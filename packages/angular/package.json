@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve demo",
-    "build": "ng build lib",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "start": "npm run clean && ng serve demo",
+    "build": "npm run clean && ng build lib",
+    "watch": "npm run clean && ng build --watch --configuration development",
+    "test": "npm run clean && ng test",
+    "clean": "rimraf dist .angular"
   },
   "private": true,
   "dependencies": {
