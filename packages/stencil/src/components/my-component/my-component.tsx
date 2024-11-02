@@ -13,20 +13,22 @@ export class MyComponent {
   @Prop() first: string;
 
   /**
-   * The middle name
-   */
-  @Prop() middle: string;
-
-  /**
    * The last name
    */
   @Prop() last: string;
 
+  /**
+   * Age
+   */
+  @Prop() age: number;
+
+
   private getText(): string {
-    return format(this.first, this.middle, this.last);
+    return format(this.first, this.last);
   }
 
+
   render() {
-    return <div>Hello, World! I'm {this.getText()}</div>;
+    return <div>Guten Tag! I'm {this.getText()} and I'm {this.age} years old.</div>;
   }
 }

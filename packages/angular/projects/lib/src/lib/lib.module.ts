@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { DIRECTIVES } from './index';
+import { DIRECTIVES } from '.';
 
 
 @NgModule({
