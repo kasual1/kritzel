@@ -22,6 +22,11 @@ export namespace Components {
          */
         "last": string;
     }
+    interface MyList {
+        "items": string[];
+    }
+    interface MyTitle {
+    }
 }
 declare global {
     interface HTMLMyButtonElement extends Components.MyButton, HTMLStencilElement {
@@ -36,9 +41,23 @@ declare global {
         prototype: HTMLMyComponentElement;
         new (): HTMLMyComponentElement;
     };
+    interface HTMLMyListElement extends Components.MyList, HTMLStencilElement {
+    }
+    var HTMLMyListElement: {
+        prototype: HTMLMyListElement;
+        new (): HTMLMyListElement;
+    };
+    interface HTMLMyTitleElement extends Components.MyTitle, HTMLStencilElement {
+    }
+    var HTMLMyTitleElement: {
+        prototype: HTMLMyTitleElement;
+        new (): HTMLMyTitleElement;
+    };
     interface HTMLElementTagNameMap {
         "my-button": HTMLMyButtonElement;
         "my-component": HTMLMyComponentElement;
+        "my-list": HTMLMyListElement;
+        "my-title": HTMLMyTitleElement;
     }
 }
 declare namespace LocalJSX {
@@ -58,9 +77,16 @@ declare namespace LocalJSX {
          */
         "last"?: string;
     }
+    interface MyList {
+        "items"?: string[];
+    }
+    interface MyTitle {
+    }
     interface IntrinsicElements {
         "my-button": MyButton;
         "my-component": MyComponent;
+        "my-list": MyList;
+        "my-title": MyTitle;
     }
 }
 export { LocalJSX as JSX };
@@ -69,6 +95,8 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "my-button": LocalJSX.MyButton & JSXBase.HTMLAttributes<HTMLMyButtonElement>;
             "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+            "my-list": LocalJSX.MyList & JSXBase.HTMLAttributes<HTMLMyListElement>;
+            "my-title": LocalJSX.MyTitle & JSXBase.HTMLAttributes<HTMLMyTitleElement>;
         }
     }
 }

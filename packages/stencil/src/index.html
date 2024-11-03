@@ -9,6 +9,11 @@
     <script nomodule src="/build/stencil.js"></script>
   </head>
   <body>
-    <my-component first="Lukas" middle="Anton" last="Mühlenbeck"></my-component>
+    <my-list></my-list>
   </body>
+
+
+  <script>
+    document.querySelector('my-list').items = ['Hammer', 'Meißel', 'Wasserwage'];
+  </script>
 </html>

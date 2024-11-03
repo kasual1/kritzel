@@ -10,4 +10,6 @@ import { LibModule } from 'lib';
 })
 export class AppComponent {
   title = 'demo';
+
+  list = ['Ananas', 'Banane', 'Apfel'];
 }
