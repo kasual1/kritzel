@@ -1,5 +1,6 @@
 import { Config } from '@stencil/core';
 import { angularOutputTarget } from '@stencil/angular-output-target';
+import { reactOutputTarget } from '@stencil/react-output-target';
 
 export const config: Config = {
   namespace: 'stencil',
@@ -13,7 +14,7 @@ export const config: Config = {
     },
     {
       type: 'www',
-      serviceWorker: null, // disable service workers
+      serviceWorker: null,
     },
     angularOutputTarget({
       componentCorePackage: '@workspace/stencil',
@@ -21,6 +22,10 @@ export const config: Config = {
       directivesArrayFile: '../../packages/angular/projects/lib/src/lib/index.ts',
       outputType: 'component'
     }),
+    reactOutputTarget({
+      outDir: '../react/lib/components/stencil-generated/',
+    }),
+    { type: 'dist-custom-elements', externalRuntime: false },
   ],
   testing: {
     browserHeadless: "new",
