@@ -24,6 +24,7 @@ export const config: Config = {
     }),
     reactOutputTarget({
       outDir: '../react/lib/components/stencil-generated/',
+      stencilPackageName: '../../../../stencil',
     }),
     { type: 'dist-custom-elements', externalRuntime: false },
   ],

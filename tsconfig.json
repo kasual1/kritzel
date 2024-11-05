@@ -22,19 +22,18 @@
 		"strictPropertyInitialization": false,
 		"target": "ES2017",
 		"baseUrl": ".",
-		"exclude": ["node_modules", "**/*.spec.ts", "**/__tests__/**"],
 		"paths": {
 			"@workspace/stencil": [
-				"./packages/stencil"
+				"./packages/libs/stencil"
 			],
 			"@workspace/stencil/loader": [
-				"./packages/stencil/loader"
+				"./packages/libs/stencil/loader"
 			],
 			"@workspace/angular": [
-				"./packages/angular/dist/lib"
+				"./packages/libs/angular/dist/lib"
 			],
 			"@workspace/react": [
-				"./packages/react/dist/lib"
+				"./packages/libs/react/dist/lib"
 			]
 			
 		}
