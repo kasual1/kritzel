@@ -2,6 +2,7 @@
   "name": "@workspace/angular",
   "version": "0.0.0",
   "scripts": {
+    "ng": "ng",
     "build": "ng build lib",
     "clean": "rimraf dist .angular node_modules"
   },
