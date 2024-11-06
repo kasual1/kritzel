@@ -32,12 +32,12 @@
     "loader/"
   ],
   "scripts": {
-    "build": "npm run clean && stencil build",
+    "build": "stencil build",
     "start": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
-    "clean": "rimraf dist .stencil"
+    "clean": "rimraf dist .stencil loader node_modules"
   },
   "devDependencies": {
     "@stencil/angular-output-target": "^0.10.0",
