@@ -31,7 +31,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@stencil/vue-output-target": "^0.9.0",
+    "@stencil/vue-output-target": "0.8.9",
     "@workspace/stencil": "file:../stencil"
   }
 }
