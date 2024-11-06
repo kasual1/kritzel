@@ -1,2 +1,1 @@
-import { Plugin } from 'vue';
-export declare const ComponentLibrary: Plugin;
+export declare const ComponentLibrary: any;

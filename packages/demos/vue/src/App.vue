@@ -1,9 +1,15 @@
 <script setup lang="ts">
+import { MyButton, MyComponent, MyList, MyTitle } from '@workspace/vue';
+
+
 </script>
 
 <template>
   <main>
-   Hello World
+   <MyButton>Test</MyButton>
+   <MyTitle></MyTitle>
+   <MyComponent :first="'Lukas'"></MyComponent>
+   <MyList :items="['Test']"></MyList>
   </main>
 </template>
 
