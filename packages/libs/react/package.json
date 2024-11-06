@@ -28,7 +28,9 @@
   "scripts": {
     "test": "node ./__tests__/react-library.test.js",
     "build": "npm run tsc",
-    "tsc": "tsc -p . --outDir ./dist"
+    "tsc": "tsc -p . --outDir ./dist",
+    "clean": "rimraf dist node_modules"
+
   },
   "bugs": {
     "url": "https://gitlab.com/kasual1/kritzel/issues"

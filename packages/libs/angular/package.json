@@ -2,12 +2,8 @@
   "name": "@workspace/angular",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve demo",
-    "build": "npm run clean && ng build lib",
-    "watch": "npm run clean && ng build --watch --configuration development",
-    "test": "ng test",
-    "clean": "rimraf dist .angular"
+    "build": "ng build lib",
+    "clean": "rimraf dist .angular node_modules"
   },
   "private": true,
   "dependencies": {

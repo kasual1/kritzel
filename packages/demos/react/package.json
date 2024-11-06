@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "start": "vite",
+    "clean": "rimraf dist node_modules"
   },
   "dependencies": {
     "react": "^18.3.1",

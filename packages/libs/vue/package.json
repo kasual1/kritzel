@@ -21,7 +21,8 @@
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "npm run tsc",
-    "tsc": "tsc -p . --outDir ./dist"
+    "tsc": "tsc -p . --outDir ./dist",
+    "clean": "rimraf dist node_modules"
   },
   "bugs": {
     "url": "https://gitlab.com/kasual1/kritzel/issues"
@@ -31,6 +32,6 @@
   },
   "dependencies": {
     "@stencil/vue-output-target": "^0.9.0",
-    "@workspace/stencil": "*"
+    "@workspace/stencil": "file:../stencil"
   }
 }
