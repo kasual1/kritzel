@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MyButton, MyComponent, MyList, MyTitle } from '@workspace/vue';
+import { MyButton, MyComponent, MyList, MyTitle } from '@kritzel/vue';
 
 
 </script>

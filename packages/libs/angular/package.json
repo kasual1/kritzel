@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/angular",
+  "name": "@kritzel/angular",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -16,7 +16,7 @@
     "@angular/platform-browser": "^18.2.10",
     "@angular/platform-browser-dynamic": "^18.2.10",
     "@angular/router": "^18.2.10",
-    "@workspace/stencil": "file:../stencil",
+    "@kritzel/stencil": "file:../stencil",
     "lib": "file:dist/lib",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

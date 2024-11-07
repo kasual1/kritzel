@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/vue",
+  "name": "@kritzel/vue",
   "version": "0.0.0",
   "description": "> TODO: description",
   "author": "kasual1 <seifertluk11@gmail.com>",
@@ -32,6 +32,6 @@
   },
   "dependencies": {
     "@stencil/vue-output-target": "0.8.9",
-    "@workspace/stencil": "file:../stencil"
+    "@kritzel/stencil": "file:../stencil"
   }
 }
