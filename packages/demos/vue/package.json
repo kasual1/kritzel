@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "vue": "^3.5.12",
-    "@workspace/vue": "file:../../../../libs/vue/lib"
+    "@kritzel/vue": "file:../../../../libs/vue/lib"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",

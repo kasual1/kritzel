@@ -23,16 +23,16 @@
 		"target": "ES2017",
 		"baseUrl": ".",
 		"paths": {
-			"@workspace/stencil": [
+			"@kritzel/stencil": [
 				"./packages/libs/stencil"
 			],
-			"@workspace/stencil/loader": [
+			"@kritzel/stencil/loader": [
 				"./packages/libs/stencil/loader"
 			],
-			"@workspace/angular": [
+			"@kritzel/angular": [
 				"./packages/libs/angular/dist/lib"
 			],
-			"@workspace/react": [
+			"@kritzel/react": [
 				"./packages/libs/react/dist/lib"
 			]
 			

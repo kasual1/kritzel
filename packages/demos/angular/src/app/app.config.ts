@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
-import { defineCustomElements } from '@workspace/stencil/loader';
+import { defineCustomElements } from '@kritzel/stencil/loader';
 
 
 export const appConfig: ApplicationConfig = {

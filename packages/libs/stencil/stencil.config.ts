@@ -19,7 +19,7 @@ export const config: Config = {
     },
     { type: 'dist-custom-elements', externalRuntime: false },
     angularOutputTarget({
-      componentCorePackage: '@workspace/stencil',
+      componentCorePackage: '@kritzel/stencil',
       directivesProxyFile: '../angular/projects/lib/src/lib/proxy.ts',
       directivesArrayFile: '../angular/projects/lib/src/lib/index.ts',
       outputType: 'component'
@@ -29,7 +29,7 @@ export const config: Config = {
       stencilPackageName: '../../../../stencil',
     }),
     vueOutputTarget({
-      componentCorePackage: '@workspace/stencil',
+      componentCorePackage: '@kritzel/stencil',
       proxiesFile: '../vue/lib/components.ts',
     }),
   ],
