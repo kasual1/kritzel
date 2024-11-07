@@ -17,7 +17,7 @@
   },
   "scripts": {
     "clean": "npm run clean --workspaces",
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspaces --if-present",
     "start-demo-angular": "npm run start -w packages/demos/angular",
     "start-demo-react": "npm run start -w packages/demos/react",
     "start-demo-vue": "npm run start -w packages/demos/vue"
