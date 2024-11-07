@@ -13,4 +13,4 @@ export interface InputProps<T> {
  * @prop modelProp - The prop that v-model binds to (i.e. value)
  * @prop modelUpdateEvent - The event that is fired from your Web Component when the value changes (i.e. ionChange)
  */
-export declare const defineContainer: <Props, VModelType = string | number | boolean>(name: string, defineCustomElement: any, componentProps?: string[], modelProp?: string, modelUpdateEvent?: string) => any;
+export declare const defineContainer: <Props, VModelType = string | number | boolean>(name: string, defineCustomElement: any, componentProps?: string[], modelProp?: string, modelUpdateEvent?: string) => import("vue").DefineSetupFnComponent<Props & InputProps<VModelType>, {}, {}, Props & InputProps<VModelType> & {}, import("vue").PublicProps>;
