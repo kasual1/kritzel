@@ -12,7 +12,6 @@
   ],
   "devDependencies": {
     "@types/node": "^22.8.6",
-    "lerna": "^8.1.8",
     "typescript": "^5.4.5"
   },
   "scripts": {
@@ -21,6 +20,5 @@
     "start-demo-angular": "npm run start -w packages/demos/angular",
     "start-demo-react": "npm run start -w packages/demos/react",
     "start-demo-vue": "npm run start -w packages/demos/vue"
-
   }
 }
