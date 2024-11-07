@@ -36,7 +36,4 @@ export const config: Config = {
   testing: {
     browserHeadless: "new",
   },
-  extras: {
-    enableImportInjection: true
-  }
 };
