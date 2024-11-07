@@ -8,7 +8,7 @@ import { Component, Host, Prop, h } from '@stencil/core';
 export class MyList {
 
   @Prop()
-  items: string[];
+  items: string[] = []
 
   onAdd = () => {
     this.items = [...this.items, 'New Item'];
