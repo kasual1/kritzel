@@ -1,13 +1,9 @@
-import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
-import { defineCustomElements } from '@kritzel/stencil/loader';
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { LibModule } from 'lib';
 
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => defineCustomElements,
-      multi: true
-    },
+    importProvidersFrom(LibModule.forRoot())
   ]
 };

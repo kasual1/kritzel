@@ -10,3 +10,4 @@
 
 export { format } from './utils/utils';
 export type * from './components';
+export { defineCustomElements } from '../loader';

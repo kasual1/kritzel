@@ -1,5 +1,4 @@
-import type { JSX } from '@kritzel/stencil';
-export declare const MyButton: import("vue").DefineSetupFnComponent<JSX.MyButton & import("./vue-component-lib/utils").InputProps<string | number | boolean>, {}, {}, JSX.MyButton & import("./vue-component-lib/utils").InputProps<string | number | boolean> & {}, import("vue").PublicProps>;
-export declare const MyComponent: import("vue").DefineSetupFnComponent<JSX.MyComponent & import("./vue-component-lib/utils").InputProps<string | number | boolean>, {}, {}, JSX.MyComponent & import("./vue-component-lib/utils").InputProps<string | number | boolean> & {}, import("vue").PublicProps>;
-export declare const MyList: import("vue").DefineSetupFnComponent<JSX.MyList & import("./vue-component-lib/utils").InputProps<string | number | boolean>, {}, {}, JSX.MyList & import("./vue-component-lib/utils").InputProps<string | number | boolean> & {}, import("vue").PublicProps>;
-export declare const MyTitle: import("vue").DefineSetupFnComponent<JSX.MyTitle & import("./vue-component-lib/utils").InputProps<string | number | boolean>, {}, {}, JSX.MyTitle & import("./vue-component-lib/utils").InputProps<string | number | boolean> & {}, import("vue").PublicProps>;
+export declare const MyButton: any;
+export declare const MyComponent: any;
+export declare const MyList: any;
+export declare const MyTitle: any;
