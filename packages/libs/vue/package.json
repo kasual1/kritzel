@@ -22,7 +22,8 @@
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "npm run tsc",
     "tsc": "tsc -p . --outDir ./dist",
-    "clean": "rimraf dist node_modules"
+    "clean": "rimraf dist node_modules",
+    "bump": "npm version patch"
   },
   "bugs": {
     "url": "https://gitlab.com/kasual1/kritzel/issues"

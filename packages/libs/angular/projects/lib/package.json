@@ -1,6 +1,6 @@
 {
   "name": "kritzel-angular",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "peerDependencies": {
     "@angular/common": "^18.2.10",
     "@angular/core": "^18.2.10",
@@ -9,5 +9,8 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "scripts": {
+    "bump": "npm version patch"
+  }
 }
