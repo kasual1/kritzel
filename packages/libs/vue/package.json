@@ -23,7 +23,8 @@
     "build": "npm run tsc",
     "tsc": "tsc -p . --outDir ./dist",
     "clean": "rimraf dist node_modules",
-    "bump": "npm version patch"
+    "bump": "npm version patch",
+    "release": "npm publish"
   },
   "bugs": {
     "url": "https://gitlab.com/kasual1/kritzel/issues"
