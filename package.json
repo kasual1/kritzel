@@ -2,10 +2,10 @@
   "name": "root",
   "private": true,
   "workspaces": [
-    "packages/libs/stencil",
-    "packages/libs/angular",
-    "packages/libs/react",
-    "packages/libs/vue",
+    "packages/libs/kritzel-stencil",
+    "packages/libs/kritzel-angular",
+    "packages/libs/kritzel-react",
+    "packages/libs/kritzel-vue",
     "packages/demos/angular",
     "packages/demos/react",
     "packages/demos/vue"

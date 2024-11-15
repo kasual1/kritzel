@@ -1,5 +1,5 @@
 import './App.css'
-import { MyComponent, MyList } from '@kritzel/react'
+import { MyComponent, MyList } from 'kritzel-react'
 
 function App() {
 

@@ -10,10 +10,10 @@
 import type { StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { MyButton as MyButtonElement, defineCustomElement as defineMyButton } from "../../../../stencil/dist/components/my-button.js";
-import { MyComponent as MyComponentElement, defineCustomElement as defineMyComponent } from "../../../../stencil/dist/components/my-component.js";
-import { MyList as MyListElement, defineCustomElement as defineMyList } from "../../../../stencil/dist/components/my-list.js";
-import { MyTitle as MyTitleElement, defineCustomElement as defineMyTitle } from "../../../../stencil/dist/components/my-title.js";
+import { MyButton as MyButtonElement, defineCustomElement as defineMyButton } from "../../../../kritzel-stencil/dist/components/my-button.js";
+import { MyComponent as MyComponentElement, defineCustomElement as defineMyComponent } from "../../../../kritzel-stencil/dist/components/my-component.js";
+import { MyList as MyListElement, defineCustomElement as defineMyList } from "../../../../kritzel-stencil/dist/components/my-list.js";
+import { MyTitle as MyTitleElement, defineCustomElement as defineMyTitle } from "../../../../kritzel-stencil/dist/components/my-title.js";
 
 type MyButtonEvents = NonNullable<unknown>;
 

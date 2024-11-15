@@ -19,18 +19,18 @@ export const config: Config = {
     },
     { type: 'dist-custom-elements', externalRuntime: false },
     angularOutputTarget({
-      componentCorePackage: '@kritzel/stencil',
-      directivesProxyFile: '../angular/projects/lib/src/lib/proxy.ts',
-      directivesArrayFile: '../angular/projects/lib/src/lib/index.ts',
+      componentCorePackage: 'kritzel-stencil',
+      directivesProxyFile: '../kritzel-angular/projects/lib/src/lib/proxy.ts',
+      directivesArrayFile: '../kritzel-angular/projects/lib/src/lib/index.ts',
       outputType: 'component'
     }),
     reactOutputTarget({
-      outDir: '../react/lib/components/stencil-generated/',
-      stencilPackageName: '../../../../stencil',
+      outDir: '../kritzel-react/lib/components/stencil-generated/',
+      stencilPackageName: '../../../../kritzel-stencil'
     }),
     vueOutputTarget({
       componentCorePackage: '@kritzel/stencil',
-      proxiesFile: '../vue/lib/components.ts',
+      proxiesFile: '../kritzel-vue/lib/components.ts',
     }),
   ],
   testing: {
