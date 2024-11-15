@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LibModule } from 'lib';
+import { LibModule } from 'kritzel-angular';
 
 @Component({
   selector: 'app-root',

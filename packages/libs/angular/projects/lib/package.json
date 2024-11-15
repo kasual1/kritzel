@@ -1,6 +1,6 @@
 {
   "name": "kritzel-angular",
-  "version": "0.0.5",
+  "version": "0.0.20",
   "peerDependencies": {
     "@angular/common": "^18.2.10",
     "@angular/core": "^18.2.10",

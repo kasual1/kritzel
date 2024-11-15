@@ -18,6 +18,7 @@
     "clean": "npm run clean --workspaces",
     "bump": "npm run bump --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
+    "publish": "npm run release --workspaces --if-present",
     "start-demo-angular": "npm run start -w packages/demos/angular",
     "start-demo-react": "npm run start -w packages/demos/react",
     "start-demo-vue": "npm run start -w packages/demos/vue"

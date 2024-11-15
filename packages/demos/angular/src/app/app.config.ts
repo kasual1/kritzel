@@ -1,5 +1,5 @@
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
-import { LibModule } from 'lib';
+import { LibModule } from 'kritzel-angular';
 
 
 export const appConfig: ApplicationConfig = {
