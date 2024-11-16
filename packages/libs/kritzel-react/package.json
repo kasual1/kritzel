@@ -1,8 +1,6 @@
 {
   "name": "kritzel-react",
   "version": "0.0.21",
-  "description": "> TODO: description",
-  "author": "kasual1 <seifertluk11@gmail.com>",
   "homepage": "https://gitlab.com/kasual1/kritzel#readme",
   "license": "ISC",
   "main": "dist/index.js",
@@ -35,9 +33,6 @@
     "clean": "rimraf dist node_modules",
     "bump": "npm version patch",
     "release": "npm publish"
-  },
-  "bugs": {
-    "url": "https://gitlab.com/kasual1/kritzel/issues"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
