@@ -18,7 +18,7 @@ export class MyList {
   render() {
     return (
       <Host>
-        <button onClick={this.onAdd}>+Add Version 0.0.8</button>
+        <button onClick={this.onAdd}>+Add Version 0.0.13</button>
 
         <ul>
           {this.items?.map(item => (
