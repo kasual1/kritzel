@@ -1,8 +1,11 @@
 # Setup 
-run `npm i kritzel-angular`
-
-Add LibModule to the providers array in you appConfig.
+Install the kritzel-angular package
 ```
+npm i kritzel-angular
+```
+
+Add LibModule to the providers array in your app.config.ts
+```typescript
 import  { LibModule } from 'kritzel-angular';
 
 export const appConfig: ApplicationConfig = {
@@ -14,7 +17,7 @@ export const appConfig: ApplicationConfig = {
 
 Include the LibModule into the imports array of your component to use Kritzel components in you template.
 
-```
+```typescript
 import { LibModule } from 'kritzel-angular';
 
 @Component({
