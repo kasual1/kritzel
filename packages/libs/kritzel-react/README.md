@@ -6,7 +6,7 @@ npm i kritzel-react
 ```
 
 Add MyList to your imports to use it in your component template.
-```
+```typescript
 import { MyList } from 'kritzel-react'
 
 function MyComponent() {
