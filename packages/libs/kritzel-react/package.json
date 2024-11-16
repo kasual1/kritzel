@@ -1,6 +1,6 @@
 {
   "name": "kritzel-react",
-  "version": "0.0.18",
+  "version": "0.0.21",
   "description": "> TODO: description",
   "author": "kasual1 <seifertluk11@gmail.com>",
   "homepage": "https://gitlab.com/kasual1/kritzel#readme",
@@ -22,7 +22,7 @@
     "@stencil/react-output-target": "^0.7.4"
   },
   "peerDependencies": {
-    "kritzel-stencil": "^0.0.13"
+    "kritzel-stencil": "^0.0.16"
   },
   "repository": {
     "type": "git",

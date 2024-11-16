@@ -1,6 +1,6 @@
 {
-  "name": "@kritzel/vue",
-  "version": "0.0.24",
+  "name": "kritzel-vue",
+  "version": "0.0.28",
   "description": "> TODO: description",
   "author": "kasual1 <seifertluk11@gmail.com>",
   "homepage": "https://gitlab.com/kasual1/kritzel#readme",
@@ -33,7 +33,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@stencil/vue-output-target": "0.8.9",
-    "@kritzel/stencil": "file:../stencil"
+    "@stencil/vue-output-target": "0.8.9"
+  },
+  "peerDependencies": {
+    "kritzel-stencil": "^0.0.16"
   }
 }
