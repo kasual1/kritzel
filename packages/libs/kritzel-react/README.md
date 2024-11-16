@@ -1,11 +1,22 @@
-# `react`
+# Setup
 
-> TODO: description
-
-## Usage
-
+Install the kritzel-react package.
 ```
-const react = require('react');
+npm i kritzel-react
+```
 
-// TODO: DEMONSTRATE API
+Add MyList to your imports to use it in your component template.
+```
+import { MyList } from 'kritzel-react'
+
+function MyComponent() {
+
+  return (
+    <>
+      <MyList></MyList>
+    </>
+  )
+}
+
+export default MyComponent
 ```
