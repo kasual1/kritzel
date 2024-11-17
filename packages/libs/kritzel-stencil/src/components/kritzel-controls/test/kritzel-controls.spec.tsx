@@ -1,18 +1,18 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { MyButton } from '../my-button';
+import { KritzelControls } from '../kritzel-controls';
 
-describe('my-button', () => {
+describe('kritzel-controls', () => {
   it('renders', async () => {
     const page = await newSpecPage({
-      components: [MyButton],
-      html: `<my-button></my-button>`,
+      components: [KritzelControls],
+      html: `<kritzel-controls></kritzel-controls>`,
     });
     expect(page.root).toEqualHtml(`
-      <my-button>
+      <kritzel-controls>
         <mock:shadow-root>
           <slot></slot>
         </mock:shadow-root>
-      </my-button>
+      </kritzel-controls>
     `);
   });
 });

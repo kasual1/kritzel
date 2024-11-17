@@ -1,15 +1,15 @@
 import { Component, Host, h } from '@stencil/core';
 
 @Component({
-  tag: 'my-title',
-  styleUrl: 'my-title.css',
+  tag: 'kritzel-controls',
+  styleUrl: 'kritzel-controls.css',
   shadow: true,
 })
-export class MyTitle {
+export class KritzelControls {
   render() {
     return (
       <Host>
-        This is just a title component for testing purposes (updated).
+        Kritzel Controls is coming soon!
       </Host>
     );
   }

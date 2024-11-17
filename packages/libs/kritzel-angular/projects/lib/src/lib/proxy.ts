@@ -10,13 +10,13 @@ import { Components } from 'kritzel-stencil';
 @ProxyCmp({
 })
 @Component({
-  selector: 'my-button',
+  selector: 'kritzel-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: [],
 })
-export class MyButton {
+export class KritzelControls {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -25,63 +25,19 @@ export class MyButton {
 }
 
 
-export declare interface MyButton extends Components.MyButton {}
-
-
-@ProxyCmp({
-  inputs: ['age', 'first', 'last']
-})
-@Component({
-  selector: 'my-component',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['age', 'first', 'last'],
-})
-export class MyComponent {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
-export declare interface MyComponent extends Components.MyComponent {}
-
-
-@ProxyCmp({
-  inputs: ['items']
-})
-@Component({
-  selector: 'my-list',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['items'],
-})
-export class MyList {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
-export declare interface MyList extends Components.MyList {}
+export declare interface KritzelControls extends Components.KritzelControls {}
 
 
 @ProxyCmp({
 })
 @Component({
-  selector: 'my-title',
+  selector: 'kritzel-engine',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: [],
 })
-export class MyTitle {
+export class KritzelEngine {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -90,6 +46,6 @@ export class MyTitle {
 }
 
 
-export declare interface MyTitle extends Components.MyTitle {}
+export declare interface KritzelEngine extends Components.KritzelEngine {}
 
 

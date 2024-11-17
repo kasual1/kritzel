@@ -10,51 +10,27 @@
 import type { StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { MyButton as MyButtonElement, defineCustomElement as defineMyButton } from "../../../../kritzel-stencil/dist/components/my-button.js";
-import { MyComponent as MyComponentElement, defineCustomElement as defineMyComponent } from "../../../../kritzel-stencil/dist/components/my-component.js";
-import { MyList as MyListElement, defineCustomElement as defineMyList } from "../../../../kritzel-stencil/dist/components/my-list.js";
-import { MyTitle as MyTitleElement, defineCustomElement as defineMyTitle } from "../../../../kritzel-stencil/dist/components/my-title.js";
+import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
+import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
 
-type MyButtonEvents = NonNullable<unknown>;
+type KritzelControlsEvents = NonNullable<unknown>;
 
-export const MyButton: StencilReactComponent<MyButtonElement, MyButtonEvents> = /*@__PURE__*/ createComponent<MyButtonElement, MyButtonEvents>({
-    tagName: 'my-button',
-    elementClass: MyButtonElement,
+export const KritzelControls: StencilReactComponent<KritzelControlsElement, KritzelControlsEvents> = /*@__PURE__*/ createComponent<KritzelControlsElement, KritzelControlsEvents>({
+    tagName: 'kritzel-controls',
+    elementClass: KritzelControlsElement,
     // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
     react: React,
-    events: {} as MyButtonEvents,
-    defineCustomElement: defineMyButton
+    events: {} as KritzelControlsEvents,
+    defineCustomElement: defineKritzelControls
 });
 
-type MyComponentEvents = NonNullable<unknown>;
+type KritzelEngineEvents = NonNullable<unknown>;
 
-export const MyComponent: StencilReactComponent<MyComponentElement, MyComponentEvents> = /*@__PURE__*/ createComponent<MyComponentElement, MyComponentEvents>({
-    tagName: 'my-component',
-    elementClass: MyComponentElement,
+export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelEngineEvents> = /*@__PURE__*/ createComponent<KritzelEngineElement, KritzelEngineEvents>({
+    tagName: 'kritzel-engine',
+    elementClass: KritzelEngineElement,
     // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
     react: React,
-    events: {} as MyComponentEvents,
-    defineCustomElement: defineMyComponent
-});
-
-type MyListEvents = NonNullable<unknown>;
-
-export const MyList: StencilReactComponent<MyListElement, MyListEvents> = /*@__PURE__*/ createComponent<MyListElement, MyListEvents>({
-    tagName: 'my-list',
-    elementClass: MyListElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
-    react: React,
-    events: {} as MyListEvents,
-    defineCustomElement: defineMyList
-});
-
-type MyTitleEvents = NonNullable<unknown>;
-
-export const MyTitle: StencilReactComponent<MyTitleElement, MyTitleEvents> = /*@__PURE__*/ createComponent<MyTitleElement, MyTitleEvents>({
-    tagName: 'my-title',
-    elementClass: MyTitleElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
-    react: React,
-    events: {} as MyTitleEvents,
-    defineCustomElement: defineMyTitle
+    events: {} as KritzelEngineEvents,
+    defineCustomElement: defineKritzelEngine
 });

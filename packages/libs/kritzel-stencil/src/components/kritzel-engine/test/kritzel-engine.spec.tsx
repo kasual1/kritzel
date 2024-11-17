@@ -1,18 +1,18 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { MyList } from '../my-list';
+import { KritzelEngine } from '../kritzel-engine';
 
-describe('my-list', () => {
+describe('kritzel-engine', () => {
   it('renders', async () => {
     const page = await newSpecPage({
-      components: [MyList],
-      html: `<my-list></my-list>`,
+      components: [KritzelEngine],
+      html: `<kritzel-engine></kritzel-engine>`,
     });
     expect(page.root).toEqualHtml(`
-      <my-list>
+      <kritzel-engine>
         <mock:shadow-root>
           <slot></slot>
         </mock:shadow-root>
-      </my-list>
+      </kritzel-engine>
     `);
   });
 });
