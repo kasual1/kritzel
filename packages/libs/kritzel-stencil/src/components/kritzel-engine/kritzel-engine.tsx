@@ -32,10 +32,10 @@ export class KritzelEngine {
   currentPathPoints: number[][] = [];
 
   @State()
-  currentPath?: any;
+  currentPath?: Path;
 
   @State()
-  scale: number = 0.0001;
+  scale: number = 1;
 
   @State()
   drawing: Drawing = {
@@ -124,7 +124,7 @@ export class KritzelEngine {
   }
 
 
-  render() {
+  private updateObjectsInViewport() {
     const padding = 25;
 
     this.drawing?.paths?.forEach((path) => {
@@ -138,14 +138,68 @@ export class KritzelEngine {
         this.scale
       );
     });
+  }
 
-    console.log(this.drawing?.paths);
+  getOriginStyle = () => {
+    return {
+      transform: `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.translateX}, ${this.translateY})`,
+    };
+  }
+
+  getStyle = (path: Path) => {
+    return {
+      height: path?.height.toString(),
+      width: path?.width.toString(),
+      left: '0', 
+      top: '0',
+      position: 'absolute',
+      transform: path?.transformationMatrix, 
+    };
+  }
+
+  render() {
+    this.updateObjectsInViewport();
+
     return (
       <Host>
-        <div>StartX: {this.startX}</div>
-        <div>StartY: {this.startY}</div>
-        <div>TranslateX: {this.translateX}</div>
-        <div>TranslateY: {this.translateY}</div>
+        <div class="debug-panel">
+          <div>StartX: {this.startX}</div>
+          <div>StartY: {this.startY}</div>
+          <div>TranslateX: {this.translateX}</div>
+          <div>TranslateY: {this.translateY}</div>
+        </div>
+
+        <div class="origin" style={this.getOriginStyle()}>
+        
+          {this.drawing?.paths?.map((path) => {
+            return (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                style={this.getStyle(path)}
+                viewBox={path?.viewBox}
+              >
+                <path
+                  d={path?.d}
+                  fill={path?.fill}
+                  stroke={path?.stroke}
+                />
+              </svg>
+            );
+          })}
+
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            style={this.getStyle(this.currentPath)}
+            viewBox={this.currentPath?.viewBox}
+          >
+            <path
+              d={this.currentPath?.d}
+              fill={this.currentPath?.fill}
+              stroke={this.currentPath?.stroke}
+            />
+          </svg>
+        </div>
       </Host>
     );
   }

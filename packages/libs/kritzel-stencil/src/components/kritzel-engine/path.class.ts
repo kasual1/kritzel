@@ -55,6 +55,10 @@ export class Path {
     return `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
   }
 
+  get viewBox(): string {
+      return `${this.x} ${this.y} ${this.width} ${this.height}`;
+  }
+
   constructor(options: PathOptions) {
     this.options = options;
     this.id = this.generateId();
