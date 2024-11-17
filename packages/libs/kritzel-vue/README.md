@@ -5,7 +5,7 @@ Install the kritzel-vue package.
 npm i kritzel-vue
 ```
 
-Import the ComponentLibrary register it as a plugin.
+Import the ComponentLibrary and register it as a plugin.
 ```typescript
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -16,7 +16,7 @@ createApp(App).use(ComponentLibrary).mount('#app')
 ```
 
 Add MyList to your imports to use it in your component template.
-```typescript
+```html
 <script setup lang="ts">
 import { MyList } from 'kritzel-vue';
 </script>
