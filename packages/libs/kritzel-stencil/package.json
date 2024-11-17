@@ -52,5 +52,8 @@
     "jest-cli": "^29.7.0",
     "puppeteer": "^23.7.1"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "perfect-freehand": "^1.2.2"
+  }
 }
