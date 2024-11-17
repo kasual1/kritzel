@@ -1,11 +1,11 @@
 import { newE2EPage } from '@stencil/core/testing';
 
-describe('my-title', () => {
+describe('kritzel-controls', () => {
   it('renders', async () => {
     const page = await newE2EPage();
-    await page.setContent('<my-title></my-title>');
+    await page.setContent('<kritzel-controls></kritzel-controls>');
 
-    const element = await page.find('my-title');
+    const element = await page.find('kritzel-controls');
     expect(element).toHaveClass('hydrated');
   });
 });

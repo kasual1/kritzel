@@ -6,97 +6,45 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
-    interface MyButton {
+    interface KritzelControls {
     }
-    interface MyComponent {
-        /**
-          * Age
-         */
-        "age": number;
-        /**
-          * The first name
-         */
-        "first": string;
-        /**
-          * The last name
-         */
-        "last": string;
-    }
-    interface MyList {
-        "items": string[];
-    }
-    interface MyTitle {
+    interface KritzelEngine {
     }
 }
 declare global {
-    interface HTMLMyButtonElement extends Components.MyButton, HTMLStencilElement {
+    interface HTMLKritzelControlsElement extends Components.KritzelControls, HTMLStencilElement {
     }
-    var HTMLMyButtonElement: {
-        prototype: HTMLMyButtonElement;
-        new (): HTMLMyButtonElement;
+    var HTMLKritzelControlsElement: {
+        prototype: HTMLKritzelControlsElement;
+        new (): HTMLKritzelControlsElement;
     };
-    interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
+    interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
     }
-    var HTMLMyComponentElement: {
-        prototype: HTMLMyComponentElement;
-        new (): HTMLMyComponentElement;
-    };
-    interface HTMLMyListElement extends Components.MyList, HTMLStencilElement {
-    }
-    var HTMLMyListElement: {
-        prototype: HTMLMyListElement;
-        new (): HTMLMyListElement;
-    };
-    interface HTMLMyTitleElement extends Components.MyTitle, HTMLStencilElement {
-    }
-    var HTMLMyTitleElement: {
-        prototype: HTMLMyTitleElement;
-        new (): HTMLMyTitleElement;
+    var HTMLKritzelEngineElement: {
+        prototype: HTMLKritzelEngineElement;
+        new (): HTMLKritzelEngineElement;
     };
     interface HTMLElementTagNameMap {
-        "my-button": HTMLMyButtonElement;
-        "my-component": HTMLMyComponentElement;
-        "my-list": HTMLMyListElement;
-        "my-title": HTMLMyTitleElement;
+        "kritzel-controls": HTMLKritzelControlsElement;
+        "kritzel-engine": HTMLKritzelEngineElement;
     }
 }
 declare namespace LocalJSX {
-    interface MyButton {
+    interface KritzelControls {
     }
-    interface MyComponent {
-        /**
-          * Age
-         */
-        "age"?: number;
-        /**
-          * The first name
-         */
-        "first"?: string;
-        /**
-          * The last name
-         */
-        "last"?: string;
-    }
-    interface MyList {
-        "items"?: string[];
-    }
-    interface MyTitle {
+    interface KritzelEngine {
     }
     interface IntrinsicElements {
-        "my-button": MyButton;
-        "my-component": MyComponent;
-        "my-list": MyList;
-        "my-title": MyTitle;
+        "kritzel-controls": KritzelControls;
+        "kritzel-engine": KritzelEngine;
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "my-button": LocalJSX.MyButton & JSXBase.HTMLAttributes<HTMLMyButtonElement>;
-            "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
-            "my-list": LocalJSX.MyList & JSXBase.HTMLAttributes<HTMLMyListElement>;
-            "my-title": LocalJSX.MyTitle & JSXBase.HTMLAttributes<HTMLMyTitleElement>;
+            "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
+            "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
         }
     }
 }

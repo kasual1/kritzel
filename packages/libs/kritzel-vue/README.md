@@ -15,14 +15,15 @@ createApp(App).use(ComponentLibrary).mount('#app')
 
 ```
 
-Add MyList to your imports to use it in your component template.
+Import Kritzel components to use them in your template.
 ```html
 <script setup lang="ts">
-import { MyList } from 'kritzel-vue';
+import { KritzelEngine, KritzelControls } from 'kritzel-vue';
 </script>
 
 <template>
-  <MyList></MyList>
+  <KritzelEngine></KritzelEngine>
+  <KritzelControls></KritzelControls>
 </template>
 
 <style scoped>

@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { MyButton, MyComponent, MyList, MyTitle } from 'kritzel-vue';
 
-
+import {KritzelEngine, KritzelControls} from 'kritzel-vue'
 </script>
 
 <template>
   <main>
-   <MyButton>Test</MyButton>
-   <MyTitle></MyTitle>
-   <MyComponent :first="'Lukas'"></MyComponent>
-   <MyList :items="['Test']"></MyList>
+    <KritzelEngine />
+    <KritzelControls />
   </main>
 </template>
 

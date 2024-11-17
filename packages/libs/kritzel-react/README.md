@@ -5,15 +5,16 @@ Install the kritzel-react package.
 npm i kritzel-react
 ```
 
-Add MyList to your imports to use it in your component template.
+Import Kritzel components to use them in your template.
 ```jsx
-import { MyList } from 'kritzel-react'
+import { KritzelEngine, KritzelControls } from 'kritzel-react'
 
 function MyComponent() {
 
   return (
     <>
-      <MyList></MyList>
+      <KritzelEngine></KritzelEngine>
+      <KritzelControls></KritzelControls>
     </>
   )
 }

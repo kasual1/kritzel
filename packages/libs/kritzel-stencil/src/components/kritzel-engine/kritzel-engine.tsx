@@ -1,17 +1,15 @@
 import { Component, Host, h } from '@stencil/core';
 
 @Component({
-  tag: 'my-button',
-  styleUrl: 'my-button.css',
+  tag: 'kritzel-engine',
+  styleUrl: 'kritzel-engine.css',
   shadow: true,
 })
-export class MyButton {
+export class KritzelEngine {
   render() {
     return (
       <Host>
-        <button>
-          My-<slot></slot>
-        </button>
+        Kritzel Engine is coming soon!
       </Host>
     );
   }

@@ -25,7 +25,8 @@ import { LibModule } from 'kritzel-angular';
   standalone: true,
   imports: [LibModule],
   template: `
-    <my-list></my-list>
+    <kritzel-engine></kritzel-engine>
+    <kritzel-controls></kritzel-controls>
   `,
 })
 export class MyComponent {
