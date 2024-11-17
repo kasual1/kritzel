@@ -1,3 +1,31 @@
-:host {
-  display: block;
+:host{
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.debug-panel{
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.origin{
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
+  -webkit-transform-origin: top left;
+  -moz-transform-origin: top left;
+  transform-origin: top left;
+  overflow: visible;
+}
+
+svg {
+  -webkit-transform-origin: top left;
+  -moz-transform-origin: top left;
+  transform-origin: top left;
+  overflow: visible;
 }
