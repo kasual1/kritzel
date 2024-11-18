@@ -97,7 +97,7 @@ export class KritzelEngine {
   }
 
   @Listen('mouseup', { target: 'window', passive: true })
-  handleMouseUp(ev) {
+  handleMouseUp() {
     if (this.isDragging) {
       this.isDragging = false;
     }
@@ -115,7 +115,7 @@ export class KritzelEngine {
   }
 
   @Listen('wheel', { target: 'window', passive: true })
-  handleWheel(ev) {
+  handleWheel() {
   }
 
   @Listen('contextmenu', { target: 'window' })
