@@ -10,7 +10,7 @@
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "kritzel-react": "^0.0.39"
+    "kritzel-react": "file:../../libs/kritzel-react/dist"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

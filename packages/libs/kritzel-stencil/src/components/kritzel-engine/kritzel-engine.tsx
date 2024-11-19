@@ -1,4 +1,4 @@
-import { Component, Host, h, Listen, State } from '@stencil/core';
+import { Component, Host, h, Listen, State, Element } from '@stencil/core';
 import { EventButton } from './event-button.enum';
 import { Path } from './path.class';
 import { Drawing } from './drawing.interface';
@@ -10,11 +10,20 @@ import { Drawing } from './drawing.interface';
 })
 export class KritzelEngine {
 
+  @Element()
+  host: HTMLElement
+
   @State()
   startX: number;
 
   @State()
   startY: number;
+
+  @State()
+  cursorX: number;
+
+  @State()
+  cursorY: number;
 
   @State()
   translateX: number = 0;
@@ -36,6 +45,14 @@ export class KritzelEngine {
 
   @State()
   scale: number = 1;
+
+  scaleStep: number = 0.05;
+
+  scaleMax: number = 1000;
+
+  scaleMin: number = 0.0001;
+
+  showDebugPanel: boolean = false;
 
   @State()
   drawing: Drawing = {
@@ -114,8 +131,30 @@ export class KritzelEngine {
     }
   }
 
-  @Listen('wheel', { target: 'window', passive: true })
-  handleWheel() {
+  @Listen('wheel', { target: 'window', passive: false })
+  handleWheel(ev) {
+    ev.preventDefault();
+
+    const rect = this.host.getBoundingClientRect();
+    this.cursorX = ev.clientX - rect.left;
+    this.cursorY = ev.clientY - rect.top;
+
+    const delta =
+      ev.deltaY > 0
+        ? -this.scaleStep * this.scale
+        : this.scaleStep * this.scale;
+    const newScale = this.getUpdatedScale(this.scale + delta);
+
+    const scaleRatio = newScale / this.scale;
+    const translateXAdjustment =
+      (this.cursorX - this.translateX) * (scaleRatio - 1);
+    const translateYAdjustment =
+      (this.cursorY - this.translateY) * (scaleRatio - 1);
+
+    this.scale = newScale;
+
+    this.translateX -= translateXAdjustment;
+    this.translateY -= translateYAdjustment;
   }
 
   @Listen('contextmenu', { target: 'window' })
@@ -123,6 +162,9 @@ export class KritzelEngine {
     ev.preventDefault();
   }
 
+  private getUpdatedScale(scale: number): number {
+    return Math.min(this.scaleMax, Math.max(this.scaleMin, scale));
+  }
 
   private updateObjectsInViewport() {
     const padding = 25;
@@ -162,12 +204,14 @@ export class KritzelEngine {
 
     return (
       <Host>
+
+        {this.showDebugPanel && 
         <div class="debug-panel">
           <div>StartX: {this.startX}</div>
           <div>StartY: {this.startY}</div>
           <div>TranslateX: {this.translateX}</div>
           <div>TranslateY: {this.translateY}</div>
-        </div>
+        </div>}
 
         <div class="origin" style={this.getOriginStyle()}>
         
