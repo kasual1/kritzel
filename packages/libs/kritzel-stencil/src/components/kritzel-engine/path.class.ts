@@ -70,10 +70,7 @@ export class Path {
     this.strokeWidth = options.strokeWidth ?? 8;
     this.fill = options.fill ?? 'black';
 
-    debugger;
-
     this.d = this.generateSvgPath();
-
 
     this.initializeDimensions();
     this.setPosition();
