@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "vue": "^3.5.12",
-    "kritzel-vue": "^0.0.39"
+    "kritzel-vue": "file:../../libs/kritzel-vue/dist"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",

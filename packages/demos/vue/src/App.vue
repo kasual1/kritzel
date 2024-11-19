@@ -1,12 +1,11 @@
 <script setup lang="ts">
 
-import {KritzelEngine, KritzelControls} from 'kritzel-vue'
+import { KritzelEngine } from 'kritzel-vue'
 </script>
 
 <template>
   <main>
     <KritzelEngine />
-    <KritzelControls />
   </main>
 </template>
 
