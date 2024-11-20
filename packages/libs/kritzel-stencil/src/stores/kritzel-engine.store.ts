@@ -2,7 +2,7 @@ import { createStore } from "@stencil/store";
 import { Path } from "../classes/path.class";
 import { Drawing } from "../interfaces/drawing.interface";
 
-interface KritzelEngineState {
+export interface KritzelEngineState {
   startX: number;
   startY: number;
   cursorX: number;
