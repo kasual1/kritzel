@@ -1,7 +1,7 @@
-import { Component, Host, h, Listen, State, Element } from '@stencil/core';
-import { EventButton } from './event-button.enum';
-import { Path } from './path.class';
-import { Drawing } from './drawing.interface';
+import { Component, Host, h, Listen, Element } from '@stencil/core';
+import { MouseButton } from '../../enums/event-button.enum';
+import { Path } from '../../classes/path.class';
+import state from '../../stores/kritzel-engine.store';
 
 @Component({
   tag: 'kritzel-engine',
@@ -11,123 +11,73 @@ import { Drawing } from './drawing.interface';
 export class KritzelEngine {
 
   @Element()
-  host: HTMLElement
+  host: HTMLElement;
 
-  @State()
-  startX: number;
+  isRightClick = (ev) => ev.button === MouseButton.RIGHT
 
-  @State()
-  startY: number;
-
-  @State()
-  cursorX: number;
-
-  @State()
-  cursorY: number;
-
-  @State()
-  translateX: number = 0;
-
-  @State()
-  translateY: number = 0;
-
-  @State()
-  isDragging: boolean;
-
-  @State()
-  isDrawing: boolean;
-
-  @State()
-  currentPathPoints: number[][] = [];
-
-  @State()
-  currentPath?: Path;
-
-  @State()
-  scale: number = 1;
-
-  scaleStep: number = 0.05;
-
-  scaleMax: number = 1000;
-
-  scaleMin: number = 0.0001;
-
-  showDebugPanel: boolean = false;
-
-  @State()
-  drawing: Drawing = {
-    id: '1',
-    releaseDate: new Date(),
-    paths: [],
-    translateX: 0,
-    translateY: 0,
-  }
-
-  isRightClick = (ev) => ev.button === EventButton.RIGHT
-
-  isLeftClick = (ev) => ev.button === EventButton.LEFT
+  isLeftClick = (ev) => ev.button === MouseButton.LEFT
 
   @Listen('mousedown', { target: 'window', passive: true })
   handleMouseDown(ev) {
 
     if(this.isRightClick(ev)) {
-      this.isDragging = true;
-      this.startX = ev.clientX;
-      this.startY = ev.clientY;
+      state.isDragging = true;
+      state.startX = ev.clientX;
+      state.startY = ev.clientY;
     }
 
     if(this.isLeftClick(ev)) {
-      this.isDrawing = true;
+      state.isDrawing = true;
       const x = ev.clientX;
       const y = ev.clientY;
 
-      this.currentPathPoints.push([x, y]);
-      this.currentPath = new Path({
-        points: this.currentPathPoints,
-        translateX: -this.translateX,
-        translateY: -this.translateY,
-        scale: this.scale,
+      state.currentPathPoints.push([x, y]);
+      state.currentPath = new Path({
+        points: state.currentPathPoints,
+        translateX: -state.translateX,
+        translateY: -state.translateY,
+        scale: state.scale,
       });
     }
   }
 
   @Listen('mousemove', { target: 'window', passive: true })
   handleMouseMove(ev) {
-    if (this.isDragging) {
-      this.translateX -= this.startX - ev.clientX;
-      this.translateY -= this.startY - ev.clientY;
-      this.startX = ev.clientX;
-      this.startY = ev.clientY;
+    if (state.isDragging) {
+      state.translateX -= state.startX - ev.clientX;
+      state.translateY -= state.startY - ev.clientY;
+      state.startX = ev.clientX;
+      state.startY = ev.clientY;
     }
 
-    if(this.isDrawing){
+    if(state.isDrawing){
       const x = ev.clientX;
       const y = ev.clientY;
-      this.currentPathPoints.push([x, y]);
-      this.currentPath = new Path({
-        points: this.currentPathPoints,
-        translateX: -this.translateX,
-        translateY: -this.translateY,
-        scale: this.scale,
+      state.currentPathPoints.push([x, y]);
+      state.currentPath = new Path({
+        points: state.currentPathPoints,
+        translateX: -state.translateX,
+        translateY: -state.translateY,
+        scale: state.scale,
       });
     }
   }
 
   @Listen('mouseup', { target: 'window', passive: true })
   handleMouseUp() {
-    if (this.isDragging) {
-      this.isDragging = false;
+    if (state.isDragging) {
+      state.isDragging = false;
     }
 
-    if (this.isDrawing) {
-      this.isDrawing = false;
+    if (state.isDrawing) {
+      state.isDrawing = false;
 
-      if (this.currentPath) {
-        this.drawing?.paths.push(this.currentPath);
+      if (state.currentPath) {
+        state.drawing?.paths.push(state.currentPath);
       }
 
-      this.currentPath = undefined;
-      this.currentPathPoints = [];
+      state.currentPath = undefined;
+      state.currentPathPoints = [];
     }
   }
 
@@ -136,25 +86,25 @@ export class KritzelEngine {
     ev.preventDefault();
 
     const rect = this.host.getBoundingClientRect();
-    this.cursorX = ev.clientX - rect.left;
-    this.cursorY = ev.clientY - rect.top;
+    state.cursorX = ev.clientX - rect.left;
+    state.cursorY = ev.clientY - rect.top;
 
     const delta =
       ev.deltaY > 0
-        ? -this.scaleStep * this.scale
-        : this.scaleStep * this.scale;
-    const newScale = this.getUpdatedScale(this.scale + delta);
+        ? -state.scaleStep * state.scale
+        : state.scaleStep * state.scale;
+    const newScale = this.getUpdatedScale(state.scale + delta);
 
-    const scaleRatio = newScale / this.scale;
+    const scaleRatio = newScale / state.scale;
     const translateXAdjustment =
-      (this.cursorX - this.translateX) * (scaleRatio - 1);
+      (state.cursorX - state.translateX) * (scaleRatio - 1);
     const translateYAdjustment =
-      (this.cursorY - this.translateY) * (scaleRatio - 1);
+      (state.cursorY - state.translateY) * (scaleRatio - 1);
 
-    this.scale = newScale;
+    state.scale = newScale;
 
-    this.translateX -= translateXAdjustment;
-    this.translateY -= translateYAdjustment;
+    state.translateX -= translateXAdjustment;
+    state.translateY -= translateYAdjustment;
   }
 
   @Listen('contextmenu', { target: 'window' })
@@ -163,28 +113,28 @@ export class KritzelEngine {
   }
 
   private getUpdatedScale(scale: number): number {
-    return Math.min(this.scaleMax, Math.max(this.scaleMin, scale));
+    return Math.min(state.scaleMax, Math.max(state.scaleMin, scale));
   }
 
   private updateObjectsInViewport() {
     const padding = 25;
 
-    this.drawing?.paths?.forEach((path) => {
+    state.drawing?.paths?.forEach((path) => {
       path.visible = path.isInViewport(
         {
-          x: (-this.translateX - padding) / this.scale,
-          y: (-this.translateY - padding) / this.scale,
-          width: (window.innerWidth + 2 * padding) / this.scale,
-          height: (window.innerHeight + 2 * padding) / this.scale,
+          x: (-state.translateX - padding) / state.scale,
+          y: (-state.translateY - padding) / state.scale,
+          width: (window.innerWidth + 2 * padding) / state.scale,
+          height: (window.innerHeight + 2 * padding) / state.scale,
         },
-        this.scale
+        state.scale
       );
     });
   }
 
   getOriginStyle = () => {
     return {
-      transform: `matrix(${this.scale}, 0, 0, ${this.scale}, ${this.translateX}, ${this.translateY})`,
+      transform: `matrix(${state.scale}, 0, 0, ${state.scale}, ${state.translateX}, ${state.translateY})`,
     };
   }
 
@@ -192,10 +142,10 @@ export class KritzelEngine {
     return {
       height: path?.height.toString(),
       width: path?.width.toString(),
-      left: '0', 
+      left: '0',
       top: '0',
       position: 'absolute',
-      transform: path?.transformationMatrix, 
+      transform: path?.transformationMatrix,
     };
   }
 
@@ -205,17 +155,17 @@ export class KritzelEngine {
     return (
       <Host>
 
-        {this.showDebugPanel && 
+        {state.showDebugPanel &&
         <div class="debug-panel">
-          <div>StartX: {this.startX}</div>
-          <div>StartY: {this.startY}</div>
-          <div>TranslateX: {this.translateX}</div>
-          <div>TranslateY: {this.translateY}</div>
+          <div>StartX: {state.startX}</div>
+          <div>StartY: {state.startY}</div>
+          <div>TranslateX: {state.translateX}</div>
+          <div>TranslateY: {state.translateY}</div>
         </div>}
 
         <div class="origin" style={this.getOriginStyle()}>
-        
-          {this.drawing?.paths?.map((path) => {
+
+          {state.drawing?.paths?.map((path) => {
             return (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -234,13 +184,13 @@ export class KritzelEngine {
 
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            style={this.getStyle(this.currentPath)}
-            viewBox={this.currentPath?.viewBox}
+            style={this.getStyle(state.currentPath)}
+            viewBox={state.currentPath?.viewBox}
           >
             <path
-              d={this.currentPath?.d}
-              fill={this.currentPath?.fill}
-              stroke={this.currentPath?.stroke}
+              d={state.currentPath?.d}
+              fill={state.currentPath?.fill}
+              stroke={state.currentPath?.stroke}
             />
           </svg>
         </div>
