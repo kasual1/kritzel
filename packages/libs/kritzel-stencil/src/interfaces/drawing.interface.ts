@@ -1,4 +1,4 @@
-import { Path } from "./path.class";
+import { Path } from "../classes/path.class";
 
 export interface Drawing {
 	id: string;

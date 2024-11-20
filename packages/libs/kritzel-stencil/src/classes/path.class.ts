@@ -1,22 +1,7 @@
 import { getStroke } from 'perfect-freehand';
-import { MathHelper } from './math.helper';
-
-export interface PathOptions {
-  points: number[][];
-  translateX?: number;
-  translateY?: number;
-  scale?: number;
-  stroke?: string;
-  strokeWidth?: number;
-  fill?: string;
-}
-
-export interface BoundingBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+import { MathHelper } from '../helpers/math.helper';
+import { BoundingBox } from 'puppeteer';
+import { PathOptions } from '../interfaces/path-options.interface';
 
 export class Path {
   id: string = '';
