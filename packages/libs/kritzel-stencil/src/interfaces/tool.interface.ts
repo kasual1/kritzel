@@ -1,4 +1,4 @@
-export interface Tool {
+export interface KritzelTool {
   name: string;
   icon: string;
   handleMouseDown(event: MouseEvent): void;

@@ -1,58 +1,70 @@
-import { ClickHelper } from '../helpers/click.helper';
-import { KritzelEngineState, set } from '../stores/kritzel-engine.store';
+import { KritzelClickHelper } from '../helpers/click.helper';
+import { KritzelEngineState, kritzelEngineState, setKritzelEngineState } from '../stores/engine.store';
 import { cloneDeep } from 'lodash-es';
+import { kritzelViewportState, KritzelViewportState, setKritzelViewportState } from '../stores/viewport.store';
 
-export class History {
-  states: KritzelEngineState[];
+export class KritzelHistory {
+  snapshots: {
+    viewport: KritzelViewportState;
+    engine: KritzelEngineState;
+  }[];
 
-  currentState: number;
+  currentStateIndex: number;
 
-  constructor(state: KritzelEngineState) {
-    this.states = [];
-    this.currentState = -1;
-    this.pushState(state);
+  constructor() {
+    this.snapshots = [];
+    this.currentStateIndex = -1;
+    this.pushSnapshot({
+      viewport: cloneDeep(kritzelViewportState),
+      engine: cloneDeep(kritzelEngineState),
+    });
   }
 
-  handleMouseUp(event: MouseEvent, state: KritzelEngineState) {
-    if (ClickHelper.isLeftClick(event)) {
-      this.pushState(state);
+  handleMouseUp(event: MouseEvent) {
+    if (KritzelClickHelper.isLeftClick(event)) {
+      this.pushSnapshot({
+        viewport: cloneDeep(kritzelViewportState),
+        engine: cloneDeep(kritzelEngineState),
+      });
     }
   }
 
   undo() {
-    if (this.currentState > 0) {
-      this.currentState--;
-      this.setStateFromSnapshot(this.states[this.currentState]);
+    if (this.currentStateIndex > 0) {
+      this.currentStateIndex--;
+
+      for (const key in this.snapshots[this.currentStateIndex].viewport) {
+        const value = this.snapshots[this.currentStateIndex].viewport[key];
+        setKritzelViewportState(key as any, value);
+      }
+
+      for (const key in this.snapshots[this.currentStateIndex].engine) {
+        const value = this.snapshots[this.currentStateIndex].engine[key];
+        setKritzelEngineState(key as any, value);
+      }
     }
   }
 
   redo() {
-    if (this.currentState < this.states.length - 1) {
-      this.currentState++;
-      this.setStateFromSnapshot(this.states[this.currentState]);
+    if (this.currentStateIndex < this.snapshots.length - 1) {
+      this.currentStateIndex++;
+
+      for (const key in this.snapshots[this.currentStateIndex].viewport) {
+        const value = this.snapshots[this.currentStateIndex].viewport[key];
+        setKritzelViewportState(key as any, value);
+      }
+
+      for (const key in this.snapshots[this.currentStateIndex].engine) {
+        const value = this.snapshots[this.currentStateIndex].engine[key];
+        setKritzelEngineState(key as any, value);
+      }
     }
   }
 
-  private pushState(state: KritzelEngineState) {
-    const snapshot = this.getSnapshotFromState(state);
-    this.states = this.states.slice(0, this.currentState + 1);
-    this.states.push(snapshot);
-    this.currentState++;
-    console.log(this.states);
-  }
-
-  private getSnapshotFromState(state: any): KritzelEngineState {
-    const snapshot = {};
-    for (const key in state) {
-      snapshot[key] = state[key];
-    }
-
-    return cloneDeep(snapshot);
-  }
-
-  private setStateFromSnapshot(snapshot: KritzelEngineState): void {
-    Object.keys(snapshot).forEach(key => {
-      set(key as any, snapshot[key]);
-    });
+  private pushSnapshot(state: { viewport: KritzelViewportState; engine: KritzelEngineState }) {
+    this.snapshots = this.snapshots.slice(0, this.currentStateIndex + 1);
+    this.snapshots.push(state);
+    this.currentStateIndex++;
+    console.log(this.snapshots);
   }
 }

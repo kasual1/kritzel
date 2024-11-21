@@ -1,12 +1,12 @@
-import { MouseButton } from "../enums/event-button.enum";
+import { KritzelMouseButton } from "../enums/event-button.enum";
 
-export class ClickHelper {
+export class KritzelClickHelper {
 
   public static isRightClick(ev: MouseEvent): boolean {
-    return ev.button === MouseButton.RIGHT;
+    return ev.button === KritzelMouseButton.RIGHT;
   }
 
   public static isLeftClick(ev: MouseEvent): boolean {
-    return ev.button === MouseButton.LEFT;
+    return ev.button === KritzelMouseButton.LEFT;
   }
 }

@@ -1,23 +1,24 @@
-import { ClickHelper } from "../helpers/click.helper";
-import { KritzelEngineState } from "../stores/kritzel-engine.store";
+import { KritzelClickHelper } from "../helpers/click.helper";
+import { kritzelEngineState } from "../stores/engine.store";
+import { KritzelViewportState, kritzelViewportState } from "../stores/viewport.store";
 
-export class Viewport {
+export class KritzelViewport {
 
   host: HTMLElement;
 
-  state: KritzelEngineState;
+  state: KritzelViewportState;
 
   isDragging: boolean = false;
 
-  constructor(host: HTMLElement, state: KritzelEngineState){
+  constructor(host: HTMLElement){
     this.host = host;
-    this.state = state;
+    this.state = kritzelViewportState;
   }
 
   updateObjectsVisibility() {
     const padding = 25;
 
-    this.state.paths?.forEach(path => {
+    kritzelEngineState.paths?.forEach(path => {
       path.visible = path.isInViewport(
         {
           x: (-this.state.translateX - padding) / this.state.scale,
@@ -31,7 +32,7 @@ export class Viewport {
   }
 
   handleMouseDown(event: MouseEvent): void{
-    if (ClickHelper.isRightClick(event)) {
+    if (KritzelClickHelper.isRightClick(event)) {
       this.isDragging = true;
       this.state.startX = event.clientX;
       this.state.startY = event.clientY;
