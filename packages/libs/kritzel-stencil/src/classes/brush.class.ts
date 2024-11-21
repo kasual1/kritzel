@@ -57,7 +57,7 @@ export class Brush implements Tool {
     }
   }
 
-  handleWheel(event: WheelEvent): void {
+  handleWheel(_event: WheelEvent): void {
     //TODO: Update paths's scaling factor
     throw new Error('Method not implemented.');
   }

@@ -1,8 +1,8 @@
 import { Component, Host, h, Listen, Element, Prop, Watch } from '@stencil/core';
 import state from '../../stores/kritzel-engine.store';
 import { Tool } from '../../interfaces/tool.interface';
-import { ClickHelper } from '../../helpers/click.helper';
 import { Brush } from '../../classes/brush.class';
+import { Viewport } from '../../classes/viewport.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -10,70 +10,22 @@ import { Brush } from '../../classes/brush.class';
   shadow: true,
 })
 export class KritzelEngine {
-  @Prop()
-  activeTool: Tool = new Brush(state);
-
   @Element()
   host: HTMLElement;
+
+  @Prop()
+  activeTool: Tool;
+
+  viewport: Viewport;
+
+  componentWillLoad() {
+    this.activeTool = new Brush(state);
+    this.viewport = new Viewport(this.host, state);
+  }
 
   @Watch('activeTool')
   onActiveToolChange() {
     this.activeTool.state = state;
-  }
-
-  @Listen('mousedown', { target: 'window', passive: true })
-  handleMouseDown(ev) {
-    if (ClickHelper.isRightClick(ev)) {
-      state.isDragging = true;
-      state.startX = ev.clientX;
-      state.startY = ev.clientY;
-    }
-
-    this.activeTool.handleMouseDown(ev);
-  }
-
-  @Listen('mousemove', { target: 'window', passive: true })
-  handleMouseMove(ev) {
-    if (state.isDragging) {
-      state.translateX -= state.startX - ev.clientX;
-      state.translateY -= state.startY - ev.clientY;
-      state.startX = ev.clientX;
-      state.startY = ev.clientY;
-    }
-
-    this.activeTool.handleMouseMove(ev);
-  }
-
-  @Listen('mouseup', { target: 'window', passive: true })
-  handleMouseUp(ev) {
-    if (state.isDragging) {
-      state.isDragging = false;
-    }
-
-    this.activeTool.handleMouseUp(ev);
-  }
-
-  @Listen('wheel', { target: 'window', passive: false })
-  handleWheel(ev) {
-    ev.preventDefault();
-
-    const rect = this.host.getBoundingClientRect();
-    state.cursorX = ev.clientX - rect.left;
-    state.cursorY = ev.clientY - rect.top;
-
-    const delta = ev.deltaY > 0 ? -state.scaleStep * state.scale : state.scaleStep * state.scale;
-    const newScale = this.getUpdatedScale(state.scale + delta);
-
-    const scaleRatio = newScale / state.scale;
-    const translateXAdjustment = (state.cursorX - state.translateX) * (scaleRatio - 1);
-    const translateYAdjustment = (state.cursorY - state.translateY) * (scaleRatio - 1);
-
-    state.scale = newScale;
-
-    state.translateX -= translateXAdjustment;
-    state.translateY -= translateYAdjustment;
-
-    this.activeTool.handleWheel(ev);
   }
 
   @Listen('contextmenu', { target: 'window' })
@@ -81,27 +33,32 @@ export class KritzelEngine {
     ev.preventDefault();
   }
 
-  private getUpdatedScale(scale: number): number {
-    return Math.min(state.scaleMax, Math.max(state.scaleMin, scale));
+  @Listen('mousedown', { target: 'window', passive: true })
+  handleMouseDown(ev) {
+    this.viewport.handleMouseDown(ev);
+    this.activeTool.handleMouseDown(ev);
   }
 
-  private updateObjectsInViewport() {
-    const padding = 25;
-
-    state.drawing?.paths?.forEach(path => {
-      path.visible = path.isInViewport(
-        {
-          x: (-state.translateX - padding) / state.scale,
-          y: (-state.translateY - padding) / state.scale,
-          width: (window.innerWidth + 2 * padding) / state.scale,
-          height: (window.innerHeight + 2 * padding) / state.scale,
-        },
-        state.scale,
-      );
-    });
+  @Listen('mousemove', { target: 'window', passive: true })
+  handleMouseMove(ev) {
+    this.viewport.handleMouseMove(ev);
+    this.activeTool.handleMouseMove(ev);
   }
+
+  @Listen('mouseup', { target: 'window', passive: true })
+  handleMouseUp(ev) {
+    this.viewport.handleMouseUp(ev);
+    this.activeTool.handleMouseUp(ev);
+  }
+
+  @Listen('wheel', { target: 'window', passive: false })
+  handleWheel(ev) {
+    this.viewport.handleWheel(ev);
+    this.activeTool.handleWheel(ev);
+  }
+
   render() {
-    this.updateObjectsInViewport();
+    this.viewport.updateObjectsVisibility();
 
     return (
       <Host>
