@@ -62,14 +62,6 @@ export class Path {
     this.updateTranslation();
   }
 
-  toJSON(): string {
-    return JSON.stringify(this.options);
-  }
-
-  static fromJSON(json: string): Path {
-    return new Path(JSON.parse(json));
-  }
-
   isInViewport(viewport: BoundingBox, scale: number): boolean {
     return (
       this.doesBoundingBoxIntersectViewport(viewport) &&

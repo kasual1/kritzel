@@ -3,6 +3,7 @@ import state from '../../stores/kritzel-engine.store';
 import { Tool } from '../../interfaces/tool.interface';
 import { Brush } from '../../classes/brush.class';
 import { Viewport } from '../../classes/viewport.class';
+import { History } from '../../classes/history.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -18,9 +19,12 @@ export class KritzelEngine {
 
   viewport: Viewport;
 
+  history: History;
+
   componentWillLoad() {
     this.activeTool = new Brush(state);
     this.viewport = new Viewport(this.host, state);
+    this.history = new History(state);
   }
 
   @Watch('activeTool')
@@ -49,12 +53,24 @@ export class KritzelEngine {
   handleMouseUp(ev) {
     this.viewport.handleMouseUp(ev);
     this.activeTool.handleMouseUp(ev);
+    this.history.handleMouseUp(ev, state);
   }
 
   @Listen('wheel', { target: 'window', passive: false })
   handleWheel(ev) {
     this.viewport.handleWheel(ev);
     this.activeTool.handleWheel(ev);
+  }
+
+  @Listen('keydown', { target: 'window' })
+  handleKeyDown(ev) {
+    if (ev.key === 'z' && ev.ctrlKey) {
+      this.history.undo();
+    }
+
+    if (ev.key === 'y' && ev.ctrlKey) {
+      this.history.redo();
+    }
   }
 
   render() {

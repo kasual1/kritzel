@@ -21,7 +21,7 @@ export interface KritzelEngineState {
   scaleMin: number;
 }
 
-const { state } = createStore<KritzelEngineState>({
+const { state, set } = createStore<KritzelEngineState>({
   currentPathPoints: [],
   cursorX: 0,
   cursorY: 0,
@@ -46,3 +46,4 @@ const { state } = createStore<KritzelEngineState>({
 });
 
 export default state;
+export { set };
