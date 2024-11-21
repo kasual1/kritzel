@@ -1,4 +1,4 @@
-export interface PathOptions {
+export interface KritzelPathOptions {
   points: number[][];
   translateX?: number;
   translateY?: number;

@@ -1,9 +1,9 @@
 import { getStroke } from 'perfect-freehand';
-import { MathHelper } from '../helpers/math.helper';
+import { KritzelMathHelper } from '../helpers/math.helper';
 import { BoundingBox } from 'puppeteer';
-import { PathOptions } from '../interfaces/path-options.interface';
+import { KritzelPathOptions } from '../interfaces/path-options.interface';
 
-export class Path {
+export class KritzelPath {
   id: string = '';
   points: number[][];
   d: string;
@@ -21,7 +21,7 @@ export class Path {
   visible: boolean = true;
   showAsImage: boolean = false;
   zIndex: number = 1;
-  options: PathOptions | undefined;
+  options: KritzelPathOptions | undefined;
 
   get boundingBox(): BoundingBox {
     return {
@@ -44,7 +44,7 @@ export class Path {
       return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
-  constructor(options: PathOptions) {
+  constructor(options: KritzelPathOptions) {
     this.options = options;
     this.id = this.generateId();
     this.points = options.points ?? [];
@@ -144,16 +144,16 @@ export class Path {
 
     let result = `M${a[0].toFixed(2)},${a[1].toFixed(2)} Q${b[0].toFixed(
       2
-    )},${b[1].toFixed(2)} ${MathHelper.average(b[0], c[0]).toFixed(
+    )},${b[1].toFixed(2)} ${KritzelMathHelper.average(b[0], c[0]).toFixed(
       2
-    )},${MathHelper.average(b[1], c[1]).toFixed(2)} T`;
+    )},${KritzelMathHelper.average(b[1], c[1]).toFixed(2)} T`;
 
     for (let i = 2, max = len - 1; i < max; i++) {
       a = points[i];
       b = points[i + 1];
-      result += `${MathHelper.average(a[0], b[0]).toFixed(
+      result += `${KritzelMathHelper.average(a[0], b[0]).toFixed(
         2
-      )},${MathHelper.average(a[1], b[1]).toFixed(2)} `;
+      )},${KritzelMathHelper.average(a[1], b[1]).toFixed(2)} `;
     }
 
     if (closed) {

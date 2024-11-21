@@ -1,9 +1,9 @@
 import { Component, Host, h, Listen, Element, Prop } from '@stencil/core';
-import state from '../../stores/kritzel-engine.store';
-import { Tool } from '../../interfaces/tool.interface';
-import { Brush } from '../../classes/brush.class';
-import { Viewport } from '../../classes/viewport.class';
-import { History } from '../../classes/history.class';
+import { KritzelTool } from '../../interfaces/tool.interface';
+import { KritzelBrush } from '../../classes/brush.class';
+import { KritzelViewport } from '../../classes/viewport.class';
+import { KritzelHistory } from '../../classes/history.class';
+import { KritzelEngineState, kritzelEngineState } from '../../stores/engine.store';
 
 @Component({
   tag: 'kritzel-engine',
@@ -15,16 +15,18 @@ export class KritzelEngine {
   host: HTMLElement;
 
   @Prop()
-  activeTool: Tool;
+  activeTool: KritzelTool = new KritzelBrush();
 
-  viewport: Viewport;
+  viewport: KritzelViewport;
 
-  history: History;
+  history: KritzelHistory;
+
+  state: KritzelEngineState = kritzelEngineState;
 
   componentWillLoad() {
-    this.activeTool = new Brush();
-    this.viewport = new Viewport(this.host, state);
-    this.history = new History(state);
+    this.state.activeTool = this.activeTool;
+    this.viewport = new KritzelViewport(this.host);
+    this.history = new KritzelHistory();
   }
 
   @Listen('contextmenu', { target: 'window' })
@@ -48,7 +50,7 @@ export class KritzelEngine {
   handleMouseUp(ev) {
     this.viewport.handleMouseUp(ev);
     this.activeTool.handleMouseUp(ev);
-    this.history.handleMouseUp(ev, state);
+    this.history.handleMouseUp(ev);
   }
 
   @Listen('wheel', { target: 'window', passive: false })
@@ -73,22 +75,22 @@ export class KritzelEngine {
 
     return (
       <Host>
-        {state.showDebugPanel && (
+        {kritzelEngineState.showDebugPanel && (
           <div class="debug-panel">
-            <div>StartX: {state.startX}</div>
-            <div>StartY: {state.startY}</div>
-            <div>TranslateX: {state.translateX}</div>
-            <div>TranslateY: {state.translateY}</div>
+            <div>StartX: {this.viewport.state.startX}</div>
+            <div>StartY: {this.viewport.state.startY}</div>
+            <div>TranslateX: {this.viewport.state.translateX}</div>
+            <div>TranslateY: {this.viewport.state.translateY}</div>
           </div>
         )}
 
         <div
           class="origin"
           style={{
-            transform: `matrix(${state.scale}, 0, 0, ${state.scale}, ${state.translateX}, ${state.translateY})`,
+            transform: `matrix(${this.viewport.state.scale}, 0, 0, ${this.viewport.state.scale}, ${this.viewport.state.translateX}, ${this.viewport.state.translateY})`,
           }}
         >
-          {state.paths?.map(path => (
+          {kritzelEngineState.paths?.map(path => (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               style={{
@@ -108,16 +110,16 @@ export class KritzelEngine {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             style={{
-              height: state.currentPath?.height.toString(),
-              width: state.currentPath?.width.toString(),
+              height: this.state.currentPath?.height.toString(),
+              width: this.state.currentPath?.width.toString(),
               left: '0',
               top: '0',
               position: 'absolute',
-              transform: state.currentPath?.transformationMatrix,
+              transform: this.state.currentPath?.transformationMatrix,
             }}
-            viewBox={state.currentPath?.viewBox}
+            viewBox={this.state.currentPath?.viewBox}
           >
-            <path d={state.currentPath?.d} fill={state.currentPath?.fill} stroke={state.currentPath?.stroke} />
+            <path d={this.state.currentPath?.d} fill={this.state.currentPath?.fill} stroke={this.state.currentPath?.stroke} />
           </svg>
         </div>
       </Host>
