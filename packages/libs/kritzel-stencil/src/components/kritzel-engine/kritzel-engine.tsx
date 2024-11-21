@@ -22,14 +22,9 @@ export class KritzelEngine {
   history: History;
 
   componentWillLoad() {
-    this.activeTool = new Brush(state);
+    this.activeTool = new Brush();
     this.viewport = new Viewport(this.host, state);
     this.history = new History(state);
-  }
-
-  @Watch('activeTool')
-  onActiveToolChange() {
-    this.activeTool.state = state;
   }
 
   @Listen('contextmenu', { target: 'window' })
