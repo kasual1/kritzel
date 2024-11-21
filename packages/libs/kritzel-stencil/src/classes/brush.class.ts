@@ -6,37 +6,59 @@ import { Path } from './path.class';
 export class Brush implements Tool {
   name: string = 'brush';
   icon: string = 'brush';
+  state: KritzelEngineState;
 
   isDrawing: boolean = false;
 
   currentPath: Path | undefined;
-  currentPathPoints: number[][] = [];
 
-  constructor() {}
+  constructor(state: KritzelEngineState) {
+    this.state = state;
+  }
 
-  handleMouseDown(ev: MouseEvent, state: KritzelEngineState) {
-    if (ClickHelper.isLeftClick(ev)) {
+  handleMouseDown(event: MouseEvent) {
+    if (ClickHelper.isLeftClick(event)) {
       this.isDrawing = true;
-      const x = ev.clientX;
-      const y = ev.clientY;
+      const x = event.clientX;
+      const y = event.clientY;
 
-      this.currentPathPoints.push([x, y]);
-      this.currentPath = new Path({
-        points: this.currentPathPoints,
-        translateX: -state.translateX,
-        translateY: -state.translateY,
-        scale: state.scale,
+      this.state.currentPath = new Path({
+        points: [[x, y]],
+        translateX: -this.state.translateX,
+        translateY: -this.state.translateY,
+        scale: this.state.scale,
       });
     }
   }
 
-  handleMouseMove(event: MouseEvent, state: KritzelEngineState): void {
-    throw new Error('Method not implemented.');
+  handleMouseMove(event: MouseEvent): void {
+    if (this.isDrawing) {
+      const x = event.clientX;
+      const y = event.clientY;
+
+      this.state.currentPath = new Path({
+        points: [...this.state.currentPath.points, [x, y]],
+        translateX: -this.state.translateX,
+        translateY: -this.state.translateY,
+        scale: this.state.scale,
+      });
+    }
   }
-  handleMouseUp(event: MouseEvent, state: KritzelEngineState): void {
-    throw new Error('Method not implemented.');
+
+  handleMouseUp(_event: MouseEvent): void {
+    if (this.isDrawing) {
+      this.isDrawing = false;
+
+      if (this.state.currentPath) {
+        this.state.drawing?.paths.push(this.state.currentPath);
+      }
+
+      this.state.currentPath = undefined;
+    }
   }
-  handleWheel(event: WheelEvent, state: KritzelEngineState): void {
+
+  handleWheel(event: WheelEvent): void {
+    //TODO: Update paths's scaling factor
     throw new Error('Method not implemented.');
   }
 }

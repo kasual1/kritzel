@@ -29,13 +29,14 @@ export declare interface KritzelControls extends Components.KritzelControls {}
 
 
 @ProxyCmp({
+  inputs: ['activeTool']
 })
 @Component({
   selector: 'kritzel-engine',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [],
+  inputs: ['activeTool'],
 })
 export class KritzelEngine {
   protected el: HTMLElement;
