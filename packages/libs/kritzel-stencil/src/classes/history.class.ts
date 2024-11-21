@@ -38,6 +38,7 @@ export class History {
     this.states = this.states.slice(0, this.currentState + 1);
     this.states.push(snapshot);
     this.currentState++;
+    console.log(this.states);
   }
 
   private getSnapshotFromState(state: any): KritzelEngineState {

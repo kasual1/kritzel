@@ -1,4 +1,4 @@
-import { Component, Host, h, Listen, Element, Prop, Watch } from '@stencil/core';
+import { Component, Host, h, Listen, Element, Prop } from '@stencil/core';
 import state from '../../stores/kritzel-engine.store';
 import { Tool } from '../../interfaces/tool.interface';
 import { Brush } from '../../classes/brush.class';
@@ -88,7 +88,7 @@ export class KritzelEngine {
             transform: `matrix(${state.scale}, 0, 0, ${state.scale}, ${state.translateX}, ${state.translateY})`,
           }}
         >
-          {state.drawing?.paths?.map(path => (
+          {state.paths?.map(path => (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               style={{

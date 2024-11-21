@@ -17,7 +17,7 @@ export class Viewport {
   updateObjectsVisibility() {
     const padding = 25;
 
-    this.state.drawing?.paths?.forEach(path => {
+    this.state.paths?.forEach(path => {
       path.visible = path.isInViewport(
         {
           x: (-this.state.translateX - padding) / this.state.scale,

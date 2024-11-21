@@ -49,7 +49,7 @@ export class Brush implements Tool {
       this.isDrawing = false;
 
       if (state.currentPath) {
-        state.drawing?.paths.push(state.currentPath);
+        state.paths.push(state.currentPath);
       }
 
       state.currentPath = undefined;
