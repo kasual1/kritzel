@@ -1,6 +1,7 @@
 import { createStore } from "@stencil/store";
 import { Path } from "../classes/path.class";
 import { Drawing } from "../interfaces/drawing.interface";
+import { Tool } from "../components";
 
 export interface KritzelEngineState {
   startX: number;
@@ -11,7 +12,6 @@ export interface KritzelEngineState {
   translateY: number;
   isDragging: boolean;
   isDrawing: boolean;
-  currentPathPoints: number[][];
   currentPath?: Path;
   scale: number;
   showDebugPanel: boolean;
@@ -19,10 +19,10 @@ export interface KritzelEngineState {
   scaleStep: number;
   scaleMax: number;
   scaleMin: number;
+  activeTool: Tool;
 }
 
 const { state, set } = createStore<KritzelEngineState>({
-  currentPathPoints: [],
   cursorX: 0,
   cursorY: 0,
   drawing: {
@@ -43,6 +43,7 @@ const { state, set } = createStore<KritzelEngineState>({
   startY: 0,
   translateX: 0,
   translateY: 0,
+  activeTool: undefined
 });
 
 export default state;

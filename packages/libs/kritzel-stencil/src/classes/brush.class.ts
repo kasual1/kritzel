@@ -1,19 +1,18 @@
 import { ClickHelper } from '../helpers/click.helper';
 import { Tool } from '../interfaces/tool.interface';
-import { KritzelEngineState } from '../stores/kritzel-engine.store';
+import state from '../stores/kritzel-engine.store';
 import { Path } from './path.class';
 
 export class Brush implements Tool {
   name: string = 'brush';
   icon: string = 'brush';
-  state: KritzelEngineState;
 
   isDrawing: boolean = false;
 
   currentPath: Path | undefined;
 
-  constructor(state: KritzelEngineState) {
-    this.state = state;
+  constructor() {
+    state.activeTool = this;
   }
 
   handleMouseDown(event: MouseEvent) {
@@ -22,11 +21,11 @@ export class Brush implements Tool {
       const x = event.clientX;
       const y = event.clientY;
 
-      this.state.currentPath = new Path({
+      state.currentPath = new Path({
         points: [[x, y]],
-        translateX: -this.state.translateX,
-        translateY: -this.state.translateY,
-        scale: this.state.scale,
+        translateX: -state.translateX,
+        translateY: -state.translateY,
+        scale: state.scale,
       });
     }
   }
@@ -36,11 +35,11 @@ export class Brush implements Tool {
       const x = event.clientX;
       const y = event.clientY;
 
-      this.state.currentPath = new Path({
-        points: [...this.state.currentPath.points, [x, y]],
-        translateX: -this.state.translateX,
-        translateY: -this.state.translateY,
-        scale: this.state.scale,
+      state.currentPath = new Path({
+        points: [...state.currentPath.points, [x, y]],
+        translateX: -state.translateX,
+        translateY: -state.translateY,
+        scale: state.scale,
       });
     }
   }
@@ -49,11 +48,11 @@ export class Brush implements Tool {
     if (this.isDrawing) {
       this.isDrawing = false;
 
-      if (this.state.currentPath) {
-        this.state.drawing?.paths.push(this.state.currentPath);
+      if (state.currentPath) {
+        state.drawing?.paths.push(state.currentPath);
       }
 
-      this.state.currentPath = undefined;
+      state.currentPath = undefined;
     }
   }
 
