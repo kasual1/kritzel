@@ -30,32 +30,14 @@ export class KritzelHistory {
   undo() {
     if (this.currentStateIndex > 0) {
       this.currentStateIndex--;
-
-      for (const key in this.snapshots[this.currentStateIndex].viewport) {
-        const value = this.snapshots[this.currentStateIndex].viewport[key];
-        setKritzelViewportState(key as any, value);
-      }
-
-      for (const key in this.snapshots[this.currentStateIndex].engine) {
-        const value = this.snapshots[this.currentStateIndex].engine[key];
-        setKritzelEngineState(key as any, value);
-      }
+      this.recreateStateFromSnapshot(this.snapshots[this.currentStateIndex]);
     }
   }
 
   redo() {
     if (this.currentStateIndex < this.snapshots.length - 1) {
       this.currentStateIndex++;
-
-      for (const key in this.snapshots[this.currentStateIndex].viewport) {
-        const value = this.snapshots[this.currentStateIndex].viewport[key];
-        setKritzelViewportState(key as any, value);
-      }
-
-      for (const key in this.snapshots[this.currentStateIndex].engine) {
-        const value = this.snapshots[this.currentStateIndex].engine[key];
-        setKritzelEngineState(key as any, value);
-      }
+      this.recreateStateFromSnapshot(this.snapshots[this.currentStateIndex]);
     }
   }
 
@@ -66,5 +48,19 @@ export class KritzelHistory {
 
     this.snapshots.push(snapshot);
     this.currentStateIndex++;
+  }
+
+  private recreateStateFromSnapshot(snapshot: KritzelSnapshot) {
+    snapshot = cloneDeep(snapshot);
+
+    for (const key in snapshot.viewport) {
+      const value = snapshot.viewport[key];
+      setKritzelViewportState(key as any, value);
+    }
+
+    for (const key in snapshot.engine) {
+      const value = snapshot.engine[key];
+      setKritzelEngineState(key as any, value);
+    }
   }
 }
