@@ -24,8 +24,8 @@ export class KritzelEngine {
   state: KritzelEngineState = kritzelEngineState;
 
   componentWillLoad() {
-    this.state.activeTool = this.activeTool;
     this.viewport = new KritzelViewport(this.host);
+    this.state.activeTool = this.activeTool;
     this.history = new KritzelHistory();
   }
 

@@ -1,15 +1,12 @@
 import { KritzelClickHelper } from '../helpers/click.helper';
 import { KritzelTool } from '../interfaces/tool.interface';
-import { kritzelEngineState, KritzelEngineState } from '../stores/engine.store';
-import { kritzelViewportState, KritzelViewportState } from '../stores/viewport.store';
+import { kritzelEngineState } from '../stores/engine.store';
+import { kritzelViewportState } from '../stores/viewport.store';
 import { KritzelPath } from './path.class';
 
 export class KritzelBrush implements KritzelTool {
   name: string = 'brush';
   icon: string = 'brush';
-
-  viewportState: KritzelViewportState;
-  engineState: KritzelEngineState;
 
   isDrawing: boolean;
 
@@ -17,8 +14,6 @@ export class KritzelBrush implements KritzelTool {
 
   constructor() {
     this.isDrawing = false;
-    this.viewportState = kritzelViewportState;
-    this.engineState = kritzelEngineState;
   }
 
   handleMouseDown(event: MouseEvent) {
@@ -27,11 +22,11 @@ export class KritzelBrush implements KritzelTool {
       const x = event.clientX;
       const y = event.clientY;
 
-      this.engineState.currentPath = new KritzelPath({
+      kritzelEngineState.currentPath = new KritzelPath({
         points: [[x, y]],
-        translateX: -this.viewportState.translateX,
-        translateY: -this.viewportState.translateY,
-        scale: this.viewportState.scale,
+        translateX: -kritzelViewportState.translateX,
+        translateY: -kritzelViewportState.translateY,
+        scale: kritzelViewportState.scale,
       });
     }
   }
@@ -41,11 +36,11 @@ export class KritzelBrush implements KritzelTool {
       const x = event.clientX;
       const y = event.clientY;
 
-      this.engineState.currentPath = new KritzelPath({
-        points: [...this.engineState.currentPath.points, [x, y]],
-        translateX: -this.viewportState.translateX,
-        translateY: -this.viewportState.translateY,
-        scale: this.viewportState.scale,
+      kritzelEngineState.currentPath = new KritzelPath({
+        points: [...kritzelEngineState.currentPath.points, [x, y]],
+        translateX: -kritzelViewportState.translateX,
+        translateY: -kritzelViewportState.translateY,
+        scale: kritzelViewportState.scale,
       });
     }
   }
@@ -54,16 +49,15 @@ export class KritzelBrush implements KritzelTool {
     if (this.isDrawing) {
       this.isDrawing = false;
 
-      if (this.engineState.currentPath) {
-        this.engineState.paths.push(this.engineState.currentPath);
+      if (kritzelEngineState.currentPath) {
+        kritzelEngineState.paths.push(kritzelEngineState.currentPath);
       }
 
-      this.engineState.currentPath = undefined;
+      kritzelEngineState.currentPath = undefined;
     }
   }
 
   handleWheel(_event: WheelEvent): void {
     //TODO: Update paths's scaling factor
-    throw new Error('Method not implemented.');
   }
 }
