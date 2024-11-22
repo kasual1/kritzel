@@ -75,12 +75,13 @@ export class KritzelEngine {
 
     return (
       <Host>
-        {kritzelEngineState.showDebugPanel && (
+        {this.state.showDebugPanel && (
           <div class="debug-panel">
             <div>StartX: {this.viewport.state.startX}</div>
             <div>StartY: {this.viewport.state.startY}</div>
             <div>TranslateX: {this.viewport.state.translateX}</div>
             <div>TranslateY: {this.viewport.state.translateY}</div>
+            <div>CurrentStateIndex: {this.history.currentStateIndex}</div>
           </div>
         )}
 
@@ -90,7 +91,7 @@ export class KritzelEngine {
             transform: `matrix(${this.viewport.state.scale}, 0, 0, ${this.viewport.state.scale}, ${this.viewport.state.translateX}, ${this.viewport.state.translateY})`,
           }}
         >
-          {kritzelEngineState.paths?.map(path => (
+          {this.state.paths?.map(path => (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               style={{

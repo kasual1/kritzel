@@ -1,13 +1,11 @@
 import { KritzelClickHelper } from '../helpers/click.helper';
-import { KritzelEngineState, kritzelEngineState, setKritzelEngineState } from '../stores/engine.store';
+import { kritzelEngineState, setKritzelEngineState } from '../stores/engine.store';
 import { cloneDeep } from 'lodash-es';
-import { kritzelViewportState, KritzelViewportState, setKritzelViewportState } from '../stores/viewport.store';
+import { kritzelViewportState, setKritzelViewportState } from '../stores/viewport.store';
+import { KritzelSnapshot } from '../interfaces/snapshot.interface';
 
 export class KritzelHistory {
-  snapshots: {
-    viewport: KritzelViewportState;
-    engine: KritzelEngineState;
-  }[];
+  snapshots: KritzelSnapshot[];
 
   currentStateIndex: number;
 
@@ -61,10 +59,12 @@ export class KritzelHistory {
     }
   }
 
-  private pushSnapshot(state: { viewport: KritzelViewportState; engine: KritzelEngineState }) {
-    this.snapshots = this.snapshots.slice(0, this.currentStateIndex + 1);
-    this.snapshots.push(state);
+  private pushSnapshot(snapshot: KritzelSnapshot) {
+    if (this.currentStateIndex < this.snapshots.length - 1) {
+      this.snapshots = this.snapshots.slice(0, this.currentStateIndex + 1);
+    }
+
+    this.snapshots.push(snapshot);
     this.currentStateIndex++;
-    console.log(this.snapshots);
   }
 }
