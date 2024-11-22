@@ -18,8 +18,8 @@ export class KritzelViewport {
   updateObjectsVisibility() {
     const padding = 25;
 
-    kritzelEngineState.paths?.forEach(path => {
-      path.visible = path.isInViewport(
+    kritzelEngineState.objects?.forEach(object => {
+      object.visible = object.isInViewport(
         {
           x: (-this.state.translateX - padding) / this.state.scale,
           y: (-this.state.translateY - padding) / this.state.scale,
