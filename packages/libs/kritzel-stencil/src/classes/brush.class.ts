@@ -50,7 +50,7 @@ export class KritzelBrush implements KritzelTool {
       this.isDrawing = false;
 
       if (kritzelEngineState.currentPath) {
-        kritzelEngineState.paths.push(kritzelEngineState.currentPath);
+        kritzelEngineState.objects.push(kritzelEngineState.currentPath);
       }
 
       kritzelEngineState.currentPath = undefined;

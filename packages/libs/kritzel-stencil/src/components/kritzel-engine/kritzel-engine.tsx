@@ -4,6 +4,7 @@ import { KritzelBrush } from '../../classes/brush.class';
 import { KritzelViewport } from '../../classes/viewport.class';
 import { KritzelHistory } from '../../classes/history.class';
 import { KritzelEngineState, kritzelEngineState } from '../../stores/engine.store';
+import { KritzelPath } from '../../classes/path.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -91,22 +92,28 @@ export class KritzelEngine {
             transform: `matrix(${this.viewport.state.scale}, 0, 0, ${this.viewport.state.scale}, ${this.viewport.state.translateX}, ${this.viewport.state.translateY})`,
           }}
         >
-          {this.state.paths?.map(path => (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              style={{
-                height: path?.height.toString(),
-                width: path?.width.toString(),
-                left: '0',
-                top: '0',
-                position: 'absolute',
-                transform: path?.transformationMatrix,
-              }}
-              viewBox={path?.viewBox}
-            >
-              <path d={path?.d} fill={path?.fill} stroke={path?.stroke} />
-            </svg>
-          ))}
+          {this.state.objects?.map(object => {
+
+            if(object instanceof KritzelPath){
+              const path = object as KritzelPath;
+
+              return (<svg
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  height: path?.height.toString(),
+                  width: path?.width.toString(),
+                  left: '0',
+                  top: '0',
+                  position: 'absolute',
+                  transform: path?.transformationMatrix,
+                }}
+                viewBox={path?.viewBox}
+              >
+                <path d={path?.d} fill={path?.fill} stroke={path?.stroke} />
+              </svg>)
+            }
+
+      })}
 
           <svg
             xmlns="http://www.w3.org/2000/svg"

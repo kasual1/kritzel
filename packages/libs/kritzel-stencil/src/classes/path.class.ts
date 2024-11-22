@@ -2,9 +2,9 @@ import { getStroke } from 'perfect-freehand';
 import { KritzelMathHelper } from '../helpers/math.helper';
 import { BoundingBox } from 'puppeteer';
 import { KritzelPathOptions } from '../interfaces/path-options.interface';
+import { KritzelObjectBase } from './object.class';
 
-export class KritzelPath {
-  id: string = '';
+export class KritzelPath extends KritzelObjectBase {
   points: number[][];
   d: string;
   stroke: string;
@@ -19,7 +19,6 @@ export class KritzelPath {
   scale: number = 1;
   topLeft: number[] = [0, 0];
   visible: boolean = true;
-  showAsImage: boolean = false;
   zIndex: number = 1;
   options: KritzelPathOptions | undefined;
 
@@ -45,6 +44,7 @@ export class KritzelPath {
   }
 
   constructor(options: KritzelPathOptions) {
+    super();
     this.options = options;
     this.id = this.generateId();
     this.points = options.points ?? [];
