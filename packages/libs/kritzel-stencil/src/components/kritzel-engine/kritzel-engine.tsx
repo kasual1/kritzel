@@ -1,12 +1,16 @@
 import { Component, Host, h, Listen, Element, Prop } from '@stencil/core';
 import { KritzelTool } from '../../interfaces/tool.interface';
-import { KritzelBrush } from '../../classes/brush.class';
+import { KritzelBrushTool } from '../../classes/brush-tool.class';
 import { KritzelViewport } from '../../classes/viewport.class';
 import { KritzelHistory } from '../../classes/history.class';
 import { KritzelEngineState, kritzelEngineState } from '../../stores/engine.store';
 import { KritzelPath } from '../../classes/path.class';
-import { KritzelSelection } from '../../classes/selection.class';
-import { KritzelEraser } from '../../classes/eraser.class';
+import { KritzelSelectionTool } from '../../classes/selection-tool.class';
+import { KritzelEraserTool } from '../../classes/eraser-tool.class';
+import { KritzelImageTool } from '../../classes/image-tool.class';
+import { KrtizelText } from '../../classes/text.class';
+import { KritzelImage } from '../../classes/image.class';
+import { KritzelTextTool } from '../../classes/text-tool.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -18,7 +22,7 @@ export class KritzelEngine {
   host: HTMLElement;
 
   @Prop()
-  activeTool: KritzelTool = new KritzelBrush();
+  activeTool: KritzelTool = new KritzelBrushTool();
 
   viewport: KritzelViewport;
 
@@ -39,27 +43,27 @@ export class KritzelEngine {
 
   @Listen('mousedown', { target: 'window', passive: true })
   handleMouseDown(ev) {
-    this.viewport.handleMouseDown(ev);
-    this.state.activeTool.handleMouseDown(ev);
+    this.viewport?.handleMouseDown(ev);
+    this.state.activeTool?.handleMouseDown(ev);
   }
 
   @Listen('mousemove', { target: 'window', passive: true })
   handleMouseMove(ev) {
-    this.viewport.handleMouseMove(ev);
-    this.state.activeTool.handleMouseMove(ev);
+    this.viewport?.handleMouseMove(ev);
+    this.state.activeTool?.handleMouseMove(ev);
   }
 
   @Listen('mouseup', { target: 'window', passive: true })
   handleMouseUp(ev) {
-    this.viewport.handleMouseUp(ev);
-    this.state.activeTool.handleMouseUp(ev);
+    this.viewport?.handleMouseUp(ev);
+    this.state.activeTool?.handleMouseUp(ev);
     this.history.handleMouseUp(ev);
   }
 
   @Listen('wheel', { target: 'window', passive: false })
   handleWheel(ev) {
-    this.viewport.handleWheel(ev);
-    this.state.activeTool.handleWheel(ev);
+    this.viewport?.handleWheel(ev);
+    this.state.activeTool?.handleWheel(ev);
   }
 
   @Listen('keydown', { target: 'window' })
@@ -79,15 +83,23 @@ export class KritzelEngine {
     }
 
     if (ev.key === 's' && ev.ctrlKey) {
-      this.state.activeTool = new KritzelSelection();
+      this.state.activeTool = new KritzelSelectionTool();
     }
 
     if (ev.key === 'b' && ev.ctrlKey) {
-      this.state.activeTool = new KritzelBrush();
+      this.state.activeTool = new KritzelBrushTool();
     }
 
     if (ev.key === 'e' && ev.ctrlKey) {
-      this.state.activeTool = new KritzelEraser();
+      this.state.activeTool = new KritzelEraserTool();
+    }
+
+    if (ev.key === 'i' && ev.ctrlKey) {
+      this.state.activeTool = new KritzelImageTool();
+    }
+
+    if (ev.key === 'x' && ev.ctrlKey) {
+      this.state.activeTool = new KritzelTextTool();
     }
   }
 
@@ -130,7 +142,7 @@ export class KritzelEngine {
                     position: 'absolute',
                     transform: path?.transformationMatrix,
                     border: path.selected ? '2px dashed blue' : '2px solid transparent',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
                   }}
                 >
                   <svg
@@ -148,6 +160,42 @@ export class KritzelEngine {
                 </div>
               );
             }
+
+            if (object instanceof KritzelImage) {
+              const image = object as KritzelImage;
+
+              return (
+                <div
+                  class="object"
+                  style={{
+                    height: image?.height.toString(),
+                    width: image?.width.toString(),
+                    left: '0',
+                    top: '0',
+                    position: 'absolute',
+                    transform: image?.transformationMatrix,
+                    border: image.selected ? '2px dashed blue' : '2px solid transparent',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <img
+                    src={image.img.src}
+                    style={{
+                      height: image.height.toString(),
+                      width: image.height.toString(),
+                      userSelect: 'none',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                </div>
+              );
+            }
+
+            if (object instanceof KrtizelText) {
+              const text = object as KrtizelText;
+
+              return <div>{text.id}</div>;
+            }
           })}
 
           <svg
@@ -159,7 +207,7 @@ export class KritzelEngine {
               top: '0',
               position: 'absolute',
               transform: this.state.currentPath?.transformationMatrix,
-              border: '2px solid transparent'
+              border: '2px solid transparent',
             }}
             viewBox={this.state.currentPath?.viewBox}
           >

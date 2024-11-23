@@ -4,7 +4,7 @@ import { kritzelEngineState } from "../stores/engine.store";
 import { kritzelViewportState } from "../stores/viewport.store";
 import { KritzelObjectBase } from "./object.class";
 
-export class KritzelEraser implements KritzelTool {
+export class KritzelEraserTool implements KritzelTool {
   name: string = 'eraser';
   icon: string = 'eraser';
 
