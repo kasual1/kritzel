@@ -1,6 +1,7 @@
 import { KritzelTool } from "../components";
 import { kritzelEngineState } from "../stores/engine.store";
 import { KritzelImage } from "./image.class";
+import { KritzelSelectionTool } from "./selection-tool.class";
 
 export class KritzelImageTool implements KritzelTool {
   name: string = 'image';
@@ -58,8 +59,11 @@ export class KritzelImageTool implements KritzelTool {
 
         img.onload = () => {
           const image = new KritzelImage(img);
+          image.centerInViewport();
+
           kritzelEngineState.objects = [...kritzelEngineState.objects, image];
-          console.log(kritzelEngineState.objects);
+          kritzelEngineState.activeTool = new KritzelSelectionTool();
+          (kritzelEngineState.activeTool as KritzelSelectionTool).setSelectedObjects([image]);
         };
       };
 

@@ -15,5 +15,6 @@ export interface KritzelObject {
     get boundingBox(): KritzelBoundingBox;
     generateId(): string;
     isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
-    isPointInBoundingBox(_x: number, _y: number): boolean
+    isPointInBoundingBox(_x: number, _y: number): boolean;
+    centerInViewport(): void;
 }
