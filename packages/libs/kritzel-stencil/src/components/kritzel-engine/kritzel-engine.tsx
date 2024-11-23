@@ -5,6 +5,7 @@ import { KritzelViewport } from '../../classes/viewport.class';
 import { KritzelHistory } from '../../classes/history.class';
 import { KritzelEngineState, kritzelEngineState } from '../../stores/engine.store';
 import { KritzelPath } from '../../classes/path.class';
+import { KritzelSelection } from '../../classes/selection.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -38,36 +39,50 @@ export class KritzelEngine {
   @Listen('mousedown', { target: 'window', passive: true })
   handleMouseDown(ev) {
     this.viewport.handleMouseDown(ev);
-    this.activeTool.handleMouseDown(ev);
+    this.state.activeTool.handleMouseDown(ev);
   }
 
   @Listen('mousemove', { target: 'window', passive: true })
   handleMouseMove(ev) {
     this.viewport.handleMouseMove(ev);
-    this.activeTool.handleMouseMove(ev);
+    this.state.activeTool.handleMouseMove(ev);
   }
 
   @Listen('mouseup', { target: 'window', passive: true })
   handleMouseUp(ev) {
     this.viewport.handleMouseUp(ev);
-    this.activeTool.handleMouseUp(ev);
+    this.state.activeTool.handleMouseUp(ev);
     this.history.handleMouseUp(ev);
   }
 
   @Listen('wheel', { target: 'window', passive: false })
   handleWheel(ev) {
     this.viewport.handleWheel(ev);
-    this.activeTool.handleWheel(ev);
+    this.state.activeTool.handleWheel(ev);
   }
 
   @Listen('keydown', { target: 'window' })
   handleKeyDown(ev) {
+    ev.preventDefault();
+
     if (ev.key === 'z' && ev.ctrlKey) {
       this.history.undo();
     }
 
     if (ev.key === 'y' && ev.ctrlKey) {
       this.history.redo();
+    }
+
+    if (ev.key === 'd' && ev.ctrlKey) {
+      this.state.showDebugPanel = !this.state.showDebugPanel;
+    }
+
+    if (ev.key === 's' && ev.ctrlKey) {
+      this.state.activeTool = new KritzelSelection();
+    }
+
+    if (ev.key === 'b' && ev.ctrlKey) {
+      this.state.activeTool = new KritzelBrush();
     }
   }
 
@@ -83,6 +98,9 @@ export class KritzelEngine {
             <div>TranslateX: {this.viewport.state.translateX}</div>
             <div>TranslateY: {this.viewport.state.translateY}</div>
             <div>CurrentStateIndex: {this.history.currentStateIndex}</div>
+            <div>Scale: {this.viewport.state.scale}</div>
+            <div>ActiveTool: {this.state.activeTool.name}</div>
+            <div>SelectedObjects: {this.state.selectedObjects.length}</div>
           </div>
         )}
 
@@ -93,27 +111,38 @@ export class KritzelEngine {
           }}
         >
           {this.state.objects?.map(object => {
-
-            if(object instanceof KritzelPath){
+            if (object instanceof KritzelPath) {
               const path = object as KritzelPath;
 
-              return (<svg
-                xmlns="http://www.w3.org/2000/svg"
-                style={{
-                  height: path?.height.toString(),
-                  width: path?.width.toString(),
-                  left: '0',
-                  top: '0',
-                  position: 'absolute',
-                  transform: path?.transformationMatrix,
-                }}
-                viewBox={path?.viewBox}
-              >
-                <path d={path?.d} fill={path?.fill} stroke={path?.stroke} />
-              </svg>)
+              return (
+                <div
+                  class="object"
+                  style={{
+                    height: path?.height.toString(),
+                    width: path?.width.toString(),
+                    left: '0',
+                    top: '0',
+                    position: 'absolute',
+                    transform: path?.transformationMatrix,
+                    border: path.selected ? '2px dashed blue' : '2px solid transparent',
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={{
+                      height: path?.height.toString(),
+                      width: path?.width.toString(),
+                      position: 'relative',
+                      opacity: path.selected ? '0.5' : '1',
+                    }}
+                    viewBox={path?.viewBox}
+                  >
+                    <path d={path?.d} fill={path?.fill} stroke={path?.stroke} />
+                  </svg>
+                </div>
+              );
             }
-
-      })}
+          })}
 
           <svg
             xmlns="http://www.w3.org/2000/svg"
