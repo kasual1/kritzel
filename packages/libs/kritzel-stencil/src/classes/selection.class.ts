@@ -22,6 +22,10 @@ export class KritzelSelection implements KritzelTool {
 			const adjustedClientY = (kritzelViewportState.translateY + clientY) / kritzelViewportState.scale;
 			let objectSelected = false;
 
+			const translateX = kritzelViewportState.translateX;
+			const translateY = kritzelViewportState.translateY;
+			const scale = kritzelViewportState.scale;
+
 			for (const object of kritzelEngineState.objects) {
 				if (object.isPointInBoundingBox(adjustedClientX, adjustedClientY)) {
 
