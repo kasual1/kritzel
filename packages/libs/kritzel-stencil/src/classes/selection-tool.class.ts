@@ -3,7 +3,7 @@ import { KritzelClickHelper } from "../helpers/click.helper";
 import { kritzelEngineState } from "../stores/engine.store";
 import { kritzelViewportState } from "../stores/viewport.store";
 
-export class KritzelSelection implements KritzelTool {
+export class KritzelSelectionTool implements KritzelTool {
 	name: string = 'selection';
 	icon: string = 'selection';
 

@@ -4,7 +4,7 @@ import { kritzelEngineState } from '../stores/engine.store';
 import { kritzelViewportState } from '../stores/viewport.store';
 import { KritzelPath } from './path.class';
 
-export class KritzelBrush implements KritzelTool {
+export class KritzelBrushTool implements KritzelTool {
   name: string = 'brush';
   icon: string = 'brush';
 
