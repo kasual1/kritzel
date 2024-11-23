@@ -19,7 +19,6 @@ export class KritzelViewport {
     const padding = 25;
 
     kritzelEngineState.objects?.forEach(object => {
-      debugger;
       object.visible = object.isInViewport(
         {
           x: (-this.state.translateX - padding) / this.state.scale,

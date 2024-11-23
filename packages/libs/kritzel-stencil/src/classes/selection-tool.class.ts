@@ -2,6 +2,7 @@ import { KritzelTool } from "../components";
 import { KritzelClickHelper } from "../helpers/click.helper";
 import { kritzelEngineState } from "../stores/engine.store";
 import { kritzelViewportState } from "../stores/viewport.store";
+import { KritzelObjectBase } from "./object.class";
 
 export class KritzelSelectionTool implements KritzelTool {
 	name: string = 'selection';
@@ -53,5 +54,18 @@ export class KritzelSelectionTool implements KritzelTool {
 		for (const object of kritzelEngineState.objects) {
 			object.selected = false;
 		}
+	}
+
+	setSelectedObjects(objects: KritzelObjectBase[]): void {
+		this.deselectAllObjects();
+
+		for (const object of objects) {
+			const objectToSelect = kritzelEngineState.objects.find((o) => o.id === object.id);
+			if (objectToSelect) {
+				objectToSelect.selected = true;
+			}
+		}
+
+		kritzelEngineState.selectedObjects = objects;
 	}
 }
