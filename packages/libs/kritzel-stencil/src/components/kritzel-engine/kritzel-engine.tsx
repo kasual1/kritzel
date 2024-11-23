@@ -86,7 +86,7 @@ export class KritzelEngine {
       this.state.activeTool = new KritzelBrush();
     }
 
-    if(ev.key === 'e' && ev.ctrlKey) {
+    if (ev.key === 'e' && ev.ctrlKey) {
       this.state.activeTool = new KritzelEraser();
     }
   }
@@ -130,6 +130,7 @@ export class KritzelEngine {
                     position: 'absolute',
                     transform: path?.transformationMatrix,
                     border: path.selected ? '2px dashed blue' : '2px solid transparent',
+                    boxSizing: 'border-box'
                   }}
                 >
                   <svg
@@ -158,6 +159,7 @@ export class KritzelEngine {
               top: '0',
               position: 'absolute',
               transform: this.state.currentPath?.transformationMatrix,
+              border: '2px solid transparent'
             }}
             viewBox={this.state.currentPath?.viewBox}
           >

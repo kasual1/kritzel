@@ -1,5 +1,6 @@
 import { KritzelBoundingBox } from "../interfaces/bounding-box.interface";
 import { KritzelObject } from "../interfaces/object.interface";
+import { kritzelViewportState } from "../stores/viewport.store";
 
 export class KritzelObjectBase implements KritzelObject{
   id: string;
@@ -33,6 +34,17 @@ export class KritzelObjectBase implements KritzelObject{
   
   isPointInBoundingBox(x: number, y: number): boolean {
     const boundingBox = this.boundingBox;
+    const adjustedBoundingBox = {
+      x: boundingBox.x - kritzelViewportState.translateX,
+      y: boundingBox.y - kritzelViewportState.translateY,
+      width: boundingBox.width,
+      height: boundingBox.height,
+    };
+
+    console.log(`Clicked at ${x}, ${y}`);
+    console.log(`Object bounding box: ${JSON.stringify(boundingBox)}`);
+    console.log(`Adjusted bounding box: ${JSON.stringify(adjustedBoundingBox)}`);
+
     return (
       x >= boundingBox.x &&
       x <= boundingBox.x + boundingBox.width &&
@@ -40,4 +52,5 @@ export class KritzelObjectBase implements KritzelObject{
       y <= boundingBox.y + boundingBox.height
     );
   }
+
 }
