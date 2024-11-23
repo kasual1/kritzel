@@ -6,6 +6,7 @@ import { KritzelHistory } from '../../classes/history.class';
 import { KritzelEngineState, kritzelEngineState } from '../../stores/engine.store';
 import { KritzelPath } from '../../classes/path.class';
 import { KritzelSelection } from '../../classes/selection.class';
+import { KritzelEraser } from '../../classes/eraser.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -84,6 +85,10 @@ export class KritzelEngine {
     if (ev.key === 'b' && ev.ctrlKey) {
       this.state.activeTool = new KritzelBrush();
     }
+
+    if(ev.key === 'e' && ev.ctrlKey) {
+      this.state.activeTool = new KritzelEraser();
+    }
   }
 
   render() {
@@ -133,7 +138,7 @@ export class KritzelEngine {
                       height: path?.height.toString(),
                       width: path?.width.toString(),
                       position: 'relative',
-                      opacity: path.selected ? '0.5' : '1',
+                      opacity: path.markedForRemoval ? '0.5' : '1',
                     }}
                     viewBox={path?.viewBox}
                   >

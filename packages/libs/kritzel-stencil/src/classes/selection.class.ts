@@ -1,4 +1,5 @@
 import { KritzelTool } from "../components";
+import { KritzelClickHelper } from "../helpers/click.helper";
 import { kritzelEngineState } from "../stores/engine.store";
 import { kritzelViewportState } from "../stores/viewport.store";
 
@@ -15,28 +16,29 @@ export class KritzelSelection implements KritzelTool {
 	}
 
 	handleMouseUp(event: MouseEvent): void {
-		const { clientX, clientY } = event;
-		const adjustedClientX = (kritzelViewportState.translateX + clientX) / kritzelViewportState.scale;
-		const adjustedClientY = (kritzelViewportState.translateY + clientY) / kritzelViewportState.scale;
-		let objectSelected = false;
-		console.log(adjustedClientX, adjustedClientY);
+		if (KritzelClickHelper.isLeftClick(event)) {
+			const { clientX, clientY } = event;
+			const adjustedClientX = (kritzelViewportState.translateX + clientX) / kritzelViewportState.scale;
+			const adjustedClientY = (kritzelViewportState.translateY + clientY) / kritzelViewportState.scale;
+			let objectSelected = false;
 
-		for (const object of kritzelEngineState.objects) {
-			if (object.isPointInBoundingBox(adjustedClientX, adjustedClientY)) {
+			for (const object of kritzelEngineState.objects) {
+				if (object.isPointInBoundingBox(adjustedClientX, adjustedClientY)) {
 
-				this.deselectAllObjects();
-				object.selected = true;
-				objectSelected = true;
-				break;
+					this.deselectAllObjects();
+					object.selected = true;
+					objectSelected = true;
+					break;
+				}
 			}
-		}
 
-		if (!objectSelected) {
-			this.deselectAllObjects();
-		}
+			if (!objectSelected) {
+				this.deselectAllObjects();
+			}
 
-		const selectedObjects = kritzelEngineState.objects.filter((object) => object.selected);
-		kritzelEngineState.selectedObjects = selectedObjects;
+			const selectedObjects = kritzelEngineState.objects.filter((object) => object.selected);
+			kritzelEngineState.selectedObjects = selectedObjects;
+		}
 	}
 
 	handleWheel(_event: WheelEvent): void {
