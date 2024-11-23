@@ -22,15 +22,6 @@ export class KritzelPath extends KritzelObjectBase {
   zIndex: number = 1;
   options: KritzelPathOptions | undefined;
 
-  get boundingBox(): BoundingBox {
-    return {
-      x: this.translateX,
-      y: this.translateY,
-      width: this.width / this.scale,
-      height: this.height / this.scale,
-    };
-  }
-
   get transformationMatrix(): string {
     const scale = 1 / this.scale;
     const translateX = this.translateX;
@@ -68,10 +59,6 @@ export class KritzelPath extends KritzelObjectBase {
       this.isLargeEnoughAtScale(scale) &&
       this.isNotTooLargeAtScale(scale)
     );
-  }
-
-  private generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
   }
 
   private initializeDimensions(): void {
