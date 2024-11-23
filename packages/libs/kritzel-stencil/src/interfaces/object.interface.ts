@@ -11,6 +11,7 @@ export interface KritzelObject {
     width: number;
     scale: number;
     selected: boolean;
+    markedForRemoval: boolean;
     get boundingBox(): KritzelBoundingBox;
     generateId(): string;
     isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;

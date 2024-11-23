@@ -12,6 +12,7 @@ export class KritzelObjectBase implements KritzelObject{
   width: number;
   scale: number;
   selected: boolean = false;
+  markedForRemoval: boolean = false;
 
   get boundingBox(): KritzelBoundingBox {
     return {
