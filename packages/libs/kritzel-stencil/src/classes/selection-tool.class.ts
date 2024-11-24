@@ -78,9 +78,14 @@ export class KritzelSelectionTool implements KritzelTool {
 		// }
 
 		if (KritzelClickHelper.isLeftClick(event)) {
-			const { clientX, clientY } = event;
+			let { clientX, clientY } = event;
+			const adjustedClientX = (clientX + kritzelViewportState.translateX) * kritzelViewportState.scale;
+			const adjustedClientY = (clientY + kritzelViewportState.translateY) * kritzelViewportState.scale;
 			let objectSelected = false;
 
+			const scale = kritzelViewportState.scale;
+			clientX = scale === 1 ? clientX : adjustedClientX;
+			clientY = scale === 1 ? clientY : adjustedClientY;
 			for (const object of kritzelEngineState.objects) {
 				if (object.isPointInBoundingBox(clientX, clientY)) {
 
