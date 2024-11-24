@@ -35,14 +35,24 @@ export class KritzelObjectBase implements KritzelObject{
   isPointInBoundingBox(x: number, y: number): boolean {
     const boundingBox = this.boundingBox;
 
-    const adjustedX = this.boundingBox.x + kritzelViewportState.translateX;
-    const adjustedY = this.boundingBox.y + kritzelViewportState.translateY;
+    const adjustedX = (this.boundingBox.x + kritzelViewportState.translateX) * kritzelViewportState.scale;
+    const adjustedY = (this.boundingBox.y + kritzelViewportState.translateY) * kritzelViewportState.scale;
+    const adjustedWidth = boundingBox.width * kritzelViewportState.scale;
+    const adjustedHeight = boundingBox.height * kritzelViewportState.scale;
 
+    const adjustedBoundingBox = {
+      x: adjustedX,
+      y: adjustedY,
+      width: adjustedWidth,
+      height: adjustedHeight,
+    }
+
+    console.log(adjustedBoundingBox);
     return (
-      x >= adjustedX &&
-      x <= adjustedX + boundingBox.width &&
-      y >= adjustedY &&
-      y <= adjustedY + boundingBox.height
+      x >= adjustedBoundingBox.x &&
+      x <= adjustedBoundingBox.x + adjustedBoundingBox.width &&
+      y >= adjustedBoundingBox.y &&
+      y <= adjustedBoundingBox.y + adjustedBoundingBox.height
     );
   }
 
