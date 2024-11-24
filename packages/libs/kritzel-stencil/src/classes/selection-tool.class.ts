@@ -36,55 +36,53 @@ export class KritzelSelectionTool implements KritzelTool {
 	}
 
 	handleMouseDown(event: MouseEvent): void {
-		if (KritzelClickHelper.isLeftClick(event)) {
-			const { clientX, clientY } = event;
-			const adjustedClientX = (kritzelViewportState.translateX + clientX) / kritzelViewportState.scale;
-			const adjustedClientY = (kritzelViewportState.translateY + clientY) / kritzelViewportState.scale;
+		// if (KritzelClickHelper.isLeftClick(event)) {
+		// 	const { clientX, clientY } = event;
+		// 	const adjustedClientX = (kritzelViewportState.translateX + clientX) / kritzelViewportState.scale;
+		// 	const adjustedClientY = (kritzelViewportState.translateY + clientY) / kritzelViewportState.scale;
 
-			for (const object of kritzelEngineState.objects) {
-				if (object.isPointInBoundingBox(adjustedClientX, adjustedClientY)) {
-					if (object.selected) {
-						this.isDragging = true;
-						this.dragStartX = clientX;
-						this.dragStartY = clientY;
-						this.selectedObject = object;
-						break;
-					}
-				}
-			}
-		}
+		// 	for (const object of kritzelEngineState.objects) {
+		// 		if (object.isPointInBoundingBox(adjustedClientX, adjustedClientY)) {
+		// 			if (object.selected) {
+		// 				this.isDragging = true;
+		// 				this.dragStartX = clientX;
+		// 				this.dragStartY = clientY;
+		// 				this.selectedObject = object;
+		// 				break;
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 
 	handleMouseMove(event: MouseEvent): void {
-		if (this.isDragging && this.selectedObject) {
-			const { clientX, clientY } = event;
-			const deltaX = (clientX - this.dragStartX) / kritzelViewportState.scale;
-			const deltaY = (clientY - this.dragStartY) / kritzelViewportState.scale;
+		// if (this.isDragging && this.selectedObject) {
+		// 	const { clientX, clientY } = event;
+		// 	const deltaX = (clientX - this.dragStartX) / kritzelViewportState.scale;
+		// 	const deltaY = (clientY - this.dragStartY) / kritzelViewportState.scale;
 	  
-			this.selectedObject.translateX += deltaX;
-			this.selectedObject.translateY += deltaY;
+		// 	this.selectedObject.translateX += deltaX;
+		// 	this.selectedObject.translateY += deltaY;
 	  
-			this.dragStartX = clientX;
-			this.dragStartY = clientY;
+		// 	this.dragStartX = clientX;
+		// 	this.dragStartY = clientY;
 
-			kritzelEngineState.objects = [...kritzelEngineState.objects];
-		  }
+		// 	kritzelEngineState.objects = [...kritzelEngineState.objects];
+		//   }
 	}
 
 	handleMouseUp(event: MouseEvent): void {
-		if(this.isDragging) {
-			this.isDragging = false;
-			this.selectedObject = null;
-		}
+		// if(this.isDragging) {
+		// 	this.isDragging = false;
+		// 	this.selectedObject = null;
+		// }
 
 		if (KritzelClickHelper.isLeftClick(event)) {
 			const { clientX, clientY } = event;
-			const adjustedClientX = (kritzelViewportState.translateX + clientX) / kritzelViewportState.scale;
-			const adjustedClientY = (kritzelViewportState.translateY + clientY) / kritzelViewportState.scale;
 			let objectSelected = false;
 
 			for (const object of kritzelEngineState.objects) {
-				if (object.isPointInBoundingBox(adjustedClientX, adjustedClientY)) {
+				if (object.isPointInBoundingBox(clientX, clientY)) {
 
 					this.deselectAllObjects();
 					object.selected = true;

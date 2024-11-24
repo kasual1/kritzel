@@ -21,11 +21,9 @@ export class KritzelEraserTool implements KritzelTool {
   handleMouseMove(event: MouseEvent): void {
     if (this.isErasing) {
       const { clientX, clientY } = event;
-      const adjustedClientX = (kritzelViewportState.translateX + clientX) / kritzelViewportState.scale;
-			const adjustedClientY = (kritzelViewportState.translateY + clientY) / kritzelViewportState.scale;
 
 			for (const object of kritzelEngineState.objects) {
-				if (object.isPointInBoundingBox(adjustedClientX, adjustedClientY)) {
+				if (object.isPointInBoundingBox(clientX, clientY)) {
           object.markedForRemoval = true;
           this.objectsMarkedForRemoval.push(object);
 				}
