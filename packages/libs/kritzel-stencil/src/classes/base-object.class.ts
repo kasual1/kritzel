@@ -2,7 +2,7 @@ import { KritzelBoundingBox } from "../interfaces/bounding-box.interface";
 import { KritzelObject } from "../interfaces/object.interface";
 import { kritzelViewportState } from "../stores/viewport.store";
 
-export class KritzelObjectBase implements KritzelObject{
+export class KritzelBaseObject implements KritzelObject{
   id: string;
   visible: boolean = true;
   x: number;

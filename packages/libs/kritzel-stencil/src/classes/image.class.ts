@@ -1,7 +1,7 @@
 import { KritzelBoundingBox } from "../interfaces/bounding-box.interface";
-import { KritzelObjectBase } from "./object.class";
+import { KritzelBaseObject } from "./base-object.class";
 
-export class KritzelImage extends KritzelObjectBase {
+export class KritzelImage extends KritzelBaseObject {
 
 	img: HTMLImageElement;
 

@@ -59,11 +59,11 @@ export class KritzelImageTool implements KritzelTool {
 
         img.onload = () => {
           const image = new KritzelImage(img);
+          image.selected = true;
           image.centerInViewport();
 
           kritzelEngineState.objects = [...kritzelEngineState.objects, image];
           kritzelEngineState.activeTool = new KritzelSelectionTool();
-          (kritzelEngineState.activeTool as KritzelSelectionTool).setSelectedObjects([image]);
         };
       };
 
