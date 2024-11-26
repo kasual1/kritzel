@@ -68,38 +68,40 @@ export class KritzelEngine {
 
   @Listen('keydown', { target: 'window' })
   handleKeyDown(ev) {
-    ev.preventDefault();
+    if (ev.ctrlKey) {
+      ev.preventDefault();
 
-    if (ev.key === 'z' && ev.ctrlKey) {
-      this.history.undo();
-    }
+      if (ev.key === 'z') {
+        this.history.undo();
+      }
 
-    if (ev.key === 'y' && ev.ctrlKey) {
-      this.history.redo();
-    }
+      if (ev.key === 'y') {
+        this.history.redo();
+      }
 
-    if (ev.key === 'd' && ev.ctrlKey) {
-      this.state.showDebugPanel = !this.state.showDebugPanel;
-    }
+      if (ev.key === 'd') {
+        this.state.showDebugPanel = !this.state.showDebugPanel;
+      }
 
-    if (ev.key === 's' && ev.ctrlKey) {
-      this.state.activeTool = new KritzelSelectionTool();
-    }
+      if (ev.key === 's') {
+        this.state.activeTool = new KritzelSelectionTool();
+      }
 
-    if (ev.key === 'b' && ev.ctrlKey) {
-      this.state.activeTool = new KritzelBrushTool();
-    }
+      if (ev.key === 'b') {
+        this.state.activeTool = new KritzelBrushTool();
+      }
 
-    if (ev.key === 'e' && ev.ctrlKey) {
-      this.state.activeTool = new KritzelEraserTool();
-    }
+      if (ev.key === 'e') {
+        this.state.activeTool = new KritzelEraserTool();
+      }
 
-    if (ev.key === 'i' && ev.ctrlKey) {
-      this.state.activeTool = new KritzelImageTool();
-    }
+      if (ev.key === 'i') {
+        this.state.activeTool = new KritzelImageTool();
+      }
 
-    if (ev.key === 'x' && ev.ctrlKey) {
-      this.state.activeTool = new KritzelTextTool();
+      if (ev.key === 'x') {
+        this.state.activeTool = new KritzelTextTool();
+      }
     }
   }
 
@@ -133,6 +135,7 @@ export class KritzelEngine {
 
               return (
                 <div
+                  id={path.id}
                   class="object"
                   style={{
                     height: path?.height.toString(),
@@ -166,6 +169,7 @@ export class KritzelEngine {
 
               return (
                 <div
+                  id={image.id}
                   class="object"
                   style={{
                     height: image?.height.toString(),
@@ -194,7 +198,33 @@ export class KritzelEngine {
             if (object instanceof KrtizelText) {
               const text = object as KrtizelText;
 
-              return <div>{text.id}</div>;
+              return (
+                <div
+                  id={text.id}
+                  class="object"
+                  style={{
+                    height: text?.height?.toString() + 'px',
+                    width: text?.width?.toString() + 'px',
+                    left: '0',
+                    top: '0',
+                    position: 'absolute',
+                    transform: text?.transformationMatrix,
+                    border: text.selected ? '2px dashed blue' : '2px solid transparent',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <textarea
+                    ref={el => (text.elementRef = el)}
+                    value={text.value}
+                    onInput={event => text.handleInput(event)}
+                    rows={1}
+                    style={{
+                      width: text.width?.toString() + 'px',
+                      height: text.height?.toString() + 'px',
+                    }}
+                  ></textarea>
+                </div>
+              );
             }
           })}
 
@@ -205,6 +235,7 @@ export class KritzelEngine {
               width: this.state.currentPath?.width.toString(),
               left: '0',
               top: '0',
+              zIndex: '-1',
               position: 'absolute',
               transform: this.state.currentPath?.transformationMatrix,
               border: '2px solid transparent',

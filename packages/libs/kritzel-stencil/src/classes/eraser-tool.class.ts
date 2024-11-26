@@ -1,16 +1,12 @@
 import { KritzelTool } from "../components";
 import { KritzelClickHelper } from "../helpers/click.helper";
 import { kritzelEngineState } from "../stores/engine.store";
-import { kritzelViewportState } from "../stores/viewport.store";
-import { KritzelObjectBase } from "./object.class";
 
 export class KritzelEraserTool implements KritzelTool {
   name: string = 'eraser';
   icon: string = 'eraser';
 
   isErasing: boolean;
-
-  objectsMarkedForRemoval: KritzelObjectBase[] = [];
 
   handleMouseDown(event: MouseEvent): void {
     if (KritzelClickHelper.isLeftClick(event)) {
@@ -20,27 +16,24 @@ export class KritzelEraserTool implements KritzelTool {
 
   handleMouseMove(event: MouseEvent): void {
     if (this.isErasing) {
-      const { clientX, clientY } = event;
+        const path = event.composedPath() as HTMLElement[];
+        const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
+  
+        if (selectedObject) {
+          for (const object of kritzelEngineState.objects) {
+            if (selectedObject.id === object.id) {
+              object.markedForRemoval = true;
+            }
+          }
+        }
 
-			for (const object of kritzelEngineState.objects) {
-				if (object.isPointInBoundingBox(clientX, clientY)) {
-          object.markedForRemoval = true;
-          this.objectsMarkedForRemoval.push(object);
-				}
-			}
-
-			const selectedObjects = kritzelEngineState.objects.filter((object) => object.selected);
-			kritzelEngineState.selectedObjects = selectedObjects;
+        kritzelEngineState.objects = [...kritzelEngineState.objects];
     }
   }
 
   handleMouseUp(_event: MouseEvent): void {
     if(this.isErasing) {
-      for (const object of this.objectsMarkedForRemoval) {
-        kritzelEngineState.objects = kritzelEngineState.objects.filter((o) => o.id !== object.id);
-      }
-
-      this.objectsMarkedForRemoval = [];
+      kritzelEngineState.objects = kritzelEngineState.objects.filter((o) => o.markedForRemoval === false);
       this.isErasing = false;
     }
   }

@@ -24,6 +24,18 @@ export class KritzelObjectBase implements KritzelObject{
     };
   }
 
+  get transformationMatrix(): string {
+		const scale = 1 / this.scale;
+		const translateX = this.translateX;
+		const translateY = this.translateY;
+
+		return `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
+	}
+
+  constructor() {
+    this.id = this.generateId();
+  }
+
   generateId(): string {
     return Math.random().toString(36).substr(2, 9);
   }
@@ -31,14 +43,14 @@ export class KritzelObjectBase implements KritzelObject{
   isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {
     throw new Error("Method not implemented.");
   }
-  
+
   isPointInBoundingBox(x: number, y: number): boolean {
     const boundingBox = this.boundingBox;
 
-    const adjustedX = (this.boundingBox.x + kritzelViewportState.translateX) * kritzelViewportState.scale;
-    const adjustedY = (this.boundingBox.y + kritzelViewportState.translateY) * kritzelViewportState.scale;
-    const adjustedWidth = boundingBox.width * kritzelViewportState.scale;
-    const adjustedHeight = boundingBox.height * kritzelViewportState.scale;
+    const adjustedX = (this.boundingBox.x + kritzelViewportState.translateX) / kritzelViewportState.scale;
+    const adjustedY = (this.boundingBox.y + kritzelViewportState.translateY) / kritzelViewportState.scale;
+    const adjustedWidth = boundingBox.width / kritzelViewportState.scale;
+    const adjustedHeight = boundingBox.height / kritzelViewportState.scale;
 
     const adjustedBoundingBox = {
       x: adjustedX,
@@ -47,7 +59,6 @@ export class KritzelObjectBase implements KritzelObject{
       height: adjustedHeight,
     }
 
-    console.log(adjustedBoundingBox);
     return (
       x >= adjustedBoundingBox.x &&
       x <= adjustedBoundingBox.x + adjustedBoundingBox.width &&

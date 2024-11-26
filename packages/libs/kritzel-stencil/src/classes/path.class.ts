@@ -37,7 +37,6 @@ export class KritzelPath extends KritzelObjectBase {
   constructor(options: KritzelPathOptions) {
     super();
     this.options = options;
-    this.id = this.generateId();
     this.points = options.points ?? [];
     this.translateX = options.translateX ?? 0;
     this.translateY = options.translateY ?? 0;

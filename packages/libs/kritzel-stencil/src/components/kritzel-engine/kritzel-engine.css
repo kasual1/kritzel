@@ -29,5 +29,14 @@ svg, .object {
   -moz-transform-origin: top left;
   transform-origin: top left;
   overflow: visible;
-  
+}
+
+textarea {
+  height: 100%;
+  width: 100%;
+  all: unset;
+  box-sizing: border-box;
+  outline: none !important;
+  border: none !important;
+  overflow: visible;
 }
