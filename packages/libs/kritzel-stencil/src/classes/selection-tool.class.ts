@@ -24,7 +24,7 @@ export class KritzelSelectionTool implements KritzelTool {
 			kritzelEngineState.selectedObjects = [];
 		}
 
-		if(event.key === 'Delete') {
+		if (event.key === 'Delete') {
 			const objectsToRemove = kritzelEngineState.objects.filter((object) => object.selected);
 			kritzelEngineState.objects = kritzelEngineState.objects.filter((object) => !object.selected);
 			kritzelEngineState.selectedObjects = [];
@@ -36,63 +36,61 @@ export class KritzelSelectionTool implements KritzelTool {
 	}
 
 	handleMouseDown(event: MouseEvent): void {
-		// if (KritzelClickHelper.isLeftClick(event)) {
-		// 	const { clientX, clientY } = event;
-		// 	const adjustedClientX = (kritzelViewportState.translateX + clientX) / kritzelViewportState.scale;
-		// 	const adjustedClientY = (kritzelViewportState.translateY + clientY) / kritzelViewportState.scale;
+		if (KritzelClickHelper.isLeftClick(event)) {
+			const { clientX, clientY } = event;
+			const path = event.composedPath() as HTMLElement[];
+			const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
 
-		// 	for (const object of kritzelEngineState.objects) {
-		// 		if (object.isPointInBoundingBox(adjustedClientX, adjustedClientY)) {
-		// 			if (object.selected) {
-		// 				this.isDragging = true;
-		// 				this.dragStartX = clientX;
-		// 				this.dragStartY = clientY;
-		// 				this.selectedObject = object;
-		// 				break;
-		// 			}
-		// 		}
-		// 	}
-		// }
+			if (selectedObject) {
+				for (const object of kritzelEngineState.selectedObjects) {
+					if (selectedObject.id === object.id) {
+						this.isDragging = true;
+						this.dragStartX = clientX;
+						this.dragStartY = clientY;
+						this.selectedObject = object;
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	handleMouseMove(event: MouseEvent): void {
-		// if (this.isDragging && this.selectedObject) {
-		// 	const { clientX, clientY } = event;
-		// 	const deltaX = (clientX - this.dragStartX) / kritzelViewportState.scale;
-		// 	const deltaY = (clientY - this.dragStartY) / kritzelViewportState.scale;
-	  
-		// 	this.selectedObject.translateX += deltaX;
-		// 	this.selectedObject.translateY += deltaY;
-	  
-		// 	this.dragStartX = clientX;
-		// 	this.dragStartY = clientY;
+		if (this.isDragging && this.selectedObject) {
+			const { clientX, clientY } = event;
+			const deltaX = (clientX - this.dragStartX) / kritzelViewportState.scale;
+			const deltaY = (clientY - this.dragStartY) / kritzelViewportState.scale;
 
-		// 	kritzelEngineState.objects = [...kritzelEngineState.objects];
-		//   }
+			this.selectedObject.translateX += deltaX;
+			this.selectedObject.translateY += deltaY;
+
+			this.dragStartX = clientX;
+			this.dragStartY = clientY;
+
+			kritzelEngineState.objects = [...kritzelEngineState.objects];
+		}
 	}
 
 	handleMouseUp(event: MouseEvent): void {
-		// if(this.isDragging) {
-		// 	this.isDragging = false;
-		// 	this.selectedObject = null;
-		// }
+		if (this.isDragging) {
+			this.isDragging = false;
+			this.selectedObject = null;
+		}
 
 		if (KritzelClickHelper.isLeftClick(event)) {
-			let { clientX, clientY } = event;
-			const adjustedClientX = (clientX + kritzelViewportState.translateX) * kritzelViewportState.scale;
-			const adjustedClientY = (clientY + kritzelViewportState.translateY) * kritzelViewportState.scale;
+			const path = event.composedPath() as HTMLElement[];
+			const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
 			let objectSelected = false;
 
-			const scale = kritzelViewportState.scale;
-			clientX = scale === 1 ? clientX : adjustedClientX;
-			clientY = scale === 1 ? clientY : adjustedClientY;
-			for (const object of kritzelEngineState.objects) {
-				if (object.isPointInBoundingBox(clientX, clientY)) {
+			if (selectedObject) {
+				for (const object of kritzelEngineState.objects) {
+					if (selectedObject.id === object.id) {
 
-					this.deselectAllObjects();
-					object.selected = true;
-					objectSelected = true;
-					break;
+						this.deselectAllObjects();
+						object.selected = true;
+						objectSelected = true;
+						break;
+					}
 				}
 			}
 

@@ -1,22 +1,33 @@
 import { KritzelTool } from "../components";
+import { kritzelEngineState } from "../stores/engine.store";
+import { KrtizelText } from "./text.class";
 
 export class KritzelTextTool implements KritzelTool {
   name: string = 'text';
   icon: string = 'text';
 
+  isWriting: boolean = false;
+
   handleMouseDown(_event: MouseEvent): void {
-	// Do nothing
+    // Do nothing
   }
 
   handleMouseMove(_event: MouseEvent): void {
-	// Do nothing
+    // Do nothing
   }
 
-  handleMouseUp(_event: MouseEvent): void {
-	// Do nothing
+  handleMouseUp(event: MouseEvent): void {
+    if (this.isWriting === false) {
+      const { clientX, clientY } = event;
+      const text = new KrtizelText();
+      text.translateX = clientX;
+      text.translateY = clientY;
+      kritzelEngineState.objects = [...kritzelEngineState.objects, text];
+      this.isWriting = true;
+    }
   }
 
   handleWheel(_event: WheelEvent): void {
-	// Do nothing
+    // Do nothing
   }
 }
