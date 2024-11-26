@@ -3,8 +3,6 @@ import { KritzelClickHelper } from "../helpers/click.helper";
 import { KritzelObject } from "../interfaces/object.interface";
 import { kritzelEngineState } from "../stores/engine.store";
 import { kritzelViewportState } from "../stores/viewport.store";
-import { KritzelObjectBase } from "./object.class";
-
 export class KritzelSelectionTool implements KritzelTool {
 	name: string = 'selection';
 	icon: string = 'selection';
@@ -21,13 +19,11 @@ export class KritzelSelectionTool implements KritzelTool {
 	handleKeyDown(event: KeyboardEvent): void {
 		if (event.key === 'Escape') {
 			this.deselectAllObjects();
-			kritzelEngineState.selectedObjects = [];
 		}
 
 		if (event.key === 'Delete') {
 			const objectsToRemove = kritzelEngineState.objects.filter((object) => object.selected);
 			kritzelEngineState.objects = kritzelEngineState.objects.filter((object) => !object.selected);
-			kritzelEngineState.selectedObjects = [];
 
 			for (const object of objectsToRemove) {
 				object.markedForRemoval = true;
@@ -40,9 +36,10 @@ export class KritzelSelectionTool implements KritzelTool {
 			const { clientX, clientY } = event;
 			const path = event.composedPath() as HTMLElement[];
 			const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
+			const selectedObjects = kritzelEngineState.objects.filter((object) => object.selected);
 
 			if (selectedObject) {
-				for (const object of kritzelEngineState.selectedObjects) {
+				for (const object of selectedObjects) {
 					if (selectedObject.id === object.id) {
 						this.isDragging = true;
 						this.dragStartX = clientX;
@@ -98,8 +95,7 @@ export class KritzelSelectionTool implements KritzelTool {
 				this.deselectAllObjects();
 			}
 
-			const selectedObjects = kritzelEngineState.objects.filter((object) => object.selected);
-			kritzelEngineState.selectedObjects = selectedObjects;
+			kritzelEngineState.objects = [...kritzelEngineState.objects];
 		}
 	}
 
@@ -111,18 +107,5 @@ export class KritzelSelectionTool implements KritzelTool {
 		for (const object of kritzelEngineState.objects) {
 			object.selected = false;
 		}
-	}
-
-	setSelectedObjects(objects: KritzelObjectBase[]): void {
-		this.deselectAllObjects();
-
-		for (const object of objects) {
-			const objectToSelect = kritzelEngineState.objects.find((o) => o.id === object.id);
-			if (objectToSelect) {
-				objectToSelect.selected = true;
-			}
-		}
-
-		kritzelEngineState.selectedObjects = objects;
 	}
 }

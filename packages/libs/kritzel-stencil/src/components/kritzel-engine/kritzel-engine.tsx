@@ -119,7 +119,6 @@ export class KritzelEngine {
             <div>CurrentStateIndex: {this.history.currentStateIndex}</div>
             <div>Scale: {this.viewport.state.scale}</div>
             <div>ActiveTool: {this.state.activeTool.name}</div>
-            <div>SelectedObjects: {this.state.selectedObjects.length}</div>
           </div>
         )}
 

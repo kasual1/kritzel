@@ -2,9 +2,9 @@ import { getStroke } from 'perfect-freehand';
 import { KritzelMathHelper } from '../helpers/math.helper';
 import { BoundingBox } from 'puppeteer';
 import { KritzelPathOptions } from '../interfaces/path-options.interface';
-import { KritzelObjectBase } from './object.class';
+import { KritzelBaseObject } from './base-object.class';
 
-export class KritzelPath extends KritzelObjectBase {
+export class KritzelPath extends KritzelBaseObject {
   points: number[][];
   d: string;
   stroke: string;
