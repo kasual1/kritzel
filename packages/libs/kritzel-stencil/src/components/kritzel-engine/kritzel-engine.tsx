@@ -85,24 +85,37 @@ export class KritzelEngine {
 
       if (ev.key === 's') {
         this.state.activeTool = new KritzelSelectionTool();
+        this.deselectAllObjects();
       }
 
       if (ev.key === 'b') {
         this.state.activeTool = new KritzelBrushTool();
+        this.deselectAllObjects();
       }
 
       if (ev.key === 'e') {
         this.state.activeTool = new KritzelEraserTool();
+        this.deselectAllObjects();
       }
 
       if (ev.key === 'i') {
         this.state.activeTool = new KritzelImageTool();
+        this.deselectAllObjects();
       }
 
       if (ev.key === 'x') {
         this.state.activeTool = new KritzelTextTool();
+        this.deselectAllObjects();
       }
     }
+  }
+
+  private deselectAllObjects() {
+    this.state.objects.forEach(object => {
+      object.selected = false;
+    });
+
+    this.state.objects = [...this.state.objects];
   }
 
   render() {
