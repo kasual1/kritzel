@@ -158,6 +158,7 @@ export class KritzelEngine {
                     transform: path?.transformationMatrix,
                     border: path.selected ? '2px dashed blue' : '2px solid transparent',
                     boxSizing: 'border-box',
+                    opacity: path.markedForRemoval ? '0.5' : '1',
                   }}
                 >
                   <svg
@@ -166,7 +167,6 @@ export class KritzelEngine {
                       height: path?.height.toString(),
                       width: path?.width.toString(),
                       position: 'relative',
-                      opacity: path.markedForRemoval ? '0.5' : '1',
                     }}
                     viewBox={path?.viewBox}
                   >
@@ -192,6 +192,7 @@ export class KritzelEngine {
                     transform: image?.transformationMatrix,
                     border: image.selected ? '2px dashed blue' : '2px solid transparent',
                     boxSizing: 'border-box',
+                    opacity: image.markedForRemoval ? '0.5' : '1',
                   }}
                 >
                   <img
@@ -223,6 +224,7 @@ export class KritzelEngine {
                     transform: text?.transformationMatrix,
                     border: text.selected ? '2px dashed blue' : '2px solid transparent',
                     boxSizing: 'border-box',
+                    opacity: text.markedForRemoval ? '0.5' : '1',
                   }}
                 >
                   <textarea
