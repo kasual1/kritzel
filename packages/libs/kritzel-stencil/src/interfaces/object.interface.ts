@@ -1,4 +1,5 @@
 import { KritzelBoundingBox } from "./bounding-box.interface";
+import { KritzelSelection } from "./selection.interface";
 
 export interface KritzelObject {
     id: string;
@@ -12,9 +13,9 @@ export interface KritzelObject {
     scale: number;
     selected: boolean;
     markedForRemoval: boolean;
+    selection: KritzelSelection;
     get boundingBox(): KritzelBoundingBox;
     generateId(): string;
     isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
-    isPointInBoundingBox(_x: number, _y: number): boolean;
     centerInViewport(): void;
 }

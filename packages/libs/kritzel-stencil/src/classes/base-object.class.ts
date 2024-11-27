@@ -1,5 +1,6 @@
 import { KritzelBoundingBox } from "../interfaces/bounding-box.interface";
 import { KritzelObject } from "../interfaces/object.interface";
+import { KritzelSelection } from "../interfaces/selection.interface";
 import { kritzelViewportState } from "../stores/viewport.store";
 
 export class KritzelBaseObject implements KritzelObject{
@@ -14,6 +15,26 @@ export class KritzelBaseObject implements KritzelObject{
   scale: number;
   selected: boolean = false;
   markedForRemoval: boolean = false;
+  selection: KritzelSelection = {
+    stroke: {
+      color: '#009999',
+      size: 1,
+      style: 'solid',
+    },
+    handles: {
+      color: 'black',
+      size: 5,
+      onMouseDown: (event: MouseEvent) => {
+        console.log('onMouseDown');
+      },
+      onMouseMove: (event: MouseEvent) => {
+        console.log('onMouseMove');
+      },
+      onMouseUp: (event: MouseEvent) => {
+        console.log('onMouseUp');
+      }
+    },
+  }
 
   get boundingBox(): KritzelBoundingBox {
     return {
@@ -21,34 +42,6 @@ export class KritzelBaseObject implements KritzelObject{
       y: this.translateY,
       width: this.width / this.scale,
       height: this.height / this.scale,
-    };
-  }
-
-  get boundingBoxTopLeft(): { x: number; y: number } {
-    return {
-      x: this.translateX,
-      y: this.translateY,
-    };
-  }
-
-  get boundingBoxTopRight(): { x: number; y: number } {
-    return {
-      x: this.translateX + this.width / this.scale,
-      y: this.translateY,
-    };
-  }
-
-  get boundingBoxBottomLeft(): { x: number; y: number } {
-    return {
-      x: this.translateX,
-      y: this.translateY + this.height / this.scale,
-    };
-  }
-
-  get boundingBoxBottomRight(): { x: number; y: number } {
-    return {
-      x: this.translateX + this.width / this.scale,
-      y: this.translateY + this.height / this.scale,
     };
   }
 
@@ -70,29 +63,6 @@ export class KritzelBaseObject implements KritzelObject{
 
   isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {
     throw new Error("Method not implemented.");
-  }
-
-  isPointInBoundingBox(x: number, y: number): boolean {
-    const boundingBox = this.boundingBox;
-
-    const adjustedX = (this.boundingBox.x + kritzelViewportState.translateX) / kritzelViewportState.scale;
-    const adjustedY = (this.boundingBox.y + kritzelViewportState.translateY) / kritzelViewportState.scale;
-    const adjustedWidth = boundingBox.width / kritzelViewportState.scale;
-    const adjustedHeight = boundingBox.height / kritzelViewportState.scale;
-
-    const adjustedBoundingBox = {
-      x: adjustedX,
-      y: adjustedY,
-      width: adjustedWidth,
-      height: adjustedHeight,
-    }
-
-    return (
-      x >= adjustedBoundingBox.x &&
-      x <= adjustedBoundingBox.x + adjustedBoundingBox.width &&
-      y >= adjustedBoundingBox.y &&
-      y <= adjustedBoundingBox.y + adjustedBoundingBox.height
-    );
   }
 
   centerInViewport(): void {
