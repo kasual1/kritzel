@@ -23,14 +23,12 @@ export class KrtizelText extends KritzelBaseObject {
 	}
 
 	handleInput(event: InputEvent): void {
-		debugger;
 		const target = event.target as HTMLTextAreaElement;
 		this.value = target.value;
 		this.adjustTextareaSize();
 	}
 
 	adjustTextareaSize() {
-		debugger;
 		if (this.elementRef) {
 
 			if (this.elementRef.scrollHeight > this.elementRef.clientHeight) {

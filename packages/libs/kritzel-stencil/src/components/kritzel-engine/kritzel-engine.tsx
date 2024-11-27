@@ -146,7 +146,8 @@ export class KritzelEngine {
               const path = object as KritzelPath;
 
               return (
-                <div
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
                   id={path.id}
                   class="object"
                   style={{
@@ -156,11 +157,83 @@ export class KritzelEngine {
                     top: '0',
                     position: 'absolute',
                     transform: path?.transformationMatrix,
-                    border: path.selected ? '2px dashed blue' : '2px solid transparent',
-                    boxSizing: 'border-box',
                     opacity: path.markedForRemoval ? '0.5' : '1',
                   }}
                 >
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2={path.width}
+                    y2="0"
+                    style={{ stroke: path.selection.stroke.color, strokeWidth: `${(path.selection.stroke.size * path.scale) / this.viewport.state.scale}` }}
+                    visibility={path.selected ? 'visible' : 'hidden'}
+                  />
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2={path.height}
+                    style={{ stroke: path.selection.stroke.color, strokeWidth: `${(path.selection.stroke.size * path.scale) / this.viewport.state.scale}` }}
+                    visibility={path.selected ? 'visible' : 'hidden'}
+                  />
+                  <line
+                    x1="0"
+                    y1={path.height}
+                    x2={path.width}
+                    y2={path.height}
+                    style={{ stroke: path.selection.stroke.color, strokeWidth: `${(path.selection.stroke.size * path.scale) / this.viewport.state.scale}` }}
+                    visibility={path.selected ? 'visible' : 'hidden'}
+                  />
+                  <line
+                    x1={path.width}
+                    y1="0"
+                    x2={path.width}
+                    y2={path.height}
+                    style={{ stroke: path.selection.stroke.color, strokeWidth: `${(path.selection.stroke.size * path.scale) / this.viewport.state.scale}` }}
+                    visibility={path.selected ? 'visible' : 'hidden'}
+                  />
+
+                  <circle
+                    class="selection-handle nwse"
+                    cx="0"
+                    cy="0"
+                    r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
+                    visibility={path.selected ? 'visible' : 'hidden'}
+                    onMouseDown={(event) => path.selection.handles.onMouseDown(event)}
+                    onMouseMove={(event) => path.selection.handles.onMouseMove(event)}
+                    onMouseUp={(event) => path.selection.handles.onMouseUp(event)}
+                  />
+                  <circle
+                    class="selection-handle nesw"
+                    cx={path.width}
+                    cy="0"
+                    r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
+                    visibility={path.selected ? 'visible' : 'hidden'}
+                    onMouseDown={(event) => path.selection.handles.onMouseDown(event)}
+                    onMouseMove={(event) => path.selection.handles.onMouseMove(event)}
+                    onMouseUp={(event) => path.selection.handles.onMouseUp(event)}
+                  />
+                  <circle
+                    class="selection-handle nesw"
+                    cx="0"
+                    cy={path.height}
+                    r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
+                    visibility={path.selected ? 'visible' : 'hidden'}
+                    onMouseDown={(event) => path.selection.handles.onMouseDown(event)}
+                    onMouseMove={(event) => path.selection.handles.onMouseMove(event)}
+                    onMouseUp={(event) => path.selection.handles.onMouseUp(event)}
+                  />
+                  <circle
+                    class="selection-handle nwse"
+                    cx={path.width}
+                    cy={path.height}
+                    r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
+                    visibility={path.selected ? 'visible' : 'hidden'}
+                    onMouseDown={(event) => path.selection.handles.onMouseDown(event)}
+                    onMouseMove={(event) => path.selection.handles.onMouseMove(event)}
+                    onMouseUp={(event) => path.selection.handles.onMouseUp(event)}
+                  />
+
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     style={{
@@ -172,7 +245,7 @@ export class KritzelEngine {
                   >
                     <path d={path?.d} fill={path?.fill} stroke={path?.stroke} />
                   </svg>
-                </div>
+                </svg>
               );
             }
 
@@ -252,7 +325,6 @@ export class KritzelEngine {
               zIndex: '-1',
               position: 'absolute',
               transform: this.state.currentPath?.transformationMatrix,
-              border: '2px solid transparent',
             }}
             viewBox={this.state.currentPath?.viewBox}
           >

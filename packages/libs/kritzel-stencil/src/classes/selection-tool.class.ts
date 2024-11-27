@@ -77,7 +77,7 @@ export class KritzelSelectionTool implements KritzelTool {
 		if (KritzelClickHelper.isLeftClick(event)) {
 			const path = event.composedPath() as HTMLElement[];
 			const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
-			
+
 			let noObjectSelected = true;
 
 			if (selectedObject) {
@@ -86,12 +86,6 @@ export class KritzelSelectionTool implements KritzelTool {
 
 						this.deselectAllObjects();
 						object.selected = true;
-						console.log({
-							topLeft: object.boundingBoxTopLeft,
-							topRight: object.boundingBoxTopRight,
-							bottomLeft: object.boundingBoxBottomLeft,
-							bottomRight: object.boundingBoxBottomRight,
-						});
 						noObjectSelected = false;
 						break;
 					}
