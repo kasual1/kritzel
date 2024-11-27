@@ -24,6 +24,34 @@ export class KritzelBaseObject implements KritzelObject{
     };
   }
 
+  get boundingBoxTopLeft(): { x: number; y: number } {
+    return {
+      x: this.translateX,
+      y: this.translateY,
+    };
+  }
+
+  get boundingBoxTopRight(): { x: number; y: number } {
+    return {
+      x: this.translateX + this.width / this.scale,
+      y: this.translateY,
+    };
+  }
+
+  get boundingBoxBottomLeft(): { x: number; y: number } {
+    return {
+      x: this.translateX,
+      y: this.translateY + this.height / this.scale,
+    };
+  }
+
+  get boundingBoxBottomRight(): { x: number; y: number } {
+    return {
+      x: this.translateX + this.width / this.scale,
+      y: this.translateY + this.height / this.scale,
+    };
+  }
+
   get transformationMatrix(): string {
 		const scale = 1 / this.scale;
 		const translateX = this.translateX;
