@@ -7,8 +7,5 @@ export interface KritzelSelection {
   handles: {
     color: string;
     size: number;
-    onMouseDown: (event: MouseEvent) => void;
-    onMouseMove: (event: MouseEvent) => void;
-    onMouseUp: (event: MouseEvent) => void;
   }
 }

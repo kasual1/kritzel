@@ -12,6 +12,12 @@ export class KritzelSelectionTool implements KritzelTool {
 	dragStartY: number = 0;
 	selectedObject: KritzelObject | null = null;
 
+  isResizing: boolean = false;
+  initialMouseX: number = 0;
+  initialMouseY: number = 0;
+  initialWidth: number = 0;
+  initialHeight: number = 0;
+
 	constructor() {
 		document.addEventListener('keydown', this.handleKeyDown.bind(this));
 	}
@@ -35,20 +41,26 @@ export class KritzelSelectionTool implements KritzelTool {
 		if (KritzelClickHelper.isLeftClick(event)) {
 			const { clientX, clientY } = event;
 			const path = event.composedPath() as HTMLElement[];
-			const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
-			const selectedObjects = kritzelEngineState.objects.filter((object) => object.selected);
+			const objectElement = path.find(element => element.classList && element.classList.contains('object'));
+      const isHandleSelected = path.find(element => element.classList && element.classList.contains('selection-handle'));
 
-			if (selectedObject) {
-				for (const object of selectedObjects) {
-					if (selectedObject.id === object.id) {
-						this.isDragging = true;
-						this.dragStartX = clientX;
-						this.dragStartY = clientY;
-						this.selectedObject = object;
-						break;
-					}
-				}
-			}
+      const selectedObject = this.findObjectById(objectElement.id);
+
+			if(selectedObject && !isHandleSelected) {
+        this.isDragging = true;
+        this.dragStartX = clientX;
+        this.dragStartY = clientY;
+        this.selectedObject = selectedObject;
+      }
+
+      if (selectedObject && isHandleSelected) {
+        this.isResizing = true;
+        this.initialMouseX = event.clientX;
+        this.initialMouseY = event.clientY;
+        this.initialWidth = selectedObject.width;
+        this.initialHeight = selectedObject.height;
+        this.selectedObject = selectedObject;
+      }
 		}
 	}
 
@@ -66,6 +78,16 @@ export class KritzelSelectionTool implements KritzelTool {
 
 			kritzelEngineState.objects = [...kritzelEngineState.objects];
 		}
+
+    if(this.isResizing && this.selectedObject) {
+      debugger;
+      const dx = event.clientX - this.initialMouseX;
+      const dy = event.clientY - this.initialMouseY;
+
+      this.selectedObject.updateDimensions(this.initialWidth + dx / kritzelViewportState.scale, this.initialHeight + dy / kritzelViewportState.scale);
+
+      kritzelEngineState.objects = [...kritzelEngineState.objects];
+    }
 	}
 
 	handleMouseUp(event: MouseEvent): void {
@@ -73,6 +95,11 @@ export class KritzelSelectionTool implements KritzelTool {
 			this.isDragging = false;
 			this.selectedObject = null;
 		}
+
+    if (this.isResizing) {
+      this.isResizing = false;
+      this.selectedObject = null;
+    }
 
 		if (KritzelClickHelper.isLeftClick(event)) {
 			const path = event.composedPath() as HTMLElement[];
@@ -103,6 +130,14 @@ export class KritzelSelectionTool implements KritzelTool {
 	handleWheel(_event: WheelEvent): void {
 		// Do nothing
 	}
+
+  private findObjectById(id: string): KritzelObject | null {
+    for (const object of kritzelEngineState.objects) {
+      if (object.id === id) {
+        return object;
+      }
+    }
+  }
 
 	private deselectAllObjects(): void {
 		for (const object of kritzelEngineState.objects) {

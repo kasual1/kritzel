@@ -12,10 +12,12 @@ export interface KritzelObject {
     width: number;
     scale: number;
     selected: boolean;
+    resizing: boolean;
     markedForRemoval: boolean;
     selection: KritzelSelection;
     get boundingBox(): KritzelBoundingBox;
     generateId(): string;
     isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
     centerInViewport(): void;
+    updateDimensions(width: number, height: number): void;
 }

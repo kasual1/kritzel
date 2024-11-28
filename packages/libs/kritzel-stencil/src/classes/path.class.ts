@@ -60,6 +60,19 @@ export class KritzelPath extends KritzelBaseObject {
     );
   }
 
+  updateDimensions(width: number, height: number): void {
+    const scaleX = width / this.width;
+    const scaleY = height / this.height;
+
+    this.width = width;
+    this.height = height;
+
+    this.points = this.points.map(([x, y]) => [x * scaleX, y * scaleY]);
+    this.d = this.generateSvgPath();
+    this.initializeDimensions();
+    this.setPosition();
+  }
+
   private initializeDimensions(): void {
     const padding = this.strokeWidth;
     this.width =
