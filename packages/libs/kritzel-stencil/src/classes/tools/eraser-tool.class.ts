@@ -1,6 +1,6 @@
-import { KritzelTool } from "../components";
-import { KritzelClickHelper } from "../helpers/click.helper";
-import { kritzelEngineState } from "../stores/engine.store";
+import { KritzelTool } from "../../components";
+import { KritzelClickHelper } from "../../helpers/click.helper";
+import { kritzelEngineState } from "../../stores/engine.store";
 
 export class KritzelEraserTool implements KritzelTool {
   name: string = 'eraser';
@@ -18,7 +18,7 @@ export class KritzelEraserTool implements KritzelTool {
     if (this.isErasing) {
         const path = event.composedPath() as HTMLElement[];
         const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
-  
+
         if (selectedObject) {
           for (const object of kritzelEngineState.objects) {
             if (selectedObject.id === object.id) {

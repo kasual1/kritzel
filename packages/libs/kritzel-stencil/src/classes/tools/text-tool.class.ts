@@ -1,6 +1,6 @@
-import { KritzelTool } from "../components";
-import { kritzelEngineState } from "../stores/engine.store";
-import { KrtizelText } from "./text.class";
+import { KritzelTool } from "../../components";
+import { kritzelEngineState } from "../../stores/engine.store";
+import { KrtizelText } from "../objects/text.class";
 
 export class KritzelTextTool implements KritzelTool {
   name: string = 'text';

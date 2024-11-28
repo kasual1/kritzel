@@ -1,8 +1,8 @@
-import { KritzelClickHelper } from '../helpers/click.helper';
-import { KritzelTool } from '../interfaces/tool.interface';
-import { kritzelEngineState } from '../stores/engine.store';
-import { kritzelViewportState } from '../stores/viewport.store';
-import { KritzelPath } from './path.class';
+import { KritzelClickHelper } from '../../helpers/click.helper';
+import { KritzelTool } from '../../interfaces/tool.interface';
+import { kritzelEngineState } from '../../stores/engine.store';
+import { kritzelViewportState } from '../../stores/viewport.store';
+import { KritzelPath } from '../objects/path.class';
 
 export class KritzelBrushTool implements KritzelTool {
   name: string = 'brush';

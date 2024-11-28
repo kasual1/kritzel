@@ -1,16 +1,16 @@
 import { Component, Host, h, Listen, Element, Prop } from '@stencil/core';
 import { KritzelTool } from '../../interfaces/tool.interface';
-import { KritzelBrushTool } from '../../classes/brush-tool.class';
+import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelViewport } from '../../classes/viewport.class';
 import { KritzelHistory } from '../../classes/history.class';
 import { KritzelEngineState, kritzelEngineState } from '../../stores/engine.store';
-import { KritzelPath } from '../../classes/path.class';
-import { KritzelSelectionTool } from '../../classes/selection-tool.class';
-import { KritzelEraserTool } from '../../classes/eraser-tool.class';
-import { KritzelImageTool } from '../../classes/image-tool.class';
-import { KrtizelText } from '../../classes/text.class';
-import { KritzelImage } from '../../classes/image.class';
-import { KritzelTextTool } from '../../classes/text-tool.class';
+import { KritzelPath } from '../../classes/objects/path.class';
+import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
+import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
+import { KritzelImageTool } from '../../classes/tools/image-tool.class';
+import { KritzelImage } from '../../classes/objects/image.class';
+import { KritzelTextTool } from '../../classes/tools/text-tool.class';
+import { KrtizelText } from '../../classes/objects/text.class';
 
 @Component({
   tag: 'kritzel-engine',
