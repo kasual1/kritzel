@@ -199,9 +199,6 @@ export class KritzelEngine {
                     cy="0"
                     r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
                     visibility={path.selected ? 'visible' : 'hidden'}
-                    onMouseDown={(event) => path.selection.handles.onMouseDown(event)}
-                    onMouseMove={(event) => path.selection.handles.onMouseMove(event)}
-                    onMouseUp={(event) => path.selection.handles.onMouseUp(event)}
                   />
                   <circle
                     class="selection-handle nesw"
@@ -209,9 +206,6 @@ export class KritzelEngine {
                     cy="0"
                     r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
                     visibility={path.selected ? 'visible' : 'hidden'}
-                    onMouseDown={(event) => path.selection.handles.onMouseDown(event)}
-                    onMouseMove={(event) => path.selection.handles.onMouseMove(event)}
-                    onMouseUp={(event) => path.selection.handles.onMouseUp(event)}
                   />
                   <circle
                     class="selection-handle nesw"
@@ -219,9 +213,6 @@ export class KritzelEngine {
                     cy={path.height}
                     r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
                     visibility={path.selected ? 'visible' : 'hidden'}
-                    onMouseDown={(event) => path.selection.handles.onMouseDown(event)}
-                    onMouseMove={(event) => path.selection.handles.onMouseMove(event)}
-                    onMouseUp={(event) => path.selection.handles.onMouseUp(event)}
                   />
                   <circle
                     class="selection-handle nwse"
@@ -229,9 +220,6 @@ export class KritzelEngine {
                     cy={path.height}
                     r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
                     visibility={path.selected ? 'visible' : 'hidden'}
-                    onMouseDown={(event) => path.selection.handles.onMouseDown(event)}
-                    onMouseMove={(event) => path.selection.handles.onMouseMove(event)}
-                    onMouseUp={(event) => path.selection.handles.onMouseUp(event)}
                   />
 
                   <svg

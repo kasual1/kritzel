@@ -1,9 +1,9 @@
-import { KritzelBoundingBox } from "../interfaces/bounding-box.interface";
-import { KritzelObject } from "../interfaces/object.interface";
-import { KritzelSelection } from "../interfaces/selection.interface";
-import { kritzelViewportState } from "../stores/viewport.store";
+import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
+import { KritzelObject } from '../interfaces/object.interface';
+import { KritzelSelection } from '../interfaces/selection.interface';
+import { kritzelViewportState } from '../stores/viewport.store';
 
-export class KritzelBaseObject implements KritzelObject{
+export class KritzelBaseObject implements KritzelObject {
   id: string;
   visible: boolean = true;
   x: number;
@@ -14,27 +14,22 @@ export class KritzelBaseObject implements KritzelObject{
   width: number;
   scale: number;
   selected: boolean = false;
+  resizing: boolean = false;
   markedForRemoval: boolean = false;
+
+
+
   selection: KritzelSelection = {
     stroke: {
       color: '#009999',
       size: 1,
-      style: 'solid',
+      style: 'solid'
     },
     handles: {
       color: 'black',
-      size: 5,
-      onMouseDown: (event: MouseEvent) => {
-        console.log('onMouseDown');
-      },
-      onMouseMove: (event: MouseEvent) => {
-        console.log('onMouseMove');
-      },
-      onMouseUp: (event: MouseEvent) => {
-        console.log('onMouseUp');
-      }
-    },
-  }
+      size: 5
+    }
+  };
 
   get boundingBox(): KritzelBoundingBox {
     return {
@@ -46,12 +41,12 @@ export class KritzelBaseObject implements KritzelObject{
   }
 
   get transformationMatrix(): string {
-		const scale = 1 / this.scale;
-		const translateX = this.translateX;
-		const translateY = this.translateY;
+    const scale = 1 / this.scale;
+    const translateX = this.translateX;
+    const translateY = this.translateY;
 
-		return `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
-	}
+    return `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
+  }
 
   constructor() {
     this.id = this.generateId();
@@ -62,12 +57,16 @@ export class KritzelBaseObject implements KritzelObject{
   }
 
   isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   centerInViewport(): void {
-    this.translateX = (window.innerWidth / 2 - this.width / 2) - kritzelViewportState.translateX;
-    this.translateY = (window.innerHeight / 2 - this.height / 2) - kritzelViewportState.translateY;
+    this.translateX = window.innerWidth / 2 - this.width / 2 - kritzelViewportState.translateX;
+    this.translateY = window.innerHeight / 2 - this.height / 2 - kritzelViewportState.translateY;
   }
 
+  updateDimensions(width: number, height: number): void {
+    this.width = width;
+    this.height = height;
+  }
 }
