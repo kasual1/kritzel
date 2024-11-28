@@ -1,6 +1,6 @@
-import { KritzelTool } from "../components";
-import { kritzelEngineState } from "../stores/engine.store";
-import { KritzelImage } from "./image.class";
+import { KritzelTool } from "../../components";
+import { kritzelEngineState } from "../../stores/engine.store";
+import { KritzelImage } from "../objects/image.class";
 import { KritzelSelectionTool } from "./selection-tool.class";
 
 export class KritzelImageTool implements KritzelTool {
