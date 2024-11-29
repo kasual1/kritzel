@@ -19,5 +19,5 @@ export interface KritzelObject {
     generateId(): string;
     isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
     centerInViewport(): void;
-    updateDimensions(width: number, height: number): void;
+    updateDimensions(x: number, y: number, width: number, height: number): void;
 }
