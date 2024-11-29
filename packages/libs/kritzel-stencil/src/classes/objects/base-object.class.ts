@@ -65,7 +65,9 @@ export class KritzelBaseObject implements KritzelObject {
     this.translateY = window.innerHeight / 2 - this.height / 2 - kritzelViewportState.translateY;
   }
 
-  updateDimensions(width: number, height: number): void {
+  updateDimensions(x: number, y: number, width: number, height: number): void {
+    this.x = x;
+    this.y = y;
     this.width = width;
     this.height = height;
   }

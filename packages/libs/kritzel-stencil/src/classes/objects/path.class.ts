@@ -60,7 +60,7 @@ export class KritzelPath extends KritzelBaseObject {
     );
   }
 
-  updateDimensions(width: number, height: number): void {
+  updateDimensions(x: number | null, y: number | null, width: number, height: number): void {
     const scaleX = width / this.width;
     const scaleY = height / this.height;
 
@@ -69,8 +69,25 @@ export class KritzelPath extends KritzelBaseObject {
 
     this.points = this.points.map(([x, y]) => [x * scaleX, y * scaleY]);
     this.d = this.generateSvgPath();
-    this.initializeDimensions();
-    this.setPosition();
+
+    const padding = this.strokeWidth;
+    this.width =
+      Math.max(...this.points.map((p) => p[0])) -
+      Math.min(...this.points.map((p) => p[0])) +
+      padding;
+    this.height =
+      Math.max(...this.points.map((p) => p[1])) -
+      Math.min(...this.points.map((p) => p[1])) +
+      padding;
+    this.topLeft = [
+      Math.min(...this.points.map((p) => p[0])),
+      Math.min(...this.points.map((p) => p[1])),
+    ];
+
+    this.x = this.topLeft[0] - padding / 2;
+    this.y = this.topLeft[1] - padding / 2;
+    this.translateX = x;
+    this.translateY = y;
   }
 
   private initializeDimensions(): void {

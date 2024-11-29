@@ -194,28 +194,28 @@ export class KritzelEngine {
                   />
 
                   <circle
-                    class="selection-handle nwse"
+                    class="selection-handle top-left"
                     cx="0"
                     cy="0"
                     r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
                     visibility={path.selected ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="selection-handle nesw"
+                    class="selection-handle top-right"
                     cx={path.width}
                     cy="0"
                     r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
                     visibility={path.selected ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="selection-handle nesw"
+                    class="selection-handle bottom-left"
                     cx="0"
                     cy={path.height}
                     r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
                     visibility={path.selected ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="selection-handle nwse"
+                    class="selection-handle bottom-right"
                     cx={path.width}
                     cy={path.height}
                     r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
