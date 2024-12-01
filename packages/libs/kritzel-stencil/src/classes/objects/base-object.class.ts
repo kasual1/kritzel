@@ -66,9 +66,14 @@ export class KritzelBaseObject implements KritzelObject {
   }
 
   updateDimensions(x: number, y: number, width: number, height: number): void {
-    this.x = x;
-    this.y = y;
+    
+    if(width <= 1 || height <= 1) {
+      return;
+    }
+
     this.width = width;
     this.height = height;
+    this.translateX = x;
+    this.translateY = y;
   }
 }
