@@ -47,6 +47,7 @@ export class KritzelResizeHandler {
 
   handleMouseMove(event: MouseEvent): void {
     if(this.isResizing && this.selectedObject) {
+
       const dx = event.clientX - this.initialMouseX;
       const dy = event.clientY - this.initialMouseY;
 
@@ -77,6 +78,8 @@ export class KritzelResizeHandler {
         case SelectionHandleType.BottomRight:
           width = this.initialWidth + dx / this.selectedObject.scale;
           height = this.initialHeight + dy / this.selectedObject.scale;
+          x = this.initialTranslateX;
+          y = this.initialTranslateY;
           this.selectedObject.updateDimensions(x, y, width, height);
           break;
       }
@@ -93,6 +96,5 @@ export class KritzelResizeHandler {
 
       kritzelEngineState.objects = [...kritzelEngineState.objects];
     }
-
   }
 }

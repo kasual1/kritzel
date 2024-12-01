@@ -5,12 +5,12 @@ export class KritzelSelectionTool implements KritzelTool {
 	name: string = 'selection';
 	icon: string = 'selection';
 
-  selectionHandler: KritzelSelectionHandler;
-  resizeHandler: KritzelResizeHandler;
+	selectionHandler: KritzelSelectionHandler;
+	resizeHandler: KritzelResizeHandler;
 
 	constructor() {
-    this.selectionHandler = new KritzelSelectionHandler();
-    this.resizeHandler = new KritzelResizeHandler();
+		this.selectionHandler = new KritzelSelectionHandler();
+		this.resizeHandler = new KritzelResizeHandler();
 		document.addEventListener('keydown', this.handleKeyDown.bind(this));
 	}
 
@@ -20,17 +20,17 @@ export class KritzelSelectionTool implements KritzelTool {
 
 	handleMouseDown(event: MouseEvent): void {
 		this.selectionHandler.handleMouseDown(event);
-    this.resizeHandler.handleMouseDown(event);
+		this.resizeHandler.handleMouseDown(event);
 	}
 
 	handleMouseMove(event: MouseEvent): void {
 		this.selectionHandler.handleMouseMove(event);
-    this.resizeHandler.handleMouseMove(event);
+		this.resizeHandler.handleMouseMove(event);
 	}
 
 	handleMouseUp(event: MouseEvent): void {
 		this.selectionHandler.handleMouseUp(event);
-    this.resizeHandler.handleMouseUp(event);
+		this.resizeHandler.handleMouseUp(event);
 	}
 
 	handleWheel(_event: WheelEvent): void {
