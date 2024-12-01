@@ -61,6 +61,11 @@ export class KritzelPath extends KritzelBaseObject {
   }
 
   updateDimensions(x: number | null, y: number | null, width: number, height: number): void {
+
+    if(width <= 1 || height <= 1) {
+      return;
+    }
+    
     const scaleX = width / this.width;
     const scaleY = height / this.height;
 
