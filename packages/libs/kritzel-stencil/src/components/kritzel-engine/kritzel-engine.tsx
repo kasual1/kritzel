@@ -142,288 +142,57 @@ export class KritzelEngine {
           }}
         >
           {this.state.objects?.map(object => {
-            if (object instanceof KritzelPath) {
-              const path = object as KritzelPath;
-
-              return (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  id={path.id}
-                  class="object"
-                  style={{
-                    height: path?.height.toString(),
-                    width: path?.width.toString(),
-                    left: '0',
-                    top: '0',
-                    position: 'absolute',
-                    transform: path?.transformationMatrix,
-                    opacity: path.markedForRemoval ? '0.5' : '1',
-                  }}
-                >
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2={path.width}
-                    y2="0"
-                    style={{ stroke: path.selection.stroke.color, strokeWidth: `${(path.selection.stroke.size * path.scale) / this.viewport.state.scale}` }}
-                    visibility={path.selected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2={path.height}
-                    style={{ stroke: path.selection.stroke.color, strokeWidth: `${(path.selection.stroke.size * path.scale) / this.viewport.state.scale}` }}
-                    visibility={path.selected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1="0"
-                    y1={path.height}
-                    x2={path.width}
-                    y2={path.height}
-                    style={{ stroke: path.selection.stroke.color, strokeWidth: `${(path.selection.stroke.size * path.scale) / this.viewport.state.scale}` }}
-                    visibility={path.selected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1={path.width}
-                    y1="0"
-                    x2={path.width}
-                    y2={path.height}
-                    style={{ stroke: path.selection.stroke.color, strokeWidth: `${(path.selection.stroke.size * path.scale) / this.viewport.state.scale}` }}
-                    visibility={path.selected ? 'visible' : 'hidden'}
-                  />
-
-                  <circle
-                    class="selection-handle top-left"
-                    cx="0"
-                    cy="0"
-                    r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
-                    visibility={path.selected ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="selection-handle top-right"
-                    cx={path.width}
-                    cy="0"
-                    r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
-                    visibility={path.selected ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="selection-handle bottom-left"
-                    cx="0"
-                    cy={path.height}
-                    r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
-                    visibility={path.selected ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="selection-handle bottom-right"
-                    cx={path.width}
-                    cy={path.height}
-                    r={`${(path.selection.handles.size * path.scale) / this.viewport.state.scale}`}
-                    visibility={path.selected ? 'visible' : 'hidden'}
-                  />
-
+            return (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                id={object.id}
+                class="object"
+                style={{
+                  height: object?.height.toString(),
+                  width: object?.width.toString(),
+                  left: '0',
+                  top: '0',
+                  position: 'absolute',
+                  transform: object?.transformationMatrix,
+                  opacity: object.markedForRemoval ? '0.5' : '1',
+                }}
+              >
+                {object instanceof KritzelPath && (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     style={{
-                      height: path?.height.toString(),
-                      width: path?.width.toString(),
+                      height: object?.height.toString(),
+                      width: object?.width.toString(),
                       position: 'relative',
                     }}
-                    viewBox={path?.viewBox}
+                    viewBox={object?.viewBox}
                   >
-                    <path d={path?.d} fill={path?.fill} stroke={path?.stroke} />
+                    <path d={object?.d} fill={object?.fill} stroke={object?.stroke} />
                   </svg>
-                </svg>
-              );
-            }
+                )}
 
-            if (object instanceof KritzelImage) {
-              const image = object as KritzelImage;
-
-              return (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  id={image.id}
-                  class="object"
-                  style={{
-                    height: image?.height.toString(),
-                    width: image?.width.toString(),
-                    left: '0',
-                    top: '0',
-                    position: 'absolute',
-                    transform: image?.transformationMatrix,
-                    opacity: image.markedForRemoval ? '0.5' : '1',
-                  }}
-                >
+                {object instanceof KritzelImage && (
                   <image
-                    href={image.img.src}
-                    height={image.height.toString()}
-                    width={image.width.toString()}
+                    href={object.img.src}
+                    height={object.height.toString()}
+                    width={object.width.toString()}
                     style={{
                       userSelect: 'none',
                       pointerEvents: 'none',
                     }}
                   />
+                )}
 
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2={image.width}
-                    y2="0"
-                    style={{ stroke: image.selection.stroke.color, strokeWidth: `${(image.selection.stroke.size * image.scale) / this.viewport.state.scale}` }}
-                    visibility={image.selected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2={image.height}
-                    style={{ stroke: image.selection.stroke.color, strokeWidth: `${(image.selection.stroke.size * image.scale) / this.viewport.state.scale}` }}
-                    visibility={image.selected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1="0"
-                    y1={image.height}
-                    x2={image.width}
-                    y2={image.height}
-                    style={{ stroke: image.selection.stroke.color, strokeWidth: `${(image.selection.stroke.size * image.scale) / this.viewport.state.scale}` }}
-                    visibility={image.selected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1={image.width}
-                    y1="0"
-                    x2={image.width}
-                    y2={image.height}
-                    style={{ stroke: image.selection.stroke.color, strokeWidth: `${(image.selection.stroke.size * image.scale) / this.viewport.state.scale}` }}
-                    visibility={image.selected ? 'visible' : 'hidden'}
-                  />
-
-                  <circle
-                    class="selection-handle top-left"
-                    cx="0"
-                    cy="0"
-                    r={`${(image.selection.handles.size * image.scale) / this.viewport.state.scale}`}
-                    visibility={image.selected ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="selection-handle top-right"
-                    cx={image.width}
-                    cy="0"
-                    r={`${(image.selection.handles.size * image.scale) / this.viewport.state.scale}`}
-                    visibility={image.selected ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="selection-handle bottom-left"
-                    cx="0"
-                    cy={image.height}
-                    r={`${(image.selection.handles.size * image.scale) / this.viewport.state.scale}`}
-                    visibility={image.selected ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="selection-handle bottom-right"
-                    cx={image.width}
-                    cy={image.height}
-                    r={`${(image.selection.handles.size * image.scale) / this.viewport.state.scale}`}
-                    visibility={image.selected ? 'visible' : 'hidden'}
-                  />
-                </svg>
-              );
-            }
-
-            if (object instanceof KrtizelText) {
-              const text = object as KrtizelText;
-
-              return (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  id={text.id}
-                  class="object"
-                  style={{
-                    height: text?.height.toString(),
-                    width: text?.width.toString(),
-                    left: '0',
-                    top: '0',
-                    position: 'absolute',
-                    transform: text?.transformationMatrix,
-                    opacity: text.markedForRemoval ? '0.5' : '1',
-                  }}
-                >
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2={text.width}
-                    y2="0"
-                    style={{ stroke: text.selection.stroke.color, strokeWidth: `${(text.selection.stroke.size * text.scale) / this.viewport.state.scale}` }}
-                    visibility={text.selected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2={text.height}
-                    style={{ stroke: text.selection.stroke.color, strokeWidth: `${(text.selection.stroke.size * text.scale) / this.viewport.state.scale}` }}
-                    visibility={text.selected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1="0"
-                    y1={text.height}
-                    x2={text.width}
-                    y2={text.height}
-                    style={{ stroke: text.selection.stroke.color, strokeWidth: `${(text.selection.stroke.size * text.scale) / this.viewport.state.scale}` }}
-                    visibility={text.selected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1={text.width}
-                    y1="0"
-                    x2={text.width}
-                    y2={text.height}
-                    style={{ stroke: text.selection.stroke.color, strokeWidth: `${(text.selection.stroke.size * text.scale) / this.viewport.state.scale}` }}
-                    visibility={text.selected ? 'visible' : 'hidden'}
-                  />
-
-                  <circle
-                    class="selection-handle top-left"
-                    cx="0"
-                    cy="0"
-                    r={`${(text.selection.handles.size * text.scale) / this.viewport.state.scale}`}
-                    visibility={text.selected ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="selection-handle top-right"
-                    cx={text.width}
-                    cy="0"
-                    r={`${(text.selection.handles.size * text.scale) / this.viewport.state.scale}`}
-                    visibility={text.selected ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="selection-handle bottom-left"
-                    cx="0"
-                    cy={text.height}
-                    r={`${(text.selection.handles.size * text.scale) / this.viewport.state.scale}`}
-                    visibility={text.selected ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="selection-handle bottom-right"
-                    cx={text.width}
-                    cy={text.height}
-                    r={`${(text.selection.handles.size * text.scale) / this.viewport.state.scale}`}
-                    visibility={text.selected ? 'visible' : 'hidden'}
-                  />
-
-                  <foreignObject
-                    x="0"
-                    y="0"
-                    width={text.width.toString()}
-                    height={text.height.toString()}
-                  >
+                {object instanceof KrtizelText && (
+                  <foreignObject x="0" y="0" width={object.width.toString()} height={object.height.toString()}>
                     <textarea
-                      ref={el => (text.elementRef = el)}
-                      value={text.value}
-                      onInput={event => text.handleInput(event)}
+                      ref={el => (object.elementRef = el)}
+                      value={object.value}
+                      onInput={event => object.handleInput(event)}
                       rows={1}
                       style={{
-                        width: text.width?.toString() + 'px',
-                        height: text.height?.toString() + 'px',
+                        width: object.width?.toString() + 'px',
+                        height: object.height?.toString() + 'px',
                         border: 'none',
                         outline: 'none',
                         resize: 'none',
@@ -431,12 +200,75 @@ export class KritzelEngine {
                       }}
                     ></textarea>
                   </foreignObject>
-                </svg>
-              );
-            }
+                )}
+                
+                <line
+                  x1="0"
+                  y1="0"
+                  x2={object.width}
+                  y2="0"
+                  style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  visibility={object.selected ? 'visible' : 'hidden'}
+                />
+                <line
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2={object.height}
+                  style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  visibility={object.selected ? 'visible' : 'hidden'}
+                />
+                <line
+                  x1="0"
+                  y1={object.height}
+                  x2={object.width}
+                  y2={object.height}
+                  style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  visibility={object.selected ? 'visible' : 'hidden'}
+                />
+                <line
+                  x1={object.width}
+                  y1="0"
+                  x2={object.width}
+                  y2={object.height}
+                  style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  visibility={object.selected ? 'visible' : 'hidden'}
+                />
+
+                <circle
+                  class="selection-handle top-left"
+                  cx="0"
+                  cy="0"
+                  r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                  visibility={object.selected ? 'visible' : 'hidden'}
+                />
+                <circle
+                  class="selection-handle top-right"
+                  cx={object.width}
+                  cy="0"
+                  r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                  visibility={object.selected ? 'visible' : 'hidden'}
+                />
+                <circle
+                  class="selection-handle bottom-left"
+                  cx="0"
+                  cy={object.height}
+                  r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                  visibility={object.selected ? 'visible' : 'hidden'}
+                />
+                <circle
+                  class="selection-handle bottom-right"
+                  cx={object.width}
+                  cy={object.height}
+                  r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                  visibility={object.selected ? 'visible' : 'hidden'}
+                />
+              </svg>
+            );
           })}
 
           <svg
+            class="object"
             xmlns="http://www.w3.org/2000/svg"
             style={{
               height: this.state.currentPath?.height.toString(),
