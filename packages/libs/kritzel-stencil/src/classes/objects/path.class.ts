@@ -30,10 +30,6 @@ export class KritzelPath extends KritzelBaseObject {
     return `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
   }
 
-  get viewBox(): string {
-      return `${this.x} ${this.y} ${this.width} ${this.height}`;
-  }
-
   constructor(options: KritzelPathOptions) {
     super();
     this.options = options;

@@ -17,8 +17,6 @@ export class KritzelBaseObject implements KritzelObject {
   resizing: boolean = false;
   markedForRemoval: boolean = false;
 
-
-
   selection: KritzelSelection = {
     stroke: {
       color: '#009999',
@@ -38,6 +36,10 @@ export class KritzelBaseObject implements KritzelObject {
       width: this.width / this.scale,
       height: this.height / this.scale,
     };
+  }
+
+  get viewBox(): string {
+    return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
   get transformationMatrix(): string {
@@ -66,7 +68,7 @@ export class KritzelBaseObject implements KritzelObject {
   }
 
   updateDimensions(x: number, y: number, width: number, height: number): void {
-    
+
     if(width <= 1 || height <= 1) {
       return;
     }
