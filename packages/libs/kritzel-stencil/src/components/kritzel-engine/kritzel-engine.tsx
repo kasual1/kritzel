@@ -157,34 +157,35 @@ export class KritzelEngine {
                   opacity: object.markedForRemoval ? '0.5' : '1',
                 }}
               >
-                {object instanceof KritzelPath && (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{
-                      height: object?.height.toString(),
-                      width: object?.width.toString(),
-                      position: 'relative',
-                    }}
-                    viewBox={object?.viewBox}
-                  >
-                    <path d={object?.d} fill={object?.fill} stroke={object?.stroke} />
-                  </svg>
-                )}
+                <foreignObject x="0" y="0" width={object.width.toString()} height={object.height.toString()}>
+                  {object instanceof KritzelPath && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{
+                        height: object?.height.toString(),
+                        width: object?.width.toString(),
+                        position: 'relative',
+                        zIndex: '-1',
+                      }}
+                      viewBox={object?.viewBox}
+                    >
+                      <path d={object?.d} fill={object?.fill} stroke={object?.stroke} />
+                    </svg>
+                  )}
 
-                {object instanceof KritzelImage && (
-                  <image
-                    href={object.img.src}
-                    height={object.height.toString()}
-                    width={object.width.toString()}
-                    style={{
-                      userSelect: 'none',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                )}
+                  {object instanceof KritzelImage && (
+                    <img
+                      src={object.img.src}
+                      height={object.height.toString()}
+                      width={object.width.toString()}
+                      style={{
+                        userSelect: 'none',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  )}
 
-                {object instanceof KrtizelText && (
-                  <foreignObject x="0" y="0" width={object.width.toString()} height={object.height.toString()}>
+                  {object instanceof KrtizelText && (
                     <textarea
                       ref={el => (object.elementRef = el)}
                       value={object.value}
@@ -199,9 +200,9 @@ export class KritzelEngine {
                         overflow: 'hidden',
                       }}
                     ></textarea>
-                  </foreignObject>
-                )}
-                
+                  )}
+                </foreignObject>
+
                 <line
                   x1="0"
                   y1="0"
