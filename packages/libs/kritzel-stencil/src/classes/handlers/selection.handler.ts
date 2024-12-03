@@ -30,16 +30,12 @@ export class KritzelSelectionHandler {
       if (KritzelClickHelper.isLeftClick(event)) {
         const { clientX, clientY } = event;
         const path = event.composedPath() as HTMLElement[];
-        const objectElement = path.find(element => element.classList && element.classList.contains('object'));
         const isHandleSelected = path.find(element => element.classList && element.classList.contains('selection-handle'));
 
-        const selectedObject = findObjectById(objectElement.id);
-
-        if(selectedObject && !isHandleSelected) {
+        if(this.selectedObject && !isHandleSelected) {
           this.isDragging = true;
           this.dragStartX = clientX;
           this.dragStartY = clientY;
-          this.selectedObject = selectedObject;
         }
 
       }
@@ -80,6 +76,7 @@ export class KritzelSelectionHandler {
               deselectAllObjects();
               object.selected = true;
               noObjectSelected = false;
+              this.selectedObject = object;
               break;
             }
           }
