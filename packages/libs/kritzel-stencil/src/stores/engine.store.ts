@@ -14,7 +14,7 @@ const { state: kritzelEngineState, set: setKritzelEngineState } = createStore<Kr
   activeTool: undefined,
   currentPath: undefined,
   objects: [],
-  showDebugPanel: true,
+  showDebugPanel: false,
 });
 
 
