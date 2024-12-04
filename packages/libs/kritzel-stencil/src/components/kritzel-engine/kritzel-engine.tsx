@@ -182,6 +182,8 @@ export class KritzelEngine {
                         userSelect: 'none',
                         pointerEvents: 'none',
                       }}
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                     />
                   )}
 
