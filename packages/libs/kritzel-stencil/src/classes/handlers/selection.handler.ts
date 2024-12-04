@@ -4,12 +4,19 @@ import { kritzelEngineState, findObjectById, deselectAllObjects } from "../../st
 import { kritzelViewportState } from "../../stores/viewport.store";
 
 export class KritzelSelectionHandler {
+    private static instance: KritzelSelectionHandler;
+
     isDragging: boolean = false;
     dragStartX: number = 0;
     dragStartY: number = 0;
     selectedObject: KritzelObject | null = null;
 
-    constructor() {}
+    constructor() {
+      if (KritzelSelectionHandler.instance) {
+        return KritzelSelectionHandler.instance;
+      }
+      KritzelSelectionHandler.instance = this;
+    }
 
     handleKeyDown(event: KeyboardEvent): void {
       if (event.key === 'Escape') {
