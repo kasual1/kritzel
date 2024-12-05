@@ -16,6 +16,7 @@ export interface KritzelObject<T = Element> {
   markedForRemoval: boolean;
   selection: KritzelSelection;
   viewBox: string;
+  isMounted: boolean;
   _elementRef: T;
   set elementRef(element: T);
   get elementRef(): T;

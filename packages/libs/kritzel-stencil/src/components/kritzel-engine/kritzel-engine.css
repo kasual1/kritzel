@@ -32,8 +32,6 @@
 }
 
 textarea {
-  height: 100%;
-  width: 100%;
   all: unset;
   box-sizing: border-box;
   outline: none !important;

@@ -16,6 +16,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   selected: boolean = false;
   resizing: boolean = false;
   markedForRemoval: boolean = false;
+  isMounted: boolean = false;
   _elementRef: T;
 
   selection: KritzelSelection = {
@@ -64,7 +65,12 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   }
 
   mount(element: T): void {
+    if(this.isMounted) {
+      return;
+    }
+
     this.elementRef = element;
+    this.isMounted = true;
   }
 
   generateId(): string {
