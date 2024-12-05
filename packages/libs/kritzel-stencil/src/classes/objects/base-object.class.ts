@@ -3,7 +3,7 @@ import { KritzelObject } from "../../interfaces/object.interface";
 import { KritzelSelection } from "../../interfaces/selection.interface";
 import { kritzelViewportState } from "../../stores/viewport.store";
 
-export class KritzelBaseObject implements KritzelObject {
+export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   id: string;
   visible: boolean = true;
   x: number;
@@ -16,6 +16,7 @@ export class KritzelBaseObject implements KritzelObject {
   selected: boolean = false;
   resizing: boolean = false;
   markedForRemoval: boolean = false;
+  _elementRef: T;
 
   selection: KritzelSelection = {
     stroke: {
@@ -28,6 +29,14 @@ export class KritzelBaseObject implements KritzelObject {
       size: 5
     }
   };
+
+  set elementRef(element: T) {
+    this._elementRef = element;
+  }
+
+  get elementRef(): T {
+    return this._elementRef;
+  }
 
   get boundingBox(): KritzelBoundingBox {
     return {
@@ -52,6 +61,10 @@ export class KritzelBaseObject implements KritzelObject {
 
   constructor() {
     this.id = this.generateId();
+  }
+
+  mount(element: T): void {
+    this.elementRef = element;
   }
 
   generateId(): string {

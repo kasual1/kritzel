@@ -157,9 +157,10 @@ export class KritzelEngine {
                   opacity: object.markedForRemoval ? '0.5' : '1',
                 }}
               >
-                <foreignObject x="0" y="0" width={object.width.toString()} height={object.height.toString()}>
+                <foreignObject x="0" y="0"  width={object.width.toString()} height={object.height.toString()}>
                   {object instanceof KritzelPath && (
                     <svg
+                      ref={el => object.mount(el)}
                       xmlns="http://www.w3.org/2000/svg"
                       style={{
                         height: object?.height.toString(),
@@ -175,6 +176,7 @@ export class KritzelEngine {
 
                   {object instanceof KritzelImage && (
                     <img
+                      ref={el => object.mount(el)}
                       src={object.img.src}
                       height={object.height.toString()}
                       width={object.width.toString()}
@@ -189,10 +191,10 @@ export class KritzelEngine {
 
                   {object instanceof KrtizelText && (
                     <textarea
-                      ref={el => (object.elementRef = el)}
+                      ref={el => object.mount(el)}
                       value={object.value}
                       onInput={event => object.handleInput(event)}
-                      rows={1}
+                      rows={object.rows}
                       style={{
                         width: object.width?.toString() + 'px',
                         height: object.height?.toString() + 'px',

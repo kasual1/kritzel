@@ -4,7 +4,7 @@ import { BoundingBox } from 'puppeteer';
 import { KritzelPathOptions } from '../../interfaces/path-options.interface';
 import { KritzelBaseObject } from './base-object.class';
 
-export class KritzelPath extends KritzelBaseObject {
+export class KritzelPath extends KritzelBaseObject<SVGElement> {
   points: number[][];
   d: string;
   stroke: string;
@@ -19,7 +19,6 @@ export class KritzelPath extends KritzelBaseObject {
   scale: number = 1;
   topLeft: number[] = [0, 0];
   visible: boolean = true;
-  zIndex: number = 1;
   options: KritzelPathOptions | undefined;
 
   get transformationMatrix(): string {
@@ -61,7 +60,7 @@ export class KritzelPath extends KritzelBaseObject {
     if(width <= 1 || height <= 1) {
       return;
     }
-    
+
     const scaleX = width / this.width;
     const scaleY = height / this.height;
 
