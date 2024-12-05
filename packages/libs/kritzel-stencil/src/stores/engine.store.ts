@@ -6,7 +6,7 @@ import { KritzelObject } from "../interfaces/object.interface";
 export interface KritzelEngineState {
   activeTool: KritzelTool;
   currentPath?: KritzelPath;
-  objects: KritzelBaseObject[];
+  objects: KritzelBaseObject<Element>[];
   showDebugPanel: boolean;
 }
 

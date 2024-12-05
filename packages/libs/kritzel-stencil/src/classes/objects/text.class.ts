@@ -1,11 +1,13 @@
 import { KritzelBoundingBox } from "../../interfaces/bounding-box.interface";
+import { kritzelEngineState } from "../../stores/engine.store";
 import { KritzelBaseObject } from "./base-object.class";
 
 export class KrtizelText extends KritzelBaseObject {
 
-	elementRef: HTMLElement;
-
 	value: string = 'Test';
+
+  readonly rows: number = 1;
+
 
 	constructor() {
 		super();
@@ -13,10 +15,15 @@ export class KrtizelText extends KritzelBaseObject {
 		this.y = 0;
 		this.translateX = 0;
 		this.translateY = 0;
+    this.width = 50;
+    this.height = 50;
 		this.scale = 1;
-
-		console.log(this.elementRef);
 	}
+
+  override mount(element: HTMLElement): void {
+    super.mount(element);
+    this.elementRef.focus();
+  }
 
 	override isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {
 		return true;
@@ -29,17 +36,15 @@ export class KrtizelText extends KritzelBaseObject {
 	}
 
 	adjustTextareaSize() {
-		if (this.elementRef) {
-
-			if (this.elementRef.scrollHeight > this.elementRef.clientHeight) {
-				this.elementRef.style.height = `${this.elementRef.scrollHeight}px`;
-			}
-
 			if (this.elementRef.scrollWidth > this.elementRef.clientWidth) {
-				this.elementRef.style.width = `${this.elementRef.scrollWidth}px`;
+        this.width = this.elementRef.scrollWidth;
 			}
 
+      if(this.elementRef.scrollHeight > this.elementRef.clientHeight) {
+        this.height = this.elementRef.scrollHeight;
+      }
 			this.elementRef.style.backgroundColor = 'red';
-		}
+
+      kritzelEngineState.objects = [...kritzelEngineState.objects];
 	}
 }
