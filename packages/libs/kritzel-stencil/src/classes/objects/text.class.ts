@@ -11,8 +11,6 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   constructor() {
     super();
-    this.x = 0;
-    this.y = 0;
     this.translateX = 0;
     this.translateY = 0;
     this.width = 50;
