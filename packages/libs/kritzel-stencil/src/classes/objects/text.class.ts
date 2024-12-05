@@ -2,12 +2,11 @@ import { KritzelBoundingBox } from "../../interfaces/bounding-box.interface";
 import { kritzelEngineState } from "../../stores/engine.store";
 import { KritzelBaseObject } from "./base-object.class";
 
-export class KrtizelText extends KritzelBaseObject {
+export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
 	value: string = 'Test';
 
   readonly rows: number = 1;
-
 
 	constructor() {
 		super();
@@ -20,9 +19,8 @@ export class KrtizelText extends KritzelBaseObject {
 		this.scale = 1;
 	}
 
-  override mount(element: HTMLElement): void {
+  override mount(element: HTMLTextAreaElement): void {
     super.mount(element);
-    this.elementRef.focus();
   }
 
 	override isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {
