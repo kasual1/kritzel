@@ -62,9 +62,16 @@ export class KritzelBaseObject implements KritzelObject {
     throw new Error('Method not implemented.');
   }
 
+  resizeToViewportScale(): void {
+    const scale = kritzelViewportState.scale;
+    this.width = this.width / scale;
+    this.height = this.height / scale;
+  }
+
   centerInViewport(): void {
-    this.translateX = window.innerWidth / 2 - this.width / 2 - kritzelViewportState.translateX;
-    this.translateY = window.innerHeight / 2 - this.height / 2 - kritzelViewportState.translateY;
+    const scale = kritzelViewportState.scale;
+    this.translateX = (window.innerWidth / 2 - (this.width * scale) / 2 - kritzelViewportState.translateX) / scale;
+    this.translateY = (window.innerHeight / 2 - (this.height * scale) / 2 - kritzelViewportState.translateY) / scale;
   }
 
   updateDimensions(x: number, y: number, width: number, height: number): void {
