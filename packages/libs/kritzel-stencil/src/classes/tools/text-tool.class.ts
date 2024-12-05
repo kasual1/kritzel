@@ -1,5 +1,6 @@
 import { KritzelTool } from "../../components";
 import { kritzelEngineState } from "../../stores/engine.store";
+import { kritzelViewportState } from "../../stores/viewport.store";
 import { KrtizelText } from "../objects/text.class";
 
 export class KritzelTextTool implements KritzelTool {
@@ -20,13 +21,12 @@ export class KritzelTextTool implements KritzelTool {
     if (this.isWriting === false) {
       const { clientX, clientY } = event;
       const text = new KrtizelText();
-      text.translateX = clientX;
-      text.translateY = clientY;
+      text.translateX = clientX + (-kritzelViewportState.translateX);
+      text.translateY = clientY + (-kritzelViewportState.translateY);
       kritzelEngineState.objects = [...kritzelEngineState.objects, text];
       this.isWriting = true;
     }
   }
-
   handleWheel(_event: WheelEvent): void {
     // Do nothing
   }
