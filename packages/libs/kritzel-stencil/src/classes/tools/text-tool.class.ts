@@ -23,8 +23,10 @@ export class KritzelTextTool implements KritzelTool {
       const text = new KrtizelText();
       text.translateX = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
       text.translateY = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
-      kritzelEngineState.objects = [...kritzelEngineState.objects, text];
+
       this.isWriting = true;
+
+      kritzelEngineState.objects = [...kritzelEngineState.objects, text];
     }
   }
   handleWheel(_event: WheelEvent): void {

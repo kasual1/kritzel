@@ -33,6 +33,23 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
     return true;
   }
 
+  override updateDimensions(x: number, y: number, width: number, height: number): void {
+    
+    if(width <= 1 || height <= 1) {
+      return;
+    }
+     
+    const scaleFactor = height / this.height;
+    
+    this.fontSize = this.fontSize * scaleFactor;
+    this.width = width;
+    this.height = height;
+    this.translateX = x;
+    this.translateY = y;
+
+    kritzelEngineState.objects = [...kritzelEngineState.objects];
+  }
+
   handleInput(event: InputEvent): void {
     const target = event.target as HTMLTextAreaElement;
     this.value = target.value;
@@ -68,4 +85,5 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
       kritzelEngineState.objects = [...kritzelEngineState.objects];
     }
   }
+
 }
