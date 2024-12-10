@@ -21,8 +21,12 @@ export class KritzelTextTool implements KritzelTool {
     if (this.isWriting === false) {
       const { clientX, clientY } = event;
       const text = new KrtizelText();
+      const scaleFactor = text.height / text.height / kritzelViewportState.scale;
       text.translateX = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
       text.translateY = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
+      text.fontSize = text.fontSize * scaleFactor;
+      text.width = text.width / kritzelViewportState.scale;
+      text.height = text.height / kritzelViewportState.scale;
 
       this.isWriting = true;
 
