@@ -30,7 +30,7 @@ export class KritzelResizeHandler {
 
       const isHandleSelected = selectionHandle ? true : false;
 
-      const selectedObject = findObjectById(objectElement.id);
+      const selectedObject = findObjectById(objectElement?.id);
 
       if (selectedObject && isHandleSelected) {
         this.isResizing = true;

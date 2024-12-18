@@ -157,7 +157,13 @@ export class KritzelEngine {
                   opacity: object.markedForRemoval ? '0.5' : '1',
                 }}
               >
-                <foreignObject x="0" y="0"  width={object.width.toString()} height={object.height.toString()} style={{minHeight: '0', minWidth: '0'}}>
+                <foreignObject
+                  x="0"
+                  y="0"
+                  width={(object.totalWidth).toString()}
+                  height={object.totalHeight.toString()}
+                  style={{ minHeight: '0', minWidth: '0', backgroundColor: object.backgroundColor, padding: object.padding + 'px' }}
+                >
                   {object instanceof KritzelPath && (
                     <svg
                       ref={el => object.mount(el)}
@@ -185,7 +191,7 @@ export class KritzelEngine {
                         pointerEvents: 'none',
                       }}
                       draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
+                      onDragStart={e => e.preventDefault()}
                     />
                   )}
 
@@ -195,17 +201,16 @@ export class KritzelEngine {
                       value={object.value}
                       onInput={event => object.handleInput(event)}
                       rows={object.rows}
+                      readOnly={object.isReadonly}
                       style={{
-                        width: object.width?.toString() + 'px',
-                        height: object.height?.toString() + 'px',
-                        minHeight: '0',
-                        minWidth: '0',
+                        width: '100%',
+                        height: '100%',
                         fontSize: object.fontSize?.toString() + 'px',
                         border: 'none',
                         outline: 'none',
                         resize: 'none',
                         overflow: 'hidden',
-                        whiteSpace: 'nowrap',
+                        whiteSpace: object.isReadonly ? 'pre-wrap' : 'nowrap',
                         display: 'block',
                       }}
                     ></textarea>
@@ -215,7 +220,7 @@ export class KritzelEngine {
                 <line
                   x1="0"
                   y1="0"
-                  x2={object.width}
+                  x2={object.totalWidth}
                   y2="0"
                   style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
                   visibility={object.selected ? 'visible' : 'hidden'}
@@ -224,23 +229,23 @@ export class KritzelEngine {
                   x1="0"
                   y1="0"
                   x2="0"
-                  y2={object.height}
+                  y2={object.totalHeight}
                   style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
                   visibility={object.selected ? 'visible' : 'hidden'}
                 />
                 <line
                   x1="0"
-                  y1={object.height}
-                  x2={object.width}
-                  y2={object.height}
+                  y1={object.totalHeight}
+                  x2={object.totalWidth}
+                  y2={object.totalHeight}
                   style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
                   visibility={object.selected ? 'visible' : 'hidden'}
                 />
                 <line
-                  x1={object.width}
+                  x1={object.totalWidth}
                   y1="0"
-                  x2={object.width}
-                  y2={object.height}
+                  x2={object.totalWidth}
+                  y2={object.totalHeight}
                   style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
                   visibility={object.selected ? 'visible' : 'hidden'}
                 />
@@ -254,7 +259,7 @@ export class KritzelEngine {
                 />
                 <circle
                   class="selection-handle top-right"
-                  cx={object.width}
+                  cx={object.totalWidth}
                   cy="0"
                   r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
                   visibility={object.selected ? 'visible' : 'hidden'}
@@ -262,14 +267,14 @@ export class KritzelEngine {
                 <circle
                   class="selection-handle bottom-left"
                   cx="0"
-                  cy={object.height}
+                  cy={object.totalHeight}
                   r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
                   visibility={object.selected ? 'visible' : 'hidden'}
                 />
                 <circle
                   class="selection-handle bottom-right"
-                  cx={object.width}
-                  cy={object.height}
+                  cx={object.totalWidth}
+                  cy={object.totalHeight}
                   r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
                   visibility={object.selected ? 'visible' : 'hidden'}
                 />

@@ -1,21 +1,36 @@
 import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
 import { kritzelEngineState } from '../../stores/engine.store';
+import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelBaseObject } from './base-object.class';
 
 export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
   value: string = '';
 
-  fontSize: number = 46;
+  fontSize: number = 16;
+
+  initalHeight: number = 2;
+
+  initialWidth: number = this.lineHeight;
 
   readonly rows: number = 1;
+
+  get lineHeight(): number {
+    return this.fontSize * 1.2;
+  }
+
+  get isReadonly(): boolean {
+    return kritzelEngineState.activeTool?.name !== 'text';
+  }
 
   constructor() {
     super();
     this.translateX = 0;
     this.translateY = 0;
-    this.width = 50;
-    this.height = 50;
-    this.scale = 1;
+    this.width = this.initialWidth * kritzelViewportState.scale;
+    this.height = this.initalHeight * kritzelViewportState.scale;
+    this.padding = 5;
+    this.backgroundColor = 'red';
+    this.scale = kritzelViewportState.scale;
   }
 
   override mount(element: HTMLTextAreaElement): void {
@@ -34,15 +49,15 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
   }
 
   override updateDimensions(x: number, y: number, width: number, height: number): void {
-    
-    if(width <= 1 || height <= 1) {
+
+    if (width <= 1 || height <= 1) {
       return;
     }
-     
+
     const scaleFactor = height / this.height;
-    
+
     this.fontSize = this.fontSize * scaleFactor;
-    this.width = width;
+    this.width = this.width * scaleFactor;
     this.height = height;
     this.translateX = x;
     this.translateY = y;
@@ -71,19 +86,9 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
       document.body.removeChild(span);
 
       this.width = textWidth;
-
-      this.elementRef.style.height = 'auto';
       this.height = this.elementRef.scrollHeight;
-
-      this.elementRef.style.width = `${this.width}px`;
-      this.elementRef.style.height = `${this.height}px`;
-      this.elementRef.style.minWidth = '0';
-      this.elementRef.style.minHeight = '0';
-
-      this.elementRef.style.backgroundColor = 'red';
 
       kritzelEngineState.objects = [...kritzelEngineState.objects];
     }
   }
-
 }
