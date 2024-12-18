@@ -14,7 +14,7 @@ const { state: kritzelEngineState, set: setKritzelEngineState } = createStore<Kr
   activeTool: undefined,
   currentPath: undefined,
   objects: [],
-  showDebugPanel: false,
+  showDebugPanel: true,
 });
 
 
@@ -24,6 +24,7 @@ export function findObjectById(id: string): KritzelObject | null  {
       return object;
     }
   }
+  return null;
 }
 
 export function deselectAllObjects(): void {

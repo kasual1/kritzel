@@ -12,6 +12,8 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   translateY: number;
   height: number;
   width: number;
+  backgroundColor: string;
+  padding: number = 0;
   scale: number;
   selected: boolean = false;
   resizing: boolean = false;
@@ -30,6 +32,14 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
       size: 5
     }
   };
+
+  get totalWidth(): number {
+    return this.width + this.padding * 2;
+  }
+
+  get totalHeight(): number {
+    return this.height + this.padding * 2;
+  }
 
   set elementRef(element: T) {
     this._elementRef = element;

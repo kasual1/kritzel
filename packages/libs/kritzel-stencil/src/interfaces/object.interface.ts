@@ -10,6 +10,7 @@ export interface KritzelObject<T = Element> {
   translateY: number;
   height: number;
   width: number;
+  backgroundColor: string;
   scale: number;
   selected: boolean;
   resizing: boolean;
@@ -21,6 +22,8 @@ export interface KritzelObject<T = Element> {
   set elementRef(element: T);
   get elementRef(): T;
   get boundingBox(): KritzelBoundingBox;
+  get totalWidth(): number;
+  get totalHeight(): number;
   mount(element: T): void;
   generateId(): string;
   isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
