@@ -210,8 +210,9 @@ export class KritzelEngine {
                         outline: 'none',
                         resize: 'none',
                         overflow: 'hidden',
-                        whiteSpace: object.isReadonly ? 'pre-wrap' : 'nowrap',
                         display: 'block',
+                        whiteSpace: object.isReadonly ? 'pre-wrap' : 'nowrap',
+                        cursor: object.isReadonly ? 'default' : 'text',
                       }}
                     ></textarea>
                   )}
