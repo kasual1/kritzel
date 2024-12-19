@@ -8,9 +8,9 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   fontSize: number = 16;
 
-  initalHeight: number = 2;
-
-  initialWidth: number = this.lineHeight;
+  initialWidth: number = 2;
+  
+  initalHeight: number = this.lineHeight;
 
   readonly rows: number = 1;
 
