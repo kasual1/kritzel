@@ -1,6 +1,7 @@
 import { KritzelBoundingBox } from "../../interfaces/bounding-box.interface";
 import { KritzelObject } from "../../interfaces/object.interface";
 import { KritzelSelection } from "../../interfaces/selection.interface";
+import { kritzelEngineState } from "../../stores/engine.store";
 import { kritzelViewportState } from "../../stores/viewport.store";
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
@@ -113,5 +114,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     this.height = height;
     this.translateX = x;
     this.translateY = y;
+
+    kritzelEngineState.objects = [...kritzelEngineState.objects];
   }
 }

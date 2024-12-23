@@ -1,7 +1,6 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
 import { KritzelObject } from "../../interfaces/object.interface";
 import { kritzelEngineState, findObjectById } from "../../stores/engine.store";
-import { kritzelViewportState } from "../../stores/viewport.store";
 
 enum SelectionHandleType {
   TopLeft = 'top-left',
@@ -49,36 +48,36 @@ export class KritzelResizeHandler {
   handleMouseMove(event: MouseEvent): void {
     if(this.isResizing && this.selectedObject) {
 
-      const dx = (event.clientX - this.initialMouseX) / kritzelViewportState.scale;
-      const dy = (event.clientY - this.initialMouseY) / kritzelViewportState.scale;
+      const dx = event.clientX - this.initialMouseX;
+      const dy = event.clientY - this.initialMouseY;
 
       let width, height, x, y;
 
       switch (this.handleType) {
         case SelectionHandleType.TopLeft:
-          width = this.initialWidth - dx / this.selectedObject.scale;
-          height = this.initialHeight - dy / this.selectedObject.scale;
+          width = this.initialWidth - dx;
+          height = this.initialHeight - dy;
           x = dx + this.initialTranslateX;
           y = dy + this.initialTranslateY;
           this.selectedObject.updateDimensions(x, y, width, height);
           break;
         case SelectionHandleType.TopRight:
-          width = this.initialWidth + dx / this.selectedObject.scale;
-          height = this.initialHeight - dy / this.selectedObject.scale;
+          width = this.initialWidth + dx;
+          height = this.initialHeight - dy;
           x = this.initialTranslateX;
           y = dy + this.initialTranslateY;
           this.selectedObject.updateDimensions(x, y, width, height);
           break;
         case SelectionHandleType.BottomLeft:
-          width = this.initialWidth - dx / this.selectedObject.scale;
-          height = this.initialHeight + dy / this.selectedObject.scale;
+          width = this.initialWidth - dx;
+          height = this.initialHeight + dy;
           x = dx + this.initialTranslateX;
           y = this.initialTranslateY;
           this.selectedObject.updateDimensions(x, y, width, height);
           break;
         case SelectionHandleType.BottomRight:
-          width = this.initialWidth + dx / this.selectedObject.scale;
-          height = this.initialHeight + dy / this.selectedObject.scale;
+          width = this.initialWidth + dx;
+          height = this.initialHeight + dy;
           x = this.initialTranslateX;
           y = this.initialTranslateY;
           this.selectedObject.updateDimensions(x, y, width, height);
