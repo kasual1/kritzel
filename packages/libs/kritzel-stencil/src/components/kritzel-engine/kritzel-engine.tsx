@@ -184,9 +184,9 @@ export class KritzelEngine {
                     <img
                       ref={el => object.mount(el)}
                       src={object.img.src}
-                      height={object.height.toString()}
-                      width={object.width.toString()}
                       style={{
+                        width: '100%',
+                        height: '100%',
                         userSelect: 'none',
                         pointerEvents: 'none',
                       }}

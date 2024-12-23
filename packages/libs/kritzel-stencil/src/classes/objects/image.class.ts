@@ -1,5 +1,6 @@
 import { KritzelBoundingBox } from "../../interfaces/bounding-box.interface";
 import { kritzelEngineState } from "../../stores/engine.store";
+import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "./base-object.class";
 
 export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
@@ -15,7 +16,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 		this.translateY = 0;
 		this.width = img.width;
 		this.height = img.height;
-		this.scale = 1;
+		this.scale = kritzelViewportState.scale;
 	}
 
 	override isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {
@@ -28,10 +29,10 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
       return;
     }
 
-    const scaleFactor = height / this.height;
+    const scaleFactor = (height / this.height);
 
     this.width = this.width * scaleFactor;
-    this.height = height;
+    this.height = this.height * scaleFactor;
     this.translateX = x;
     this.translateY = y;
 
