@@ -9,7 +9,7 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
   fontSize: number = 16;
 
   initialWidth: number = 2;
-  
+
   initalHeight: number = this.lineHeight;
 
   readonly rows: number = 1;
@@ -31,6 +31,7 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.padding = 5;
     this.backgroundColor = 'red';
     this.scale = kritzelViewportState.scale;
+    this.value = 'Teststring to fix resizing';
   }
 
   override mount(element: HTMLTextAreaElement): void {
@@ -41,6 +42,7 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
     requestAnimationFrame(() => {
       this.elementRef.focus();
+      this.adjustTextareaSize();
     });
   }
 
