@@ -148,8 +148,8 @@ export class KritzelEngine {
                 id={object.id}
                 class="object"
                 style={{
-                  height: object?.height.toString(),
-                  width: object?.width.toString(),
+                  height: object?.totalHeight.toString(),
+                  width: object?.totalWidth.toString(),
                   left: '0',
                   top: '0',
                   position: 'absolute',
