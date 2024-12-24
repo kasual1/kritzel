@@ -32,6 +32,7 @@ export class KritzelTextTool implements KritzelTool {
       kritzelEngineState.objects = [...kritzelEngineState.objects, text];
     }
   }
+  
   handleWheel(_event: WheelEvent): void {
     // Do nothing
   }

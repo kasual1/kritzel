@@ -55,7 +55,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     );
   }
 
-  updateDimensions(x: number | null, y: number | null, width: number, height: number): void {
+  resize(x: number | null, y: number | null, width: number, height: number): void {
 
     if(width <= 1 || height <= 1) {
       return;

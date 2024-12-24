@@ -89,16 +89,16 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   }
 
   isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {
-    throw new Error('Method not implemented.');
+    return true;
   }
 
   centerInViewport(): void {
     const scale = kritzelViewportState.scale;
-    this.translateX = (((window.innerWidth / 2) - (this.width / 2)) - kritzelViewportState.translateX) / scale;
-    this.translateY = (((window.innerHeight / 2) - (this.height / 2)) - kritzelViewportState.translateY) / scale;
+    this.translateX = (((window.innerWidth / 2) - (this.totalWidth / 2)) - kritzelViewportState.translateX) / scale;
+    this.translateY = (((window.innerHeight / 2) - (this.totalHeight / 2)) - kritzelViewportState.translateY) / scale;
   }
 
-  updateDimensions(x: number, y: number, width: number, height: number): void {
+  resize(x: number, y: number, width: number, height: number): void {
 
     if(width <= 1 || height <= 1) {
       return;

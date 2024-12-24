@@ -39,6 +39,7 @@ export class KritzelEraserTool implements KritzelTool {
   }
 
   handleWheel(_event: WheelEvent): void {
+    // Do nothing
   }
 
 }

@@ -59,28 +59,28 @@ export class KritzelResizeHandler {
           height = this.initialHeight - dy;
           x = dx + this.initialTranslateX;
           y = dy + this.initialTranslateY;
-          this.selectedObject.updateDimensions(x, y, width, height);
+          this.selectedObject.resize(x, y, width, height);
           break;
         case SelectionHandleType.TopRight:
           width = this.initialWidth + dx;
           height = this.initialHeight - dy;
           x = this.initialTranslateX;
           y = dy + this.initialTranslateY;
-          this.selectedObject.updateDimensions(x, y, width, height);
+          this.selectedObject.resize(x, y, width, height);
           break;
         case SelectionHandleType.BottomLeft:
           width = this.initialWidth - dx;
           height = this.initialHeight + dy;
           x = dx + this.initialTranslateX;
           y = this.initialTranslateY;
-          this.selectedObject.updateDimensions(x, y, width, height);
+          this.selectedObject.resize(x, y, width, height);
           break;
         case SelectionHandleType.BottomRight:
           width = this.initialWidth + dx;
           height = this.initialHeight + dy;
           x = this.initialTranslateX;
           y = this.initialTranslateY;
-          this.selectedObject.updateDimensions(x, y, width, height);
+          this.selectedObject.resize(x, y, width, height);
           break;
       }
 

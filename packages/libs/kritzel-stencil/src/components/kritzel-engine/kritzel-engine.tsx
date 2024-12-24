@@ -155,6 +155,7 @@ export class KritzelEngine {
                   position: 'absolute',
                   transform: object?.transformationMatrix,
                   opacity: object.markedForRemoval ? '0.5' : '1',
+                  zIndex: '0'
                 }}
               >
                 <foreignObject
@@ -291,7 +292,7 @@ export class KritzelEngine {
               width: this.state.currentPath?.width.toString(),
               left: '0',
               top: '0',
-              zIndex: '-1',
+              zIndex: '1',
               position: 'absolute',
               transform: this.state.currentPath?.transformationMatrix,
             }}
