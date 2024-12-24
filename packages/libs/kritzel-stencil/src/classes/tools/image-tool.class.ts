@@ -64,7 +64,6 @@ export class KritzelImageTool implements KritzelTool {
         img.onload = () => {
           const image = new KritzelImage(img);
           image.selected = true;
-          image.resizeToViewportScale();
           image.centerInViewport();
 
           this.selectionHandler.selectedObject = image;
