@@ -19,37 +19,6 @@ export class KritzelSelectionHandler {
       KritzelSelectionHandler.instance = this;
     }
 
-    handleKeyDown(event: KeyboardEvent): void {
-      if (event.key === 'Escape') {
-        deselectAllObjects();
-      }
-
-      if (event.key === 'Delete') {
-        const objectsToRemove = kritzelEngineState.objects.filter((object) => object.selected);
-        kritzelEngineState.objects = kritzelEngineState.objects.filter((object) => !object.selected);
-
-        for (const object of objectsToRemove) {
-          object.markedForRemoval = true;
-        }
-      }
-
-      if (event.key === 'c' && event.ctrlKey) {
-        this.copiedObject = this.selectedObject.copy();
-        this.copiedObject.id = this.copiedObject.generateId();
-        this.copiedObject.translateX += 25;
-        this.copiedObject.translateY += 25;
-        this.copiedObject.selected = false;
-      }
-      
-      if (event.key === 'v' && event.ctrlKey) {
-        deselectAllObjects();
-        this.selectedObject = this.copiedObject;
-        this.copiedObject.selected = true;
-        kritzelEngineState.objects = [...kritzelEngineState.objects, this.copiedObject];
-      }
-
-    }
-
     handleMouseDown(event) {
       if (KritzelClickHelper.isLeftClick(event)) {
         const { clientX, clientY } = event;
@@ -115,6 +84,53 @@ export class KritzelSelectionHandler {
 
         kritzelEngineState.objects = [...kritzelEngineState.objects];
       }
+    }
+
+    handleKeyDown(event: KeyboardEvent): void {
+      if (event.key === 'Escape') {
+        this.handleEscape();
+      }
+
+      if (event.key === 'Delete') {
+        this.handleDelete();
+      }
+
+      if (event.key === 'c' && event.ctrlKey) {
+        this.handleCopy();
+      }
+      
+      if (event.key === 'v' && event.ctrlKey) {
+        this.handlePaste();
+      }
+
+    }
+
+    private handleEscape() {
+      deselectAllObjects();
+    }
+
+    private handleDelete() {
+      const objectsToRemove = kritzelEngineState.objects.filter((object) => object.selected);
+      kritzelEngineState.objects = kritzelEngineState.objects.filter((object) => !object.selected);
+
+      for (const object of objectsToRemove) {
+        object.markedForRemoval = true;
+      }
+    }
+
+    private handleCopy() {
+      this.copiedObject = this.selectedObject.copy();
+      this.copiedObject.id = this.copiedObject.generateId();
+      this.copiedObject.translateX += 25;
+      this.copiedObject.translateY += 25;
+      this.copiedObject.selected = false;
+    }
+
+    private handlePaste() {
+      deselectAllObjects();
+      this.selectedObject = this.copiedObject;
+      this.copiedObject.selected = true;
+      kritzelEngineState.objects = [...kritzelEngineState.objects, this.copiedObject];
     }
 
 }
