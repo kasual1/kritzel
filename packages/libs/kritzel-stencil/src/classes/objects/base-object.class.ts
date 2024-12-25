@@ -111,4 +111,12 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
 
     kritzelEngineState.objects = [...kritzelEngineState.objects];
   }
+
+  copy(): KritzelBaseObject<T> {
+    const copiedObject = Object.create(Object.getPrototypeOf(this));
+    Object.assign(copiedObject, this);
+    copiedObject.elementRef = (this.elementRef as HTMLElement).cloneNode(true) as HTMLElement;
+    copiedObject.isMounted = true;
+    return copiedObject;
+  }
 }
