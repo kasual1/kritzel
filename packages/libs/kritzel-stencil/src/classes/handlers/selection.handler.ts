@@ -1,7 +1,7 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
-import { KritzelObject } from "../../interfaces/object.interface";
 import { kritzelEngineState, findObjectById, deselectAllObjects } from "../../stores/engine.store";
 import { kritzelViewportState } from "../../stores/viewport.store";
+import { KritzelBaseObject } from "../objects/base-object.class";
 
 export class KritzelSelectionHandler {
     private static instance: KritzelSelectionHandler;
@@ -9,7 +9,8 @@ export class KritzelSelectionHandler {
     isDragging: boolean = false;
     dragStartX: number = 0;
     dragStartY: number = 0;
-    selectedObject: KritzelObject | null = null;
+    selectedObject: KritzelBaseObject<any> | null = null;
+    copiedObject: KritzelBaseObject<any> | null = null;
 
     constructor() {
       if (KritzelSelectionHandler.instance) {
@@ -31,6 +32,22 @@ export class KritzelSelectionHandler {
           object.markedForRemoval = true;
         }
       }
+
+      if (event.key === 'c' && event.ctrlKey) {
+        this.copiedObject = this.selectedObject.copy();
+        this.copiedObject.id = this.copiedObject.generateId();
+        this.copiedObject.translateX += 25;
+        this.copiedObject.translateY += 25;
+        this.copiedObject.selected = false;
+      }
+      
+      if (event.key === 'v' && event.ctrlKey) {
+        deselectAllObjects();
+        this.selectedObject = this.copiedObject;
+        this.copiedObject.selected = true;
+        kritzelEngineState.objects = [...kritzelEngineState.objects, this.copiedObject];
+      }
+
     }
 
     handleMouseDown(event) {

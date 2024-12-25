@@ -29,4 +29,5 @@ export interface KritzelObject<T = Element> {
   isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
   centerInViewport(): void;
   resize(x: number, y: number, width: number, height: number): void;
+  copy(): KritzelObject<T>;
 }
