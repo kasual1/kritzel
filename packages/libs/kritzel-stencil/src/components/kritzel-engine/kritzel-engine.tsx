@@ -280,6 +280,23 @@ export class KritzelEngine {
                   r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
                   visibility={object.selected ? 'visible' : 'hidden'}
                 />
+
+
+                <line
+                  x1={object.totalWidth / 2}
+                  y1="0"
+                  x2={object.totalWidth / 2}
+                  y2="-20"
+                  style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  visibility={object.selected ? 'visible' : 'hidden'}
+                />
+                <circle
+                  class="rotation-handle"
+                  cx={object.totalWidth / 2}
+                  cy="-20"
+                  r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                  visibility={object.selected ? 'visible' : 'hidden'}
+                />
               </svg>
             );
           })}

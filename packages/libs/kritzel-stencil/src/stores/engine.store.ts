@@ -18,7 +18,7 @@ const { state: kritzelEngineState, set: setKritzelEngineState } = createStore<Kr
 });
 
 
-export function findObjectById(id: string): KritzelObject | null  {
+export function findObjectById(id: string): KritzelBaseObject<any> | null  {
   for (const object of kritzelEngineState.objects) {
     if (object.id === id) {
       return object;

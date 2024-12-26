@@ -14,6 +14,7 @@ export interface KritzelObject<T = Element> {
   scale: number;
   selected: boolean;
   resizing: boolean;
+  rotation: number;
   markedForRemoval: boolean;
   selection: KritzelSelection;
   viewBox: string;
@@ -29,5 +30,6 @@ export interface KritzelObject<T = Element> {
   isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
   centerInViewport(): void;
   resize(x: number, y: number, width: number, height: number): void;
+  rotate(degrees: number): void;
   copy(): KritzelObject<T>;
 }
