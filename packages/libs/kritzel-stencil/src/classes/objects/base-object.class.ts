@@ -18,6 +18,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   scale: number;
   selected: boolean = false;
   resizing: boolean = false;
+  rotation: number = 0;
   markedForRemoval: boolean = false;
   isMounted: boolean = false;
   _elementRef: T;
@@ -112,11 +113,17 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     kritzelEngineState.objects = [...kritzelEngineState.objects];
   }
 
+  rotate(degrees: number): void {
+    console.log('rotate', degrees);
+  }
+
   copy(): KritzelBaseObject<T> {
     const copiedObject = Object.create(Object.getPrototypeOf(this));
     Object.assign(copiedObject, this);
     copiedObject.elementRef = (this.elementRef as HTMLElement).cloneNode(true) as HTMLElement;
     copiedObject.isMounted = true;
+    copiedObject.translateX += 25;
+    copiedObject.translateY += 25;
     return copiedObject;
   }
 }

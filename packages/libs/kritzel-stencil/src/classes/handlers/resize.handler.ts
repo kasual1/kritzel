@@ -8,6 +8,7 @@ enum SelectionHandleType {
   BottomLeft = 'bottom-left',
   BottomRight = 'bottom-right',
 }
+
 export class KritzelResizeHandler {
   isResizing: boolean = false;
   initialMouseX: number = 0;

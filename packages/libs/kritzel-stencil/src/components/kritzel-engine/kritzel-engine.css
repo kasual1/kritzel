@@ -48,3 +48,7 @@ textarea {
 .selection-handle.bottom-left {
   cursor: nesw-resize;
 }
+
+.rotation-handle {
+  cursor: grab;
+}
