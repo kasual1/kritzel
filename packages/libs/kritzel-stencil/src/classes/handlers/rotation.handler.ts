@@ -32,7 +32,8 @@ export class KritzelRotationHandler {
 		if (this.isRotating && this.selectedObject) {
 			const rotation = Math.atan2(event.clientY - this.selectedObject.translateY, event.clientX - this.selectedObject.translateX) * 180 / Math.PI;
 
-			const degrees = rotation - this.initialRotation;
+			let degrees = (rotation - this.initialRotation);
+			degrees = (degrees + 360) % 360;
 
 			this.selectedObject.rotate(degrees);
 
