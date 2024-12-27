@@ -68,8 +68,11 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     const scale = 1 / this.scale;
     const translateX = this.translateX;
     const translateY = this.translateY;
+    const rotation = this.rotation;
 
-    return `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
+    console.log(`matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY}) rotate(${rotation}deg)`);
+
+    return `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY}) rotate(${rotation}deg)`;
   }
 
   constructor() {
@@ -114,7 +117,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   }
 
   rotate(degrees: number): void {
-    console.log('rotate', degrees);
+    this.rotation = degrees;
   }
 
   copy(): KritzelBaseObject<T> {
