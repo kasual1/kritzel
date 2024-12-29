@@ -170,6 +170,7 @@ export class KritzelEngine {
                       ref={el => object.mount(el)}
                       xmlns="http://www.w3.org/2000/svg"
                       style={{
+                        backgroundColor: 'red',
                         height: object?.height.toString(),
                         width: object?.width.toString(),
                         position: 'relative',
@@ -305,6 +306,7 @@ export class KritzelEngine {
             class="object"
             xmlns="http://www.w3.org/2000/svg"
             style={{
+              backgroundColor: 'red',
               height: this.state.currentPath?.height.toString(),
               width: this.state.currentPath?.width.toString(),
               left: '0',
