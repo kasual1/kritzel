@@ -18,16 +18,16 @@
   left: 0;
   height: 0;
   width: 0;
-  -webkit-transform-origin: center;
-  -moz-transform-origin: center;
-  transform-origin: center;
+  -webkit-transform-origin: top left;
+  -moz-transform-origin: top left;
+  transform-origin: top left;
   overflow: visible;
 }
 
 .object {
-  -webkit-transform-origin: center;
-  -moz-transform-origin: center;
-  transform-origin: center;
+  -webkit-transform-origin: top left;
+  -moz-transform-origin: top left;
+  transform-origin: top left;
   overflow: visible;
 }
 
