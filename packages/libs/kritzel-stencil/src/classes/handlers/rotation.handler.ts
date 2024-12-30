@@ -30,10 +30,15 @@ export class KritzelRotationHandler {
 
 	handleMouseMove(event: MouseEvent): void {
 		if (this.isRotating && this.selectedObject) {
-			const rotation = Math.atan2(event.clientY - this.selectedObject.translateY, event.clientX - this.selectedObject.translateX) * 180 / Math.PI;
+			const deltaX = event.clientX - this.selectedObject.translateX;
+			const deltaY = event.clientY - this.selectedObject.translateY;
+			const rotation = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
 
-			let degrees = (rotation - this.initialRotation);
-			degrees = (degrees + 360) % 360;
+			let degrees = rotation - this.initialRotation;
+
+			if (degrees < 0) {
+				degrees += 360;
+			}
 
 			this.selectedObject.rotate(degrees);
 
