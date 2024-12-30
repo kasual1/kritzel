@@ -155,149 +155,152 @@ export class KritzelEngine {
                   position: 'absolute',
                   transform: object?.transformationMatrix,
                   opacity: object.markedForRemoval ? '0.5' : '1',
-                  zIndex: '0'
+                  zIndex: '0',
                 }}
               >
-                <foreignObject
-                  x="0"
-                  y="0"
-                  width={(object.totalWidth).toString()}
-                  height={object.totalHeight.toString()}
-                  style={{ minHeight: '0', minWidth: '0', backgroundColor: object.backgroundColor, padding: object.padding + 'px' }}
-                >
-                  {object instanceof KritzelPath && (
-                    <svg
-                      ref={el => object.mount(el)}
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{
-                        backgroundColor: 'red',
-                        height: object?.height.toString(),
-                        width: object?.width.toString(),
-                        position: 'relative',
-                        zIndex: '-1',
-                      }}
-                      viewBox={object?.viewBox}
-                    >
-                      <path d={object?.d} fill={object?.fill} stroke={object?.stroke} />
-                    </svg>
-                  )}
+                <g transform={`rotate(${object.rotation})`} style={{
+                  transformOrigin: 'center'
+                }}>
+                  <foreignObject
+                    x="0"
+                    y="0"
+                    width={(object.totalWidth).toString()}
+                    height={object.totalHeight.toString()}
+                    style={{ minHeight: '0', minWidth: '0', backgroundColor: object.backgroundColor, padding: object.padding + 'px' }}
+                  >
+                    {object instanceof KritzelPath && (
+                      <svg
+                        ref={el => object.mount(el)}
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{
+                          backgroundColor: 'red',
+                          height: object?.height.toString(),
+                          width: object?.width.toString(),
+                          position: 'relative',
+                          zIndex: '-1',
+                        }}
+                        viewBox={object?.viewBox}
+                      >
+                        <path d={object?.d} fill={object?.fill} stroke={object?.stroke} />
+                      </svg>
+                    )}
 
-                  {object instanceof KritzelImage && (
-                    <img
-                      ref={el => object.mount(el)}
-                      src={object.img.src}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        userSelect: 'none',
-                        pointerEvents: 'none',
-                      }}
-                      draggable={false}
-                      onDragStart={e => e.preventDefault()}
-                    />
-                  )}
+                    {object instanceof KritzelImage && (
+                      <img
+                        ref={el => object.mount(el)}
+                        src={object.img.src}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          userSelect: 'none',
+                          pointerEvents: 'none',
+                        }}
+                        draggable={false}
+                        onDragStart={e => e.preventDefault()}
+                      />
+                    )}
 
-                  {object instanceof KrtizelText && (
-                    <textarea
-                      ref={el => object.mount(el)}
-                      value={object.value}
-                      onInput={event => object.handleInput(event)}
-                      rows={object.rows}
-                      readOnly={object.isReadonly}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        fontSize: object.fontSize?.toString() + 'px',
-                        border: 'none',
-                        outline: 'none',
-                        resize: 'none',
-                        overflow: 'hidden',
-                        display: 'block',
-                        whiteSpace: object.isReadonly ? 'pre-wrap' : 'nowrap',
-                        cursor: object.isReadonly ? 'default' : 'text',
-                      }}
-                    ></textarea>
-                  )}
-                </foreignObject>
+                    {object instanceof KrtizelText && (
+                      <textarea
+                        ref={el => object.mount(el)}
+                        value={object.value}
+                        onInput={event => object.handleInput(event)}
+                        rows={object.rows}
+                        readOnly={object.isReadonly}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          fontSize: object.fontSize?.toString() + 'px',
+                          border: 'none',
+                          outline: 'none',
+                          resize: 'none',
+                          overflow: 'hidden',
+                          display: 'block',
+                          whiteSpace: object.isReadonly ? 'pre-wrap' : 'nowrap',
+                          cursor: object.isReadonly ? 'default' : 'text',
+                        }}
+                      ></textarea>
+                    )}
+                  </foreignObject>
 
-                <line
-                  x1="0"
-                  y1="0"
-                  x2={object.totalWidth}
-                  y2="0"
-                  style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  visibility={object.selected ? 'visible' : 'hidden'}
-                />
-                <line
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2={object.totalHeight}
-                  style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  visibility={object.selected ? 'visible' : 'hidden'}
-                />
-                <line
-                  x1="0"
-                  y1={object.totalHeight}
-                  x2={object.totalWidth}
-                  y2={object.totalHeight}
-                  style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  visibility={object.selected ? 'visible' : 'hidden'}
-                />
-                <line
-                  x1={object.totalWidth}
-                  y1="0"
-                  x2={object.totalWidth}
-                  y2={object.totalHeight}
-                  style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  visibility={object.selected ? 'visible' : 'hidden'}
-                />
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2={object.totalWidth}
+                    y2="0"
+                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                    visibility={object.selected ? 'visible' : 'hidden'}
+                  />
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2={object.totalHeight}
+                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                    visibility={object.selected ? 'visible' : 'hidden'}
+                  />
+                  <line
+                    x1="0"
+                    y1={object.totalHeight}
+                    x2={object.totalWidth}
+                    y2={object.totalHeight}
+                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                    visibility={object.selected ? 'visible' : 'hidden'}
+                  />
+                  <line
+                    x1={object.totalWidth}
+                    y1="0"
+                    x2={object.totalWidth}
+                    y2={object.totalHeight}
+                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                    visibility={object.selected ? 'visible' : 'hidden'}
+                  />
 
-                <circle
-                  class="selection-handle top-left"
-                  cx="0"
-                  cy="0"
-                  r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
-                  visibility={object.selected ? 'visible' : 'hidden'}
-                />
-                <circle
-                  class="selection-handle top-right"
-                  cx={object.totalWidth}
-                  cy="0"
-                  r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
-                  visibility={object.selected ? 'visible' : 'hidden'}
-                />
-                <circle
-                  class="selection-handle bottom-left"
-                  cx="0"
-                  cy={object.totalHeight}
-                  r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
-                  visibility={object.selected ? 'visible' : 'hidden'}
-                />
-                <circle
-                  class="selection-handle bottom-right"
-                  cx={object.totalWidth}
-                  cy={object.totalHeight}
-                  r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
-                  visibility={object.selected ? 'visible' : 'hidden'}
-                />
+                  <circle
+                    class="selection-handle top-left"
+                    cx="0"
+                    cy="0"
+                    r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                    visibility={object.selected ? 'visible' : 'hidden'}
+                  />
+                  <circle
+                    class="selection-handle top-right"
+                    cx={object.totalWidth}
+                    cy="0"
+                    r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                    visibility={object.selected ? 'visible' : 'hidden'}
+                  />
+                  <circle
+                    class="selection-handle bottom-left"
+                    cx="0"
+                    cy={object.totalHeight}
+                    r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                    visibility={object.selected ? 'visible' : 'hidden'}
+                  />
+                  <circle
+                    class="selection-handle bottom-right"
+                    cx={object.totalWidth}
+                    cy={object.totalHeight}
+                    r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                    visibility={object.selected ? 'visible' : 'hidden'}
+                  />
 
-
-                <line
-                  x1={object.totalWidth / 2}
-                  y1="0"
-                  x2={object.totalWidth / 2}
-                  y2="-20"
-                  style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  visibility={object.selected ? 'visible' : 'hidden'}
-                />
-                <circle
-                  class="rotation-handle"
-                  cx={object.totalWidth / 2}
-                  cy="-20"
-                  r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
-                  visibility={object.selected ? 'visible' : 'hidden'}
-                />
+                  <line
+                    x1={object.totalWidth / 2}
+                    y1="0"
+                    x2={object.totalWidth / 2}
+                    y2="-20"
+                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                    visibility={object.selected ? 'visible' : 'hidden'}
+                  />
+                  <circle
+                    class="rotation-handle"
+                    cx={object.totalWidth / 2}
+                    cy="-20"
+                    r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                    visibility={object.selected ? 'visible' : 'hidden'}
+                  />
+                </g>
               </svg>
             );
           })}

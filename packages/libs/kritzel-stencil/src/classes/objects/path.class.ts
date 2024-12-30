@@ -25,9 +25,8 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     const scale = 1 / this.scale;
     const translateX = this.translateX;
     const translateY = this.translateY;
-    const rotation = this.rotation;
 
-    return `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY}) rotate(${rotation}deg)`;
+    return `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
   }
 
   constructor(options: KritzelPathOptions) {
