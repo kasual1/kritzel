@@ -2,18 +2,33 @@ import { KritzelTool } from "../../components";
 import { KritzelResizeHandler } from "../handlers/resize.handler";
 import { KritzelRotationHandler } from "../handlers/rotation.handler";
 import { KritzelSelectionHandler } from "../handlers/selection.handler";
+import { KritzelBaseObject } from "../objects/base-object.class";
+
+export interface KritzelSelectionState {
+	selectedObject: KritzelBaseObject<any> | null;
+	isResizing: boolean;
+	isRotating: boolean;
+	isDragging: boolean;
+}
 export class KritzelSelectionTool implements KritzelTool {
 	name: string = 'selection';
 	icon: string = 'selection';
+
+	selectionState: KritzelSelectionState = {
+		selectedObject: null,
+		isResizing: false,
+		isRotating: false,
+		isDragging: false,
+	}
 
 	selectionHandler: KritzelSelectionHandler;
 	resizeHandler: KritzelResizeHandler;
 	rotationHandler: KritzelRotationHandler;
 
 	constructor() {
-		this.selectionHandler = new KritzelSelectionHandler();
-		this.resizeHandler = new KritzelResizeHandler();
-		this.rotationHandler = new KritzelRotationHandler();
+		this.selectionHandler = new KritzelSelectionHandler(this.selectionState);
+		this.resizeHandler = new KritzelResizeHandler(this.selectionState);
+		this.rotationHandler = new KritzelRotationHandler(this.selectionState);
 		document.addEventListener('keydown', this.handleKeyDown.bind(this));
 	}
 

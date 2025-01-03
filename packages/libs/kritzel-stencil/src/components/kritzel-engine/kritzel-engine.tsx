@@ -158,7 +158,7 @@ export class KritzelEngine {
                   zIndex: '0',
                 }}
               >
-                <g transform={`rotate(${object.rotation})`} style={{
+                <g transform={`rotate(${object.rotationDegrees})`} style={{
                   transformOrigin: 'center'
                 }}>
                   <foreignObject

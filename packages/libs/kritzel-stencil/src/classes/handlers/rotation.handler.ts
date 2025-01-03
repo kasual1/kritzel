@@ -1,14 +1,17 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
-import { KritzelObject } from "../../interfaces/object.interface";
 import { kritzelEngineState, findObjectById } from "../../stores/engine.store";
+import { KritzelSelectionState } from "../tools/selection-tool.class";
 
 
 export class KritzelRotationHandler {
-	isRotating: boolean = false;
-	selectedObject: KritzelObject | null = null;
+
+	selectionState: KritzelSelectionState;
+
 	initialRotation: number = 0;
 
-	constructor() { }
+	constructor(selectionState: KritzelSelectionState) {
+		this.selectionState = selectionState;
+	}
 
 	handleMouseDown(event: MouseEvent): void {
 		if (KritzelClickHelper.isLeftClick(event)) {
@@ -21,35 +24,36 @@ export class KritzelRotationHandler {
 			const selectedObject = findObjectById(objectElement?.id);
 
 			if (selectedObject && isRotationHandleSelected) {
-				this.isRotating = true;
-				this.selectedObject = selectedObject;
-				this.initialRotation = selectedObject.rotation;
+				this.selectionState.isRotating = true;
+				this.selectionState.selectedObject = selectedObject;
+				
+				const centerX = selectedObject.translateX + selectedObject.width / 2;
+				const centerY = selectedObject.translateY + selectedObject.height / 2;
+
+				this.initialRotation = Math.atan2(centerY - event.clientY,
+					centerX - event.clientX) - selectedObject.rotation;
 			}
 		}
 	}
 
 	handleMouseMove(event: MouseEvent): void {
-		if (this.isRotating && this.selectedObject) {
-			const deltaX = event.clientX - this.selectedObject.translateX;
-			const deltaY = event.clientY - this.selectedObject.translateY;
-			const rotation = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+		if (this.selectionState.isRotating && this.selectionState.selectedObject) {
+			const centerX = this.selectionState.selectedObject.translateX + this.selectionState.selectedObject.width / 2;
+			const centerY = this.selectionState.selectedObject.translateY + this.selectionState.selectedObject.height / 2;
 
-			let degrees = rotation - this.initialRotation;
+			const currentRotation = Math.atan2(centerY - event.clientY,
+				centerX - event.clientX);
+				
 
-			if (degrees < 0) {
-				degrees += 360;
-			}
-
-			this.selectedObject.rotate(degrees);
+			this.selectionState.selectedObject.rotation = currentRotation - this.initialRotation;
 
 			kritzelEngineState.objects = [...kritzelEngineState.objects];
 		}
 	}
 
 	handleMouseUp(_event: MouseEvent): void {
-		if (this.isRotating) {
-			this.isRotating = false;
-			this.selectedObject = null;
+		if (this.selectionState.isRotating) {
+			this.selectionState.isRotating = false;
 
 			kritzelEngineState.objects = [...kritzelEngineState.objects];
 		}

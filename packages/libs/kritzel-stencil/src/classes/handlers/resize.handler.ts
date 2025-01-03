@@ -1,6 +1,6 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
-import { KritzelObject } from "../../interfaces/object.interface";
 import { kritzelEngineState, findObjectById } from "../../stores/engine.store";
+import { KritzelSelectionState } from "../tools/selection-tool.class";
 
 enum SelectionHandleType {
   TopLeft = 'top-left',
@@ -10,17 +10,19 @@ enum SelectionHandleType {
 }
 
 export class KritzelResizeHandler {
-  isResizing: boolean = false;
+  selectionState: KritzelSelectionState;
+
   initialMouseX: number = 0;
   initialMouseY: number = 0;
   initialWidth: number = 0;
   initialHeight: number = 0;
   initialTranslateX: number = 0;
   initialTranslateY: number = 0;
-  selectedObject: KritzelObject | null = null;
   handleType: SelectionHandleType | null = null;
 
-  constructor() {}
+  constructor(selectionState: KritzelSelectionState) {
+    this.selectionState = selectionState;
+  }
 
   handleMouseDown(event: MouseEvent): void {
     if (KritzelClickHelper.isLeftClick(event)) {
@@ -33,12 +35,12 @@ export class KritzelResizeHandler {
       const selectedObject = findObjectById(objectElement?.id);
 
       if (selectedObject && isHandleSelected) {
-        this.isResizing = true;
+        this.selectionState.isResizing = true;
         this.initialMouseX = event.clientX;
         this.initialMouseY = event.clientY;
         this.initialWidth = selectedObject.width;
         this.initialHeight = selectedObject.height;
-        this.selectedObject = selectedObject;
+        this.selectionState.selectedObject = selectedObject;
         this.handleType = selectionHandle?.classList[1] as SelectionHandleType;
         this.initialTranslateX = selectedObject.translateX;
         this.initialTranslateY = selectedObject.translateY;
@@ -47,7 +49,7 @@ export class KritzelResizeHandler {
   }
 
   handleMouseMove(event: MouseEvent): void {
-    if(this.isResizing && this.selectedObject) {
+    if(this.selectionState.isResizing && this.selectionState.selectedObject) {
 
       const dx = event.clientX - this.initialMouseX;
       const dy = event.clientY - this.initialMouseY;
@@ -60,28 +62,28 @@ export class KritzelResizeHandler {
           height = this.initialHeight - dy;
           x = dx + this.initialTranslateX;
           y = dy + this.initialTranslateY;
-          this.selectedObject.resize(x, y, width, height);
+          this.selectionState.selectedObject.resize(x, y, width, height);
           break;
         case SelectionHandleType.TopRight:
           width = this.initialWidth + dx;
           height = this.initialHeight - dy;
           x = this.initialTranslateX;
           y = dy + this.initialTranslateY;
-          this.selectedObject.resize(x, y, width, height);
+          this.selectionState.selectedObject.resize(x, y, width, height);
           break;
         case SelectionHandleType.BottomLeft:
           width = this.initialWidth - dx;
           height = this.initialHeight + dy;
           x = dx + this.initialTranslateX;
           y = this.initialTranslateY;
-          this.selectedObject.resize(x, y, width, height);
+          this.selectionState.selectedObject.resize(x, y, width, height);
           break;
         case SelectionHandleType.BottomRight:
           width = this.initialWidth + dx;
           height = this.initialHeight + dy;
           x = this.initialTranslateX;
           y = this.initialTranslateY;
-          this.selectedObject.resize(x, y, width, height);
+          this.selectionState.selectedObject.resize(x, y, width, height);
           break;
       }
 
@@ -90,9 +92,9 @@ export class KritzelResizeHandler {
   }
 
   handleMouseUp(_event: MouseEvent): void {
-    if (this.isResizing) {
-      this.isResizing = false;
-      this.selectedObject = null;
+    if (this.selectionState.isResizing) {
+      this.selectionState.isResizing = false;
+      this.selectionState.selectedObject = null;
       this.handleType = null;
 
       kritzelEngineState.objects = [...kritzelEngineState.objects];
