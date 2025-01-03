@@ -2,7 +2,6 @@ import { createStore } from "@stencil/store";
 import { KritzelPath } from "../classes/objects/path.class";
 import { KritzelTool } from "../interfaces/tool.interface";
 import { KritzelBaseObject } from "../classes/objects/base-object.class";
-import { KritzelObject } from "../interfaces/object.interface";
 export interface KritzelEngineState {
   activeTool: KritzelTool;
   currentPath?: KritzelPath;

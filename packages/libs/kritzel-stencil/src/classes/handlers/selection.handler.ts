@@ -2,21 +2,23 @@ import { KritzelClickHelper } from "../../helpers/click.helper";
 import { kritzelEngineState, findObjectById, deselectAllObjects } from "../../stores/engine.store";
 import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "../objects/base-object.class";
+import { KritzelSelectionState } from "../tools/selection-tool.class";
 
 export class KritzelSelectionHandler {
     private static instance: KritzelSelectionHandler;
 
-    isDragging: boolean = false;
+    selectionState: KritzelSelectionState;
+
     dragStartX: number = 0;
     dragStartY: number = 0;
-    selectedObject: KritzelBaseObject<any> | null = null;
     copiedObject: KritzelBaseObject<any> | null = null;
 
-    constructor() {
+    constructor(selectionState: KritzelSelectionState) {
       if (KritzelSelectionHandler.instance) {
         return KritzelSelectionHandler.instance;
       }
       KritzelSelectionHandler.instance = this;
+      this.selectionState = selectionState;
     }
 
     handleMouseDown(event) {
@@ -30,7 +32,7 @@ export class KritzelSelectionHandler {
         const selectedObject = objectElement ? findObjectById(objectElement.id) : null;
 
         if(selectedObject?.selected && !isHandleSelected && !isRotationHandleSelected) {
-          this.isDragging = true;
+          this.selectionState.isDragging = true;
           this.dragStartX = clientX;
           this.dragStartY = clientY;
         }
@@ -39,13 +41,13 @@ export class KritzelSelectionHandler {
     }
 
     handleMouseMove(event) {
-      if (this.isDragging && this.selectedObject) {
+      if (this.selectionState.isDragging && this.selectionState.selectedObject) {
         const { clientX, clientY } = event;
         const deltaX = (clientX - this.dragStartX) / kritzelViewportState.scale;
         const deltaY = (clientY - this.dragStartY) / kritzelViewportState.scale;
 
-        this.selectedObject.translateX += deltaX;
-        this.selectedObject.translateY += deltaY;
+        this.selectionState.selectedObject.translateX += deltaX;
+        this.selectionState.selectedObject.translateY += deltaY;
 
         this.dragStartX = clientX;
         this.dragStartY = clientY;
@@ -55,12 +57,12 @@ export class KritzelSelectionHandler {
     }
 
     handleMouseUp(event) {
-      if (this.isDragging) {
-        this.isDragging = false;
-        this.selectedObject = null;
+      if (this.selectionState.isDragging) {
+        this.selectionState.isDragging = false;
+        this.selectionState.selectedObject = null;
       }
 
-      if (KritzelClickHelper.isLeftClick(event)) {
+      if (KritzelClickHelper.isLeftClick(event) && !this.selectionState.isRotating) {
         const path = event.composedPath() as HTMLElement[];
         const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
 
@@ -73,7 +75,7 @@ export class KritzelSelectionHandler {
               deselectAllObjects();
               object.selected = true;
               noObjectSelected = false;
-              this.selectedObject = object;
+              this.selectionState.selectedObject = object;
               break;
             }
           }
@@ -120,7 +122,7 @@ export class KritzelSelectionHandler {
     }
 
     private handleCopy() {
-      this.copiedObject = this.selectedObject.copy();
+      this.copiedObject = this.selectionState.selectedObject.copy();
       this.copiedObject.id = this.copiedObject.generateId();
       this.copiedObject.translateX += 25;
       this.copiedObject.translateY += 25;
@@ -129,7 +131,7 @@ export class KritzelSelectionHandler {
 
     private handlePaste() {
       deselectAllObjects();
-      this.selectedObject = this.copiedObject;
+      this.selectionState.selectedObject = this.copiedObject;
       this.copiedObject.selected = true;
       kritzelEngineState.objects = [...kritzelEngineState.objects, this.copiedObject];
     }

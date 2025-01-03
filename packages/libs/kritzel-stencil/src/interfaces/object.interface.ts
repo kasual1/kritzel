@@ -1,3 +1,4 @@
+import { KritzelBaseObject } from '../classes/objects/base-object.class';
 import { KritzelBoundingBox } from './bounding-box.interface';
 import { KritzelSelection } from './selection.interface';
 
@@ -25,11 +26,11 @@ export interface KritzelObject<T = Element> {
   get boundingBox(): KritzelBoundingBox;
   get totalWidth(): number;
   get totalHeight(): number;
+  get rotationDegrees(): number;
   mount(element: T): void;
   generateId(): string;
   isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
   centerInViewport(): void;
   resize(x: number, y: number, width: number, height: number): void;
-  rotate(degrees: number): void;
-  copy(): KritzelObject<T>;
+  copy(): KritzelBaseObject<T>;
 }
