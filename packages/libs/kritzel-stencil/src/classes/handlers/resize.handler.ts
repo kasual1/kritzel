@@ -1,6 +1,6 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
+import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelEngineState, findObjectById } from "../../stores/engine.store";
-import { KritzelSelectionState } from "../tools/selection-tool.class";
 
 enum SelectionHandleType {
   TopLeft = 'top-left',

@@ -1,8 +1,8 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
+import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelEngineState, findObjectById, deselectAllObjects } from "../../stores/engine.store";
 import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "../objects/base-object.class";
-import { KritzelSelectionState } from "../tools/selection-tool.class";
 
 export class KritzelSelectionHandler {
 
