@@ -12,6 +12,7 @@ export class KritzelSelectionTool implements KritzelTool {
 
 	selectionState: KritzelSelectionState = {
 		selectedObject: null,
+		selectedObjects: [],
 		isResizing: false,
 		isRotating: false,
 		isDragging: false,
@@ -31,10 +32,15 @@ export class KritzelSelectionTool implements KritzelTool {
 		this.resizeHandler = new KritzelResizeHandler(this.selectionState);
 		this.rotationHandler = new KritzelRotationHandler(this.selectionState);
 		document.addEventListener('keydown', this.handleKeyDown.bind(this));
+		document.addEventListener('keyup', this.handleKeyUp.bind(this));
 	}
 
 	handleKeyDown(event: KeyboardEvent): void {
 		this.selectionHandler.handleKeyDown(event);
+	}
+
+	handleKeyUp(event: KeyboardEvent): void {
+		this.selectionHandler.handleKeyUp(event);
 	}
 
 	handleMouseDown(event: MouseEvent): void {
