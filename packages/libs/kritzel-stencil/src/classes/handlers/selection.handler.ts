@@ -5,7 +5,6 @@ import { KritzelBaseObject } from "../objects/base-object.class";
 import { KritzelSelectionState } from "../tools/selection-tool.class";
 
 export class KritzelSelectionHandler {
-    private static instance: KritzelSelectionHandler;
 
     selectionState: KritzelSelectionState;
 
@@ -14,10 +13,6 @@ export class KritzelSelectionHandler {
     copiedObject: KritzelBaseObject<any> | null = null;
 
     constructor(selectionState: KritzelSelectionState) {
-      if (KritzelSelectionHandler.instance) {
-        return KritzelSelectionHandler.instance;
-      }
-      KritzelSelectionHandler.instance = this;
       this.selectionState = selectionState;
     }
 

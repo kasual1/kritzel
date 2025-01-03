@@ -8,17 +8,12 @@ export class KritzelImageTool implements KritzelTool {
   name: string = 'image';
   icon: string = 'image';
 
-  selectionHandler: KritzelSelectionHandler;
+  selectionTool: KritzelSelectionTool;
 
   fileInput: HTMLInputElement;
 
   constructor() {
-    this.selectionHandler = new KritzelSelectionHandler({
-    isDragging: false,
-    isResizing: false,
-    isRotating: false,
-    selectedObject: null,
-    });
+    this.selectionTool = new KritzelSelectionTool();
     this.setupFileInput();
     this.openFilePicker();
   }
@@ -71,7 +66,7 @@ export class KritzelImageTool implements KritzelTool {
           image.selected = true;
           image.centerInViewport();
 
-          this.selectionHandler.selectionState.selectedObject = image;
+          this.selectionTool.selectionState.selectedObject = image;
           kritzelEngineState.objects = [...kritzelEngineState.objects, image];
           kritzelEngineState.activeTool = new KritzelSelectionTool();
         };

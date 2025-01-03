@@ -11,6 +11,8 @@ export interface KritzelSelectionState {
 	isDragging: boolean;
 }
 export class KritzelSelectionTool implements KritzelTool {
+	private static instance: KritzelSelectionTool;
+
 	name: string = 'selection';
 	icon: string = 'selection';
 
@@ -26,6 +28,11 @@ export class KritzelSelectionTool implements KritzelTool {
 	rotationHandler: KritzelRotationHandler;
 
 	constructor() {
+		if (KritzelSelectionTool.instance) {
+			return KritzelSelectionTool.instance;
+		}
+		KritzelSelectionTool.instance = this;
+		
 		this.selectionHandler = new KritzelSelectionHandler(this.selectionState);
 		this.resizeHandler = new KritzelResizeHandler(this.selectionState);
 		this.rotationHandler = new KritzelRotationHandler(this.selectionState);
