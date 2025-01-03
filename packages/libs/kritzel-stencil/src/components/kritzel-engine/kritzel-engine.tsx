@@ -155,7 +155,7 @@ export class KritzelEngine {
                   top: '0',
                   position: 'absolute',
                   transform: object?.transformationMatrix,
-                  opacity: object.markedForRemoval ? '0.5' : '1',
+                  opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                   zIndex: '0',
                 }}
               >

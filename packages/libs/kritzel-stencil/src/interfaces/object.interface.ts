@@ -12,6 +12,7 @@ export interface KritzelObject<T = Element> {
   height: number;
   width: number;
   backgroundColor: string;
+  opacity: number;
   scale: number;
   selected: boolean;
   resizing: boolean;

@@ -3,6 +3,7 @@ import { KritzelSelectionState } from "../../interfaces/selection-state.interfac
 import { KritzelResizeHandler } from "../handlers/resize.handler";
 import { KritzelRotationHandler } from "../handlers/rotation.handler";
 import { KritzelSelectionHandler } from "../handlers/selection.handler";
+import { KrtizelGroup } from "../objects/group.class";
 
 export class KritzelSelectionTool implements KritzelTool {
 	private static instance: KritzelSelectionTool;
@@ -12,7 +13,7 @@ export class KritzelSelectionTool implements KritzelTool {
 
 	selectionState: KritzelSelectionState = {
 		selectedObject: null,
-		selectedObjects: [],
+		selectedGroup: new KrtizelGroup(),
 		isResizing: false,
 		isRotating: false,
 		isDragging: false,

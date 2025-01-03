@@ -3,6 +3,7 @@ import { KritzelSelectionState } from "../../interfaces/selection-state.interfac
 import { kritzelEngineState, findObjectById, deselectAllObjects } from "../../stores/engine.store";
 import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "../objects/base-object.class";
+import { KrtizelGroup } from "../objects/group.class";
 
 export class KritzelSelectionHandler {
 
@@ -69,15 +70,25 @@ export class KritzelSelectionHandler {
         for (const object of kritzelEngineState.objects) {
           if (selectedObject.id === object.id) {
 
-            if (this.ctrlKey !== true) {
+            if (this.ctrlKey === false) {
               deselectAllObjects();
+              this.selectionState.selectedGroup.clear();
             }
-            
+
             object.selected = !object.selected;
             noObjectSelected = false;
-            
+
             this.selectionState.selectedObject = object;
-            this.selectionState.selectedObjects = [...this.selectionState.selectedObjects, object];
+            this.selectionState.selectedGroup.addOrRemove(object);
+
+            if(this.selectionState.selectedGroup.objects.length > 1) {
+              this.selectionState.selectedGroup.selected = true;
+              kritzelEngineState.objects =  [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelGroup)), this.selectionState.selectedGroup];
+            } else {
+              this.selectionState.selectedGroup.selected = false;
+              kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelGroup))];
+            }
+
             break;
           }
         }

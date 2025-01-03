@@ -1,8 +1,9 @@
 import { KritzelBaseObject } from "../classes/objects/base-object.class";
+import { KrtizelGroup } from "../classes/objects/group.class";
 
 export interface KritzelSelectionState {
 	selectedObject: KritzelBaseObject<any> | null;
-	selectedObjects: KritzelBaseObject<any>[];
+	selectedGroup: KrtizelGroup;
 	isResizing: boolean;
 	isRotating: boolean;
 	isDragging: boolean;

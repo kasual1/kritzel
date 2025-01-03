@@ -14,6 +14,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   height: number;
   width: number;
   backgroundColor: string;
+  opacity: number = 1;
   padding: number = 0;
   scale: number;
   selected: boolean = false;
