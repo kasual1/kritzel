@@ -1,15 +1,9 @@
 import { KritzelTool } from "../../components";
+import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { KritzelResizeHandler } from "../handlers/resize.handler";
 import { KritzelRotationHandler } from "../handlers/rotation.handler";
 import { KritzelSelectionHandler } from "../handlers/selection.handler";
-import { KritzelBaseObject } from "../objects/base-object.class";
 
-export interface KritzelSelectionState {
-	selectedObject: KritzelBaseObject<any> | null;
-	isResizing: boolean;
-	isRotating: boolean;
-	isDragging: boolean;
-}
 export class KritzelSelectionTool implements KritzelTool {
 	private static instance: KritzelSelectionTool;
 
