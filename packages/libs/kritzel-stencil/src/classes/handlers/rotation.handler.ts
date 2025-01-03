@@ -29,8 +29,11 @@ export class KritzelRotationHandler {
 				const centerX = selectedObject.translateX + selectedObject.width / 2;
 				const centerY = selectedObject.translateY + selectedObject.height / 2;
 
-				this.initialRotation = Math.atan2(centerY - event.clientY,
-					centerX - event.clientX) - selectedObject.rotation;
+				const cursorX = event.clientX;
+				const cursorY = event.clientY;
+
+				this.initialRotation = Math.atan2(centerY - cursorY,
+					centerX - cursorX) - selectedObject.rotation;
 			}
 		}
 	}
@@ -40,8 +43,11 @@ export class KritzelRotationHandler {
 			const centerX = this.selectionState.selectedObject.translateX + this.selectionState.selectedObject.width / 2;
 			const centerY = this.selectionState.selectedObject.translateY + this.selectionState.selectedObject.height / 2;
 
-			const currentRotation = Math.atan2(centerY - event.clientY,
-				centerX - event.clientX);
+			const cursorX = event.clientX;
+			const cursorY = event.clientY;
+
+			const currentRotation = Math.atan2(centerY - cursorY,
+				centerX - cursorX);
 				
 
 			this.selectionState.selectedObject.rotation = currentRotation - this.initialRotation;
