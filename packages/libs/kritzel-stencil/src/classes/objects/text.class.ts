@@ -58,8 +58,6 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.height = height;
     this.translateX = x;
     this.translateY = y;
-
-    kritzelEngineState.objects = [...kritzelEngineState.objects];
   }
 
   handleInput(event: InputEvent): void {
