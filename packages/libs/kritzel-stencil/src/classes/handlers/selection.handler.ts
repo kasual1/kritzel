@@ -1,7 +1,6 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
 import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelEngineState, findObjectById, deselectAllObjects } from "../../stores/engine.store";
-import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "../objects/base-object.class";
 import { KrtizelGroup } from "../objects/group.class";
 
@@ -40,15 +39,10 @@ export class KritzelSelectionHandler {
 
   handleMouseMove(event) {
     if (this.selectionState.isDragging && this.selectionState.selectedObject) {
-      const { clientX, clientY } = event;
-      const deltaX = (clientX - this.dragStartX) / kritzelViewportState.scale;
-      const deltaY = (clientY - this.dragStartY) / kritzelViewportState.scale;
+      this.selectionState.selectedObject.move(event, this.dragStartX, this.dragStartY, this.selectionState);
 
-      this.selectionState.selectedObject.translateX += deltaX;
-      this.selectionState.selectedObject.translateY += deltaY;
-
-      this.dragStartX = clientX;
-      this.dragStartY = clientY;
+      this.dragStartX = event.clientX;
+      this.dragStartY = event.clientY;
 
       kritzelEngineState.objects = [...kritzelEngineState.objects];
     }
@@ -82,6 +76,8 @@ export class KritzelSelectionHandler {
             this.selectionState.selectedGroup.addOrRemove(object);
 
             if(this.selectionState.selectedGroup.objects.length > 1) {
+              this.selectionState.selectedGroup.deselectAllChildren();
+              this.selectionState.selectedObject = this.selectionState.selectedGroup;
               this.selectionState.selectedGroup.selected = true;
               kritzelEngineState.objects =  [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelGroup)), this.selectionState.selectedGroup];
             } else {
@@ -96,6 +92,7 @@ export class KritzelSelectionHandler {
 
       if (noObjectSelected === true) {
         deselectAllObjects();
+        this.selectionState.selectedGroup.clear();
       }
 
       kritzelEngineState.objects = [...kritzelEngineState.objects];

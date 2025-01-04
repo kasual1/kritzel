@@ -50,7 +50,7 @@ export class KritzelRotationHandler {
 				centerX - cursorX);
 				
 
-			this.selectionState.selectedObject.rotation = currentRotation - this.initialRotation;
+			this.selectionState.selectedObject.rotate(currentRotation - this.initialRotation);
 
 			kritzelEngineState.objects = [...kritzelEngineState.objects];
 		}

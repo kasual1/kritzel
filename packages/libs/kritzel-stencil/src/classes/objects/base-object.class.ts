@@ -1,7 +1,7 @@
 import { KritzelBoundingBox } from "../../interfaces/bounding-box.interface";
 import { KritzelObject } from "../../interfaces/object.interface";
+import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { KritzelSelection } from "../../interfaces/selection.interface";
-import { kritzelEngineState } from "../../stores/engine.store";
 import { kritzelViewportState } from "../../stores/viewport.store";
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
@@ -82,7 +82,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   }
 
   mount(element: T): void {
-    if(this.isMounted) {
+    if (this.isMounted) {
       return;
     }
 
@@ -104,9 +104,17 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     this.translateY = (((window.innerHeight / 2) - (this.totalHeight / 2)) - kritzelViewportState.translateY) / scale;
   }
 
+  move(event: MouseEvent, dragStartX: number, dragStartY: number, selectionState: KritzelSelectionState): void {
+    const deltaX = (event.clientX - dragStartX) / kritzelViewportState.scale;
+    const deltaY = (event.clientY - dragStartY) / kritzelViewportState.scale;
+
+    selectionState.selectedObject.translateX += deltaX;
+    selectionState.selectedObject.translateY += deltaY;
+  }
+
   resize(x: number, y: number, width: number, height: number): void {
 
-    if(width <= 1 || height <= 1) {
+    if (width <= 1 || height <= 1) {
       return;
     }
 
@@ -114,8 +122,10 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     this.height = height;
     this.translateX = x;
     this.translateY = y;
+  }
 
-    kritzelEngineState.objects = [...kritzelEngineState.objects];
+  rotate(value: number): void {
+    this.rotation = value;
   }
 
   copy(): KritzelBaseObject<T> {

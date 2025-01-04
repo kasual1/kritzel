@@ -1,4 +1,3 @@
-import { kritzelEngineState } from "../../stores/engine.store";
 import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "./base-object.class";
 
@@ -30,7 +29,5 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 		this.height = this.height * scaleFactor;
 		this.translateX = x;
 		this.translateY = y;
-
-		kritzelEngineState.objects = [...kritzelEngineState.objects];
 	}
 }

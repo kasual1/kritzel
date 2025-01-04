@@ -1,5 +1,6 @@
 import { KritzelBaseObject } from '../classes/objects/base-object.class';
 import { KritzelBoundingBox } from './bounding-box.interface';
+import { KritzelSelectionState } from './selection-state.interface';
 import { KritzelSelection } from './selection.interface';
 
 export interface KritzelObject<T = Element> {
@@ -32,6 +33,8 @@ export interface KritzelObject<T = Element> {
   generateId(): string;
   isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
   centerInViewport(): void;
+  move(event: MouseEvent, dragStartX: number, dragStartY: number, selectionState: KritzelSelectionState): void;
   resize(x: number, y: number, width: number, height: number): void;
+  rotate(value: number): void;
   copy(): KritzelBaseObject<T>;
 }
