@@ -40,13 +40,13 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 		this.width = this.maxX - this.minX;
 		this.height = this.maxY - this.minY;
 
-		const groupCenterX = this.translateX + this.width / 2;
-		const groupCenterY = this.translateY + this.height / 2;
+		const groupCenterX = this.translateX + this.totalWidth / 2;
+		const groupCenterY = this.translateY + this.totalHeight / 2;
 
 		this.initialOffsets = this.objects.map(child => ({
 			child,
-			offsetX: child.translateX - groupCenterX,
-			offsetY: child.translateY - groupCenterY,
+			offsetX: child.translateX + child.width / 2 - groupCenterX,
+			offsetY: child.translateY + child.height / 2 - groupCenterY,
 		}));
 	}
 
@@ -103,25 +103,22 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 	override rotate(value: number): void {
 		this.rotation = value;
 
-		const groupCenterX = this.translateX + this.width / 2;
-		const groupCenterY = this.translateY + this.height / 2;
 
-		// Calculate the new position of the child after rotation
-		const angle = value; // Convert degrees to radians
+		const groupCenterX = this.translateX + this.totalWidth / 2;
+		const groupCenterY = this.translateY + this.totalHeight / 2;
+
+		const angle = value; 
 		const cos = Math.cos(angle);
 		const sin = Math.sin(angle);
 
 		this.initialOffsets.forEach(({ child, offsetX, offsetY }) => {
-			// Calculate the new position based on the initial offset
 			const rotatedX = cos * offsetX - sin * offsetY + groupCenterX;
 			const rotatedY = sin * offsetX + cos * offsetY + groupCenterY;
 
-			// Update the child's position and rotation
-			child.translateX = rotatedX;
-			child.translateY = rotatedY;
+			child.translateX = rotatedX - child.width / 2;
+			child.translateY = rotatedY - child.height / 2;
 			child.rotation = value;
 		});
-
 	}
 
 }
