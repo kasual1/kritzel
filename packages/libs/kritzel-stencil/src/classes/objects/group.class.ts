@@ -12,6 +12,8 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 	minY: number;
 	maxY: number;
 
+	private initialOffsets: { child: KritzelBaseObject<any>, offsetX: number, offsetY: number }[] = [];
+
 	constructor(objects: KritzelBaseObject<any>[] = []) {
 		super();
 		this.backgroundColor = 'rebeccapurple';
@@ -25,14 +27,7 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 		return this.objects.length;
 	}
 
-	addOrRemove(object: KritzelBaseObject<any>) {
-		const index = this.objects.findIndex(obj => obj.id === object.id);
-		if (index === -1) {
-			this.objects.push(object);
-		} else {
-			this.objects.splice(index, 1);
-		}
-
+	private updateBoundingBox() {
 		this.minX = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateX), this.objects[0].translateX);
 		this.maxX = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateX + obj.totalWidth), this.objects[0].translateX + this.objects[0].totalWidth);
 
@@ -44,6 +39,27 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 
 		this.width = this.maxX - this.minX;
 		this.height = this.maxY - this.minY;
+
+		const groupCenterX = this.translateX + this.width / 2;
+		const groupCenterY = this.translateY + this.height / 2;
+
+		this.initialOffsets = this.objects.map(child => ({
+			child,
+			offsetX: child.translateX - groupCenterX,
+			offsetY: child.translateY - groupCenterY,
+		}));
+	}
+
+
+	addOrRemove(object: KritzelBaseObject<any>) {
+		const index = this.objects.findIndex(obj => obj.id === object.id);
+		if (index === -1) {
+			this.objects.push(object);
+		} else {
+			this.objects.splice(index, 1);
+		}
+
+		this.updateBoundingBox();
 	}
 
 	clear() {
@@ -67,47 +83,45 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 	}
 
 	override resize(x: number, y: number, width: number, height: number): void {
+		const widthScaleFactor = width / this.width;
+		const heightScaleFactor = height / this.height;
+
+		const deltaX = x - this.translateX;
+		const deltaY = y - this.translateY;
+
 		this.objects.forEach(obj => {
-			obj.resize(x, y, width, height);
+			const updatedWidth = obj.width * widthScaleFactor;
+			const updatedHeight = obj.height * heightScaleFactor;
+			const updatedX = obj.translateX * widthScaleFactor + deltaX;
+			const updatedY = obj.translateY * heightScaleFactor + deltaY;
+			obj.resize(updatedX, updatedY, updatedWidth, updatedHeight);
 		});
 
-		this.minX = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateX), this.objects[0].translateX);
-		this.maxX = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateX + obj.totalWidth), this.objects[0].translateX + this.objects[0].totalWidth);
-
-		this.minY = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateY), this.objects[0].translateY);
-		this.maxY = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateY + obj.totalHeight), this.objects[0].translateY + this.objects[0].totalHeight);
-
-		this.translateX = this.minX - this.padding;
-		this.translateY = this.minY - this.padding;
-
-		this.width = this.maxX - this.minX;
-		this.height = this.maxY - this.minY;
+		this.updateBoundingBox();
 	}
 
 	override rotate(value: number): void {
-		 // Calculate the center of the group
-		 const centerX = this.translateX + this.width / 2;
-		 const centerY = this.translateY + this.height / 2;
-	 
-		 this.objects.forEach(child => {
-			// Calculate the child's position relative to the group's center
-			let relativeX = child.translateX - centerX;
-			let relativeY = child.translateY - centerY;
-		
-			// Rotate the relative coordinates
-			let rotatedX = relativeX * Math.cos(value) - relativeY * Math.sin(value);
-			let rotatedY = relativeX * Math.sin(value) + relativeY * Math.cos(value);
-		
-			// Calculate the child's new absolute position
-			child.translateX = centerX + rotatedX;
-			child.translateY = centerY + rotatedY;
-		
-			// Rotate the child itself by the same value
-			child.rotation += value;
-		 });
-	 
-		 // Call the base class rotate method (if necessary)
-		this.rotation += value;
+		this.rotation = value;
+
+		const groupCenterX = this.translateX + this.width / 2;
+		const groupCenterY = this.translateY + this.height / 2;
+
+		// Calculate the new position of the child after rotation
+		const angle = value; // Convert degrees to radians
+		const cos = Math.cos(angle);
+		const sin = Math.sin(angle);
+
+		this.initialOffsets.forEach(({ child, offsetX, offsetY }) => {
+			// Calculate the new position based on the initial offset
+			const rotatedX = cos * offsetX - sin * offsetY + groupCenterX;
+			const rotatedY = sin * offsetX + cos * offsetY + groupCenterY;
+
+			// Update the child's position and rotation
+			child.translateX = rotatedX;
+			child.translateY = rotatedY;
+			child.rotation = value;
+		});
+
 	}
 
 }
