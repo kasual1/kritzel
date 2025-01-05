@@ -42,12 +42,13 @@ export class KritzelSelectionHandler {
   }
 
   handleMouseUp(event) {
+    debugger;
     if (this.selectionState.isDragging) {
       this.selectionState.isDragging = false;
       this.selectionState.selectedObject = null;
     }
 
-    if (KritzelClickHelper.isLeftClick(event) && !this.selectionState.isRotating) {
+    if (KritzelClickHelper.isLeftClick(event) && !this.selectionState.isRotating && !this.selectionState.isDragging) {
       const path = event.composedPath() as HTMLElement[];
       const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
 
@@ -59,13 +60,18 @@ export class KritzelSelectionHandler {
 
             if (this.selectionState.isCtrlKeyPressed === false) {
               deselectAllObjects();
-              this.selectionState.selectedGroup.clear();
+              this.selectionState.selectedGroup = null;
             }
 
             object.selected = !object.selected;
             noObjectSelected = false;
 
             this.selectionState.selectedObject = object;
+
+            if(this.selectionState.selectedGroup === null) {
+              this.selectionState.selectedGroup = new KrtizelGroup();
+            }
+
             this.selectionState.selectedGroup.addOrRemove(object);
 
             if(this.selectionState.selectedGroup.objects.length > 1) {
@@ -85,7 +91,8 @@ export class KritzelSelectionHandler {
 
       if (noObjectSelected === true) {
         deselectAllObjects();
-        this.selectionState.selectedGroup.clear();
+        this.selectionState.selectedGroup = null;
+        kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelGroup))];
       }
 
       kritzelEngineState.objects = [...kritzelEngineState.objects];

@@ -37,11 +37,6 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 		this.updateBoundingBox();
 	}
 
-	clear() {
-		this.objects = [];
-		this.rotation = 0;
-	}
-
 	deselectAllChildren() {
 		this.objects.forEach(obj => obj.selected = false);
 	}
