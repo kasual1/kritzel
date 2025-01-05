@@ -1,5 +1,6 @@
 import { KritzelTool } from "../../components";
 import { kritzelEngineState } from "../../stores/engine.store";
+import { KrtizelGroup } from "../objects/group.class";
 import { KritzelImage } from "../objects/image.class";
 import { KritzelSelectionTool } from "./selection-tool.class";
 
@@ -38,13 +39,11 @@ export class KritzelImageTool implements KritzelTool {
   }
 
   private setupFileInput(): void {
-    // Create a hidden file input element
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
     this.fileInput.accept = 'image/*';
     this.fileInput.style.display = 'none';
 
-    // Add an event listener to handle file selection
     this.fileInput.addEventListener('change', this.handleFileSelect.bind(this));
     document.body.appendChild(this.fileInput);
   }
@@ -62,11 +61,14 @@ export class KritzelImageTool implements KritzelTool {
 
         img.onload = () => {
           const image = new KritzelImage(img);
-          image.selected = true;
           image.centerInViewport();
 
-          this.selectionTool.selectionState.selectedObject.addOrRemove(image);
-          kritzelEngineState.objects = [...kritzelEngineState.objects, image];
+          const group = new KrtizelGroup();
+          group.addOrRemove(image);
+          group.selected = true;
+
+          this.selectionTool.selectionState.selectedObject = group;
+          kritzelEngineState.objects = [...kritzelEngineState.objects, image, group];
           kritzelEngineState.activeTool = new KritzelSelectionTool();
         };
       };
