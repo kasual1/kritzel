@@ -131,6 +131,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   copy(): KritzelBaseObject<T> {
     const copiedObject = Object.create(Object.getPrototypeOf(this));
     Object.assign(copiedObject, this);
+    copiedObject.id = this.generateId();
     copiedObject.isMounted = true;
     copiedObject.translateX += 25;
     copiedObject.translateY += 25;
