@@ -97,6 +97,14 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 		});
 	}
 
+	override copy(): KritzelBaseObject<HTMLElement> {
+		const group = new KrtizelGroup();
+		group.objects = this.objects.map(obj => obj.copy());
+		group.unchangedObjects = lodash.cloneDeep(group.objects);
+		group.updateBoundingBox();
+		return group;
+	}
+
 	private updateBoundingBox() {
 		this.minX = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateX), this.objects[0].translateX);
 		this.maxX = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateX + obj.totalWidth), this.objects[0].translateX + this.objects[0].totalWidth);
