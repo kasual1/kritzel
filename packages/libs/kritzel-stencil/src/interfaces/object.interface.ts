@@ -22,19 +22,32 @@ export interface KritzelObject<T = Element> {
   selection: KritzelSelection;
   viewBox: string;
   isMounted: boolean;
+
   _elementRef: T;
+
   set elementRef(element: T);
   get elementRef(): T;
   get boundingBox(): KritzelBoundingBox;
   get totalWidth(): number;
   get totalHeight(): number;
   get rotationDegrees(): number;
+
   mount(element: T): void;
   generateId(): string;
   isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
   centerInViewport(): void;
-  move(event: MouseEvent, dragStartX: number, dragStartY: number, selectionState: KritzelSelectionState): void;
   resize(x: number, y: number, width: number, height: number): void;
   rotate(value: number): void;
   copy(): KritzelBaseObject<T>;
+
+  move(startX: number, startY: number, endX: number, endY: number): void;
+
+  resizeStart(event: MouseEvent, state: KritzelSelectionState): void;
+  resize2(event: MouseEvent, state: KritzelSelectionState): void;
+  resizeEnd(event: MouseEvent, state: KritzelSelectionState): void;
+
+  rotateStart(event: MouseEvent, state: KritzelSelectionState): void;
+  rotate2(event: MouseEvent, state: KritzelSelectionState): void;
+  rotateEnd(event: MouseEvent, state: KritzelSelectionState): void;
+
 }
