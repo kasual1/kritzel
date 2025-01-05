@@ -1,4 +1,3 @@
-import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "./base-object.class";
 
@@ -71,11 +70,12 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 		this.objects.forEach(obj => obj.selected = false);
 	}
 
-	override move(event: MouseEvent, dragStartX: number, dragStartY: number, selectionState: KritzelSelectionState): void {
-		super.move(event, dragStartX, dragStartY, selectionState);
+	override move(startX: number, startY: number, endX: number, endY: number): void {
+		const deltaX = (startX - endX) / kritzelViewportState.scale;
+		const deltaY = (startY - endY) / kritzelViewportState.scale;
 
-		const deltaX = (event.clientX - dragStartX) / kritzelViewportState.scale;
-		const deltaY = (event.clientY - dragStartY) / kritzelViewportState.scale;
+		this.translateX += deltaX;
+		this.translateY += deltaY;
 
 		this.objects.forEach(obj => {
 			obj.translateX += deltaX;

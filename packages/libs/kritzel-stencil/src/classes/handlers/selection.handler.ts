@@ -7,8 +7,8 @@ export class KritzelSelectionHandler {
 
   selectionState: KritzelSelectionState;
 
-  dragStartX: number = 0;
-  dragStartY: number = 0;
+  dragStartX: number;
+  dragStartY: number;
 
   constructor(selectionState: KritzelSelectionState) {
     this.selectionState = selectionState;
@@ -16,7 +16,6 @@ export class KritzelSelectionHandler {
 
   handleMouseDown(event) {
     if (KritzelClickHelper.isLeftClick(event)) {
-      const { clientX, clientY } = event;
       const path = event.composedPath() as HTMLElement[];
       const objectElement = path.find(element => element.classList && element.classList.contains('object'));
       const isHandleSelected = path.find(element => element.classList && element.classList.contains('selection-handle'));
@@ -26,8 +25,8 @@ export class KritzelSelectionHandler {
 
       if (selectedObject?.selected && !isHandleSelected && !isRotationHandleSelected) {
         this.selectionState.isDragging = true;
-        this.dragStartX = clientX;
-        this.dragStartY = clientY;
+        this.dragStartX = event.clientX;
+        this.dragStartY = event.clientY;
       }
 
     }
@@ -35,11 +34,9 @@ export class KritzelSelectionHandler {
 
   handleMouseMove(event) {
     if (this.selectionState.isDragging && this.selectionState.selectedObject) {
-      this.selectionState.selectedObject.move(event, this.dragStartX, this.dragStartY, this.selectionState);
-
+      this.selectionState.selectedObject.move(event.clientX, event.clientY, this.dragStartX, this.dragStartY);
       this.dragStartX = event.clientX;
       this.dragStartY = event.clientY;
-
       kritzelEngineState.objects = [...kritzelEngineState.objects];
     }
   }
