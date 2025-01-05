@@ -11,7 +11,7 @@ import { KritzelImageTool } from '../../classes/tools/image-tool.class';
 import { KritzelImage } from '../../classes/objects/image.class';
 import { KritzelTextTool } from '../../classes/tools/text-tool.class';
 import { KrtizelText } from '../../classes/objects/text.class';
-import { KrtizelSelection } from '../../classes/objects/selection.class';
+import { KrtizelSelectionGroup } from '../../classes/objects/selection-group.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -222,7 +222,7 @@ export class KritzelEngine {
                       ></textarea>
                     )}
 
-                    {object instanceof KrtizelSelection && (
+                    {object instanceof KrtizelSelectionGroup && (
                       <div style={{
                         width: '100%',
                         height: '100%'
