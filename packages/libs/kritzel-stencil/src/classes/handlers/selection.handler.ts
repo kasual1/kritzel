@@ -60,27 +60,25 @@ export class KritzelSelectionHandler {
 
             if (this.selectionState.isCtrlKeyPressed === false) {
               deselectAllObjects();
-              this.selectionState.selectedGroup = null;
+              this.selectionState.selectedObject = null;
             }
 
             object.selected = !object.selected;
             noObjectSelected = false;
 
-            this.selectionState.selectedObject = object;
 
-            if(this.selectionState.selectedGroup === null) {
-              this.selectionState.selectedGroup = new KrtizelGroup();
+            if(this.selectionState.selectedObject === null) {
+              this.selectionState.selectedObject = new KrtizelGroup();
             }
 
-            this.selectionState.selectedGroup.addOrRemove(object);
+            this.selectionState.selectedObject.addOrRemove(object);
 
-            if(this.selectionState.selectedGroup.objects.length > 1) {
-              this.selectionState.selectedGroup.deselectAllChildren();
-              this.selectionState.selectedObject = this.selectionState.selectedGroup;
-              this.selectionState.selectedGroup.selected = true;
-              kritzelEngineState.objects =  [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelGroup)), this.selectionState.selectedGroup];
+            if(this.selectionState.selectedObject.objects.length > 1) {
+              this.selectionState.selectedObject.deselectAllChildren();
+              this.selectionState.selectedObject.selected = true;
+              kritzelEngineState.objects =  [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelGroup)), this.selectionState.selectedObject];
             } else {
-              this.selectionState.selectedGroup.selected = false;
+              this.selectionState.selectedObject.selected = false;
               kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelGroup))];
             }
 
@@ -91,7 +89,7 @@ export class KritzelSelectionHandler {
 
       if (noObjectSelected === true) {
         deselectAllObjects();
-        this.selectionState.selectedGroup = null;
+        this.selectionState.selectedObject = null;
         kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelGroup))];
       }
 

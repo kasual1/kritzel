@@ -24,7 +24,6 @@ export class KritzelRotationHandler {
 
 			if (selectedObject && isRotationHandleSelected) {
 				this.selectionState.isRotating = true;
-				this.selectionState.selectedObject = selectedObject;
 				
 				const centerX = selectedObject.translateX + selectedObject.width / 2;
 				const centerY = selectedObject.translateY + selectedObject.height / 2;
