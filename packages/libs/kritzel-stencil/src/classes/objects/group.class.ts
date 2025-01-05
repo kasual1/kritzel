@@ -64,6 +64,7 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 
 	clear() {
 		this.objects = [];
+		this.rotation = 0;
 	}
 
 	deselectAllChildren() {
@@ -101,8 +102,8 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 	}
 
 	override rotate(value: number): void {
-		this.rotation = value;
 
+		this.rotation = value;
 
 		const groupCenterX = this.translateX + this.totalWidth / 2;
 		const groupCenterY = this.translateY + this.totalHeight / 2;
