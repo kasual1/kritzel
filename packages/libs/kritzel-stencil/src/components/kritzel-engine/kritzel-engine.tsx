@@ -12,6 +12,7 @@ import { KritzelImage } from '../../classes/objects/image.class';
 import { KritzelTextTool } from '../../classes/tools/text-tool.class';
 import { KrtizelText } from '../../classes/objects/text.class';
 import { KrtizelSelectionGroup } from '../../classes/objects/selection-group.class';
+import { KrtizelSelectionBox } from '../../classes/objects/selection-box.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -227,6 +228,13 @@ export class KritzelEngine {
                         width: '100%',
                         height: '100%'
                       }}>This is an object selection</div>
+                  )}
+
+                    {object instanceof KrtizelSelectionBox && (
+                      <div style={{
+                        width: '100%',
+                        height: '100%'
+                      }}>This is selection box</div>
                   )}
                   </foreignObject>
 
