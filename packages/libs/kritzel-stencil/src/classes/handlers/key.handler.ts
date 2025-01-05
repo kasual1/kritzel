@@ -1,12 +1,12 @@
 import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelEngineState } from "../../stores/engine.store";
-import { KrtizelSelection } from "../objects/selection.class";
+import { KrtizelSelectionGroup } from "../objects/selection-group.class";
 
 export class KritzelKeyHandler {
 
 	selectionState: KritzelSelectionState;
 
-	copiedObject: KrtizelSelection | null = null;
+	copiedObject: KrtizelSelectionGroup | null = null;
 
 	constructor(selectionState: KritzelSelectionState) {
 		this.selectionState = selectionState;
@@ -38,37 +38,37 @@ export class KritzelKeyHandler {
 	}
 
 	private handleEscape() {
-		this.selectionState.selection = null;
+		this.selectionState.selectionGroup = null;
 
 		kritzelEngineState.objects = [
-			...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelection))
+			...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup))
 		];
 	}
 
 	private handleDelete() {
-		const toBeDeleted = this.selectionState.selection.objects;
+		const toBeDeleted = this.selectionState.selectionGroup.objects;
 
-		this.selectionState.selection = null;
+		this.selectionState.selectionGroup = null;
 
 		kritzelEngineState.objects = [
 			...kritzelEngineState.objects
 				.filter(o => !toBeDeleted.includes(o))
-				.filter(o => !(o instanceof KrtizelSelection))
+				.filter(o => !(o instanceof KrtizelSelectionGroup))
 		];
 	}
 
 	private handleCopy() {
-		this.copiedObject = this.selectionState.selection.copy() as KrtizelSelection;
+		this.copiedObject = this.selectionState.selectionGroup.copy() as KrtizelSelectionGroup;
 	}
 
 	private handlePaste() {
-		this.selectionState.selection = this.copiedObject;
-		this.selectionState.selection.selected = true;
+		this.selectionState.selectionGroup = this.copiedObject;
+		this.selectionState.selectionGroup.selected = true;
 
 		kritzelEngineState.objects = [
-			...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelection)),
-			...this.selectionState.selection.objects,
-			this.selectionState.selection
+			...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup)),
+			...this.selectionState.selectionGroup.objects,
+			this.selectionState.selectionGroup
 		];
 	}
 }

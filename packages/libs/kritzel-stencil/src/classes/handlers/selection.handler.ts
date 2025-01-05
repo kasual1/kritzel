@@ -1,7 +1,7 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
 import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelEngineState, findObjectById } from "../../stores/engine.store";
-import { KrtizelSelection } from "../objects/selection.class";
+import { KrtizelSelectionGroup } from "../objects/selection-group.class";
 
 export class KritzelSelectionHandler {
 
@@ -33,8 +33,8 @@ export class KritzelSelectionHandler {
   }
 
   handleMouseMove(event) {
-    if (this.selectionState.isDragging && this.selectionState.selection) {
-      this.selectionState.selection.move(event.clientX, event.clientY, this.dragStartX, this.dragStartY);
+    if (this.selectionState.isDragging && this.selectionState.selectionGroup) {
+      this.selectionState.selectionGroup.move(event.clientX, event.clientY, this.dragStartX, this.dragStartY);
       this.dragStartX = event.clientX;
       this.dragStartY = event.clientY;
       kritzelEngineState.objects = [...kritzelEngineState.objects];
@@ -44,7 +44,7 @@ export class KritzelSelectionHandler {
   handleMouseUp(event) {
     if (this.selectionState.isDragging) {
       this.selectionState.isDragging = false;
-      this.selectionState.selection = null;
+      this.selectionState.selectionGroup = null;
     }
 
     if (KritzelClickHelper.isLeftClick(event) && !this.selectionState.isRotating) {
@@ -58,19 +58,19 @@ export class KritzelSelectionHandler {
           if (selectedObject.id === object.id) {
             
             if (this.selectionState.isCtrlKeyPressed === false) {
-              this.selectionState.selection = null;
+              this.selectionState.selectionGroup = null;
             }
 
-            if(this.selectionState.selection === null) {
-              this.selectionState.selection = new KrtizelSelection();
+            if(this.selectionState.selectionGroup === null) {
+              this.selectionState.selectionGroup = new KrtizelSelectionGroup();
             }
 
-            if((object instanceof KrtizelSelection) === false) {
-              this.selectionState.selection.addOrRemove(object);
-              this.selectionState.selection.selected = true;
+            if((object instanceof KrtizelSelectionGroup) === false) {
+              this.selectionState.selectionGroup.addOrRemove(object);
+              this.selectionState.selectionGroup.selected = true;
               noObjectSelected = false;
   
-              kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelection)), this.selectionState.selection];
+              kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup)), this.selectionState.selectionGroup];
             }
 
             break;
@@ -79,8 +79,8 @@ export class KritzelSelectionHandler {
       }
 
       if (noObjectSelected === true) {
-        this.selectionState.selection = null;
-        kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelection))];
+        this.selectionState.selectionGroup = null;
+        kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup))];
       }
 
     }

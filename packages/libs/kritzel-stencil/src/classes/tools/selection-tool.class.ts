@@ -12,7 +12,7 @@ export class KritzelSelectionTool implements KritzelTool {
 	icon: string = 'selection';
 
 	selectionState: KritzelSelectionState = {
-		selection: null,
+		selectionGroup: null,
 		isResizing: false,
 		isRotating: false,
 		isDragging: false,
