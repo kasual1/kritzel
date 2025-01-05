@@ -1,9 +1,11 @@
 import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "./base-object.class";
+import * as lodash from 'lodash-es';
 
 export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 
 	objects: KritzelBaseObject<any>[] = [];
+	unchangedObjects: KritzelBaseObject<any>[] = [];
 
 	minX: number;
 	maxX: number;
@@ -11,13 +13,10 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 	minY: number;
 	maxY: number;
 
-	private initialOffsets: { child: KritzelBaseObject<any>, offsetX: number, offsetY: number }[] = [];
-
-	constructor(objects: KritzelBaseObject<any>[] = []) {
+	constructor() {
 		super();
 		this.backgroundColor = 'rebeccapurple';
 		this.opacity = 0.5;
-		this.objects = objects;
 		this.scale = 1;
 		this.padding = 5;
 	}
@@ -25,30 +24,6 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 	get length(): number {
 		return this.objects.length;
 	}
-
-	private updateBoundingBox() {
-		this.minX = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateX), this.objects[0].translateX);
-		this.maxX = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateX + obj.totalWidth), this.objects[0].translateX + this.objects[0].totalWidth);
-
-		this.minY = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateY), this.objects[0].translateY);
-		this.maxY = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateY + obj.totalHeight), this.objects[0].translateY + this.objects[0].totalHeight);
-
-		this.translateX = this.minX - this.padding;
-		this.translateY = this.minY - this.padding;
-
-		this.width = this.maxX - this.minX;
-		this.height = this.maxY - this.minY;
-
-		const groupCenterX = this.translateX + this.totalWidth / 2;
-		const groupCenterY = this.translateY + this.totalHeight / 2;
-
-		this.initialOffsets = this.objects.map(child => ({
-			child,
-			offsetX: child.translateX + child.width / 2 - groupCenterX,
-			offsetY: child.translateY + child.height / 2 - groupCenterY,
-		}));
-	}
-
 
 	addOrRemove(object: KritzelBaseObject<any>) {
 		const index = this.objects.findIndex(obj => obj.id === object.id);
@@ -58,6 +33,7 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 			this.objects.splice(index, 1);
 		}
 
+		this.unchangedObjects = lodash.cloneDeep(this.objects);
 		this.updateBoundingBox();
 	}
 
@@ -112,14 +88,44 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 		const cos = Math.cos(angle);
 		const sin = Math.sin(angle);
 
-		this.initialOffsets.forEach(({ child, offsetX, offsetY }) => {
+		this.objects.forEach(child => {
+			const unchangedChild = this.getUnchangedObject(child.id);
+			const offsetX = this.getOffsetXToGroupCenter(unchangedChild);
+			const offsetY = this.getOffsetYToGroupCenter(unchangedChild);
+
 			const rotatedX = cos * offsetX - sin * offsetY + groupCenterX;
 			const rotatedY = sin * offsetX + cos * offsetY + groupCenterY;
 
 			child.translateX = rotatedX - child.width / 2;
 			child.translateY = rotatedY - child.height / 2;
-			child.rotation = value;
+			child.rotation = value + unchangedChild.rotation;
 		});
+	}
+
+	private updateBoundingBox() {
+		this.minX = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateX), this.objects[0].translateX);
+		this.maxX = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateX + obj.totalWidth), this.objects[0].translateX + this.objects[0].totalWidth);
+
+		this.minY = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateY), this.objects[0].translateY);
+		this.maxY = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateY + obj.totalHeight), this.objects[0].translateY + this.objects[0].totalHeight);
+
+		this.translateX = this.minX - this.padding;
+		this.translateY = this.minY - this.padding;
+
+		this.width = this.maxX - this.minX;
+		this.height = this.maxY - this.minY;
+	}
+
+	private getOffsetXToGroupCenter(obj: KritzelBaseObject<any>): number {
+		return obj.translateX + obj.width / 2 - this.translateX - this.totalWidth / 2;
+	}
+
+	private getOffsetYToGroupCenter(obj: KritzelBaseObject<any>): number {
+		return obj.translateY + obj.height / 2 - this.translateY - this.totalHeight / 2;
+	}
+
+	private getUnchangedObject(objectId: string): KritzelBaseObject<any> {
+		return this.unchangedObjects.find(obj => obj.id === objectId);
 	}
 
 }

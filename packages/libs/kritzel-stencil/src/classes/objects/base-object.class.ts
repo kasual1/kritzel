@@ -1,6 +1,5 @@
 import { KritzelBoundingBox } from "../../interfaces/bounding-box.interface";
 import { KritzelObject } from "../../interfaces/object.interface";
-import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { KritzelSelection } from "../../interfaces/selection.interface";
 import { kritzelViewportState } from "../../stores/viewport.store";
 
@@ -105,6 +104,14 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     this.translateY = (((window.innerHeight / 2) - (this.totalHeight / 2)) - kritzelViewportState.translateY) / scale;
   }
 
+  move(startX: number, startY: number, endX: number, endY: number): void {
+    const deltaX = (startX - endX) / kritzelViewportState.scale;
+    const deltaY = (startY - endY) / kritzelViewportState.scale;
+
+    this.translateX += deltaX;
+    this.translateY += deltaY;
+  }
+
   resize(x: number, y: number, width: number, height: number): void {
 
     if (width <= 1 || height <= 1) {
@@ -129,42 +136,6 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     copiedObject.translateX += 25;
     copiedObject.translateY += 25;
     return copiedObject;
-  }
-
-  move(startX: number, startY: number, endX: number, endY: number): void {
-    const deltaX = (startX - endX) / kritzelViewportState.scale;
-    const deltaY = (startY - endY) / kritzelViewportState.scale;
-
-    this.translateX += deltaX;
-    this.translateY += deltaY;
-  }
-
-  moveEnd(_event: MouseEvent, _state: KritzelSelectionState): void {
-    // noop
-  }
-
-  resizeStart(_event: MouseEvent, _state: KritzelSelectionState): void {
-    // noop
-  }
-
-  resize2(_event: MouseEvent, _state: KritzelSelectionState): void {
-    // noop
-  }
-
-  resizeEnd(_event: MouseEvent, _state: KritzelSelectionState): void {
-    // noop
-  }
-
-  rotateStart(_event: MouseEvent, _state: KritzelSelectionState): void {
-    // noop
-  }
-
-  rotate2(_event: MouseEvent, _state: KritzelSelectionState): void {
-    // noop
-  }
-
-  rotateEnd(_event: MouseEvent, _state: KritzelSelectionState): void {
-    // noop
   }
 
 }
