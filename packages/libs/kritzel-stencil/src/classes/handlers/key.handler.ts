@@ -1,12 +1,12 @@
 import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelEngineState } from "../../stores/engine.store";
-import { KrtizelGroup } from "../objects/group.class";
+import { KrtizelSelection } from "../objects/selection.class";
 
 export class KritzelKeyHandler {
 
 	selectionState: KritzelSelectionState;
 
-	copiedObject: KrtizelGroup | null = null;
+	copiedObject: KrtizelSelection | null = null;
 
 	constructor(selectionState: KritzelSelectionState) {
 		this.selectionState = selectionState;
@@ -38,37 +38,37 @@ export class KritzelKeyHandler {
 	}
 
 	private handleEscape() {
-		this.selectionState.selectedObject = null;
+		this.selectionState.selection = null;
 
 		kritzelEngineState.objects = [
-			...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelGroup))
+			...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelection))
 		];
 	}
 
 	private handleDelete() {
-		const toBeDeleted = this.selectionState.selectedObject.objects;
+		const toBeDeleted = this.selectionState.selection.objects;
 
-		this.selectionState.selectedObject = null;
+		this.selectionState.selection = null;
 
 		kritzelEngineState.objects = [
 			...kritzelEngineState.objects
 				.filter(o => !toBeDeleted.includes(o))
-				.filter(o => !(o instanceof KrtizelGroup))
+				.filter(o => !(o instanceof KrtizelSelection))
 		];
 	}
 
 	private handleCopy() {
-		this.copiedObject = this.selectionState.selectedObject.copy() as KrtizelGroup;
+		this.copiedObject = this.selectionState.selection.copy() as KrtizelSelection;
 	}
 
 	private handlePaste() {
-		this.selectionState.selectedObject = this.copiedObject;
-		this.selectionState.selectedObject.selected = true;
+		this.selectionState.selection = this.copiedObject;
+		this.selectionState.selection.selected = true;
 
 		kritzelEngineState.objects = [
-			...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelGroup)),
-			...this.selectionState.selectedObject.objects,
-			this.selectionState.selectedObject
+			...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelection)),
+			...this.selectionState.selection.objects,
+			this.selectionState.selection
 		];
 	}
 }

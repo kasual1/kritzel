@@ -1,7 +1,7 @@
-import { KrtizelGroup } from "../classes/objects/group.class";
+import { KrtizelSelection } from "../classes/objects/selection.class";
 
 export interface KritzelSelectionState {
-	selectedObject: KrtizelGroup | null;
+	selection: KrtizelSelection | null;
 	isResizing: boolean;
 	isRotating: boolean;
 	isDragging: boolean;

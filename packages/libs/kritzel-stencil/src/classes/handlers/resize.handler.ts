@@ -48,7 +48,7 @@ export class KritzelResizeHandler {
   }
 
   handleMouseMove(event: MouseEvent): void {
-    if(this.selectionState.isResizing && this.selectionState.selectedObject) {
+    if(this.selectionState.isResizing && this.selectionState.selection) {
 
       const dx = event.clientX - this.initialMouseX;
       const dy = event.clientY - this.initialMouseY;
@@ -61,28 +61,28 @@ export class KritzelResizeHandler {
           height = this.initialHeight - dy;
           x = dx + this.initialTranslateX;
           y = dy + this.initialTranslateY;
-          this.selectionState.selectedObject.resize(x, y, width, height);
+          this.selectionState.selection.resize(x, y, width, height);
           break;
         case SelectionHandleType.TopRight:
           width = this.initialWidth + dx;
           height = this.initialHeight - dy;
           x = this.initialTranslateX;
           y = dy + this.initialTranslateY;
-          this.selectionState.selectedObject.resize(x, y, width, height);
+          this.selectionState.selection.resize(x, y, width, height);
           break;
         case SelectionHandleType.BottomLeft:
           width = this.initialWidth - dx;
           height = this.initialHeight + dy;
           x = dx + this.initialTranslateX;
           y = this.initialTranslateY;
-          this.selectionState.selectedObject.resize(x, y, width, height);
+          this.selectionState.selection.resize(x, y, width, height);
           break;
         case SelectionHandleType.BottomRight:
           width = this.initialWidth + dx;
           height = this.initialHeight + dy;
           x = this.initialTranslateX;
           y = this.initialTranslateY;
-          this.selectionState.selectedObject.resize(x, y, width, height);
+          this.selectionState.selection.resize(x, y, width, height);
           break;
       }
 
@@ -93,7 +93,7 @@ export class KritzelResizeHandler {
   handleMouseUp(_event: MouseEvent): void {
     if (this.selectionState.isResizing) {
       this.selectionState.isResizing = false;
-      this.selectionState.selectedObject = null;
+      this.selectionState.selection = null;
       this.handleType = null;
 
       kritzelEngineState.objects = [...kritzelEngineState.objects];

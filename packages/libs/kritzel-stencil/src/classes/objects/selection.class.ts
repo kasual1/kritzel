@@ -2,7 +2,7 @@ import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "./base-object.class";
 import * as lodash from 'lodash-es';
 
-export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
+export class KrtizelSelection extends KritzelBaseObject<HTMLElement> {
 
 	objects: KritzelBaseObject<any>[] = [];
 	unchangedObjects: KritzelBaseObject<any>[] = [];
@@ -76,8 +76,8 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 
 		this.rotation = value;
 
-		const groupCenterX = this.translateX + this.totalWidth / 2;
-		const groupCenterY = this.translateY + this.totalHeight / 2;
+		const centerX = this.translateX + this.totalWidth / 2;
+		const centerY = this.translateY + this.totalHeight / 2;
 
 		const angle = value; 
 		const cos = Math.cos(angle);
@@ -85,11 +85,11 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 
 		this.objects.forEach(child => {
 			const unchangedChild = this.getUnchangedObject(child.id);
-			const offsetX = this.getOffsetXToGroupCenter(unchangedChild);
-			const offsetY = this.getOffsetYToGroupCenter(unchangedChild);
+			const offsetX = this.getOffsetXToCenter(unchangedChild);
+			const offsetY = this.getOffsetYToCenter(unchangedChild);
 
-			const rotatedX = cos * offsetX - sin * offsetY + groupCenterX;
-			const rotatedY = sin * offsetX + cos * offsetY + groupCenterY;
+			const rotatedX = cos * offsetX - sin * offsetY + centerX;
+			const rotatedY = sin * offsetX + cos * offsetY + centerY;
 
 			child.translateX = rotatedX - child.width / 2;
 			child.translateY = rotatedY - child.height / 2;
@@ -98,11 +98,11 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 	}
 
 	override copy(): KritzelBaseObject<HTMLElement> {
-		const group = new KrtizelGroup();
-		group.objects = this.objects.map(obj => obj.copy());
-		group.unchangedObjects = lodash.cloneDeep(group.objects);
-		group.updateBoundingBox();
-		return group;
+		const selection = new KrtizelSelection();
+		selection.objects = this.objects.map(obj => obj.copy());
+		selection.unchangedObjects = lodash.cloneDeep(selection.objects);
+		selection.updateBoundingBox();
+		return selection;
 	}
 
 	private updateBoundingBox() {
@@ -119,11 +119,11 @@ export class KrtizelGroup extends KritzelBaseObject<HTMLElement> {
 		this.height = this.maxY - this.minY;
 	}
 
-	private getOffsetXToGroupCenter(obj: KritzelBaseObject<any>): number {
+	private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {
 		return obj.translateX + obj.width / 2 - this.translateX - this.totalWidth / 2;
 	}
 
-	private getOffsetYToGroupCenter(obj: KritzelBaseObject<any>): number {
+	private getOffsetYToCenter(obj: KritzelBaseObject<any>): number {
 		return obj.translateY + obj.height / 2 - this.translateY - this.totalHeight / 2;
 	}
 

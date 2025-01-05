@@ -1,6 +1,6 @@
 import { KritzelTool } from "../../components";
 import { kritzelEngineState } from "../../stores/engine.store";
-import { KrtizelGroup } from "../objects/group.class";
+import { KrtizelSelection } from "../objects/selection.class";
 import { KritzelImage } from "../objects/image.class";
 import { KritzelSelectionTool } from "./selection-tool.class";
 
@@ -63,12 +63,12 @@ export class KritzelImageTool implements KritzelTool {
           const image = new KritzelImage(img);
           image.centerInViewport();
 
-          const group = new KrtizelGroup();
-          group.addOrRemove(image);
-          group.selected = true;
+          const selection = new KrtizelSelection();
+          selection.addOrRemove(image);
+          selection.selected = true;
 
-          this.selectionTool.selectionState.selectedObject = group;
-          kritzelEngineState.objects = [...kritzelEngineState.objects, image, group];
+          this.selectionTool.selectionState.selection = selection;
+          kritzelEngineState.objects = [...kritzelEngineState.objects, image, selection];
           kritzelEngineState.activeTool = new KritzelSelectionTool();
         };
       };
