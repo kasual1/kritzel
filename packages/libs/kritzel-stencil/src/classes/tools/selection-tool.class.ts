@@ -1,5 +1,6 @@
 import { KritzelTool } from "../../components";
 import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
+import { KritzelKeyHandler } from "../handlers/key.handler";
 import { KritzelResizeHandler } from "../handlers/resize.handler";
 import { KritzelRotationHandler } from "../handlers/rotation.handler";
 import { KritzelSelectionHandler } from "../handlers/selection.handler";
@@ -17,11 +18,13 @@ export class KritzelSelectionTool implements KritzelTool {
 		isResizing: false,
 		isRotating: false,
 		isDragging: false,
+		isCtrlKeyPressed: false,
 	}
 
 	selectionHandler: KritzelSelectionHandler;
 	resizeHandler: KritzelResizeHandler;
 	rotationHandler: KritzelRotationHandler;
+	keyHandler: KritzelKeyHandler;
 
 	constructor() {
 		if (KritzelSelectionTool.instance) {
@@ -32,16 +35,18 @@ export class KritzelSelectionTool implements KritzelTool {
 		this.selectionHandler = new KritzelSelectionHandler(this.selectionState);
 		this.resizeHandler = new KritzelResizeHandler(this.selectionState);
 		this.rotationHandler = new KritzelRotationHandler(this.selectionState);
+		this.keyHandler = new KritzelKeyHandler(this.selectionState);
+
 		document.addEventListener('keydown', this.handleKeyDown.bind(this));
 		document.addEventListener('keyup', this.handleKeyUp.bind(this));
 	}
 
 	handleKeyDown(event: KeyboardEvent): void {
-		this.selectionHandler.handleKeyDown(event);
+		this.keyHandler.handleKeyDown(event);
 	}
 
 	handleKeyUp(event: KeyboardEvent): void {
-		this.selectionHandler.handleKeyUp(event);
+		this.keyHandler.handleKeyUp(event);
 	}
 
 	handleMouseDown(event: MouseEvent): void {

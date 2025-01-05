@@ -7,4 +7,5 @@ export interface KritzelSelectionState {
 	isResizing: boolean;
 	isRotating: boolean;
 	isDragging: boolean;
+	isCtrlKeyPressed: boolean;
 }
