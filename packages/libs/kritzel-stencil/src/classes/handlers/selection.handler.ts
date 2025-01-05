@@ -47,7 +47,7 @@ export class KritzelSelectionHandler {
       this.selectionState.selection = null;
     }
 
-    if (KritzelClickHelper.isLeftClick(event) && !this.selectionState.isRotating && !this.selectionState.isDragging) {
+    if (KritzelClickHelper.isLeftClick(event) && !this.selectionState.isRotating) {
       const path = event.composedPath() as HTMLElement[];
       const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
 
@@ -56,7 +56,7 @@ export class KritzelSelectionHandler {
       if (selectedObject) {
         for (const object of kritzelEngineState.objects) {
           if (selectedObject.id === object.id) {
-
+            
             if (this.selectionState.isCtrlKeyPressed === false) {
               this.selectionState.selection = null;
             }
