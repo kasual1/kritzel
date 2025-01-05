@@ -38,9 +38,9 @@ export class KritzelRotationHandler {
 	}
 
 	handleMouseMove(event: MouseEvent): void {
-		if (this.selectionState.isRotating && this.selectionState.selectedObject) {
-			const centerX = this.selectionState.selectedObject.translateX + this.selectionState.selectedObject.width / 2;
-			const centerY = this.selectionState.selectedObject.translateY + this.selectionState.selectedObject.height / 2;
+		if (this.selectionState.isRotating && this.selectionState.selection) {
+			const centerX = this.selectionState.selection.translateX + this.selectionState.selection.width / 2;
+			const centerY = this.selectionState.selection.translateY + this.selectionState.selection.height / 2;
 
 			const cursorX = event.clientX;
 			const cursorY = event.clientY;
@@ -49,7 +49,7 @@ export class KritzelRotationHandler {
 				centerX - cursorX);
 				
 
-			this.selectionState.selectedObject.rotate(currentRotation - this.initialRotation);
+			this.selectionState.selection.rotate(currentRotation - this.initialRotation);
 
 			kritzelEngineState.objects = [...kritzelEngineState.objects];
 		}
