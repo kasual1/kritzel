@@ -40,7 +40,6 @@ export class KritzelResizeHandler {
         this.initialMouseY = event.clientY;
         this.initialWidth = selectedObject.width;
         this.initialHeight = selectedObject.height;
-        this.selectionState.selectedObject = selectedObject;
         this.handleType = selectionHandle?.classList[1] as SelectionHandleType;
         this.initialTranslateX = selectedObject.translateX;
         this.initialTranslateY = selectedObject.translateY;

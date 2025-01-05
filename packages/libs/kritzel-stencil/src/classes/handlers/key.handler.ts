@@ -60,7 +60,7 @@ export class KritzelKeyHandler {
 	
 	  private handlePaste() {
 		deselectAllObjects();
-		this.selectionState.selectedObject = this.copiedObject;
+		this.selectionState.selectedObject.addOrRemove(this.copiedObject);
 		this.copiedObject.selected = true;
 		kritzelEngineState.objects = [...kritzelEngineState.objects, this.copiedObject];
 	  }
