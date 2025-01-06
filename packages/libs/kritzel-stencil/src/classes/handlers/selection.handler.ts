@@ -1,4 +1,5 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
+import { KritzelBoundingBox } from "../../interfaces/bounding-box.interface";
 import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelEngineState, findObjectById } from "../../stores/engine.store";
 import { KrtizelSelectionBox } from "../objects/selection-box.class";
@@ -60,16 +61,25 @@ export class KritzelSelectionHandler {
       const width = event.clientX - this.dragStartX;
       const height = event.clientY - this.dragStartY;
 
-      const translateX = width < 0 ? event.clientX : this.dragStartX;
-      const translateY = height < 0 ? event.clientY : this.dragStartY;
+      const objectBox: KritzelBoundingBox = {
+        x: width < 0 ? event.clientX : this.dragStartX,
+        y: height < 0 ? event.clientY : this.dragStartY,
+        width: width,
+        height: height
+      }
 
+      
       this.selectionState.selectionBox.width = Math.abs(event.clientX - this.dragStartX);
       this.selectionState.selectionBox.height = Math.abs(event.clientY - this.dragStartY);
 
-      this.selectionState.selectionBox.translateX = translateX;
-      this.selectionState.selectionBox.translateY = translateY;
+      this.selectionState.selectionBox.translateX = objectBox.x;
+      this.selectionState.selectionBox.translateY = objectBox.y;
       
       kritzelEngineState.objects = [...kritzelEngineState.objects];
+
+      kritzelEngineState.objects.forEach(object => {
+        object.selected = this.isBoundingBoxOverlapping(objectBox, object.boundingBox);
+      });
     }
   }
 
@@ -119,6 +129,15 @@ export class KritzelSelectionHandler {
       }
 
     }
+  }
+
+  private isBoundingBoxOverlapping(box1: { x: number, y: number, width: number, height: number }, box2: { x: number, y: number, width: number, height: number }): boolean {
+    return (
+      box1.x < box2.x + box2.width &&
+      box1.x + box1.width > box2.x &&
+      box1.y < box2.y + box2.height &&
+      box1.y + box1.height > box2.y
+    );
   }
 
 }
