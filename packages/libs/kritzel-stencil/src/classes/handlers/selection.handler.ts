@@ -1,12 +1,12 @@
-import { KritzelClickHelper } from "../../helpers/click.helper";
-import { KritzelBoundingBox } from "../../interfaces/bounding-box.interface";
-import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
-import { kritzelEngineState, findObjectById } from "../../stores/engine.store";
-import { KrtizelSelectionBox } from "../objects/selection-box.class";
-import { KrtizelSelectionGroup } from "../objects/selection-group.class";
+import { KritzelClickHelper } from '../../helpers/click.helper';
+import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
+import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
+import { kritzelEngineState, findObjectById } from '../../stores/engine.store';
+import { kritzelViewportState } from '../../stores/viewport.store';
+import { KrtizelSelectionBox } from '../objects/selection-box.class';
+import { KrtizelSelectionGroup } from '../objects/selection-group.class';
 
 export class KritzelSelectionHandler {
-
   selectionState: KritzelSelectionState;
 
   dragStartX: number;
@@ -26,6 +26,8 @@ export class KritzelSelectionHandler {
       const selectedObject = objectElement ? findObjectById(objectElement.id) : null;
 
       if (selectedObject?.selected && !isHandleSelected && !isRotationHandleSelected) {
+        console.log('SELECTIONGROUP DOWN');
+
         this.selectionState.selectionGroup = selectedObject as KrtizelSelectionGroup;
         this.selectionState.isDragging = true;
         this.dragStartX = event.clientX;
@@ -33,23 +35,32 @@ export class KritzelSelectionHandler {
       }
 
       if (!selectedObject) {
+        console.log('SELECTIONBOX DOWN');
+        kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup) && !(o instanceof KrtizelSelectionBox))];
+
+        const { clientX, clientY } = event;
         const selectionBox = new KrtizelSelectionBox();
-        selectionBox.translateX = event.clientX;
-        selectionBox.translateY = event.clientY;
+
+        this.dragStartX = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
+        this.dragStartY = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
+
+        selectionBox.translateX = this.dragStartX;
+        selectionBox.translateY = this.dragStartY;
+        this.selectionState.selectionGroup = null;
         this.selectionState.selectionBox = selectionBox;
         this.selectionState.isDragging = true;
 
-        this.dragStartX = event.clientX;
-        this.dragStartY = event.clientY;
+        console.log(this.dragStartX, this.dragStartY);
 
         kritzelEngineState.objects = [...kritzelEngineState.objects, selectionBox];
       }
-
     }
   }
 
   handleMouseMove(event) {
     if (this.selectionState.isDragging && this.selectionState.selectionGroup) {
+      console.log('SELECTIONGROUP MOVE');
+
       this.selectionState.selectionGroup.move(event.clientX, event.clientY, this.dragStartX, this.dragStartY);
       this.dragStartX = event.clientX;
       this.dragStartY = event.clientY;
@@ -58,44 +69,50 @@ export class KritzelSelectionHandler {
     }
 
     if (this.selectionState.isDragging && this.selectionState.selectionBox) {
+      console.log('SELECTIONBOX MOVE');
+      const { clientX, clientY } = event;
 
-      const width = event.clientX - this.dragStartX;
-      const height = event.clientY - this.dragStartY;
+      const x = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
+      const y = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
+
+      const width = x - this.dragStartX;
+      const height = y - this.dragStartY;
 
       const objectBox: KritzelBoundingBox = {
-        x: width < 0 ? event.clientX : this.dragStartX,
-        y: height < 0 ? event.clientY : this.dragStartY,
+        x: width < 0 ? x : this.dragStartX,
+        y: height < 0 ? y : this.dragStartY,
         width: Math.abs(width),
-        height: Math.abs(height)
-      }
+        height: Math.abs(height),
+      };
 
-      this.selectionState.selectionBox.width = Math.abs(event.clientX - this.dragStartX);
-      this.selectionState.selectionBox.height = Math.abs(event.clientY - this.dragStartY);
+      this.selectionState.selectionBox.width = Math.abs(objectBox.width);
+      this.selectionState.selectionBox.height = Math.abs(objectBox.height);
 
       this.selectionState.selectionBox.translateX = objectBox.x;
       this.selectionState.selectionBox.translateY = objectBox.y;
 
       kritzelEngineState.objects = [...kritzelEngineState.objects];
 
-      kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionBox)).forEach(object => {
-        if (this.isBoundingBoxOverlapping(objectBox, object.boundingBox)) {
-          object.selected = true;
-        } else {
-          object.selected = false;
-        }
-      });
+      kritzelEngineState.objects
+        .filter(o => !(o instanceof KrtizelSelectionBox))
+        .forEach(object => {
+          if (this.isBoundingBoxOverlapping(objectBox, object.boundingBox)) {
+            object.selected = true;
+          } else {
+            object.selected = false;
+          }
+        });
     }
   }
 
   handleMouseUp(event) {
-    debugger;
     if (this.selectionState.isDragging) {
+      console.log('SELECTION UP');
+
       this.selectionState.isDragging = false;
       this.selectionState.selectionGroup = null;
 
-      const selectedObjects = kritzelEngineState.objects
-        .filter(o => !(o instanceof KrtizelSelectionGroup))
-        .filter(o => o.selected);
+      const selectedObjects = kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup)).filter(o => o.selected);
 
       if (selectedObjects.length > 0) {
         const selectionGroup = new KrtizelSelectionGroup();
@@ -111,6 +128,8 @@ export class KritzelSelectionHandler {
 
         return;
       }
+
+      kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionBox))];
     }
 
     if (KritzelClickHelper.isLeftClick(event) && !this.selectionState.isRotating) {
@@ -122,7 +141,6 @@ export class KritzelSelectionHandler {
       if (selectedObject) {
         for (const object of kritzelEngineState.objects) {
           if (selectedObject.id === object.id) {
-
             if (this.selectionState.isCtrlKeyPressed === false) {
               this.selectionState.selectionGroup = null;
             }
@@ -131,7 +149,7 @@ export class KritzelSelectionHandler {
               this.selectionState.selectionGroup = new KrtizelSelectionGroup();
             }
 
-            if ((object instanceof KrtizelSelectionGroup) === false) {
+            if (object instanceof KrtizelSelectionGroup === false) {
               this.selectionState.selectionGroup.addOrRemove(object);
               this.selectionState.selectionGroup.selected = true;
               noObjectSelected = false;
@@ -148,17 +166,10 @@ export class KritzelSelectionHandler {
         this.selectionState.selectionGroup = null;
         kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup))];
       }
-
     }
   }
 
-  private isBoundingBoxOverlapping(box1: { x: number, y: number, width: number, height: number }, box2: { x: number, y: number, width: number, height: number }): boolean {
-    return (
-      box1.x < box2.x + box2.width &&
-      box1.x + box1.width > box2.x &&
-      box1.y < box2.y + box2.height &&
-      box1.y + box1.height > box2.y
-    );
+  private isBoundingBoxOverlapping(box1: { x: number; y: number; width: number; height: number }, box2: { x: number; y: number; width: number; height: number }): boolean {
+    return box1.x < box2.x + box2.width && box1.x + box1.width > box2.x && box1.y < box2.y + box2.height && box1.y + box1.height > box2.y;
   }
-
 }
