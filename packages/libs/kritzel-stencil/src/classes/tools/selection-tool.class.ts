@@ -14,6 +14,7 @@ export class KritzelSelectionTool implements KritzelTool {
 	selectionState: KritzelSelectionState = {
 		selectionBox: null,
 		selectionGroup: null,
+    isSelecting: false,
 		isResizing: false,
 		isRotating: false,
 		isDragging: false,
@@ -30,7 +31,7 @@ export class KritzelSelectionTool implements KritzelTool {
 			return KritzelSelectionTool.instance;
 		}
 		KritzelSelectionTool.instance = this;
-		
+
 		this.selectionHandler = new KritzelSelectionHandler(this.selectionState);
 		this.resizeHandler = new KritzelResizeHandler(this.selectionState);
 		this.rotationHandler = new KritzelRotationHandler(this.selectionState);
