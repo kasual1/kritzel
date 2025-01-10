@@ -79,7 +79,7 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 		const centerX = this.translateX + this.totalWidth / 2;
 		const centerY = this.translateY + this.totalHeight / 2;
 
-		const angle = value; 
+		const angle = value;
 		const cos = Math.cos(angle);
 		const sin = Math.sin(angle);
 

@@ -19,7 +19,7 @@ export class KritzelSelectionHandler {
   handleMouseDown(event) {
     if (KritzelClickHelper.isLeftClick(event)) {
       const selectedObject = this.getSelectedObject(event);
-      const isHandleSelected = this.isHandleSelected(event);
+      const isResizeHandleSelected = this.isHandleSelected(event);
       const isRotationHandleSelected = this.isRotationHandleSelected(event);
 
       if(!selectedObject?.selected){
@@ -29,7 +29,7 @@ export class KritzelSelectionHandler {
         this.addSelectedObjectsToSelectionGroup();
       }
 
-      if (selectedObject?.selected && !isHandleSelected && !isRotationHandleSelected) {
+      if (selectedObject?.selected && !isResizeHandleSelected && !isRotationHandleSelected) {
         this.startDragging(selectedObject, event);
       }
 
