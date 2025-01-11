@@ -85,14 +85,14 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
 		this.objects.forEach(child => {
 			const unchangedChild = this.getUnchangedObject(child.id);
-			const offsetX = this.getOffsetXToCenter(unchangedChild);
-			const offsetY = this.getOffsetYToCenter(unchangedChild);
+			const offsetX = this.getOffsetXToCenter(child);
+			const offsetY = this.getOffsetYToCenter(child);
 
-			const rotatedX = cos * offsetX - sin * offsetY + centerX;
-			const rotatedY = sin * offsetX + cos * offsetY + centerY;
+			const rotatedX = cos * offsetX - sin * offsetY;
+			const rotatedY = sin * offsetX + cos * offsetY;
 
-			child.translateX = rotatedX - child.width / 2;
-			child.translateY = rotatedY - child.height / 2;
+			child.translateX = (centerX + rotatedX - child.width / 2);
+			child.translateY = (centerY + rotatedY - child.height / 2);
 			child.rotation = value + unchangedChild.rotation;
 		});
 	}
@@ -120,11 +120,11 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 	}
 
 	private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {
-		return obj.translateX + obj.width / 2 - this.translateX - this.totalWidth / 2;
+		return (obj.translateX + obj.width / 2) - (this.translateX + this.totalWidth / 2);
 	}
 
 	private getOffsetYToCenter(obj: KritzelBaseObject<any>): number {
-		return obj.translateY + obj.height / 2 - this.translateY - this.totalHeight / 2;
+		return (obj.translateY + obj.height / 2) - (this.translateY + this.totalHeight / 2);
 	}
 
 	private getUnchangedObject(objectId: string): KritzelBaseObject<any> {
