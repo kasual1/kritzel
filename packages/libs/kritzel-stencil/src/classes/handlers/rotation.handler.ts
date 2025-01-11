@@ -1,6 +1,7 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
 import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelEngineState, findObjectById } from "../../stores/engine.store";
+import { kritzelViewportState } from "../../stores/viewport.store";
 import { KrtizelSelectionGroup } from "../objects/selection-group.class";
 
 export class KritzelRotationHandler {
@@ -26,12 +27,12 @@ export class KritzelRotationHandler {
 			if (selectedObject && isRotationHandleSelected) {
 				this.selectionState.selectionGroup = selectedObject as KrtizelSelectionGroup;
 				this.selectionState.isRotating = true;
-				
+
 				const centerX = selectedObject.translateX + selectedObject.width / 2;
 				const centerY = selectedObject.translateY + selectedObject.height / 2;
 
-				const cursorX = event.clientX;
-				const cursorY = event.clientY;
+				const cursorX = (event.clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
+				const cursorY = (event.clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
 
 				this.initialRotation = Math.atan2(centerY - cursorY,
 					centerX - cursorX) - selectedObject.rotation;
@@ -44,12 +45,12 @@ export class KritzelRotationHandler {
 			const centerX = this.selectionState.selectionGroup.translateX + this.selectionState.selectionGroup.width / 2;
 			const centerY = this.selectionState.selectionGroup.translateY + this.selectionState.selectionGroup.height / 2;
 
-			const cursorX = event.clientX;
-			const cursorY = event.clientY;
+			const cursorX = (event.clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
+			const cursorY = (event.clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
 
 			const currentRotation = Math.atan2(centerY - cursorY,
 				centerX - cursorX);
-				
+
 
 			this.selectionState.selectionGroup.rotate(currentRotation - this.initialRotation);
 
