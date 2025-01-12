@@ -17,7 +17,7 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 		super();
 		this.backgroundColor = 'rebeccapurple';
 		this.opacity = 0.5;
-		this.scale = 1;
+		this.scale = kritzelViewportState.scale;
 		this.padding = 5;
 	}
 
