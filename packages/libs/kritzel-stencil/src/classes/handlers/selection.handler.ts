@@ -113,13 +113,13 @@ export class KritzelSelectionHandler {
 
   private updateSelection(event: MouseEvent): void {
     const { clientX, clientY } = event;
-    const currentX = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
-    const currentY = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
     const selectionBox = this.selectionState.selectionBox;
+    const currentX = (clientX - kritzelViewportState.translateX) / selectionBox.scale;
+    const currentY = (clientY - kritzelViewportState.translateY) / selectionBox.scale;
 
     if (selectionBox) {
-      selectionBox.width = Math.abs(currentX - this.dragStartX);
-      selectionBox.height = Math.abs(currentY - this.dragStartY);
+      selectionBox.width = Math.abs(currentX - this.dragStartX) * selectionBox.scale;
+      selectionBox.height = Math.abs(currentY - this.dragStartY) * selectionBox.scale;
       selectionBox.translateX = Math.min(currentX, this.dragStartX);
       selectionBox.translateY = Math.min(currentY, this.dragStartY);
     }
@@ -130,12 +130,16 @@ export class KritzelSelectionHandler {
   }
 
   private updateSelectedObjects(): void {
+    const scale = kritzelViewportState.scale;
+
     const objectBox: KritzelBoundingBox = {
       x: this.selectionState.selectionBox.translateX,
       y: this.selectionState.selectionBox.translateY,
-      width: this.selectionState.selectionBox.width,
-      height: this.selectionState.selectionBox.height,
+      width: this.selectionState.selectionBox.width / scale,
+      height: this.selectionState.selectionBox.height / scale,
     };
+
+    console.log(objectBox);
 
     kritzelEngineState.objects
       .filter(o => !(o instanceof KrtizelSelectionBox))
