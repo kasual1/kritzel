@@ -64,7 +64,21 @@ export class KritzelSelectionHandler {
   private getSelectedObject(event: MouseEvent): KrtizelSelectionGroup | null {
     const path = event.composedPath() as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
-    return objectElement ? (findObjectById(objectElement.id) as KrtizelSelectionGroup) : null;
+    const object = findObjectById(objectElement?.id);
+
+    if (!object) {
+      return null;
+    }
+
+    if(object instanceof KrtizelSelectionGroup){
+      return object;
+    } else {
+      const group = new KrtizelSelectionGroup();
+      group.translateX = 0;
+      group.translateY = 0;
+      group.addOrRemove(object);
+      return group;
+    }
   }
 
   private isHandleSelected(event: MouseEvent): boolean {
@@ -138,8 +152,6 @@ export class KritzelSelectionHandler {
       width: this.selectionState.selectionBox.width / scale,
       height: this.selectionState.selectionBox.height / scale,
     };
-
-    console.log(objectBox);
 
     kritzelEngineState.objects
       .filter(o => !(o instanceof KrtizelSelectionBox))
