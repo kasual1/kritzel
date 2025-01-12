@@ -107,7 +107,6 @@ export class KritzelSelectionHandler {
     this.selectionState.selectionGroup = null;
     this.selectionState.selectionBox = selectionBox;
     this.selectionState.isSelecting = true;
-    this.selectionState.isDragging = true;
 
     kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup) && !(o instanceof KrtizelSelectionBox)), selectionBox];
   }

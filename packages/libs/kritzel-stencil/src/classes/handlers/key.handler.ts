@@ -58,7 +58,6 @@ export class KritzelKeyHandler {
 	}
 
 	private handleCopy() {
-		debugger;
 		this.copiedObject = this.selectionState.selectionGroup.copy() as KrtizelSelectionGroup;
 	}
 
@@ -71,5 +70,7 @@ export class KritzelKeyHandler {
 			...this.selectionState.selectionGroup.objects,
 			this.selectionState.selectionGroup
 		];
+
+
 	}
 }
