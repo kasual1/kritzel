@@ -158,14 +158,14 @@ export class KritzelSelectionHandler {
     const selectedObjects = kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup)).filter(o => o.selected);
 
     if (selectedObjects.length > 0) {
-      const selectionGroup = new KrtizelSelectionGroup();
+      this.selectionState.selectionGroup = new KrtizelSelectionGroup();
       selectedObjects.forEach(o => {
         o.selected = false;
-        selectionGroup.addOrRemove(o);
+        this.selectionState.selectionGroup.addOrRemove(o);
       });
-      selectionGroup.selected = true;
+      this.selectionState.selectionGroup.selected = true;
 
-      kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionBox)), selectionGroup];
+      kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionBox)), this.selectionState.selectionGroup];
     } else {
       kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionBox))];
     }
