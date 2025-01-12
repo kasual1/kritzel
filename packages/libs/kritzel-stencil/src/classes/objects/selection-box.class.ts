@@ -1,3 +1,4 @@
+import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "./base-object.class";
 
 export class KrtizelSelectionBox extends KritzelBaseObject<HTMLElement> {
@@ -8,7 +9,7 @@ export class KrtizelSelectionBox extends KritzelBaseObject<HTMLElement> {
 		super();
 		this.backgroundColor = 'blue';
 		this.opacity = 0.5;
-		this.scale = 1;
+		this.scale = kritzelViewportState.scale;
 		this.height = 0;
 		this.width = 0;
 	}

@@ -64,7 +64,21 @@ export class KritzelSelectionHandler {
   private getSelectedObject(event: MouseEvent): KrtizelSelectionGroup | null {
     const path = event.composedPath() as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
-    return objectElement ? (findObjectById(objectElement.id) as KrtizelSelectionGroup) : null;
+    const object = findObjectById(objectElement?.id);
+
+    if (!object) {
+      return null;
+    }
+
+    if(object instanceof KrtizelSelectionGroup){
+      return object;
+    } else {
+      const group = new KrtizelSelectionGroup();
+      group.translateX = 0;
+      group.translateY = 0;
+      group.addOrRemove(object);
+      return group;
+    }
   }
 
   private isHandleSelected(event: MouseEvent): boolean {
@@ -113,13 +127,13 @@ export class KritzelSelectionHandler {
 
   private updateSelection(event: MouseEvent): void {
     const { clientX, clientY } = event;
-    const currentX = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
-    const currentY = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
     const selectionBox = this.selectionState.selectionBox;
+    const currentX = (clientX - kritzelViewportState.translateX) / selectionBox.scale;
+    const currentY = (clientY - kritzelViewportState.translateY) / selectionBox.scale;
 
     if (selectionBox) {
-      selectionBox.width = Math.abs(currentX - this.dragStartX);
-      selectionBox.height = Math.abs(currentY - this.dragStartY);
+      selectionBox.width = Math.abs(currentX - this.dragStartX) * selectionBox.scale;
+      selectionBox.height = Math.abs(currentY - this.dragStartY) * selectionBox.scale;
       selectionBox.translateX = Math.min(currentX, this.dragStartX);
       selectionBox.translateY = Math.min(currentY, this.dragStartY);
     }
@@ -130,11 +144,13 @@ export class KritzelSelectionHandler {
   }
 
   private updateSelectedObjects(): void {
+    const scale = kritzelViewportState.scale;
+
     const objectBox: KritzelBoundingBox = {
       x: this.selectionState.selectionBox.translateX,
       y: this.selectionState.selectionBox.translateY,
-      width: this.selectionState.selectionBox.width,
-      height: this.selectionState.selectionBox.height,
+      width: this.selectionState.selectionBox.width / scale,
+      height: this.selectionState.selectionBox.height / scale,
     };
 
     kritzelEngineState.objects
@@ -163,6 +179,10 @@ export class KritzelSelectionHandler {
         this.selectionState.selectionGroup.addOrRemove(o);
       });
       this.selectionState.selectionGroup.selected = true;
+
+      if(this.selectionState.selectionGroup.length === 1){
+        this.selectionState.selectionGroup.rotation = this.selectionState.selectionGroup.objects[0].rotation;
+      }
 
       kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionBox)), this.selectionState.selectionGroup];
     } else {

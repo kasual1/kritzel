@@ -113,11 +113,13 @@ export class KritzelEngine {
   }
 
   private deselectAllObjects() {
-    this.state.objects.forEach(object => {
+    const objects = this.state.objects.filter(o => !(o instanceof KrtizelSelectionBox)).filter(o => !(o instanceof KrtizelSelectionGroup));
+
+    objects.forEach(object => {
       object.selected = false;
     });
 
-    this.state.objects = [...this.state.objects];
+    this.state.objects = [...objects];
   }
 
   render() {
@@ -160,13 +162,16 @@ export class KritzelEngine {
                   zIndex: '0',
                 }}
               >
-                <g transform={`rotate(${object.rotationDegrees})`} style={{
-                  transformOrigin: 'center'
-                }}>
+                <g
+                  transform={`rotate(${object.rotationDegrees})`}
+                  style={{
+                    transformOrigin: 'center',
+                  }}
+                >
                   <foreignObject
                     x="0"
                     y="0"
-                    width={(object.totalWidth).toString()}
+                    width={object.totalWidth.toString()}
                     height={object.totalHeight.toString()}
                     style={{ minHeight: '0', minWidth: '0', backgroundColor: object.backgroundColor, padding: object.padding + 'px' }}
                   >
@@ -224,18 +229,26 @@ export class KritzelEngine {
                     )}
 
                     {object instanceof KrtizelSelectionGroup && (
-                      <div style={{
-                        width: '100%',
-                        height: '100%'
-                      }}>This is an object selection</div>
-                  )}
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                        }}
+                      >
+                        This is an object selection
+                      </div>
+                    )}
 
                     {object instanceof KrtizelSelectionBox && (
-                      <div style={{
-                        width: '100%',
-                        height: '100%'
-                      }}>This is selection box</div>
-                  )}
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                        }}
+                      >
+                        This is selection box
+                      </div>
+                    )}
                   </foreignObject>
 
                   <line
@@ -316,6 +329,36 @@ export class KritzelEngine {
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
                 </g>
+
+                  {/**DEBUG BOUNDINGBOX */}
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2={object.boundingBox.width}
+                    y2="0"
+                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  />
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2={object.boundingBox.height}
+                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  />
+                  <line
+                    x1="0"
+                    y1={object.boundingBox.height}
+                    x2={object.boundingBox.width}
+                    y2={object.boundingBox.height}
+                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  />
+                  <line
+                    x1={object.boundingBox.width}
+                    y1="0"
+                    x2={object.boundingBox.width}
+                    y2={object.boundingBox.height}
+                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  />
               </svg>
             );
           })}
