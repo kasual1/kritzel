@@ -117,8 +117,8 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 		this.minY = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateY), this.objects[0].translateY);
 		this.maxY = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateY + obj.totalHeight), this.objects[0].translateY + this.objects[0].totalHeight);
 
-		this.translateX = this.minX - this.padding;
-		this.translateY = this.minY - this.padding;
+		this.translateX = this.minX - this.padding / this.scale;
+		this.translateY = this.minY - this.padding / this.scale;
 
 		this.width = this.maxX - this.minX;
 		this.height = this.maxY - this.minY;
