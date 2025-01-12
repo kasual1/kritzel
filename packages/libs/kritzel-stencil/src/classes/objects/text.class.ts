@@ -46,7 +46,6 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
   }
 
   override resize(x: number, y: number, width: number, height: number): void {
-
     if (width <= 1 || height <= 1) {
       return;
     }

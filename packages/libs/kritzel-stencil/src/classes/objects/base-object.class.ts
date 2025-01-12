@@ -56,8 +56,8 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     return {
       x: this.translateX,
       y: this.translateY,
-      width: this.width / this.scale,
-      height: this.height / this.scale,
+      width: this.totalWidth / this.scale,
+      height: this.totalHeight / this.scale,
     };
   }
 
