@@ -329,6 +329,36 @@ export class KritzelEngine {
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
                 </g>
+
+                  {/**DEBUG BOUNDINGBOX */}
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2={object.boundingBox.width}
+                    y2="0"
+                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  />
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2={object.boundingBox.height}
+                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  />
+                  <line
+                    x1="0"
+                    y1={object.boundingBox.height}
+                    x2={object.boundingBox.width}
+                    y2={object.boundingBox.height}
+                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  />
+                  <line
+                    x1={object.boundingBox.width}
+                    y1="0"
+                    x2={object.boundingBox.width}
+                    y2={object.boundingBox.height}
+                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                  />
               </svg>
             );
           })}
