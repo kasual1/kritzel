@@ -64,13 +64,12 @@ export class KritzelKeyHandler {
 	private handlePaste() {
 		this.selectionState.selectionGroup = this.copiedObject;
 		this.selectionState.selectionGroup.selected = true;
+    this.copiedObject = this.selectionState.selectionGroup.copy() as KrtizelSelectionGroup;
 
 		kritzelEngineState.objects = [
 			...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup)),
 			...this.selectionState.selectionGroup.objects,
 			this.selectionState.selectionGroup
 		];
-
-
 	}
 }
