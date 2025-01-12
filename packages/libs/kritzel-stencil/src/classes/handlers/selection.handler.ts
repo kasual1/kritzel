@@ -180,6 +180,10 @@ export class KritzelSelectionHandler {
       });
       this.selectionState.selectionGroup.selected = true;
 
+      if(this.selectionState.selectionGroup.length === 1){
+        this.selectionState.selectionGroup.rotation = this.selectionState.selectionGroup.objects[0].rotation;
+      }
+
       kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionBox)), this.selectionState.selectionGroup];
     } else {
       kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionBox))];
