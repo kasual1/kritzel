@@ -113,11 +113,13 @@ export class KritzelEngine {
   }
 
   private deselectAllObjects() {
-    this.state.objects.forEach(object => {
+    const objects = this.state.objects.filter(o => !(o instanceof KrtizelSelectionBox)).filter(o => !(o instanceof KrtizelSelectionGroup));
+
+    objects.forEach(object => {
       object.selected = false;
     });
 
-    this.state.objects = [...this.state.objects];
+    this.state.objects = [...objects];
   }
 
   render() {
@@ -160,13 +162,16 @@ export class KritzelEngine {
                   zIndex: '0',
                 }}
               >
-                <g transform={`rotate(${object.rotationDegrees})`} style={{
-                  transformOrigin: 'center'
-                }}>
+                <g
+                  transform={`rotate(${object.rotationDegrees})`}
+                  style={{
+                    transformOrigin: 'center',
+                  }}
+                >
                   <foreignObject
                     x="0"
                     y="0"
-                    width={(object.totalWidth).toString()}
+                    width={object.totalWidth.toString()}
                     height={object.totalHeight.toString()}
                     style={{ minHeight: '0', minWidth: '0', backgroundColor: object.backgroundColor, padding: object.padding + 'px' }}
                   >
@@ -224,18 +229,26 @@ export class KritzelEngine {
                     )}
 
                     {object instanceof KrtizelSelectionGroup && (
-                      <div style={{
-                        width: '100%',
-                        height: '100%'
-                      }}>This is an object selection</div>
-                  )}
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                        }}
+                      >
+                        This is an object selection
+                      </div>
+                    )}
 
                     {object instanceof KrtizelSelectionBox && (
-                      <div style={{
-                        width: '100%',
-                        height: '100%'
-                      }}>This is selection box</div>
-                  )}
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                        }}
+                      >
+                        This is selection box
+                      </div>
+                    )}
                   </foreignObject>
 
                   <line
