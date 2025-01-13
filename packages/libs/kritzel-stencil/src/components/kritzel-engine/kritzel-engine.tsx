@@ -330,6 +330,7 @@ export class KritzelEngine {
                   />
                 </g>
 
+                <g>
                   {/**DEBUG BOUNDINGBOX */}
                   <line
                     x1="0"
@@ -359,6 +360,7 @@ export class KritzelEngine {
                     y2={object.boundingBox.height}
                     style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
                   />
+                </g>
               </svg>
             );
           })}
