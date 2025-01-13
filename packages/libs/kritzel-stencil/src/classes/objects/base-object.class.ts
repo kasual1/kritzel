@@ -53,11 +53,44 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   }
 
   get boundingBox(): KritzelBoundingBox {
+    const halfWidth = this.totalWidth / this.scale / 2;
+    const halfHeight = this.totalHeight / this.scale / 2;
+
+    // Calculate the corners of the unrotated rectangle
+    const corners = [
+      { x: -halfWidth, y: -halfHeight },
+      { x: halfWidth, y: -halfHeight },
+      { x: halfWidth, y: halfHeight },
+      { x: -halfWidth, y: halfHeight },
+    ];
+
+    // Rotate the corners
+    const rotatedCorners = corners.map(corner => {
+      const rotatedX = corner.x * Math.cos(this.rotation) - corner.y * Math.sin(this.rotation);
+      const rotatedY = corner.x * Math.sin(this.rotation) + corner.y * Math.cos(this.rotation);
+      return { x: rotatedX, y: rotatedY };
+    });
+
+    // Find the min and max x and y values of the rotated corners
+    let minX = rotatedCorners[0].x;
+    let maxX = rotatedCorners[0].x;
+    let minY = rotatedCorners[0].y;
+    let maxY = rotatedCorners[0].y;
+
+    for (const corner of rotatedCorners) {
+      minX = Math.min(minX, corner.x);
+      maxX = Math.max(maxX, corner.x);
+      minY = Math.min(minY, corner.y);
+      maxY = Math.max(maxY, corner.y);
+    }
+
+
+    //The bounding box x and y are relative to the center of the element.
     return {
-      x: this.translateX,
-      y: this.translateY,
-      width: this.totalWidth / this.scale,
-      height: this.totalHeight / this.scale,
+      x: this.translateX + (minX+maxX)/2, //this.translateX,
+      y: this.translateY + (minY+maxY)/2, //this.translateY,
+      width: maxX - minX,
+      height: maxY - minY,
     };
   }
 
