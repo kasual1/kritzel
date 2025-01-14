@@ -87,8 +87,8 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
 
     //The bounding box x and y are relative to the center of the element.
     return {
-      x: this.translateX + (minX+maxX)/2, //this.translateX,
-      y: this.translateY + (minY+maxY)/2, //this.translateY,
+      x: this.translateX + minX /2, //this.translateX,
+      y: this.translateY + minY / 2, //this.translateY,
       width: maxX - minX,
       height: maxY - minY,
     };
