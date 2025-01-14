@@ -330,7 +330,9 @@ export class KritzelEngine {
                   />
                 </g>
 
-                <g>
+                <g style={{
+                  transform: `translate(${object.boundingBox.x - object.translateX}px, ${object.boundingBox.y - object.translateY}px)`,
+                }}>
                   {/**DEBUG BOUNDINGBOX */}
                   <line
                     x1="0"
