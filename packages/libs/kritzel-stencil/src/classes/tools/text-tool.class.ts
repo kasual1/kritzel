@@ -26,13 +26,14 @@ export class KritzelTextTool implements KritzelTool {
       text.width = text.width / kritzelViewportState.scale;
       text.height = text.height / kritzelViewportState.scale;
       text.fontSize = 16;
+      text.initializeZIndex();
 
       this.isWriting = true;
 
       kritzelEngineState.objects = [...kritzelEngineState.objects, text];
     }
   }
-  
+
   handleWheel(_event: WheelEvent): void {
     // Do nothing
   }

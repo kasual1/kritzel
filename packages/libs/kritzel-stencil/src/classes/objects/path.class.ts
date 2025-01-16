@@ -104,7 +104,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
       Math.min(...this.points.map((p) => p[0])),
       Math.min(...this.points.map((p) => p[1])),
     ];
-    
+
   }
 
   private setPosition(): void {
