@@ -1,7 +1,7 @@
 import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
 import { KritzelObject } from '../../interfaces/object.interface';
 import { KritzelSelection } from '../../interfaces/selection.interface';
-import { kritzelEngineState } from '../../stores/engine.store';
+import { getCurrentZIndex, kritzelEngineState } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
@@ -129,7 +129,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   }
 
   initializeZIndex(): void {
-    this.zIndex = kritzelEngineState.currentZIndex++;
+    this.zIndex = getCurrentZIndex();
   }
 
   isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {

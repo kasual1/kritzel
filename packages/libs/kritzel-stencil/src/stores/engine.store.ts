@@ -7,7 +7,6 @@ export interface KritzelEngineState {
   currentPath?: KritzelPath;
   objects: KritzelBaseObject<Element>[];
   showDebugPanel: boolean;
-  currentZIndex: number;
 }
 
 const { state: kritzelEngineState, set: setKritzelEngineState } = createStore<KritzelEngineState>({
@@ -15,9 +14,7 @@ const { state: kritzelEngineState, set: setKritzelEngineState } = createStore<Kr
   currentPath: undefined,
   objects: [],
   showDebugPanel: true,
-  currentZIndex: 0
 });
-
 
 export function findObjectById(id: string): KritzelBaseObject<any> | null  {
   for (const object of kritzelEngineState.objects) {
@@ -34,6 +31,10 @@ export function deselectAllObjects(): void {
   }
 
   kritzelEngineState.objects = [...kritzelEngineState.objects];
+}
+
+export function getCurrentZIndex(): number {
+  return kritzelEngineState.objects.length;
 }
 
 export { kritzelEngineState, setKritzelEngineState };
