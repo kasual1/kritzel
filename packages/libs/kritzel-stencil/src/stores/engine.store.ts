@@ -7,6 +7,7 @@ export interface KritzelEngineState {
   currentPath?: KritzelPath;
   objects: KritzelBaseObject<Element>[];
   showDebugPanel: boolean;
+  currentZIndex: number;
 }
 
 const { state: kritzelEngineState, set: setKritzelEngineState } = createStore<KritzelEngineState>({
@@ -14,6 +15,7 @@ const { state: kritzelEngineState, set: setKritzelEngineState } = createStore<Kr
   currentPath: undefined,
   objects: [],
   showDebugPanel: true,
+  currentZIndex: 0
 });
 
 

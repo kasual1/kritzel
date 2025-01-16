@@ -159,7 +159,7 @@ export class KritzelEngine {
                   position: 'absolute',
                   transform: object?.transformationMatrix,
                   opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
-                  zIndex: '0',
+                  zIndex: object.zIndex.toString(),
                 }}
               >
                 <g
@@ -333,35 +333,6 @@ export class KritzelEngine {
                 <g style={{
                   transform: `translate(${object.boundingBox.x - object.translateX}px, ${object.boundingBox.y - object.translateY}px)`,
                 }}>
-                  {/**DEBUG BOUNDINGBOX */}
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2={object.boundingBox.width}
-                    y2="0"
-                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  />
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2={object.boundingBox.height}
-                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  />
-                  <line
-                    x1="0"
-                    y1={object.boundingBox.height}
-                    x2={object.boundingBox.width}
-                    y2={object.boundingBox.height}
-                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  />
-                  <line
-                    x1={object.boundingBox.width}
-                    y1="0"
-                    x2={object.boundingBox.width}
-                    y2={object.boundingBox.height}
-                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  />
                 </g>
               </svg>
             );

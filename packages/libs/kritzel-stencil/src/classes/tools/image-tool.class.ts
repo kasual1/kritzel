@@ -61,6 +61,7 @@ export class KritzelImageTool implements KritzelTool {
 
         img.onload = () => {
           const image = new KritzelImage(img);
+          image.initializeZIndex();
           image.centerInViewport();
 
           const selectionGroup = new KrtizelSelectionGroup();

@@ -1,7 +1,8 @@
-import { KritzelBoundingBox } from "../../interfaces/bounding-box.interface";
-import { KritzelObject } from "../../interfaces/object.interface";
-import { KritzelSelection } from "../../interfaces/selection.interface";
-import { kritzelViewportState } from "../../stores/viewport.store";
+import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
+import { KritzelObject } from '../../interfaces/object.interface';
+import { KritzelSelection } from '../../interfaces/selection.interface';
+import { kritzelEngineState } from '../../stores/engine.store';
+import { kritzelViewportState } from '../../stores/viewport.store';
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   id: string;
@@ -21,6 +22,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   rotation: number = 0;
   markedForRemoval: boolean = false;
   isMounted: boolean = false;
+  zIndex: number = 0;
 
   _elementRef: T;
 
@@ -28,12 +30,12 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     stroke: {
       color: '#009999',
       size: 1,
-      style: 'solid'
+      style: 'solid',
     },
     handles: {
       color: 'black',
-      size: 5
-    }
+      size: 5,
+    },
   };
 
   get totalWidth(): number {
@@ -84,11 +86,10 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
       maxY = Math.max(maxY, corner.y);
     }
 
-
     //The bounding box x and y are relative to the center of the element.
     return {
-      x: this.translateX + minX /2, //this.translateX,
-      y: this.translateY + minY / 2, //this.translateY,
+      x: this.translateX + (minX + maxX) / 2, //this.translateX,
+      y: this.translateY + (minY + maxY) / 2, //this.translateY,
       width: maxX - minX,
       height: maxY - minY,
     };
@@ -127,14 +128,18 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     return Math.random().toString(36).substr(2, 9);
   }
 
+  initializeZIndex(): void {
+    this.zIndex = kritzelEngineState.currentZIndex++;
+  }
+
   isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {
     return true;
   }
 
   centerInViewport(): void {
     const scale = kritzelViewportState.scale;
-    this.translateX = (((window.innerWidth / 2) - (this.totalWidth / 2)) - kritzelViewportState.translateX) / scale;
-    this.translateY = (((window.innerHeight / 2) - (this.totalHeight / 2)) - kritzelViewportState.translateY) / scale;
+    this.translateX = (window.innerWidth / 2 - this.totalWidth / 2 - kritzelViewportState.translateX) / scale;
+    this.translateY = (window.innerHeight / 2 - this.totalHeight / 2 - kritzelViewportState.translateY) / scale;
   }
 
   move(startX: number, startY: number, endX: number, endY: number): void {
@@ -146,7 +151,6 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   }
 
   resize(x: number, y: number, width: number, height: number): void {
-
     if (width <= 1 || height <= 1) {
       return;
     }
@@ -170,5 +174,4 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     copiedObject.translateY += 25;
     return copiedObject;
   }
-
 }

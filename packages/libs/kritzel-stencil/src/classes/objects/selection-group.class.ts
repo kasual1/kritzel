@@ -19,6 +19,7 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 		this.opacity = 0.5;
 		this.scale = kritzelViewportState.scale;
 		this.padding = 5;
+    this.zIndex = 99999;
 	}
 
 	get length(): number {
