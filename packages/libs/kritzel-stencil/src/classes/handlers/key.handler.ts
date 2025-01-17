@@ -38,11 +38,11 @@ export class KritzelKeyHandler {
       this.handleMoveDown();
     }
 
-    if (event.key === '+' && event.ctrlKey && event.altKey && this.selectionState.selectionGroup) {
+    if (event.key === '*' && event.shiftKey && this.selectionState.selectionGroup) {
       this.handleMoveToTop();
     }
 
-    if (event.key === '-' && event.ctrlKey && event.altKey && this.selectionState.selectionGroup) {
+    if (event.key === '_' && event.shiftKey && this.selectionState.selectionGroup) {
       this.handleMoveToBottom();
     }
   }
@@ -108,7 +108,7 @@ export class KritzelKeyHandler {
   }
 
   private handleMoveToTop() {
-    const max = kritzelEngineState.objects.length;
+    const max = kritzelEngineState.objects.length + 1;
     this.selectionState.selectionGroup?.objects.forEach(obj => {
       obj.zIndex = max;
     });
@@ -117,7 +117,7 @@ export class KritzelKeyHandler {
   }
 
   private handleMoveToBottom() {
-    const min = 0;
+    const min = -1;
     this.selectionState.selectionGroup?.objects.forEach(obj => {
       obj.zIndex = min;
     });
