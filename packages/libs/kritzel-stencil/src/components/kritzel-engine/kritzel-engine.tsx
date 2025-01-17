@@ -183,7 +183,6 @@ export class KritzelEngine {
                           height: object?.height.toString(),
                           width: object?.width.toString(),
                           position: 'relative',
-                          zIndex: '-1',
                         }}
                         viewBox={object?.viewBox}
                       >
@@ -346,7 +345,7 @@ export class KritzelEngine {
               width: this.state.currentPath?.width.toString(),
               left: '0',
               top: '0',
-              zIndex: '1',
+              zIndex: this.state.currentPath?.zIndex.toString(),
               position: 'absolute',
               transform: this.state.currentPath?.transformationMatrix,
             }}
