@@ -60,10 +60,10 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
 
     // Calculate the corners of the unrotated rectangle
     const corners = [
-      { x: -halfWidth, y: -halfHeight },
-      { x: halfWidth, y: -halfHeight },
-      { x: halfWidth, y: halfHeight },
-      { x: -halfWidth, y: halfHeight },
+      { x: -halfWidth, y: -halfHeight }, // Top left
+      { x: halfWidth, y: -halfHeight }, // Top right
+      { x: halfWidth, y: halfHeight }, // Bottom right
+      { x: -halfWidth, y: halfHeight }, // Bottom left
     ];
 
     let minXOriginal = corners[0].x;
