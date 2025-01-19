@@ -1,7 +1,7 @@
 import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
 import { KritzelObject } from '../../interfaces/object.interface';
 import { KritzelSelection } from '../../interfaces/selection.interface';
-import { getCurrentZIndex, kritzelEngineState } from '../../stores/engine.store';
+import { getCurrentZIndex } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
@@ -54,7 +54,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     return this._elementRef;
   }
 
-  get boundingBox(): KritzelBoundingBox {
+  get boundingBox(): any {
     const halfWidth = this.totalWidth / this.scale / 2;
     const halfHeight = this.totalHeight / this.scale / 2;
 
@@ -65,6 +65,9 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
       { x: halfWidth, y: halfHeight },
       { x: -halfWidth, y: halfHeight },
     ];
+
+    let minXOriginal = corners[0].x;
+    let minYOriginal = corners[0].y;
 
     // Rotate the corners
     const rotatedCorners = corners.map(corner => {
@@ -90,6 +93,8 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     return {
       x: this.translateX + (minX + maxX) / 2, //this.translateX,
       y: this.translateY + (minY + maxY) / 2, //this.translateY,
+      minX: -(minXOriginal - minX),
+      minY: -(minYOriginal - minY),
       width: maxX - minX,
       height: maxY - minY,
     };

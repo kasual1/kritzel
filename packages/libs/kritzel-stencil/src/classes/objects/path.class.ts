@@ -21,14 +21,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   visible: boolean = true;
   options: KritzelPathOptions | undefined;
 
-  get transformationMatrix(): string {
-    const scale = 1 / this.scale;
-    const translateX = this.translateX;
-    const translateY = this.translateY;
-
-    return `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
-  }
-
   constructor(options: KritzelPathOptions) {
     super();
     this.options = options;
