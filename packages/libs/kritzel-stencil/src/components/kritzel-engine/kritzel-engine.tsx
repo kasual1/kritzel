@@ -136,6 +136,8 @@ export class KritzelEngine {
             <div>CurrentStateIndex: {this.history.currentStateIndex}</div>
             <div>Scale: {this.viewport.state.scale}</div>
             <div>ActiveTool: {this.state.activeTool.name}</div>
+            <div>CursorX: {this.viewport.state.cursorX}</div>
+            <div>CursorY: {this.viewport.state.cursorY}</div>
           </div>
         )}
 
