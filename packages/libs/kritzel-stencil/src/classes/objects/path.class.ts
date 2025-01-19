@@ -21,6 +21,46 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   visible: boolean = true;
   options: KritzelPathOptions | undefined;
 
+  override get boundingBox(): any {
+    const minX = Math.min(...this.points.map(p => p[0]));
+    const minY = Math.min(...this.points.map(p => p[1]));
+    const maxX = Math.max(...this.points.map(p => p[0]));
+    const maxY = Math.max(...this.points.map(p => p[1]));
+
+    const corners = [
+      { x: minX, y: minY }, // Top left
+      { x: maxX, y: minY }, // Top right
+      { x: maxX, y: maxY }, // Bottom right
+      { x: minX, y: maxY }, // Bottom left
+    ];
+
+    let minXOriginal = corners[0].x;
+    let minYOriginal = corners[0].y;
+
+    // Rotate the corners
+    const rotatedCorners = corners.map(corner => {
+      const rotatedX = corner.x * Math.cos(this.rotation) - corner.y * Math.sin(this.rotation);
+      const rotatedY = corner.x * Math.sin(this.rotation) + corner.y * Math.cos(this.rotation);
+      return { x: rotatedX, y: rotatedY };
+    });
+
+    // Find the min and max x and y values of the rotated corners
+    let minXRotated = Math.min(...rotatedCorners.map(p => p.x));
+    let maxXRotated = Math.max(...rotatedCorners.map(p => p.x));
+    let minYRotated = Math.min(...rotatedCorners.map(p => p.y));
+    let maxYRotated = Math.max(...rotatedCorners.map(p => p.y));
+
+    //The bounding box x and y are relative to the center of the element.
+    return {
+      x: this.translateX, //this.translateX,
+      y: this.translateY, //this.translateY,
+      minX: 0,
+      minY: 0,
+      width: maxXRotated - minXRotated,
+      height: maxYRotated - minYRotated,
+    };
+  }
+
   constructor(options: KritzelPathOptions) {
     super();
     this.options = options;
@@ -41,16 +81,11 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   }
 
   isInViewport(viewport: BoundingBox, scale: number): boolean {
-    return (
-      this.doesBoundingBoxIntersectViewport(viewport) &&
-      this.isLargeEnoughAtScale(scale) &&
-      this.isNotTooLargeAtScale(scale)
-    );
+    return this.doesBoundingBoxIntersectViewport(viewport) && this.isLargeEnoughAtScale(scale) && this.isNotTooLargeAtScale(scale);
   }
 
   resize(x: number | null, y: number | null, width: number, height: number): void {
-
-    if(width <= 1 || height <= 1) {
+    if (width <= 1 || height <= 1) {
       return;
     }
 
@@ -64,18 +99,9 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.d = this.generateSvgPath();
 
     const padding = this.strokeWidth;
-    this.width =
-      Math.max(...this.points.map((p) => p[0])) -
-      Math.min(...this.points.map((p) => p[0])) +
-      padding;
-    this.height =
-      Math.max(...this.points.map((p) => p[1])) -
-      Math.min(...this.points.map((p) => p[1])) +
-      padding;
-    this.topLeft = [
-      Math.min(...this.points.map((p) => p[0])),
-      Math.min(...this.points.map((p) => p[1])),
-    ];
+    this.width = Math.max(...this.points.map(p => p[0])) - Math.min(...this.points.map(p => p[0])) + padding;
+    this.height = Math.max(...this.points.map(p => p[1])) - Math.min(...this.points.map(p => p[1])) + padding;
+    this.topLeft = [Math.min(...this.points.map(p => p[0])), Math.min(...this.points.map(p => p[1]))];
 
     this.x = this.topLeft[0] - padding / 2;
     this.y = this.topLeft[1] - padding / 2;
@@ -85,19 +111,9 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   private initializeDimensions(): void {
     const padding = this.strokeWidth;
-    this.width =
-      Math.max(...this.points.map((p) => p[0])) -
-      Math.min(...this.points.map((p) => p[0])) +
-      padding;
-    this.height =
-      Math.max(...this.points.map((p) => p[1])) -
-      Math.min(...this.points.map((p) => p[1])) +
-      padding;
-    this.topLeft = [
-      Math.min(...this.points.map((p) => p[0])),
-      Math.min(...this.points.map((p) => p[1])),
-    ];
-
+    this.width = Math.max(...this.points.map(p => p[0])) - Math.min(...this.points.map(p => p[0])) + padding;
+    this.height = Math.max(...this.points.map(p => p[1])) - Math.min(...this.points.map(p => p[1])) + padding;
+    this.topLeft = [Math.min(...this.points.map(p => p[0])), Math.min(...this.points.map(p => p[1]))];
   }
 
   private setPosition(): void {
@@ -116,27 +132,24 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return this.getSvgPathFromStroke(stroke);
   }
 
-  private getStrokeFromPoints(
-    points: number[][],
-    strokeWidth: number
-  ): number[][] {
+  private getStrokeFromPoints(points: number[][], strokeWidth: number): number[][] {
     return getStroke(points, {
       size: strokeWidth,
       thinning: 0.5,
       smoothing: 0.5,
       streamline: 0.5,
-      easing: (t) => t,
+      easing: t => t,
       simulatePressure: true,
       last: true,
       start: {
         cap: true,
         taper: 0,
-        easing: (t) => t,
+        easing: t => t,
       },
       end: {
         cap: true,
         taper: 0,
-        easing: (t) => t,
+        easing: t => t,
       },
     });
   }
@@ -152,18 +165,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     let b = points[1];
     const c = points[2];
 
-    let result = `M${a[0].toFixed(2)},${a[1].toFixed(2)} Q${b[0].toFixed(
-      2
-    )},${b[1].toFixed(2)} ${KritzelMathHelper.average(b[0], c[0]).toFixed(
-      2
+    let result = `M${a[0].toFixed(2)},${a[1].toFixed(2)} Q${b[0].toFixed(2)},${b[1].toFixed(2)} ${KritzelMathHelper.average(b[0], c[0]).toFixed(
+      2,
     )},${KritzelMathHelper.average(b[1], c[1]).toFixed(2)} T`;
 
     for (let i = 2, max = len - 1; i < max; i++) {
       a = points[i];
       b = points[i + 1];
-      result += `${KritzelMathHelper.average(a[0], b[0]).toFixed(
-        2
-      )},${KritzelMathHelper.average(a[1], b[1]).toFixed(2)} `;
+      result += `${KritzelMathHelper.average(a[0], b[0]).toFixed(2)},${KritzelMathHelper.average(a[1], b[1]).toFixed(2)} `;
     }
 
     if (closed) {
@@ -173,12 +182,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return result;
   }
 
-  private doesBoundingBoxIntersectViewport(viewport: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  }): boolean {
+  private doesBoundingBoxIntersectViewport(viewport: { x: number; y: number; width: number; height: number }): boolean {
     return (
       this.boundingBox.x <= viewport.x + viewport.width &&
       this.boundingBox.x + this.boundingBox.width >= viewport.x &&
@@ -188,13 +192,10 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   }
 
   private isLargeEnoughAtScale(scale: number): boolean {
-    return (
-      (this.width / this.scale) * scale > 0.5 &&
-      (this.height / this.scale) * scale > 0.5
-    );
+    return (this.width / this.scale) * scale > 0.5 && (this.height / this.scale) * scale > 0.5;
   }
 
   private isNotTooLargeAtScale(scale: number): boolean {
-		return  (scale / this.scale) < 150;
+    return scale / this.scale < 150;
   }
 }
