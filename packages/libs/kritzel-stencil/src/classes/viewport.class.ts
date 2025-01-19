@@ -40,6 +40,9 @@ export class KritzelViewport {
   }
 
   handleMouseMove(event: MouseEvent): void{
+    this.state.cursorX = event.clientX;
+    this.state.cursorY = event.clientY;
+
     if (this.isDragging) {
       this.state.translateX -= this.state.startX - event.clientX;
       this.state.translateY -= this.state.startY - event.clientY;
