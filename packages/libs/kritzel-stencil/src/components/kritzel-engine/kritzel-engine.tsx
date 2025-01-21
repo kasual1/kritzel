@@ -334,6 +334,23 @@ export class KritzelEngine {
                 <g style={{
                   transform: `translate(${object.boundingBox.minX}px, ${object.boundingBox.minY}px)`,
                 }}>
+
+                  <foreignObject
+                    x={object.totalWidth.toString()}
+                    y="0"
+                    width="600px"
+                    height="600px"
+                    style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none'}}
+                  >
+
+                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                      <pre>tX: {object.translateX} ty: {object.translateY}</pre>
+                      <pre>width: {object.width} height: {object.height}</pre>
+                      <pre>{JSON.stringify(object.corners)}</pre>
+                      <pre>{JSON.stringify(object.rotatedCorners)}</pre>
+                    </div>
+                  </foreignObject>
+
                   {/**DEBUG BOUNDINGBOX */}
                   <line
                     x1="0"
