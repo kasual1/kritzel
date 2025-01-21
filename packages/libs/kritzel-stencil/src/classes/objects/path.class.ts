@@ -21,43 +21,67 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   visible: boolean = true;
   options: KritzelPathOptions | undefined;
 
+  debugInfoVisible: boolean = true;
+
+  corners: { x: number; y: number }[] = [];
+  rotatedCorners: { x: number; y: number }[] = [];
+
   override get boundingBox(): any {
     const minX = Math.min(...this.points.map(p => p[0]));
     const minY = Math.min(...this.points.map(p => p[1]));
     const maxX = Math.max(...this.points.map(p => p[0]));
     const maxY = Math.max(...this.points.map(p => p[1]));
 
-    const corners = [
+    this.corners = [
       { x: minX, y: minY }, // Top left
       { x: maxX, y: minY }, // Top right
       { x: maxX, y: maxY }, // Bottom right
       { x: minX, y: maxY }, // Bottom left
     ];
 
-    let minXOriginal = corners[0].x;
-    let minYOriginal = corners[0].y;
+    let minXOriginal = this.corners[0].x;
+    let minYOriginal = this.corners[0].y;
 
-    // Rotate the corners
-    const rotatedCorners = corners.map(corner => {
-      const rotatedX = corner.x * Math.cos(this.rotation) - corner.y * Math.sin(this.rotation);
-      const rotatedY = corner.x * Math.sin(this.rotation) + corner.y * Math.cos(this.rotation);
-      return { x: rotatedX, y: rotatedY };
+    const rotatedPoints = this.points.map(([x, y]) => {
+      const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
+      const rotatedY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation);
+      return [rotatedX, rotatedY];
     });
 
-    // Find the min and max x and y values of the rotated corners
-    let minXRotated = Math.min(...rotatedCorners.map(p => p.x));
-    let maxXRotated = Math.max(...rotatedCorners.map(p => p.x));
-    let minYRotated = Math.min(...rotatedCorners.map(p => p.y));
-    let maxYRotated = Math.max(...rotatedCorners.map(p => p.y));
+    const minXRotated = Math.min(...rotatedPoints.map(p => p[0]));
+    const minYRotated = Math.min(...rotatedPoints.map(p => p[1]));
+    const maxXRotated = Math.max(...rotatedPoints.map(p => p[0]));
+    const maxYRotated = Math.max(...rotatedPoints.map(p => p[1]));
 
-    //The bounding box x and y are relative to the center of the element.
+    this.rotatedCorners = [
+      { x: minXRotated, y: minYRotated }, // Top left
+      { x: maxXRotated, y: minYRotated }, // Top right
+      { x: maxXRotated, y: maxYRotated }, // Bottom right
+      { x: minXRotated, y: maxYRotated }, // Bottom left
+    ];
+
+    const width = Math.floor(maxXRotated - minXRotated);
+    const height = Math.floor(maxYRotated - minYRotated);
+
+    const halfWidth = width / this.scale / 2;
+    const halfHeight = height / this.scale / 2;
+
+    // Calculate the corners of the unrotated rectangle
+    this.corners = [
+      { x: -halfWidth, y: -halfHeight }, // Top left
+      { x: halfWidth, y: -halfHeight }, // Top right
+      { x: halfWidth, y: halfHeight }, // Bottom right
+      { x: -halfWidth, y: halfHeight }, // Bottom left
+    ];
+
+
     return {
-      x: this.translateX, //this.translateX,
-      y: this.translateY, //this.translateY,
-      minX: 0,
-      minY: 0,
-      width: maxXRotated - minXRotated,
-      height: maxYRotated - minYRotated,
+      x: this.translateX,
+      y: this.translateY,
+      minX: (this.totalWidth - width) / 2,
+      minY: (this.totalHeight - height) / 2,
+      width: (maxXRotated - minXRotated) + this.padding,
+      height: (maxYRotated - minYRotated) + this.padding,
     };
   }
 
@@ -75,7 +99,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     this.d = this.generateSvgPath();
 
-    this.initializeDimensions();
+    this.updateDimensions();
     this.setPosition();
     this.updateTranslation();
   }
@@ -109,11 +133,22 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateY = y;
   }
 
-  private initializeDimensions(): void {
+  override rotate(value: number): void {
+    super.rotate(value);
+    this.updateDimensions();
+  }
+
+  private updateDimensions(): void {
     const padding = this.strokeWidth;
-    this.width = Math.max(...this.points.map(p => p[0])) - Math.min(...this.points.map(p => p[0])) + padding;
-    this.height = Math.max(...this.points.map(p => p[1])) - Math.min(...this.points.map(p => p[1])) + padding;
-    this.topLeft = [Math.min(...this.points.map(p => p[0])), Math.min(...this.points.map(p => p[1]))];
+    const rotatedPoints = this.points.map(([x, y]) => {
+      const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
+      const rotatedY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation);
+      return [rotatedX, rotatedY];
+    });
+
+    this.width = Math.max(...rotatedPoints.map(p => p[0])) - Math.min(...rotatedPoints.map(p => p[0])) + padding;
+    this.height = Math.max(...rotatedPoints.map(p => p[1])) - Math.min(...rotatedPoints.map(p => p[1])) + padding;
+    this.topLeft = [Math.min(...rotatedPoints.map(p => p[0])), Math.min(...rotatedPoints.map(p => p[1]))];
   }
 
   private setPosition(): void {
