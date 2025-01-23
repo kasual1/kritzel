@@ -23,24 +23,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   debugInfoVisible: boolean = true;
 
-  corners: { x: number; y: number }[] = [];
-  rotatedCorners: { x: number; y: number }[] = [];
-
   override get boundingBox(): any {
-    const minX = Math.min(...this.points.map(p => p[0]));
-    const minY = Math.min(...this.points.map(p => p[1]));
-    const maxX = Math.max(...this.points.map(p => p[0]));
-    const maxY = Math.max(...this.points.map(p => p[1]));
-
-    this.corners = [
-      { x: minX, y: minY }, // Top left
-      { x: maxX, y: minY }, // Top right
-      { x: maxX, y: maxY }, // Bottom right
-      { x: minX, y: maxY }, // Bottom left
-    ];
-
-    let minXOriginal = this.corners[0].x;
-    let minYOriginal = this.corners[0].y;
 
     const rotatedPoints = this.points.map(([x, y]) => {
       const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
@@ -53,35 +36,16 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     const maxXRotated = Math.max(...rotatedPoints.map(p => p[0]));
     const maxYRotated = Math.max(...rotatedPoints.map(p => p[1]));
 
-    this.rotatedCorners = [
-      { x: minXRotated, y: minYRotated }, // Top left
-      { x: maxXRotated, y: minYRotated }, // Top right
-      { x: maxXRotated, y: maxYRotated }, // Bottom right
-      { x: minXRotated, y: maxYRotated }, // Bottom left
-    ];
-
-    const width = Math.floor(maxXRotated - minXRotated);
-    const height = Math.floor(maxYRotated - minYRotated);
-
-    const halfWidth = width / this.scale / 2;
-    const halfHeight = height / this.scale / 2;
-
-    // Calculate the corners of the unrotated rectangle
-    this.corners = [
-      { x: -halfWidth, y: -halfHeight }, // Top left
-      { x: halfWidth, y: -halfHeight }, // Top right
-      { x: halfWidth, y: halfHeight }, // Bottom right
-      { x: -halfWidth, y: halfHeight }, // Bottom left
-    ];
-
+    const width = Math.floor(maxXRotated - minXRotated) + this.strokeWidth;
+    const height = Math.floor(maxYRotated - minYRotated) + this.strokeWidth;
 
     return {
       x: this.translateX,
       y: this.translateY,
       minX: (this.totalWidth - width) / 2,
       minY: (this.totalHeight - height) / 2,
-      width: (maxXRotated - minXRotated) + this.padding,
-      height: (maxYRotated - minYRotated) + this.padding,
+      width: (maxXRotated - minXRotated) + this.strokeWidth,
+      height: (maxYRotated - minYRotated) + this.strokeWidth,
     };
   }
 
