@@ -195,30 +195,4 @@ export class KritzelSelectionHandler {
     return box1.x < box2.x + box2.width && box1.x + box1.width > box2.x && box1.y < box2.y + box2.height && box1.y + box1.height > box2.y;
   }
 
-  // private isClickWithinRotatedElement(event, element, rotationDegrees) {
-  //   // Get the element's position and dimensions
-  //   const rect = element.getBoundingClientRect();
-  //   const centerX = rect.left + rect.width / 2;
-  //   const centerY = rect.top + rect.height / 2;
-
-  //   // Get the click coordinates relative to the element's center
-  //   const clickX = event.clientX - centerX;
-  //   const clickY = event.clientY - centerY;
-
-  //   // Convert rotation degrees to radians
-  //   const rotationRadians = rotationDegrees * Math.PI / 180;
-
-  //   // Rotate the click coordinates back to the element's original orientation
-  //   const rotatedClickX = clickX * Math.cos(-rotationRadians) - clickY * Math.sin(-rotationRadians);
-  //   const rotatedClickY = clickX * Math.sin(-rotationRadians) + clickY * Math.cos(-rotationRadians);
-
-  //   // Check if the rotated click coordinates are within the element's original bounds
-  //   return (
-  //     rotatedClickX >= -rect.width / 2 &&
-  //     rotatedClickX <= rect.width / 2 &&
-  //     rotatedClickY >= -rect.height / 2 &&
-  //     rotatedClickY <= rect.height / 2
-  //   );
-  // }
-
 }

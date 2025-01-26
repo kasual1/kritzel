@@ -346,8 +346,7 @@ export class KritzelEngine {
                     <div style={{ whiteSpace: 'pre-wrap' }}>
                       <pre>tX: {object.translateX} ty: {object.translateY}</pre>
                       <pre>width: {object.width} height: {object.height}</pre>
-                      <pre>{JSON.stringify(object.corners)}</pre>
-                      <pre>{JSON.stringify(object.rotatedCorners)}</pre>
+                      <pre>{JSON.stringify(object.boundingBox)}</pre>
                     </div>
                   </foreignObject>
 
