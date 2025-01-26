@@ -24,7 +24,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   debugInfoVisible: boolean = true;
 
   override get boundingBox(): any {
-
     const rotatedPoints = this.points.map(([x, y]) => {
       const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
       const rotatedY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation);
@@ -36,14 +35,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     const maxXRotated = Math.max(...rotatedPoints.map(p => p[0]));
     const maxYRotated = Math.max(...rotatedPoints.map(p => p[1]));
 
-    const width = Math.floor(maxXRotated - minXRotated) + this.strokeWidth;
-    const height = Math.floor(maxYRotated - minYRotated) + this.strokeWidth;
+    const totalWidthRotated = Math.floor(maxXRotated - minXRotated) + this.strokeWidth;
+    const totalHeightRotated = Math.floor(maxYRotated - minYRotated) + this.strokeWidth;
 
     return {
-      x: this.translateX,
-      y: this.translateY,
-      minX: (this.totalWidth - width) / 2,
-      minY: (this.totalHeight - height) / 2,
+      x: this.translateX + ((this.totalWidth - totalWidthRotated) / 2),
+      y: this.translateY + ((this.totalHeight - totalHeightRotated) / 2),
+      minX: (this.totalWidth - totalWidthRotated) / 2,
+      minY: (this.totalHeight - totalHeightRotated) / 2,
       width: (maxXRotated - minXRotated) + this.strokeWidth,
       height: (maxYRotated - minYRotated) + this.strokeWidth,
     };

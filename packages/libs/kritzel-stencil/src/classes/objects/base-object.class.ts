@@ -26,9 +26,6 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
 
   debugInfoVisible: boolean = false;
 
-  corners: { x: number; y: number }[] = [];
-  rotatedCorners: { x: number; y: number }[] = [];
-
   _elementRef: T;
 
   selection: KritzelSelection = {
@@ -64,30 +61,30 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     const halfHeight = this.totalHeight / this.scale / 2;
 
     // Calculate the corners of the unrotated rectangle
-    this.corners = [
+    const corners = [
       { x: -halfWidth, y: -halfHeight }, // Top left
       { x: halfWidth, y: -halfHeight }, // Top right
       { x: halfWidth, y: halfHeight }, // Bottom right
       { x: -halfWidth, y: halfHeight }, // Bottom left
     ];
 
-    let minXOriginal = this.corners[0].x;
-    let minYOriginal = this.corners[0].y;
+    let minXOriginal = corners[0].x;
+    let minYOriginal = corners[0].y;
 
     // Rotate the corners
-    this.rotatedCorners = this.corners.map(corner => {
+    const rotatedCorners = corners.map(corner => {
       const rotatedX = corner.x * Math.cos(this.rotation) - corner.y * Math.sin(this.rotation);
       const rotatedY = corner.x * Math.sin(this.rotation) + corner.y * Math.cos(this.rotation);
       return { x: rotatedX, y: rotatedY };
     });
 
     // Find the min and max x and y values of the rotated corners
-    let minX = this.rotatedCorners[0].x;
-    let maxX = this.rotatedCorners[0].x;
-    let minY = this.rotatedCorners[0].y;
-    let maxY = this.rotatedCorners[0].y;
+    let minX = rotatedCorners[0].x;
+    let maxX = rotatedCorners[0].x;
+    let minY = rotatedCorners[0].y;
+    let maxY = rotatedCorners[0].y;
 
-    for (const corner of this.rotatedCorners) {
+    for (const corner of rotatedCorners) {
       minX = Math.min(minX, corner.x);
       maxX = Math.max(maxX, corner.x);
       minY = Math.min(minY, corner.y);
