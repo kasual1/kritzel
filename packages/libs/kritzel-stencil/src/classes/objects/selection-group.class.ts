@@ -112,11 +112,11 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 	}
 
 	private updateBoundingBox() {
-		this.minX = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateX), this.objects[0].translateX);
-		this.maxX = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateX + obj.totalWidth), this.objects[0].translateX + this.objects[0].totalWidth);
+		this.minX = this.objects.reduce((acc, obj) => Math.min(acc, obj.boundingBox.x), this.objects[0].boundingBox.x);
+		this.maxX = this.objects.reduce((acc, obj) => Math.max(acc, obj.boundingBox.x + obj.boundingBox.width), this.objects[0].boundingBox.x + this.objects[0].boundingBox.width);
 
-		this.minY = this.objects.reduce((acc, obj) => Math.min(acc, obj.translateY), this.objects[0].translateY);
-		this.maxY = this.objects.reduce((acc, obj) => Math.max(acc, obj.translateY + obj.totalHeight), this.objects[0].translateY + this.objects[0].totalHeight);
+		this.minY = this.objects.reduce((acc, obj) => Math.min(acc, obj.boundingBox.y), this.objects[0].boundingBox.y);
+		this.maxY = this.objects.reduce((acc, obj) => Math.max(acc, obj.boundingBox.y + obj.boundingBox.height), this.objects[0].boundingBox.y + this.objects[0].boundingBox.height);
 
 		this.translateX = this.minX - this.padding / this.scale;
 		this.translateY = this.minY - this.padding / this.scale;
