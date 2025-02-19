@@ -95,8 +95,8 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
     return {
       x: this.translateX + (minX + maxX) / 2, //this.translateX,
       y: this.translateY + (minY + maxY) / 2, //this.translateY,
-      minX: -(minXOriginal - minX),
-      minY: -(minYOriginal - minY),
+      deltaX: -(minXOriginal - minX),
+      deltaY: -(minYOriginal - minY),
       width: maxX - minX,
       height: maxY - minY,
     };
