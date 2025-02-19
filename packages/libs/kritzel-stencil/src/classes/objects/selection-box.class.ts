@@ -12,7 +12,7 @@ export class KrtizelSelectionBox extends KritzelBaseObject<HTMLElement> {
 		this.scale = kritzelViewportState.scale;
 		this.height = 0;
 		this.width = 0;
-    this.zIndex = 99999;
+    	this.zIndex = 99999;
 	}
 
 }

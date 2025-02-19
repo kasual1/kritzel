@@ -332,7 +332,7 @@ export class KritzelEngine {
                 </g>
 
                 <g style={{
-                  transform: `translate(${object.boundingBox.minX}px, ${object.boundingBox.minY}px)`,
+                  transform: `translate(${object.boundingBox.deltaX}px, ${object.boundingBox.deltaY}px)`,
                 }}>
 
                   <foreignObject
