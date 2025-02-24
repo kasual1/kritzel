@@ -1,5 +1,4 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
-import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
 import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
 import { kritzelEngineState, findObjectById } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
@@ -154,24 +153,15 @@ export class KritzelSelectionHandler {
   }
 
   private updateSelectedObjects(): void {
-    const scale = kritzelViewportState.scale;
-
-    const objectBox: KritzelBoundingBox = {
-      x: this.selectionState.selectionBox.translateX,
-      y: this.selectionState.selectionBox.translateY,
-      width: this.selectionState.selectionBox.width / scale,
-      height: this.selectionState.selectionBox.height / scale,
-    };
-
     kritzelEngineState.objects
       .filter(o => !(o instanceof KrtizelSelectionBox))
       .forEach(object => {
-        const objectPolygon = this.applyRotationToBox(object.translateX, object.translateY, object.totalWidth, object.totalHeight, object.rotation);
+        const objectPolygon = this.applyRotationToBox(object.translateX, object.translateY, object.totalWidth / object.scale, object.totalHeight / object.scale, object.rotation);
         const selectionBoxPolygon = this.applyRotationToBox(
           this.selectionState.selectionBox.translateX,
           this.selectionState.selectionBox.translateY,
-          this.selectionState.selectionBox.width,
-          this.selectionState.selectionBox.height,
+          this.selectionState.selectionBox.width /  kritzelViewportState.scale,
+          this.selectionState.selectionBox.height /  kritzelViewportState.scale,
           0,
         );
 
@@ -296,9 +286,5 @@ export class KritzelSelectionHandler {
     } else {
       kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionBox))];
     }
-  }
-
-  private isBoundingBoxOverlapping(box1: { x: number; y: number; width: number; height: number }, box2: { x: number; y: number; width: number; height: number }): boolean {
-    return box1.x < box2.x + box2.width && box1.x + box1.width > box2.x && box1.y < box2.y + box2.height && box1.y + box1.height > box2.y;
   }
 }
