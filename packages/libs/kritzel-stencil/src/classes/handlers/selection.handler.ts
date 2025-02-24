@@ -1,20 +1,12 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
+import { KritzelPoint } from '../../interfaces/point.interface';
+import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
 import { kritzelEngineState, findObjectById } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KrtizelSelectionGroup } from '../objects/selection-group.class';
-interface Point {
-  x: number;
-  y: number;
-}
 
-interface Polygon {
-  bottomLeft: Point;
-  bottomRight: Point;
-  topLeft: Point;
-  topRight: Point;
-}
 export class KritzelSelectionHandler {
   selectionState: KritzelSelectionState;
 
@@ -176,7 +168,7 @@ export class KritzelSelectionHandler {
       });
   }
 
-  private applyRotationToBox(x: number, y: number, width: number, height: number, rotation): Polygon {
+  private applyRotationToBox(x: number, y: number, width: number, height: number, rotation): KritzelPolygon {
     const cx = x + width / 2;
     const cy = y + height / 2;
     const angle = rotation;
@@ -196,10 +188,10 @@ export class KritzelSelectionHandler {
       return acc;
     }, {});
 
-    return rotatedCorners as Polygon;
+    return rotatedCorners as KritzelPolygon;
   }
 
-  private doPolygonsIntersect(polygon1: Polygon, polygon2: Polygon): boolean {
+  private doPolygonsIntersect(polygon1: KritzelPolygon, polygon2: KritzelPolygon): boolean {
     // 1. Convert polygons to array of points for easier processing
     const points1 = [polygon1.bottomLeft, polygon1.bottomRight, polygon1.topRight, polygon1.topLeft];
     const points2 = [polygon2.bottomLeft, polygon2.bottomRight, polygon2.topRight, polygon2.topLeft];
@@ -236,7 +228,7 @@ export class KritzelSelectionHandler {
     return false; // No intersection found
   }
 
-  isPointInPolygon(point: Point, polygon: Point[]): boolean {
+  isPointInPolygon(point: KritzelPoint, polygon: KritzelPoint[]): boolean {
     let inside = false;
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
       const xi = polygon[i].x,
@@ -250,7 +242,7 @@ export class KritzelSelectionHandler {
     return inside;
   }
 
-  intersectLines(p1a: Point, p1b: Point, p2a: Point, p2b: Point): boolean {
+  intersectLines(p1a: KritzelPoint, p1b: KritzelPoint, p2a: KritzelPoint, p2b: KritzelPoint): boolean {
     const det = (p1b.x - p1a.x) * (p2b.y - p2a.y) - (p1b.y - p1a.y) * (p2b.x - p2a.x);
     if (det === 0) {
       return false; // Lines are parallel
