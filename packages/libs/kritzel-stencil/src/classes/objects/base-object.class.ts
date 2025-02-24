@@ -1,5 +1,6 @@
 import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
 import { KritzelObject } from '../../interfaces/object.interface';
+import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSelection } from '../../interfaces/selection.interface';
 import { getCurrentZIndex } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
@@ -64,6 +65,29 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
       height: this.totalHeight / this.scale,
     };
   }
+
+  get rotatedPolygon(): KritzelPolygon {
+      const cx = this.translateX + this.width / 2;
+      const cy = this.translateY + this.height / 2;
+      const angle = this.rotation;
+  
+      const corners = {
+        topLeft: { x: this.translateX, y: this.translateY },
+        topRight: { x: this.translateX + this.width, y: this.translateY },
+        bottomRight: { x: this.translateX + this.width, y: this.translateY + this.height },
+        bottomLeft: { x: this.translateX, y: this.translateY + this.height },
+      };
+  
+      const rotatedCorners = Object.keys(corners).reduce((acc, key) => {
+        const corner = corners[key];
+        const rotatedX = Math.cos(angle) * (corner.x - cx) - Math.sin(angle) * (corner.y - cy) + cx;
+        const rotatedY = Math.sin(angle) * (corner.x - cx) + Math.cos(angle) * (corner.y - cy) + cy;
+        acc[key] = { x: rotatedX, y: rotatedY };
+        return acc;
+      }, {});
+  
+      return rotatedCorners as KritzelPolygon;
+    }
 
   get viewBox(): string {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
