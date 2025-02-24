@@ -23,34 +23,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   debugInfoVisible: boolean = true;
 
-  override get boundingBox(): any {
-    const halfStrokeWidth = this.strokeWidth / 2;
-    const rotatedPoints = this.points.map(([x, y]) => {
-      const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
-      const rotatedY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation);
-      return [rotatedX, rotatedY];
-    });
-
-
-    const minXRotated = Math.min(...rotatedPoints.map(p => p[0] - halfStrokeWidth));
-    const minYRotated = Math.min(...rotatedPoints.map(p => p[1] - halfStrokeWidth));
-    const maxXRotated = Math.max(...rotatedPoints.map(p => p[0] + halfStrokeWidth));
-    const maxYRotated = Math.max(...rotatedPoints.map(p => p[1] + halfStrokeWidth));
-
-    const totalWidthRotated = Math.floor(maxXRotated - minXRotated);
-    const totalHeightRotated = Math.floor(maxYRotated - minYRotated);
-
-
-    return {
-      deltaX: ((this.width - totalWidthRotated) / 2),
-      deltaY: ((this.height - totalHeightRotated) / 2),
-      x: this.translateX + ((this.totalWidth - totalWidthRotated) / 2),
-      y: this.translateY + ((this.totalHeight - totalHeightRotated) / 2),
-      width: (maxXRotated - minXRotated),
-      height: (maxYRotated - minYRotated),
-    };
-  }
-
   constructor(options: KritzelPathOptions) {
     super();
     this.options = options;
