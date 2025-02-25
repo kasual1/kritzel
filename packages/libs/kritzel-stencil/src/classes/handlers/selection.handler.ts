@@ -149,12 +149,11 @@ export class KritzelSelectionHandler {
       .forEach(object => {
         const objectPolygon = object.rotatedPolygon;
         const selectionBoxPolygon = this.selectionState.selectionBox.rotatedPolygon;
-
-        if (KritzelGeometryHelper.doPolygonsIntersect(objectPolygon, selectionBoxPolygon)) {
-          object.selected = true;
-        } else {
-          object.selected = false;
-        }
+        
+        object.selected = KritzelGeometryHelper.doPolygonsIntersect(
+          objectPolygon,
+          selectionBoxPolygon
+        );
       });
   }
 
