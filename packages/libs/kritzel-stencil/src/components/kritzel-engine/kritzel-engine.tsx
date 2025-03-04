@@ -331,56 +331,6 @@ export class KritzelEngine {
                   />
                 </g>
 
-                <g style={{
-                  transform: `translate(${object.boundingBox.deltaX}px, ${object.boundingBox.deltaY}px)`,
-                }}>
-
-                  <foreignObject
-                    x={object.totalWidth.toString()}
-                    y="0"
-                    width="600px"
-                    height="600px"
-                    style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none'}}
-                  >
-
-                    <div style={{ whiteSpace: 'pre-wrap' }}>
-                      <pre>tX: {object.translateX} ty: {object.translateY}</pre>
-                      <pre>width: {object.width} height: {object.height}</pre>
-                      <pre>{JSON.stringify(object.boundingBox)}</pre>
-                    </div>
-                  </foreignObject>
-
-                  {/**DEBUG BOUNDINGBOX */}
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2={object.boundingBox.width}
-                    y2="0"
-                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  />
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2={object.boundingBox.height}
-                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  />
-                  <line
-                    x1="0"
-                    y1={object.boundingBox.height}
-                    x2={object.boundingBox.width}
-                    y2={object.boundingBox.height}
-                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  />
-                  <line
-                    x1={object.boundingBox.width}
-                    y1="0"
-                    x2={object.boundingBox.width}
-                    y2={object.boundingBox.height}
-                    style={{ stroke: 'orange', strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                  />
-
-                </g>
               </svg>
             );
           })}
