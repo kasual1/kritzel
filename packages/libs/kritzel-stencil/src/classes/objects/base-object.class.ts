@@ -87,7 +87,52 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
       }, {});
   
       return rotatedCorners as KritzelPolygon;
-    }
+  }
+  
+
+  get minXRotated(): number {
+    const corners = [
+      this.rotatedPolygon.topLeft.x,
+      this.rotatedPolygon.topRight.x,
+      this.rotatedPolygon.bottomRight.x,
+      this.rotatedPolygon.bottomLeft.x,
+    ];
+
+    return Math.min(...corners);
+  }
+
+  get minYRotated(): number {
+    const corners = [
+      this.rotatedPolygon.topLeft.y,
+      this.rotatedPolygon.topRight.y,
+      this.rotatedPolygon.bottomRight.y,
+      this.rotatedPolygon.bottomLeft.y,
+    ];
+
+    return Math.min(...corners);
+  }
+
+  get maxXRotated(): number {
+    const corners = [
+      this.rotatedPolygon.topLeft.x,
+      this.rotatedPolygon.topRight.x,
+      this.rotatedPolygon.bottomRight.x,
+      this.rotatedPolygon.bottomLeft.x,
+    ];
+
+    return Math.max(...corners);
+  }
+
+  get maxYRotated(): number {
+    const corners = [
+      this.rotatedPolygon.topLeft.y,
+      this.rotatedPolygon.topRight.y,
+      this.rotatedPolygon.bottomRight.y,
+      this.rotatedPolygon.bottomLeft.y,
+    ];
+
+    return Math.max(...corners);
+  }
 
   get viewBox(): string {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;

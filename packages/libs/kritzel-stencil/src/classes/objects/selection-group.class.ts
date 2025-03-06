@@ -19,7 +19,7 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 		this.opacity = 0.5;
 		this.scale = kritzelViewportState.scale;
 		this.padding = 5;
-    this.zIndex = 99999;
+		this.zIndex = 99999;
 	}
 
 	get length(): number {
@@ -55,9 +55,9 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 		});
 
 		this.unchangedObjects.forEach(obj => {
-      obj.translateX += deltaX;
-      obj.translateY += deltaY;
-    });
+			obj.translateX += deltaX;
+			obj.translateY += deltaY;
+		});
 	}
 
 	override resize(x: number, y: number, width: number, height: number): void {
@@ -112,25 +112,43 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 	}
 
 	private updateBoundingBox() {
-		this.minX = this.objects.reduce((acc, obj) => Math.min(acc, obj.boundingBox.x), this.objects[0].boundingBox.x);
-		this.maxX = this.objects.reduce((acc, obj) => Math.max(acc, obj.boundingBox.x + obj.boundingBox.width), this.objects[0].boundingBox.x + this.objects[0].boundingBox.width);
+		if (this.objects.length === 1) {
+			this.updateCornersForSingleObject();
 
-		this.minY = this.objects.reduce((acc, obj) => Math.min(acc, obj.boundingBox.y), this.objects[0].boundingBox.y);
-		this.maxY = this.objects.reduce((acc, obj) => Math.max(acc, obj.boundingBox.y + obj.boundingBox.height), this.objects[0].boundingBox.y + this.objects[0].boundingBox.height);
+		} else {
+			this.updateCornersForMultipleObjects();
+		}
 
-		this.translateX = this.minX - this.padding / this.scale;
-		this.translateY = this.minY - this.padding / this.scale;
+		this.translateX = (this.minX - this.padding) / this.scale;
+		this.translateY = (this.minY - this.padding) / this.scale;
 
 		this.width = this.maxX - this.minX;
 		this.height = this.maxY - this.minY;
 	}
 
+	private updateCornersForSingleObject() {
+		const obj = this.objects[0];
+		this.minX = obj.boundingBox.x;
+		this.maxX = obj.boundingBox.x + obj.boundingBox.width;
+		this.minY = obj.boundingBox.y;
+		this.maxY = obj.boundingBox.y + obj.boundingBox.height;
+	}
+
+	private updateCornersForMultipleObjects() {
+		this.minX = Math.min(...this.objects.map(obj => obj.minXRotated));
+		this.maxX = Math.max(...this.objects.map(obj => obj.maxXRotated));
+
+		this.minY = Math.min(...this.objects.map(obj => obj.minYRotated));
+		this.maxY = Math.max(...this.objects.map(obj => obj.maxYRotated));
+	}
+
+
 	private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {
-    return obj.translateX + obj.totalWidth / 2 - this.translateX - this.totalWidth / 2;
+		return obj.translateX + obj.totalWidth / 2 - this.translateX - this.totalWidth / 2;
 	}
 
 	private getOffsetYToCenter(obj: KritzelBaseObject<any>): number {
-    return obj.translateY + obj.totalHeight / 2 - this.translateY - this.totalHeight / 2;
+		return obj.translateY + obj.totalHeight / 2 - this.translateY - this.totalHeight / 2;
 	}
 
 	private getUnchangedObject(objectId: string): KritzelBaseObject<any> {
