@@ -67,26 +67,26 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   }
 
   get rotatedPolygon(): KritzelPolygon {
-      const cx = this.translateX + this.width / 2;
-      const cy = this.translateY + this.height / 2;
-      const angle = this.rotation;
-  
-      const corners = {
-        topLeft: { x: this.translateX, y: this.translateY },
-        topRight: { x: this.translateX + this.width, y: this.translateY },
-        bottomRight: { x: this.translateX + this.width, y: this.translateY + this.height },
-        bottomLeft: { x: this.translateX, y: this.translateY + this.height },
-      };
-  
-      const rotatedCorners = Object.keys(corners).reduce((acc, key) => {
-        const corner = corners[key];
-        const rotatedX = Math.cos(angle) * (corner.x - cx) - Math.sin(angle) * (corner.y - cy) + cx;
-        const rotatedY = Math.sin(angle) * (corner.x - cx) + Math.cos(angle) * (corner.y - cy) + cy;
-        acc[key] = { x: rotatedX, y: rotatedY };
-        return acc;
-      }, {});
-  
-      return rotatedCorners as KritzelPolygon;
+    const cx = this.translateX + (this.width / 2) / this.scale;
+    const cy = this.translateY + (this.height / 2) / this.scale;
+    const angle = this.rotation;
+
+    const corners = {
+      topLeft: { x: this.translateX, y: this.translateY },
+      topRight: { x: this.translateX + this.width / this.scale, y: this.translateY },
+      bottomRight: { x: this.translateX + this.width / this.scale, y: this.translateY + this.height / this.scale },
+      bottomLeft: { x: this.translateX, y: this.translateY + this.height / this.scale },
+    };
+
+    const rotatedCorners = Object.keys(corners).reduce((acc, key) => {
+      const corner = corners[key];
+      const rotatedX = Math.cos(angle) * (corner.x - cx) - Math.sin(angle) * (corner.y - cy) + cx;
+      const rotatedY = Math.sin(angle) * (corner.x - cx) + Math.cos(angle) * (corner.y - cy) + cy;
+      acc[key] = { x: rotatedX, y: rotatedY };
+      return acc;
+    }, {});
+
+    return rotatedCorners as KritzelPolygon;
   }
   
 
