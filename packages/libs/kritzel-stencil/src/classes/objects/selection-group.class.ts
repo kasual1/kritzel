@@ -99,7 +99,7 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
 			child.translateX = (centerX + rotatedX - child.totalWidth / 2);
 			child.translateY = (centerY + rotatedY - child.totalHeight / 2);
-			child.rotation = value + unchangedChild.rotation;
+			child.rotation = this.objects.length === 1 ? value : value + unchangedChild.rotation;
 		});
 	}
 
