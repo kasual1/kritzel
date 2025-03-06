@@ -22,8 +22,6 @@ export class KritzelSelectionHandler {
       const isResizeHandleSelected = this.isHandleSelected(event);
       const isRotationHandleSelected = this.isRotationHandleSelected(event);
 
-      debugger;
-
       if (!selectedObject?.selected) {
         this.startSelection(event);
         this.updateSelection(event);
@@ -67,8 +65,6 @@ export class KritzelSelectionHandler {
     const path = event.composedPath().slice(1) as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = findObjectById(objectElement?.id);
-
-    console.log(path);
 
     if (!object) {
       return null;
