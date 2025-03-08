@@ -114,24 +114,23 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 	private updateBoundingBox() {
 		if (this.objects.length === 1) {
 			this.updateCornersForSingleObject();
-
 		} else {
 			this.updateCornersForMultipleObjects();
 		}
-
-		this.translateX = (this.minX - this.padding) / this.scale;
-		this.translateY = (this.minY - this.padding) / this.scale;
-
-		this.width = this.maxX - this.minX;
-		this.height = this.maxY - this.minY;
 	}
 
 	private updateCornersForSingleObject() {
 		const obj = this.objects[0];
-		this.minX = obj.boundingBox.x;
-		this.maxX = obj.boundingBox.x + obj.boundingBox.width;
-		this.minY = obj.boundingBox.y;
-		this.maxY = obj.boundingBox.y + obj.boundingBox.height;
+		this.minX = obj.boundingBox.x / this.scale;
+		this.maxX = obj.boundingBox.x / this.scale + obj.boundingBox.width;
+		this.minY = obj.boundingBox.y / this.scale;
+		this.maxY = obj.boundingBox.y / this.scale + obj.boundingBox.height;
+
+		this.translateX = (this.minX - this.padding) * this.scale;
+		this.translateY = (this.minY - this.padding) * this.scale;
+
+		this.width = (this.maxX - this.minX - this.padding) * this.scale;
+		this.height = (this.maxY - this.minY - this.padding) * this.scale;
 	}
 
 	private updateCornersForMultipleObjects() {
@@ -140,8 +139,13 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
 		this.minY = Math.min(...this.objects.map(obj => obj.minYRotated));
 		this.maxY = Math.max(...this.objects.map(obj => obj.maxYRotated));
-	}
 
+		this.translateX = (this.minX - this.padding);
+		this.translateY = (this.minY - this.padding);
+
+		this.width = (this.maxX - this.minX - this.padding) * this.scale;
+		this.height = (this.maxY - this.minY - this.padding) * this.scale;
+	}
 
 	private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {
 		return obj.translateX + obj.totalWidth / 2 - this.translateX - this.totalWidth / 2;
