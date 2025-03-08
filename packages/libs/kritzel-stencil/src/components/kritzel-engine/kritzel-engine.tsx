@@ -331,6 +331,28 @@ export class KritzelEngine {
                   />
                 </g>
 
+                <g style={{
+                  transform: `translate(${object.boundingBox.deltaX}px, ${object.boundingBox.deltaY}px)`,
+                }}>
+
+                  <foreignObject
+                    x={object.totalWidth.toString()}
+                    y="0"
+                    width="600px"
+                    height="600px"
+                    style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none'}}
+                  >
+
+                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                      <pre>translateX: {object.translateX} translateY: {object.translateY}</pre>
+                      <pre>width: {object.width} height: {object.height}</pre>
+                      <pre>scale: {object.scale}</pre>
+                    </div>
+                  </foreignObject>
+
+                </g>
+
+
               </svg>
             );
           })}

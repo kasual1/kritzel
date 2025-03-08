@@ -67,15 +67,18 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   }
 
   get rotatedPolygon(): KritzelPolygon {
-    const cx = this.translateX + (this.width / 2) / this.scale;
-    const cy = this.translateY + (this.height / 2) / this.scale;
+    const cx = (this.translateX + (this.width / 2)) / this.scale;
+    const cy = (this.translateY + (this.height / 2)) / this.scale;
     const angle = this.rotation;
+
+    const adjustedWidth = this.width / this.scale;
+    const adjustedHeight = this.height / this.scale;
 
     const corners = {
       topLeft: { x: this.translateX, y: this.translateY },
-      topRight: { x: this.translateX + this.width / this.scale, y: this.translateY },
-      bottomRight: { x: this.translateX + this.width / this.scale, y: this.translateY + this.height / this.scale },
-      bottomLeft: { x: this.translateX, y: this.translateY + this.height / this.scale },
+      topRight: { x: this.translateX + adjustedWidth, y: this.translateY },
+      bottomRight: { x: this.translateX + adjustedWidth, y: this.translateY + adjustedHeight },
+      bottomLeft: { x: this.translateX, y: this.translateY + adjustedHeight },
     };
 
     const rotatedCorners = Object.keys(corners).reduce((acc, key) => {
