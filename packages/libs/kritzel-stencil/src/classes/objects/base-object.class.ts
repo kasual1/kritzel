@@ -67,8 +67,8 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T> {
   }
 
   get rotatedPolygon(): KritzelPolygon {
-    const cx = (this.translateX + (this.width / 2)) / this.scale;
-    const cy = (this.translateY + (this.height / 2)) / this.scale;
+    const cx = (this.translateX + this.width / 2 / this.scale);
+    const cy = (this.translateY + this.height / 2 / this.scale);
     const angle = this.rotation;
 
     const adjustedWidth = this.width / this.scale;
