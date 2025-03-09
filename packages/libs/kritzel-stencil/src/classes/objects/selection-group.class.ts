@@ -17,7 +17,6 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.backgroundColor = 'rebeccapurple';
     this.opacity = 0.5;
     this.scale = kritzelViewportState.scale;
-    this.padding = 5;
     this.zIndex = 99999;
   }
 
@@ -80,8 +79,8 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override rotate(value: number): void {
     this.rotation = value;
 
-    const centerX = this.translateX + this.totalWidth / 2 / this.scale;
-    const centerY = this.translateY + this.totalHeight / 2 / this.scale;
+	const centerX = this.translateX + this.totalWidth / 2 / this.scale;
+	const centerY = this.translateY + this.totalHeight / 2 / this.scale;
 
     const angle = value;
     const cos = Math.cos(angle);
