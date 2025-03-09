@@ -338,15 +338,18 @@ export class KritzelEngine {
                   <foreignObject
                     x={object.totalWidth.toString()}
                     y="0"
-                    width="600px"
-                    height="600px"
+                    width="400px"
+                    height="110px"
                     style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none'}}
                   >
 
-                    <div style={{ whiteSpace: 'pre-wrap' }}>
-                      <pre>translateX: {object.translateX} translateY: {object.translateY}</pre>
-                      <pre>width: {object.width} height: {object.height}</pre>
-                      <pre>scale: {object.scale}</pre>
+                    <div style={{ width: '100%', height: '100%'}}>
+                      <div style={{ whiteSpace: 'nowrap'}}>translateX: {object.translateX}</div>
+                      <div style={{ whiteSpace: 'nowrap'}}>translateY: {object.translateY}</div>
+                      <div style={{ whiteSpace: 'nowrap'}}>width: {object.width}</div>
+                      <div style={{ whiteSpace: 'nowrap'}}>height: {object.height}</div>
+                      <div style={{ whiteSpace: 'nowrap'}}>scale: {object.scale}</div>
+                      <div style={{ whiteSpace: 'nowrap'}}>rotation: {object.rotation}</div>
                     </div>
                   </foreignObject>
 

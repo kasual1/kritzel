@@ -48,9 +48,7 @@ export class KritzelRotationHandler {
 			const cursorX = (event.clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
 			const cursorY = (event.clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
 
-			const currentRotation = Math.atan2(centerY - cursorY,
-				centerX - cursorX);
-
+			const currentRotation = Math.atan2(centerY - cursorY, centerX - cursorX);
 
 			this.selectionState.selectionGroup.rotate(currentRotation - this.initialRotation);
 

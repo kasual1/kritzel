@@ -16,7 +16,7 @@ export interface KritzelViewportState {
 const { state: kritzelViewportState, set: setKritzelViewportState } = createStore<KritzelViewportState>({
   cursorX: 0,
   cursorY: 0,
-  scale: 1,
+  scale: 0.9,
   scaleMax: 1000,
   scaleMin: 0.0001,
   scaleStep: 0.05,
