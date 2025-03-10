@@ -11,6 +11,8 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   initalHeight: number = this.lineHeight;
 
+	override debugInfoVisible: boolean = true;
+
   readonly rows: number = 1;
 
   get lineHeight(): number {

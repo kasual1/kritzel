@@ -5,6 +5,8 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 
 	img: HTMLImageElement;
 
+	override debugInfoVisible: boolean = true;
+
 	constructor(img: HTMLImageElement) {
 		super();
 		this.img = img;
