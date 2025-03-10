@@ -331,10 +331,7 @@ export class KritzelEngine {
                   />
                 </g>
 
-                <g style={{
-                  transform: `translate(${object.boundingBox.deltaX}px, ${object.boundingBox.deltaY}px)`,
-                }}>
-
+                <g>
                   <foreignObject
                     x={object.totalWidth.toString()}
                     y="0"
