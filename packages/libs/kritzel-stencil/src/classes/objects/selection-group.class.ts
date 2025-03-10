@@ -74,6 +74,7 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     });
 
     this.updateBoundingBox();
+    this.unchangedObjects = lodash.cloneDeep(this.objects);
   }
 
   override rotate(value: number): void {
