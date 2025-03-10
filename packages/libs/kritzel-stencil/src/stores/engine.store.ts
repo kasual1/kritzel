@@ -6,14 +6,14 @@ export interface KritzelEngineState {
   activeTool: KritzelTool;
   currentPath?: KritzelPath;
   objects: KritzelBaseObject<Element>[];
-  showDebugPanel: boolean;
+  showDebugInfo: boolean;
 }
 
 const { state: kritzelEngineState, set: setKritzelEngineState } = createStore<KritzelEngineState>({
   activeTool: undefined,
   currentPath: undefined,
   objects: [],
-  showDebugPanel: true,
+  showDebugInfo: false,
 });
 
 export function findObjectById(id: string): KritzelBaseObject<any> | null  {

@@ -82,7 +82,7 @@ export class KritzelEngine {
       }
 
       if (ev.key === 'd') {
-        this.state.showDebugPanel = !this.state.showDebugPanel;
+        this.state.showDebugInfo = !this.state.showDebugInfo;
       }
 
       if (ev.key === 's') {
@@ -127,7 +127,7 @@ export class KritzelEngine {
 
     return (
       <Host>
-        {this.state.showDebugPanel && (
+        {this.state.showDebugInfo && (
           <div class="debug-panel">
             <div>StartX: {this.viewport.state.startX}</div>
             <div>StartY: {this.viewport.state.startY}</div>
@@ -331,7 +331,7 @@ export class KritzelEngine {
                   />
                 </g>
 
-                <g>
+                <g style={{display: this.state.showDebugInfo ? 'block' : 'none'}}>
                   <foreignObject
                     x={object.totalWidth.toString()}
                     y="0"
