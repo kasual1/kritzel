@@ -114,10 +114,13 @@ export class KritzelSelectionHandler {
   private startSelection(event: MouseEvent): void {
     const { clientX, clientY } = event;
     const selectionBox = new KrtizelSelectionBox();
+
     this.dragStartX = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
     this.dragStartY = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
+
     selectionBox.translateX = this.dragStartX;
     selectionBox.translateY = this.dragStartY;
+    
     this.selectionState.selectionGroup = null;
     this.selectionState.selectionBox = selectionBox;
     this.selectionState.isSelecting = true;
