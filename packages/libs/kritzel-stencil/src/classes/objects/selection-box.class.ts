@@ -7,7 +7,7 @@ export class KrtizelSelectionBox extends KritzelBaseObject<HTMLElement> {
 
 	constructor() {
 		super();
-		this.backgroundColor = 'blue';
+		this.backgroundColor = '#009999';
 		this.opacity = 0.5;
 		this.scale = kritzelViewportState.scale;
 		this.height = 0;
