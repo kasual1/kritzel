@@ -32,6 +32,10 @@ export class KritzelEngine {
 
   state: KritzelEngineState = kritzelEngineState;
 
+  get isSelecting() {
+    return this.state.activeTool instanceof KritzelSelectionTool && this.state.activeTool.selectionState.isSelecting;
+  }
+
   componentWillLoad() {
     this.viewport = new KritzelViewport(this.host);
     this.state.activeTool = this.activeTool;
@@ -136,6 +140,7 @@ export class KritzelEngine {
             <div>CurrentStateIndex: {this.history.currentStateIndex}</div>
             <div>Scale: {this.viewport.state.scale}</div>
             <div>ActiveTool: {this.state.activeTool.name}</div>
+            <div>IsSelecting: {this.isSelecting ? 'true': 'false'}</div>
             <div>CursorX: {this.viewport.state.cursorX}</div>
             <div>CursorY: {this.viewport.state.cursorY}</div>
           </div>
@@ -236,7 +241,6 @@ export class KritzelEngine {
                           height: '100%',
                         }}
                       >
-                        This is an object selection
                       </div>
                     )}
 
@@ -247,7 +251,6 @@ export class KritzelEngine {
                           height: '100%',
                         }}
                       >
-                        This is selection box
                       </div>
                     )}
                   </foreignObject>
@@ -290,28 +293,29 @@ export class KritzelEngine {
                     cx="0"
                     cy="0"
                     r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+
                   />
                   <circle
                     class="selection-handle top-right"
                     cx={object.totalWidth}
                     cy="0"
                     r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="selection-handle bottom-left"
                     cx="0"
                     cy={object.totalHeight}
                     r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="selection-handle bottom-right"
                     cx={object.totalWidth}
                     cy={object.totalHeight}
                     r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <line
@@ -320,14 +324,14 @@ export class KritzelEngine {
                     x2={object.totalWidth / 2}
                     y2="-20"
                     style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="rotation-handle"
                     cx={object.totalWidth / 2}
                     cy="-20"
                     r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                 </g>
 
@@ -349,9 +353,7 @@ export class KritzelEngine {
                       <div style={{ whiteSpace: 'nowrap'}}>rotation: {object.rotation}</div>
                     </div>
                   </foreignObject>
-
                 </g>
-
 
               </svg>
             );
