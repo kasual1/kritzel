@@ -14,7 +14,7 @@ export class KritzelSelectionTool implements KritzelTool {
 	selectionState: KritzelSelectionState = {
 		selectionBox: null,
 		selectionGroup: null,
-    isSelecting: false,
+    	isSelecting: false,
 		isResizing: false,
 		isRotating: false,
 		isDragging: false,
