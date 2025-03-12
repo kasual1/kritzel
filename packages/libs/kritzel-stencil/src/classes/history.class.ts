@@ -20,6 +20,23 @@ export class KritzelHistory {
 
   handleMouseUp(event: MouseEvent) {
     if (KritzelClickHelper.isLeftClick(event)) {
+      const mostRecentSnapshot = this.snapshots[this.currentStateIndex];
+      const scaleChanged = mostRecentSnapshot.viewport.scale !== kritzelViewportState.scale;
+      const translateXChanged = mostRecentSnapshot.viewport.translateX !== kritzelViewportState.translateX;
+      const translateYChanged = mostRecentSnapshot.viewport.translateY !== kritzelViewportState.translateY;
+
+      if (scaleChanged || translateXChanged || translateYChanged) {
+        this.pushSnapshot({
+          ...mostRecentSnapshot,
+          viewport: {
+            ...mostRecentSnapshot.viewport,
+            translateX: kritzelViewportState.translateX,
+            translateY: kritzelViewportState.translateY,
+            scale: kritzelViewportState.scale,
+          },
+        });
+      }
+
       this.pushSnapshot({
         viewport: cloneDeep(kritzelViewportState),
         engine: cloneDeep(kritzelEngineState),
