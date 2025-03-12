@@ -37,6 +37,7 @@ export class KritzelHistory {
     const scaleChanged = mostRecentSnapshot.viewport.scale !== kritzelViewportState.scale;
     const translateXChanged = mostRecentSnapshot.viewport.translateX !== kritzelViewportState.translateX;
     const translateYChanged = mostRecentSnapshot.viewport.translateY !== kritzelViewportState.translateY;
+    const objectsLengthChanged = mostRecentSnapshot.engine.objects.length !== kritzelEngineState.objects.length;
 
     if (scaleChanged || translateXChanged || translateYChanged) {
       this.pushSnapshot({
@@ -50,10 +51,12 @@ export class KritzelHistory {
       });
     }
 
-    this.pushSnapshot({
-      viewport: cloneDeep(kritzelViewportState),
-      engine: cloneDeep(kritzelEngineState),
-    });
+    if (objectsLengthChanged) {
+      this.pushSnapshot({
+        viewport: cloneDeep(kritzelViewportState),
+        engine: cloneDeep(kritzelEngineState),
+      });
+    }
   }
 
   undo() {

@@ -36,6 +36,10 @@ export class KritzelEngine {
     return this.state.activeTool instanceof KritzelSelectionTool && this.state.activeTool.selectionState.isSelecting;
   }
 
+  get isSelectionActive() {
+    return this.state.activeTool instanceof KritzelSelectionTool && this.state.activeTool.selectionState.selectionGroup !== null;
+  }
+
   componentWillLoad() {
     this.viewport = new KritzelViewport(this.host);
     this.state.activeTool = this.activeTool;
@@ -141,6 +145,7 @@ export class KritzelEngine {
             <div>Scale: {this.viewport.state.scale}</div>
             <div>ActiveTool: {this.state.activeTool.name}</div>
             <div>IsSelecting: {this.isSelecting ? 'true': 'false'}</div>
+            <div>IsSelectionActive: {this.isSelectionActive ? 'true': 'false'}</div>
             <div>CursorX: {this.viewport.state.cursorX}</div>
             <div>CursorY: {this.viewport.state.cursorY}</div>
           </div>
