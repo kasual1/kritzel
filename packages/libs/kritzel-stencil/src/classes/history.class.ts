@@ -5,43 +5,55 @@ import { kritzelViewportState, setKritzelViewportState } from '../stores/viewpor
 import { KritzelSnapshot } from '../interfaces/snapshot.interface';
 
 export class KritzelHistory {
+  private static instance: KritzelHistory;
+
   snapshots: KritzelSnapshot[];
 
   currentStateIndex: number;
 
   constructor() {
+    if (KritzelHistory.instance) {
+      return KritzelHistory.instance;
+    }
+
     this.snapshots = [];
     this.currentStateIndex = -1;
     this.pushSnapshot({
       viewport: cloneDeep(kritzelViewportState),
       engine: cloneDeep(kritzelEngineState),
     });
+
+    KritzelHistory.instance = this;
   }
 
   handleMouseUp(event: MouseEvent) {
     if (KritzelClickHelper.isLeftClick(event)) {
-      const mostRecentSnapshot = this.snapshots[this.currentStateIndex];
-      const scaleChanged = mostRecentSnapshot.viewport.scale !== kritzelViewportState.scale;
-      const translateXChanged = mostRecentSnapshot.viewport.translateX !== kritzelViewportState.translateX;
-      const translateYChanged = mostRecentSnapshot.viewport.translateY !== kritzelViewportState.translateY;
+      this.createSnapshot();
+    }
+  }
 
-      if (scaleChanged || translateXChanged || translateYChanged) {
-        this.pushSnapshot({
-          ...mostRecentSnapshot,
-          viewport: {
-            ...mostRecentSnapshot.viewport,
-            translateX: kritzelViewportState.translateX,
-            translateY: kritzelViewportState.translateY,
-            scale: kritzelViewportState.scale,
-          },
-        });
-      }
+  createSnapshot() {
+    const mostRecentSnapshot = this.snapshots[this.currentStateIndex];
+    const scaleChanged = mostRecentSnapshot.viewport.scale !== kritzelViewportState.scale;
+    const translateXChanged = mostRecentSnapshot.viewport.translateX !== kritzelViewportState.translateX;
+    const translateYChanged = mostRecentSnapshot.viewport.translateY !== kritzelViewportState.translateY;
 
+    if (scaleChanged || translateXChanged || translateYChanged) {
       this.pushSnapshot({
-        viewport: cloneDeep(kritzelViewportState),
-        engine: cloneDeep(kritzelEngineState),
+        ...mostRecentSnapshot,
+        viewport: {
+          ...mostRecentSnapshot.viewport,
+          translateX: kritzelViewportState.translateX,
+          translateY: kritzelViewportState.translateY,
+          scale: kritzelViewportState.scale,
+        },
       });
     }
+
+    this.pushSnapshot({
+      viewport: cloneDeep(kritzelViewportState),
+      engine: cloneDeep(kritzelEngineState),
+    });
   }
 
   undo() {
