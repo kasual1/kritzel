@@ -78,8 +78,8 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override rotate(value: number): void {
     this.rotation = value;
 
-	const centerX = this.translateX + this.totalWidth / 2 / this.scale;
-	const centerY = this.translateY + this.totalHeight / 2 / this.scale;
+    const centerX = this.translateX + this.totalWidth / 2 / this.scale;
+    const centerY = this.translateY + this.totalHeight / 2 / this.scale;
 
     const angle = value;
     const cos = Math.cos(angle);
@@ -143,17 +143,17 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.height = (this.maxY - this.minY - this.padding) * this.scale;
   }
 
-private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {
-	const objCenterX = obj.translateX + obj.totalWidth / obj.scale / 2;
-	const groupCenterX = this.translateX + this.totalWidth / this.scale / 2;
-	return objCenterX - groupCenterX;
-}
+  private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {
+    const objCenterX = obj.translateX + obj.totalWidth / obj.scale / 2;
+    const groupCenterX = this.translateX + this.totalWidth / this.scale / 2;
+    return objCenterX - groupCenterX;
+  }
 
-private getOffsetYToCenter(obj: KritzelBaseObject<any>): number {
-	const objCenterY = obj.translateY + obj.totalHeight / obj.scale / 2;
-	const groupCenterY = this.translateY + this.totalHeight / this.scale / 2;
-	return objCenterY - groupCenterY;
-}
+  private getOffsetYToCenter(obj: KritzelBaseObject<any>): number {
+    const objCenterY = obj.translateY + obj.totalHeight / obj.scale / 2;
+    const groupCenterY = this.translateY + this.totalHeight / this.scale / 2;
+    return objCenterY - groupCenterY;
+  }
 
   private getUnchangedObject(objectId: string): KritzelBaseObject<any> {
     return this.unchangedObjects.find(obj => obj.id === objectId);

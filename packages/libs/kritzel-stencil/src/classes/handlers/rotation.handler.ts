@@ -27,8 +27,8 @@ export class KritzelRotationHandler {
         this.selectionState.selectionGroup = selectedObject as KrtizelSelectionGroup;
         this.selectionState.isRotating = true;
 
-        const centerX = selectedObject.translateX + selectedObject.width / 2;
-        const centerY = selectedObject.translateY + selectedObject.height / 2;
+        const centerX = selectedObject.translateX + selectedObject.width / 2 / kritzelViewportState.scale;
+        const centerY = selectedObject.translateY + selectedObject.height / 2 / kritzelViewportState.scale;
 
         const cursorX = (event.clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
         const cursorY = (event.clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
@@ -40,8 +40,8 @@ export class KritzelRotationHandler {
 
   handleMouseMove(event: MouseEvent): void {
     if (this.selectionState.isRotating && this.selectionState.selectionGroup) {
-      const groupCenterX = this.selectionState.selectionGroup.translateX + this.selectionState.selectionGroup.width / 2;
-      const groupCenterY = this.selectionState.selectionGroup.translateY + this.selectionState.selectionGroup.height / 2;
+      const groupCenterX = this.selectionState.selectionGroup.translateX + this.selectionState.selectionGroup.width / 2 / kritzelViewportState.scale;
+      const groupCenterY = this.selectionState.selectionGroup.translateY + this.selectionState.selectionGroup.height / 2 / kritzelViewportState.scale;
 
       const cursorX = (event.clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
       const cursorY = (event.clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
