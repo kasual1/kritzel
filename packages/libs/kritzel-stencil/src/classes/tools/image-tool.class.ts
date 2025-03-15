@@ -1,10 +1,13 @@
 import { KritzelTool } from "../../components";
 import { kritzelEngineState } from "../../stores/engine.store";
-import { KrtizelSelectionGroup } from "../objects/selection-group.class";
+import { KritzelSelectionGroup } from "../objects/selection-group.class";
 import { KritzelImage } from "../objects/image.class";
 import { KritzelSelectionTool } from "./selection-tool.class";
+import { KritzelSerializable } from "../../interfaces/serializable.interface";
 
-export class KritzelImageTool implements KritzelTool {
+export class KritzelImageTool implements KritzelTool, KritzelSerializable {
+  __class__: string = this.constructor.name;
+
   name: string = 'image';
   icon: string = 'image';
 
@@ -64,7 +67,7 @@ export class KritzelImageTool implements KritzelTool {
           image.initializeZIndex();
           image.centerInViewport();
 
-          const selectionGroup = new KrtizelSelectionGroup();
+          const selectionGroup = new KritzelSelectionGroup();
           selectionGroup.addOrRemove(image);
           selectionGroup.selected = true;
 
@@ -76,6 +79,11 @@ export class KritzelImageTool implements KritzelTool {
 
       reader.readAsDataURL(file);
     }
+  }
+
+  revive(object: any): KritzelSerializable {
+    Object.assign(this, object);
+    return this;
   }
 
 }

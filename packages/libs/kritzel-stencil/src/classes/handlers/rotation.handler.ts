@@ -2,7 +2,7 @@ import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
 import { kritzelEngineState, findObjectById } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
-import { KrtizelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelSelectionGroup } from '../objects/selection-group.class';
 
 export class KritzelRotationHandler {
   selectionState: KritzelSelectionState;
@@ -24,7 +24,7 @@ export class KritzelRotationHandler {
       const selectedObject = findObjectById(objectElement?.id);
 
       if (selectedObject && isRotationHandleSelected) {
-        this.selectionState.selectionGroup = selectedObject as KrtizelSelectionGroup;
+        this.selectionState.selectionGroup = selectedObject as KritzelSelectionGroup;
         this.selectionState.isRotating = true;
 
         const centerX = selectedObject.translateX + selectedObject.width / 2 / kritzelViewportState.scale;

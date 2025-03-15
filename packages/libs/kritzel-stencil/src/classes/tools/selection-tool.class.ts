@@ -1,74 +1,85 @@
-import { KritzelTool } from "../../components";
-import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
-import { KritzelKeyHandler } from "../handlers/key.handler";
-import { KritzelResizeHandler } from "../handlers/resize.handler";
-import { KritzelRotationHandler } from "../handlers/rotation.handler";
-import { KritzelSelectionHandler } from "../handlers/selection.handler";
+import { KritzelTool } from '../../components';
+import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
+import { KritzelSerializable } from '../../interfaces/serializable.interface';
+import { KritzelKeyHandler } from '../handlers/key.handler';
+import { KritzelResizeHandler } from '../handlers/resize.handler';
+import { KritzelRotationHandler } from '../handlers/rotation.handler';
+import { KritzelSelectionHandler } from '../handlers/selection.handler';
 
-export class KritzelSelectionTool implements KritzelTool {
-	private static instance: KritzelSelectionTool;
+export class KritzelSelectionTool implements KritzelTool, KritzelSerializable {
+  __class__: string = this.constructor.name;
 
-	name: string = 'selection';
-	icon: string = 'selection';
+  private static instance: KritzelSelectionTool;
 
-	selectionState: KritzelSelectionState = {
-		selectionBox: null,
-		selectionGroup: null,
-    	isSelecting: false,
-		isResizing: false,
-		isRotating: false,
-		isDragging: false,
-		isCtrlKeyPressed: false,
-	}
+  name: string = 'selection';
+  icon: string = 'selection';
 
-	selectionHandler: KritzelSelectionHandler;
-	resizeHandler: KritzelResizeHandler;
-	rotationHandler: KritzelRotationHandler;
-	keyHandler: KritzelKeyHandler;
+  selectionState: KritzelSelectionState = {
+    selectionBox: null,
+    selectionGroup: null,
+    isSelecting: false,
+    isResizing: false,
+    isRotating: false,
+    isDragging: false,
+    isCtrlKeyPressed: false,
+  };
 
-	constructor() {
-		if (KritzelSelectionTool.instance) {
-			return KritzelSelectionTool.instance;
-		}
-		KritzelSelectionTool.instance = this;
+  selectionHandler: KritzelSelectionHandler;
+  resizeHandler: KritzelResizeHandler;
+  rotationHandler: KritzelRotationHandler;
+  keyHandler: KritzelKeyHandler;
 
-		this.selectionHandler = new KritzelSelectionHandler(this.selectionState);
-		this.resizeHandler = new KritzelResizeHandler(this.selectionState);
-		this.rotationHandler = new KritzelRotationHandler(this.selectionState);
-		this.keyHandler = new KritzelKeyHandler(this.selectionState);
+  constructor() {
+    if (KritzelSelectionTool.instance) {
+      return KritzelSelectionTool.instance;
+    }
+    KritzelSelectionTool.instance = this;
 
-		document.addEventListener('keydown', this.handleKeyDown.bind(this));
-		document.addEventListener('keyup', this.handleKeyUp.bind(this));
-	}
+    this.selectionHandler = new KritzelSelectionHandler(this.selectionState);
+    this.resizeHandler = new KritzelResizeHandler(this.selectionState);
+    this.rotationHandler = new KritzelRotationHandler(this.selectionState);
+    this.keyHandler = new KritzelKeyHandler(this.selectionState);
 
-	handleKeyDown(event: KeyboardEvent): void {
-		this.keyHandler.handleKeyDown(event);
-	}
+    document.addEventListener('keydown', this.handleKeyDown.bind(this));
+    document.addEventListener('keyup', this.handleKeyUp.bind(this));
+  }
 
-	handleKeyUp(event: KeyboardEvent): void {
-		this.keyHandler.handleKeyUp(event);
-	}
+  handleKeyDown(event: KeyboardEvent): void {
+    this.keyHandler.handleKeyDown(event);
+  }
 
-	handleMouseDown(event: MouseEvent): void {
-		this.selectionHandler.handleMouseDown(event);
-		this.resizeHandler.handleMouseDown(event);
-		this.rotationHandler.handleMouseDown(event);
-	}
+  handleKeyUp(event: KeyboardEvent): void {
+    this.keyHandler.handleKeyUp(event);
+  }
 
-	handleMouseMove(event: MouseEvent): void {
-		this.selectionHandler.handleMouseMove(event);
-		this.resizeHandler.handleMouseMove(event);
-		this.rotationHandler.handleMouseMove(event);
-	}
+  handleMouseDown(event: MouseEvent): void {
+    this.selectionHandler.handleMouseDown(event);
+    this.resizeHandler.handleMouseDown(event);
+    this.rotationHandler.handleMouseDown(event);
+  }
 
-	handleMouseUp(event: MouseEvent): void {
-		this.selectionHandler.handleMouseUp(event);
-		this.resizeHandler.handleMouseUp(event);
-		this.rotationHandler.handleMouseUp(event);
-	}
+  handleMouseMove(event: MouseEvent): void {
+    this.selectionHandler.handleMouseMove(event);
+    this.resizeHandler.handleMouseMove(event);
+    this.rotationHandler.handleMouseMove(event);
+  }
 
-	handleWheel(_event: WheelEvent): void {
-		// Do nothing
-	}
+  handleMouseUp(event: MouseEvent): void {
+    this.selectionHandler.handleMouseUp(event);
+    this.resizeHandler.handleMouseUp(event);
+    this.rotationHandler.handleMouseUp(event);
+  }
 
+  handleWheel(_event: WheelEvent): void {
+    // Do nothing
+  }
+
+  revive(object: any): KritzelSerializable {
+    Object.keys(object).forEach(key => {
+      if (key in this) {
+        (this as any)[key] = object[key];
+      }
+    });
+    return KritzelSelectionTool.instance;
+  }
 }

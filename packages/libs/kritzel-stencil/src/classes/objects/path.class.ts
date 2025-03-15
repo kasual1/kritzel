@@ -1,6 +1,5 @@
 import { getStroke } from 'perfect-freehand';
 import { KritzelMathHelper } from '../../helpers/math.helper';
-import { BoundingBox } from 'puppeteer';
 import { KritzelPathOptions } from '../../interfaces/path-options.interface';
 import { KritzelBaseObject } from './base-object.class';
 
@@ -23,16 +22,16 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   debugInfoVisible: boolean = true;
 
-  constructor(options: KritzelPathOptions) {
+  constructor(options?: KritzelPathOptions) {
     super();
     this.options = options;
-    this.points = options.points ?? [];
-    this.translateX = options.translateX ?? 0;
-    this.translateY = options.translateY ?? 0;
-    this.scale = options.scale ?? 1;
-    this.stroke = options.stroke ?? 'black';
-    this.strokeWidth = options.strokeWidth ?? 8;
-    this.fill = options.fill ?? 'black';
+    this.points = options?.points ?? [];
+    this.translateX = options?.translateX ?? 0;
+    this.translateY = options?.translateY ?? 0;
+    this.scale = options?.scale ?? 1;
+    this.stroke = options?.stroke ?? 'black';
+    this.strokeWidth = options?.strokeWidth ?? 8;
+    this.fill = options?.fill ?? 'black';
     this.zIndex = 9999;
 
     this.d = this.generateSvgPath();
@@ -40,10 +39,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.updateDimensions();
     this.setPosition();
     this.updateTranslation();
-  }
-
-  isInViewport(viewport: BoundingBox, scale: number): boolean {
-    return this.doesBoundingBoxIntersectViewport(viewport) && this.isLargeEnoughAtScale(scale) && this.isNotTooLargeAtScale(scale);
   }
 
   resize(x: number | null, y: number | null, width: number, height: number): void {
@@ -153,20 +148,4 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return result;
   }
 
-  private doesBoundingBoxIntersectViewport(viewport: { x: number; y: number; width: number; height: number }): boolean {
-    return (
-      this.boundingBox.x <= viewport.x + viewport.width &&
-      this.boundingBox.x + this.boundingBox.width >= viewport.x &&
-      this.boundingBox.y <= viewport.y + viewport.height &&
-      this.boundingBox.y + this.boundingBox.height >= viewport.y
-    );
-  }
-
-  private isLargeEnoughAtScale(scale: number): boolean {
-    return (this.width / this.scale) * scale > 0.5 && (this.height / this.scale) * scale > 0.5;
-  }
-
-  private isNotTooLargeAtScale(scale: number): boolean {
-    return scale / this.scale < 150;
-  }
 }

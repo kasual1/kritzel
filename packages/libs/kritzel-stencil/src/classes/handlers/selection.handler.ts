@@ -4,7 +4,7 @@ import { KritzelSelectionState } from '../../interfaces/selection-state.interfac
 import { kritzelEngineState, findObjectById } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
-import { KrtizelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelSelectionGroup } from '../objects/selection-group.class';
 
 export class KritzelSelectionHandler {
   selectionState: KritzelSelectionState;
@@ -61,7 +61,7 @@ export class KritzelSelectionHandler {
     }
   }
 
-  private getSelectedObject(event: MouseEvent): KrtizelSelectionGroup | null {
+  private getSelectedObject(event: MouseEvent): KritzelSelectionGroup | null {
     const path = event.composedPath().slice(1) as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = findObjectById(objectElement?.id);
@@ -70,10 +70,10 @@ export class KritzelSelectionHandler {
       return null;
     }
 
-    if (object instanceof KrtizelSelectionGroup) {
+    if (object instanceof KritzelSelectionGroup) {
       return object;
     } else {
-      const group = new KrtizelSelectionGroup();
+      const group = new KritzelSelectionGroup();
       group.translateX = 0;
       group.translateY = 0;
       group.addOrRemove(object);
@@ -91,7 +91,7 @@ export class KritzelSelectionHandler {
     return !!path.find(element => element.classList && element.classList.contains('rotation-handle'));
   }
 
-  private startDragging(selectedObject: KrtizelSelectionGroup, event: MouseEvent): void {
+  private startDragging(selectedObject: KritzelSelectionGroup, event: MouseEvent): void {
     this.selectionState.selectionGroup = selectedObject;
     this.selectionState.isDragging = true;
     this.dragStartX = event.clientX;
@@ -125,7 +125,7 @@ export class KritzelSelectionHandler {
     this.selectionState.selectionBox = selectionBox;
     this.selectionState.isSelecting = true;
 
-    kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup) && !(o instanceof KrtizelSelectionBox)), selectionBox];
+    kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox)), selectionBox];
   }
 
   private updateSelection(event: MouseEvent): void {
@@ -166,10 +166,10 @@ export class KritzelSelectionHandler {
   }
 
   private addSelectedObjectsToSelectionGroup(): void {
-    const selectedObjects = kritzelEngineState.objects.filter(o => !(o instanceof KrtizelSelectionGroup)).filter(o => o.selected);
+    const selectedObjects = kritzelEngineState.objects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
 
     if (selectedObjects.length > 0) {
-      this.selectionState.selectionGroup = new KrtizelSelectionGroup();
+      this.selectionState.selectionGroup = new KritzelSelectionGroup();
       selectedObjects.forEach(o => {
         o.selected = false;
         this.selectionState.selectionGroup.addOrRemove(o);
