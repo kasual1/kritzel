@@ -2,7 +2,7 @@ import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelBaseObject } from './base-object.class';
 import * as lodash from 'lodash-es';
 
-export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
+export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   objects: KritzelBaseObject<any>[] = [];
   unchangedObjects: KritzelBaseObject<any>[] = [];
 
@@ -100,7 +100,7 @@ export class KrtizelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override copy(): KritzelBaseObject<HTMLElement> {
-    const selectionGroup = new KrtizelSelectionGroup();
+    const selectionGroup = new KritzelSelectionGroup();
     selectionGroup.objects = this.objects.map(obj => obj.copy());
     selectionGroup.unchangedObjects = lodash.cloneDeep(selectionGroup.objects);
     selectionGroup.updateBoundingBox();

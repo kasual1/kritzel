@@ -1,5 +1,4 @@
 import { KritzelClickHelper } from "../helpers/click.helper";
-import { kritzelEngineState } from "../stores/engine.store";
 import { KritzelViewportState, kritzelViewportState } from "../stores/viewport.store";
 
 export class KritzelViewport {
@@ -13,22 +12,6 @@ export class KritzelViewport {
   constructor(host: HTMLElement){
     this.host = host;
     this.state = kritzelViewportState;
-  }
-
-  updateObjectsVisibility() {
-    const padding = 25;
-
-    kritzelEngineState.objects?.forEach(object => {
-      object.visible = object.isInViewport(
-        {
-          x: (-this.state.translateX - padding) / this.state.scale,
-          y: (-this.state.translateY - padding) / this.state.scale,
-          width: (window.innerWidth + 2 * padding) / this.state.scale,
-          height: (window.innerHeight + 2 * padding) / this.state.scale,
-        },
-        this.state.scale,
-      );
-    });
   }
 
   handleMouseDown(event: MouseEvent): void{

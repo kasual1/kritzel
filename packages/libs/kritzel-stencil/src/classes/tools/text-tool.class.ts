@@ -2,8 +2,11 @@ import { KritzelTool } from "../../components";
 import { kritzelEngineState } from "../../stores/engine.store";
 import { kritzelViewportState } from "../../stores/viewport.store";
 import { KrtizelText } from "../objects/text.class";
+import { KritzelSerializable } from "../../interfaces/serializable.interface";
 
-export class KritzelTextTool implements KritzelTool {
+export class KritzelTextTool implements KritzelTool, KritzelSerializable {
+  __class__: string = this.constructor.name;
+
   name: string = 'text';
   icon: string = 'text';
 
@@ -36,5 +39,10 @@ export class KritzelTextTool implements KritzelTool {
 
   handleWheel(_event: WheelEvent): void {
     // Do nothing
+  }
+
+  revive(object: any): KritzelSerializable {
+    Object.assign(this, object);
+    return this;
   }
 }

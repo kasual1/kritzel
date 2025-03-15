@@ -1,7 +1,7 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
 import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelEngineState, findObjectById } from "../../stores/engine.store";
-import { KrtizelSelectionGroup } from "../objects/selection-group.class";
+import { KritzelSelectionGroup } from "../objects/selection-group.class";
 
 enum SelectionHandleType {
   TopLeft = 'top-left',
@@ -36,7 +36,7 @@ export class KritzelResizeHandler {
       const selectedObject = findObjectById(objectElement?.id);
 
       if (selectedObject && isHandleSelected) {
-        this.selectionState.selectionGroup = selectedObject as KrtizelSelectionGroup;
+        this.selectionState.selectionGroup = selectedObject as KritzelSelectionGroup;
         this.selectionState.isResizing = true;
         this.initialMouseX = event.clientX;
         this.initialMouseY = event.clientY;

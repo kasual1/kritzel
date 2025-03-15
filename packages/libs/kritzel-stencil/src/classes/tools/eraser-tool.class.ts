@@ -1,8 +1,11 @@
 import { KritzelTool } from "../../components";
 import { KritzelClickHelper } from "../../helpers/click.helper";
+import { KritzelSerializable } from "../../interfaces/serializable.interface";
 import { kritzelEngineState } from "../../stores/engine.store";
 
-export class KritzelEraserTool implements KritzelTool {
+export class KritzelEraserTool implements KritzelTool, KritzelSerializable {
+  __class__: string = this.constructor.name;
+
   name: string = 'eraser';
   icon: string = 'eraser';
 
@@ -40,6 +43,11 @@ export class KritzelEraserTool implements KritzelTool {
 
   handleWheel(_event: WheelEvent): void {
     // Do nothing
+  }
+
+  revive(object: any): KritzelSerializable {
+    Object.assign(this, object);
+    return this;
   }
 
 }

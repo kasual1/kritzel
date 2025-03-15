@@ -11,7 +11,7 @@ import { KritzelImageTool } from '../../classes/tools/image-tool.class';
 import { KritzelImage } from '../../classes/objects/image.class';
 import { KritzelTextTool } from '../../classes/tools/text-tool.class';
 import { KrtizelText } from '../../classes/objects/text.class';
-import { KrtizelSelectionGroup } from '../../classes/objects/selection-group.class';
+import { KritzelSelectionGroup } from '../../classes/objects/selection-group.class';
 import { KrtizelSelectionBox } from '../../classes/objects/selection-box.class';
 
 @Component({
@@ -121,7 +121,7 @@ export class KritzelEngine {
   }
 
   private deselectAllObjects() {
-    const objects = this.state.objects.filter(o => !(o instanceof KrtizelSelectionBox)).filter(o => !(o instanceof KrtizelSelectionGroup));
+    const objects = this.state.objects.filter(o => !(o instanceof KrtizelSelectionBox)).filter(o => !(o instanceof KritzelSelectionGroup));
 
     objects.forEach(object => {
       object.selected = false;
@@ -131,8 +131,6 @@ export class KritzelEngine {
   }
 
   render() {
-    this.viewport.updateObjectsVisibility();
-
     return (
       <Host>
         {this.state.showDebugInfo && (
@@ -239,7 +237,7 @@ export class KritzelEngine {
                       ></textarea>
                     )}
 
-                    {object instanceof KrtizelSelectionGroup && (
+                    {object instanceof KritzelSelectionGroup && (
                       <div
                         style={{
                           width: '100%',
