@@ -4,11 +4,12 @@ import { cloneDeep } from 'lodash-es';
 import { kritzelViewportState, setKritzelViewportState } from '../stores/viewport.store';
 import { KritzelSnapshot } from '../interfaces/snapshot.interface';
 import { KritzelReviver } from './reviver.class';
+import { ObjectHelper } from '../helpers/object.helper';
 
 export class KritzelHistory {
   private static instance: KritzelHistory;
 
-  snapshots: string[];
+  snapshots: KritzelSnapshot[];
 
   currentStateIndex: number;
 
@@ -54,11 +55,13 @@ export class KritzelHistory {
         engine: cloneDeep(kritzelEngineState),
       });
     }
+  }
 
-    console.log({
+  forceCreateSnapshot() {
+    this.pushSnapshot({
       viewport: cloneDeep(kritzelViewportState),
       engine: cloneDeep(kritzelEngineState),
-    })
+    });
   }
 
   handleMouseUp(event: MouseEvent) {
@@ -84,7 +87,7 @@ export class KritzelHistory {
   }
 
   private pushSnapshot(snapshot: KritzelSnapshot) {
-    const serialzedSnapshot = JSON.stringify(snapshot);
+    const serialzedSnapshot = ObjectHelper.toPlainObject(snapshot);
 
     if (this.currentStateIndex < this.snapshots.length - 1) {
       this.snapshots = this.snapshots.slice(0, this.currentStateIndex + 1);
@@ -95,7 +98,7 @@ export class KritzelHistory {
   }
 
   private getSnapshot(): KritzelSnapshot {
-    const snapshot = JSON.parse(this.snapshots[this.currentStateIndex]);
+    const snapshot = this.snapshots[this.currentStateIndex];
     return KritzelReviver.revive(snapshot);
   }
 
