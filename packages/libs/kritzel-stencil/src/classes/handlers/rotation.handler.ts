@@ -2,6 +2,7 @@ import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
 import { kritzelEngineState, findObjectById } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
+import { KritzelHistory } from '../history.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 
 export class KritzelRotationHandler {
@@ -9,8 +10,11 @@ export class KritzelRotationHandler {
 
   initialRotation: number = 0;
 
+  history: KritzelHistory;
+
   constructor(selectionState: KritzelSelectionState) {
     this.selectionState = selectionState;
+    this.history = new KritzelHistory();
   }
 
   handleMouseDown(event: MouseEvent): void {
@@ -59,6 +63,7 @@ export class KritzelRotationHandler {
       this.selectionState.isRotating = false;
 
       kritzelEngineState.objects = [...kritzelEngineState.objects];
+      this.history.forceCreateSnapshot();
     }
   }
 }
