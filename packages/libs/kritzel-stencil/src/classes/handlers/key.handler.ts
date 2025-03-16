@@ -84,7 +84,7 @@ export class KritzelKeyHandler {
       this.selectionState.selectionGroup,
     ];
 
-    this.history.createSnapshot();
+    this.history.forceCreateSnapshot();
   }
 
   private handleMoveUp() {
