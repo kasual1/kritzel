@@ -1,6 +1,6 @@
+import { ObjectHelper } from '../../helpers/object.helper';
 import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelBaseObject } from './base-object.class';
-import * as lodash from 'lodash-es';
 
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   objects: KritzelBaseObject<any>[] = [];
@@ -30,7 +30,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.objects.splice(index, 1);
     }
 
-    this.unchangedObjects = lodash.cloneDeep(this.objects);
+    this.unchangedObjects = ObjectHelper.cloneDeep(this.objects);
     this.updateBoundingBox();
   }
 
@@ -72,7 +72,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     });
 
     this.updateBoundingBox();
-    this.unchangedObjects = lodash.cloneDeep(this.objects);
+    this.unchangedObjects = ObjectHelper.cloneDeep(this.objects);
   }
 
   override rotate(value: number): void {
@@ -102,7 +102,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override copy(): KritzelBaseObject<HTMLElement> {
     const selectionGroup = new KritzelSelectionGroup();
     selectionGroup.objects = this.objects.map(obj => obj.copy());
-    selectionGroup.unchangedObjects = lodash.cloneDeep(selectionGroup.objects);
+    selectionGroup.unchangedObjects = ObjectHelper.cloneDeep(selectionGroup.objects);
     selectionGroup.updateBoundingBox();
     return selectionGroup;
   }

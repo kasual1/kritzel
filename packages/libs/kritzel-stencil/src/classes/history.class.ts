@@ -1,6 +1,5 @@
 import { KritzelClickHelper } from '../helpers/click.helper';
 import { kritzelEngineState, setKritzelEngineState } from '../stores/engine.store';
-import { cloneDeep } from 'lodash-es';
 import { kritzelViewportState, setKritzelViewportState } from '../stores/viewport.store';
 import { KritzelSnapshot } from '../interfaces/snapshot.interface';
 import { KritzelReviver } from './reviver.class';
@@ -24,8 +23,8 @@ export class KritzelHistory {
     this.snapshots = [];
     this.currentStateIndex = -1;
     this.pushSnapshot({
-      viewport: cloneDeep(kritzelViewportState),
-      engine: cloneDeep(kritzelEngineState),
+      viewport: kritzelViewportState,
+      engine: kritzelEngineState,
     });
     KritzelHistory.instance = this;
   }
@@ -51,16 +50,16 @@ export class KritzelHistory {
 
     if (objectsLengthChanged) {
       this.pushSnapshot({
-        viewport: cloneDeep(kritzelViewportState),
-        engine: cloneDeep(kritzelEngineState),
+        viewport: kritzelViewportState,
+        engine: kritzelEngineState,
       });
     }
   }
 
   forceCreateSnapshot() {
     this.pushSnapshot({
-      viewport: cloneDeep(kritzelViewportState),
-      engine: cloneDeep(kritzelEngineState),
+      viewport: kritzelViewportState,
+      engine: kritzelEngineState,
     });
   }
 
@@ -95,6 +94,7 @@ export class KritzelHistory {
 
     this.snapshots.push(serialzedSnapshot);
     this.currentStateIndex++;
+    console.log(this.snapshots);
   }
 
   private getSnapshot(): KritzelSnapshot {
@@ -103,7 +103,6 @@ export class KritzelHistory {
   }
 
   private recreateStateFromSnapshot(snapshot: KritzelSnapshot) {
-    snapshot = cloneDeep(snapshot);
 
     for (const key in snapshot.viewport) {
       const value = snapshot.viewport[key];
