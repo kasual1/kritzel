@@ -128,6 +128,7 @@ export class KritzelEngine {
     });
 
     this.state.objects = [...objects];
+    this.history.createSnapshot();
   }
 
   render() {

@@ -13,7 +13,7 @@ const { state: kritzelEngineState, set: setKritzelEngineState } = createStore<Kr
   activeTool: undefined,
   currentPath: undefined,
   objects: [],
-  showDebugInfo: false,
+  showDebugInfo: true,
 });
 
 export function findObjectById(id: string): KritzelBaseObject<any> | null  {
