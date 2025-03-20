@@ -4,18 +4,18 @@ import { kritzelViewportState, setKritzelViewportState } from '../stores/viewpor
 import { KritzelSnapshot } from '../interfaces/snapshot.interface';
 import { KritzelReviver } from './reviver.class';
 import { ObjectHelper } from '../helpers/object.helper';
+import { KritzelStore } from '../stores/store';
 
 export class KritzelHistory {
-  private static instance: KritzelHistory;
 
   snapshots: KritzelSnapshot[];
 
   currentStateIndex: number;
 
-  constructor() {
-    if (KritzelHistory.instance) {
-      return KritzelHistory.instance;
-    }
+  store: KritzelStore;
+
+  constructor(store: KritzelStore) {
+    this.store = store;
     this.initialize();
   }
 
@@ -26,7 +26,6 @@ export class KritzelHistory {
       viewport: kritzelViewportState,
       engine: kritzelEngineState,
     });
-    KritzelHistory.instance = this;
   }
 
   createSnapshot() {
@@ -94,12 +93,11 @@ export class KritzelHistory {
 
     this.snapshots.push(serialzedSnapshot);
     this.currentStateIndex++;
-    console.log(this.snapshots);
   }
 
   private getSnapshot(): KritzelSnapshot {
     const snapshot = this.snapshots[this.currentStateIndex];
-    return KritzelReviver.revive(snapshot);
+    return new KritzelReviver(this.store).revive(snapshot);
   }
 
   private recreateStateFromSnapshot(snapshot: KritzelSnapshot) {

@@ -1,8 +1,9 @@
-import { KritzelTool } from "../../components";
-import { kritzelEngineState } from "../../stores/engine.store";
-import { kritzelViewportState } from "../../stores/viewport.store";
-import { KrtizelText } from "../objects/text.class";
-import { KritzelSerializable } from "../../interfaces/serializable.interface";
+import { KritzelTool } from '../../components';
+import { kritzelEngineState } from '../../stores/engine.store';
+import { kritzelViewportState } from '../../stores/viewport.store';
+import { KrtizelText } from '../objects/text.class';
+import { KritzelSerializable } from '../../interfaces/serializable.interface';
+import { KritzelStore } from '../../stores/store';
 
 export class KritzelTextTool implements KritzelTool, KritzelSerializable {
   __class__: string = this.constructor.name;
@@ -11,6 +12,12 @@ export class KritzelTextTool implements KritzelTool, KritzelSerializable {
   icon: string = 'text';
 
   isWriting: boolean = false;
+
+  store: KritzelStore;
+
+  constructor(store: KritzelStore) {
+    this.store = store;
+  }
 
   handleMouseDown(_event: MouseEvent): void {
     // Do nothing

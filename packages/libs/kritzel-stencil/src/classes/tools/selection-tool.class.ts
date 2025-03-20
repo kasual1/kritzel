@@ -1,6 +1,7 @@
 import { KritzelTool } from '../../components';
 import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
+import { KritzelStore } from '../../stores/store';
 import { KritzelKeyHandler } from '../handlers/key.handler';
 import { KritzelResizeHandler } from '../handlers/resize.handler';
 import { KritzelRotationHandler } from '../handlers/rotation.handler';
@@ -29,16 +30,16 @@ export class KritzelSelectionTool implements KritzelTool, KritzelSerializable {
   rotationHandler: KritzelRotationHandler;
   keyHandler: KritzelKeyHandler;
 
-  constructor() {
+  constructor(store: KritzelStore) {
     if (KritzelSelectionTool.instance) {
       return KritzelSelectionTool.instance;
     }
     KritzelSelectionTool.instance = this;
 
-    this.selectionHandler = new KritzelSelectionHandler(this.selectionState);
-    this.resizeHandler = new KritzelResizeHandler(this.selectionState);
-    this.rotationHandler = new KritzelRotationHandler(this.selectionState);
-    this.keyHandler = new KritzelKeyHandler(this.selectionState);
+    this.selectionHandler = new KritzelSelectionHandler(this.selectionState, store);
+    this.resizeHandler = new KritzelResizeHandler(this.selectionState, store);
+    this.rotationHandler = new KritzelRotationHandler(this.selectionState, store);
+    this.keyHandler = new KritzelKeyHandler(this.selectionState, store);
 
     document.addEventListener('keydown', this.handleKeyDown.bind(this));
     document.addEventListener('keyup', this.handleKeyUp.bind(this));

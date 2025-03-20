@@ -4,6 +4,7 @@ import { KritzelSelectionGroup } from "../objects/selection-group.class";
 import { KritzelImage } from "../objects/image.class";
 import { KritzelSelectionTool } from "./selection-tool.class";
 import { KritzelSerializable } from "../../interfaces/serializable.interface";
+import { KritzelStore } from "../../stores/store";
 
 export class KritzelImageTool implements KritzelTool, KritzelSerializable {
   __class__: string = this.constructor.name;
@@ -15,8 +16,11 @@ export class KritzelImageTool implements KritzelTool, KritzelSerializable {
 
   fileInput: HTMLInputElement;
 
-  constructor() {
-    this.selectionTool = new KritzelSelectionTool();
+  store: KritzelStore;
+
+  constructor(store: KritzelStore) {
+    this.store = store;
+    this.selectionTool = new KritzelSelectionTool(this.store);
     this.setupFileInput();
     this.openFilePicker();
   }
@@ -73,7 +77,7 @@ export class KritzelImageTool implements KritzelTool, KritzelSerializable {
 
           this.selectionTool.selectionState.selectionGroup = selectionGroup;
           kritzelEngineState.objects = [...kritzelEngineState.objects, image, selectionGroup];
-          kritzelEngineState.activeTool = new KritzelSelectionTool();
+          kritzelEngineState.activeTool = new KritzelSelectionTool(this.store);
         };
       };
 

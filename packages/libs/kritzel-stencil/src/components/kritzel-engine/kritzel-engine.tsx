@@ -13,6 +13,7 @@ import { KritzelTextTool } from '../../classes/tools/text-tool.class';
 import { KrtizelText } from '../../classes/objects/text.class';
 import { KritzelSelectionGroup } from '../../classes/objects/selection-group.class';
 import { KrtizelSelectionBox } from '../../classes/objects/selection-box.class';
+import { KritzelStore } from '../../stores/store';
 
 @Component({
   tag: 'kritzel-engine',
@@ -24,13 +25,15 @@ export class KritzelEngine {
   host: HTMLElement;
 
   @Prop()
-  activeTool: KritzelTool = new KritzelBrushTool();
+  activeTool: KritzelTool;
 
   viewport: KritzelViewport;
 
   history: KritzelHistory;
 
   state: KritzelEngineState = kritzelEngineState;
+
+  store: KritzelStore;
 
   get isSelecting() {
     return this.state.activeTool instanceof KritzelSelectionTool && this.state.activeTool.selectionState.isSelecting;
@@ -41,9 +44,11 @@ export class KritzelEngine {
   }
 
   componentWillLoad() {
+    this.store = new KritzelStore();
     this.viewport = new KritzelViewport(this.host);
-    this.state.activeTool = this.activeTool;
-    this.history = new KritzelHistory();
+    this.store.state.activeTool = new KritzelBrushTool(this.store);
+    this.state.activeTool = new KritzelBrushTool(this.store);
+    this.history = new KritzelHistory(this.store);
   }
 
   @Listen('contextmenu', { target: 'window' })
@@ -94,27 +99,32 @@ export class KritzelEngine {
       }
 
       if (ev.key === 's') {
-        this.state.activeTool = new KritzelSelectionTool();
+        this.state.activeTool = new KritzelSelectionTool(this.store);
+        this.store.state.activeTool = new KritzelSelectionTool(this.store);
         this.deselectAllObjects();
       }
 
       if (ev.key === 'b') {
-        this.state.activeTool = new KritzelBrushTool();
+        this.state.activeTool = new KritzelBrushTool(this.store);
+        this.store.state.activeTool = new KritzelBrushTool(this.store);
         this.deselectAllObjects();
       }
 
       if (ev.key === 'e') {
-        this.state.activeTool = new KritzelEraserTool();
+        this.state.activeTool = new KritzelEraserTool(this.store);
+        this.store.state.activeTool = new KritzelEraserTool(this.store);
         this.deselectAllObjects();
       }
 
       if (ev.key === 'i') {
-        this.state.activeTool = new KritzelImageTool();
+        this.state.activeTool = new KritzelImageTool(this.store);
+        this.store.state.activeTool = new KritzelImageTool(this.store);
         this.deselectAllObjects();
       }
 
       if (ev.key === 'x') {
-        this.state.activeTool = new KritzelTextTool();
+        this.state.activeTool = new KritzelTextTool(this.store);
+        this.store.state.activeTool = new KritzelTextTool(this.store);
         this.deselectAllObjects();
       }
     }
@@ -156,7 +166,7 @@ export class KritzelEngine {
             transform: `matrix(${this.viewport.state.scale}, 0, 0, ${this.viewport.state.scale}, ${this.viewport.state.translateX}, ${this.viewport.state.translateY})`,
           }}
         >
-          {this.state.objects?.map(object => {
+          {this.store.state.objects?.map(object => {
             return (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -367,17 +377,17 @@ export class KritzelEngine {
             class="object"
             xmlns="http://www.w3.org/2000/svg"
             style={{
-              height: this.state.currentPath?.height.toString(),
-              width: this.state.currentPath?.width.toString(),
+              height: this.store.state.currentPath?.height.toString(),
+              width: this.store.state.currentPath?.width.toString(),
               left: '0',
               top: '0',
-              zIndex: this.state.currentPath?.zIndex.toString(),
+              zIndex: this.store.state.currentPath?.zIndex.toString(),
               position: 'absolute',
-              transform: this.state.currentPath?.transformationMatrix,
+              transform: this.store.state.currentPath?.transformationMatrix,
             }}
-            viewBox={this.state.currentPath?.viewBox}
+            viewBox={this.store.state.currentPath?.viewBox}
           >
-            <path d={this.state.currentPath?.d} fill={this.state.currentPath?.fill} stroke={this.state.currentPath?.stroke} />
+            <path d={this.store.state.currentPath?.d} fill={this.state.currentPath?.fill} stroke={this.state.currentPath?.stroke} />
           </svg>
         </div>
       </Host>

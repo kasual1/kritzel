@@ -1,3 +1,4 @@
+import { KritzelStore } from "../stores/store";
 import { KritzelImage } from "./objects/image.class";
 import { KritzelPath } from "./objects/path.class";
 import { KritzelSelectionGroup } from "./objects/selection-group.class";
@@ -9,8 +10,14 @@ import { KritzelSelectionTool } from "./tools/selection-tool.class";
 import { KritzelTextTool } from "./tools/text-tool.class";
 
 export class KritzelReviver {
+
+  store: KritzelStore;
+
+  constructor(store: KritzelStore) {
+    this.store = store;
+  }
     
-  static revive(obj: any): any {
+  revive(obj: any): any {
     if (obj && typeof obj === 'object') {
       if (obj.__class__) {
         let revivedObj;
@@ -28,19 +35,19 @@ export class KritzelReviver {
             revivedObj = new KritzelSelectionGroup().revive(obj);
             break;
           case 'KritzelBrushTool':
-            revivedObj = new KritzelBrushTool();
+            revivedObj = new KritzelBrushTool(this.store);
             break;
           case 'KritzelEraserTool':
-            revivedObj = new KritzelEraserTool();
+            revivedObj = new KritzelEraserTool(this.store);
             break;
           case 'KritzelImageTool':
-            revivedObj = new KritzelImageTool();
+            revivedObj = new KritzelImageTool(this.store);
             break;
           case 'KritzelSelectionTool':
-            revivedObj = new KritzelSelectionTool();
+            revivedObj = new KritzelSelectionTool(this.store);
             break;
           case 'KritzelTextTool':
-            revivedObj = new KritzelTextTool();
+            revivedObj = new KritzelTextTool(this.store);
             break;
 
           default:
@@ -52,7 +59,7 @@ export class KritzelReviver {
       const newObj = Array.isArray(obj) ? [] : {};
       for (const key in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          newObj[key] = KritzelReviver.revive(obj[key]);
+          newObj[key] = this.revive(obj[key]);
         }
       }
       return newObj;
