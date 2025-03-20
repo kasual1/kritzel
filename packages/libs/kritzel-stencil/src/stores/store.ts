@@ -4,6 +4,7 @@ import { KritzelPath } from '../classes/objects/path.class';
 import { KritzelTool } from '../components';
 import { KrtizelSelectionBox } from '../classes/objects/selection-box.class';
 import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
+import { KritzelHistory } from '../classes/history.class';
 
 export interface KritzelEngineState {
   activeTool: KritzelTool;
@@ -19,6 +20,7 @@ export interface KritzelEngineState {
   isDrawing: boolean;
   isErasing: boolean;
   isCtrlKeyPressed: boolean;
+  history: KritzelHistory;
   showDebugInfo: boolean;
 }
 
@@ -54,6 +56,7 @@ export class KritzelStore {
       isDrawing: false,
       isErasing: false,
       isCtrlKeyPressed: false,
+      history: new KritzelHistory(this),
     });
   }
 
