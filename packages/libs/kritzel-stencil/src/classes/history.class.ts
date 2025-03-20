@@ -1,65 +1,56 @@
 import { KritzelClickHelper } from '../helpers/click.helper';
-import { kritzelEngineState, setKritzelEngineState } from '../stores/engine.store';
 import { kritzelViewportState, setKritzelViewportState } from '../stores/viewport.store';
-import { KritzelSnapshot } from '../interfaces/snapshot.interface';
 import { KritzelReviver } from './reviver.class';
 import { ObjectHelper } from '../helpers/object.helper';
 import { KritzelStore } from '../stores/store';
 
 export class KritzelHistory {
 
-  snapshots: KritzelSnapshot[];
+  snapshots: any[];
 
   currentStateIndex: number;
 
-  store: KritzelStore;
+  private readonly _store: KritzelStore;
 
   constructor(store: KritzelStore) {
-    this.store = store;
-    this.initialize();
+    this._store = store;
+    // this.initialize();
   }
 
   initialize() {
     this.snapshots = [];
     this.currentStateIndex = -1;
-    this.pushSnapshot({
-      viewport: kritzelViewportState,
-      engine: kritzelEngineState,
-    });
+    this.pushSnapshot({});
   }
 
   createSnapshot() {
-    const mostRecentSnapshot = this.getSnapshot();
-    const scaleChanged = mostRecentSnapshot.viewport.scale !== kritzelViewportState.scale;
-    const translateXChanged = mostRecentSnapshot.viewport.translateX !== kritzelViewportState.translateX;
-    const translateYChanged = mostRecentSnapshot.viewport.translateY !== kritzelViewportState.translateY;
-    const objectsLengthChanged = mostRecentSnapshot.engine.objects.length !== kritzelEngineState.objects.length;
+    // const mostRecentSnapshot = this.getSnapshot();
+    // const scaleChanged = mostRecentSnapshot.viewport.scale !== kritzelViewportState.scale;
+    // const translateXChanged = mostRecentSnapshot.viewport.translateX !== kritzelViewportState.translateX;
+    // const translateYChanged = mostRecentSnapshot.viewport.translateY !== kritzelViewportState.translateY;
+    // const objectsLengthChanged = mostRecentSnapshot.engine.objects.length !== this._store.state.objects.length;
 
-    if (scaleChanged || translateXChanged || translateYChanged) {
-      this.pushSnapshot({
-        ...mostRecentSnapshot,
-        viewport: {
-          ...mostRecentSnapshot.viewport,
-          translateX: kritzelViewportState.translateX,
-          translateY: kritzelViewportState.translateY,
-          scale: kritzelViewportState.scale,
-        },
-      });
-    }
+    // if (scaleChanged || translateXChanged || translateYChanged) {
+    //   this.pushSnapshot({
+    //     ...mostRecentSnapshot,
+    //     viewport: {
+    //       ...mostRecentSnapshot.viewport,
+    //       translateX: kritzelViewportState.translateX,
+    //       translateY: kritzelViewportState.translateY,
+    //       scale: kritzelViewportState.scale,
+    //     },
+    //   });
+    // }
 
-    if (objectsLengthChanged) {
-      this.pushSnapshot({
-        viewport: kritzelViewportState,
-        engine: kritzelEngineState,
-      });
-    }
+    // if (objectsLengthChanged) {
+    //   this.pushSnapshot({
+    //   });
+    // }
   }
 
   forceCreateSnapshot() {
-    this.pushSnapshot({
-      viewport: kritzelViewportState,
-      engine: kritzelEngineState,
-    });
+    // this.pushSnapshot({
+    // });
   }
 
   handleMouseUp(event: MouseEvent) {
@@ -84,7 +75,7 @@ export class KritzelHistory {
     }
   }
 
-  private pushSnapshot(snapshot: KritzelSnapshot) {
+  private pushSnapshot(snapshot: any) {
     const serialzedSnapshot = ObjectHelper.toPlainObject(snapshot);
 
     if (this.currentStateIndex < this.snapshots.length - 1) {
@@ -95,21 +86,21 @@ export class KritzelHistory {
     this.currentStateIndex++;
   }
 
-  private getSnapshot(): KritzelSnapshot {
+  private getSnapshot(): any {
     const snapshot = this.snapshots[this.currentStateIndex];
-    return new KritzelReviver(this.store).revive(snapshot);
+    return new KritzelReviver(this._store).revive(snapshot);
   }
 
-  private recreateStateFromSnapshot(snapshot: KritzelSnapshot) {
+  private recreateStateFromSnapshot(snapshot: any) {
 
     for (const key in snapshot.viewport) {
       const value = snapshot.viewport[key];
       setKritzelViewportState(key as any, value);
     }
 
-    for (const key in snapshot.engine) {
-      const value = snapshot.engine[key];
-      setKritzelEngineState(key as any, value);
-    }
+    // for (const key in snapshot.engine) {
+    //   const value = snapshot.engine[key];
+    //   setKritzelEngineState(key as any, value);
+    // }
   }
 }

@@ -3,7 +3,6 @@ import { KritzelTool } from '../../interfaces/tool.interface';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelViewport } from '../../classes/viewport.class';
 import { KritzelHistory } from '../../classes/history.class';
-import { KritzelEngineState, kritzelEngineState } from '../../stores/engine.store';
 import { KritzelPath } from '../../classes/objects/path.class';
 import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
 import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
@@ -31,23 +30,21 @@ export class KritzelEngine {
 
   history: KritzelHistory;
 
-  state: KritzelEngineState = kritzelEngineState;
-
   store: KritzelStore;
 
   get isSelecting() {
-    return this.state.activeTool instanceof KritzelSelectionTool && this.state.activeTool.selectionState.isSelecting;
+    return this.store.state.activeTool instanceof KritzelSelectionTool && this.store.state.isSelecting;
   }
 
   get isSelectionActive() {
-    return this.state.activeTool instanceof KritzelSelectionTool && this.state.activeTool.selectionState.selectionGroup !== null;
+    return this.store.state.activeTool instanceof KritzelSelectionTool && this.store.state.selectionGroup !== null;
   }
 
   componentWillLoad() {
     this.store = new KritzelStore();
     this.viewport = new KritzelViewport(this.host);
     this.store.state.activeTool = new KritzelBrushTool(this.store);
-    this.state.activeTool = new KritzelBrushTool(this.store);
+    this.store.state.activeTool = new KritzelBrushTool(this.store);
     this.history = new KritzelHistory(this.store);
   }
 
@@ -59,26 +56,26 @@ export class KritzelEngine {
   @Listen('mousedown', { target: 'window', passive: true })
   handleMouseDown(ev) {
     this.viewport?.handleMouseDown(ev);
-    this.state.activeTool?.handleMouseDown(ev);
+    this.store.state?.activeTool?.handleMouseDown(ev);
   }
 
   @Listen('mousemove', { target: 'window', passive: true })
   handleMouseMove(ev) {
     this.viewport?.handleMouseMove(ev);
-    this.state.activeTool?.handleMouseMove(ev);
+    this.store.state?.activeTool?.handleMouseMove(ev);
   }
 
   @Listen('mouseup', { target: 'window', passive: true })
   handleMouseUp(ev) {
     this.viewport?.handleMouseUp(ev);
-    this.state.activeTool?.handleMouseUp(ev);
+    this.store.state?.activeTool?.handleMouseUp(ev);
     this.history.handleMouseUp(ev);
   }
 
   @Listen('wheel', { target: 'window', passive: false })
   handleWheel(ev) {
     this.viewport?.handleWheel(ev);
-    this.state.activeTool?.handleWheel(ev);
+    this.store.state?.activeTool?.handleWheel(ev);
   }
 
   @Listen('keydown', { target: 'window' })
@@ -95,35 +92,30 @@ export class KritzelEngine {
       }
 
       if (ev.key === 'd') {
-        this.state.showDebugInfo = !this.state.showDebugInfo;
+        this.store.state.showDebugInfo = !this.store.state.showDebugInfo;
       }
 
       if (ev.key === 's') {
-        this.state.activeTool = new KritzelSelectionTool(this.store);
         this.store.state.activeTool = new KritzelSelectionTool(this.store);
         this.deselectAllObjects();
       }
 
       if (ev.key === 'b') {
-        this.state.activeTool = new KritzelBrushTool(this.store);
         this.store.state.activeTool = new KritzelBrushTool(this.store);
         this.deselectAllObjects();
       }
 
       if (ev.key === 'e') {
-        this.state.activeTool = new KritzelEraserTool(this.store);
         this.store.state.activeTool = new KritzelEraserTool(this.store);
         this.deselectAllObjects();
       }
 
       if (ev.key === 'i') {
-        this.state.activeTool = new KritzelImageTool(this.store);
         this.store.state.activeTool = new KritzelImageTool(this.store);
         this.deselectAllObjects();
       }
 
       if (ev.key === 'x') {
-        this.state.activeTool = new KritzelTextTool(this.store);
         this.store.state.activeTool = new KritzelTextTool(this.store);
         this.deselectAllObjects();
       }
@@ -131,20 +123,20 @@ export class KritzelEngine {
   }
 
   private deselectAllObjects() {
-    const objects = this.state.objects.filter(o => !(o instanceof KrtizelSelectionBox)).filter(o => !(o instanceof KritzelSelectionGroup));
+    const objects = this.store.state.objects.filter(o => !(o instanceof KrtizelSelectionBox)).filter(o => !(o instanceof KritzelSelectionGroup));
 
     objects.forEach(object => {
       object.selected = false;
     });
 
-    this.state.objects = [...objects];
+    this.store.state.objects = [...objects];
     this.history.createSnapshot();
   }
 
   render() {
     return (
       <Host>
-        {this.state.showDebugInfo && (
+        {this.store.state.showDebugInfo && (
           <div class="debug-panel">
             <div>StartX: {this.viewport.state.startX}</div>
             <div>StartY: {this.viewport.state.startY}</div>
@@ -152,7 +144,7 @@ export class KritzelEngine {
             <div>TranslateY: {this.viewport.state.translateY}</div>
             <div>CurrentStateIndex: {this.history.currentStateIndex}</div>
             <div>Scale: {this.viewport.state.scale}</div>
-            <div>ActiveTool: {this.state.activeTool.name}</div>
+            <div>ActiveTool: {this.store.state.activeTool.name}</div>
             <div>IsSelecting: {this.isSelecting ? 'true': 'false'}</div>
             <div>IsSelectionActive: {this.isSelectionActive ? 'true': 'false'}</div>
             <div>CursorX: {this.viewport.state.cursorX}</div>
@@ -349,7 +341,7 @@ export class KritzelEngine {
                   />
                 </g>
 
-                <g style={{display: this.state.showDebugInfo ? 'block' : 'none'}}>
+                <g style={{display: this.store.state.showDebugInfo ? 'block' : 'none'}}>
                   <foreignObject
                     x={object.totalWidth.toString()}
                     y="0"
@@ -387,7 +379,7 @@ export class KritzelEngine {
             }}
             viewBox={this.store.state.currentPath?.viewBox}
           >
-            <path d={this.store.state.currentPath?.d} fill={this.state.currentPath?.fill} stroke={this.state.currentPath?.stroke} />
+            <path d={this.store.state.currentPath?.d} fill={this.store.state.currentPath?.fill} stroke={this.store.state.currentPath?.stroke} />
           </svg>
         </div>
       </Host>

@@ -3,7 +3,6 @@ import { KritzelObject } from '../../interfaces/object.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelSelection } from '../../interfaces/selection.interface';
-import { getCurrentZIndex } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, KritzelSerializable {
@@ -170,10 +169,6 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
 
   generateId(): string {
     return Math.random().toString(36).substr(2, 9);
-  }
-
-  initializeZIndex(): void {
-    this.zIndex = getCurrentZIndex();
   }
 
   isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {

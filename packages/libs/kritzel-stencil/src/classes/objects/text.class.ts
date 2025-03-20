@@ -1,4 +1,3 @@
-import { kritzelEngineState } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelBaseObject } from './base-object.class';
 
@@ -20,7 +19,8 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
   }
 
   get isReadonly(): boolean {
-    return kritzelEngineState.activeTool?.name !== 'text';
+    return false;
+    // return kritzelEngineState.activeTool?.name !== 'text';
   }
 
   constructor() {
@@ -84,7 +84,7 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
       this.width = textWidth;
       this.height = this.elementRef.scrollHeight;
 
-      kritzelEngineState.objects = [...kritzelEngineState.objects];
+      // kritzelEngineState.objects = [...kritzelEngineState.objects];
     }
   }
 }
