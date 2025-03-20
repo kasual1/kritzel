@@ -2,7 +2,6 @@ import { Component, Host, h, Listen, Element, Prop } from '@stencil/core';
 import { KritzelTool } from '../../interfaces/tool.interface';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelViewport } from '../../classes/viewport.class';
-import { KritzelHistory } from '../../classes/history.class';
 import { KritzelPath } from '../../classes/objects/path.class';
 import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
 import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
@@ -28,8 +27,6 @@ export class KritzelEngine {
 
   viewport: KritzelViewport;
 
-  history: KritzelHistory;
-
   store: KritzelStore;
 
   get isSelecting() {
@@ -44,8 +41,6 @@ export class KritzelEngine {
     this.store = new KritzelStore();
     this.viewport = new KritzelViewport(this.host);
     this.store.state.activeTool = new KritzelBrushTool(this.store);
-    this.store.state.activeTool = new KritzelBrushTool(this.store);
-    this.history = new KritzelHistory(this.store);
   }
 
   @Listen('contextmenu', { target: 'window' })
@@ -69,7 +64,7 @@ export class KritzelEngine {
   handleMouseUp(ev) {
     this.viewport?.handleMouseUp(ev);
     this.store.state?.activeTool?.handleMouseUp(ev);
-    this.history.handleMouseUp(ev);
+    this.store.state?.history.handleMouseUp(ev);
   }
 
   @Listen('wheel', { target: 'window', passive: false })
@@ -84,11 +79,11 @@ export class KritzelEngine {
       ev.preventDefault();
 
       if (ev.key === 'z') {
-        this.history.undo();
+        this.store.state?.history.undo();
       }
 
       if (ev.key === 'y') {
-        this.history.redo();
+        this.store.state?.history.redo();
       }
 
       if (ev.key === 'd') {
@@ -130,7 +125,7 @@ export class KritzelEngine {
     });
 
     this.store.state.objects = [...objects];
-    this.history.createSnapshot();
+    this.store.state?.history.createSnapshot();
   }
 
   render() {
@@ -142,7 +137,7 @@ export class KritzelEngine {
             <div>StartY: {this.viewport.state.startY}</div>
             <div>TranslateX: {this.viewport.state.translateX}</div>
             <div>TranslateY: {this.viewport.state.translateY}</div>
-            <div>CurrentStateIndex: {this.history.currentStateIndex}</div>
+            <div>CurrentStateIndex: {this.store.state?.history.currentStateIndex}</div>
             <div>Scale: {this.viewport.state.scale}</div>
             <div>ActiveTool: {this.store.state.activeTool.name}</div>
             <div>IsSelecting: {this.isSelecting ? 'true': 'false'}</div>
