@@ -1,6 +1,5 @@
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelStore } from '../../stores/store';
-import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelBaseObject } from './base-object.class';
 
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
@@ -15,7 +14,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
   constructor(store: KritzelStore) {
     super(store);
-    this.scale = kritzelViewportState.scale;
+    this.scale = this._store.state.scale;
     this.zIndex = 99999;
   }
 
@@ -40,8 +39,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override move(startX: number, startY: number, endX: number, endY: number): void {
-    const deltaX = (startX - endX) / kritzelViewportState.scale;
-    const deltaY = (startY - endY) / kritzelViewportState.scale;
+    const deltaX = (startX - endX) / this._store.state.scale;
+    const deltaY = (startY - endY) / this._store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;

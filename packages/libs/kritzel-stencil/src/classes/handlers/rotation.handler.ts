@@ -1,6 +1,5 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelStore } from '../../stores/store';
-import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelHistory } from '../history.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base-handler';
@@ -29,11 +28,11 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
         this._store.state.selectionGroup = selectedObject as KritzelSelectionGroup;
         this._store.state.isRotating = true;
 
-        const centerX = selectedObject.translateX + selectedObject.width / 2 / kritzelViewportState.scale;
-        const centerY = selectedObject.translateY + selectedObject.height / 2 / kritzelViewportState.scale;
+        const centerX = selectedObject.translateX + selectedObject.width / 2 / this._store.state.scale;
+        const centerY = selectedObject.translateY + selectedObject.height / 2 / this._store.state.scale;
 
-        const cursorX = (event.clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
-        const cursorY = (event.clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
+        const cursorX = (event.clientX - this._store.state.translateX) / this._store.state.scale;
+        const cursorY = (event.clientY - this._store.state.translateY) / this._store.state.scale;
 
         this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - selectedObject.rotation;
       }
@@ -42,11 +41,11 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
 
   handleMouseMove(event: MouseEvent): void {
     if (this._store.state.isRotating && this._store.state.selectionGroup) {
-      const groupCenterX = this._store.state.selectionGroup.translateX + this._store.state.selectionGroup.width / 2 / kritzelViewportState.scale;
-      const groupCenterY = this._store.state.selectionGroup.translateY + this._store.state.selectionGroup.height / 2 / kritzelViewportState.scale;
+      const groupCenterX = this._store.state.selectionGroup.translateX + this._store.state.selectionGroup.width / 2 / this._store.state.scale;
+      const groupCenterY = this._store.state.selectionGroup.translateY + this._store.state.selectionGroup.height / 2 / this._store.state.scale;
 
-      const cursorX = (event.clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
-      const cursorY = (event.clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
+      const cursorX = (event.clientX - this._store.state.translateX) / this._store.state.scale;
+      const cursorY = (event.clientY - this._store.state.translateY) / this._store.state.scale;
 
       const currentRotation = Math.atan2(groupCenterY - cursorY, groupCenterX - cursorX);
 

@@ -1,7 +1,6 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelStore } from '../../stores/store';
-import { kritzelViewportState } from '../../stores/viewport.store';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base-handler';
@@ -113,8 +112,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
     const { clientX, clientY } = event;
     const selectionBox = new KrtizelSelectionBox(this._store);
 
-    this.dragStartX = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
-    this.dragStartY = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
+    this.dragStartX = (clientX - this._store.state.translateX) / this._store.state.scale;
+    this.dragStartY = (clientY - this._store.state.translateY) / this._store.state.scale;
 
     selectionBox.translateX = this.dragStartX;
     selectionBox.translateY = this.dragStartY;
@@ -129,8 +128,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
   private updateSelection(event: MouseEvent): void {
     const { clientX, clientY } = event;
     const selectionBox = this._store.state.selectionBox;
-    const currentX = (clientX - kritzelViewportState.translateX) / selectionBox.scale;
-    const currentY = (clientY - kritzelViewportState.translateY) / selectionBox.scale;
+    const currentX = (clientX - this._store.state.translateX) / selectionBox.scale;
+    const currentY = (clientY - this._store.state.translateY) / selectionBox.scale;
 
     if (selectionBox) {
       selectionBox.width = Math.abs(currentX - this.dragStartX) * selectionBox.scale;

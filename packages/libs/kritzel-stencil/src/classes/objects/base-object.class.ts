@@ -3,7 +3,6 @@ import { KritzelObject } from '../../interfaces/object.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelSelection } from '../../interfaces/selection.interface';
-import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelStore } from '../../stores/store';
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, KritzelSerializable {
@@ -179,14 +178,14 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
   }
 
   centerInViewport(): void {
-    const scale = kritzelViewportState.scale;
-    this.translateX = (window.innerWidth / 2 - this.totalWidth / 2 - kritzelViewportState.translateX) / scale;
-    this.translateY = (window.innerHeight / 2 - this.totalHeight / 2 - kritzelViewportState.translateY) / scale;
+    const scale = this._store.state.scale;
+    this.translateX = (window.innerWidth / 2 - this.totalWidth / 2 - this._store.state.translateX) / scale;
+    this.translateY = (window.innerHeight / 2 - this.totalHeight / 2 - this._store.state.translateY) / scale;
   }
 
   move(startX: number, startY: number, endX: number, endY: number): void {
-    const deltaX = (startX - endX) / kritzelViewportState.scale;
-    const deltaY = (startY - endY) / kritzelViewportState.scale;
+    const deltaX = (startX - endX) / this._store.state.scale;
+    const deltaY = (startY - endY) / this._store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;

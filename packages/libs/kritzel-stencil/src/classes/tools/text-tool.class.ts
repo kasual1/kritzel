@@ -1,4 +1,3 @@
-import { kritzelViewportState } from '../../stores/viewport.store';
 import { KrtizelText } from '../objects/text.class';
 import { KritzelStore } from '../../stores/store';
 import { KritzelBaseTool } from './base-tool.class';
@@ -17,10 +16,10 @@ export class KritzelTextTool extends KritzelBaseTool {
     if (this.isWriting === false) {
       const { clientX, clientY } = event;
       const text = new KrtizelText(this._store);
-      text.translateX = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
-      text.translateY = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
-      text.width = text.width / kritzelViewportState.scale;
-      text.height = text.height / kritzelViewportState.scale;
+      text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;
+      text.translateY = (clientY - this._store.state.translateY) / this._store.state.scale;
+      text.width = text.width / this._store.state.scale;
+      text.height = text.height / this._store.state.scale;
       text.fontSize = 16;
       text.zIndex = this._store.currentZIndex;
 
