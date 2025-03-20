@@ -1,4 +1,5 @@
 import { ObjectHelper } from '../../helpers/object.helper';
+import { KritzelStore } from '../../stores/store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelBaseObject } from './base-object.class';
 
@@ -12,8 +13,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   minY: number;
   maxY: number;
 
-  constructor() {
-    super();
+  constructor(store: KritzelStore) {
+    super(store);
     this.scale = kritzelViewportState.scale;
     this.zIndex = 99999;
   }
@@ -100,7 +101,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override copy(): KritzelBaseObject<HTMLElement> {
-    const selectionGroup = new KritzelSelectionGroup();
+    const selectionGroup = new KritzelSelectionGroup(this._store);
     selectionGroup.objects = this.objects.map(obj => obj.copy());
     selectionGroup.unchangedObjects = ObjectHelper.cloneDeep(selectionGroup.objects);
     selectionGroup.updateBoundingBox();

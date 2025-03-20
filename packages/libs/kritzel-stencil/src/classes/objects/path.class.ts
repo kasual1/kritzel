@@ -2,6 +2,7 @@ import { getStroke } from 'perfect-freehand';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelPathOptions } from '../../interfaces/path-options.interface';
 import { KritzelBaseObject } from './base-object.class';
+import { KritzelStore } from '../../stores/store';
 
 export class KritzelPath extends KritzelBaseObject<SVGElement> {
   points: number[][];
@@ -22,8 +23,8 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   debugInfoVisible: boolean = true;
 
-  constructor(options?: KritzelPathOptions) {
-    super();
+  constructor(store: KritzelStore, options?: KritzelPathOptions) {
+    super(store);
     this.options = options;
     this.points = options?.points ?? [];
     this.translateX = options?.translateX ?? 0;

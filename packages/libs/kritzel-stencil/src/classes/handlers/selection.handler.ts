@@ -71,7 +71,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
     if (object instanceof KritzelSelectionGroup) {
       return object;
     } else {
-      const group = new KritzelSelectionGroup();
+      const group = new KritzelSelectionGroup(this._store);
       group.translateX = 0;
       group.translateY = 0;
       group.addOrRemove(object);
@@ -111,7 +111,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
 
   private startSelection(event: MouseEvent): void {
     const { clientX, clientY } = event;
-    const selectionBox = new KrtizelSelectionBox();
+    const selectionBox = new KrtizelSelectionBox(this._store);
 
     this.dragStartX = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
     this.dragStartY = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
@@ -167,7 +167,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
     const selectedObjects = this._store.state.objects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
 
     if (selectedObjects.length > 0) {
-      this._store.state.selectionGroup = new KritzelSelectionGroup();
+      this._store.state.selectionGroup = new KritzelSelectionGroup(this._store);
       selectedObjects.forEach(o => {
         o.selected = false;
         this._store.state.selectionGroup.addOrRemove(o);

@@ -16,7 +16,7 @@ export class KritzelTextTool extends KritzelBaseTool {
   handleMouseUp(event: MouseEvent): void {
     if (this.isWriting === false) {
       const { clientX, clientY } = event;
-      const text = new KrtizelText();
+      const text = new KrtizelText(this._store);
       text.translateX = (clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
       text.translateY = (clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
       text.width = text.width / kritzelViewportState.scale;

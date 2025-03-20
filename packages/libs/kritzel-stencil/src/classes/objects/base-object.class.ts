@@ -4,6 +4,7 @@ import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelSelection } from '../../interfaces/selection.interface';
 import { kritzelViewportState } from '../../stores/viewport.store';
+import { KritzelStore } from '../../stores/store';
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, KritzelSerializable {
   __class__: string = this.constructor.name;
@@ -28,6 +29,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
 
   debugInfoVisible: boolean = false;
 
+  protected readonly _store: KritzelStore;
   _elementRef: T;
 
   selection: KritzelSelection = {
@@ -154,7 +156,8 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     return this.rotation * (180 / Math.PI);
   }
 
-  constructor() {
+  constructor(store: KritzelStore) {
+    this._store = store;
     this.id = this.generateId();
   }
 

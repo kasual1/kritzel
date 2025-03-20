@@ -11,10 +11,10 @@ import { KritzelTextTool } from "./tools/text-tool.class";
 
 export class KritzelReviver {
 
-  store: KritzelStore;
+  private readonly _store: KritzelStore;
 
   constructor(store: KritzelStore) {
-    this.store = store;
+    this._store = store;
   }
     
   revive(obj: any): any {
@@ -23,31 +23,31 @@ export class KritzelReviver {
         let revivedObj;
         switch (obj.__class__) {
           case 'KritzelPath':
-            revivedObj = new KritzelPath().revive(obj);
+            revivedObj = new KritzelPath(this._store).revive(obj);
             break;
           case 'KritzelText':
-            revivedObj = new KrtizelText().revive(obj);
+            revivedObj = new KrtizelText(this._store).revive(obj);
             break;
           case 'KritzelImage':
-            revivedObj = new KritzelImage().revive(obj);
+            revivedObj = new KritzelImage(this._store).revive(obj);
             break;
           case 'KritzelSelectionGroup':
-            revivedObj = new KritzelSelectionGroup().revive(obj);
+            revivedObj = new KritzelSelectionGroup(this._store).revive(obj);
             break;
           case 'KritzelBrushTool':
-            revivedObj = new KritzelBrushTool(this.store);
+            revivedObj = new KritzelBrushTool(this._store);
             break;
           case 'KritzelEraserTool':
-            revivedObj = new KritzelEraserTool(this.store);
+            revivedObj = new KritzelEraserTool(this._store);
             break;
           case 'KritzelImageTool':
-            revivedObj = new KritzelImageTool(this.store);
+            revivedObj = new KritzelImageTool(this._store);
             break;
           case 'KritzelSelectionTool':
-            revivedObj = new KritzelSelectionTool(this.store);
+            revivedObj = new KritzelSelectionTool(this._store);
             break;
           case 'KritzelTextTool':
-            revivedObj = new KritzelTextTool(this.store);
+            revivedObj = new KritzelTextTool(this._store);
             break;
 
           default:
