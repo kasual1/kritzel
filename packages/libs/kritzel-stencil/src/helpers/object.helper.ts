@@ -1,3 +1,5 @@
+import { cloneDeep } from 'lodash-es';
+
 export class ObjectHelper {
   static toPlainObject(obj: any, visited = new WeakSet(), depth = 0, maxDepth = 100): any {
 
@@ -42,7 +44,7 @@ export class ObjectHelper {
   }
 
   static cloneDeep(obj: any): any {
-    const clone = this.toPlainObject(obj);
+    const clone = cloneDeep(obj);
     return clone;
   }
 }
