@@ -40,7 +40,7 @@ export class KritzelEngine {
     return this.store.state.activeTool instanceof KritzelSelectionTool && this.store.state.selectionGroup !== null;
   }
 
-  componentWillLoad() {
+  constructor() {
     this.store = new KritzelStore();
     this.viewport = new KritzelViewport(this.host);
     this.store.state.activeTool = new KritzelBrushTool(this.store);
