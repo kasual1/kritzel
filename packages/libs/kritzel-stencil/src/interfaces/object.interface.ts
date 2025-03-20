@@ -34,7 +34,6 @@ export interface KritzelObject<T = Element> {
 
   mount(element: T): void;
   generateId(): string;
-  initializeZIndex(): void;
   isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
   centerInViewport(): void;
   move(startX: number, startY: number, endX: number, endY: number): void;

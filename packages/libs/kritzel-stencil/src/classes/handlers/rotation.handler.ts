@@ -1,24 +1,18 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
-import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
-import { kritzelEngineState, findObjectById } from '../../stores/engine.store';
 import { KritzelStore } from '../../stores/store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelHistory } from '../history.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelBaseHandler } from './base-handler';
 
-export class KritzelRotationHandler {
-  selectionState: KritzelSelectionState;
-
-  store: KritzelStore;
-
+export class KritzelRotationHandler extends KritzelBaseHandler{
   initialRotation: number = 0;
 
   history: KritzelHistory;
 
-  constructor(selectionState: KritzelSelectionState, store: KritzelStore) {
-    this.selectionState = selectionState;
-    this.store = store;
-    this.history = new KritzelHistory(this.store);
+  constructor(store: KritzelStore) {
+    super(store);
+    this.history = new KritzelHistory(this._store);
   }
 
   handleMouseDown(event: MouseEvent): void {
@@ -29,11 +23,11 @@ export class KritzelRotationHandler {
 
       const isRotationHandleSelected = rotationHandle ? true : false;
 
-      const selectedObject = findObjectById(objectElement?.id);
+      const selectedObject = this._store.findObjectById(objectElement?.id);
 
       if (selectedObject && isRotationHandleSelected) {
-        this.selectionState.selectionGroup = selectedObject as KritzelSelectionGroup;
-        this.selectionState.isRotating = true;
+        this._store.state.selectionGroup = selectedObject as KritzelSelectionGroup;
+        this._store.state.isRotating = true;
 
         const centerX = selectedObject.translateX + selectedObject.width / 2 / kritzelViewportState.scale;
         const centerY = selectedObject.translateY + selectedObject.height / 2 / kritzelViewportState.scale;
@@ -47,26 +41,27 @@ export class KritzelRotationHandler {
   }
 
   handleMouseMove(event: MouseEvent): void {
-    if (this.selectionState.isRotating && this.selectionState.selectionGroup) {
-      const groupCenterX = this.selectionState.selectionGroup.translateX + this.selectionState.selectionGroup.width / 2 / kritzelViewportState.scale;
-      const groupCenterY = this.selectionState.selectionGroup.translateY + this.selectionState.selectionGroup.height / 2 / kritzelViewportState.scale;
+    if (this._store.state.isRotating && this._store.state.selectionGroup) {
+      const groupCenterX = this._store.state.selectionGroup.translateX + this._store.state.selectionGroup.width / 2 / kritzelViewportState.scale;
+      const groupCenterY = this._store.state.selectionGroup.translateY + this._store.state.selectionGroup.height / 2 / kritzelViewportState.scale;
 
       const cursorX = (event.clientX - kritzelViewportState.translateX) / kritzelViewportState.scale;
       const cursorY = (event.clientY - kritzelViewportState.translateY) / kritzelViewportState.scale;
 
       const currentRotation = Math.atan2(groupCenterY - cursorY, groupCenterX - cursorX);
 
-      this.selectionState.selectionGroup.rotate(currentRotation - this.initialRotation);
+      this._store.state.selectionGroup.rotate(currentRotation - this.initialRotation);
 
-      kritzelEngineState.objects = [...kritzelEngineState.objects];
+      this._store.rerender();
     }
   }
 
   handleMouseUp(_event: MouseEvent): void {
-    if (this.selectionState.isRotating) {
-      this.selectionState.isRotating = false;
+    if (this._store.state.isRotating) {
+      this._store.state.isRotating = false;
 
-      kritzelEngineState.objects = [...kritzelEngineState.objects];
+      this._store.rerender();
+
       this.history.forceCreateSnapshot();
     }
   }

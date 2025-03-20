@@ -1,26 +1,18 @@
-import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
-import { kritzelEngineState } from '../../stores/engine.store';
 import { KritzelStore } from '../../stores/store';
 import { KritzelHistory } from '../history.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelBaseHandler } from './base-handler';
 
-export class KritzelKeyHandler {
-  selectionState: KritzelSelectionState;
-
+export class KritzelKeyHandler extends KritzelBaseHandler {
   history: KritzelHistory;
 
-  copiedObject: KritzelSelectionGroup | null = null;
-
-  store: KritzelStore;
-
-  constructor(selectionState: KritzelSelectionState, store: KritzelStore) {
-    this.selectionState = selectionState;
-    this.store = store;
-    this.history = new KritzelHistory(this.store);
+  constructor(store: KritzelStore) {
+    super(store);
+    this.history = new KritzelHistory(this._store);
   }
 
   handleKeyDown(event: KeyboardEvent): void {
-    this.selectionState.isCtrlKeyPressed = event.ctrlKey;
+    this._store.state.isCtrlKeyPressed = event.ctrlKey;
 
     if (event.key === 'Escape') {
       this.handleEscape();
@@ -38,62 +30,62 @@ export class KritzelKeyHandler {
       this.handlePaste();
     }
 
-    if (event.key === '+' && event.ctrlKey && this.selectionState.selectionGroup) {
+    if (event.key === '+' && event.ctrlKey && this._store.state.selectionGroup) {
       this.handleMoveUp();
     }
 
-    if (event.key === '-' && event.ctrlKey && this.selectionState.selectionGroup) {
+    if (event.key === '-' && event.ctrlKey && this._store.state.selectionGroup) {
       this.handleMoveDown();
     }
 
-    if (event.key === '*' && event.shiftKey && this.selectionState.selectionGroup) {
+    if (event.key === '*' && event.shiftKey && this._store.state.selectionGroup) {
       this.handleMoveToTop();
     }
 
-    if (event.key === '_' && event.shiftKey && this.selectionState.selectionGroup) {
+    if (event.key === '_' && event.shiftKey && this._store.state.selectionGroup) {
       this.handleMoveToBottom();
     }
   }
 
   handleKeyUp(event: KeyboardEvent): void {
-    this.selectionState.isCtrlKeyPressed = event.ctrlKey;
+    this._store.state.isCtrlKeyPressed = event.ctrlKey;
   }
 
   private handleEscape() {
-    this.selectionState.selectionGroup = null;
+    this._store.state.selectionGroup = null;
 
-    kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !(o instanceof KritzelSelectionGroup))];
+    this._store.state.objects = [...this._store.state.objects.filter(o => !(o instanceof KritzelSelectionGroup))];
   }
 
   private handleDelete() {
-    const toBeDeleted = this.selectionState.selectionGroup.objects;
+    const toBeDeleted = this._store.state.selectionGroup.objects;
 
-    this.selectionState.selectionGroup = null;
+    this._store.state.selectionGroup = null;
 
-    kritzelEngineState.objects = [...kritzelEngineState.objects.filter(o => !toBeDeleted.includes(o)).filter(o => !(o instanceof KritzelSelectionGroup))];
+    this._store.state.objects = [...this._store.state.objects.filter(o => !toBeDeleted.includes(o)).filter(o => !(o instanceof KritzelSelectionGroup))];
   }
 
   private handleCopy() {
-    this.copiedObject = this.selectionState.selectionGroup.copy() as KritzelSelectionGroup;
+    this._store.state.copiedObject = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
   }
 
   private handlePaste() {
-    this.selectionState.selectionGroup = this.copiedObject;
-    this.selectionState.selectionGroup.selected = true;
-    this.copiedObject = this.selectionState.selectionGroup.copy() as KritzelSelectionGroup;
+    this._store.state.selectionGroup = this._store.state.copiedObject;
+    this._store.state.selectionGroup.selected = true;
+    this._store.state.copiedObject = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
 
-    kritzelEngineState.objects = [
-      ...kritzelEngineState.objects.filter(o => !(o instanceof KritzelSelectionGroup)),
-      ...this.selectionState.selectionGroup.objects,
-      this.selectionState.selectionGroup,
+    this._store.state.objects = [
+      ...this._store.state.objects.filter(o => !(o instanceof KritzelSelectionGroup)),
+      ...this._store.state.selectionGroup.objects,
+      this._store.state.selectionGroup,
     ];
 
     this.history.forceCreateSnapshot();
   }
 
   private handleMoveUp() {
-    const max = kritzelEngineState.objects.length;
-    this.selectionState.selectionGroup?.objects.forEach(obj => {
+    const max = this._store.state.objects.length;
+    this._store.state.selectionGroup?.objects.forEach(obj => {
       if (obj.zIndex === max) {
         return;
       }
@@ -101,12 +93,12 @@ export class KritzelKeyHandler {
       obj.zIndex += 1;
     });
 
-    kritzelEngineState.objects = [...kritzelEngineState.objects];
+    this._store.rerender();
   }
 
   private handleMoveDown() {
     const min = 0;
-    this.selectionState.selectionGroup?.objects.forEach(obj => {
+    this._store.state.selectionGroup?.objects.forEach(obj => {
       if (obj.zIndex === min) {
         return;
       }
@@ -114,24 +106,24 @@ export class KritzelKeyHandler {
       obj.zIndex -= 1;
     });
 
-    kritzelEngineState.objects = [...kritzelEngineState.objects];
+    this._store.rerender();
   }
 
   private handleMoveToTop() {
-    const max = kritzelEngineState.objects.length + 1;
-    this.selectionState.selectionGroup?.objects.forEach(obj => {
+    const max = this._store.state.objects.length + 1;
+    this._store.state.selectionGroup?.objects.forEach(obj => {
       obj.zIndex = max;
     });
 
-    kritzelEngineState.objects = [...kritzelEngineState.objects];
+    this._store.rerender();
   }
 
   private handleMoveToBottom() {
     const min = -1;
-    this.selectionState.selectionGroup?.objects.forEach(obj => {
+    this._store.state.selectionGroup?.objects.forEach(obj => {
       obj.zIndex = min;
     });
 
-    kritzelEngineState.objects = [...kritzelEngineState.objects];
+    this._store.rerender();
   }
 }

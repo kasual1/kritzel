@@ -1,30 +1,16 @@
-import { KritzelTool } from '../../components';
-import { kritzelEngineState } from '../../stores/engine.store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 import { KrtizelText } from '../objects/text.class';
-import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelStore } from '../../stores/store';
+import { KritzelBaseTool } from './base-tool.class';
 
-export class KritzelTextTool implements KritzelTool, KritzelSerializable {
-  __class__: string = this.constructor.name;
-
+export class KritzelTextTool extends KritzelBaseTool {
   name: string = 'text';
   icon: string = 'text';
 
   isWriting: boolean = false;
 
-  store: KritzelStore;
-
   constructor(store: KritzelStore) {
-    this.store = store;
-  }
-
-  handleMouseDown(_event: MouseEvent): void {
-    // Do nothing
-  }
-
-  handleMouseMove(_event: MouseEvent): void {
-    // Do nothing
+    super(store);
   }
 
   handleMouseUp(event: MouseEvent): void {
@@ -36,20 +22,11 @@ export class KritzelTextTool implements KritzelTool, KritzelSerializable {
       text.width = text.width / kritzelViewportState.scale;
       text.height = text.height / kritzelViewportState.scale;
       text.fontSize = 16;
-      text.initializeZIndex();
+      text.zIndex = this._store.currentZIndex;
 
       this.isWriting = true;
 
-      kritzelEngineState.objects = [...kritzelEngineState.objects, text];
+      this._store.state.objects = [...this._store.state.objects, text];
     }
-  }
-
-  handleWheel(_event: WheelEvent): void {
-    // Do nothing
-  }
-
-  revive(object: any): KritzelSerializable {
-    Object.assign(this, object);
-    return this;
   }
 }

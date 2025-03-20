@@ -1,60 +1,47 @@
-import { KritzelTool } from "../../components";
 import { KritzelClickHelper } from "../../helpers/click.helper";
-import { KritzelSerializable } from "../../interfaces/serializable.interface";
-import { kritzelEngineState } from "../../stores/engine.store";
 import { KritzelStore } from "../../stores/store";
+import { KritzelBaseTool } from "./base-tool.class";
 
-export class KritzelEraserTool implements KritzelTool, KritzelSerializable {
-  __class__: string = this.constructor.name;
-
+export class KritzelEraserTool extends KritzelBaseTool {
   name: string = 'eraser';
   icon: string = 'eraser';
 
-  isErasing: boolean;
-
-  store: KritzelStore;
-
   constructor(store: KritzelStore){
-    this.store = store;
+    super(store);
   }
 
   handleMouseDown(event: MouseEvent): void {
     if (KritzelClickHelper.isLeftClick(event)) {
-      this.isErasing = true;
+      this._store.state.isErasing = true;
     }
   }
 
   handleMouseMove(event: MouseEvent): void {
-    if (this.isErasing) {
+    if (this._store.state.isErasing) {
         const path = event.composedPath() as HTMLElement[];
         const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
 
         if (selectedObject) {
-          for (const object of kritzelEngineState.objects) {
+          for (const object of this._store.state.objects) {
             if (selectedObject.id === object.id) {
               object.markedForRemoval = true;
             }
           }
         }
 
-        kritzelEngineState.objects = [...kritzelEngineState.objects];
+        this._store.rerender();
     }
   }
 
   handleMouseUp(_event: MouseEvent): void {
-    if(this.isErasing) {
-      kritzelEngineState.objects = kritzelEngineState.objects.filter((o) => o.markedForRemoval === false);
-      this.isErasing = false;
+    if(this._store.state.isErasing) {
+      this._store.state.objects = this._store.state.objects.filter((o) => o.markedForRemoval === false);
+      this._store.state.isErasing = false;
     }
   }
 
   handleWheel(_event: WheelEvent): void {
     // Do nothing
-  }
-
-  revive(object: any): KritzelSerializable {
-    Object.assign(this, object);
-    return this;
   }
 
 }

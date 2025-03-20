@@ -1,42 +1,24 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
-import { KritzelSerializable } from '../../interfaces/serializable.interface';
-import { KritzelTool } from '../../interfaces/tool.interface';
-import { kritzelEngineState } from '../../stores/engine.store';
 import { KritzelStore } from '../../stores/store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelPath } from '../objects/path.class';
+import { KritzelBaseTool } from './base-tool.class';
 
-export class KritzelBrushTool implements KritzelTool, KritzelSerializable {
-  __class__: string = this.constructor.name;
-
+export class KritzelBrushTool extends KritzelBaseTool {
   name: string = 'brush';
   icon: string = 'brush';
 
-  isDrawing: boolean;
-
-  currentPath: KritzelPath | undefined;
-
-  store: KritzelStore;
-
   constructor(store: KritzelStore) {
-    this.store = store;
-    this.isDrawing = false;
+    super(store);
   }
 
   handleMouseDown(event: MouseEvent) {
     if (KritzelClickHelper.isLeftClick(event)) {
-      this.isDrawing = true;
+      this._store.state.isDrawing = true;
       const x = event.clientX;
       const y = event.clientY;
 
-      kritzelEngineState.currentPath = new KritzelPath({
-        points: [[x, y]],
-        translateX: -kritzelViewportState.translateX,
-        translateY: -kritzelViewportState.translateY,
-        scale: kritzelViewportState.scale,
-      });
-
-      this.store.state.currentPath = new KritzelPath({
+      this._store.state.currentPath = new KritzelPath({
         points: [[x, y]],
         translateX: -kritzelViewportState.translateX,
         translateY: -kritzelViewportState.translateY,
@@ -46,19 +28,12 @@ export class KritzelBrushTool implements KritzelTool, KritzelSerializable {
   }
 
   handleMouseMove(event: MouseEvent): void {
-    if (this.isDrawing) {
+    if (this._store.state.isDrawing) {
       const x = event.clientX;
       const y = event.clientY;
 
-      kritzelEngineState.currentPath = new KritzelPath({
-        points: [...kritzelEngineState.currentPath.points, [x, y]],
-        translateX: -kritzelViewportState.translateX,
-        translateY: -kritzelViewportState.translateY,
-        scale: kritzelViewportState.scale,
-      });
-
-      this.store.state.currentPath = new KritzelPath({
-        points: [...kritzelEngineState.currentPath.points, [x, y]],
+      this._store.state.currentPath = new KritzelPath({
+        points: [...this._store.state.currentPath.points, [x, y]],
         translateX: -kritzelViewportState.translateX,
         translateY: -kritzelViewportState.translateY,
         scale: kritzelViewportState.scale,
@@ -67,30 +42,15 @@ export class KritzelBrushTool implements KritzelTool, KritzelSerializable {
   }
 
   handleMouseUp(_event: MouseEvent): void {
-    if (this.isDrawing) {
-      this.isDrawing = false;
+    if (this._store.state.isDrawing) {
+      this._store.state.isDrawing = false;
 
-      if (kritzelEngineState.currentPath) {
-        kritzelEngineState.currentPath.initializeZIndex();
-        kritzelEngineState.objects.push(kritzelEngineState.currentPath);
+      if(this._store.state.currentPath){
+        this._store.state.currentPath.zIndex = this._store.currentZIndex;
+        this._store.state.objects.push(this._store.state.currentPath);
       }
 
-      if(this.store.state.currentPath){
-        this.store.state.currentPath.zIndex = this.store.currentZIndex;
-        this.store.state.objects.push(this.store.state.currentPath);
-      }
-
-      kritzelEngineState.currentPath = undefined;
-      this.store.state.currentPath = undefined;
+      this._store.state.currentPath = undefined;
     }
-  }
-
-  handleWheel(_event: WheelEvent): void {
-    //TODO: Update paths's scaling factor
-  }
-
-  revive(object: any): KritzelSerializable {
-    Object.assign(this, object);
-    return this;
   }
 }

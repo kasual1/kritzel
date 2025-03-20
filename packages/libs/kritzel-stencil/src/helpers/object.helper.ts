@@ -42,6 +42,7 @@ export class ObjectHelper {
   }
 
   static cloneDeep(obj: any): any {
-    return this.toPlainObject(obj);
+    const clone = this.toPlainObject(obj);
+    return clone;
   }
 }

@@ -2,14 +2,24 @@ import { createStore } from '@stencil/store';
 import { KritzelBaseObject } from '../classes/objects/base-object.class';
 import { KritzelPath } from '../classes/objects/path.class';
 import { KritzelTool } from '../components';
-import { KritzelSelectionState } from '../interfaces/selection-state.interface';
+import { KrtizelSelectionBox } from '../classes/objects/selection-box.class';
+import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
 
 export interface KritzelEngineState {
   activeTool: KritzelTool;
   currentPath?: KritzelPath;
+  copiedObject?: KritzelSelectionGroup;
   objects: KritzelBaseObject<Element>[];
+  selectionBox?: KrtizelSelectionBox;
+  selectionGroup?: KritzelSelectionGroup;
+  isSelecting: boolean;
+  isResizing: boolean;
+  isRotating: boolean;
+  isDragging: boolean;
+  isDrawing: boolean;
+  isErasing: boolean;
+  isCtrlKeyPressed: boolean;
   showDebugInfo: boolean;
-  selectionState: KritzelSelectionState;
 }
 
 export class KritzelStore {
@@ -35,20 +45,20 @@ export class KritzelStore {
       currentPath: undefined,
       objects: [],
       showDebugInfo: true,
-      selectionState: {
-        selectionBox: null,
-        selectionGroup: null,
-        isSelecting: false,
-        isResizing: false,
-        isRotating: false,
-        isDragging: false,
-        isCtrlKeyPressed: false,
-      },
+      selectionBox: null,
+      selectionGroup: null,
+      isSelecting: false,
+      isResizing: false,
+      isRotating: false,
+      isDragging: false,
+      isDrawing: false,
+      isErasing: false,
+      isCtrlKeyPressed: false,
     });
   }
 
   rerender() {
-    this.state = { ...this.state };
+    this.state.objects = [...this.state.objects];
   }
 
   findObjectById(id: string): KritzelBaseObject<any> | null {
