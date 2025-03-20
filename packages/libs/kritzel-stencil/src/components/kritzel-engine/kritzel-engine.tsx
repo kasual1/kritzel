@@ -25,9 +25,9 @@ export class KritzelEngine {
   @Prop()
   activeTool: KritzelTool;
 
-  viewport: KritzelViewport;
-
   store: KritzelStore;
+
+  viewport: KritzelViewport;
 
   get isSelecting() {
     return this.store.state.activeTool instanceof KritzelSelectionTool && this.store.state.isSelecting;
@@ -39,7 +39,7 @@ export class KritzelEngine {
 
   constructor() {
     this.store = new KritzelStore();
-    this.viewport = new KritzelViewport(this.host);
+    this.viewport = new KritzelViewport(this.store, this.host);
     this.store.state.activeTool = new KritzelBrushTool(this.store);
   }
 
@@ -50,26 +50,26 @@ export class KritzelEngine {
 
   @Listen('mousedown', { target: 'window', passive: true })
   handleMouseDown(ev) {
-    this.viewport?.handleMouseDown(ev);
+    this.viewport.handleMouseDown(ev);
     this.store.state?.activeTool?.handleMouseDown(ev);
   }
 
   @Listen('mousemove', { target: 'window', passive: true })
   handleMouseMove(ev) {
-    this.viewport?.handleMouseMove(ev);
+    this.viewport.handleMouseMove(ev);
     this.store.state?.activeTool?.handleMouseMove(ev);
   }
 
   @Listen('mouseup', { target: 'window', passive: true })
   handleMouseUp(ev) {
-    this.viewport?.handleMouseUp(ev);
+    this.viewport.handleMouseUp(ev);
     this.store.state?.activeTool?.handleMouseUp(ev);
     this.store.state?.history.handleMouseUp(ev);
   }
 
   @Listen('wheel', { target: 'window', passive: false })
   handleWheel(ev) {
-    this.viewport?.handleWheel(ev);
+    this.viewport.handleWheel(ev);
     this.store.state?.activeTool?.handleWheel(ev);
   }
 
@@ -133,24 +133,24 @@ export class KritzelEngine {
       <Host>
         {this.store.state.showDebugInfo && (
           <div class="debug-panel">
-            <div>StartX: {this.viewport.state.startX}</div>
-            <div>StartY: {this.viewport.state.startY}</div>
-            <div>TranslateX: {this.viewport.state.translateX}</div>
-            <div>TranslateY: {this.viewport.state.translateY}</div>
+            <div>StartX: {this.store.state?.startX}</div>
+            <div>StartY: {this.store.state?.startY}</div>
+            <div>TranslateX: {this.store.state?.translateX}</div>
+            <div>TranslateY: {this.store.state?.translateY}</div>
             <div>CurrentStateIndex: {this.store.state?.history.currentStateIndex}</div>
-            <div>Scale: {this.viewport.state.scale}</div>
+            <div>Scale: {this.store.state?.scale}</div>
             <div>ActiveTool: {this.store.state.activeTool.name}</div>
             <div>IsSelecting: {this.isSelecting ? 'true': 'false'}</div>
             <div>IsSelectionActive: {this.isSelectionActive ? 'true': 'false'}</div>
-            <div>CursorX: {this.viewport.state.cursorX}</div>
-            <div>CursorY: {this.viewport.state.cursorY}</div>
+            <div>CursorX: {this.store.state?.cursorX}</div>
+            <div>CursorY: {this.store.state?.cursorY}</div>
           </div>
         )}
 
         <div
           class="origin"
           style={{
-            transform: `matrix(${this.viewport.state.scale}, 0, 0, ${this.viewport.state.scale}, ${this.viewport.state.translateX}, ${this.viewport.state.translateY})`,
+            transform: `matrix(${this.store.state?.scale}, 0, 0, ${this.store.state?.scale}, ${this.store.state?.translateX}, ${this.store.state?.translateY})`,
           }}
         >
           {this.store.state.objects?.map(object => {
@@ -261,7 +261,7 @@ export class KritzelEngine {
                     y1="0"
                     x2={object.totalWidth}
                     y2="0"
-                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.store.state?.scale}` }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
                   <line
@@ -269,7 +269,7 @@ export class KritzelEngine {
                     y1="0"
                     x2="0"
                     y2={object.totalHeight}
-                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.store.state?.scale}` }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
                   <line
@@ -277,7 +277,7 @@ export class KritzelEngine {
                     y1={object.totalHeight}
                     x2={object.totalWidth}
                     y2={object.totalHeight}
-                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.store.state?.scale}` }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
                   <line
@@ -285,7 +285,7 @@ export class KritzelEngine {
                     y1="0"
                     x2={object.totalWidth}
                     y2={object.totalHeight}
-                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.store.state?.scale}` }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
 
@@ -293,7 +293,7 @@ export class KritzelEngine {
                     class="selection-handle top-left"
                     cx="0"
                     cy="0"
-                    r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                    r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
 
                   />
@@ -301,21 +301,21 @@ export class KritzelEngine {
                     class="selection-handle top-right"
                     cx={object.totalWidth}
                     cy="0"
-                    r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                    r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="selection-handle bottom-left"
                     cx="0"
                     cy={object.totalHeight}
-                    r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                    r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="selection-handle bottom-right"
                     cx={object.totalWidth}
                     cy={object.totalHeight}
-                    r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                    r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
@@ -324,14 +324,14 @@ export class KritzelEngine {
                     y1="0"
                     x2={object.totalWidth / 2}
                     y2="-20"
-                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.viewport.state.scale}` }}
+                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.store.state?.scale}` }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="rotation-handle"
                     cx={object.totalWidth / 2}
                     cy="-20"
-                    r={`${(object.selection.handles.size * object.scale) / this.viewport.state.scale}`}
+                    r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                 </g>

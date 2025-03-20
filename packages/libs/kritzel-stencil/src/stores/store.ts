@@ -22,6 +22,17 @@ export interface KritzelEngineState {
   isCtrlKeyPressed: boolean;
   history: KritzelHistory;
   showDebugInfo: boolean;
+  host: HTMLElement;
+  cursorX: number;
+  cursorY: number;
+  scale: number;
+  scaleMax: number;
+  scaleMin: number;
+  scaleStep: number;
+  startX: number;
+  startY: number;
+  translateX: number;
+  translateY: number;
 }
 
 export class KritzelStore {
@@ -46,7 +57,6 @@ export class KritzelStore {
       activeTool: undefined,
       currentPath: undefined,
       objects: [],
-      showDebugInfo: true,
       selectionBox: null,
       selectionGroup: null,
       isSelecting: false,
@@ -57,6 +67,18 @@ export class KritzelStore {
       isErasing: false,
       isCtrlKeyPressed: false,
       history: new KritzelHistory(this),
+      showDebugInfo: true,
+      host: undefined,
+      cursorX: 0,
+      cursorY: 0,
+      scale: 1,
+      scaleMax: 1000,
+      scaleMin: 0.0001,
+      scaleStep: 0.05,
+      startX: 0,
+      startY: 0,
+      translateX: 0,
+      translateY: 0,
     });
   }
 

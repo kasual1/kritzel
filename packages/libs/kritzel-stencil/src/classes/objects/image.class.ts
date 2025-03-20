@@ -1,5 +1,4 @@
 import { KritzelStore } from "../../stores/store";
-import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "./base-object.class";
 
 export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
@@ -17,7 +16,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 		this.translateY = 0;
 		this.width = img.width;
 		this.height = img.height;
-		this.scale = kritzelViewportState.scale;
+		this.scale = this._store.state.scale;
 	}
 
 	override resize(x: number, y: number, width: number, height: number): void {

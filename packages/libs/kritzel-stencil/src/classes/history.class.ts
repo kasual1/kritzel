@@ -1,5 +1,4 @@
 import { KritzelClickHelper } from '../helpers/click.helper';
-import { kritzelViewportState, setKritzelViewportState } from '../stores/viewport.store';
 import { KritzelReviver } from './reviver.class';
 import { ObjectHelper } from '../helpers/object.helper';
 import { KritzelStore } from '../stores/store';
@@ -93,10 +92,10 @@ export class KritzelHistory {
 
   private recreateStateFromSnapshot(snapshot: any) {
 
-    for (const key in snapshot.viewport) {
-      const value = snapshot.viewport[key];
-      setKritzelViewportState(key as any, value);
-    }
+    // for (const key in snapshot.viewport) {
+    //   const value = snapshot.viewport[key];
+    //   setKritzelViewportState(key as any, value);
+    // }
 
     // for (const key in snapshot.engine) {
     //   const value = snapshot.engine[key];

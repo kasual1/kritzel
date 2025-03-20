@@ -1,5 +1,4 @@
 import { KritzelStore } from '../../stores/store';
-import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelBaseObject } from './base-object.class';
 
 export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
@@ -27,11 +26,11 @@ export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
     super(store);
     this.translateX = 0;
     this.translateY = 0;
-    this.width = this.initialWidth * kritzelViewportState.scale;
-    this.height = this.initalHeight * kritzelViewportState.scale;
+    this.width = this.initialWidth * this._store.state.scale;
+    this.height = this.initalHeight * this._store.state.scale;
     this.padding = 5;
     this.backgroundColor = 'red';
-    this.scale = kritzelViewportState.scale;
+    this.scale = this._store.state.scale;
     this.value = 'Teststring to fix resizing';
   }
 

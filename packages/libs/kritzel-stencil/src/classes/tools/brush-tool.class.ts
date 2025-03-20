@@ -1,6 +1,5 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelStore } from '../../stores/store';
-import { kritzelViewportState } from '../../stores/viewport.store';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelBaseTool } from './base-tool.class';
 
@@ -20,9 +19,9 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
       this._store.state.currentPath = new KritzelPath(this._store, {
         points: [[x, y]],
-        translateX: -kritzelViewportState.translateX,
-        translateY: -kritzelViewportState.translateY,
-        scale: kritzelViewportState.scale,
+        translateX: -this._store.state.translateX,
+        translateY: -this._store.state.translateY,
+        scale: this._store.state.scale,
       });
     }
   }
@@ -34,9 +33,9 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
       this._store.state.currentPath = new KritzelPath(this._store,{
         points: [...this._store.state.currentPath.points, [x, y]],
-        translateX: -kritzelViewportState.translateX,
-        translateY: -kritzelViewportState.translateY,
-        scale: kritzelViewportState.scale,
+        translateX: -this._store.state.translateX,
+        translateY: -this._store.state.translateY,
+        scale: this._store.state.scale,
       });
     }
   }
