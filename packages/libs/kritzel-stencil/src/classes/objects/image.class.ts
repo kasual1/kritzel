@@ -1,3 +1,4 @@
+import { KritzelStore } from "../../stores/store";
 import { kritzelViewportState } from "../../stores/viewport.store";
 import { KritzelBaseObject } from "./base-object.class";
 
@@ -7,8 +8,8 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 
 	override debugInfoVisible: boolean = true;
 
-	constructor(img?: HTMLImageElement) {
-		super();
+	constructor(store: KritzelStore, img?: HTMLImageElement) {
+		super(store);
 		this.img = img;
 		this.x = 0;
 		this.y = 0;

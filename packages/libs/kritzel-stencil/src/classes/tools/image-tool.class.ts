@@ -41,11 +41,11 @@ export class KritzelImageTool extends KritzelBaseTool {
         img.src = e.target?.result as string;
 
         img.onload = () => {
-          const image = new KritzelImage(img);
+          const image = new KritzelImage(this._store, img);
           image.zIndex = this._store.currentZIndex;
           image.centerInViewport();
 
-          const selectionGroup = new KritzelSelectionGroup();
+          const selectionGroup = new KritzelSelectionGroup(this._store);
           selectionGroup.addOrRemove(image);
           selectionGroup.selected = true;
 
