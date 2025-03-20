@@ -1,6 +1,7 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
 import { KritzelSelectionState } from "../../interfaces/selection-state.interface";
 import { kritzelEngineState, findObjectById } from "../../stores/engine.store";
+import { KritzelStore } from "../../stores/store";
 import { KritzelSelectionGroup } from "../objects/selection-group.class";
 
 enum SelectionHandleType {
@@ -13,6 +14,8 @@ enum SelectionHandleType {
 export class KritzelResizeHandler {
   selectionState: KritzelSelectionState;
 
+  store: KritzelStore;
+
   initialMouseX: number = 0;
   initialMouseY: number = 0;
   initialWidth: number = 0;
@@ -21,8 +24,9 @@ export class KritzelResizeHandler {
   initialTranslateY: number = 0;
   handleType: SelectionHandleType | null = null;
 
-  constructor(selectionState: KritzelSelectionState) {
+  constructor(selectionState: KritzelSelectionState, store: KritzelStore) {
     this.selectionState = selectionState;
+    this.store = store;
   }
 
   handleMouseDown(event: MouseEvent): void {

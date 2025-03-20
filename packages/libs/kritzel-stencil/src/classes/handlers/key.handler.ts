@@ -1,5 +1,6 @@
 import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
 import { kritzelEngineState } from '../../stores/engine.store';
+import { KritzelStore } from '../../stores/store';
 import { KritzelHistory } from '../history.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 
@@ -10,9 +11,12 @@ export class KritzelKeyHandler {
 
   copiedObject: KritzelSelectionGroup | null = null;
 
-  constructor(selectionState: KritzelSelectionState) {
+  store: KritzelStore;
+
+  constructor(selectionState: KritzelSelectionState, store: KritzelStore) {
     this.selectionState = selectionState;
-    this.history = new KritzelHistory();
+    this.store = store;
+    this.history = new KritzelHistory(this.store);
   }
 
   handleKeyDown(event: KeyboardEvent): void {

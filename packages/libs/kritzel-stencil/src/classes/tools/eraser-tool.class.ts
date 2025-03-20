@@ -2,6 +2,7 @@ import { KritzelTool } from "../../components";
 import { KritzelClickHelper } from "../../helpers/click.helper";
 import { KritzelSerializable } from "../../interfaces/serializable.interface";
 import { kritzelEngineState } from "../../stores/engine.store";
+import { KritzelStore } from "../../stores/store";
 
 export class KritzelEraserTool implements KritzelTool, KritzelSerializable {
   __class__: string = this.constructor.name;
@@ -10,6 +11,12 @@ export class KritzelEraserTool implements KritzelTool, KritzelSerializable {
   icon: string = 'eraser';
 
   isErasing: boolean;
+
+  store: KritzelStore;
+
+  constructor(store: KritzelStore){
+    this.store = store;
+  }
 
   handleMouseDown(event: MouseEvent): void {
     if (KritzelClickHelper.isLeftClick(event)) {

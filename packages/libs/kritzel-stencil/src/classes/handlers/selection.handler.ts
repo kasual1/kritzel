@@ -2,6 +2,7 @@ import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelSelectionState } from '../../interfaces/selection-state.interface';
 import { kritzelEngineState, findObjectById } from '../../stores/engine.store';
+import { KritzelStore } from '../../stores/store';
 import { kritzelViewportState } from '../../stores/viewport.store';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
@@ -9,10 +10,13 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 export class KritzelSelectionHandler {
   selectionState: KritzelSelectionState;
 
+  store: KritzelStore;
+
   dragStartX: number;
   dragStartY: number;
 
-  constructor(selectionState: KritzelSelectionState) {
+  constructor(selectionState: KritzelSelectionState, store: KritzelStore) {
+    this.store = store;
     this.selectionState = selectionState;
   }
 
