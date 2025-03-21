@@ -1,14 +1,10 @@
 import { KritzelStore } from '../../stores/store';
-import { KritzelHistory } from '../history.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base-handler';
 
 export class KritzelKeyHandler extends KritzelBaseHandler {
-  history: KritzelHistory;
-
   constructor(store: KritzelStore) {
     super(store);
-    this.history = new KritzelHistory(this._store);
   }
 
   handleKeyDown(event: KeyboardEvent): void {
@@ -80,7 +76,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       this._store.state.selectionGroup,
     ];
 
-    this.history.forceCreateSnapshot();
+    this._store.state.history.forceCreateSnapshot();
   }
 
   private handleMoveUp() {
