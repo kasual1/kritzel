@@ -163,7 +163,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
   }
 
   private addSelectedObjectsToSelectionGroup(): void {
-    const selectedObjects = this._store.state.objects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
+    const selectedObjects = this._store.selectedObjects;
 
     if (selectedObjects.length > 0) {
       this._store.state.selectionGroup = new KritzelSelectionGroup(this._store);

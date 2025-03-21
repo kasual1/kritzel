@@ -48,6 +48,14 @@ export class KritzelStore {
     return this.state.objects.length;
   }
 
+  get selectedObjects() {
+    return this.state.objects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
+  }
+
+  get unselctedObjects() {
+    return this.state.objects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => !o.selected);
+  }
+
   set state(value: KritzelEngineState) {
     this.store.state = value;
   }
