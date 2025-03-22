@@ -76,7 +76,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       this._store.state.selectionGroup,
     ];
 
-    this._store.state.history.forceCreateSnapshot();
+    this._store.history.forceCreateSnapshot();
   }
 
   private handleMoveUp() {

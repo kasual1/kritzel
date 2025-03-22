@@ -57,7 +57,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
 
       this._store.rerender();
 
-      this._store.state.history.forceCreateSnapshot();
+      this._store.history.forceCreateSnapshot();
     }
   }
 }
