@@ -4,6 +4,7 @@ import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelSelection } from '../../interfaces/selection.interface';
 import { KritzelStore } from '../../stores/store';
+import { ObjectHelper } from '../../helpers/object.helper';
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, KritzelSerializable {
   __class__: string = this.constructor.name;
@@ -170,7 +171,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
   }
 
   generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
+    return ObjectHelper.generateUUID();
   }
 
   isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {

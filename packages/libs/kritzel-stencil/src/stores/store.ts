@@ -20,7 +20,6 @@ export interface KritzelEngineState {
   isDrawing: boolean;
   isErasing: boolean;
   isCtrlKeyPressed: boolean;
-  history: KritzelHistory;
   showDebugInfo: boolean;
   host: HTMLElement;
   cursorX: number;
@@ -38,7 +37,7 @@ export interface KritzelEngineState {
 export class KritzelStore {
   store: any;
 
-  kritzelEngineState: KritzelEngineState;
+  history: KritzelHistory;
 
   get state(): KritzelEngineState {
     return this.store.state;
@@ -62,8 +61,8 @@ export class KritzelStore {
 
   constructor() {
     this.store = createStore<KritzelEngineState>({
-      activeTool: undefined,
-      currentPath: undefined,
+      activeTool: null,
+      currentPath: null,
       objects: [],
       selectionBox: null,
       selectionGroup: null,
@@ -74,9 +73,8 @@ export class KritzelStore {
       isDrawing: false,
       isErasing: false,
       isCtrlKeyPressed: false,
-      history: new KritzelHistory(this),
       showDebugInfo: true,
-      host: undefined,
+      host: null,
       cursorX: 0,
       cursorY: 0,
       scale: 1,
@@ -109,5 +107,12 @@ export class KritzelStore {
     }
 
     this.rerender();
+  }
+
+  updateEntireState(state: KritzelEngineState) {
+    for (const key in state) {
+      const value = state[key];
+      this.store.set(key, value);
+    }
   }
 }
