@@ -1,7 +1,7 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelStore } from '../../stores/store';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelBaseHandler } from './base-handler';
+import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelRotationHandler extends KritzelBaseHandler{
   initialRotation: number = 0;
@@ -56,8 +56,6 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
       this._store.state.isRotating = false;
 
       this._store.rerender();
-
-      this._store.history.forceCreateSnapshot();
     }
   }
 }

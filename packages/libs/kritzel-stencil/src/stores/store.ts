@@ -4,7 +4,8 @@ import { KritzelPath } from '../classes/objects/path.class';
 import { KritzelTool } from '../components';
 import { KrtizelSelectionBox } from '../classes/objects/selection-box.class';
 import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
-import { KritzelHistory } from '../classes/history.class';
+import { KritzelBaseCommand } from '../classes/commands/base.command';
+import { ChangeViewportCommand } from '../classes/commands/change-viewport.command';
 
 export interface KritzelEngineState {
   activeTool: KritzelTool;
@@ -20,6 +21,7 @@ export interface KritzelEngineState {
   isDrawing: boolean;
   isErasing: boolean;
   isCtrlKeyPressed: boolean;
+  hasViewportChanged: boolean;
   showDebugInfo: boolean;
   host: HTMLElement;
   cursorX: number;
@@ -37,7 +39,14 @@ export interface KritzelEngineState {
 export class KritzelStore {
   store: any;
 
-  history: KritzelHistory;
+  undoStack: KritzelBaseCommand[] = [];
+  redoStack: KritzelBaseCommand[] = [];
+
+  previousViewport: {
+    scale: number;
+    translateX: number;
+    translateY: number;
+  } = null;
 
   get state(): KritzelEngineState {
     return this.store.state;
@@ -73,6 +82,7 @@ export class KritzelStore {
       isDrawing: false,
       isErasing: false,
       isCtrlKeyPressed: false,
+      hasViewportChanged: false,
       showDebugInfo: true,
       host: null,
       cursorX: 0,
@@ -90,6 +100,44 @@ export class KritzelStore {
 
   rerender() {
     this.state.objects = [...this.state.objects];
+  }
+
+  executeCommand(command: KritzelBaseCommand) {
+    if (this.state.hasViewportChanged) {
+      const previousViewport = this.getPreviouseViewport();
+      const command = new ChangeViewportCommand(this, previousViewport);
+      command.execute();
+      this.undoStack.push(command);
+      this.state.hasViewportChanged = false;
+    }
+
+    command.execute();
+    this.undoStack.push(command);
+  }
+
+  getPreviouseViewport(): {
+    scale: number;
+    translateX: number;
+    translateY: number;
+  } {
+    const previousCommand = this.undoStack[this.undoStack.length - 1];
+    return {
+      scale: previousCommand.scale,
+      translateX: previousCommand.translateX,
+      translateY: previousCommand.translateY,
+    };
+  }
+
+  undo() {
+    const command = this.undoStack.pop();
+    command.undo();
+    this.redoStack.push(command);
+  }
+
+  redo() {
+    const command = this.redoStack.pop();
+    command.execute();
+    this.undoStack.push(command);
   }
 
   findObjectById(id: string): KritzelBaseObject<any> | null {

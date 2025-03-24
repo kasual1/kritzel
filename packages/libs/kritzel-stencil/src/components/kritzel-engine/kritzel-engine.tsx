@@ -12,7 +12,6 @@ import { KrtizelText } from '../../classes/objects/text.class';
 import { KritzelSelectionGroup } from '../../classes/objects/selection-group.class';
 import { KrtizelSelectionBox } from '../../classes/objects/selection-box.class';
 import { KritzelStore } from '../../stores/store';
-import { KritzelHistory } from '../../classes/history.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -42,7 +41,6 @@ export class KritzelEngine {
     this.store = new KritzelStore();
     this.viewport = new KritzelViewport(this.store, this.host);
     this.store.state.activeTool = new KritzelBrushTool(this.store);
-    this.store.history = new KritzelHistory(this.store);
   }
 
   @Listen('contextmenu', { target: 'window' })
@@ -66,7 +64,6 @@ export class KritzelEngine {
   handleMouseUp(ev) {
     this.viewport.handleMouseUp(ev);
     this.store.state?.activeTool?.handleMouseUp(ev);
-    this.store.history.handleMouseUp(ev);
   }
 
   @Listen('wheel', { target: 'window', passive: false })
@@ -81,11 +78,11 @@ export class KritzelEngine {
       ev.preventDefault();
 
       if (ev.key === 'z') {
-        this.store.history.undo();
+        this.store.undo();
       }
 
       if (ev.key === 'y') {
-        this.store.history.redo();
+        this.store.redo();
       }
 
       if (ev.key === 'd') {
@@ -127,7 +124,6 @@ export class KritzelEngine {
     });
 
     this.store.state.objects = [...objects];
-    this.store.history.createSnapshot();
   }
 
   render() {
@@ -139,9 +135,9 @@ export class KritzelEngine {
             <div>StartY: {this.store.state?.startY}</div>
             <div>TranslateX: {this.store.state?.translateX}</div>
             <div>TranslateY: {this.store.state?.translateY}</div>
-            <div>CurrentStateIndex: {this.store.history?.currentStateIndex}</div>
             <div>Scale: {this.store.state?.scale}</div>
             <div>ActiveTool: {this.store.state?.activeTool?.name}</div>
+            <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true': 'false'}</div>
             <div>IsSelecting: {this.isSelecting ? 'true': 'false'}</div>
             <div>IsSelectionActive: {this.isSelectionActive ? 'true': 'false'}</div>
             <div>CursorX: {this.store.state?.cursorX}</div>
