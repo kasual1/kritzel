@@ -1,6 +1,6 @@
 import { KritzelStore } from '../../stores/store';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelBaseHandler } from './base-handler';
+import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelKeyHandler extends KritzelBaseHandler {
   constructor(store: KritzelStore) {
@@ -75,8 +75,6 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       ...this._store.state.selectionGroup.objects,
       this._store.state.selectionGroup,
     ];
-
-    this._store.history.forceCreateSnapshot();
   }
 
   private handleMoveUp() {

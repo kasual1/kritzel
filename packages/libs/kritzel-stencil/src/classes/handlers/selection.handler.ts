@@ -3,7 +3,7 @@ import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelStore } from '../../stores/store';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelBaseHandler } from './base-handler';
+import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelSelectionHandler extends KritzelBaseHandler{
   dragStartX: number;

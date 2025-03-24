@@ -1,7 +1,7 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
 import { KritzelStore } from "../../stores/store";
 import { KritzelSelectionGroup } from "../objects/selection-group.class";
-import { KritzelBaseHandler } from "./base-handler";
+import { KritzelBaseHandler } from "./base.handler";
 
 enum SelectionHandleType {
   TopLeft = 'top-left',

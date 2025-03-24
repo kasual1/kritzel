@@ -2,7 +2,6 @@ import { KritzelClickHelper } from '../helpers/click.helper';
 import { KritzelStore } from '../stores/store';
 
 export class KritzelViewport {
-
   private readonly _store: KritzelStore;
 
   isDragging: boolean = false;
@@ -29,6 +28,7 @@ export class KritzelViewport {
       this._store.state.translateY -= this._store.state.startY - event.clientY;
       this._store.state.startX = event.clientX;
       this._store.state.startY = event.clientY;
+      this._store.state.hasViewportChanged = true;
     }
   }
 
@@ -56,5 +56,7 @@ export class KritzelViewport {
 
     this._store.state.translateX -= translateXAdjustment;
     this._store.state.translateY -= translateYAdjustment;
+
+    this._store.state.hasViewportChanged = true;
   }
 }
