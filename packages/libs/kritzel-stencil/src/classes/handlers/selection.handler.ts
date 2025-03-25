@@ -1,10 +1,8 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelStore } from '../../stores/store';
-import { AddObjectCommand } from '../commands/add-object.command';
-import { AddSelectionCommand } from '../commands/add-selection.command';
-import { ClearSelectionCommand } from '../commands/clear-selection.command';
-import { ReplaceObjectsCommand } from '../commands/replace-objects.command';
+import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
+import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
@@ -24,6 +22,15 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       const isRotationHandleSelected = this.isRotationHandleSelected(event);
 
       if (!selectedObject?.selected) {
+
+        if(this._store.state.selectionGroup){
+          this._store.executeCommand(new RemoveSelectionGroupCommand(this._store));
+        }
+
+        if(this._store.state.selectionBox){
+          this.removeSelectionBox();
+        }
+
         this.startSelection(event);
         this.updateSelection(event);
         this.stopSelection();
@@ -58,6 +65,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     if (this._store.state.isSelecting) {
       this.stopSelection();
       this.addSelectedObjectsToSelectionGroup();
+      this.removeSelectionBox();
     }
   }
 
@@ -107,9 +115,13 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   private stopDragging(): void {
-    this._store.executeCommand(new ReplaceObjectsCommand(this._store, [this._store.state.selectionGroup]));
     this._store.state.isDragging = false;
     this._store.state.selectionGroup = null;
+  }
+
+  private removeSelectionBox(): void {
+    this._store.state.selectionBox = null;
+    this._store.state.objects = [...this._store.state.objects.filter(o => !(o instanceof KrtizelSelectionBox))];
   }
 
   private startSelection(event: MouseEvent): void {
@@ -178,10 +190,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
         this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
       }
 
-      this._store.executeCommand(new AddSelectionCommand(this._store, this._store.state.selectionGroup));
-    } else {
-      this._store.state.objects = [...this._store.state.objects.filter(o => !(o instanceof KrtizelSelectionBox))];
-      // this._store.executeCommand(new ClearSelectionCommand(this._store));
-    }
+      this._store.executeCommand(new AddSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+    } 
   }
 }

@@ -1,9 +1,8 @@
 import { KritzelStore } from '../../stores/store';
-import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseCommand } from './base.command';
 
-export class ClearSelectionCommand extends KritzelBaseCommand {
+export class RemoveSelectionGroupCommand extends KritzelBaseCommand {
 
   private previousSelectionGroup: KritzelSelectionGroup;
 
@@ -13,9 +12,7 @@ export class ClearSelectionCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
-    this._store.state.objects = this._store.state.objects
-        .filter(object => !(object instanceof KrtizelSelectionBox))
-        .filter(object => !(object instanceof KritzelSelectionGroup));
+    this._store.state.objects = this._store.state.objects.filter(object => !(object instanceof KritzelSelectionGroup));
 
     this._store.state.selectionGroup = null;
   }
