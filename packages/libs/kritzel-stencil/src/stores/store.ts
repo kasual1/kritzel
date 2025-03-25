@@ -44,9 +44,10 @@ export class KritzelStore {
 
   previousViewport: {
     scale: number;
+    scaleStep: number;
     translateX: number;
     translateY: number;
-  } = null;
+  };
 
   get state(): KritzelEngineState {
     return this.store.state;
@@ -96,36 +97,36 @@ export class KritzelStore {
       translateX: 0,
       translateY: 0,
     });
+    this.previousViewport = {
+      scale: this.state.scale,
+      scaleStep: this.state.scaleStep,
+      translateX: this.state.translateX,
+      translateY: this.state.translateY,
+    };
   }
 
   rerender() {
-    this.state.objects = [...this.state.objects];
+    this.state.objects = [...this.state.objects.filter(o => !(o instanceof KrtizelSelectionBox))];
   }
 
   executeCommand(command: KritzelBaseCommand) {
     if (this.state.hasViewportChanged) {
-      const previousViewport = this.getPreviouseViewport();
-      const command = new ChangeViewportCommand(this, previousViewport);
+      const command = new ChangeViewportCommand(this, this.previousViewport);
       command.execute();
       this.undoStack.push(command);
       this.state.hasViewportChanged = false;
+      this.previousViewport = {
+        scale: this.state.scale,
+        scaleStep: this.state.scaleStep,
+        translateX: this.state.translateX,
+        translateY: this.state.translateY,
+      };
     }
 
     command.execute();
     this.undoStack.push(command);
-  }
 
-  getPreviouseViewport(): {
-    scale: number;
-    translateX: number;
-    translateY: number;
-  } {
-    const previousCommand = this.undoStack[this.undoStack.length - 1];
-    return {
-      scale: previousCommand.scale,
-      translateX: previousCommand.translateX,
-      translateY: previousCommand.translateY,
-    };
+    console.log(this.undoStack);
   }
 
   undo() {
