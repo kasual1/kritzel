@@ -1,6 +1,6 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelStore } from '../../stores/store';
-import { AddObjectCommand } from '../commands/add-object.command';
+import { AddObjectsCommand } from '../commands/add-objects.command';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelBaseTool } from './base-tool.class';
 
@@ -47,7 +47,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
       if(this._store.state.currentPath){
         this._store.state.currentPath.zIndex = this._store.currentZIndex;
-        this._store.executeCommand(new AddObjectCommand(this._store, this._store.state.currentPath))
+        this._store.executeCommand(new AddObjectsCommand(this._store, [this._store.state.currentPath]));
       }
 
       this._store.state.currentPath = undefined;

@@ -3,6 +3,7 @@ import { KritzelImage } from "../objects/image.class";
 import { KritzelSelectionTool } from "./selection-tool.class";
 import { KritzelStore } from "../../stores/store";
 import { KritzelBaseTool } from "./base-tool.class";
+import { AddObjectsCommand } from "../commands/add-objects.command";
 
 export class KritzelImageTool extends KritzelBaseTool {
   name: string = 'image';
@@ -49,8 +50,7 @@ export class KritzelImageTool extends KritzelBaseTool {
           selectionGroup.addOrRemove(image);
           selectionGroup.selected = true;
 
-          this._store.state.selectionGroup = selectionGroup;
-          this._store.state.objects = [...this._store.state.objects, image, selectionGroup];
+          this._store.executeCommand(new AddObjectsCommand(this._store, [image, selectionGroup]));
           this._store.state.activeTool = new KritzelSelectionTool(this._store);
         };
       };

@@ -1,6 +1,7 @@
 import { KrtizelText } from '../objects/text.class';
 import { KritzelStore } from '../../stores/store';
 import { KritzelBaseTool } from './base-tool.class';
+import { AddObjectsCommand } from '../commands/add-objects.command';
 
 export class KritzelTextTool extends KritzelBaseTool {
   name: string = 'text';
@@ -25,7 +26,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       this.isWriting = true;
 
-      this._store.state.objects = [...this._store.state.objects, text];
+      this._store.executeCommand(new AddObjectsCommand(this._store, [text]));
     }
   }
 }
