@@ -1,11 +1,15 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelStore } from '../../stores/store';
+import { AddObjectCommand } from '../commands/add-object.command';
+import { AddSelectionCommand } from '../commands/add-selection.command';
+import { ClearSelectionCommand } from '../commands/clear-selection.command';
+import { ReplaceObjectsCommand } from '../commands/replace-objects.command';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
 
-export class KritzelSelectionHandler extends KritzelBaseHandler{
+export class KritzelSelectionHandler extends KritzelBaseHandler {
   dragStartX: number;
   dragStartY: number;
 
@@ -54,7 +58,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
     if (this._store.state.isSelecting) {
       this.stopSelection();
       this.addSelectedObjectsToSelectionGroup();
-      return;
     }
   }
 
@@ -104,6 +107,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
   }
 
   private stopDragging(): void {
+    this._store.executeCommand(new ReplaceObjectsCommand(this._store, [this._store.state.selectionGroup]));
     this._store.state.isDragging = false;
     this._store.state.selectionGroup = null;
   }
@@ -117,7 +121,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
 
     selectionBox.translateX = this.dragStartX;
     selectionBox.translateY = this.dragStartY;
-    
+
     this._store.state.selectionGroup = null;
     this._store.state.selectionBox = selectionBox;
     this._store.state.isSelecting = true;
@@ -149,11 +153,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
       .forEach(object => {
         const objectPolygon = object.rotatedPolygon;
         const selectionBoxPolygon = this._store.state.selectionBox.rotatedPolygon;
-        
-        object.selected = KritzelGeometryHelper.doPolygonsIntersect(
-          objectPolygon,
-          selectionBoxPolygon
-        );
+
+        object.selected = KritzelGeometryHelper.doPolygonsIntersect(objectPolygon, selectionBoxPolygon);
       });
   }
 
@@ -177,9 +178,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler{
         this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
       }
 
-      this._store.state.objects = [...this._store.state.objects.filter(o => !(o instanceof KrtizelSelectionBox)), this._store.state.selectionGroup];
+      this._store.executeCommand(new AddSelectionCommand(this._store, this._store.state.selectionGroup));
     } else {
       this._store.state.objects = [...this._store.state.objects.filter(o => !(o instanceof KrtizelSelectionBox))];
+      // this._store.executeCommand(new ClearSelectionCommand(this._store));
     }
   }
 }

@@ -65,6 +65,10 @@ export class KritzelStore {
     return this.state.objects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => !o.selected);
   }
 
+  get objectsWithoutSelectionBox() {
+    return this.state.objects.filter(o => !(o instanceof KrtizelSelectionBox));
+  }
+
   set state(value: KritzelEngineState) {
     this.store.state = value;
   }
@@ -106,7 +110,7 @@ export class KritzelStore {
   }
 
   rerender() {
-    this.state.objects = [...this.state.objects.filter(o => !(o instanceof KrtizelSelectionBox))];
+    this.state.objects = [...this.state.objects];
   }
 
   executeCommand(command: KritzelBaseCommand) {
@@ -125,8 +129,6 @@ export class KritzelStore {
 
     command.execute();
     this.undoStack.push(command);
-
-    console.log(this.undoStack);
   }
 
   undo() {
