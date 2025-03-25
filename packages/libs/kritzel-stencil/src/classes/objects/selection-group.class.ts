@@ -1,7 +1,6 @@
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelStore } from '../../stores/store';
 import { KritzelBaseObject } from './base-object.class';
-
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   objects: KritzelBaseObject<any>[] = [];
   unchangedObjects: KritzelBaseObject<any>[] = [];
@@ -30,7 +29,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.objects.splice(index, 1);
     }
 
-    this.unchangedObjects = ObjectHelper.cloneDeep(this.objects);
+    this.unchangedObjects = ObjectHelper.clone(this.objects);
     this.updateBoundingBox();
   }
 
@@ -72,7 +71,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     });
 
     this.updateBoundingBox();
-    this.unchangedObjects = ObjectHelper.cloneDeep(this.objects);
+    this.unchangedObjects = ObjectHelper.clone(this.objects);
   }
 
   override rotate(value: number): void {
@@ -102,7 +101,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override copy(): KritzelBaseObject<HTMLElement> {
     const selectionGroup = new KritzelSelectionGroup(this._store);
     selectionGroup.objects = this.objects.map(obj => obj.copy());
-    selectionGroup.unchangedObjects = ObjectHelper.cloneDeep(selectionGroup.objects);
+    selectionGroup.unchangedObjects = ObjectHelper.clone(selectionGroup.objects);
     selectionGroup.updateBoundingBox();
     return selectionGroup;
   }

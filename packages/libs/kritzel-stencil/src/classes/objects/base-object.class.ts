@@ -29,7 +29,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
 
   debugInfoVisible: boolean = false;
 
-  protected readonly _store: KritzelStore;
+  readonly _store: KritzelStore;
   _elementRef: T;
 
   selection: KritzelSelection = {

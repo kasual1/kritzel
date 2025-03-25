@@ -69,6 +69,10 @@ export class KritzelStore {
     return this.state.objects.filter(o => !(o instanceof KrtizelSelectionBox));
   }
 
+  get hasSelectionGroup() {
+    return this.state.selectionGroup !== null;
+  }
+
   set state(value: KritzelEngineState) {
     this.store.state = value;
   }
@@ -128,19 +132,26 @@ export class KritzelStore {
     }
 
     command.execute();
+    console.log('add', command);
     this.undoStack.push(command);
   }
 
   undo() {
     const command = this.undoStack.pop();
-    command.undo();
-    this.redoStack.push(command);
+    if(command){
+      command.undo();
+      console.log('undo', command);
+      this.redoStack.push(command);
+    }
   }
 
   redo() {
     const command = this.redoStack.pop();
-    command.execute();
-    this.undoStack.push(command);
+    if (command) {
+      command.execute();
+      console.log('redo', command);
+      this.undoStack.push(command);
+    }
   }
 
   findObjectById(id: string): KritzelBaseObject<any> | null {

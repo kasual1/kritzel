@@ -1,7 +1,7 @@
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseCommand } from './base.command';
 
-export class AddSelectionCommand extends KritzelBaseCommand {
+export class AddSelectionGroupCommand extends KritzelBaseCommand {
   private selectionGroup: KritzelSelectionGroup;
 
   constructor(store, selectionGroup: KritzelSelectionGroup) {
