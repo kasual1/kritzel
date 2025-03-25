@@ -1,9 +1,11 @@
-import { KritzelSelectionGroup } from "../objects/selection-group.class";
-import { KritzelImage } from "../objects/image.class";
-import { KritzelSelectionTool } from "./selection-tool.class";
-import { KritzelStore } from "../../stores/store";
-import { KritzelBaseTool } from "./base-tool.class";
-import { AddObjectsCommand } from "../commands/add-objects.command";
+import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelImage } from '../objects/image.class';
+import { KritzelSelectionTool } from './selection-tool.class';
+import { KritzelStore } from '../../stores/store';
+import { KritzelBaseTool } from './base-tool.class';
+import { AddObjectCommand } from '../commands/add-object.command';
+import { BatchCommand } from '../commands/batch.command';
+import { AddSelectionCommand } from '../commands/add-selection.command';
 
 export class KritzelImageTool extends KritzelBaseTool {
   name: string = 'image';
@@ -37,7 +39,7 @@ export class KritzelImageTool extends KritzelBaseTool {
       const file = input.files[0];
       const reader = new FileReader();
 
-      reader.onload = (e) => {
+      reader.onload = e => {
         const img = new Image();
         img.src = e.target?.result as string;
 
@@ -50,7 +52,7 @@ export class KritzelImageTool extends KritzelBaseTool {
           selectionGroup.addOrRemove(image);
           selectionGroup.selected = true;
 
-          this._store.executeCommand(new AddObjectsCommand(this._store, [image, selectionGroup]));
+          this._store.executeCommand(new BatchCommand(this._store, [new AddObjectCommand(this._store, image), new AddSelectionCommand(this._store, selectionGroup)]));
           this._store.state.activeTool = new KritzelSelectionTool(this._store);
         };
       };
@@ -58,5 +60,4 @@ export class KritzelImageTool extends KritzelBaseTool {
       reader.readAsDataURL(file);
     }
   }
-
 }
