@@ -6,7 +6,7 @@ import { KrtizelSelectionBox } from '../classes/objects/selection-box.class';
 import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
 import { KritzelBaseCommand } from '../classes/commands/base.command';
 import { UpdateViewportCommand } from '../classes/commands/update-viewport.command';
-
+import { KritzelHandleType } from '../enums/handle-type.enum';
 export interface KritzelEngineState {
   activeTool: KritzelTool;
   currentPath?: KritzelPath;
@@ -14,9 +14,12 @@ export interface KritzelEngineState {
   objects: KritzelBaseObject<Element>[];
   selectionBox?: KrtizelSelectionBox;
   selectionGroup?: KritzelSelectionGroup;
+  resizeHandleType: KritzelHandleType;
   isSelecting: boolean;
   isResizing: boolean;
+  isResizeHandleSelected: boolean;
   isRotating: boolean;
+  isRotationHandleSelected: boolean;
   isDragging: boolean;
   isDrawing: boolean;
   isErasing: boolean;
@@ -84,9 +87,12 @@ export class KritzelStore {
       objects: [],
       selectionBox: null,
       selectionGroup: null,
+      resizeHandleType: null,
       isSelecting: false,
       isResizing: false,
+      isResizeHandleSelected: false,
       isRotating: false,
+      isRotationHandleSelected: false,
       isDragging: false,
       isDrawing: false,
       isErasing: false,

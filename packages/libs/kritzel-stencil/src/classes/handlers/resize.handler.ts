@@ -1,14 +1,7 @@
+import { KritzelHandleType } from "../../enums/handle-type.enum";
 import { KritzelClickHelper } from "../../helpers/click.helper";
 import { KritzelStore } from "../../stores/store";
-import { KritzelSelectionGroup } from "../objects/selection-group.class";
 import { KritzelBaseHandler } from "./base.handler";
-
-enum SelectionHandleType {
-  TopLeft = 'top-left',
-  TopRight = 'top-right',
-  BottomLeft = 'bottom-left',
-  BottomRight = 'bottom-right',
-}
 
 export class KritzelResizeHandler extends KritzelBaseHandler {
   initialMouseX: number = 0;
@@ -17,7 +10,6 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   initialHeight: number = 0;
   initialTranslateX: number = 0;
   initialTranslateY: number = 0;
-  handleType: SelectionHandleType | null = null;
 
   constructor(store: KritzelStore) {
     super(store);
@@ -25,24 +17,15 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
   handleMouseDown(event: MouseEvent): void {
     if (KritzelClickHelper.isLeftClick(event)) {
-			const path = event.composedPath() as HTMLElement[];
-			const objectElement = path.find(element => element.classList && element.classList.contains('object'));
-      const selectionHandle = path.find(element => element.classList && element.classList.contains('selection-handle'));
 
-      const isHandleSelected = selectionHandle ? true : false;
-
-      const selectedObject = this._store.findObjectById(objectElement?.id);
-
-      if (selectedObject && isHandleSelected) {
-        this._store.state.selectionGroup = selectedObject as KritzelSelectionGroup;
+      if (this._store.state.selectionGroup && this._store.state.isResizeHandleSelected) {
         this._store.state.isResizing = true;
         this.initialMouseX = event.clientX;
         this.initialMouseY = event.clientY;
-        this.initialWidth = selectedObject.width;
-        this.initialHeight = selectedObject.height;
-        this.handleType = selectionHandle?.classList[1] as SelectionHandleType;
-        this.initialTranslateX = selectedObject.translateX;
-        this.initialTranslateY = selectedObject.translateY;
+        this.initialWidth = this._store.state.selectionGroup.width;
+        this.initialHeight = this._store.state.selectionGroup.height;
+        this.initialTranslateX = this._store.state.selectionGroup.translateX;
+        this.initialTranslateY = this._store.state.selectionGroup.translateY;
       }
 		}
   }
@@ -55,29 +38,29 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
       let width, height, x, y;
 
-      switch (this.handleType) {
-        case SelectionHandleType.TopLeft:
+      switch (this._store.state.resizeHandleType) {
+        case KritzelHandleType.TopLeft:
           width = this.initialWidth - dx;
           height = this.initialHeight - dy;
           x = dx + this.initialTranslateX;
           y = dy + this.initialTranslateY;
           this._store.state.selectionGroup.resize(x, y, width, height);
           break;
-        case SelectionHandleType.TopRight:
+        case KritzelHandleType.TopRight:
           width = this.initialWidth + dx;
           height = this.initialHeight - dy;
           x = this.initialTranslateX;
           y = dy + this.initialTranslateY;
           this._store.state.selectionGroup.resize(x, y, width, height);
           break;
-        case SelectionHandleType.BottomLeft:
+        case KritzelHandleType.BottomLeft:
           width = this.initialWidth - dx;
           height = this.initialHeight + dy;
           x = dx + this.initialTranslateX;
           y = this.initialTranslateY;
           this._store.state.selectionGroup.resize(x, y, width, height);
           break;
-        case SelectionHandleType.BottomRight:
+        case KritzelHandleType.BottomRight:
           width = this.initialWidth + dx;
           height = this.initialHeight + dy;
           x = this.initialTranslateX;
@@ -93,11 +76,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   handleMouseUp(_event: MouseEvent): void {
     if (this._store.state.isResizing) {
       this._store.state.isResizing = false;
-      this._store.state.selectionGroup = null;
-      this.handleType = null;
-
       this._store.rerender();
-
     }
   }
 }
