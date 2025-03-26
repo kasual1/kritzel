@@ -1,10 +1,13 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelStore } from '../../stores/store';
+import { RotatedSelectionGroupCommand } from '../commands/rotate-selection-group.command';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelRotationHandler extends KritzelBaseHandler{
   initialRotation: number = 0;
+
+  rotation: number = 0;
 
   constructor(store: KritzelStore) {
     super(store);
@@ -23,7 +26,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
       if (selectedObject && isRotationHandleSelected) {
         this._store.state.selectionGroup = selectedObject as KritzelSelectionGroup;
         this._store.state.isRotating = true;
-
+        
         const centerX = selectedObject.translateX + selectedObject.width / 2 / this._store.state.scale;
         const centerY = selectedObject.translateY + selectedObject.height / 2 / this._store.state.scale;
 
@@ -45,7 +48,9 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
 
       const currentRotation = Math.atan2(groupCenterY - cursorY, groupCenterX - cursorX);
 
-      this._store.state.selectionGroup.rotate(currentRotation - this.initialRotation);
+      this.rotation = currentRotation - this.initialRotation;
+
+      this._store.state.selectionGroup.rotate(this.rotation);
 
       this._store.rerender();
     }
@@ -53,9 +58,13 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
 
   handleMouseUp(_event: MouseEvent): void {
     if (this._store.state.isRotating) {
+      this._store.executeCommand(new RotatedSelectionGroupCommand(this._store, this, this.rotation));
+
       this._store.state.isRotating = false;
 
-      this._store.rerender();
+      this.initialRotation = 0;
+      this.rotation = 0;
+
     }
   }
 }

@@ -1,6 +1,6 @@
 import { KritzelBaseCommand } from './base.command';
 
-export class ChangeViewportCommand extends KritzelBaseCommand {
+export class UpdateViewportCommand extends KritzelBaseCommand {
 
   currentViewport: {
     scale: number;
@@ -14,12 +14,12 @@ export class ChangeViewportCommand extends KritzelBaseCommand {
     translateY: number;
   };
 
-  constructor(store, previousViewport: {
+  constructor(store, initiator: any,  previousViewport: {
     scale: number;
     translateX: number;
     translateY: number;
   }) {
-    super(store);
+    super(store, initiator);
     this.previousViewport = previousViewport
     this.currentViewport = {
       scale: this._store.state.scale,

@@ -5,7 +5,7 @@ import { KritzelTool } from '../components';
 import { KrtizelSelectionBox } from '../classes/objects/selection-box.class';
 import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
 import { KritzelBaseCommand } from '../classes/commands/base.command';
-import { ChangeViewportCommand } from '../classes/commands/change-viewport.command';
+import { UpdateViewportCommand } from '../classes/commands/update-viewport.command';
 
 export interface KritzelEngineState {
   activeTool: KritzelTool;
@@ -37,7 +37,7 @@ export interface KritzelEngineState {
 }
 
 export class KritzelStore {
-  store: any;
+  private readonly store: any;
 
   undoStack: KritzelBaseCommand[] = [];
   redoStack: KritzelBaseCommand[] = [];
@@ -73,9 +73,9 @@ export class KritzelStore {
     return this.state.selectionGroup !== null;
   }
 
-  set state(value: KritzelEngineState) {
-    this.store.state = value;
-  }
+  // set state(value: KritzelEngineState) {
+  //   this.store.state = value;
+  // }
 
   constructor() {
     this.store = createStore<KritzelEngineState>({
@@ -119,7 +119,7 @@ export class KritzelStore {
 
   executeCommand(command: KritzelBaseCommand) {
     if (this.state.hasViewportChanged) {
-      const command = new ChangeViewportCommand(this, this.previousViewport);
+      const command = new UpdateViewportCommand(this, this, this.previousViewport);
       command.execute();
       this.undoStack.push(command);
       this.state.hasViewportChanged = false;

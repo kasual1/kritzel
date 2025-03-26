@@ -26,7 +26,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       this.isWriting = true;
 
-      this._store.executeCommand(new AddObjectCommand(this._store, text));
+      this._store.executeCommand(new AddObjectCommand(this._store, this, text));
     }
   }
 }

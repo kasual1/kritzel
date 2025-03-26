@@ -5,8 +5,8 @@ import { KritzelBaseCommand } from './base.command';
 export class AddObjectCommand extends KritzelBaseCommand {
   private object: KritzelBaseObject<any>;
 
-  constructor(store: KritzelStore, object: KritzelBaseObject<any>) {
-    super(store);
+  constructor(store: KritzelStore, initiator: any,  object: KritzelBaseObject<any>) {
+    super(store, initiator);
     this.object = object;
   }
 

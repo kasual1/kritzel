@@ -17,7 +17,7 @@ export class KritzelReviver {
     this._store = store;
   }
     
-  revive(obj: any): any {
+  revive<T>(obj: any): T {
     if (obj && typeof obj === 'object') {
       if (obj.__class__) {
         let revivedObj;
@@ -62,7 +62,7 @@ export class KritzelReviver {
           newObj[key] = this.revive(obj[key]);
         }
       }
-      return newObj;
+      return newObj as T;
     }
     return obj;
   }
