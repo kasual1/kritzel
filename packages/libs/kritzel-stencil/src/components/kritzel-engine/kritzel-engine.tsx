@@ -140,6 +140,8 @@ export class KritzelEngine {
             <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true': 'false'}</div>
             <div>IsSelecting: {this.isSelecting ? 'true': 'false'}</div>
             <div>IsSelectionActive: {this.isSelectionActive ? 'true': 'false'}</div>
+            <div>IsResizeHandleSelected: {this.store.state.isResizeHandleSelected ? 'true': 'false'}</div>
+            <div>IsRotationHandleSelected: {this.store.state.isRotationHandleSelected ? 'true': 'false'}</div>
             <div>CursorX: {this.store.state?.cursorX}</div>
             <div>CursorY: {this.store.state?.cursorY}</div>
           </div>

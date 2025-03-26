@@ -3,6 +3,7 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelKeyHandler extends KritzelBaseHandler {
+
   constructor(store: KritzelStore) {
     super(store);
   }

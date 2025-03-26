@@ -2,14 +2,13 @@ import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelStore } from '../../stores/store';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
-import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelSelectionHandler extends KritzelBaseHandler {
-  dragStartX: number;
-  dragStartY: number;
+  selectionStartX: number;
+  selectionStartY: number;
 
   constructor(store: KritzelStore) {
     super(store);
@@ -17,106 +16,32 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   handleMouseDown(event) {
     if (KritzelClickHelper.isLeftClick(event)) {
-      const selectedObject = this.getSelectedObject(event);
-      const isResizeHandleSelected = this.isHandleSelected(event);
-      const isRotationHandleSelected = this.isRotationHandleSelected(event);
 
-      if (!selectedObject?.selected) {
-
-        if(this._store.state.selectionGroup){
-          this._store.executeCommand(new RemoveSelectionGroupCommand(this._store, this));
-        }
-
-        if(this._store.state.selectionBox){
-          this.removeSelectionBox();
-        }
-
+      if (!this._store.state.selectionGroup?.selected) {
         this.startSelection(event);
         this.updateSelection(event);
         this.stopSelection();
         this.addSelectedObjectsToSelectionGroup();
       }
 
-      if (selectedObject?.selected && !isResizeHandleSelected && !isRotationHandleSelected) {
-        this.startDragging(selectedObject, event);
-      }
-
-      if (!selectedObject) {
+      if (!this._store.state.selectionGroup) {
         this.startSelection(event);
       }
     }
   }
 
   handleMouseMove(event) {
-    if (this._store.state.isDragging && this._store.state.selectionGroup) {
-      this.updateDragging(event);
-    }
-
     if (this._store.state.isSelecting) {
       this.updateSelection(event);
     }
   }
 
   handleMouseUp(_event) {
-    if (this._store.state.isDragging) {
-      this.stopDragging();
-    }
-
     if (this._store.state.isSelecting) {
       this.stopSelection();
       this.addSelectedObjectsToSelectionGroup();
       this.removeSelectionBox();
     }
-  }
-
-  private getSelectedObject(event: MouseEvent): KritzelSelectionGroup | null {
-    const path = event.composedPath().slice(1) as HTMLElement[];
-    const objectElement = path.find(element => element.classList && element.classList.contains('object'));
-    const object = this._store.findObjectById(objectElement?.id);
-
-    if (!object) {
-      return null;
-    }
-
-    if (object instanceof KritzelSelectionGroup) {
-      return object;
-    } else {
-      const group = new KritzelSelectionGroup(this._store);
-      group.translateX = 0;
-      group.translateY = 0;
-      group.addOrRemove(object);
-      return group;
-    }
-  }
-
-  private isHandleSelected(event: MouseEvent): boolean {
-    const path = event.composedPath() as HTMLElement[];
-    return !!path.find(element => element.classList && element.classList.contains('selection-handle'));
-  }
-
-  private isRotationHandleSelected(event: MouseEvent): boolean {
-    const path = event.composedPath() as HTMLElement[];
-    return !!path.find(element => element.classList && element.classList.contains('rotation-handle'));
-  }
-
-  private startDragging(selectedObject: KritzelSelectionGroup, event: MouseEvent): void {
-    this._store.state.selectionGroup = selectedObject;
-    this._store.state.isDragging = true;
-    this.dragStartX = event.clientX;
-    this.dragStartY = event.clientY;
-  }
-
-  private updateDragging(event: MouseEvent): void {
-    this._store.state.selectionGroup.move(event.clientX, event.clientY, this.dragStartX, this.dragStartY);
-    this.dragStartX = event.clientX;
-    this.dragStartY = event.clientY;
-
-    this._store.rerender();
-  }
-
-  private stopDragging(): void {
-    this._store.state.isDragging = false;
-    this._store.state.selectionGroup = null;
   }
 
   private removeSelectionBox(): void {
@@ -128,11 +53,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     const { clientX, clientY } = event;
     const selectionBox = new KrtizelSelectionBox(this._store);
 
-    this.dragStartX = (clientX - this._store.state.translateX) / this._store.state.scale;
-    this.dragStartY = (clientY - this._store.state.translateY) / this._store.state.scale;
+    this.selectionStartX = (clientX - this._store.state.translateX) / this._store.state.scale;
+    this.selectionStartY = (clientY - this._store.state.translateY) / this._store.state.scale;
 
-    selectionBox.translateX = this.dragStartX;
-    selectionBox.translateY = this.dragStartY;
+    selectionBox.translateX = this.selectionStartX;
+    selectionBox.translateY = this.selectionStartY;
 
     this._store.state.selectionGroup = null;
     this._store.state.selectionBox = selectionBox;
@@ -148,10 +73,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     const currentY = (clientY - this._store.state.translateY) / selectionBox.scale;
 
     if (selectionBox) {
-      selectionBox.width = Math.abs(currentX - this.dragStartX) * selectionBox.scale;
-      selectionBox.height = Math.abs(currentY - this.dragStartY) * selectionBox.scale;
-      selectionBox.translateX = Math.min(currentX, this.dragStartX);
-      selectionBox.translateY = Math.min(currentY, this.dragStartY);
+      selectionBox.width = Math.abs(currentX - this.selectionStartX) * selectionBox.scale;
+      selectionBox.height = Math.abs(currentY - this.selectionStartY) * selectionBox.scale;
+      selectionBox.translateX = Math.min(currentX, this.selectionStartX);
+      selectionBox.translateY = Math.min(currentY, this.selectionStartY);
     }
 
     this.updateSelectedObjects();
@@ -191,6 +116,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       }
 
       this._store.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
-    } 
+    }
   }
 }
