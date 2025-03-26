@@ -24,7 +24,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       if (!selectedObject?.selected) {
 
         if(this._store.state.selectionGroup){
-          this._store.executeCommand(new RemoveSelectionGroupCommand(this._store));
+          this._store.executeCommand(new RemoveSelectionGroupCommand(this._store, this));
         }
 
         if(this._store.state.selectionBox){
@@ -190,7 +190,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
         this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
       }
 
-      this._store.executeCommand(new AddSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+      this._store.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
     } 
   }
 }

@@ -217,7 +217,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     return copiedObject;
   }
 
-  revive(object: any): KritzelSerializable {
+  revive(object: any): KritzelBaseObject<T> {
     Object.assign(this, object);
     return this;
   }

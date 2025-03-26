@@ -1,5 +1,6 @@
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelStore } from '../../stores/store';
+import { KritzelReviver } from '../reviver.class';
 import { KritzelBaseObject } from './base-object.class';
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   objects: KritzelBaseObject<any>[] = [];
@@ -155,6 +156,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   private getUnchangedObject(objectId: string): KritzelBaseObject<any> {
-    return this.unchangedObjects.find(obj => obj.id === objectId);
+    const obj = this.unchangedObjects.find(obj => obj.id === objectId);
+    const reviver = new KritzelReviver(this._store);
+    return reviver.revive(obj);
   }
 }

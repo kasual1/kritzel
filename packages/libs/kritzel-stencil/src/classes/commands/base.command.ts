@@ -4,8 +4,13 @@ import { KritzelStore } from '../../stores/store';
 export class KritzelBaseCommand implements KritzelCommand {
   protected _store: KritzelStore;
 
-  constructor(store: KritzelStore) {
+  initiator: string;
+  isUndoable;
+
+  constructor(store: KritzelStore, initiator: any) {
     this._store = store;
+    this.initiator = initiator?.constructor?.name ?? 'Unknown';
+    this.isUndoable = true;
   }
 
   execute(): void {
