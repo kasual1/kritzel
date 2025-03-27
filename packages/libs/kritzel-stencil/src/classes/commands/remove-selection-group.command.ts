@@ -17,7 +17,12 @@ export class RemoveSelectionGroupCommand extends KritzelBaseCommand {
   }
 
   undo(): void {
-    this._store.state.objects = [...this._store.state.objects, this.previousSelectionGroup];
-    this._store.state.selectionGroup = this.previousSelectionGroup;
+    if(this.previousSelectionGroup) {
+      this._store.state.objects = [...this._store.state.objects, this.previousSelectionGroup];
+      this._store.state.selectionGroup = this.previousSelectionGroup;
+    } else {
+      this._store.state.objects = [...this._store.state.objects];
+    }
+
   }
 }

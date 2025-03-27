@@ -91,39 +91,29 @@ export class KritzelEngine {
 
       if (ev.key === 's') {
         this.store.state.activeTool = new KritzelSelectionTool(this.store);
-        this.deselectAllObjects();
+        this.store.deselectAllObjects();
       }
 
       if (ev.key === 'b') {
         this.store.state.activeTool = new KritzelBrushTool(this.store);
-        this.deselectAllObjects();
+        this.store.deselectAllObjects();
       }
 
       if (ev.key === 'e') {
         this.store.state.activeTool = new KritzelEraserTool(this.store);
-        this.deselectAllObjects();
+        this.store.deselectAllObjects();
       }
 
       if (ev.key === 'i') {
         this.store.state.activeTool = new KritzelImageTool(this.store);
-        this.deselectAllObjects();
+        this.store.deselectAllObjects();
       }
 
       if (ev.key === 'x') {
         this.store.state.activeTool = new KritzelTextTool(this.store);
-        this.deselectAllObjects();
+        this.store.deselectAllObjects();
       }
     }
-  }
-
-  private deselectAllObjects() {
-    const objects = this.store.state.objects.filter(o => !(o instanceof KrtizelSelectionBox)).filter(o => !(o instanceof KritzelSelectionGroup));
-
-    objects.forEach(object => {
-      object.selected = false;
-    });
-
-    this.store.state.objects = [...objects];
   }
 
   render() {
