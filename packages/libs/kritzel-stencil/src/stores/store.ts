@@ -95,7 +95,7 @@ export class KritzelStore {
       isErasing: false,
       isCtrlKeyPressed: false,
       hasViewportChanged: false,
-      showDebugInfo: true,
+      showDebugInfo: false,
       host: null,
       cursorX: 0,
       cursorY: 0,
