@@ -11,7 +11,7 @@ import { RemoveSelectionGroupCommand } from '../classes/commands/remove-selectio
 export interface KritzelEngineState {
   activeTool: KritzelTool;
   currentPath?: KritzelPath;
-  copiedObject?: KritzelSelectionGroup;
+  copiedObjects?: KritzelSelectionGroup;
   objects: KritzelBaseObject<Element>[];
   selectionBox?: KrtizelSelectionBox;
   selectionGroup?: KritzelSelectionGroup;
