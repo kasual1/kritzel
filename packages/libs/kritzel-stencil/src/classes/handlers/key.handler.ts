@@ -1,4 +1,9 @@
 import { KritzelStore } from '../../stores/store';
+import { AddObjectCommand } from '../commands/add-object.command';
+import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
+import { BatchCommand } from '../commands/batch.command';
+import { RemoveObjectCommand } from '../commands/remove-object.command';
+import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
 
@@ -49,33 +54,33 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   }
 
   private handleEscape() {
-    this._store.state.selectionGroup = null;
-
-    this._store.state.objects = [...this._store.state.objects.filter(o => !(o instanceof KritzelSelectionGroup))];
+    this._store.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
   }
 
   private handleDelete() {
-    const toBeDeleted = this._store.state.selectionGroup.objects;
+    const commands = [
+      ...this._store.state.selectionGroup.objects.map(
+      obj => new RemoveObjectCommand(this._store, this._store.state.selectionGroup, obj)
+      ),
+      new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup)
+    ];
 
-    this._store.state.selectionGroup = null;
-
-    this._store.state.objects = [...this._store.state.objects.filter(o => !toBeDeleted.includes(o)).filter(o => !(o instanceof KritzelSelectionGroup))];
+    this._store.executeCommand(new BatchCommand(this._store, this._store.state.selectionGroup, commands));
   }
 
   private handleCopy() {
-    this._store.state.copiedObject = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
+    this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
   }
 
   private handlePaste() {
-    this._store.state.selectionGroup = this._store.state.copiedObject;
-    this._store.state.selectionGroup.selected = true;
-    this._store.state.copiedObject = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
-
-    this._store.state.objects = [
-      ...this._store.state.objects.filter(o => !(o instanceof KritzelSelectionGroup)),
-      ...this._store.state.selectionGroup.objects,
-      this._store.state.selectionGroup,
-    ];
+    this._store.state.copiedObjects.selected = true;
+    const removeCurrentSelectionGroupCommand = new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup);
+    const addCopiedObjectsCommands = this._store.state.copiedObjects.objects.map(
+      obj => new AddObjectCommand(this._store, this, obj)
+    );
+    const addCopiedObjectsAsSelectionGroupCommand = new AddSelectionGroupCommand(this._store, this, this._store.state.copiedObjects);
+    this._store.executeCommand(new BatchCommand(this._store, this, [removeCurrentSelectionGroupCommand, ...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand]));
+    this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
   }
 
   private handleMoveUp() {
