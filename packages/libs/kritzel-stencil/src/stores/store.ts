@@ -125,6 +125,7 @@ export class KritzelStore {
       const command = new UpdateViewportCommand(this, this, this.previousViewport);
       command.execute();
       this.undoStack.push(command);
+      this.redoStack = this.redoStack.length > 0 ? [] : this.redoStack;
       this.state.hasViewportChanged = false;
       this.previousViewport = {
         scale: this.state.scale,
@@ -137,6 +138,7 @@ export class KritzelStore {
     command.execute();
     console.log('add', command);
     this.undoStack.push(command);
+    this.redoStack = this.redoStack.length > 0 ? [] : this.redoStack;
   }
 
   undo() {
