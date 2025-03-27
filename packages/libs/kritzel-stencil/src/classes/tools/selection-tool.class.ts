@@ -53,22 +53,22 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       }
     }
 
-    this.selectionHandler.handleMouseDown(event);
     this.moveHandler.handleMouseDown(event);
+    this.selectionHandler.handleMouseDown(event);
     this.resizeHandler.handleMouseDown(event);
     this.rotationHandler.handleMouseDown(event);
   }
 
   handleMouseMove(event: MouseEvent): void {
-    this.selectionHandler.handleMouseMove(event);
     this.moveHandler.handleMouseMove(event);
+    this.selectionHandler.handleMouseMove(event);
     this.resizeHandler.handleMouseMove(event);
     this.rotationHandler.handleMouseMove(event);
   }
 
   handleMouseUp(event: MouseEvent): void {
-    this.selectionHandler.handleMouseUp(event);
     this.moveHandler.handleMouseUp(event);
+    this.selectionHandler.handleMouseUp(event);
     this.resizeHandler.handleMouseUp(event);
     this.rotationHandler.handleMouseUp(event);
   }
