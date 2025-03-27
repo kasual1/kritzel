@@ -1,10 +1,17 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelStore } from '../../stores/store';
+import { MoveSelectionGroupCommand } from '../commands/move-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelMoveHandler extends KritzelBaseHandler {
   dragStartX: number;
   dragStartY: number;
+
+  startX: number;
+  startY: number;
+
+  endX: number;
+  endY: number;
 
   constructor(store: KritzelStore) {
     super(store);
@@ -34,9 +41,13 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     this._store.state.isDragging = true;
     this.dragStartX = event.clientX;
     this.dragStartY = event.clientY;
+    this.startX = this.dragStartX;
+    this.startY = this.dragStartY;
   }
 
   private updateDragging(event: MouseEvent): void {
+    this.endX = event.clientX;
+    this.endY = event.clientY;
     this._store.state.selectionGroup.move(event.clientX, event.clientY, this.dragStartX, this.dragStartY);
     this.dragStartX = event.clientX;
     this.dragStartY = event.clientY;
@@ -46,5 +57,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
   private stopDragging(): void {
     this._store.state.isDragging = false;
+
+    this._store.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
   }
 }

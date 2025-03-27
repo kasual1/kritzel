@@ -7,6 +7,7 @@ import { KritzelSelectionGroup } from '../classes/objects/selection-group.class'
 import { KritzelBaseCommand } from '../classes/commands/base.command';
 import { UpdateViewportCommand } from '../classes/commands/update-viewport.command';
 import { KritzelHandleType } from '../enums/handle-type.enum';
+import { RemoveSelectionGroupCommand } from '../classes/commands/remove-selection-group.command';
 export interface KritzelEngineState {
   activeTool: KritzelTool;
   currentPath?: KritzelPath;
@@ -76,10 +77,6 @@ export class KritzelStore {
     return this.state.selectionGroup !== null;
   }
 
-  // set state(value: KritzelEngineState) {
-  //   this.store.state = value;
-  // }
-
   constructor() {
     this.store = createStore<KritzelEngineState>({
       activeTool: null,
@@ -144,7 +141,7 @@ export class KritzelStore {
 
   undo() {
     const command = this.undoStack.pop();
-    if(command){
+    if (command) {
       command.undo();
       console.log('undo', command);
       this.redoStack.push(command);
@@ -170,11 +167,9 @@ export class KritzelStore {
   }
 
   deselectAllObjects(): void {
-    for (const object of this.state.objects) {
-      object.selected = false;
+    if (this.state.selectionGroup) {
+      this.executeCommand(new RemoveSelectionGroupCommand(this, this));
     }
-
-    this.rerender();
   }
 
   updateEntireState(state: KritzelEngineState) {
