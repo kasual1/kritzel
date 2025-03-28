@@ -38,15 +38,13 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handleMouseUp(_event: MouseEvent): void {
     if(this._store.state.isErasing) {
 
-      const removeCommands = [];
-
-      for (const object of this._store.state.objects) {
-        if (object.markedForRemoval) {
+      const removeCommands = this._store.state.objects
+        .filter(object => object.markedForRemoval)
+        .map(object => {
           object.markedForRemoval = false;
-          removeCommands.push(new RemoveObjectCommand(this._store, this, object));
-        }
-      }
-      
+          return new RemoveObjectCommand(this._store, this, object);
+        });
+
       if(removeCommands.length > 0) {
         this._store.executeCommand(new BatchCommand(this._store, this, removeCommands));
       }
