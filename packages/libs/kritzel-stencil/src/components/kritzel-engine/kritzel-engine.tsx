@@ -4,14 +4,12 @@ import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelViewport } from '../../classes/viewport.class';
 import { KritzelPath } from '../../classes/objects/path.class';
 import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
-import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
-import { KritzelImageTool } from '../../classes/tools/image-tool.class';
 import { KritzelImage } from '../../classes/objects/image.class';
-import { KritzelTextTool } from '../../classes/tools/text-tool.class';
 import { KrtizelText } from '../../classes/objects/text.class';
 import { KritzelSelectionGroup } from '../../classes/objects/selection-group.class';
 import { KrtizelSelectionBox } from '../../classes/objects/selection-box.class';
 import { KritzelStore } from '../../stores/store';
+import { KritzelKeyHandler } from '../../classes/handlers/key.handler';
 
 @Component({
   tag: 'kritzel-engine',
@@ -29,6 +27,8 @@ export class KritzelEngine {
 
   viewport: KritzelViewport;
 
+  keyHandler: KritzelKeyHandler;
+
   get isSelecting() {
     return this.store.state.activeTool instanceof KritzelSelectionTool && this.store.state.isSelecting;
   }
@@ -41,6 +41,7 @@ export class KritzelEngine {
     this.store = new KritzelStore();
     this.viewport = new KritzelViewport(this.store, this.host);
     this.store.state.activeTool = new KritzelBrushTool(this.store);
+    this.keyHandler = new KritzelKeyHandler(this.store);
   }
 
   @Listen('contextmenu', { target: 'window' })
@@ -74,46 +75,12 @@ export class KritzelEngine {
 
   @Listen('keydown', { target: 'window' })
   handleKeyDown(ev) {
-    if (ev.ctrlKey) {
-      ev.preventDefault();
+    this.keyHandler.handleKeyDown(ev);
+  }
 
-      if (ev.key === 'z') {
-        this.store.undo();
-      }
-
-      if (ev.key === 'y') {
-        this.store.redo();
-      }
-
-      if (ev.key === 'd') {
-        this.store.state.showDebugInfo = !this.store.state.showDebugInfo;
-      }
-
-      if (ev.key === 's') {
-        this.store.state.activeTool = new KritzelSelectionTool(this.store);
-        this.store.deselectAllObjects();
-      }
-
-      if (ev.key === 'b') {
-        this.store.state.activeTool = new KritzelBrushTool(this.store);
-        this.store.deselectAllObjects();
-      }
-
-      if (ev.key === 'e') {
-        this.store.state.activeTool = new KritzelEraserTool(this.store);
-        this.store.deselectAllObjects();
-      }
-
-      if (ev.key === 'i') {
-        this.store.state.activeTool = new KritzelImageTool(this.store);
-        this.store.deselectAllObjects();
-      }
-
-      if (ev.key === 'x') {
-        this.store.state.activeTool = new KritzelTextTool(this.store);
-        this.store.deselectAllObjects();
-      }
-    }
+  @Listen('keyup', { target: 'window' })
+  handleKeyUp(ev) {
+    this.keyHandler.handleKeyUp(ev);
   }
 
   render() {
