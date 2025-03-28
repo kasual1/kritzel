@@ -6,6 +6,11 @@ import { RemoveObjectCommand } from '../commands/remove-object.command';
 import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
 import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelBrushTool } from '../tools/brush-tool.class';
+import { KritzelEraserTool } from '../tools/eraser-tool.class';
+import { KritzelImageTool } from '../tools/image-tool.class';
+import { KritzelSelectionTool } from '../tools/selection-tool.class';
+import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelKeyHandler extends KritzelBaseHandler {
@@ -16,19 +21,60 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   handleKeyDown(event: KeyboardEvent): void {
     this._store.state.isCtrlKeyPressed = event.ctrlKey;
 
-    if (event.key === 'Escape') {
+    if(this._store.state.isCtrlKeyPressed) {
+      event.preventDefault();
+    }
+
+    if (event.key === 'Escape' && this._store.state.selectionGroup) {
       this.handleEscape();
     }
 
-    if (event.key === 'Delete') {
+    if (event.key === 'Delete' && this._store.state.selectionGroup) {
       this.handleDelete();
     }
 
-    if (event.key === 'c' && event.ctrlKey) {
+    if (event.key === 'z' && event.ctrlKey) {
+      this._store.undo();
+    }
+
+    if (event.key === 'y' && event.ctrlKey) {
+      this._store.redo();
+    }
+
+    if (event.key === 'd' && event.ctrlKey) {
+      this._store.state.showDebugInfo = !this._store.state.showDebugInfo;
+    }
+
+    if (event.key === 's' && event.ctrlKey) {
+      this._store.state.activeTool = new KritzelSelectionTool(this._store);
+      this._store.deselectAllObjects();
+    }
+
+    if (event.key === 'b' && event.ctrlKey) {
+      this._store.state.activeTool = new KritzelBrushTool(this._store);
+      this._store.deselectAllObjects();
+    }
+
+    if (event.key === 'e' && event.ctrlKey) {
+      this._store.state.activeTool = new KritzelEraserTool(this._store);
+      this._store.deselectAllObjects();
+    }
+
+    if (event.key === 'i' && event.ctrlKey) {
+      this._store.state.activeTool = new KritzelImageTool(this._store);
+      this._store.deselectAllObjects();
+    }
+
+    if (event.key === 'x' && event.ctrlKey) {
+      this._store.state.activeTool = new KritzelTextTool(this._store);
+      this._store.deselectAllObjects();
+    }
+
+    if (event.key === 'c' && event.ctrlKey && this._store.state.selectionGroup) {
       this.handleCopy();
     }
 
-    if (event.key === 'v' && event.ctrlKey) {
+    if (event.key === 'v' && event.ctrlKey && this._store.state.selectionGroup) {
       this.handlePaste();
     }
 
@@ -111,7 +157,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     const increaseZIndexCommands = this._store.state.selectionGroup.objects.map(obj => {
       return new UpdateObjectCommand(this._store, this, obj, { zIndex: max });
     });
-    
+
     this._store.executeCommand(new BatchCommand(this._store, this, increaseZIndexCommands));
   }
 
