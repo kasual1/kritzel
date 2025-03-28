@@ -4,11 +4,11 @@ import { AddSelectionGroupCommand } from '../commands/add-selection-group.comman
 import { BatchCommand } from '../commands/batch.command';
 import { RemoveObjectCommand } from '../commands/remove-object.command';
 import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
+import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelKeyHandler extends KritzelBaseHandler {
-
   constructor(store: KritzelStore) {
     super(store);
   }
@@ -58,12 +58,9 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   }
 
   private handleDelete() {
-    const commands = [
-      ...this._store.state.selectionGroup.objects.map(
-      obj => new RemoveObjectCommand(this._store, this._store.state.selectionGroup, obj)
-      ),
-      new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup)
-    ];
+    const deleteSelectedObjectsCommand = this._store.state.selectionGroup.objects.map(obj => new RemoveObjectCommand(this._store, this._store.state.selectionGroup, obj));
+    const removeSelectionGroupCommand = new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup);
+    const commands = [...deleteSelectedObjectsCommand, removeSelectionGroupCommand];
 
     this._store.executeCommand(new BatchCommand(this._store, this._store.state.selectionGroup, commands));
   }
@@ -74,56 +71,56 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
 
   private handlePaste() {
     this._store.state.copiedObjects.selected = true;
+
     const removeCurrentSelectionGroupCommand = new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup);
-    const addCopiedObjectsCommands = this._store.state.copiedObjects.objects.map(
-      obj => new AddObjectCommand(this._store, this, obj)
-    );
+    const addCopiedObjectsCommands = this._store.state.copiedObjects.objects.map(obj => new AddObjectCommand(this._store, this, obj));
     const addCopiedObjectsAsSelectionGroupCommand = new AddSelectionGroupCommand(this._store, this, this._store.state.copiedObjects);
+
     this._store.executeCommand(new BatchCommand(this._store, this, [removeCurrentSelectionGroupCommand, ...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand]));
     this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
   }
 
   private handleMoveUp() {
-    const max = this._store.state.objects.length;
-    this._store.state.selectionGroup?.objects.forEach(obj => {
+    const max = this._store.state.objects.length + 1;
+    const increaseZIndexCommands = this._store.state.selectionGroup.objects.map(obj => {
       if (obj.zIndex === max) {
         return;
       }
 
-      obj.zIndex += 1;
+      return new UpdateObjectCommand(this._store, this, obj, { zIndex: obj.zIndex + 1 });
     });
 
-    this._store.rerender();
+    this._store.executeCommand(new BatchCommand(this._store, this, increaseZIndexCommands));
   }
 
   private handleMoveDown() {
     const min = 0;
-    this._store.state.selectionGroup?.objects.forEach(obj => {
+    const decreaseZIndexCommands = this._store.state.selectionGroup.objects.map(obj => {
       if (obj.zIndex === min) {
         return;
       }
 
-      obj.zIndex -= 1;
+      return new UpdateObjectCommand(this._store, this, obj, { zIndex: obj.zIndex - 1 });
     });
 
-    this._store.rerender();
+    this._store.executeCommand(new BatchCommand(this._store, this, decreaseZIndexCommands));
   }
 
   private handleMoveToTop() {
     const max = this._store.state.objects.length + 1;
-    this._store.state.selectionGroup?.objects.forEach(obj => {
-      obj.zIndex = max;
+    const increaseZIndexCommands = this._store.state.selectionGroup.objects.map(obj => {
+      return new UpdateObjectCommand(this._store, this, obj, { zIndex: max });
     });
-
-    this._store.rerender();
+    
+    this._store.executeCommand(new BatchCommand(this._store, this, increaseZIndexCommands));
   }
 
   private handleMoveToBottom() {
     const min = -1;
-    this._store.state.selectionGroup?.objects.forEach(obj => {
-      obj.zIndex = min;
+    const decreaseZIndexCommands = this._store.state.selectionGroup.objects.map(obj => {
+      return new UpdateObjectCommand(this._store, this, obj, { zIndex: min });
     });
 
-    this._store.rerender();
+    this._store.executeCommand(new BatchCommand(this._store, this, decreaseZIndexCommands));
   }
 }
