@@ -52,7 +52,9 @@ export class KritzelImageTool extends KritzelBaseTool {
           selectionGroup.addOrRemove(image);
           selectionGroup.selected = true;
 
-          this._store.executeCommand(new BatchCommand(this._store, this, [new AddObjectCommand(this._store, this, image), new AddSelectionGroupCommand(this._store, this, selectionGroup)]));
+          const addImageCommand = new AddObjectCommand(this._store, this, image);
+          const addSelectionGroupCommand = new AddSelectionGroupCommand(this._store, this, selectionGroup);
+          this._store.executeCommand(new BatchCommand(this._store, this, [addImageCommand, addSelectionGroupCommand]));
           this._store.state.activeTool = new KritzelSelectionTool(this._store);
         };
       };
