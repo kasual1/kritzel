@@ -49,7 +49,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
 
   handleMouseUp(_event: MouseEvent): void {
     if (this._store.state.isRotating) {
-      this._store.executeCommand(new RotateSelectionGroupCommand(this._store, this, this.rotation));
+      this._store.history.executeCommand(new RotateSelectionGroupCommand(this._store, this, this.rotation));
 
       this._store.state.isRotating = false;
 

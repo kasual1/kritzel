@@ -115,7 +115,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
         this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
       }
 
-      this._store.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
+      this._store.history.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
     }
   }
 }

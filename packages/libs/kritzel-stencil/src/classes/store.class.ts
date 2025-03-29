@@ -4,10 +4,9 @@ import { KritzelPath } from './objects/path.class';
 import { KritzelTool } from '../components';
 import { KrtizelSelectionBox } from './objects/selection-box.class';
 import { KritzelSelectionGroup } from './objects/selection-group.class';
-import { KritzelBaseCommand } from './commands/base.command';
-import { UpdateViewportCommand } from './commands/update-viewport.command';
 import { KritzelHandleType } from '../enums/handle-type.enum';
 import { RemoveSelectionGroupCommand } from './commands/remove-selection-group.command';
+import { KritzelHistory } from './history.class';
 export interface KritzelEngineState {
   activeTool: KritzelTool;
   currentPath?: KritzelPath;
@@ -41,20 +40,16 @@ export interface KritzelEngineState {
 }
 
 export class KritzelStore {
-  private readonly store: any;
+  private readonly _store: any;
 
-  undoStack: KritzelBaseCommand[] = [];
-  redoStack: KritzelBaseCommand[] = [];
+  private readonly _history: KritzelHistory;
 
-  previousViewport: {
-    scale: number;
-    scaleStep: number;
-    translateX: number;
-    translateY: number;
-  };
+  get history(): KritzelHistory {
+    return this._history;
+  }
 
   get state(): KritzelEngineState {
-    return this.store.state;
+    return this._store.state;
   }
 
   get currentZIndex() {
@@ -78,7 +73,7 @@ export class KritzelStore {
   }
 
   constructor() {
-    this.store = createStore<KritzelEngineState>({
+    this._store = createStore<KritzelEngineState>({
       activeTool: null,
       currentPath: null,
       objects: [],
@@ -99,7 +94,7 @@ export class KritzelStore {
       host: null,
       cursorX: 0,
       cursorY: 0,
-      scale: 1,
+      scale: 500,
       scaleMax: 1000,
       scaleMin: 0.0001,
       scaleStep: 0.05,
@@ -108,62 +103,11 @@ export class KritzelStore {
       translateX: 0,
       translateY: 0,
     });
-    this.previousViewport = {
-      scale: this.state.scale,
-      scaleStep: this.state.scaleStep,
-      translateX: this.state.translateX,
-      translateY: this.state.translateY,
-    };
+    this._history = new KritzelHistory(this);
   }
 
   rerender() {
     this.state.objects = [...this.state.objects];
-  }
-
-  executeCommand(command: KritzelBaseCommand) {
-    if (this.state.hasViewportChanged) {
-      const command = new UpdateViewportCommand(this, this, this.previousViewport);
-      command.execute();
-      this.undoStack.push(command);
-      this.redoStack = this.redoStack.length > 0 ? [] : this.redoStack;
-      this.state.hasViewportChanged = false;
-      this.previousViewport = {
-        scale: this.state.scale,
-        scaleStep: this.state.scaleStep,
-        translateX: this.state.translateX,
-        translateY: this.state.translateY,
-      };
-    }
-
-    command.execute();
-    console.log('add', command);
-    this.undoStack.push(command);
-    this.redoStack = this.redoStack.length > 0 ? [] : this.redoStack;
-  }
-
-  undo() {
-    if (this.state.hasViewportChanged) {
-      const command = new UpdateViewportCommand(this, this, this.previousViewport);
-      command.undo();
-      this.state.hasViewportChanged = false;
-      return;
-    }
-
-    const command = this.undoStack.pop();
-    if (command) {
-      command.undo();
-      console.log('undo', command);
-      this.redoStack.push(command);
-    }
-  }
-
-  redo() {
-    const command = this.redoStack.pop();
-    if (command) {
-      command.execute();
-      console.log('redo', command);
-      this.undoStack.push(command);
-    }
   }
 
   findObjectById(id: string): KritzelBaseObject<any> | null {
@@ -177,14 +121,14 @@ export class KritzelStore {
 
   deselectAllObjects(): void {
     if (this.state.selectionGroup) {
-      this.executeCommand(new RemoveSelectionGroupCommand(this, this));
+      this._history.executeCommand(new RemoveSelectionGroupCommand(this, this));
     }
   }
 
   updateEntireState(state: KritzelEngineState) {
     for (const key in state) {
       const value = state[key];
-      this.store.set(key, value);
+      this._store.set(key, value);
     }
   }
 }

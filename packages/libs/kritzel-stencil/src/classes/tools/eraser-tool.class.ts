@@ -46,7 +46,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
         });
 
       if(removeCommands.length > 0) {
-        this._store.executeCommand(new BatchCommand(this._store, this, removeCommands));
+        this._store.history.executeCommand(new BatchCommand(this._store, this, removeCommands));
       }
 
       this._store.state.isErasing = false;
