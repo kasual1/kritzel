@@ -1,7 +1,7 @@
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseCommand } from './base.command';
 
-export class RotatedSelectionGroupCommand extends KritzelBaseCommand {
+export class RotateSelectionGroupCommand extends KritzelBaseCommand {
 
   private rotation: number;
 

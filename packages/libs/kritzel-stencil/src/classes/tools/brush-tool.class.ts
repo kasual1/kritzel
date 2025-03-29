@@ -1,5 +1,5 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelBaseTool } from './base-tool.class';

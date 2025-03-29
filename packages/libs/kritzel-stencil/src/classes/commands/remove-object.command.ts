@@ -1,4 +1,4 @@
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelBaseCommand } from './base.command';
 

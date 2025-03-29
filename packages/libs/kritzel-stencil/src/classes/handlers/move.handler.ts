@@ -1,5 +1,5 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { MoveSelectionGroupCommand } from '../commands/move-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
 

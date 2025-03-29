@@ -8,7 +8,7 @@ import { KritzelImage } from '../../classes/objects/image.class';
 import { KrtizelText } from '../../classes/objects/text.class';
 import { KritzelSelectionGroup } from '../../classes/objects/selection-group.class';
 import { KrtizelSelectionBox } from '../../classes/objects/selection-box.class';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../../classes/store.class';
 import { KritzelKeyHandler } from '../../classes/handlers/key.handler';
 
 @Component({

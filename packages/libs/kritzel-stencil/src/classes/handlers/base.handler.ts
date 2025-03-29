@@ -1,4 +1,4 @@
-import { KritzelStore } from "../../stores/store";
+import { KritzelStore } from "../store.class";
 
 export class KritzelBaseHandler {
 

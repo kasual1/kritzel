@@ -1,13 +1,13 @@
 import { createStore } from '@stencil/store';
-import { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { KritzelPath } from '../classes/objects/path.class';
+import { KritzelBaseObject } from './objects/base-object.class';
+import { KritzelPath } from './objects/path.class';
 import { KritzelTool } from '../components';
-import { KrtizelSelectionBox } from '../classes/objects/selection-box.class';
-import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
-import { KritzelBaseCommand } from '../classes/commands/base.command';
-import { UpdateViewportCommand } from '../classes/commands/update-viewport.command';
+import { KrtizelSelectionBox } from './objects/selection-box.class';
+import { KritzelSelectionGroup } from './objects/selection-group.class';
+import { KritzelBaseCommand } from './commands/base.command';
+import { UpdateViewportCommand } from './commands/update-viewport.command';
 import { KritzelHandleType } from '../enums/handle-type.enum';
-import { RemoveSelectionGroupCommand } from '../classes/commands/remove-selection-group.command';
+import { RemoveSelectionGroupCommand } from './commands/remove-selection-group.command';
 export interface KritzelEngineState {
   activeTool: KritzelTool;
   currentPath?: KritzelPath;

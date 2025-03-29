@@ -1,4 +1,4 @@
-import { KritzelStore } from "../../stores/store";
+import { KritzelStore } from "../store.class";
 import { KritzelBaseObject } from "./base-object.class";
 
 export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {

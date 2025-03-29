@@ -1,4 +1,4 @@
-import { KritzelStore } from "../stores/store";
+import { KritzelStore } from "./store.class";
 import { KritzelImage } from "./objects/image.class";
 import { KritzelPath } from "./objects/path.class";
 import { KritzelSelectionGroup } from "./objects/selection-group.class";

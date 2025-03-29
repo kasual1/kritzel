@@ -1,4 +1,4 @@
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import { BatchCommand } from '../commands/batch.command';
