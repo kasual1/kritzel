@@ -1,44 +1,42 @@
 import { createStore } from '@stencil/store';
 import { KritzelBaseObject } from './objects/base-object.class';
-import { KritzelPath } from './objects/path.class';
-import { KritzelTool } from '../components';
 import { KrtizelSelectionBox } from './objects/selection-box.class';
 import { KritzelSelectionGroup } from './objects/selection-group.class';
-import { KritzelHandleType } from '../enums/handle-type.enum';
 import { RemoveSelectionGroupCommand } from './commands/remove-selection-group.command';
 import { KritzelHistory } from './history.class';
-export interface KritzelEngineState {
-  activeTool: KritzelTool;
-  currentPath?: KritzelPath;
-  copiedObjects?: KritzelSelectionGroup;
-  objects: KritzelBaseObject<Element>[];
-  selectionBox?: KrtizelSelectionBox;
-  selectionGroup?: KritzelSelectionGroup;
-  resizeHandleType: KritzelHandleType;
-  isSelecting: boolean;
-  isResizing: boolean;
-  isResizeHandleSelected: boolean;
-  isRotating: boolean;
-  isRotationHandleSelected: boolean;
-  isDragging: boolean;
-  isDrawing: boolean;
-  isErasing: boolean;
-  isCtrlKeyPressed: boolean;
-  hasViewportChanged: boolean;
-  showDebugInfo: boolean;
-  host: HTMLElement;
-  cursorX: number;
-  cursorY: number;
-  scale: number;
-  scaleMax: number;
-  scaleMin: number;
-  scaleStep: number;
-  startX: number;
-  startY: number;
-  translateX: number;
-  translateY: number;
-}
+import { KritzelEngineState } from '../interfaces/engine-state.interface';
 
+const initialState = {
+  activeTool: null,
+  currentPath: null,
+  objects: [],
+  selectionBox: null,
+  selectionGroup: null,
+  resizeHandleType: null,
+  isSelecting: false,
+  isResizing: false,
+  isResizeHandleSelected: false,
+  isRotating: false,
+  isRotationHandleSelected: false,
+  isDragging: false,
+  isDrawing: false,
+  isErasing: false,
+  isCtrlKeyPressed: false,
+  hasViewportChanged: false,
+  showDebugInfo: true,
+  host: null,
+  cursorX: 0,
+  cursorY: 0,
+  scale: 1,
+  scaleMax: 1000,
+  scaleMin: 0.0001,
+  scaleStep: 0.05,
+  startX: 0,
+  startY: 0,
+  translateX: 0,
+  translateY: 0,
+  historyBufferSize: 1000,
+};
 export class KritzelStore {
   private readonly _store: any;
 
@@ -73,36 +71,7 @@ export class KritzelStore {
   }
 
   constructor() {
-    this._store = createStore<KritzelEngineState>({
-      activeTool: null,
-      currentPath: null,
-      objects: [],
-      selectionBox: null,
-      selectionGroup: null,
-      resizeHandleType: null,
-      isSelecting: false,
-      isResizing: false,
-      isResizeHandleSelected: false,
-      isRotating: false,
-      isRotationHandleSelected: false,
-      isDragging: false,
-      isDrawing: false,
-      isErasing: false,
-      isCtrlKeyPressed: false,
-      hasViewportChanged: false,
-      showDebugInfo: true,
-      host: null,
-      cursorX: 0,
-      cursorY: 0,
-      scale: 500,
-      scaleMax: 1000,
-      scaleMin: 0.0001,
-      scaleStep: 0.05,
-      startX: 0,
-      startY: 0,
-      translateX: 0,
-      translateY: 0,
-    });
+    this._store = createStore<KritzelEngineState>(initialState);
     this._history = new KritzelHistory(this);
   }
 
