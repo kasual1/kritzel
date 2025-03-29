@@ -5,7 +5,7 @@ import { KritzelViewport } from '../../classes/viewport.class';
 import { KritzelPath } from '../../classes/objects/path.class';
 import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
 import { KritzelImage } from '../../classes/objects/image.class';
-import { KrtizelText } from '../../classes/objects/text.class';
+import { KritzelText } from '../../classes/objects/text.class';
 import { KritzelSelectionGroup } from '../../classes/objects/selection-group.class';
 import { KrtizelSelectionBox } from '../../classes/objects/selection-box.class';
 import { KritzelStore } from '../../classes/store.class';
@@ -170,7 +170,7 @@ export class KritzelEngine {
                       />
                     )}
 
-                    {object instanceof KrtizelText && (
+                    {object instanceof KritzelText && (
                       <textarea
                         ref={el => object.mount(el)}
                         value={object.value}

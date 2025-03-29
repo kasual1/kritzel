@@ -2,7 +2,7 @@ import { KritzelStore } from "./store.class";
 import { KritzelImage } from "./objects/image.class";
 import { KritzelPath } from "./objects/path.class";
 import { KritzelSelectionGroup } from "./objects/selection-group.class";
-import { KrtizelText } from "./objects/text.class";
+import { KritzelText } from "./objects/text.class";
 import { KritzelBrushTool } from "./tools/brush-tool.class";
 import { KritzelEraserTool } from "./tools/eraser-tool.class";
 import { KritzelImageTool } from "./tools/image-tool.class";
@@ -26,7 +26,7 @@ export class KritzelReviver {
             revivedObj = new KritzelPath(this._store).revive(obj);
             break;
           case 'KritzelText':
-            revivedObj = new KrtizelText(this._store).revive(obj);
+            revivedObj = new KritzelText(this._store).revive(obj);
             break;
           case 'KritzelImage':
             revivedObj = new KritzelImage(this._store).revive(obj);

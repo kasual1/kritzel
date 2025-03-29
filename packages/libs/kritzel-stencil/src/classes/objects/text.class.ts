@@ -1,7 +1,7 @@
 import { KritzelStore } from '../store.class';
 import { KritzelBaseObject } from './base-object.class';
 
-export class KrtizelText extends KritzelBaseObject<HTMLTextAreaElement> {
+export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   value: string = '';
 
   fontSize: number = 16;

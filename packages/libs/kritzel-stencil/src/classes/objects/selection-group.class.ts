@@ -93,7 +93,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       
       const rotatedX = cos * offsetX - sin * offsetY;
       const rotatedY = sin * offsetX + cos * offsetY;
-      
+
       child.translateX = centerX + rotatedX - child.totalWidth / 2 / child.scale;
       child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
       child.rotation = this.objects.length === 1 ? value : value + unchangedChild.rotation;
