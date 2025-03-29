@@ -142,6 +142,13 @@ export class KritzelStore {
   }
 
   undo() {
+    if (this.state.hasViewportChanged) {
+      const command = new UpdateViewportCommand(this, this, this.previousViewport);
+      command.undo();
+      this.state.hasViewportChanged = false;
+      return;
+    }
+
     const command = this.undoStack.pop();
     if (command) {
       command.undo();
