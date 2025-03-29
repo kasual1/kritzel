@@ -1,5 +1,5 @@
 import { KritzelCommand } from '../../interfaces/command.interface';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 
 export class KritzelBaseCommand implements KritzelCommand {
   protected _store: KritzelStore;

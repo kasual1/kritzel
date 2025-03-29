@@ -1,6 +1,6 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
-import { KritzelStore } from '../../stores/store';
-import { RotatedSelectionGroupCommand } from '../commands/rotate-selection-group.command';
+import { KritzelStore } from '../store.class';
+import { RotateSelectionGroupCommand } from '../commands/rotate-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelRotationHandler extends KritzelBaseHandler{
@@ -49,7 +49,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
 
   handleMouseUp(_event: MouseEvent): void {
     if (this._store.state.isRotating) {
-      this._store.executeCommand(new RotatedSelectionGroupCommand(this._store, this, this.rotation));
+      this._store.executeCommand(new RotateSelectionGroupCommand(this._store, this, this.rotation));
 
       this._store.state.isRotating = false;
 

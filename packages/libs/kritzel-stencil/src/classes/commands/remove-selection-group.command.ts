@@ -1,4 +1,4 @@
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseCommand } from './base.command';
 

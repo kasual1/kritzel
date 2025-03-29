@@ -1,5 +1,5 @@
 import { KrtizelText } from '../objects/text.class';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 

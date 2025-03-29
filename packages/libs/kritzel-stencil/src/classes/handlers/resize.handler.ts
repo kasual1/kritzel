@@ -1,6 +1,6 @@
 import { KritzelHandleType } from "../../enums/handle-type.enum";
 import { KritzelClickHelper } from "../../helpers/click.helper";
-import { KritzelStore } from "../../stores/store";
+import { KritzelStore } from "../store.class";
 import { KritzelBaseHandler } from "./base.handler";
 
 export class KritzelResizeHandler extends KritzelBaseHandler {

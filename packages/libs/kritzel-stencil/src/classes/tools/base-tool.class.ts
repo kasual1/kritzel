@@ -1,6 +1,6 @@
 import { KritzelTool } from '../../components';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 
 export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
   __class__: string = this.constructor.name;

@@ -1,7 +1,7 @@
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelSelectionTool } from './selection-tool.class';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { BatchCommand } from '../commands/batch.command';

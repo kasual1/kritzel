@@ -1,5 +1,5 @@
 import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { KritzelReviver } from '../reviver.class';
 import { KritzelBaseObject } from './base-object.class';
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
@@ -44,10 +44,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     this.translateX += deltaX;
     this.translateY += deltaY;
-
+    
     this.objects.forEach(obj => {
       obj.translateX += deltaX;
       obj.translateY += deltaY;
+      // console.log('move', obj.translateX, obj.translateY, obj.id);
     });
 
     this.unchangedObjects.forEach(obj => {
@@ -89,13 +90,14 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       const unchangedChild = this.getUnchangedObject(child.id);
       const offsetX = this.getOffsetXToCenter(unchangedChild);
       const offsetY = this.getOffsetYToCenter(unchangedChild);
-
+      
       const rotatedX = cos * offsetX - sin * offsetY;
       const rotatedY = sin * offsetX + cos * offsetY;
-
+      
       child.translateX = centerX + rotatedX - child.totalWidth / 2 / child.scale;
       child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
       child.rotation = this.objects.length === 1 ? value : value + unchangedChild.rotation;
+      console.log(child);
     });
   }
 

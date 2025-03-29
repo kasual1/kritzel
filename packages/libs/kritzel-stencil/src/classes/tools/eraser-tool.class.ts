@@ -1,5 +1,5 @@
 import { KritzelClickHelper } from "../../helpers/click.helper";
-import { KritzelStore } from "../../stores/store";
+import { KritzelStore } from "../store.class";
 import { BatchCommand } from "../commands/batch.command";
 import { RemoveObjectCommand } from "../commands/remove-object.command";
 import { KritzelBaseTool } from "./base-tool.class";

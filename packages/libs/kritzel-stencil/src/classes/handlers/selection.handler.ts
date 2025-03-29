@@ -1,6 +1,6 @@
 import { KritzelClickHelper } from '../../helpers/click.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';

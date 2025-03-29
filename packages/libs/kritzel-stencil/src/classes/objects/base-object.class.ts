@@ -3,7 +3,7 @@ import { KritzelObject } from '../../interfaces/object.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelSelection } from '../../interfaces/selection.interface';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { ObjectHelper } from '../../helpers/object.helper';
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, KritzelSerializable {

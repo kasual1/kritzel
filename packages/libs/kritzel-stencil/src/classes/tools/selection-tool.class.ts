@@ -1,6 +1,6 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelClickHelper } from '../../helpers/click.helper';
-import { KritzelStore } from '../../stores/store';
+import { KritzelStore } from '../store.class';
 import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
 import { KritzelMoveHandler } from '../handlers/move.handler';
 import { KritzelResizeHandler } from '../handlers/resize.handler';
