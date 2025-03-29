@@ -13,6 +13,9 @@ export class KritzelImageTool extends KritzelBaseTool {
 
   fileInput: HTMLInputElement;
 
+  maxWidth: number = 300;
+  maxHeight: number = 300;
+
   constructor(store: KritzelStore) {
     super(store);
     this.setupFileInput();
@@ -37,29 +40,63 @@ export class KritzelImageTool extends KritzelBaseTool {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
-      const reader = new FileReader();
-
-      reader.onload = e => {
-        const img = new Image();
-        img.src = e.target?.result as string;
-
-        img.onload = () => {
-          const image = new KritzelImage(this._store, img);
-          image.zIndex = this._store.currentZIndex;
-          image.centerInViewport();
-
-          const selectionGroup = new KritzelSelectionGroup(this._store);
-          selectionGroup.addOrRemove(image);
-          selectionGroup.selected = true;
-
-          const addImageCommand = new AddObjectCommand(this._store, this, image);
-          const addSelectionGroupCommand = new AddSelectionGroupCommand(this._store, this, selectionGroup);
-          this._store.executeCommand(new BatchCommand(this._store, this, [addImageCommand, addSelectionGroupCommand]));
-          this._store.state.activeTool = new KritzelSelectionTool(this._store);
-        };
-      };
-
-      reader.readAsDataURL(file);
+      this.readFile(file);
     }
+  }
+
+  private readFile(file: File): void {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.src = e.target?.result as string;
+      img.onload = () => this.processImage(img);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  private processImage(img: HTMLImageElement): void {
+    const { scaledWidth, scaledHeight } = this.calculateScaledDimensions(img);
+    const image = this.createKritzelImage(img, scaledWidth, scaledHeight);
+    this.addImageToStore(image);
+    this.switchToSelectionTool();
+  }
+
+  private calculateScaledDimensions(img: HTMLImageElement): { scaledWidth: number; scaledHeight: number } {
+    let scaledWidth = img.width;
+    let scaledHeight = img.height;
+
+    if (img.width > this.maxWidth || img.height > this.maxHeight) {
+      const widthRatio = this.maxWidth / img.width;
+      const heightRatio = this.maxHeight / img.height;
+      const scaleRatio = Math.min(widthRatio, heightRatio);
+
+      scaledWidth = img.width * scaleRatio;
+      scaledHeight = img.height * scaleRatio;
+    }
+
+    return { scaledWidth, scaledHeight };
+  }
+
+  private createKritzelImage(img: HTMLImageElement, width: number, height: number): KritzelImage {
+    const image = new KritzelImage(this._store, img);
+    image.width = width;
+    image.height = height;
+    image.zIndex = this._store.currentZIndex;
+    image.centerInViewport();
+    return image;
+  }
+
+  private addImageToStore(image: KritzelImage): void {
+    const selectionGroup = new KritzelSelectionGroup(this._store);
+    selectionGroup.addOrRemove(image);
+    selectionGroup.selected = true;
+
+    const addImageCommand = new AddObjectCommand(this._store, this, image);
+    const addSelectionGroupCommand = new AddSelectionGroupCommand(this._store, this, selectionGroup);
+    this._store.executeCommand(new BatchCommand(this._store, this, [addImageCommand, addSelectionGroupCommand]));
+  }
+
+  private switchToSelectionTool(): void {
+    this._store.state.activeTool = new KritzelSelectionTool(this._store);
   }
 }
