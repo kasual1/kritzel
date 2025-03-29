@@ -34,11 +34,11 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     }
 
     if (event.key === 'z' && event.ctrlKey) {
-      this._store.undo();
+      this._store.history.undo();
     }
 
     if (event.key === 'y' && event.ctrlKey) {
-      this._store.redo();
+      this._store.history.redo();
     }
 
     if (event.key === 'd' && event.ctrlKey) {
@@ -100,7 +100,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   }
 
   private handleEscape() {
-    this._store.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+    this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
   }
 
   private handleDelete() {
@@ -108,7 +108,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     const removeSelectionGroupCommand = new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup);
     const commands = [...deleteSelectedObjectsCommand, removeSelectionGroupCommand];
 
-    this._store.executeCommand(new BatchCommand(this._store, this._store.state.selectionGroup, commands));
+    this._store.history.executeCommand(new BatchCommand(this._store, this._store.state.selectionGroup, commands));
   }
 
   private handleCopy() {
@@ -122,7 +122,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     const addCopiedObjectsCommands = this._store.state.copiedObjects.objects.map(obj => new AddObjectCommand(this._store, this, obj));
     const addCopiedObjectsAsSelectionGroupCommand = new AddSelectionGroupCommand(this._store, this, this._store.state.copiedObjects);
 
-    this._store.executeCommand(new BatchCommand(this._store, this, [removeCurrentSelectionGroupCommand, ...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand]));
+    this._store.history.executeCommand(new BatchCommand(this._store, this, [removeCurrentSelectionGroupCommand, ...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand]));
     this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
   }
 
@@ -136,7 +136,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       return new UpdateObjectCommand(this._store, this, obj, { zIndex: obj.zIndex + 1 });
     });
 
-    this._store.executeCommand(new BatchCommand(this._store, this, increaseZIndexCommands));
+    this._store.history.executeCommand(new BatchCommand(this._store, this, increaseZIndexCommands));
   }
 
   private handleMoveDown() {
@@ -149,7 +149,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       return new UpdateObjectCommand(this._store, this, obj, { zIndex: obj.zIndex - 1 });
     });
 
-    this._store.executeCommand(new BatchCommand(this._store, this, decreaseZIndexCommands));
+    this._store.history.executeCommand(new BatchCommand(this._store, this, decreaseZIndexCommands));
   }
 
   private handleMoveToTop() {
@@ -158,7 +158,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       return new UpdateObjectCommand(this._store, this, obj, { zIndex: max });
     });
 
-    this._store.executeCommand(new BatchCommand(this._store, this, increaseZIndexCommands));
+    this._store.history.executeCommand(new BatchCommand(this._store, this, increaseZIndexCommands));
   }
 
   private handleMoveToBottom() {
@@ -167,6 +167,6 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       return new UpdateObjectCommand(this._store, this, obj, { zIndex: min });
     });
 
-    this._store.executeCommand(new BatchCommand(this._store, this, decreaseZIndexCommands));
+    this._store.history.executeCommand(new BatchCommand(this._store, this, decreaseZIndexCommands));
   }
 }

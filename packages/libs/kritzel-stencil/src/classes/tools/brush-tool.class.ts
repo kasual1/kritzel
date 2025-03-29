@@ -47,7 +47,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
       if(this._store.state.currentPath){
         this._store.state.currentPath.zIndex = this._store.currentZIndex;
-        this._store.executeCommand(new AddObjectCommand(this._store, this, this._store.state.currentPath));
+        this._store.history.executeCommand(new AddObjectCommand(this._store, this, this._store.state.currentPath));
       }
 
       this._store.state.currentPath = undefined;

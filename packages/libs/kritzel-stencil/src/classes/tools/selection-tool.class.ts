@@ -41,7 +41,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         !this._store.state.isResizeHandleSelected &&
         !this._store.state.isRotationHandleSelected
       ) {
-        this._store.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+        this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
       }
     }
 
