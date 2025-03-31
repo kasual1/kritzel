@@ -5,11 +5,14 @@ import { KritzelSelectionGroup } from './objects/selection-group.class';
 import { RemoveSelectionGroupCommand } from './commands/remove-selection-group.command';
 import { KritzelHistory } from './history.class';
 import { KritzelEngineState } from '../interfaces/engine-state.interface';
+import { KritzelOctree } from './structures/octree.structure';
+import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 
-const initialState = {
+const initialState: KritzelEngineState = {
   activeTool: null,
   currentPath: null,
   objects: [],
+  objectsOctree: null,
   selectionBox: null,
   selectionGroup: null,
   resizeHandleType: null,
@@ -35,6 +38,8 @@ const initialState = {
   startY: 0,
   translateX: 0,
   translateY: 0,
+  viewportWidth: window.innerWidth,
+  viewportHeight: window.innerHeight,
   historyBufferSize: 1000,
 };
 export class KritzelStore {
@@ -73,6 +78,14 @@ export class KritzelStore {
   constructor() {
     this._store = createStore<KritzelEngineState>(initialState);
     this._history = new KritzelHistory(this);
+    this._store.state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
+      x: 0,
+      y: 0,
+      z: 0,
+      width: Infinity,
+      height: Infinity,
+      depth: Infinity,
+    });
   }
 
   rerender() {

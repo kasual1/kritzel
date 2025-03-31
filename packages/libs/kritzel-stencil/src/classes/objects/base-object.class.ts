@@ -60,12 +60,14 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     return this._elementRef;
   }
 
-  get boundingBox(): any {
+  get boundingBox(): KritzelBoundingBox {
     return {
       x: this.translateX,
       y: this.translateY,
+      z: this.scale,
       width: this.totalWidth / this.scale,
       height: this.totalHeight / this.scale,
+      depth: 0,
     };
   }
 

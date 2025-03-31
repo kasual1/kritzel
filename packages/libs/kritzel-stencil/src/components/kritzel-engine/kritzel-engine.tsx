@@ -92,6 +92,8 @@ export class KritzelEngine {
             <div>StartY: {this.store.state?.startY}</div>
             <div>TranslateX: {this.store.state?.translateX}</div>
             <div>TranslateY: {this.store.state?.translateY}</div>
+            <div>ViewportWidth: {this.store.state?.viewportWidth}</div>
+            <div>ViewportHeight: {this.store.state?.viewportHeight}</div>
             <div>Scale: {this.store.state?.scale}</div>
             <div>ActiveTool: {this.store.state?.activeTool?.name}</div>
             <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true': 'false'}</div>
