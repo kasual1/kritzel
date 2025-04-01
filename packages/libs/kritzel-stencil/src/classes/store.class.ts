@@ -92,9 +92,9 @@ export class KritzelStore {
     this._store = createStore<KritzelEngineState>(initialState);
     this._history = new KritzelHistory(this);
     this._store.state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
-      x: 0,
-      y: 0,
-      z: 0,
+      x: -Infinity,
+      y: -Infinity,
+      z: -Infinity,
       width: Infinity,
       height: Infinity,
       depth: Infinity,
