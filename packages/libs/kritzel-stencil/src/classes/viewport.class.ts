@@ -1,5 +1,4 @@
 import { KritzelClickHelper } from '../helpers/click.helper';
-import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 import { KritzelStore } from './store.class';
 
 export class KritzelViewport {
@@ -30,18 +29,6 @@ export class KritzelViewport {
       this._store.state.startX = event.clientX;
       this._store.state.startY = event.clientY;
       this._store.state.hasViewportChanged = true;
-
-      const viewportBounds: KritzelBoundingBox = {
-        x: -this._store.state.translateX,
-        y: -this._store.state.translateY,
-        z: 0,
-        width: this._store.state.viewportWidth,
-        height: this._store.state.viewportHeight,
-        depth: 0,
-      };
-
-      const objectsInViewport = this._store.state.objectsOctree.query(viewportBounds);
-      console.log(objectsInViewport);
     }
   }
 

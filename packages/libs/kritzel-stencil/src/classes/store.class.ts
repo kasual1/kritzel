@@ -59,6 +59,19 @@ export class KritzelStore {
     return this.state.objects.length;
   }
 
+  get objectsInViewport() {
+    const viewportBounds: KritzelBoundingBox = {
+      x: -this.state.translateX,
+      y: -this.state.translateY,
+      z: this.state.scale,
+      width: this.state.viewportWidth / this.state.scale,
+      height: this.state.viewportHeight / this.state.scale,
+      depth: 0,
+    };
+    const objectsInViewport = this.state.objectsOctree.query(viewportBounds).filter(o => o.visible === true);
+    return objectsInViewport;
+  }
+
   get selectedObjects() {
     return this.state.objects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
   }
