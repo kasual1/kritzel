@@ -61,12 +61,12 @@ export class KritzelStore {
 
   get objectsInViewport() {
     const viewportBounds: KritzelBoundingBox = {
-      x: -this.state.translateX,
-      y: -this.state.translateY,
+      x: -this.state.translateX / this.state.scale,
+      y: -this.state.translateY / this.state.scale,
       z: this.state.scale,
       width: this.state.viewportWidth / this.state.scale,
       height: this.state.viewportHeight / this.state.scale,
-      depth: 0,
+      depth: 100,
     };
     const objectsInViewport = this.state.objectsOctree.query(viewportBounds).filter(o => o.visible === true);
     return objectsInViewport;
