@@ -11,16 +11,14 @@ export class AddSelectionGroupCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
-    this._store.state.objectsOctree
-      .filter(object => object instanceof KrtizelSelectionBox)
-      .forEach(object => this._store.state.objectsOctree.remove(object));
+    this._store.state.objectsOctree.remove(object => object instanceof KrtizelSelectionBox);
     this._store.state.objectsOctree.insert(this.selectionGroup, this.selectionGroup.boundingBox);
     this._store.state.selectionGroup = this.selectionGroup;
     this._store.rerender();
   }
 
   undo(): void {
-    this._store.state.objectsOctree.remove(this.selectionGroup);
+    this._store.state.objectsOctree.remove(object => object.id === this.selectionGroup.id);
     this._store.state.selectionGroup = null;
     this._store.rerender();
   }

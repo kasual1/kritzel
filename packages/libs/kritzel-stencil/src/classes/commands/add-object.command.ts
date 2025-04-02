@@ -17,7 +17,7 @@ export class AddObjectCommand extends KritzelBaseCommand {
   }
 
   undo(): void {
-    this._store.state.objectsOctree.remove(this.object);
+    this._store.state.objectsOctree.remove(object => object.id === this.object.id);
     this._store.rerender();
   }
 }
