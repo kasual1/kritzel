@@ -11,7 +11,6 @@ import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 const initialState: KritzelEngineState = {
   activeTool: null,
   currentPath: null,
-  objects: [],
   objectsOctree: null,
   selectionBox: null,
   selectionGroup: null,
@@ -56,7 +55,7 @@ export class KritzelStore {
   }
 
   get currentZIndex() {
-    return this.state.objects.length;
+    return this.allObjects.length;
   }
 
   get objectsInViewport() {
@@ -68,20 +67,34 @@ export class KritzelStore {
       height: this.state.viewportHeight / this.state.scale,
       depth: 100,
     };
-    const objectsInViewport = this.state.objectsOctree.query(viewportBounds).filter(o => o.visible === true);
+    const objectsInViewport = this.state.objectsOctree.query(viewportBounds);
+    console.log(this.state.objectsOctree);
     return objectsInViewport;
   }
 
+  get allObjects() {
+    const viewportBounds: KritzelBoundingBox = {
+      x: -Infinity,
+      y: -Infinity,
+      z: -Infinity,
+      width: Infinity,
+      height: Infinity,
+      depth: Infinity,
+    };
+    return this.state.objectsOctree.query(viewportBounds);
+  }
+
+
   get selectedObjects() {
-    return this.state.objects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
+    return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
   }
 
   get unselctedObjects() {
-    return this.state.objects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => !o.selected);
+    return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => !o.selected);
   }
 
   get objectsWithoutSelectionBox() {
-    return this.state.objects.filter(o => !(o instanceof KrtizelSelectionBox));
+    return this.allObjects.filter(o => !(o instanceof KrtizelSelectionBox));
   }
 
   get hasSelectionGroup() {
@@ -102,11 +115,12 @@ export class KritzelStore {
   }
 
   rerender() {
-    this.state.objects = [...this.state.objects];
+    this.state.cursorX++;
+    this.state.cursorX--;
   }
 
   findObjectById(id: string): KritzelBaseObject<any> | null {
-    for (const object of this.state.objects) {
+    for (const object of this.allObjects) {
       if (object.id === id) {
         return object;
       }

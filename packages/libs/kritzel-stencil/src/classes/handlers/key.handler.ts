@@ -127,7 +127,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   }
 
   private handleMoveUp() {
-    const max = this._store.state.objects.length + 1;
+    const max = this._store.allObjects.length + 1;
     const increaseZIndexCommands = this._store.state.selectionGroup.objects.map(obj => {
       if (obj.zIndex === max) {
         return;
@@ -153,7 +153,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   }
 
   private handleMoveToTop() {
-    const max = this._store.state.objects.length + 1;
+    const max = this._store.allObjects.length + 1;
     const increaseZIndexCommands = this._store.state.selectionGroup.objects.map(obj => {
       return new UpdateObjectCommand(this._store, this, obj, { zIndex: max });
     });

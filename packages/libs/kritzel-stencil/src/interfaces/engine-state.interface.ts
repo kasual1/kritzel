@@ -10,7 +10,6 @@ export interface KritzelEngineState {
   activeTool: KritzelTool;
   currentPath?: KritzelPath;
   copiedObjects?: KritzelSelectionGroup;
-  objects: KritzelBaseObject<Element>[];
   objectsOctree: KritzelOctree<KritzelBaseObject<Element>>;
   selectionBox?: KrtizelSelectionBox;
   selectionGroup?: KritzelSelectionGroup;

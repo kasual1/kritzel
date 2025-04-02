@@ -16,6 +16,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   handleMouseDown(event) {
     if (KritzelClickHelper.isLeftClick(event)) {
+      debugger;
 
       if (!this._store.state.selectionGroup?.selected) {
         this.startSelection(event);
@@ -46,7 +47,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   private removeSelectionBox(): void {
     this._store.state.selectionBox = null;
-    this._store.state.objects = [...this._store.state.objects.filter(o => !(o instanceof KrtizelSelectionBox))];
+
+    this._store.state.objectsOctree
+      .filter(o => o instanceof KrtizelSelectionBox)
+      .forEach(o => this._store.state.objectsOctree.remove(o));
   }
 
   private startSelection(event: MouseEvent): void {
@@ -63,10 +67,14 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._store.state.selectionBox = selectionBox;
     this._store.state.isSelecting = true;
 
-    this._store.state.objects = [...this._store.state.objects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox)), selectionBox];
+    this._store.state.objectsOctree
+      .filter(o => o instanceof KritzelSelectionGroup && o instanceof KrtizelSelectionBox)
+      .forEach(o => this._store.state.objectsOctree.remove(o));
+    this._store.state.objectsOctree.insert(selectionBox, selectionBox.boundingBox);
   }
 
   private updateSelection(event: MouseEvent): void {
+    debugger;
     const { clientX, clientY } = event;
     const selectionBox = this._store.state.selectionBox;
     const currentX = (clientX - this._store.state.translateX) / selectionBox.scale;
@@ -85,7 +93,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   private updateSelectedObjects(): void {
-    this._store.state.objects
+    this._store.allObjects
       .filter(o => !(o instanceof KrtizelSelectionBox))
       .forEach(object => {
         const objectPolygon = object.rotatedPolygon;

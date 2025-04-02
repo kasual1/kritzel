@@ -1,6 +1,7 @@
 import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
+import { KritzelBaseObject } from '../objects/base-object.class';
 
-export class KritzelOctree<T> {
+export class KritzelOctree<T extends KritzelBaseObject<any>> {
   private bounds: KritzelBoundingBox;
   private capacity: number;
   private objects: { object: T; bounds: KritzelBoundingBox }[] = [];
@@ -33,6 +34,40 @@ export class KritzelOctree<T> {
 
     return false;
   }
+
+  remove(object: T): boolean {
+    const index = this.objects.findIndex(o => o.object.id === object.id);
+    if (index !== -1) {
+      this.objects.splice(index, 1);
+      return true;
+    }
+  
+    if (this.children !== null) {
+      for (const child of this.children) {
+        if (child.remove(object)) {
+          return true;
+        }
+      }
+    }
+  
+    return false;
+  }
+
+  filter(predicate: (object: T) => boolean): T[] {
+    const results: T[] = [];
+    for (const { object } of this.objects) {
+      if (predicate(object)) {
+        results.push(object);
+      }
+    }
+    if (this.children !== null) {
+      for (const child of this.children) {
+        results.push(...child.filter(predicate));
+      }
+    }
+    return results;
+  }
+  
 
   query(range: KritzelBoundingBox): T[] {
     const results: T[] = [];
