@@ -12,17 +12,16 @@ export class RemoveSelectionGroupCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
-    this._store.state.objects = this._store.state.objects.filter(object => !(object instanceof KritzelSelectionGroup));
+    this._store.state.objectsOctree.remove(this.previousSelectionGroup);
     this._store.state.selectionGroup = null;
+    this._store.rerender();
   }
 
   undo(): void {
     if(this.previousSelectionGroup) {
-      this._store.state.objects = [...this._store.state.objects, this.previousSelectionGroup];
+      this._store.state.objectsOctree.insert(this.previousSelectionGroup, this.previousSelectionGroup.boundingBox);
       this._store.state.selectionGroup = this.previousSelectionGroup;
-    } else {
-      this._store.state.objects = [...this._store.state.objects];
-    }
-
+    } 
+    this._store.rerender();
   }
 }

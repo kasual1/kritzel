@@ -24,7 +24,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
         const selectedObject = path.find(element => element.classList && element.classList.contains('object'));
 
         if (selectedObject) {
-          for (const object of this._store.state.objects) {
+          for (const object of this._store.allObjects) {
             if (selectedObject.id === object.id) {
               object.markedForRemoval = true;
             }
@@ -38,7 +38,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handleMouseUp(_event: MouseEvent): void {
     if(this._store.state.isErasing) {
 
-      const removeCommands = this._store.state.objects
+      const removeCommands = this._store.allObjects
         .filter(object => object.markedForRemoval)
         .map(object => {
           object.markedForRemoval = false;
