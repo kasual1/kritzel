@@ -47,10 +47,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   private removeSelectionBox(): void {
     this._store.state.selectionBox = null;
-
-    this._store.state.objectsOctree
-      .filter(o => o instanceof KrtizelSelectionBox)
-      .forEach(o => this._store.state.objectsOctree.remove(o));
+    this._store.state.objectsOctree.remove(o => o instanceof KrtizelSelectionBox);
   }
 
   private startSelection(event: MouseEvent): void {
@@ -67,9 +64,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._store.state.selectionBox = selectionBox;
     this._store.state.isSelecting = true;
 
-    this._store.state.objectsOctree
-      .filter(o => o instanceof KritzelSelectionGroup && o instanceof KrtizelSelectionBox)
-      .forEach(o => this._store.state.objectsOctree.remove(o));
+
+    this._store.state.objectsOctree.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
     this._store.state.objectsOctree.insert(selectionBox, selectionBox.boundingBox);
   }
 

@@ -68,7 +68,6 @@ export class KritzelStore {
       depth: 100,
     };
     const objectsInViewport = this.state.objectsOctree.query(viewportBounds);
-    console.log(this.state.objectsOctree);
     return objectsInViewport;
   }
 

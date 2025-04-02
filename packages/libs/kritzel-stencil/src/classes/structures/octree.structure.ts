@@ -35,39 +35,19 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     return false;
   }
 
-  remove(object: T): boolean {
-    const index = this.objects.findIndex(o => o.object.id === object.id);
+  remove(predicate: (object: T) => boolean): void {
+    const index = this.objects.findIndex(o => predicate(o.object));
     if (index !== -1) {
       this.objects.splice(index, 1);
-      return true;
     }
-  
-    if (this.children !== null) {
-      for (const child of this.children) {
-        if (child.remove(object)) {
-          return true;
-        }
-      }
-    }
-  
-    return false;
-  }
 
-  filter(predicate: (object: T) => boolean): T[] {
-    const results: T[] = [];
-    for (const { object } of this.objects) {
-      if (predicate(object)) {
-        results.push(object);
-      }
-    }
     if (this.children !== null) {
       for (const child of this.children) {
-        results.push(...child.filter(predicate));
+        child.remove(predicate);
       }
     }
-    return results;
+
   }
-  
 
   query(range: KritzelBoundingBox): T[] {
     const results: T[] = [];
@@ -109,7 +89,7 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     ];
   }
 
-  intersects(a: KritzelBoundingBox, b: KritzelBoundingBox): boolean {
+  private intersects(a: KritzelBoundingBox, b: KritzelBoundingBox): boolean {
     return !(
       a.x >= b.x + b.width || // a is completely to the right of b
       a.x + a.width <= b.x || // a is completely to the left of b
