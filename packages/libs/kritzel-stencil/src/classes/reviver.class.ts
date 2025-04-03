@@ -29,7 +29,7 @@ export class KritzelReviver {
             revivedObj = new KritzelText(this._store).revive(obj);
             break;
           case 'KritzelImage':
-            revivedObj = new KritzelImage(this._store).revive(obj);
+            revivedObj = new KritzelImage(this._store, obj.img).revive(obj);
             break;
           case 'KritzelSelectionGroup':
             revivedObj = new KritzelSelectionGroup(this._store).revive(obj);
