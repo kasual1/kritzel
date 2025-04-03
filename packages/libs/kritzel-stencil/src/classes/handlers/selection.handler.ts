@@ -16,7 +16,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   handleMouseDown(event) {
     if (KritzelClickHelper.isLeftClick(event)) {
-      debugger;
 
       if (!this._store.state.selectionGroup?.selected) {
         this.startSelection(event);
@@ -70,7 +69,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   private updateSelection(event: MouseEvent): void {
-    debugger;
     const { clientX, clientY } = event;
     const selectionBox = this._store.state.selectionBox;
     const currentX = (clientX - this._store.state.translateX) / selectionBox.scale;
