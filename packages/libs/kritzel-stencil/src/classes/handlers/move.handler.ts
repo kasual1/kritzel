@@ -57,7 +57,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
   private stopDragging(): void {
     this._store.state.isDragging = false;
-
     this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
   }
 }
