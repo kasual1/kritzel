@@ -105,6 +105,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const selectionGroup = new KritzelSelectionGroup(this._store);
     selectionGroup.objects = this.objects.map(obj => obj.copy());
     selectionGroup.unchangedObjects = ObjectHelper.clone(selectionGroup.objects);
+    selectionGroup.rotation = this.rotation;
     selectionGroup.updateBoundingBox();
     return selectionGroup;
   }
