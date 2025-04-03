@@ -35,6 +35,23 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     return false;
   }
 
+  update(object: T, bounds: KritzelBoundingBox): boolean {
+    const index = this.objects.findIndex(o => o.object.id === object.id);
+    if (index !== -1) {
+      this.objects[index].object = object;
+      this.objects[index].bounds = bounds;
+      return true;
+    }
+    if (this.children !== null) {
+      for (const child of this.children) {
+        if (child.update(object, bounds)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   remove(predicate: (object: T) => boolean): void {
     const index = this.objects.findIndex(o => predicate(o.object));
     if (index !== -1) {
@@ -46,7 +63,6 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
         child.remove(predicate);
       }
     }
-
   }
 
   query(range: KritzelBoundingBox): T[] {
