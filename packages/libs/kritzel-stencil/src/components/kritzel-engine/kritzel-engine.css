@@ -1,4 +1,4 @@
-:host{
+:host {
   display: block;
   position: relative;
   height: 100vh;
@@ -6,13 +6,13 @@
   overflow: hidden;
 }
 
-.debug-panel{
+.debug-panel {
   position: absolute;
   top: 0;
   right: 0;
 }
 
-.origin{
+.origin {
   position: relative;
   top: 0;
   left: 0;
@@ -24,9 +24,31 @@
   overflow: visible;
 }
 
-svg {
+.object {
   -webkit-transform-origin: top left;
   -moz-transform-origin: top left;
   transform-origin: top left;
   overflow: visible;
+}
+
+textarea {
+  all: unset;
+  box-sizing: border-box;
+  outline: none !important;
+  border: none !important;
+  overflow: visible;
+}
+
+.selection-handle.top-left,
+.selection-handle.bottom-right {
+  cursor: nwse-resize;
+}
+
+.selection-handle.top-right,
+.selection-handle.bottom-left {
+  cursor: nesw-resize;
+}
+
+.rotation-handle {
+  cursor: grab;
 }

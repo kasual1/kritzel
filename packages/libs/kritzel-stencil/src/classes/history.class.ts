@@ -1,66 +1,83 @@
-import { KritzelClickHelper } from '../helpers/click.helper';
-import { kritzelEngineState, setKritzelEngineState } from '../stores/engine.store';
-import { cloneDeep } from 'lodash-es';
-import { kritzelViewportState, setKritzelViewportState } from '../stores/viewport.store';
-import { KritzelSnapshot } from '../interfaces/snapshot.interface';
+import { KritzelBaseCommand } from './commands/base.command';
+import { UpdateViewportCommand } from './commands/update-viewport.command';
+import { KritzelStore } from './store.class';
+import { KritzelCircularBuffer } from './structures/circular-buffer.structure';
 
 export class KritzelHistory {
-  snapshots: KritzelSnapshot[];
+  private readonly _store: KritzelStore;
 
-  currentStateIndex: number;
+  undoStack: KritzelCircularBuffer<KritzelBaseCommand>;
+  redoStack: KritzelCircularBuffer<KritzelBaseCommand>;
 
-  constructor() {
-    this.snapshots = [];
-    this.currentStateIndex = -1;
-    this.pushSnapshot({
-      viewport: cloneDeep(kritzelViewportState),
-      engine: cloneDeep(kritzelEngineState),
-    });
+  previousViewport: {
+    scale: number;
+    scaleStep: number;
+    translateX: number;
+    translateY: number;
+  };
+
+  constructor(store: KritzelStore) {
+    this._store = store;
+    this.undoStack = new KritzelCircularBuffer<KritzelBaseCommand>(this._store.state.historyBufferSize);
+    this.redoStack = new KritzelCircularBuffer<KritzelBaseCommand>(this._store.state.historyBufferSize);
+    this.previousViewport = {
+      scale: this._store.state.scale,
+      scaleStep: this._store.state.scaleStep,
+      translateX: this._store.state.translateX,
+      translateY: this._store.state.translateY,
+    };
   }
 
-  handleMouseUp(event: MouseEvent) {
-    if (KritzelClickHelper.isLeftClick(event)) {
-      this.pushSnapshot({
-        viewport: cloneDeep(kritzelViewportState),
-        engine: cloneDeep(kritzelEngineState),
-      });
+  executeCommand(command: KritzelBaseCommand) {
+    if (this._store.state.hasViewportChanged) {
+      const command = new UpdateViewportCommand(this._store, this, this.previousViewport);
+      command.execute();
+      this.undoStack.add(command);
+
+      if(this.redoStack.isEmpty() === false) {
+        this.redoStack.clear();
+      }
+
+      this._store.state.hasViewportChanged = false;
+      this.previousViewport = {
+        scale: this._store.state.scale,
+        scaleStep: this._store.state.scaleStep,
+        translateX: this._store.state.translateX,
+        translateY: this._store.state.translateY,
+      };
+    }
+
+    command.execute();
+    if(this._store.state.showDebugInfo) console.info('add', command);
+    this.undoStack.add(command);
+
+    if(this.redoStack.isEmpty() === false) {
+      this.redoStack.clear();
     }
   }
 
   undo() {
-    if (this.currentStateIndex > 0) {
-      this.currentStateIndex--;
-      this.recreateStateFromSnapshot(this.snapshots[this.currentStateIndex]);
+    if (this._store.state.hasViewportChanged) {
+      const command = new UpdateViewportCommand(this._store, this, this.previousViewport);
+      command.undo();
+      this._store.state.hasViewportChanged = false;
+      return;
+    }
+
+    const command = this.undoStack.pop();
+    if (command) {
+      command.undo();
+      if(this._store.state.showDebugInfo) console.info('undo', command);
+      this.redoStack.add(command);
     }
   }
 
   redo() {
-    if (this.currentStateIndex < this.snapshots.length - 1) {
-      this.currentStateIndex++;
-      this.recreateStateFromSnapshot(this.snapshots[this.currentStateIndex]);
-    }
-  }
-
-  private pushSnapshot(snapshot: KritzelSnapshot) {
-    if (this.currentStateIndex < this.snapshots.length - 1) {
-      this.snapshots = this.snapshots.slice(0, this.currentStateIndex + 1);
-    }
-
-    this.snapshots.push(snapshot);
-    this.currentStateIndex++;
-  }
-
-  private recreateStateFromSnapshot(snapshot: KritzelSnapshot) {
-    snapshot = cloneDeep(snapshot);
-
-    for (const key in snapshot.viewport) {
-      const value = snapshot.viewport[key];
-      setKritzelViewportState(key as any, value);
-    }
-
-    for (const key in snapshot.engine) {
-      const value = snapshot.engine[key];
-      setKritzelEngineState(key as any, value);
+    const command = this.redoStack.pop();
+    if (command) {
+      command.execute();
+      if(this._store.state.showDebugInfo) console.info('redo', command);
+      this.undoStack.add(command);
     }
   }
 }
