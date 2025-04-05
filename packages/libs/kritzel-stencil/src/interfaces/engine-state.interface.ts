@@ -4,6 +4,7 @@ import { KrtizelSelectionBox } from "../classes/objects/selection-box.class";
 import { KritzelSelectionGroup } from "../classes/objects/selection-group.class";
 import { KritzelOctree } from "../classes/structures/octree.structure";
 import { KritzelHandleType } from "../enums/handle-type.enum";
+import { KritzelDebugInfo } from "./debug-info.interface";
 import { KritzelTool } from "./tool.interface";
 
 export interface KritzelEngineState {
@@ -24,7 +25,7 @@ export interface KritzelEngineState {
   isErasing: boolean;
   isCtrlKeyPressed: boolean;
   hasViewportChanged: boolean;
-  showDebugInfo: boolean;
+  debugInfo: KritzelDebugInfo;
   host: HTMLElement;
   cursorX: number;
   cursorY: number;

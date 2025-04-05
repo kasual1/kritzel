@@ -29,6 +29,7 @@ export class KritzelViewport {
       this._store.state.startX = event.clientX;
       this._store.state.startY = event.clientY;
       this._store.state.hasViewportChanged = true;
+      this._store.rerender();
     }
   }
 
@@ -58,5 +59,6 @@ export class KritzelViewport {
     this._store.state.translateY -= translateYAdjustment;
 
     this._store.state.hasViewportChanged = true;
+    this._store.rerender();
   }
 }

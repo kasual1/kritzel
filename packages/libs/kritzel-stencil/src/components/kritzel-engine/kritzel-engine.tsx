@@ -86,7 +86,7 @@ export class KritzelEngine {
   render() {
     return (
       <Host>
-        {this.store.state.showDebugInfo && (
+        {this.store.state.debugInfo.showViewportInfo && (
           <div class="debug-panel">
             <div>StartX: {this.store.state?.startX}</div>
             <div>StartY: {this.store.state?.startY}</div>
@@ -296,7 +296,7 @@ export class KritzelEngine {
                   />
                 </g>
 
-                <g style={{display: this.store.state.showDebugInfo ? 'block' : 'none'}}>
+                <g style={{display: this.store.state.debugInfo.showObjectInfo ? 'block' : 'none'}}>
                   <foreignObject
                     x={object.totalWidth.toString()}
                     y="0"

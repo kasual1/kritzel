@@ -48,7 +48,7 @@ export class KritzelHistory {
     }
 
     command.execute();
-    if(this._store.state.showDebugInfo) console.info('add', command);
+    if(this._store.state.debugInfo.logCommands) console.info('add', command);
     this.undoStack.add(command);
 
     if(this.redoStack.isEmpty() === false) {
@@ -67,7 +67,7 @@ export class KritzelHistory {
     const command = this.undoStack.pop();
     if (command) {
       command.undo();
-      if(this._store.state.showDebugInfo) console.info('undo', command);
+      if(this._store.state.debugInfo.logCommands) console.info('undo', command);
       this.redoStack.add(command);
     }
   }
@@ -76,7 +76,7 @@ export class KritzelHistory {
     const command = this.redoStack.pop();
     if (command) {
       command.execute();
-      if(this._store.state.showDebugInfo) console.info('redo', command);
+      if(this._store.state.debugInfo.logCommands) console.info('redo', command);
       this.undoStack.add(command);
     }
   }

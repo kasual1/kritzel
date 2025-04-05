@@ -1,6 +1,5 @@
 import { createStore } from '@stencil/store';
 import { KritzelBaseObject } from './objects/base-object.class';
-import { KrtizelSelectionBox } from './objects/selection-box.class';
 import { KritzelSelectionGroup } from './objects/selection-group.class';
 import { RemoveSelectionGroupCommand } from './commands/remove-selection-group.command';
 import { KritzelHistory } from './history.class';
@@ -25,7 +24,11 @@ const initialState: KritzelEngineState = {
   isErasing: false,
   isCtrlKeyPressed: false,
   hasViewportChanged: false,
-  showDebugInfo: true,
+  debugInfo: {
+    showObjectInfo: false,
+    showViewportInfo: true,
+    logCommands: false,
+  },
   host: null,
   cursorX: 0,
   cursorY: 0,
@@ -46,6 +49,8 @@ export class KritzelStore {
 
   private readonly _history: KritzelHistory;
 
+  objectsCache?: KritzelBaseObject<Element>[] = [];
+
   get history(): KritzelHistory {
     return this._history;
   }
@@ -59,6 +64,11 @@ export class KritzelStore {
   }
 
   get objectsInViewport() {
+
+    if (this.objectsCache !== null) {
+      return this.objectsCache;
+    }
+
     const viewportBounds: KritzelBoundingBox = {
       x: -this.state.translateX / this.state.scale,
       y: -this.state.translateY / this.state.scale,
@@ -67,37 +77,18 @@ export class KritzelStore {
       height: this.state.viewportHeight / this.state.scale,
       depth: 100,
     };
-    const objectsInViewport = this.state.objectsOctree.query(viewportBounds);
-    return objectsInViewport;
+
+    this.objectsCache = this.state.objectsOctree.query(viewportBounds);
+    return this.objectsCache;
   }
 
   get allObjects() {
-    const viewportBounds: KritzelBoundingBox = {
-      x: -Infinity,
-      y: -Infinity,
-      z: -Infinity,
-      width: Infinity,
-      height: Infinity,
-      depth: Infinity,
-    };
-    return this.state.objectsOctree.query(viewportBounds);
+    return this.state.objectsOctree.allObjects();
   }
 
 
   get selectedObjects() {
     return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
-  }
-
-  get unselctedObjects() {
-    return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => !o.selected);
-  }
-
-  get objectsWithoutSelectionBox() {
-    return this.allObjects.filter(o => !(o instanceof KrtizelSelectionBox));
-  }
-
-  get hasSelectionGroup() {
-    return this.state.selectionGroup !== null;
   }
 
   constructor() {
@@ -114,6 +105,7 @@ export class KritzelStore {
   }
 
   rerender() {
+    this.objectsCache = null;
     this.state.cursorX++;
     this.state.cursorX--;
   }
