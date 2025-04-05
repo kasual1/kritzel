@@ -87,6 +87,16 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     return results;
   }
 
+  allObjects(): T[] {
+    const results: T[] = [...this.objects.map(o => o.object)];
+    if (this.children !== null) {
+      for (const child of this.children) {
+        results.push(...child.allObjects());
+      }
+    }
+    return results;
+  }
+
   private subdivide(): void {
     const { x, y, z, width, height, depth } = this.bounds;
     const halfWidth = width / 2;
@@ -107,10 +117,12 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
 
   private intersects(a: KritzelBoundingBox, b: KritzelBoundingBox): boolean {
     return !(
-      a.x >= b.x + b.width || // a is completely to the right of b
-      a.x + a.width <= b.x || // a is completely to the left of b
-      a.y >= b.y + b.height || // a is completely below b
-      a.y + a.height <= b.y    // a is completely above b
-  );
+      (
+        a.x >= b.x + b.width || // a is completely to the right of b
+        a.x + a.width <= b.x || // a is completely to the left of b
+        a.y >= b.y + b.height || // a is completely below b
+        a.y + a.height <= b.y
+      ) // a is completely above b
+    );
   }
 }
