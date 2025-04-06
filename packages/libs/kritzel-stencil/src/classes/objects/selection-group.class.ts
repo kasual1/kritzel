@@ -103,13 +103,22 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
   override copy(): KritzelBaseObject<HTMLElement> {
     const selectionGroup = new KritzelSelectionGroup(this._store);
-    this.objects.forEach(obj => selectionGroup.addOrRemove(obj.copy() as KritzelBaseObject<any>));
+
+    let currentZIndex = this._store.currentZIndex;
+
+    this.objects.forEach(obj => {
+      const copiedObject = obj.copy() as KritzelBaseObject<any>;
+      copiedObject.zIndex = currentZIndex;
+      selectionGroup.addOrRemove(copiedObject);
+      currentZIndex++;
+    });
+
     selectionGroup.unchangedObjects = ObjectHelper.clone(selectionGroup.objects);
 
     if(this.objects.length === 1) {
       selectionGroup.rotation = this.objects[0].rotation;
     }
-    
+
     return selectionGroup;
   }
 

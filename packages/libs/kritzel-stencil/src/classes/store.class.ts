@@ -6,6 +6,7 @@ import { KritzelHistory } from './history.class';
 import { KritzelEngineState } from '../interfaces/engine-state.interface';
 import { KritzelOctree } from './structures/octree.structure';
 import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
+import { KrtizelSelectionBox } from './objects/selection-box.class';
 
 const initialState: KritzelEngineState = {
   activeTool: null,
@@ -25,8 +26,8 @@ const initialState: KritzelEngineState = {
   isCtrlKeyPressed: false,
   hasViewportChanged: false,
   debugInfo: {
-    showObjectInfo: false,
-    showViewportInfo: true,
+    showObjectInfo: true,
+    showViewportInfo: false,
     logCommands: false,
   },
   host: null,
@@ -60,7 +61,7 @@ export class KritzelStore {
   }
 
   get currentZIndex() {
-    return this.allObjects.length;
+    return this.state.objectsOctree.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox)).length;
   }
 
   get allObjects() {
