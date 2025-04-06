@@ -6,6 +6,8 @@ import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { BatchCommand } from '../commands/batch.command';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
+import imageCompression from "browser-image-compression";
+
 
 export class KritzelImageTool extends KritzelBaseTool {
   name: string = 'image';
@@ -15,6 +17,8 @@ export class KritzelImageTool extends KritzelBaseTool {
 
   maxWidth: number = 300;
   maxHeight: number = 300;
+
+  maxCompressionSize: number = 300;
 
   constructor(store: KritzelStore) {
     super(store);
@@ -40,7 +44,11 @@ export class KritzelImageTool extends KritzelBaseTool {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
-      this.readFile(file);
+      imageCompression(file, {
+         maxWidthOrHeight: this.maxCompressionSize
+      }).then((compressedFile) => {
+        this.readFile(compressedFile);
+      });
     }
   }
 
