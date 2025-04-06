@@ -14,7 +14,6 @@ export class RemoveSelectionGroupCommand extends KritzelBaseCommand {
   execute(): void {
     this._store.state.objectsOctree.remove(object => object.id === this.previousSelectionGroup.id);
     this._store.state.selectionGroup = null;
-    this._store.rerender();
   }
 
   undo(): void {
@@ -22,6 +21,5 @@ export class RemoveSelectionGroupCommand extends KritzelBaseCommand {
       this._store.state.objectsOctree.insert(this.previousSelectionGroup, this.previousSelectionGroup.boundingBox);
       this._store.state.selectionGroup = this.previousSelectionGroup;
     } 
-    this._store.rerender();
   }
 }

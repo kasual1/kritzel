@@ -12,11 +12,9 @@ export class RemoveObjectCommand extends KritzelBaseCommand {
 
   execute(): void {
     this._store.state.objectsOctree.remove(object => object.id === this.object.id);
-    this._store.rerender();
   }
 
   undo(): void {
     this._store.state.objectsOctree.insert(this.object, this.object.boundingBox);
-    this._store.rerender();
   }
 }
