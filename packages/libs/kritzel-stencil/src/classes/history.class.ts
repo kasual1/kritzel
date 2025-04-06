@@ -34,7 +34,7 @@ export class KritzelHistory {
       command.execute();
       this.undoStack.add(command);
 
-      if(this.redoStack.isEmpty() === false) {
+      if (this.redoStack.isEmpty() === false) {
         this.redoStack.clear();
       }
 
@@ -48,10 +48,10 @@ export class KritzelHistory {
     }
 
     command.execute();
-    if(this._store.state.debugInfo.logCommands) console.info('add', command);
+    if (this._store.state.debugInfo.logCommands) console.info('add', command);
     this.undoStack.add(command);
 
-    if(this.redoStack.isEmpty() === false) {
+    if (this.redoStack.isEmpty() === false) {
       this.redoStack.clear();
     }
 
@@ -63,13 +63,14 @@ export class KritzelHistory {
       const command = new UpdateViewportCommand(this._store, this, this.previousViewport);
       command.undo();
       this._store.state.hasViewportChanged = false;
+      this._store.rerender();
       return;
     }
 
     const command = this.undoStack.pop();
     if (command) {
       command.undo();
-      if(this._store.state.debugInfo.logCommands) console.info('undo', command);
+      if (this._store.state.debugInfo.logCommands) console.info('undo', command);
       this.redoStack.add(command);
     }
 
@@ -80,7 +81,7 @@ export class KritzelHistory {
     const command = this.redoStack.pop();
     if (command) {
       command.execute();
-      if(this._store.state.debugInfo.logCommands) console.info('redo', command);
+      if (this._store.state.debugInfo.logCommands) console.info('redo', command);
       this.undoStack.add(command);
     }
 
