@@ -41,13 +41,6 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       this._store.history.redo();
     }
 
-    if (event.key === 'd' && event.ctrlKey) {
-      this._store.state.debugInfo.showViewportInfo = !this._store.state.debugInfo.showViewportInfo;
-      this._store.state.debugInfo.showObjectInfo = !this._store.state.debugInfo.showObjectInfo;
-      this._store.state.debugInfo.logCommands = !this._store.state.debugInfo.logCommands;
-      this._store.rerender();
-    }
-
     if (event.key === 's' && event.ctrlKey) {
       this._store.state.activeTool = new KritzelSelectionTool(this._store);
       this._store.deselectAllObjects();
