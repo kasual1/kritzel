@@ -86,8 +86,7 @@ export class KritzelEngine {
   render() {
     return (
       <Host>
-        {this.store.state.debugInfo.showViewportInfo && (
-          <div class="debug-panel">
+          <div class="debug-panel" style={{display: this.store.state.debugInfo.showViewportInfo ? 'block' : 'none'}}>
             <div>StartX: {this.store.state?.startX}</div>
             <div>StartY: {this.store.state?.startY}</div>
             <div>TranslateX: {this.store.state?.translateX}</div>
@@ -105,7 +104,6 @@ export class KritzelEngine {
             <div>CursorX: {this.store.state?.cursorX}</div>
             <div>CursorY: {this.store.state?.cursorY}</div>
           </div>
-        )}
 
         <div
           class="origin"
@@ -306,6 +304,7 @@ export class KritzelEngine {
                   >
 
                     <div style={{ width: '100%', height: '100%'}}>
+                      <div style={{ whiteSpace: 'nowrap'}}>zIndex: {object.zIndex}</div>
                       <div style={{ whiteSpace: 'nowrap'}}>translateX: {object.translateX}</div>
                       <div style={{ whiteSpace: 'nowrap'}}>translateY: {object.translateY}</div>
                       <div style={{ whiteSpace: 'nowrap'}}>width: {object.width}</div>

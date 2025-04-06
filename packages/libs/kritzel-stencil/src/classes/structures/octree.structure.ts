@@ -87,6 +87,16 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     return results;
   }
 
+  filter(predicate: (object: T) => boolean): T[] {
+    const results: T[] = this.objects.filter(o => predicate(o.object)).map(o => o.object);
+    if (this.children !== null) {
+      for (const child of this.children) {
+        results.push(...child.filter(predicate));
+      }
+    }
+    return results;
+  }
+
   allObjects(): T[] {
     const results: T[] = [...this.objects.map(o => o.object)];
     if (this.children !== null) {
