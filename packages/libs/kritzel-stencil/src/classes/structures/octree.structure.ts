@@ -121,8 +121,8 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
         a.x >= b.x + b.width || // a is completely to the right of b
         a.x + a.width <= b.x || // a is completely to the left of b
         a.y >= b.y + b.height || // a is completely below b
-        a.y + a.height <= b.y
-      ) // a is completely above b
+        a.y + a.height <= b.y // a is completely above b
+      ) 
     );
   }
 }
