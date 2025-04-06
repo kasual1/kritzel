@@ -54,6 +54,8 @@ export class KritzelHistory {
     if(this.redoStack.isEmpty() === false) {
       this.redoStack.clear();
     }
+
+    this._store.rerender();
   }
 
   undo() {
@@ -70,6 +72,8 @@ export class KritzelHistory {
       if(this._store.state.debugInfo.logCommands) console.info('undo', command);
       this.redoStack.add(command);
     }
+
+    this._store.rerender();
   }
 
   redo() {
@@ -79,5 +83,7 @@ export class KritzelHistory {
       if(this._store.state.debugInfo.logCommands) console.info('redo', command);
       this.undoStack.add(command);
     }
+
+    this._store.rerender();
   }
 }

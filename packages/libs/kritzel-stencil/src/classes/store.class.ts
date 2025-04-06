@@ -49,7 +49,7 @@ export class KritzelStore {
 
   private readonly _history: KritzelHistory;
 
-  objectsCache?: KritzelBaseObject<Element>[] = [];
+  objectsInViewport: KritzelBaseObject<any>[] = [];
 
   get history(): KritzelHistory {
     return this._history;
@@ -63,29 +63,9 @@ export class KritzelStore {
     return this.allObjects.length;
   }
 
-  get objectsInViewport() {
-
-    if (this.objectsCache !== null) {
-      return this.objectsCache;
-    }
-
-    const viewportBounds: KritzelBoundingBox = {
-      x: -this.state.translateX / this.state.scale,
-      y: -this.state.translateY / this.state.scale,
-      z: this.state.scale,
-      width: this.state.viewportWidth / this.state.scale,
-      height: this.state.viewportHeight / this.state.scale,
-      depth: 100,
-    };
-
-    this.objectsCache = this.state.objectsOctree.query(viewportBounds);
-    return this.objectsCache;
-  }
-
   get allObjects() {
     return this.state.objectsOctree.allObjects();
   }
-
 
   get selectedObjects() {
     return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
@@ -105,7 +85,16 @@ export class KritzelStore {
   }
 
   rerender() {
-    this.objectsCache = null;
+    const viewportBounds: KritzelBoundingBox = {
+      x: -this.state.translateX / this.state.scale,
+      y: -this.state.translateY / this.state.scale,
+      z: this.state.scale,
+      width: this.state.viewportWidth / this.state.scale,
+      height: this.state.viewportHeight / this.state.scale,
+      depth: 100,
+    };
+
+    this.objectsInViewport = this.state.objectsOctree.query(viewportBounds);
     this.state.cursorX++;
     this.state.cursorX--;
   }
