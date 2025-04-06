@@ -47,6 +47,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   private removeSelectionBox(): void {
     this._store.state.selectionBox = null;
     this._store.state.objectsOctree.remove(o => o instanceof KrtizelSelectionBox);
+    this._store.rerender();
   }
 
   private startSelection(event: MouseEvent): void {
