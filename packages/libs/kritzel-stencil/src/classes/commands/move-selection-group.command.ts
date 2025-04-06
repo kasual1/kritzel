@@ -32,12 +32,10 @@ export class MoveSelectionGroupCommand extends KritzelBaseCommand {
     
     this._store.state.selectionGroup = this.selectionGroup;
     this._store.state.selectionGroup.move(this.startX, this.startY, this.endX, this.endY);
-    this._store.rerender();
   }
 
   undo(): void {
     this._store.state.selectionGroup = this.selectionGroup;
     this._store.state.selectionGroup.move(this.endX, this.endY, this.startX, this.startY);
-    this._store.rerender();
   }
 }

@@ -19,13 +19,10 @@ export class RotateSelectionGroupCommand extends KritzelBaseCommand {
   execute(): void {
     this._store.state.selectionGroup = this.selectionGroup;
     this._store.state.selectionGroup.rotate(this.rotation);
-    this._store.rerender();
-    
   }
 
   undo(): void {
     this._store.state.selectionGroup = this.selectionGroup;
     this._store.state.selectionGroup.rotate(this.rotation - this.initialRotation);
-    this._store.rerender();
   }
 }

@@ -31,8 +31,6 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
         this.object[key] = this.updatedProperties[key];
       }
     }
-
-    this._store.rerender();
   }
 
   undo(): void {
@@ -41,7 +39,5 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
         this.object[key] = this.previousProperties[key];
       }
     }
-
-    this._store.rerender();
   }
 }
