@@ -125,6 +125,7 @@ export class KritzelEngine {
                   position: 'absolute',
                   transform: object?.transformationMatrix,
                   opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
+                  pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                   zIndex: object.zIndex.toString(),
                 }}
               >
