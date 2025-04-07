@@ -10,6 +10,14 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   selectionStartX: number;
   selectionStartY: number;
 
+  get isSelectionClick() {
+    return this._store.state.selectionBox && this._store.state.selectionBox.width === 0 && this._store.state.selectionBox.height === 0;
+  }
+
+  get isSelectionDrag() {
+    return this._store.state.selectionBox && (this._store.state.selectionBox.width > 0 || this._store.state.selectionBox.height > 0);
+  }
+
   constructor(store: KritzelStore) {
     super(store);
   }
@@ -27,16 +35,27 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   handleMouseUp(event) {
-    if (this._store.state.isSelecting) {
-      this.updateSelection(event);
-      this.stopSelection();
-      this.addSelectedObjectsToSelectionGroup();
-      this.removeSelectionBox();
+    if (KritzelClickHelper.isLeftClick(event) && this._store.state.isSelecting) {
+
+      if (this.isSelectionClick) {
+        console.log('Click');
+        this.updateSelection(event);
+        this.addSelectedObjectAtIndexToSelectionGroup(0);
+        this.removeSelectionBox();
+      }
+
+      if (this.isSelectionDrag) {
+        console.log('Drag');
+        this.updateSelection(event);
+        this.addSelectedObjectsToSelectionGroup();
+        this.removeSelectionBox();
+      }
     }
   }
 
   private removeSelectionBox(): void {
     this._store.state.selectionBox = null;
+    this._store.state.isSelecting = false;
     this._store.state.objectsOctree.remove(o => o instanceof KrtizelSelectionBox);
     this._store.rerender();
   }
@@ -55,7 +74,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._store.state.selectionBox = selectionBox;
     this._store.state.isSelecting = true;
 
-
     this._store.state.objectsOctree.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
     this._store.state.objectsOctree.insert(selectionBox, selectionBox.boundingBox);
   }
@@ -63,19 +81,20 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   private updateSelection(event: MouseEvent): void {
     const { clientX, clientY } = event;
     const selectionBox = this._store.state.selectionBox;
-    const currentX = (clientX - this._store.state.translateX) / selectionBox.scale;
-    const currentY = (clientY - this._store.state.translateY) / selectionBox.scale;
 
     if (selectionBox) {
+      const currentX = (clientX - this._store.state.translateX) / selectionBox.scale;
+      const currentY = (clientY - this._store.state.translateY) / selectionBox.scale;
+
       selectionBox.width = Math.abs(currentX - this.selectionStartX) * selectionBox.scale;
       selectionBox.height = Math.abs(currentY - this.selectionStartY) * selectionBox.scale;
       selectionBox.translateX = Math.min(currentX, this.selectionStartX);
       selectionBox.translateY = Math.min(currentY, this.selectionStartY);
+
+      this.updateSelectedObjects();
+
+      this._store.rerender();
     }
-
-    this.updateSelectedObjects();
-
-    this._store.rerender();
   }
 
   private updateSelectedObjects(): void {
@@ -89,27 +108,46 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       });
   }
 
-  private stopSelection(): void {
-    this._store.state.selectionBox = null;
-    this._store.state.isSelecting = false;
+  private addSelectedObjectAtIndexToSelectionGroup(index: number): void {
+    const selectedObjects = this._store.selectedObjects.sort((a, b) => b.zIndex - a.zIndex);
+    const selectedObject = selectedObjects[index];
+
+    if (!selectedObject) {
+      return;
+    }
+
+    selectedObjects.forEach(o => {
+      if (o !== selectedObject) {
+        o.selected = false;
+      }
+    });
+
+    this._store.state.selectionGroup = new KritzelSelectionGroup(this._store);
+    this._store.state.selectionGroup.addOrRemove(selectedObject);
+    this._store.state.selectionGroup.selected = true;
+    this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
+
+    this._store.history.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
   }
 
   private addSelectedObjectsToSelectionGroup(): void {
     const selectedObjects = this._store.selectedObjects;
 
-    if (selectedObjects.length > 0) {
-      this._store.state.selectionGroup = new KritzelSelectionGroup(this._store);
-      selectedObjects.forEach(o => {
-        o.selected = false;
-        this._store.state.selectionGroup.addOrRemove(o);
-      });
-      this._store.state.selectionGroup.selected = true;
-
-      if (this._store.state.selectionGroup.length === 1) {
-        this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
-      }
-
-      this._store.history.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
+    if (selectedObjects.length === 0) {
+      return;
     }
+
+    this._store.state.selectionGroup = new KritzelSelectionGroup(this._store);
+    selectedObjects.forEach(o => {
+      o.selected = false;
+      this._store.state.selectionGroup.addOrRemove(o);
+    });
+    this._store.state.selectionGroup.selected = true;
+
+    if (this._store.state.selectionGroup.length === 1) {
+      this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
+    }
+
+    this._store.history.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
   }
 }
