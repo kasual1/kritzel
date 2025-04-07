@@ -15,18 +15,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   handleMouseDown(event) {
-    if (KritzelClickHelper.isLeftClick(event)) {
-
-      if (!this._store.state.selectionGroup?.selected) {
-        this.startSelection(event);
-        this.updateSelection(event);
-        this.stopSelection();
-        this.addSelectedObjectsToSelectionGroup();
-      }
-
-      if (!this._store.state.selectionGroup) {
-        this.startSelection(event);
-      }
+    if (KritzelClickHelper.isLeftClick(event) && !this._store.state.selectionGroup) {
+      this.startSelection(event);
     }
   }
 
@@ -36,8 +26,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     }
   }
 
-  handleMouseUp(_event) {
+  handleMouseUp(event) {
     if (this._store.state.isSelecting) {
+      this.updateSelection(event);
       this.stopSelection();
       this.addSelectedObjectsToSelectionGroup();
       this.removeSelectionBox();
