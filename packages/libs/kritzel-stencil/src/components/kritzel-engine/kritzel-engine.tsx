@@ -197,6 +197,7 @@ export class KritzelEngine {
 
                     {object instanceof KritzelSelectionGroup && (
                       <div
+                        ref={el => object.mount(el)}
                         style={{
                           width: '100%',
                           height: '100%',
@@ -206,6 +207,7 @@ export class KritzelEngine {
 
                     {object instanceof KrtizelSelectionBox && (
                       <div
+                        ref={el => object.mount(el)}
                         style={{
                           width: '100%',
                           height: '100%',
