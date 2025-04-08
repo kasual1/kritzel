@@ -86,24 +86,24 @@ export class KritzelEngine {
   render() {
     return (
       <Host>
-          <div class="debug-panel" style={{display: this.store.state.debugInfo.showViewportInfo ? 'block' : 'none'}}>
-            <div>StartX: {this.store.state?.startX}</div>
-            <div>StartY: {this.store.state?.startY}</div>
-            <div>TranslateX: {this.store.state?.translateX}</div>
-            <div>TranslateY: {this.store.state?.translateY}</div>
-            <div>ViewportWidth: {this.store.state?.viewportWidth}</div>
-            <div>ViewportHeight: {this.store.state?.viewportHeight}</div>
-            <div>ObjectsInViewport. {this.store.objectsInViewport.length }</div>
-            <div>Scale: {this.store.state?.scale}</div>
-            <div>ActiveTool: {this.store.state?.activeTool?.name}</div>
-            <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true': 'false'}</div>
-            <div>IsSelecting: {this.isSelecting ? 'true': 'false'}</div>
-            <div>IsSelectionActive: {this.isSelectionActive ? 'true': 'false'}</div>
-            <div>IsResizeHandleSelected: {this.store.state.isResizeHandleSelected ? 'true': 'false'}</div>
-            <div>IsRotationHandleSelected: {this.store.state.isRotationHandleSelected ? 'true': 'false'}</div>
-            <div>CursorX: {this.store.state?.cursorX}</div>
-            <div>CursorY: {this.store.state?.cursorY}</div>
-          </div>
+        <div class="debug-panel" style={{ display: this.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
+          <div>StartX: {this.store.state?.startX}</div>
+          <div>StartY: {this.store.state?.startY}</div>
+          <div>TranslateX: {this.store.state?.translateX}</div>
+          <div>TranslateY: {this.store.state?.translateY}</div>
+          <div>ViewportWidth: {this.store.state?.viewportWidth}</div>
+          <div>ViewportHeight: {this.store.state?.viewportHeight}</div>
+          <div>ObjectsInViewport. {this.store.objectsInViewport.length}</div>
+          <div>Scale: {this.store.state?.scale}</div>
+          <div>ActiveTool: {this.store.state?.activeTool?.name}</div>
+          <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
+          <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
+          <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
+          <div>IsResizeHandleSelected: {this.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
+          <div>IsRotationHandleSelected: {this.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
+          <div>CursorX: {this.store.state?.cursorX}</div>
+          <div>CursorY: {this.store.state?.cursorY}</div>
+        </div>
 
         <div
           class="origin"
@@ -140,7 +140,7 @@ export class KritzelEngine {
                     y="0"
                     width={object.totalWidth.toString()}
                     height={object.totalHeight.toString()}
-                    style={{ minHeight: '0', minWidth: '0', backgroundColor: object.backgroundColor, padding: object.padding + 'px' }}
+                    style={{ minHeight: '0', minWidth: '0', backgroundColor: object.backgroundColor, padding: object.padding + 'px', overflow: 'visible' }}
                   >
                     {object instanceof KritzelPath && (
                       <svg
@@ -149,7 +149,8 @@ export class KritzelEngine {
                         style={{
                           height: object?.height.toString(),
                           width: object?.width.toString(),
-                          position: 'relative',
+                          position: 'absolute',
+                          overflow: 'visible',
                         }}
                         viewBox={object?.viewBox}
                       >
@@ -200,8 +201,7 @@ export class KritzelEngine {
                           width: '100%',
                           height: '100%',
                         }}
-                      >
-                      </div>
+                      ></div>
                     )}
 
                     {object instanceof KrtizelSelectionBox && (
@@ -210,8 +210,7 @@ export class KritzelEngine {
                           width: '100%',
                           height: '100%',
                         }}
-                      >
-                      </div>
+                      ></div>
                     )}
                   </foreignObject>
 
@@ -254,7 +253,6 @@ export class KritzelEngine {
                     cy="0"
                     r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
-
                   />
                   <circle
                     class="selection-handle top-right"
@@ -295,27 +293,25 @@ export class KritzelEngine {
                   />
                 </g>
 
-                <g style={{display: this.store.state.debugInfo.showObjectInfo ? 'block' : 'none'}}>
+                <g style={{ display: this.store.state.debugInfo.showObjectInfo ? 'block' : 'none' }}>
                   <foreignObject
                     x={object.totalWidth.toString()}
                     y="0"
                     width="400px"
                     height="110px"
-                    style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none'}}
+                    style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none' }}
                   >
-
-                    <div style={{ width: '100%', height: '100%'}}>
-                      <div style={{ whiteSpace: 'nowrap'}}>zIndex: {object.zIndex}</div>
-                      <div style={{ whiteSpace: 'nowrap'}}>translateX: {object.translateX}</div>
-                      <div style={{ whiteSpace: 'nowrap'}}>translateY: {object.translateY}</div>
-                      <div style={{ whiteSpace: 'nowrap'}}>width: {object.width}</div>
-                      <div style={{ whiteSpace: 'nowrap'}}>height: {object.height}</div>
-                      <div style={{ whiteSpace: 'nowrap'}}>scale: {object.scale}</div>
-                      <div style={{ whiteSpace: 'nowrap'}}>rotation: {object.rotation}</div>
+                    <div style={{ width: '100%', height: '100%' }}>
+                      <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
+                      <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
+                      <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
+                      <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
+                      <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
+                      <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
+                      <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
                     </div>
                   </foreignObject>
                 </g>
-
               </svg>
             );
           })}
