@@ -17,7 +17,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   height: number = 0;
   width: number = 0;
   scale: number = 1;
-  topLeft: number[] = [0, 0];
   visible: boolean = true;
   options: KritzelPathOptions | undefined;
 
@@ -56,10 +55,10 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     this.width = Math.max(...this.points.map(p => p[0])) - Math.min(...this.points.map(p => p[0])) + this.strokeWidth;
     this.height = Math.max(...this.points.map(p => p[1])) - Math.min(...this.points.map(p => p[1])) + this.strokeWidth;
-    this.topLeft = [Math.min(...this.points.map(p => p[0])), Math.min(...this.points.map(p => p[1]))];
 
-    this.x = this.topLeft[0] - this.strokeWidth / 2;
-    this.y = this.topLeft[1] - this.strokeWidth / 2;
+    this.x = Math.min(...this.points.map(p => p[0])) - this.strokeWidth / 2;
+    this.y = Math.min(...this.points.map(p => p[1])) - this.strokeWidth / 2;
+
     this.translateX = x;
     this.translateY = y;
   }
@@ -82,12 +81,12 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     const maxX = Math.max(...rotatedPoints.map(p => p[0] + this.strokeWidth / 2));
     const maxY = Math.max(...rotatedPoints.map(p => p[1] + this.strokeWidth / 2));
 
+    console.log('minX', minX, 'minY', minY, 'maxX', maxX, 'maxY', maxY);
     this.width = maxX - minX ;
     this.height = maxY - minY;
-    this.topLeft = [minX, minY];
 
-    this.x = this.topLeft[0];
-    this.y = this.topLeft[1];
+    this.x = minX;
+    this.y = minY;
 
     this.translateX = (this.x + this.translateX) / this.scale;
     this.translateY = (this.y + this.translateY) / this.scale;
