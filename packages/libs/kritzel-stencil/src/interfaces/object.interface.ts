@@ -19,7 +19,6 @@ export interface KritzelObject<T = Element> {
   rotation: number;
   markedForRemoval: boolean;
   selection: KritzelSelection;
-  viewBox: string;
   isMounted: boolean;
   zIndex: number;
 

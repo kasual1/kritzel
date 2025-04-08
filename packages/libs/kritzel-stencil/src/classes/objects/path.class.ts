@@ -9,6 +9,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   d: string;
   stroke: string;
   strokeWidth: number;
+  lineSlack: number = 0.5;
   fill: string;
   x: number = 0;
   y: number = 0;
@@ -22,6 +23,10 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   debugInfoVisible: boolean = true;
 
+  get viewBox(): string {
+    return `${this.x} ${this.y} ${this.width} ${this.height}`;
+  }
+
   constructor(store: KritzelStore, options?: KritzelPathOptions) {
     super(store);
     this.options = options;
@@ -33,9 +38,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.strokeWidth = options?.strokeWidth ?? 8;
     this.fill = options?.fill ?? 'black';
     this.zIndex = 9999;
-
     this.d = this.generateSvgPath();
-
     this.updateDimensions();
   }
 
@@ -81,9 +84,8 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     const maxX = Math.max(...rotatedPoints.map(p => p[0] + this.strokeWidth / 2));
     const maxY = Math.max(...rotatedPoints.map(p => p[1] + this.strokeWidth / 2));
 
-    console.log('minX', minX, 'minY', minY, 'maxX', maxX, 'maxY', maxY);
-    this.width = maxX - minX ;
-    this.height = maxY - minY;
+    this.width = maxX - minX + this.lineSlack; // Add 0.5 to avoid rounding issues
+    this.height = maxY - minY + this.lineSlack; // Add 0.5 to avoid rounding issues
 
     this.x = minX;
     this.y = minY;
