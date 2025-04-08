@@ -142,10 +142,6 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     return Math.max(...corners);
   }
 
-  get viewBox(): string {
-    return `${this.x} ${this.y} ${this.width} ${this.height}`;
-  }
-
   get transformationMatrix(): string {
     const scale = 1 / this.scale;
     const translateX = this.translateX;
