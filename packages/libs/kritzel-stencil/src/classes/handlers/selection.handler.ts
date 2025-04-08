@@ -116,11 +116,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       return;
     }
 
-    selectedObjects.forEach(o => {
-      if (o !== selectedObject) {
-        o.selected = false;
-      }
-    });
+    selectedObjects.forEach(o => o.selected = false);
 
     this._store.state.selectionGroup = new KritzelSelectionGroup(this._store);
     this._store.state.selectionGroup.addOrRemove(selectedObject);
