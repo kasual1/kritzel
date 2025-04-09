@@ -13,7 +13,7 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
   }
 
   insert(object: T ): boolean {
-    if (!this.intersects(object.boundingBox, this.bounds)) {
+    if (!this.intersects(object.rotatedBoundingBox, this.bounds)) {
       return false;
     }
 
@@ -37,6 +37,7 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
 
   update(object: T ): boolean {
     const index = this.objects.findIndex(o => o.id === object.id);
+
     if (index !== -1) {
       this.objects[index] = object;
       return true;
@@ -72,7 +73,7 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     }
 
     for (const object of this.objects) {
-      if (this.intersects(object.boundingBox, range)) {
+      if (this.intersects(object.rotatedBoundingBox, range)) {
         results.push(object);
       }
     }
