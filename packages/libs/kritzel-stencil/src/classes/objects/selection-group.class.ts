@@ -31,7 +31,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     this.unchangedObjects = ObjectHelper.clone(this.objects);
-    this.updateBoundingBox();
+    this.updateDimensions();
   }
 
   deselectAllChildren() {
@@ -73,7 +73,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       obj.resize(updatedX, updatedY, updatedWidth, updatedHeight);
     });
 
-    this.updateBoundingBox();
+    this.updateDimensions();
     this.unchangedObjects = ObjectHelper.clone(this.objects);
   }
 
@@ -122,29 +122,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return selectionGroup;
   }
 
-  private updateBoundingBox() {
-    if (this.objects.length === 1) {
-      this.updateCornersForSingleObject();
-    } else {
-      this.updateCornersForMultipleObjects();
-    }
-  }
-
-  private updateCornersForSingleObject() {
-    const obj = this.objects[0];
-    this.minX = obj.boundingBox.x / this.scale;
-    this.maxX = obj.boundingBox.x / this.scale + obj.boundingBox.width;
-    this.minY = obj.boundingBox.y / this.scale;
-    this.maxY = obj.boundingBox.y / this.scale + obj.boundingBox.height;
-
-    this.translateX = (this.minX - this.padding) * this.scale;
-    this.translateY = (this.minY - this.padding) * this.scale;
-
-    this.width = (this.maxX - this.minX - this.padding) * this.scale;
-    this.height = (this.maxY - this.minY - this.padding) * this.scale;
-  }
-
-  private updateCornersForMultipleObjects() {
+  private updateDimensions() {
     this.minX = Math.min(...this.objects.map(obj => obj.minXRotated));
     this.maxX = Math.max(...this.objects.map(obj => obj.maxXRotated));
 
