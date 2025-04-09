@@ -4,7 +4,7 @@ import { KritzelBaseObject } from '../objects/base-object.class';
 export class KritzelOctree<T extends KritzelBaseObject<any>> {
   private bounds: KritzelBoundingBox;
   private capacity: number;
-  private objects: { object: T; bounds: KritzelBoundingBox }[] = [];
+  private objects:  T[] = [];
   private children: KritzelOctree<T>[] | null = null;
 
   constructor(bounds: KritzelBoundingBox, capacity: number = 8) {
@@ -12,13 +12,13 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     this.capacity = capacity;
   }
 
-  insert(object: T, bounds: KritzelBoundingBox): boolean {
-    if (!this.intersects(bounds, this.bounds)) {
+  insert(object: T ): boolean {
+    if (!this.intersects(object.boundingBox, this.bounds)) {
       return false;
     }
 
     if (this.objects.length < this.capacity && this.children === null) {
-      this.objects.push({ object, bounds });
+      this.objects.push(object);
       return true;
     }
 
@@ -27,7 +27,7 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     }
 
     for (const child of this.children!) {
-      if (child.insert(object, bounds)) {
+      if (child.insert(object)) {
         return true;
       }
     }
@@ -35,16 +35,15 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     return false;
   }
 
-  update(object: T, bounds: KritzelBoundingBox): boolean {
-    const index = this.objects.findIndex(o => o.object.id === object.id);
+  update(object: T ): boolean {
+    const index = this.objects.findIndex(o => o.id === object.id);
     if (index !== -1) {
-      this.objects[index].object = object;
-      this.objects[index].bounds = bounds;
+      this.objects[index] = object;
       return true;
     }
     if (this.children !== null) {
       for (const child of this.children) {
-        if (child.update(object, bounds)) {
+        if (child.update(object)) {
           return true;
         }
       }
@@ -53,7 +52,7 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
   }
 
   remove(predicate: (object: T) => boolean): void {
-    const index = this.objects.findIndex(o => predicate(o.object));
+    const index = this.objects.findIndex(o => predicate(o));
     if (index !== -1) {
       this.objects.splice(index, 1);
     }
@@ -72,8 +71,8 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
       return results;
     }
 
-    for (const { object, bounds } of this.objects) {
-      if (this.intersects(bounds, range)) {
+    for (const object of this.objects) {
+      if (this.intersects(object.boundingBox, range)) {
         results.push(object);
       }
     }
@@ -88,7 +87,7 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
   }
 
   filter(predicate: (object: T) => boolean): T[] {
-    const results: T[] = this.objects.filter(o => predicate(o.object)).map(o => o.object);
+    const results: T[] = this.objects.filter(o => predicate(o));
     if (this.children !== null) {
       for (const child of this.children) {
         results.push(...child.filter(predicate));
@@ -98,7 +97,7 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
   }
 
   allObjects(): T[] {
-    const results: T[] = [...this.objects.map(o => o.object)];
+    const results: T[] = [...this.objects];
     if (this.children !== null) {
       for (const child of this.children) {
         results.push(...child.allObjects());

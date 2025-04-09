@@ -12,7 +12,7 @@ export class AddSelectionGroupCommand extends KritzelBaseCommand {
 
   execute(): void {
     this._store.state.objectsOctree.remove(object => object instanceof KrtizelSelectionBox);
-    this._store.state.objectsOctree.insert(this.selectionGroup, this.selectionGroup.boundingBox);
+    this._store.state.objectsOctree.insert(this.selectionGroup);
     this._store.state.selectionGroup = this.selectionGroup;
   }
 

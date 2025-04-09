@@ -15,6 +15,6 @@ export class RemoveObjectCommand extends KritzelBaseCommand {
   }
 
   undo(): void {
-    this._store.state.objectsOctree.insert(this.object, this.object.boundingBox);
+    this._store.state.objectsOctree.insert(this.object);
   }
 }
