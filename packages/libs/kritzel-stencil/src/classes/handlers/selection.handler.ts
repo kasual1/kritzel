@@ -38,14 +38,12 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     if (KritzelClickHelper.isLeftClick(event) && this._store.state.isSelecting) {
 
       if (this.isSelectionClick) {
-        console.log('Click');
         this.updateSelection(event);
         this.addSelectedObjectAtIndexToSelectionGroup(0);
         this.removeSelectionBox();
       }
 
       if (this.isSelectionDrag) {
-        console.log('Drag');
         this.updateSelection(event);
         this.addSelectedObjectsToSelectionGroup();
         this.removeSelectionBox();

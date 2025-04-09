@@ -300,7 +300,7 @@ export class KritzelEngine {
                     x={object.totalWidth.toString()}
                     y="0"
                     width="400px"
-                    height="110px"
+                    height="160px"
                     style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none' }}
                   >
                     <div style={{ width: '100%', height: '100%' }}>
