@@ -18,7 +18,7 @@ export class RemoveSelectionGroupCommand extends KritzelBaseCommand {
 
   undo(): void {
     if(this.previousSelectionGroup) {
-      this._store.state.objectsOctree.insert(this.previousSelectionGroup, this.previousSelectionGroup.boundingBox);
+      this._store.state.objectsOctree.insert(this.previousSelectionGroup);
       this._store.state.selectionGroup = this.previousSelectionGroup;
     } 
   }

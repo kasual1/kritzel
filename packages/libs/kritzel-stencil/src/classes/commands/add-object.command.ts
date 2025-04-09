@@ -11,7 +11,7 @@ export class AddObjectCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
-    this._store.state.objectsOctree.insert(this.object, this.object.boundingBox);
+    this._store.state.objectsOctree.insert(this.object);
   }
 
   undo(): void {

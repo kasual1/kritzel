@@ -20,7 +20,7 @@ export class RotateSelectionGroupCommand extends KritzelBaseCommand {
     this._store.state.selectionGroup = this.selectionGroup;
     this._store.state.selectionGroup.rotate(this.rotation);
     this._store.state.selectionGroup.objects.forEach(object => {
-      this._store.state.objectsOctree.update(object, object.boundingBox);
+      this._store.state.objectsOctree.update(object);
     });
   }
 
@@ -28,7 +28,7 @@ export class RotateSelectionGroupCommand extends KritzelBaseCommand {
     this._store.state.selectionGroup = this.selectionGroup;
     this._store.state.selectionGroup.rotate(this.rotation - this.initialRotation);
     this._store.state.selectionGroup.objects.forEach(object => {
-      this._store.state.objectsOctree.update(object, object.boundingBox);
+      this._store.state.objectsOctree.update(object);
     });
   }
 }
