@@ -68,8 +68,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.objects.forEach(obj => {
       const updatedWidth = obj.width * widthScaleFactor;
       const updatedHeight = obj.height * heightScaleFactor;
-      const updatedX = obj.translateX * widthScaleFactor + deltaX;
-      const updatedY = obj.translateY * heightScaleFactor + deltaY;
+      const updatedX = obj.translateX + deltaX;
+      const updatedY = obj.translateY + deltaY;
       obj.resize(updatedX, updatedY, updatedWidth, updatedHeight);
     });
 

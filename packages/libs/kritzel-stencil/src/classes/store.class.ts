@@ -26,7 +26,7 @@ const initialState: KritzelEngineState = {
   isCtrlKeyPressed: false,
   hasViewportChanged: false,
   debugInfo: {
-    showObjectInfo: false,
+    showObjectInfo: true,
     showViewportInfo: true,
     logCommands: false,
   },
