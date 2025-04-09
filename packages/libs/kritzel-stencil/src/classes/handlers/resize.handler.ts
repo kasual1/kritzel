@@ -33,8 +33,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   handleMouseMove(event: MouseEvent): void {
     if(this._store.state.isResizing && this._store.state.selectionGroup) {
 
-      const dx = (event.clientX - this.initialMouseX) / this._store.state.scale;
-      const dy = (event.clientY - this.initialMouseY) / this._store.state.scale;
+      const dx = (event.clientX - this.initialMouseX);
+      const dy = (event.clientY - this.initialMouseY);
 
       let width, height, x, y;
 
@@ -42,21 +42,21 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         case KritzelHandleType.TopLeft:
           width = this.initialWidth - dx;
           height = this.initialHeight - dy;
-          x = dx + this.initialTranslateX;
-          y = dy + this.initialTranslateY;
+          x = dx / this._store.state.scale + this.initialTranslateX;
+          y = dy / this._store.state.scale + this.initialTranslateY;
           this._store.state.selectionGroup.resize(x, y, width, height);
           break;
         case KritzelHandleType.TopRight:
           width = this.initialWidth + dx;
           height = this.initialHeight - dy;
           x = this.initialTranslateX;
-          y = dy + this.initialTranslateY;
+          y = dy / this._store.state.scale + this.initialTranslateY;
           this._store.state.selectionGroup.resize(x, y, width, height);
           break;
         case KritzelHandleType.BottomLeft:
           width = this.initialWidth - dx;
           height = this.initialHeight + dy;
-          x = dx + this.initialTranslateX;
+          x = dx / this._store.state.scale + this.initialTranslateX;
           y = this.initialTranslateY;
           this._store.state.selectionGroup.resize(x, y, width, height);
           break;
@@ -76,12 +76,6 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   handleMouseUp(_event: MouseEvent): void {
     if (this._store.state.isResizing) {
       this._store.state.isResizing = false;
-      this.initialMouseX = 0;
-      this.initialMouseY = 0;
-      this.initialWidth = 0;
-      this.initialHeight = 0;
-      this.initialTranslateX = 0;
-      this.initialTranslateY = 0;
       this._store.rerender();
     }
   }

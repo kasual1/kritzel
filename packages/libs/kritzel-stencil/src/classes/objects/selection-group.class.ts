@@ -45,7 +45,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.translateX += deltaX;
     this.translateY += deltaY;
     this._store.state.objectsOctree.update(this);
-    
+
     this.objects.forEach(obj => {
       obj.translateX += deltaX;
       obj.translateY += deltaY;
@@ -68,8 +68,18 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.objects.forEach(obj => {
       const updatedWidth = obj.width * widthScaleFactor;
       const updatedHeight = obj.height * heightScaleFactor;
-      const updatedX = obj.translateX + deltaX;
-      const updatedY = obj.translateY + deltaY;
+
+      let updatedX: number;
+      let updatedY: number;
+
+      if (this.objects.length > 1) {
+        updatedX = obj.translateX * widthScaleFactor + deltaX;
+        updatedY = obj.translateY * heightScaleFactor + deltaY;
+      } else {
+        updatedX = obj.translateX + deltaX;
+        updatedY = obj.translateY + deltaY;
+      }
+
       obj.resize(updatedX, updatedY, updatedWidth, updatedHeight);
     });
 
@@ -91,7 +101,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       const unchangedChild = this.getUnchangedObject(child.id);
       const offsetX = this.getOffsetXToCenter(unchangedChild);
       const offsetY = this.getOffsetYToCenter(unchangedChild);
-      
+
       const rotatedX = cos * offsetX - sin * offsetY;
       const rotatedY = sin * offsetX + cos * offsetY;
 
@@ -115,7 +125,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     selectionGroup.unchangedObjects = ObjectHelper.clone(selectionGroup.objects);
 
-    if(this.objects.length === 1) {
+    if (this.objects.length === 1) {
       selectionGroup.rotation = this.objects[0].rotation;
     }
 
