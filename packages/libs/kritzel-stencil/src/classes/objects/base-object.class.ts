@@ -71,6 +71,17 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     };
   }
 
+  get rotatedBoundingBox(): KritzelBoundingBox {
+    return {
+      x: this.minXRotated,
+      y: this.minYRotated,
+      z: this.scale,
+      width: this.maxXRotated - this.minXRotated,
+      height: this.maxYRotated - this.minYRotated,
+      depth: 0,
+    };
+  }
+
   get rotatedPolygon(): KritzelPolygon {
     const cx = (this.translateX + this.totalWidth / 2 / this.scale);
     const cy = (this.translateY + this.totalHeight / 2 / this.scale);
