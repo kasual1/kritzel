@@ -29,7 +29,8 @@ export declare interface KritzelControls extends Components.KritzelControls {}
 
 
 @ProxyCmp({
-  inputs: ['activeTool']
+  inputs: ['activeTool'],
+  methods: ['changeActiveTool']
 })
 @Component({
   selector: 'kritzel-engine',

@@ -12,6 +12,7 @@ export namespace Components {
     }
     interface KritzelEngine {
         "activeTool": KritzelTool;
+        "changeActiveTool": (tool: string) => Promise<void>;
     }
 }
 declare global {
