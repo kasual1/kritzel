@@ -69,18 +69,12 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       const updatedWidth = obj.width * widthScaleFactor;
       const updatedHeight = obj.height * heightScaleFactor;
 
-      let updatedX: number;
-      let updatedY: number;
-
-      if (this.objects.length > 1) {
-        updatedX = obj.translateX * widthScaleFactor + deltaX;
-        updatedY = obj.translateY * heightScaleFactor + deltaY;
-      } else {
-        updatedX = obj.translateX + deltaX;
-        updatedY = obj.translateY + deltaY;
-      }
+      const updatedX = obj.translateX + deltaX;
+      const updatedY = obj.translateY + deltaY;
 
       obj.resize(updatedX, updatedY, updatedWidth, updatedHeight);
+
+      this._store.state.objectsOctree.update(obj);
     });
 
     this.updateDimensions();
@@ -158,6 +152,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.width = (this.maxX - this.minX - this.padding) * this.scale;
       this.height = (this.maxY - this.minY - this.padding) * this.scale;
     }
+
+    this._store.state.objectsOctree.update(this);
   }
 
   private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {
