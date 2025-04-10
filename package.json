@@ -15,6 +15,7 @@
     "typescript": "^5.4.5"
   },
   "scripts": {
+    "test": "npm run test -w packages/libs/kritzel-stencil",
     "clean": "npm run clean --workspaces",
     "bump": "npm run bump --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",

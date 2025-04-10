@@ -1,4 +1,4 @@
-import { Component, Host, h, Listen, Element, Prop } from '@stencil/core';
+import { Component, Host, h, Listen, Element, Prop, Method } from '@stencil/core';
 import { KritzelTool } from '../../interfaces/tool.interface';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelViewport } from '../../classes/viewport.class';
@@ -10,6 +10,9 @@ import { KritzelSelectionGroup } from '../../classes/objects/selection-group.cla
 import { KrtizelSelectionBox } from '../../classes/objects/selection-box.class';
 import { KritzelStore } from '../../classes/store.class';
 import { KritzelKeyHandler } from '../../classes/handlers/key.handler';
+import { KritzelTextTool } from '../../classes/tools/text-tool.class';
+import { KritzelImageTool } from '../../classes/tools/image-tool.class';
+import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -44,30 +47,30 @@ export class KritzelEngine {
     this.keyHandler = new KritzelKeyHandler(this.store);
   }
 
-  @Listen('contextmenu', { target: 'window' })
+  @Listen('contextmenu')
   handleContextMenu(ev) {
     ev.preventDefault();
   }
 
-  @Listen('mousedown', { target: 'window', passive: true })
+  @Listen('mousedown', { passive: true })
   handleMouseDown(ev) {
     this.viewport.handleMouseDown(ev);
     this.store.state?.activeTool?.handleMouseDown(ev);
   }
 
-  @Listen('mousemove', { target: 'window', passive: true })
+  @Listen('mousemove', { passive: true })
   handleMouseMove(ev) {
     this.viewport.handleMouseMove(ev);
     this.store.state?.activeTool?.handleMouseMove(ev);
   }
 
-  @Listen('mouseup', { target: 'window', passive: true })
+  @Listen('mouseup', { passive: true })
   handleMouseUp(ev) {
     this.viewport.handleMouseUp(ev);
     this.store.state?.activeTool?.handleMouseUp(ev);
   }
 
-  @Listen('wheel', { target: 'window', passive: false })
+  @Listen('wheel', { passive: false })
   handleWheel(ev) {
     this.viewport.handleWheel(ev);
     this.store.state?.activeTool?.handleWheel(ev);
@@ -81,6 +84,31 @@ export class KritzelEngine {
   @Listen('keyup', { target: 'window' })
   handleKeyUp(ev) {
     this.keyHandler.handleKeyUp(ev);
+  }
+
+  @Method()
+  async changeActiveTool(tool: string) {
+    switch (tool) {
+      case 'pen':
+        this.store.state.activeTool = new KritzelBrushTool(this.store);
+        break;
+      case 'eraser':
+        this.store.state.activeTool = new KritzelEraserTool(this.store);
+        break;
+      case 'text':
+        this.store.state.activeTool = new KritzelTextTool(this.store);
+        break;
+      case 'image':
+        this.store.state.activeTool = new KritzelImageTool(this.store);
+        break;
+      case 'selection':
+        this.store.state.activeTool = new KritzelSelectionTool(this.store);
+        break;
+      default:
+        this.store.state.activeTool = new KritzelBrushTool(this.store);
+        break;
+    }
+    this.store.deselectAllObjects();
   }
 
   render() {
@@ -150,7 +178,7 @@ export class KritzelEngine {
                           height: object?.height.toString(),
                           width: object?.width.toString(),
                           position: 'absolute',
-                          overflow: 'visible'
+                          overflow: 'visible',
                         }}
                         viewBox={object?.viewBox}
                       >
