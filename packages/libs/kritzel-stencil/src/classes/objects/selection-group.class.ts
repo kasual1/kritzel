@@ -133,17 +133,31 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   private updateDimensions() {
-    this.minX = Math.min(...this.objects.map(obj => obj.minXRotated));
-    this.maxX = Math.max(...this.objects.map(obj => obj.maxXRotated));
+    if (this.objects.length === 1) {
+      const obj = this.objects[0];
+      this.minX = obj.boundingBox.x / this.scale;
+      this.maxX = obj.boundingBox.x / this.scale + obj.boundingBox.width;
+      this.minY = obj.boundingBox.y / this.scale;
+      this.maxY = obj.boundingBox.y / this.scale + obj.boundingBox.height;
 
-    this.minY = Math.min(...this.objects.map(obj => obj.minYRotated));
-    this.maxY = Math.max(...this.objects.map(obj => obj.maxYRotated));
+      this.translateX = (this.minX - this.padding) * this.scale;
+      this.translateY = (this.minY - this.padding) * this.scale;
 
-    this.translateX = this.minX - this.padding;
-    this.translateY = this.minY - this.padding;
+      this.width = (this.maxX - this.minX - this.padding) * this.scale;
+      this.height = (this.maxY - this.minY - this.padding) * this.scale;
+    } else {
+      this.minX = Math.min(...this.objects.map(obj => obj.minXRotated));
+      this.maxX = Math.max(...this.objects.map(obj => obj.maxXRotated));
 
-    this.width = (this.maxX - this.minX - this.padding) * this.scale;
-    this.height = (this.maxY - this.minY - this.padding) * this.scale;
+      this.minY = Math.min(...this.objects.map(obj => obj.minYRotated));
+      this.maxY = Math.max(...this.objects.map(obj => obj.maxYRotated));
+
+      this.translateX = this.minX - this.padding;
+      this.translateY = this.minY - this.padding;
+
+      this.width = (this.maxX - this.minX - this.padding) * this.scale;
+      this.height = (this.maxY - this.minY - this.padding) * this.scale;
+    }
   }
 
   private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {
