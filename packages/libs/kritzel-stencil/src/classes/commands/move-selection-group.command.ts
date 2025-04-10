@@ -14,22 +14,22 @@ export class MoveSelectionGroupCommand extends KritzelBaseCommand {
 
   private skipExecution: boolean;
 
-  constructor(store, initiator: any, startX: number, startY: number, endX: number, endY: number, skipExecution = false) {
+  constructor(store, initiator: any, startX: number, startY: number, endX: number, endY: number, skipFirstExecution = false) {
     super(store, initiator);
     this.startX = startX;
     this.startY = startY;
     this.endX = endX;
     this.endY = endY;
-    this.skipExecution = skipExecution;
+    this.skipExecution = skipFirstExecution;
     this.selectionGroup = this._store.state.selectionGroup;
   }
 
   execute(): void {
-    if(this.skipExecution) {
+    if (this.skipExecution) {
       this.skipExecution = false;
       return;
     }
-    
+
     this._store.state.selectionGroup = this.selectionGroup;
     this._store.state.selectionGroup.move(this.startX, this.startY, this.endX, this.endY);
   }
