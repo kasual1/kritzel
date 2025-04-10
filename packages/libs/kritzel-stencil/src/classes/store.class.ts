@@ -27,8 +27,8 @@ const initialState: KritzelEngineState = {
   hasViewportChanged: false,
   debugInfo: {
     showObjectInfo: false,
-    showViewportInfo: true,
-    logCommands: true,
+    showViewportInfo: false,
+    logCommands: false,
   },
   host: null,
   cursorX: 0,
