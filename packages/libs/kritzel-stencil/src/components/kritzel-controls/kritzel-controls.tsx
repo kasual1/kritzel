@@ -1,10 +1,11 @@
-import { Component, getAssetPath, h, State } from '@stencil/core';
+import { Component, h, State } from '@stencil/core';
+import { KritzelIconName } from '../../enums/icon-name.enum';
+import { Element } from '@stencil/core';
 
 interface KritzelToolbarControl {
   name: string;
-  icon?: string;
+  icon: KritzelIconName;
 }
-
 @Component({
   tag: 'kritzel-controls',
   styleUrl: 'kritzel-controls.css',
@@ -14,55 +15,38 @@ interface KritzelToolbarControl {
 export class KritzelControls {
   @State() controls: KritzelToolbarControl[] = [
     {
-      name: 'cursor'
+      name: 'selection',
+      icon: KritzelIconName.cursor,
     },
     {
       name: 'pen',
+      icon: KritzelIconName.pen,
     },
     {
       name: 'eraser',
+      icon: KritzelIconName.eraser,
     },
     {
       name: 'text',
+      icon: KritzelIconName.type,
     },
     {
       name: 'image',
+      icon: KritzelIconName.image,
     },
   ];
 
   @State() selectedControl: string | null = null;
 
+  @Element() host!: HTMLElement;
+
   kritzelEngine: HTMLKritzelEngineElement | null = null;
 
-  componentWillLoad() {
-    this.controls.forEach(async control => {
-      const path = getAssetPath(`../assets/icons/${control.name}.svg`);
-      const icon = await this.fetchSvgContent(path);
-      this.controls = [...this.controls.map(c => (c.name === control.name ? { ...c, icon } : c))];
-    });
-
+  async componentWillLoad() {
+    await customElements.whenDefined('kritzel-engine');
     this.kritzelEngine = document.querySelector('kritzel-engine');
     this.kritzelEngine?.changeActiveTool('cursor');
-    this.selectedControl = 'cursor';
-  }
-
-  async fetchSvgContent(iconPath: string): Promise<string> {
-    const response = await fetch(iconPath);
-    const reader = response.body?.getReader();
-    if (!reader) {
-      throw new Error('Failed to get reader from response body');
-    }
-
-    let svgContent = '';
-    const decoder = new TextDecoder();
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      svgContent += decoder.decode(value, { stream: true });
-    }
-
-    return svgContent;
+    this.selectedControl = 'selection';
   }
 
   preventDefault(event: Event) {
@@ -79,19 +63,19 @@ export class KritzelControls {
     return (
       <div class="kritzel-controls">
         {this.controls.map(control => (
-            <button
+          <button
             class={{
               'kritzel-control': true,
               'selected': this.selectedControl === control.name,
             }}
             key={control.name}
-            onClick={(event) => {
+            onClick={event => {
               this.preventDefault(event);
               this.handleControlClick(control.name);
             }}
-            innerHTML={control.icon}
-            >
-            </button>
+          >
+            <kritzel-icon name={control.icon}></kritzel-icon>
+          </button>
         ))}
       </div>
     );

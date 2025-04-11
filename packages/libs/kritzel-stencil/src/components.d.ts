@@ -10,9 +10,15 @@ export { KritzelTool } from "./interfaces/tool.interface";
 export namespace Components {
     interface KritzelControls {
     }
+    interface KritzelEditor {
+    }
     interface KritzelEngine {
         "activeTool": KritzelTool;
         "changeActiveTool": (tool: string) => Promise<void>;
+    }
+    interface KritzelIcon {
+        "label"?: string;
+        "name": keyof typeof this.icons;
     }
 }
 declare global {
@@ -22,26 +28,48 @@ declare global {
         prototype: HTMLKritzelControlsElement;
         new (): HTMLKritzelControlsElement;
     };
+    interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
+    }
+    var HTMLKritzelEditorElement: {
+        prototype: HTMLKritzelEditorElement;
+        new (): HTMLKritzelEditorElement;
+    };
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
     }
     var HTMLKritzelEngineElement: {
         prototype: HTMLKritzelEngineElement;
         new (): HTMLKritzelEngineElement;
     };
+    interface HTMLKritzelIconElement extends Components.KritzelIcon, HTMLStencilElement {
+    }
+    var HTMLKritzelIconElement: {
+        prototype: HTMLKritzelIconElement;
+        new (): HTMLKritzelIconElement;
+    };
     interface HTMLElementTagNameMap {
         "kritzel-controls": HTMLKritzelControlsElement;
+        "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
+        "kritzel-icon": HTMLKritzelIconElement;
     }
 }
 declare namespace LocalJSX {
     interface KritzelControls {
     }
+    interface KritzelEditor {
+    }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
     }
+    interface KritzelIcon {
+        "label"?: string;
+        "name"?: keyof typeof this.icons;
+    }
     interface IntrinsicElements {
         "kritzel-controls": KritzelControls;
+        "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
+        "kritzel-icon": KritzelIcon;
     }
 }
 export { LocalJSX as JSX };
@@ -49,7 +77,9 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
+            "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
+            "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
         }
     }
 }

@@ -11,7 +11,9 @@ import type { StencilReactComponent } from '@stencil/react-output-target/runtime
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
+import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
+import { KritzelIcon as KritzelIconElement, defineCustomElement as defineKritzelIcon } from "../../../../kritzel-stencil/dist/components/kritzel-icon.js";
 
 type KritzelControlsEvents = NonNullable<unknown>;
 
@@ -24,6 +26,17 @@ export const KritzelControls: StencilReactComponent<KritzelControlsElement, Krit
     defineCustomElement: defineKritzelControls
 });
 
+type KritzelEditorEvents = NonNullable<unknown>;
+
+export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents>({
+    tagName: 'kritzel-editor',
+    elementClass: KritzelEditorElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {} as KritzelEditorEvents,
+    defineCustomElement: defineKritzelEditor
+});
+
 type KritzelEngineEvents = NonNullable<unknown>;
 
 export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelEngineEvents> = /*@__PURE__*/ createComponent<KritzelEngineElement, KritzelEngineEvents>({
@@ -33,4 +46,15 @@ export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelE
     react: React,
     events: {} as KritzelEngineEvents,
     defineCustomElement: defineKritzelEngine
+});
+
+type KritzelIconEvents = NonNullable<unknown>;
+
+export const KritzelIcon: StencilReactComponent<KritzelIconElement, KritzelIconEvents> = /*@__PURE__*/ createComponent<KritzelIconElement, KritzelIconEvents>({
+    tagName: 'kritzel-icon',
+    elementClass: KritzelIconElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {} as KritzelIconEvents,
+    defineCustomElement: defineKritzelIcon
 });

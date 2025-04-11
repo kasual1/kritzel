@@ -1,4 +1,4 @@
-# kritzel-controls
+# kritzel-editor
 
 
 
@@ -7,20 +7,18 @@
 
 ## Dependencies
 
-### Used by
-
- - [kritzel-editor](../kritzel-editor)
-
 ### Depends on
 
-- [kritzel-icon](../kritzel-icon)
+- [kritzel-engine](../kritzel-engine)
+- [kritzel-controls](../kritzel-controls)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-controls --> kritzel-icon
+  kritzel-editor --> kritzel-engine
   kritzel-editor --> kritzel-controls
-  style kritzel-controls fill:#f9f,stroke:#333,stroke-width:4px
+  kritzel-controls --> kritzel-icon
+  style kritzel-editor fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------
