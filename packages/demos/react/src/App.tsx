@@ -1,11 +1,11 @@
 import './App.css'
-import { KritzelEngine } from 'kritzel-react'
+import { KritzelEditor } from 'kritzel-react'
 
 function App() {
 
   return (
     <>
-      <KritzelEngine></KritzelEngine>
+      <KritzelEditor></KritzelEditor>
     </>
   )
 }

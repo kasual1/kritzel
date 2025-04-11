@@ -1,0 +1,16 @@
+kritzel-editor {
+  display: flex;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+kritzel-controls{
+  position: absolute;
+  bottom: 12px;
+}
