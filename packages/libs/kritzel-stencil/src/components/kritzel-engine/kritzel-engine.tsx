@@ -88,6 +88,7 @@ export class KritzelEngine {
 
   @Method()
   async changeActiveTool(tool: string) {
+    console.log('changeActiveTool', tool);
     switch (tool) {
       case 'pen':
         this.store.state.activeTool = new KritzelBrushTool(this.store);
@@ -101,11 +102,11 @@ export class KritzelEngine {
       case 'image':
         this.store.state.activeTool = new KritzelImageTool(this.store);
         break;
-      case 'selection':
+      case 'cursor':
         this.store.state.activeTool = new KritzelSelectionTool(this.store);
         break;
       default:
-        this.store.state.activeTool = new KritzelBrushTool(this.store);
+        this.store.state.activeTool = new KritzelSelectionTool(this.store);
         break;
     }
     this.store.deselectAllObjects();

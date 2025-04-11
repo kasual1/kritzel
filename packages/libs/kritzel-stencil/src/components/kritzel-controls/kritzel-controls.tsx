@@ -14,6 +14,9 @@ interface KritzelToolbarControl {
 export class KritzelControls {
   @State() controls: KritzelToolbarControl[] = [
     {
+      name: 'cursor'
+    },
+    {
       name: 'pen',
     },
     {
@@ -36,11 +39,11 @@ export class KritzelControls {
       const path = getAssetPath(`../assets/icons/${control.name}.svg`);
       const icon = await this.fetchSvgContent(path);
       this.controls = [...this.controls.map(c => (c.name === control.name ? { ...c, icon } : c))];
-
-      console.log(control);
     });
 
     this.kritzelEngine = document.querySelector('kritzel-engine');
+    this.kritzelEngine?.changeActiveTool('cursor');
+    this.selectedControl = 'cursor';
   }
 
   async fetchSvgContent(iconPath: string): Promise<string> {
