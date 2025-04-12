@@ -83,7 +83,6 @@ export class KritzelStore {
 
 
   constructor() {
-    console.log('KritzelStore constructor');
     this._store = createStore<KritzelEngineState>(initialState);
     this._history = new KritzelHistory(this);
     this._store.state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
