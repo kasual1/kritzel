@@ -9,6 +9,7 @@ export class KritzelViewport {
   constructor(store: KritzelStore, host: HTMLElement) {
     this._store = store;
     this._store.state.host = host;
+    this._store.state.host.setAttribute('tabindex', '0');
     this._store.state.viewportWidth = host.clientWidth;
     this._store.state.viewportHeight = host.clientHeight;
     this._store.state.startX = 0;
@@ -20,7 +21,7 @@ export class KritzelViewport {
   handleMouseDown(event: MouseEvent): void {
     const adjustedClientX = event.clientX - this._store.offsetX;
     const adjustedClientY = event.clientY - this._store.offsetY;
-    
+
     if (KritzelClickHelper.isRightClick(event)) {
       this.isDragging = true;
       this._store.state.startX = adjustedClientX;
@@ -58,7 +59,7 @@ export class KritzelViewport {
     const adjustedClientY = event.clientY - this._store.offsetY;
 
     const rect = this._store.state.host.getBoundingClientRect();
-    this._store.state.cursorX = adjustedClientX- rect.left;
+    this._store.state.cursorX = adjustedClientX - rect.left;
     this._store.state.cursorY = adjustedClientY - rect.top;
 
     const delta = event.deltaY > 0 ? -this._store.state.scaleStep * this._store.state.scale : this._store.state.scaleStep * this._store.state.scale;
@@ -83,4 +84,5 @@ export class KritzelViewport {
     this._store.state.hasViewportChanged = true;
     this._store.rerender();
   }
+ 
 }

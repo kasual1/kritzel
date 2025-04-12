@@ -15,6 +15,7 @@ const initialState: KritzelEngineState = {
   selectionBox: null,
   selectionGroup: null,
   resizeHandleType: null,
+  isFocused: false,
   isSelecting: false,
   isResizing: false,
   isResizeHandleSelected: false,
@@ -26,8 +27,8 @@ const initialState: KritzelEngineState = {
   isCtrlKeyPressed: false,
   hasViewportChanged: false,
   debugInfo: {
-    showObjectInfo: true,
-    showViewportInfo: true,
+    showObjectInfo: false,
+    showViewportInfo: false,
     logCommands: false,
   },
   host: null,

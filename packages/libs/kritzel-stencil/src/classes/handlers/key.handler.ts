@@ -19,6 +19,10 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   }
 
   handleKeyDown(event: KeyboardEvent): void {
+    if(this._store.state.isFocused === false) {
+      return;
+    }
+
     this._store.state.isCtrlKeyPressed = event.ctrlKey;
 
     if(this._store.state.isCtrlKeyPressed) {
@@ -92,6 +96,10 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   }
 
   handleKeyUp(event: KeyboardEvent): void {
+    if(this._store.state.isFocused === false) {
+      return;
+    }
+    
     this._store.state.isCtrlKeyPressed = event.ctrlKey;
   }
 
