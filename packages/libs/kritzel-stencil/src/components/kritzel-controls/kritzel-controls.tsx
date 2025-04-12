@@ -44,9 +44,14 @@ export class KritzelControls {
 
   async componentWillLoad() {
     await customElements.whenDefined('kritzel-engine');
-    this.kritzelEngine = document.querySelector('kritzel-engine');
-    this.kritzelEngine?.changeActiveTool('cursor');
-    this.selectedControl = 'selection';
+    this.kritzelEngine = this.host.parentElement.querySelector('kritzel-engine');
+
+    if (!this.kritzelEngine) {
+      throw new Error('kritzel-engine not found in parent element.');
+    }
+    
+    this.kritzelEngine?.changeActiveTool('pen');
+    this.selectedControl = 'pen';
   }
 
   preventDefault(event: Event) {

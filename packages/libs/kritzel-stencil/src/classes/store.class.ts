@@ -27,7 +27,7 @@ const initialState: KritzelEngineState = {
   hasViewportChanged: false,
   debugInfo: {
     showObjectInfo: false,
-    showViewportInfo: false,
+    showViewportInfo: true,
     logCommands: false,
   },
   host: null,
@@ -41,8 +41,8 @@ const initialState: KritzelEngineState = {
   startY: 0,
   translateX: 0,
   translateY: 0,
-  viewportWidth: window.innerWidth,
-  viewportHeight: window.innerHeight,
+  viewportWidth: 0,
+  viewportHeight: 0,
   historyBufferSize: 1000,
 };
 export class KritzelStore {
@@ -73,6 +73,7 @@ export class KritzelStore {
   }
 
   constructor() {
+    console.log('KritzelStore constructor');
     this._store = createStore<KritzelEngineState>(initialState);
     this._history = new KritzelHistory(this);
     this._store.state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
