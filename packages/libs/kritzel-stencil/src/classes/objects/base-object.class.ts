@@ -189,8 +189,8 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
 
   centerInViewport(): void {
     const scale = this._store.state.scale;
-    this.translateX = (window.innerWidth / 2 - this.totalWidth / 2 - this._store.state.translateX) / scale;
-    this.translateY = (window.innerHeight / 2 - this.totalHeight / 2 - this._store.state.translateY) / scale;
+    this.translateX = (this._store.state.viewportWidth / 2 - this.totalWidth / 2 - this._store.state.translateX) / scale;
+    this.translateY = (this._store.state.viewportHeight / 2 - this.totalHeight / 2 - this._store.state.translateY) / scale;
   }
 
   move(startX: number, startY: number, endX: number, endY: number): void {
