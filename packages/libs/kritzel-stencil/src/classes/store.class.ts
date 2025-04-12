@@ -26,7 +26,7 @@ const initialState: KritzelEngineState = {
   isCtrlKeyPressed: false,
   hasViewportChanged: false,
   debugInfo: {
-    showObjectInfo: false,
+    showObjectInfo: true,
     showViewportInfo: true,
     logCommands: false,
   },
@@ -71,6 +71,15 @@ export class KritzelStore {
   get selectedObjects() {
     return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
   }
+
+  get offsetX() {
+    return this.state.host.getBoundingClientRect().left;
+  }
+
+  get offsetY() {
+    return this.state.host.getBoundingClientRect().top;
+  }
+
 
   constructor() {
     console.log('KritzelStore constructor');
