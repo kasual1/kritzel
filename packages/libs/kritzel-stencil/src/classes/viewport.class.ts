@@ -55,12 +55,9 @@ export class KritzelViewport {
   handleWheel(event: WheelEvent): void {
     event.preventDefault();
 
-    const adjustedClientX = event.clientX - this._store.offsetX;
-    const adjustedClientY = event.clientY - this._store.offsetY;
-
     const rect = this._store.state.host.getBoundingClientRect();
-    this._store.state.cursorX = adjustedClientX - rect.left;
-    this._store.state.cursorY = adjustedClientY - rect.top;
+    this._store.state.cursorX = event.clientX - rect.left;
+    this._store.state.cursorY = event.clientY - rect.top;
 
     const delta = event.deltaY > 0 ? -this._store.state.scaleStep * this._store.state.scale : this._store.state.scaleStep * this._store.state.scale;
     const newScale = Math.min(this._store.state.scaleMax, Math.max(this._store.state.scaleMin, this._store.state.scale + delta));
