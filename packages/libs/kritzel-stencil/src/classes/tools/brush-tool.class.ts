@@ -32,7 +32,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
       const x = event.clientX - this._store.offsetX;
       const y = event.clientY - this._store.offsetY;
 
-      debugger;
       this._store.state.currentPath = new KritzelPath(this._store,{
         points: [...this._store.state.currentPath.points, [x, y]],
         translateX: -this._store.state.translateX,
