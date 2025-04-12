@@ -17,7 +17,7 @@
   "scripts": {
     "test": "npm run test -w packages/libs/kritzel-stencil",
     "clean": "npm run clean --workspaces",
-    "bump": "npm run bump --workspaces --if-present",
+    "bump": "node ./scripts/bump.js",
     "build": "npm run build --workspaces --if-present",
     "publish": "npm run release --workspaces --if-present",
     "start": "npm run start -w packages/libs/kritzel-stencil",
