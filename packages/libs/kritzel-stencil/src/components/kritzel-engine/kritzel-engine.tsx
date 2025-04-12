@@ -26,8 +26,6 @@ export class KritzelEngine {
   @Prop()
   activeTool: KritzelTool;
 
-  id: string;
-
   store: KritzelStore;
 
   viewport: KritzelViewport;
@@ -43,7 +41,6 @@ export class KritzelEngine {
   }
 
   constructor() {
-    this.id = crypto.randomUUID();
     this.store = new KritzelStore();
     this.store.state.activeTool = new KritzelBrushTool(this.store);
     this.keyHandler = new KritzelKeyHandler(this.store);
@@ -131,7 +128,7 @@ export class KritzelEngine {
 
   render() {
     return (
-      <Host id={this.id}>
+      <Host>
         <div class="debug-panel" style={{ display: this.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
           <div>TranslateX: {this.store.state?.translateX}</div>
           <div>TranslateY: {this.store.state?.translateY}</div>
