@@ -15,8 +15,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
   handleMouseDown(event: MouseEvent) {
     if (KritzelClickHelper.isLeftClick(event)) {
       this._store.state.isDrawing = true;
-      const x = event.clientX;
-      const y = event.clientY;
+      const x = event.clientX - this._store.offsetX;
+      const y = event.clientY - this._store.offsetY;
 
       this._store.state.currentPath = new KritzelPath(this._store, {
         points: [[x, y]],
@@ -29,9 +29,10 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
   handleMouseMove(event: MouseEvent): void {
     if (this._store.state.isDrawing) {
-      const x = event.clientX;
-      const y = event.clientY;
+      const x = event.clientX - this._store.offsetX;
+      const y = event.clientY - this._store.offsetY;
 
+      debugger;
       this._store.state.currentPath = new KritzelPath(this._store,{
         points: [...this._store.state.currentPath.points, [x, y]],
         translateX: -this._store.state.translateX,
