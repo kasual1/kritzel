@@ -6,28 +6,20 @@ export class KritzelViewport {
 
   isDragging: boolean = false;
 
-  offsetX: number = 0;
-
-  offsetY: number = 0;
-
   constructor(store: KritzelStore, host: HTMLElement) {
-
-    this.offsetX = host.getBoundingClientRect().left;
-    this.offsetY = host.getBoundingClientRect().top;
-
     this._store = store;
     this._store.state.host = host;
     this._store.state.viewportWidth = host.clientWidth;
     this._store.state.viewportHeight = host.clientHeight;
     this._store.state.startX = 0;
     this._store.state.startY = 0;
-    this._store.state.translateX = -this.offsetX;
-    this._store.state.translateY = -this.offsetY;
+    this._store.state.translateX = -this._store.offsetX;
+    this._store.state.translateY = -this._store.offsetY;
   }
 
   handleMouseDown(event: MouseEvent): void {
-    const adjustedClientX = event.clientX - this.offsetX;
-    const adjustedClientY = event.clientY - this.offsetY;
+    const adjustedClientX = event.clientX - this._store.offsetX;
+    const adjustedClientY = event.clientY - this._store.offsetY;
     
     if (KritzelClickHelper.isRightClick(event)) {
       this.isDragging = true;
@@ -37,8 +29,8 @@ export class KritzelViewport {
   }
 
   handleMouseMove(event: MouseEvent): void {
-    const adjustedClientX = event.clientX - this.offsetX;
-    const adjustedClientY = event.clientY - this.offsetY;
+    const adjustedClientX = event.clientX - this._store.offsetX;
+    const adjustedClientY = event.clientY - this._store.offsetY;
 
     this._store.state.cursorX = adjustedClientX;
     this._store.state.cursorY = adjustedClientY;
@@ -62,8 +54,8 @@ export class KritzelViewport {
   handleWheel(event: WheelEvent): void {
     event.preventDefault();
 
-    const adjustedClientX = event.clientX - this.offsetX;
-    const adjustedClientY = event.clientY - this.offsetY;
+    const adjustedClientX = event.clientX - this._store.offsetX;
+    const adjustedClientY = event.clientY - this._store.offsetY;
 
     const rect = this._store.state.host.getBoundingClientRect();
     this._store.state.cursorX = adjustedClientX- rect.left;
