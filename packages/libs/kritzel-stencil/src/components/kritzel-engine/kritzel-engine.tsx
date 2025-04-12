@@ -76,6 +76,11 @@ export class KritzelEngine {
     this.store.state?.activeTool?.handleWheel(ev);
   }
 
+  @Listen('resize', { target: 'window' })
+  handleResize() {
+    this.viewport.handleResize();
+  }
+
   @Listen('keydown', { target: 'window' })
   handleKeyDown(ev) {
     this.keyHandler.handleKeyDown(ev);

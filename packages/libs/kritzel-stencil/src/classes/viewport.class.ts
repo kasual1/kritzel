@@ -61,4 +61,11 @@ export class KritzelViewport {
     this._store.state.hasViewportChanged = true;
     this._store.rerender();
   }
+
+  handleResize(): void {
+    this._store.state.viewportWidth = window.innerWidth;
+    this._store.state.viewportHeight = window.innerHeight;
+    this._store.state.hasViewportChanged = true;
+    this._store.rerender();
+  }
 }
