@@ -59,7 +59,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   private startSelection(event: MouseEvent): void {
-    const { clientX, clientY } = event;
+    const clientX = event.clientX - this._store.offsetX;
+    const clientY = event.clientY - this._store.offsetY;
     const selectionBox = new KrtizelSelectionBox(this._store);
 
     this.selectionStartX = (clientX - this._store.state.translateX) / this._store.state.scale;
@@ -77,7 +78,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   private updateSelection(event: MouseEvent): void {
-    const { clientX, clientY } = event;
+    const clientX = event.clientX - this._store.offsetX;
+    const clientY = event.clientY - this._store.offsetY;
     const selectionBox = this._store.state.selectionBox;
 
     if (selectionBox) {
