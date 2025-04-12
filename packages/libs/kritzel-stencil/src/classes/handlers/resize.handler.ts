@@ -21,9 +21,12 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
     if (KritzelClickHelper.isLeftClick(event)) {
 
       if (this._store.state.selectionGroup && this._store.state.isResizeHandleSelected) {
+        const clientX = event.clientX - this._store.offsetX;
+        const clientY = event.clientY - this._store.offsetY;
+
         this._store.state.isResizing = true;
-        this.initialMouseX = event.clientX;
-        this.initialMouseY = event.clientY;
+        this.initialMouseX = clientX;
+        this.initialMouseY = clientY;
         this.initialSize.width = this._store.state.selectionGroup.width;
         this.initialSize.height = this._store.state.selectionGroup.height;
         this.initialSize.x = this._store.state.selectionGroup.translateX;
@@ -34,9 +37,11 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
   handleMouseMove(event: MouseEvent): void {
     if(this._store.state.isResizing && this._store.state.selectionGroup) {
+      const clientX = event.clientX - this._store.offsetX;
+      const clientY = event.clientY - this._store.offsetY;
 
-      const dx = (event.clientX - this.initialMouseX);
-      const dy = (event.clientY - this.initialMouseY);
+      const dx = (clientX - this.initialMouseX);
+      const dy = (clientY - this.initialMouseY);
 
 
       switch (this._store.state.resizeHandleType) {

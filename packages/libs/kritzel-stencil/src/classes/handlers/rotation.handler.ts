@@ -16,13 +16,16 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
     if (KritzelClickHelper.isLeftClick(event)) {
 
       if (this._store.state.selectionGroup && this._store.state.isRotationHandleSelected) {
+        const clientX = event.clientX - this._store.offsetX;
+        const clientY = event.clientY - this._store.offsetY;
+
         this._store.state.isRotating = true;
         
         const centerX = this._store.state.selectionGroup.translateX + this._store.state.selectionGroup.width / 2 / this._store.state.scale;
         const centerY = this._store.state.selectionGroup.translateY + this._store.state.selectionGroup.height / 2 / this._store.state.scale;
 
-        const cursorX = (event.clientX - this._store.state.translateX) / this._store.state.scale;
-        const cursorY = (event.clientY - this._store.state.translateY) / this._store.state.scale;
+        const cursorX = (clientX - this._store.state.translateX) / this._store.state.scale;
+        const cursorY = (clientY - this._store.state.translateY) / this._store.state.scale;
 
         this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - this._store.state.selectionGroup.rotation;
       }
@@ -31,11 +34,14 @@ export class KritzelRotationHandler extends KritzelBaseHandler{
 
   handleMouseMove(event: MouseEvent): void {
     if (this._store.state.isRotating && this._store.state.selectionGroup) {
+      const clientX = event.clientX - this._store.offsetX;
+      const clientY = event.clientY - this._store.offsetY;
+
       const groupCenterX = this._store.state.selectionGroup.translateX + this._store.state.selectionGroup.width / 2 / this._store.state.scale;
       const groupCenterY = this._store.state.selectionGroup.translateY + this._store.state.selectionGroup.height / 2 / this._store.state.scale;
 
-      const cursorX = (event.clientX - this._store.state.translateX) / this._store.state.scale;
-      const cursorY = (event.clientY - this._store.state.translateY) / this._store.state.scale;
+      const cursorX = (clientX - this._store.state.translateX) / this._store.state.scale;
+      const cursorY = (clientY - this._store.state.translateY) / this._store.state.scale;
 
       const currentRotation = Math.atan2(groupCenterY - cursorY, groupCenterX - cursorX);
 

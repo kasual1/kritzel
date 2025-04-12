@@ -38,19 +38,25 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   }
 
   private startDragging(event: MouseEvent): void {
+    const clientX = event.clientX - this._store.offsetX;
+    const clientY = event.clientY - this._store.offsetY;
+
     this._store.state.isDragging = true;
-    this.dragStartX = event.clientX;
-    this.dragStartY = event.clientY;
+    this.dragStartX = clientX;
+    this.dragStartY = clientY;
     this.startX = this.dragStartX;
     this.startY = this.dragStartY;
   }
 
   private updateDragging(event: MouseEvent): void {
-    this.endX = event.clientX;
-    this.endY = event.clientY;
-    this._store.state.selectionGroup.move(event.clientX, event.clientY, this.dragStartX, this.dragStartY);
-    this.dragStartX = event.clientX;
-    this.dragStartY = event.clientY;
+    const clientX = event.clientX - this._store.offsetX;
+    const clientY = event.clientY - this._store.offsetY;
+
+    this.endX = clientX;
+    this.endY = clientY;
+    this._store.state.selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
+    this.dragStartX = clientX;
+    this.dragStartY = clientY;
 
     this._store.rerender();
   }
