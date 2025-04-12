@@ -13,8 +13,8 @@ export class KritzelViewport {
     this._store.state.viewportHeight = host.clientHeight;
     this._store.state.startX = 0;
     this._store.state.startY = 0;
-    this._store.state.translateX = -this._store.offsetX;
-    this._store.state.translateY = -this._store.offsetY;
+    this._store.state.translateX = 0;
+    this._store.state.translateY = 0;
   }
 
   handleMouseDown(event: MouseEvent): void {
