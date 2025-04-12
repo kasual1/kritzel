@@ -26,6 +26,8 @@ export class KritzelEngine {
   @Prop()
   activeTool: KritzelTool;
 
+  id: string;
+
   store: KritzelStore;
 
   viewport: KritzelViewport;
@@ -41,11 +43,12 @@ export class KritzelEngine {
   }
 
   constructor() {
+    this.id = crypto.randomUUID();
     this.store = new KritzelStore();
     this.store.state.activeTool = new KritzelBrushTool(this.store);
     this.keyHandler = new KritzelKeyHandler(this.store);
   }
-  
+
   componentDidLoad() {
     this.viewport = new KritzelViewport(this.store, this.host);
   }
@@ -94,6 +97,13 @@ export class KritzelEngine {
     this.keyHandler.handleKeyUp(ev);
   }
 
+  @Listen('mousedown', { target: 'window', passive: true })
+  updateFocus(ev) {
+    const rect = this.store.state.host.getBoundingClientRect();
+    const isInside = ev.clientX >= rect.left && ev.clientX <= rect.right && ev.clientY >= rect.top && ev.clientY <= rect.bottom;
+    this.store.state.isFocused = isInside;
+  }
+
   @Method()
   async changeActiveTool(tool: string) {
     switch (tool) {
@@ -121,7 +131,7 @@ export class KritzelEngine {
 
   render() {
     return (
-      <Host>
+      <Host id={this.id}>
         <div class="debug-panel" style={{ display: this.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
           <div>TranslateX: {this.store.state?.translateX}</div>
           <div>TranslateY: {this.store.state?.translateY}</div>
@@ -131,6 +141,7 @@ export class KritzelEngine {
           <div>Scale: {this.store.state?.scale}</div>
           <div>ActiveTool: {this.store.state?.activeTool?.name}</div>
           <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
+          <div>IsFocused: {this.store.state.isFocused ? 'true' : 'false'}</div>
           <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
           <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
           <div>IsResizeHandleSelected: {this.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
