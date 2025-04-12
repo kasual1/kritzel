@@ -6,28 +6,48 @@ export class KritzelViewport {
 
   isDragging: boolean = false;
 
+  offsetX: number = 0;
+
+  offsetY: number = 0;
+
   constructor(store: KritzelStore, host: HTMLElement) {
+
+    this.offsetX = host.getBoundingClientRect().left;
+    this.offsetY = host.getBoundingClientRect().top;
+
     this._store = store;
     this._store.state.host = host;
+    this._store.state.viewportWidth = host.clientWidth;
+    this._store.state.viewportHeight = host.clientHeight;
+    this._store.state.startX = 0;
+    this._store.state.startY = 0;
+    this._store.state.translateX = -this.offsetX;
+    this._store.state.translateY = -this.offsetY;
   }
 
   handleMouseDown(event: MouseEvent): void {
+    const adjustedClientX = event.clientX - this.offsetX;
+    const adjustedClientY = event.clientY - this.offsetY;
+    
     if (KritzelClickHelper.isRightClick(event)) {
       this.isDragging = true;
-      this._store.state.startX = event.clientX;
-      this._store.state.startY = event.clientY;
+      this._store.state.startX = adjustedClientX;
+      this._store.state.startY = adjustedClientY;
     }
   }
 
   handleMouseMove(event: MouseEvent): void {
-    this._store.state.cursorX = event.clientX;
-    this._store.state.cursorY = event.clientY;
+    const adjustedClientX = event.clientX - this.offsetX;
+    const adjustedClientY = event.clientY - this.offsetY;
+
+    this._store.state.cursorX = adjustedClientX;
+    this._store.state.cursorY = adjustedClientY;
 
     if (this.isDragging) {
-      this._store.state.translateX -= this._store.state.startX - event.clientX;
-      this._store.state.translateY -= this._store.state.startY - event.clientY;
-      this._store.state.startX = event.clientX;
-      this._store.state.startY = event.clientY;
+      this._store.state.translateX -= this._store.state.startX - adjustedClientX;
+      this._store.state.translateY -= this._store.state.startY - adjustedClientY;
+      this._store.state.startX = adjustedClientX;
+      this._store.state.startY = adjustedClientY;
       this._store.state.hasViewportChanged = true;
       this._store.rerender();
     }
@@ -42,9 +62,12 @@ export class KritzelViewport {
   handleWheel(event: WheelEvent): void {
     event.preventDefault();
 
+    const adjustedClientX = event.clientX - this.offsetX;
+    const adjustedClientY = event.clientY - this.offsetY;
+
     const rect = this._store.state.host.getBoundingClientRect();
-    this._store.state.cursorX = event.clientX - rect.left;
-    this._store.state.cursorY = event.clientY - rect.top;
+    this._store.state.cursorX = adjustedClientX- rect.left;
+    this._store.state.cursorY = adjustedClientY - rect.top;
 
     const delta = event.deltaY > 0 ? -this._store.state.scaleStep * this._store.state.scale : this._store.state.scaleStep * this._store.state.scale;
     const newScale = Math.min(this._store.state.scaleMax, Math.max(this._store.state.scaleMin, this._store.state.scale + delta));
@@ -63,8 +86,8 @@ export class KritzelViewport {
   }
 
   handleResize(): void {
-    this._store.state.viewportWidth = window.innerWidth;
-    this._store.state.viewportHeight = window.innerHeight;
+    this._store.state.viewportWidth = this._store.state.host.clientWidth;
+    this._store.state.viewportHeight = this._store.state.host.clientHeight;
     this._store.state.hasViewportChanged = true;
     this._store.rerender();
   }

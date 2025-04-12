@@ -6,7 +6,6 @@ import { Component, Host, h } from '@stencil/core';
   shadow: false,
 })
 export class KritzelEditor {
-
   render() {
     return (
       <Host>

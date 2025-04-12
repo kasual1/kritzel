@@ -42,9 +42,12 @@ export class KritzelEngine {
 
   constructor() {
     this.store = new KritzelStore();
-    this.viewport = new KritzelViewport(this.store, this.host);
     this.store.state.activeTool = new KritzelBrushTool(this.store);
     this.keyHandler = new KritzelKeyHandler(this.store);
+  }
+  
+  componentDidLoad() {
+    this.viewport = new KritzelViewport(this.store, this.host);
   }
 
   @Listen('contextmenu')
@@ -120,8 +123,6 @@ export class KritzelEngine {
     return (
       <Host>
         <div class="debug-panel" style={{ display: this.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
-          <div>StartX: {this.store.state?.startX}</div>
-          <div>StartY: {this.store.state?.startY}</div>
           <div>TranslateX: {this.store.state?.translateX}</div>
           <div>TranslateY: {this.store.state?.translateY}</div>
           <div>ViewportWidth: {this.store.state?.viewportWidth}</div>
