@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property     | Attribute | Description | Type          | Default     |
-| ------------ | --------- | ----------- | ------------- | ----------- |
-| `activeTool` | --        |             | `KritzelTool` | `undefined` |
+| Property     | Attribute     | Description | Type          | Default     |
+| ------------ | ------------- | ----------- | ------------- | ----------- |
+| `activeTool` | `active-tool` |             | `KritzelTool` | `undefined` |
 
 
 ## Methods

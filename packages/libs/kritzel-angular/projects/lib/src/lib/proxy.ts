@@ -17,7 +17,7 @@ import { Components } from 'kritzel-stencil';
   inputs: [],
 })
 export class KritzelControls {
-  protected el: HTMLElement;
+  protected el: HTMLKritzelControlsElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -38,7 +38,7 @@ export declare interface KritzelControls extends Components.KritzelControls {}
   inputs: [],
 })
 export class KritzelEditor {
-  protected el: HTMLElement;
+  protected el: HTMLKritzelEditorElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -61,7 +61,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {}
   inputs: ['activeTool'],
 })
 export class KritzelEngine {
-  protected el: HTMLElement;
+  protected el: HTMLKritzelEngineElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -83,7 +83,7 @@ export declare interface KritzelEngine extends Components.KritzelEngine {}
   inputs: ['label', 'name'],
 })
 export class KritzelIcon {
-  protected el: HTMLElement;
+  protected el: HTMLKritzelIconElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;

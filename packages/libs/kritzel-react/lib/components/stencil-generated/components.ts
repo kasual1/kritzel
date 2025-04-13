@@ -15,7 +15,7 @@ import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKri
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
 import { KritzelIcon as KritzelIconElement, defineCustomElement as defineKritzelIcon } from "../../../../kritzel-stencil/dist/components/kritzel-icon.js";
 
-type KritzelControlsEvents = NonNullable<unknown>;
+export type KritzelControlsEvents = NonNullable<unknown>;
 
 export const KritzelControls: StencilReactComponent<KritzelControlsElement, KritzelControlsEvents> = /*@__PURE__*/ createComponent<KritzelControlsElement, KritzelControlsEvents>({
     tagName: 'kritzel-controls',
@@ -26,7 +26,7 @@ export const KritzelControls: StencilReactComponent<KritzelControlsElement, Krit
     defineCustomElement: defineKritzelControls
 });
 
-type KritzelEditorEvents = NonNullable<unknown>;
+export type KritzelEditorEvents = NonNullable<unknown>;
 
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents>({
     tagName: 'kritzel-editor',
@@ -37,7 +37,7 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     defineCustomElement: defineKritzelEditor
 });
 
-type KritzelEngineEvents = NonNullable<unknown>;
+export type KritzelEngineEvents = NonNullable<unknown>;
 
 export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelEngineEvents> = /*@__PURE__*/ createComponent<KritzelEngineElement, KritzelEngineEvents>({
     tagName: 'kritzel-engine',
@@ -48,7 +48,7 @@ export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelE
     defineCustomElement: defineKritzelEngine
 });
 
-type KritzelIconEvents = NonNullable<unknown>;
+export type KritzelIconEvents = NonNullable<unknown>;
 
 export const KritzelIcon: StencilReactComponent<KritzelIconElement, KritzelIconEvents> = /*@__PURE__*/ createComponent<KritzelIconElement, KritzelIconEvents>({
     tagName: 'kritzel-icon',
