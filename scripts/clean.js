@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const rimraf = require('rimraf');
 const { execSync } = require('child_process');
 
 // Paths to clean
@@ -7,20 +8,20 @@ const paths = [
   '../packages/demos/angular',
   '../packages/demos/react',
   '../packages/demos/vue',
-  '../packages/libs/angular',
-  '../packages/libs/react',
-  '../packages/libs/stencil',
-  '../packages/libs/vue',
+  '../packages/libs/kritzel-angular',
+  '../packages/libs/kritzel-react',
+  '../packages/libs/kritzel-stencil',
+  '../packages/libs/kritzel-vue',
 ];
 
 // Helper function to delete a folder
-function deleteFolder(folderPath) {
-  const fullPath = path.resolve(__dirname, folderPath, 'node_modules');
+function deleteFolder(folderPath, subfolder) {
+  const fullPath = path.resolve(__dirname, folderPath, subfolder);
   if (fs.existsSync(fullPath)) {
     console.log(`Deleting: ${fullPath}`);
-    execSync(`rimraf ${fullPath}`, { stdio: 'inherit' }); // Use rimraf for cross-platform compatibility
+    rimraf.sync(fullPath); // Use rimraf's sync method
   } else {
-    console.log(`No node_modules found at: ${fullPath}`);
+    console.log(`No ${subfolder} found at: ${fullPath}`);
   }
 }
 
@@ -35,11 +36,15 @@ function deleteFile(filePath) {
   }
 }
 
-// Step 1: Delete node_modules in specified paths
-paths.forEach(deleteFolder);
+// Step 1: Delete node_modules and dist in specified paths
+paths.forEach((folderPath) => {
+  deleteFolder(folderPath, 'node_modules');
+  deleteFolder(folderPath, 'dist');
+});
 
 // Step 2: Delete node_modules and package-lock.json at the root
-deleteFolder('../'); // Delete node_modules at the root
+deleteFolder('../', 'node_modules'); // Delete node_modules at the root
+deleteFolder('../', 'dist'); // Delete dist at the root
 deleteFile('../package-lock.json'); // Delete package-lock.json at the root
 
 console.log('Clean-up complete!');
