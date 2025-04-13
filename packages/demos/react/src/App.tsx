@@ -4,9 +4,7 @@ import { KritzelEditor } from 'kritzel-react'
 function App() {
 
   return (
-    <>
-      <KritzelEditor></KritzelEditor>
-    </>
+     <KritzelEditor></KritzelEditor>
   )
 }
 

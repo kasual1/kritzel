@@ -6,34 +6,21 @@ import { vueOutputTarget } from '@stencil/vue-output-target';
 export const config: Config = {
   namespace: 'stencil',
   outputTargets: [
-    {
-      type: 'dist',
-      esmLoaderPath: '../loader',
-    },
-    {
-      type: 'docs-readme',
-    },
-    {
-      type: 'www',
-      serviceWorker: null,
-    },
-    { type: 'dist-custom-elements', externalRuntime: false },
+    { type: 'dist', esmLoaderPath: '../loader' },
+    { type: 'docs-readme' },
+    { type: 'www', serviceWorker: null },
+    { type: 'dist-custom-elements', externalRuntime: false, customElementsExportBehavior: 'single-export-module' },
     angularOutputTarget({
       componentCorePackage: 'kritzel-stencil',
       directivesProxyFile: '../kritzel-angular/projects/lib/src/lib/proxy.ts',
       directivesArrayFile: '../kritzel-angular/projects/lib/src/lib/index.ts',
-      outputType: 'component'
+      outputType: 'component',
     }),
-    reactOutputTarget({
-      outDir: '../kritzel-react/lib/components/stencil-generated/',
-      stencilPackageName: '../../../../kritzel-stencil'
-    }),
-    vueOutputTarget({
-      componentCorePackage: '@kritzel/stencil',
-      proxiesFile: '../kritzel-vue/lib/components.ts',
-    }),
+    reactOutputTarget({ outDir: '../kritzel-react/lib/components/stencil-generated/', stencilPackageName: '../../../../kritzel-stencil' }),
+    vueOutputTarget({ componentCorePackage: '../../kritzel-stencil', proxiesFile: '../kritzel-vue/lib/components.ts', includeImportCustomElements: true, customElementsDir: 'dist/components' }),
   ],
-  testing: {
-    browserHeadless: "new",
+  testing: { browserHeadless: true },
+  extras: {
+    enableImportInjection: true,
   },
 };
