@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { LibModule } from 'kritzel-angular';
-
+import { KritzelEditor } from 'kritzel-angular';
 @Component({
     selector: 'app-root',
-    imports: [CommonModule, LibModule],
+    imports: [KritzelEditor],
     templateUrl: './app.component.html',
-    styleUrl: './app.component.scss'
+    styleUrl: './app.component.scss',
+    standalone: true,
 })
 export class AppComponent {
   title = 'angular';
