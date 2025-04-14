@@ -12,6 +12,8 @@
   ],
   "devDependencies": {
     "@types/node": "^22.14.1",
+    "concurrently": "^9.1.2",
+    "localtunnel": "^2.0.2",
     "typescript": "^5.8.3"
   },
   "scripts": {
@@ -22,6 +24,7 @@
     "bump-major": "node ./scripts/bump-major.js",
     "build": "npm run build --workspaces --if-present",
     "publish": "npm run release --workspaces --if-present",
+    "tunnel": "concurrently \"npm run start -w packages/libs/kritzel-stencil\" \"lt --port 3333\"",
     "start": "npm run start -w packages/libs/kritzel-stencil",
     "start-demo-angular": "npm run start -w packages/demos/angular",
     "start-demo-react": "npm run start -w packages/demos/react",
