@@ -1,25 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html dir="ltr" lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stencil Component Starter</title>
 
     <script type="module" src="/build/stencil.esm.js"></script>
     <script nomodule src="/build/stencil.js"></script>
 
     <style>
-     body {
+      html {
         margin: 0;
-        width: 100vw;
-        height: 100vh;
+        padding: 0;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        overflow: hidden;
       }
     </style>
   </head>
   <body>
     <kritzel-editor></kritzel-editor>
-  </body>
 
-  <script>
-  </script>
+    <script>
+      window.onload = function () {
+        document.body.style.height = window.innerHeight + 'px';
+      };
+
+      window.addEventListener('resize', function () {
+        document.body.style.height = window.innerHeight + 'px';
+      });
+    </script>
+  </body>
 </html>
