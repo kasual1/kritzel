@@ -6,6 +6,11 @@ export class KritzelViewport {
 
   isDragging: boolean = false;
 
+  currentTouchEventLength: number = 0;
+  initialTouchDistance: number = 0;
+  startX: number = 0;
+  startY: number = 0;
+
   constructor(store: KritzelStore, host: HTMLElement) {
     this._store = store;
     this._store.state.host = host;
@@ -53,15 +58,79 @@ export class KritzelViewport {
   }
 
   handleTouchStart(event: TouchEvent): void {
-    console.log('touchstart', event);
+    event.preventDefault();
+
+    this.currentTouchEventLength = event.touches.length;
+
+    if (this.currentTouchEventLength === 2) {
+      this._store.state.currentPath = null;
+
+      const firstTouchX = event.touches[0].clientX - this._store.offsetX;
+      const firstTouchY = event.touches[0].clientY - this._store.offsetY;
+
+      const secondTouchX = event.touches[1].clientX - this._store.offsetX;
+      const secondTouchY = event.touches[1].clientY - this._store.offsetY;
+
+      this.initialTouchDistance = Math.sqrt(
+          Math.pow(firstTouchX - secondTouchX, 2) +
+          Math.pow(firstTouchY - secondTouchY, 2)
+      );
+
+      this.startX = (firstTouchX + secondTouchX) / 2;
+      this.startY = (firstTouchY + secondTouchY) / 2;
+    }
+
   }
 
   handleTouchMove(event: TouchEvent): void {
-    console.log('touchmove', event);
+    event.preventDefault();
+
+    if (this.currentTouchEventLength === 2) {
+
+      const firstTouchX = event.touches[0].clientX - this._store.offsetX;
+      const firstTouchY = event.touches[0].clientY - this._store.offsetY;
+
+      const secondTouchX = event.touches[1].clientX - this._store.offsetX;
+      const secondTouchY = event.touches[1].clientY - this._store.offsetY;
+
+      const currentTouchDistance = Math.sqrt(
+        Math.pow(firstTouchX - secondTouchX, 2) +
+          Math.pow(firstTouchY - secondTouchY, 2)
+      );
+
+      const midpointX =
+        (firstTouchX + secondTouchX) / 2;
+      const midpointY =
+        (firstTouchY + secondTouchY) / 2;
+
+      const scaleRatio = currentTouchDistance / this.initialTouchDistance!;
+      const newScale = this._store.state.scale * scaleRatio;
+
+      if (newScale > this._store.state.scaleMax || newScale < this._store.state.scaleMin) {
+        this._store.state.translateX += midpointX - this.startX;
+        this._store.state.translateY += midpointY - this.startY;
+      } else {
+        const translateXAdjustment =
+          (midpointX - this._store.state.translateX) * (scaleRatio - 1);
+        const translateYAdjustment =
+          (midpointY - this._store.state.translateY) * (scaleRatio - 1);
+
+        this._store.state.translateX += midpointX - this.startX - translateXAdjustment;
+        this._store.state.translateY += midpointY - this.startY - translateYAdjustment;
+        this._store.state.scale = newScale;
+        this.initialTouchDistance = currentTouchDistance;
+      }
+
+      this.startX = midpointX;
+      this.startY = midpointY;
+    }
+
   }
 
   handleTouchEnd(event: TouchEvent): void {
-    console.log('touchend', event);
+    event.preventDefault();
+
+    this.currentTouchEventLength = 0;
   }
 
   handleWheel(event: WheelEvent): void {
