@@ -27,6 +27,18 @@ export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
     // default implementation
   }
 
+  handleTouchStart(_event: TouchEvent): void {
+    // default implementation
+  }
+
+  handleTouchMove(_event: TouchEvent): void {
+    // default implementation
+  }
+
+  handleTouchEnd(_event: TouchEvent): void {
+    // default implementation
+  }
+
   handleWheel(_event: WheelEvent): void {
     // default implementation
   }

@@ -52,6 +52,18 @@ export class KritzelViewport {
     }
   }
 
+  handleTouchStart(event: TouchEvent): void {
+    console.log('touchstart', event);
+  }
+
+  handleTouchMove(event: TouchEvent): void {
+    console.log('touchmove', event);
+  }
+
+  handleTouchEnd(event: TouchEvent): void {
+    console.log('touchend', event);
+  }
+
   handleWheel(event: WheelEvent): void {
     event.preventDefault();
 

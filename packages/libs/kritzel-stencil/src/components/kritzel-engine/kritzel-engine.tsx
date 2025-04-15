@@ -73,6 +73,24 @@ export class KritzelEngine {
     this.store.state?.activeTool?.handleMouseUp(ev);
   }
 
+  @Listen('touchstart', { passive: true })
+  handleTouchStart(ev) {
+    this.viewport.handleTouchStart(ev);
+    this.store.state?.activeTool?.handleTouchStart(ev);
+  }
+
+  @Listen('touchmove', { passive: true })
+  handleTouchMove(ev) {
+    this.viewport.handleTouchMove(ev);
+    this.store.state?.activeTool?.handleTouchMove(ev);
+  }
+
+  @Listen('touchend', { passive: true })
+  handleTouchEnd(ev) {
+    this.viewport.handleTouchEnd(ev);
+    this.store.state?.activeTool?.handleTouchEnd(ev);
+  }
+
   @Listen('wheel', { passive: false })
   handleWheel(ev) {
     this.viewport.handleWheel(ev);
