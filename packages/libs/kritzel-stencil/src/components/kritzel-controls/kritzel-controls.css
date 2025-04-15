@@ -27,6 +27,7 @@
   cursor: pointer;
   color: black;
   font-size: 12px;
+  -webkit-tap-highlight-color: transparent;
   font-weight: bold;
 }
 
