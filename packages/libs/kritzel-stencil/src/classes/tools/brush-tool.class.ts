@@ -8,6 +8,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
   name: string = 'brush';
   icon: string = 'brush';
 
+  currentTouchEventLength: number = 0;
+
   constructor(store: KritzelStore) {
     super(store);
   }
@@ -46,6 +48,56 @@ export class KritzelBrushTool extends KritzelBaseTool {
       this._store.state.isDrawing = false;
 
       if(this._store.state.currentPath){
+        this._store.state.currentPath.zIndex = this._store.currentZIndex;
+        this._store.history.executeCommand(new AddObjectCommand(this._store, this, this._store.state.currentPath));
+      }
+
+      this._store.state.currentPath = undefined;
+    }
+  }
+
+  handleTouchStart(event: TouchEvent): void {
+    event.preventDefault();
+
+    this.currentTouchEventLength = event.touches.length;
+
+    if (this.currentTouchEventLength === 1) {
+      const x = Math.round(event.touches[0].clientX - this._store.offsetX);
+      const y = Math.round(event.touches[0].clientY - this._store.offsetY);
+
+      this._store.state.isDrawing = true;
+      this._store.state.currentPath = new KritzelPath(this._store, {
+        points: [[x, y]],
+        translateX: -this._store.state.translateX,
+        translateY: -this._store.state.translateY,
+        scale: this._store.state.scale,
+      });
+    }
+  }
+
+  handleTouchMove(event: TouchEvent): void {
+    event.preventDefault();
+
+    if (this.currentTouchEventLength === 1) {
+      const x = Math.round(event.touches[0].clientX - this._store.offsetX);
+      const y = Math.round(event.touches[0].clientY - this._store.offsetY);
+
+      this._store.state.currentPath = new KritzelPath(this._store, {
+        points: [...this._store.state.currentPath.points, [x, y]],
+        translateX: -this._store.state.translateX,
+        translateY: -this._store.state.translateY,
+        scale: this._store.state.scale,
+      });
+    }
+  }
+
+  handleTouchEnd(_event: TouchEvent): void {
+    this.currentTouchEventLength = 0;
+
+    if (this._store.state.isDrawing) {
+      this._store.state.isDrawing = false;
+
+      if (this._store.state.currentPath) {
         this._store.state.currentPath.zIndex = this._store.currentZIndex;
         this._store.history.executeCommand(new AddObjectCommand(this._store, this, this._store.state.currentPath));
       }
