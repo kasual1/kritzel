@@ -40,6 +40,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
       });
+
+      this._store.rerender();
     }
   }
 
@@ -57,8 +59,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
   }
 
   handleTouchStart(event: TouchEvent): void {
-    event.preventDefault();
-
     this.currentTouchEventLength = event.touches.length;
 
     if (this.currentTouchEventLength === 1) {
@@ -76,8 +76,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
   }
 
   handleTouchMove(event: TouchEvent): void {
-    event.preventDefault();
-
     if (this.currentTouchEventLength === 1) {
       const x = Math.round(event.touches[0].clientX - this._store.offsetX);
       const y = Math.round(event.touches[0].clientY - this._store.offsetY);
@@ -88,6 +86,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
       });
+
+      this._store.rerender();
     }
   }
 

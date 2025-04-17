@@ -1,4 +1,3 @@
-import { createStore } from '@stencil/store';
 import { KritzelBaseObject } from './objects/base-object.class';
 import { KritzelSelectionGroup } from './objects/selection-group.class';
 import { RemoveSelectionGroupCommand } from './commands/remove-selection-group.command';
@@ -7,6 +6,7 @@ import { KritzelEngineState } from '../interfaces/engine-state.interface';
 import { KritzelOctree } from './structures/octree.structure';
 import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 import { KrtizelSelectionBox } from './objects/selection-box.class';
+import { KritzelEngine } from '../components/kritzel-engine/kritzel-engine';
 
 const initialState: KritzelEngineState = {
   activeTool: null,
@@ -47,7 +47,10 @@ const initialState: KritzelEngineState = {
   historyBufferSize: 1000,
 };
 export class KritzelStore {
-  private readonly _store: any;
+
+  private _kritzelEngine: KritzelEngine;
+
+  private _state: KritzelEngineState;
 
   private readonly _history: KritzelHistory;
 
@@ -58,15 +61,15 @@ export class KritzelStore {
   }
 
   get state(): KritzelEngineState {
-    return this._store.state;
+    return this._state;
   }
 
   get currentZIndex() {
-    return this.state.objectsOctree.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox)).length;
+    return this._state.objectsOctree.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox)).length;
   }
 
   get allObjects() {
-    return this.state.objectsOctree.allObjects();
+    return this._state.objectsOctree.allObjects();
   }
 
   get selectedObjects() {
@@ -74,18 +77,18 @@ export class KritzelStore {
   }
 
   get offsetX() {
-    return this.state.host.getBoundingClientRect().left;
+    return this._state.host.getBoundingClientRect().left;
   }
 
   get offsetY() {
-    return this.state.host.getBoundingClientRect().top;
+    return this._state.host.getBoundingClientRect().top;
   }
 
-
-  constructor() {
-    this._store = createStore<KritzelEngineState>(initialState);
+  constructor(kritzelEngine: KritzelEngine) {
+    this._state = initialState;
+    this._kritzelEngine = kritzelEngine;
     this._history = new KritzelHistory(this);
-    this._store.state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
+    this._state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
       x: -Infinity,
       y: -Infinity,
       z: -Infinity,
@@ -97,17 +100,19 @@ export class KritzelStore {
 
   rerender() {
     const viewportBounds: KritzelBoundingBox = {
-      x: -this.state.translateX / this.state.scale,
-      y: -this.state.translateY / this.state.scale,
-      z: this.state.scale,
-      width: this.state.viewportWidth / this.state.scale,
-      height: this.state.viewportHeight / this.state.scale,
+      x: -this._state.translateX / this._state.scale,
+      y: -this._state.translateY / this._state.scale,
+      z: this._state.scale,
+      width: this._state.viewportWidth / this._state.scale,
+      height: this._state.viewportHeight / this._state.scale,
       depth: 100,
     };
 
-    this.objectsInViewport = this.state.objectsOctree.query(viewportBounds);
-    this.state.cursorX++;
-    this.state.cursorX--;
+    this.objectsInViewport = this._state.objectsOctree.query(viewportBounds);
+    
+    if(this._kritzelEngine){
+      this._kritzelEngine.forceUpdate++;
+    }
   }
 
   findObjectById(id: string): KritzelBaseObject<any> | null {
@@ -120,15 +125,9 @@ export class KritzelStore {
   }
 
   deselectAllObjects(): void {
-    if (this.state.selectionGroup) {
+    if (this._state.selectionGroup) {
       this._history.executeCommand(new RemoveSelectionGroupCommand(this, this));
     }
   }
 
-  updateEntireState(state: KritzelEngineState) {
-    for (const key in state) {
-      const value = state[key];
-      this._store.set(key, value);
-    }
-  }
 }

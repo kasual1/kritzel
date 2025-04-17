@@ -24,7 +24,7 @@
     "bump-major": "node ./scripts/bump-major.js",
     "build": "npm run build --workspaces --if-present",
     "publish": "npm run release --workspaces --if-present",
-    "tunnel": "concurrently \"npm run start -w packages/libs/kritzel-stencil\" \"lt --port 3333\"",
+    "tunnel": "concurrently \"lt --port 3333\" \"npm run start -w packages/libs/kritzel-stencil\"",
     "start": "npm run start -w packages/libs/kritzel-stencil",
     "start-demo-angular": "npm run start -w packages/demos/angular",
     "start-demo-react": "npm run start -w packages/demos/react",
