@@ -1,4 +1,4 @@
-import { Component, Host, h, Listen, Element, Prop, Method } from '@stencil/core';
+import { Component, Host, h, Listen, Element, Prop, Method, State } from '@stencil/core';
 import { KritzelTool } from '../../interfaces/tool.interface';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelViewport } from '../../classes/viewport.class';
@@ -26,6 +26,9 @@ export class KritzelEngine {
   @Prop()
   activeTool: KritzelTool;
 
+  @State() 
+  forceUpdate: number = 0;
+
   store: KritzelStore;
 
   viewport: KritzelViewport;
@@ -41,7 +44,7 @@ export class KritzelEngine {
   }
 
   constructor() {
-    this.store = new KritzelStore();
+    this.store = new KritzelStore(this);
     this.store.state.activeTool = new KritzelBrushTool(this.store);
     this.keyHandler = new KritzelKeyHandler(this.store);
   }

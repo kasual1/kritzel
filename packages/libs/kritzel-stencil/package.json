@@ -42,8 +42,8 @@
     "release": "npm publish"
   },
   "devDependencies": {
-    "@stencil/angular-output-target": "^0.10.2",
     "@stencil/core": "^4.29.2",
+    "@stencil/angular-output-target": "^0.10.2",
     "@stencil/react-output-target": "^1.0.2",
     "@stencil/vue-output-target": "0.10.7",
     "@types/jest": "^29.5.14",
@@ -54,7 +54,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@stencil/store": "^2.1.2",
     "@types/lodash-es": "^4.17.12",
     "browser-image-compression": "^2.0.2",
     "lodash-es": "^4.17.21",

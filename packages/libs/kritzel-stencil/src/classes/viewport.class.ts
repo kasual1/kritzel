@@ -58,8 +58,6 @@ export class KritzelViewport {
   }
 
   handleTouchStart(event: TouchEvent): void {
-    event.preventDefault();
-
     this.currentTouchEventLength = event.touches.length;
 
     if (this.currentTouchEventLength === 2) {
@@ -83,7 +81,7 @@ export class KritzelViewport {
   }
 
   handleTouchMove(event: TouchEvent): void {
-    event.preventDefault();
+    console.log('touch move');
 
     if (this.currentTouchEventLength === 2) {
 
@@ -118,6 +116,7 @@ export class KritzelViewport {
         this._store.state.translateX += midpointX - this.startX - translateXAdjustment;
         this._store.state.translateY += midpointY - this.startY - translateYAdjustment;
         this._store.state.scale = newScale;
+
         this.initialTouchDistance = currentTouchDistance;
       }
 
@@ -127,9 +126,7 @@ export class KritzelViewport {
 
   }
 
-  handleTouchEnd(event: TouchEvent): void {
-    event.preventDefault();
-
+  handleTouchEnd(_event: TouchEvent): void {
     this.currentTouchEventLength = 0;
   }
 
