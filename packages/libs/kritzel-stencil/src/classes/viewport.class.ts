@@ -14,7 +14,6 @@ export class KritzelViewport {
   constructor(store: KritzelStore, host: HTMLElement) {
     this._store = store;
     this._store.state.host = host;
-    this._store.state.host.setAttribute('tabindex', '0');
     this._store.state.viewportWidth = host.clientWidth;
     this._store.state.viewportHeight = host.clientHeight;
     this._store.state.startX = 0;
