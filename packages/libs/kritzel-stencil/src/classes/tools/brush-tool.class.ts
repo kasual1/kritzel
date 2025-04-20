@@ -68,6 +68,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
       });
+
+      this._store.rerender();
     }
   }
 
@@ -97,6 +99,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
       }
 
       this._store.state.currentPath = undefined;
+
+      this._store.rerender();
     }
   }
 }
