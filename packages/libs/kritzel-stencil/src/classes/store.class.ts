@@ -45,6 +45,7 @@ const initialState: KritzelEngineState = {
   viewportWidth: 0,
   viewportHeight: 0,
   historyBufferSize: 1000,
+  touchCount: 0
 };
 export class KritzelStore {
 

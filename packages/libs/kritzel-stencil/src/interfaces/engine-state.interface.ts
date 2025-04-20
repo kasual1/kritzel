@@ -41,4 +41,5 @@ export interface KritzelEngineState {
   viewportWidth: number;
   viewportHeight: number;
   historyBufferSize: number;
+  touchCount: number;
 }
