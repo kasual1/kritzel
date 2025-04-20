@@ -6,7 +6,6 @@ export class KritzelViewport {
 
   isDragging: boolean = false;
 
-  currentTouchEventLength: number = 0;
   initialTouchDistance: number = 0;
   startX: number = 0;
   startY: number = 0;
@@ -57,9 +56,9 @@ export class KritzelViewport {
   }
 
   handleTouchStart(event: TouchEvent): void {
-    this.currentTouchEventLength = event.touches.length;
+    this._store.state.touchCount = event.touches.length;
 
-    if (this.currentTouchEventLength === 2) {
+    if (this._store.state.touchCount === 2) {
       this._store.state.currentPath = null;
 
       const firstTouchX = event.touches[0].clientX - this._store.offsetX;
@@ -80,7 +79,7 @@ export class KritzelViewport {
   }
 
   handleTouchMove(event: TouchEvent): void {
-    if (this.currentTouchEventLength === 2) {
+    if (this._store.state.touchCount === 2) {
 
       const firstTouchX = event.touches[0].clientX - this._store.offsetX;
       const firstTouchY = event.touches[0].clientY - this._store.offsetY;
@@ -126,7 +125,7 @@ export class KritzelViewport {
   }
 
   handleTouchEnd(_event: TouchEvent): void {
-    this.currentTouchEventLength = 0;
+    this._store.state.touchCount = 0;
   }
 
   handleWheel(event: WheelEvent): void {
