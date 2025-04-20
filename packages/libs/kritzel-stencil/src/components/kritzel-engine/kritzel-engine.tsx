@@ -76,20 +76,23 @@ export class KritzelEngine {
     this.store.state?.activeTool?.handleMouseUp(ev);
   }
 
-  @Listen('touchstart', { passive: true })
+  @Listen('touchstart', { passive: false })
   handleTouchStart(ev) {
+    ev.preventDefault();
     this.viewport.handleTouchStart(ev);
     this.store.state?.activeTool?.handleTouchStart(ev);
   }
 
-  @Listen('touchmove', { passive: true })
+  @Listen('touchmove', { passive: false })
   handleTouchMove(ev) {
+    ev.preventDefault();
     this.viewport.handleTouchMove(ev);
     this.store.state?.activeTool?.handleTouchMove(ev);
   }
 
-  @Listen('touchend', { passive: true })
+  @Listen('touchend', { passive: false })
   handleTouchEnd(ev) {
+    ev.preventDefault();
     this.viewport.handleTouchEnd(ev);
     this.store.state?.activeTool?.handleTouchEnd(ev);
   }
@@ -105,7 +108,7 @@ export class KritzelEngine {
     this.viewport.handleResize();
   }
 
-  @Listen('keydown', { target: 'window' })
+  @Listen('keydown', { target: 'window'  })
   handleKeyDown(ev) {
     this.keyHandler.handleKeyDown(ev);
   }

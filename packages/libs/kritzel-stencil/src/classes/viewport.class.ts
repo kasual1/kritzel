@@ -81,8 +81,6 @@ export class KritzelViewport {
   }
 
   handleTouchMove(event: TouchEvent): void {
-    console.log('touch move');
-
     if (this.currentTouchEventLength === 2) {
 
       const firstTouchX = event.touches[0].clientX - this._store.offsetX;
@@ -122,8 +120,10 @@ export class KritzelViewport {
 
       this.startX = midpointX;
       this.startY = midpointY;
-    }
 
+      this._store.state.hasViewportChanged = true;
+      this._store.rerender();
+    }
   }
 
   handleTouchEnd(_event: TouchEvent): void {
