@@ -49,6 +49,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.selectionHandler.handleMouseDown(event);
     this.resizeHandler.handleMouseDown(event);
     this.rotationHandler.handleMouseDown(event);
+
+    this._store.rerender();
   }
 
   handleMouseMove(event: MouseEvent): void {
@@ -56,6 +58,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.selectionHandler.handleMouseMove(event);
     this.resizeHandler.handleMouseMove(event);
     this.rotationHandler.handleMouseMove(event);
+
+    this._store.rerender();
   }
 
   handleMouseUp(event: MouseEvent): void {
@@ -63,9 +67,50 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.selectionHandler.handleMouseUp(event);
     this.resizeHandler.handleMouseUp(event);
     this.rotationHandler.handleMouseUp(event);
+
+    this._store.rerender();
   }
 
-  private getSelectedObject(event: MouseEvent): KritzelSelectionGroup | null {
+  handleTouchStart(event: TouchEvent): void {
+    if (this._store.state.touchCount === 1) {
+      this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
+      this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
+      this._store.state.resizeHandleType = this.getHandleType(event);
+
+      const selectedObject = this.getSelectedObject(event);
+      const isDifferentObject = selectedObject && this._store.state.selectionGroup && selectedObject.id !== this._store.state.selectionGroup.id;
+
+      if (
+        (selectedObject === null || isDifferentObject) &&
+        this._store.state.selectionGroup &&
+        !this._store.state.isResizeHandleSelected &&
+        !this._store.state.isRotationHandleSelected
+      ) {
+        this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+      }
+    }
+
+    this.moveHandler.handleTouchStart(event);
+    this.selectionHandler.handleTouchStart(event);
+
+    this._store.rerender();
+  }
+
+  handleTouchMove(event: TouchEvent): void {
+    this.moveHandler.handleTouchMove(event);
+    this.selectionHandler.handleTouchMove(event);
+
+    this._store.rerender();
+  }
+
+  handleTouchEnd(event: TouchEvent): void {
+    this.moveHandler.handleTouchEnd(event);
+    this.selectionHandler.handleTouchEnd(event);
+
+    this._store.rerender();
+  }
+
+  private getSelectedObject(event: MouseEvent | TouchEvent): KritzelSelectionGroup | null {
     const path = event.composedPath().slice(1) as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = this._store.findObjectById(objectElement?.id);
@@ -85,18 +130,18 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
-  private getHandleType(event: MouseEvent): KritzelHandleType {
+  private getHandleType(event: MouseEvent | TouchEvent): KritzelHandleType {
     const path = event.composedPath() as HTMLElement[];
     const handle = path.find(element => element.classList && element.classList.contains('selection-handle'));
     return handle?.classList[1] as KritzelHandleType;
   }
 
-  private isHandleSelected(event: MouseEvent): boolean {
+  private isHandleSelected(event: MouseEvent | TouchEvent): boolean {
     const path = event.composedPath() as HTMLElement[];
     return !!path.find(element => element.classList && element.classList.contains('selection-handle'));
   }
 
-  private isRotationHandleSelected(event: MouseEvent): boolean {
+  private isRotationHandleSelected(event: MouseEvent | TouchEvent): boolean {
     const path = event.composedPath() as HTMLElement[];
     return !!path.find(element => element.classList && element.classList.contains('rotation-handle'));
   }
