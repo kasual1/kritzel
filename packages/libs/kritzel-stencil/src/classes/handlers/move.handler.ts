@@ -17,52 +17,75 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     super(store);
   }
 
-  handleMouseDown(event) {
+  handleMouseDown(event: MouseEvent) {
     if (KritzelClickHelper.isLeftClick(event)) {
       if (this._store.state.selectionGroup?.selected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
-        this.startDragging(event);
+        const clientX = event.clientX - this._store.offsetX;
+        const clientY = event.clientY - this._store.offsetY;
+
+        this._store.state.isDragging = true;
+        this.dragStartX = clientX;
+        this.dragStartY = clientY;
+        this.startX = this.dragStartX;
+        this.startY = this.dragStartY;
       }
     }
   }
 
-  handleMouseMove(event) {
+  handleMouseMove(event: MouseEvent) {
     if (this._store.state.isDragging && this._store.state.selectionGroup) {
-      this.updateDragging(event);
+      const clientX = event.clientX - this._store.offsetX;
+      const clientY = event.clientY - this._store.offsetY;
+
+      this.endX = clientX;
+      this.endY = clientY;
+      this._store.state.selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
+      this.dragStartX = clientX;
+      this.dragStartY = clientY;
+
+      this._store.rerender();
     }
   }
 
-  handleMouseUp(_event) {
+  handleMouseUp(_event: MouseEvent) {
     if (this._store.state.isDragging) {
-      this.stopDragging();
+      this._store.state.isDragging = false;
+      this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
     }
   }
 
-  private startDragging(event: MouseEvent): void {
-    const clientX = event.clientX - this._store.offsetX;
-    const clientY = event.clientY - this._store.offsetY;
+  handleTouchStart(event: TouchEvent) {
+    if (this._store.state.touchCount === 1) {
+      if (this._store.state.selectionGroup?.selected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
+        const x = Math.round(event.touches[0].clientX - this._store.offsetX);
+        const y = Math.round(event.touches[0].clientY - this._store.offsetY);
 
-    this._store.state.isDragging = true;
-    this.dragStartX = clientX;
-    this.dragStartY = clientY;
-    this.startX = this.dragStartX;
-    this.startY = this.dragStartY;
+        this._store.state.isDragging = true;
+        this.dragStartX = x;
+        this.dragStartY = y;
+        this.startX = x;
+        this.startY = y;
+      }
+    }
   }
 
-  private updateDragging(event: MouseEvent): void {
-    const clientX = event.clientX - this._store.offsetX;
-    const clientY = event.clientY - this._store.offsetY;
+  handleTouchMove(event: TouchEvent) {
+    if (this._store.state.touchCount === 1) {
+      const x = Math.round(event.touches[0].clientX - this._store.offsetX);
+      const y = Math.round(event.touches[0].clientY - this._store.offsetY);
 
-    this.endX = clientX;
-    this.endY = clientY;
-    this._store.state.selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
-    this.dragStartX = clientX;
-    this.dragStartY = clientY;
-
-    this._store.rerender();
+      this.endX = x;
+      this.endY = y;
+      this._store.state.selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
+      this.dragStartX = x;
+      this.dragStartY = y;
+    }
   }
 
-  private stopDragging(): void {
-    this._store.state.isDragging = false;
-    this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
+  handleTouchEnd(_event: TouchEvent) {
+    if (this._store.state.isDragging) {
+      this._store.state.isDragging = false;
+      this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
+    }
   }
 }
