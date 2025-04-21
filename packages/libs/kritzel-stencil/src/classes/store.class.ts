@@ -55,7 +55,7 @@ export class KritzelStore {
 
   private readonly _history: KritzelHistory;
 
-  objectsInViewport: KritzelBaseObject<any>[] = [];
+  objects: KritzelBaseObject<any>[] = [];
 
   get history(): KritzelHistory {
     return this._history;
@@ -109,7 +109,15 @@ export class KritzelStore {
       depth: 100,
     };
 
-    this.objectsInViewport = this._state.objectsOctree.query(viewportBounds);
+    const objectsInViewport = this._state.objectsOctree.query(viewportBounds);
+
+    const allObjects = this._state.objectsOctree.allObjects();
+
+    allObjects.forEach(object => {
+      object.visible = objectsInViewport.find(o => o.id === object.id) ? true : false;
+    });
+
+    this.objects = allObjects;
     
     if(this._kritzelEngine){
       this._kritzelEngine.forceUpdate++;

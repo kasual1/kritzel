@@ -158,7 +158,7 @@ export class KritzelEngine {
           <div>TranslateY: {this.store.state?.translateY}</div>
           <div>ViewportWidth: {this.store.state?.viewportWidth}</div>
           <div>ViewportHeight: {this.store.state?.viewportHeight}</div>
-          <div>ObjectsInViewport. {this.store.objectsInViewport.length}</div>
+          <div>ObjectsInViewport. {this.store.objects.length}</div>
           <div>Scale: {this.store.state?.scale}</div>
           <div>ActiveTool: {this.store.state?.activeTool?.name}</div>
           <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
@@ -177,13 +177,14 @@ export class KritzelEngine {
             transform: `matrix(${this.store.state?.scale}, 0, 0, ${this.store.state?.scale}, ${this.store.state?.translateX}, ${this.store.state?.translateY})`,
           }}
         >
-          {this.store.objectsInViewport?.map(object => {
+          {this.store.objects?.map(object => {
             return (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 id={object.id}
                 class="object"
                 style={{
+                  display: object.visible ? 'block' : 'none',
                   height: object?.totalHeight.toString(),
                   width: object?.totalWidth.toString(),
                   left: '0',
