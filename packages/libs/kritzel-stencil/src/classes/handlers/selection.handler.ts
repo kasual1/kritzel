@@ -108,10 +108,16 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   private startTouchSelection(event: TouchEvent): void {
+    const firstTouch = event.touches[0];
+
+    if(!firstTouch) {
+      return;
+    }
+
     let clientX, clientY;
 
-    clientX = Math.round(event.touches[0].clientX - this._store.offsetX);
-    clientY = Math.round(event.touches[0].clientY - this._store.offsetY);
+    clientX = Math.round(firstTouch.clientX - this._store.offsetX);
+    clientY = Math.round(firstTouch.clientY - this._store.offsetY);
 
     const selectionBox = new KrtizelSelectionBox(this._store);
 
@@ -153,10 +159,16 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   private updateTouchSelection(event: TouchEvent): void {
+    const firstTouch = event.touches[0];
+
+    if(!firstTouch) {
+      return;
+    }
+
     let clientX, clientY;
 
-    clientX = Math.round(event.touches[0].clientX - this._store.offsetX);
-    clientY = Math.round(event.touches[0].clientY - this._store.offsetY);
+    clientX = Math.round(firstTouch.clientX - this._store.offsetX);
+    clientY = Math.round(firstTouch.clientY - this._store.offsetY);
 
     const selectionBox = this._store.state.selectionBox;
 

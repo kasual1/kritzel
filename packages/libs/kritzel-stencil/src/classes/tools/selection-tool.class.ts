@@ -32,6 +32,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
       this._store.state.resizeHandleType = this.getHandleType(event);
 
+      debugger;
       const selectedObject = this.getSelectedObject(event);
       const isDifferentObject = selectedObject && this._store.state.selectionGroup && selectedObject.id !== this._store.state.selectionGroup.id;
 
