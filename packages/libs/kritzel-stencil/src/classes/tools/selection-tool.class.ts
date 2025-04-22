@@ -91,6 +91,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       }
     }
 
+    this.resizeHandler.handleTouchStart(event);
     this.moveHandler.handleTouchStart(event);
     this.selectionHandler.handleTouchStart(event);
 
@@ -98,6 +99,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handleTouchMove(event: TouchEvent): void {
+    this.resizeHandler.handleTouchMove(event);
     this.moveHandler.handleTouchMove(event);
     this.selectionHandler.handleTouchMove(event);
 
@@ -105,6 +107,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handleTouchEnd(event: TouchEvent): void {
+    this.resizeHandler.handleTouchEnd(event);
     this.moveHandler.handleTouchEnd(event);
     this.selectionHandler.handleTouchEnd(event);
 
