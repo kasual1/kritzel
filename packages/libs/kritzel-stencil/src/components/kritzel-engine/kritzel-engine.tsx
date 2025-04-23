@@ -181,6 +181,7 @@ export class KritzelEngine {
             return (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
+                key={object.id}
                 id={object.id}
                 class="object"
                 style={{
