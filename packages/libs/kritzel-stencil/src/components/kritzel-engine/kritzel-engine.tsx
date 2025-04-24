@@ -162,6 +162,7 @@ export class KritzelEngine {
           <div>Scale: {this.store.state?.scale}</div>
           <div>ActiveTool: {this.store.state?.activeTool?.name}</div>
           <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
+          <div>IsScaling: {this.store.state?.isScaling ? 'true' : 'false'}</div>
           <div>IsFocused: {this.store.state.isFocused ? 'true' : 'false'}</div>
           <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
           <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>

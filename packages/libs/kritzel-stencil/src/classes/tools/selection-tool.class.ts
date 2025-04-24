@@ -73,6 +73,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handleTouchStart(event: TouchEvent): void {
+    if(this._store.state.isScaling === true) {
+      return;
+    }
+
     if (this._store.state.touchCount === 1) {
       this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
       this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
@@ -100,6 +104,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handleTouchMove(event: TouchEvent): void {
+    if(this._store.state.isScaling === true) {
+      return;
+    }
+
     this.rotationHandler.handleTouchMove(event);
     this.resizeHandler.handleTouchMove(event);
     this.moveHandler.handleTouchMove(event);
@@ -109,6 +117,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handleTouchEnd(event: TouchEvent): void {
+    if(this._store.state.isScaling === true) {
+      return;
+    }
+
     this.rotationHandler.handleTouchEnd(event);
     this.resizeHandler.handleTouchEnd(event);
     this.moveHandler.handleTouchEnd(event);
