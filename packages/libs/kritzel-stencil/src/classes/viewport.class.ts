@@ -60,6 +60,7 @@ export class KritzelViewport {
 
     if (this._store.state.touchCount === 2) {
       this._store.state.currentPath = null;
+      this._store.state.isScaling = true;
 
       const firstTouchX = event.touches[0].clientX - this._store.offsetX;
       const firstTouchY = event.touches[0].clientY - this._store.offsetY;
@@ -114,8 +115,9 @@ export class KritzelViewport {
   }
 
   handleTouchEnd(_event: TouchEvent): void {
-    this._store.state.touchCount = 0;
-    this._store.rerender();
+      this._store.state.touchCount = 0;
+      this._store.state.isScaling = false;
+      this._store.rerender();
   }
 
   handleWheel(event: WheelEvent): void {
