@@ -111,15 +111,16 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   }
 
   handleTouchMove(event: TouchEvent): void {
-    const firstTouch = event.touches[0];
+    const oneFingerTouch = event.touches[0];
 
-    if(!firstTouch) {
+    if(!oneFingerTouch) {
       return;
     }
-    
+
     if(this._store.state.isResizing && this._store.state.selectionGroup) {
-      const clientX = Math.round(firstTouch.clientX - this._store.offsetX);
-        const clientY = Math.round(firstTouch.clientY - this._store.offsetY);
+
+      const clientX = Math.round(oneFingerTouch.clientX - this._store.offsetX);
+      const clientY = Math.round(oneFingerTouch.clientY - this._store.offsetY);
 
       const dx = (clientX - this.initialMouseX);
       const dy = (clientY - this.initialMouseY);

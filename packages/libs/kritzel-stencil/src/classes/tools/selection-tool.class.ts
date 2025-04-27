@@ -32,7 +32,6 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
       this._store.state.resizeHandleType = this.getHandleType(event);
 
-      debugger;
       const selectedObject = this.getSelectedObject(event);
       const isDifferentObject = selectedObject && this._store.state.selectionGroup && selectedObject.id !== this._store.state.selectionGroup.id;
 
@@ -100,19 +99,18 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.moveHandler.handleTouchStart(event);
     this.selectionHandler.handleTouchStart(event);
 
-    this._store.rerender();
   }
-
+  
   handleTouchMove(event: TouchEvent): void {
     if(this._store.state.isScaling === true) {
       return;
     }
-
+    
     this.rotationHandler.handleTouchMove(event);
     this.resizeHandler.handleTouchMove(event);
     this.moveHandler.handleTouchMove(event);
     this.selectionHandler.handleTouchMove(event);
-
+    
     this._store.rerender();
   }
 
@@ -125,8 +123,6 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.resizeHandler.handleTouchEnd(event);
     this.moveHandler.handleTouchEnd(event);
     this.selectionHandler.handleTouchEnd(event);
-
-    this._store.rerender();
   }
 
   private getSelectedObject(event: MouseEvent | TouchEvent): KritzelSelectionGroup | null {
@@ -150,14 +146,25 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   private getHandleType(event: MouseEvent | TouchEvent): KritzelHandleType {
-    const path = event.composedPath() as HTMLElement[];
-    const handle = path.find(element => element.classList && element.classList.contains('selection-handle'));
+    const shadowRoot = this._store.state.host?.shadowRoot;
+    if (!shadowRoot) return;
+
+    const point = event instanceof TouchEvent ? event.touches[0] : event;
+    const elementAtPoint = shadowRoot.elementFromPoint(point.clientX, point.clientY);
+
+    const handle = elementAtPoint.closest('.selection-handle') as HTMLElement | null;
+
     return handle?.classList[1] as KritzelHandleType;
   }
 
   private isHandleSelected(event: MouseEvent | TouchEvent): boolean {
-    const path = event.composedPath() as HTMLElement[];
-    return !!path.find(element => element.classList && element.classList.contains('selection-handle'));
+    const shadowRoot = this._store.state.host?.shadowRoot;
+    if (!shadowRoot) return false;
+
+    const point = event instanceof TouchEvent ? event.touches[0] : event;
+    const elementAtPoint = shadowRoot.elementFromPoint(point.clientX, point.clientY);
+
+    return elementAtPoint?.classList.contains('selection-handle');
   }
 
   private isRotationHandleSelected(event: MouseEvent | TouchEvent): boolean {
