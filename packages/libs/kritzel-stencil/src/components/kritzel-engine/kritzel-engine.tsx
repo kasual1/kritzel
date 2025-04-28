@@ -54,7 +54,6 @@ export class KritzelEngine {
     this.store.onStateChange('activeTool', (newValue: KritzelTool) => {
       this.activeToolChange.emit(newValue);
     });
-    
   }
 
   componentDidLoad() {
@@ -137,22 +136,22 @@ export class KritzelEngine {
   async changeActiveTool(tool: string) {
     switch (tool) {
       case 'selection':
-        this.store.activeTool = new KritzelSelectionTool(this.store);
+        this.store.setState('activeTool', new KritzelSelectionTool(this.store));
         break;
       case 'brush':
-        this.store.activeTool = new KritzelBrushTool(this.store);
+        this.store.setState('activeTool', new KritzelBrushTool(this.store));
         break;
       case 'eraser':
-        this.store.activeTool = new KritzelEraserTool(this.store);
+        this.store.setState('activeTool', new KritzelEraserTool(this.store));
         break;
       case 'text':
-        this.store.activeTool = new KritzelTextTool(this.store);
+        this.store.setState('activeTool', new KritzelTextTool(this.store));
         break;
       case 'image':
-        this.store.activeTool = new KritzelImageTool(this.store);
+        this.store.setState('activeTool', new KritzelImageTool(this.store));
         break;
       default:
-        this.store.activeTool = new KritzelSelectionTool(this.store);
+        this.store.setState('activeTool', new KritzelSelectionTool(this.store));
         break;
     }
 

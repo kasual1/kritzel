@@ -7,8 +7,6 @@ import { KritzelOctree } from './structures/octree.structure';
 import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 import { KrtizelSelectionBox } from './objects/selection-box.class';
 import { KritzelEngine } from '../components/kritzel-engine/kritzel-engine';
-import { UpdateActiveToolCommand } from './commands/update-active-tool.command';
-import { KritzelBaseTool } from './tools/base-tool.class';
 import { StateChangeListener, StatePropertyKey } from '../types/state.types';
 
 const initialState: KritzelEngineState = {
@@ -89,10 +87,6 @@ export class KritzelStore {
 
   get offsetY() {
     return this._state.host.getBoundingClientRect().top;
-  }
-
-  set activeTool(tool: KritzelBaseTool) {
-    this._history.executeCommand(new UpdateActiveToolCommand(this, this, tool));
   }
 
   constructor(kritzelEngine: KritzelEngine) {
