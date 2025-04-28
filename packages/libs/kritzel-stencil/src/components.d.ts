@@ -9,6 +9,7 @@ import { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelTool } from "./interfaces/tool.interface";
 export namespace Components {
     interface KritzelControls {
+        "selectedControl": string | null;
     }
     interface KritzelEditor {
     }
@@ -20,6 +21,10 @@ export namespace Components {
         "label"?: string;
         "name": keyof typeof this.icons;
     }
+}
+export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelEngineElement;
 }
 declare global {
     interface HTMLKritzelControlsElement extends Components.KritzelControls, HTMLStencilElement {
@@ -34,7 +39,18 @@ declare global {
         prototype: HTMLKritzelEditorElement;
         new (): HTMLKritzelEditorElement;
     };
+    interface HTMLKritzelEngineElementEventMap {
+        "activeToolChange": KritzelTool;
+    }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelEngineElement: {
         prototype: HTMLKritzelEngineElement;
@@ -55,11 +71,13 @@ declare global {
 }
 declare namespace LocalJSX {
     interface KritzelControls {
+        "selectedControl"?: string | null;
     }
     interface KritzelEditor {
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
+        "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelTool>) => void;
     }
     interface KritzelIcon {
         "label"?: string;

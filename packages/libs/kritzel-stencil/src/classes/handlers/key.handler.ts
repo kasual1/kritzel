@@ -46,27 +46,27 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     }
 
     if (event.key === 's' && event.ctrlKey) {
-      this._store.state.activeTool = new KritzelSelectionTool(this._store);
+      this._store.activeTool = new KritzelSelectionTool(this._store);
       this._store.deselectAllObjects();
     }
 
     if (event.key === 'b' && event.ctrlKey) {
-      this._store.state.activeTool = new KritzelBrushTool(this._store);
+      this._store.activeTool = new KritzelBrushTool(this._store);
       this._store.deselectAllObjects();
     }
 
     if (event.key === 'e' && event.ctrlKey) {
-      this._store.state.activeTool = new KritzelEraserTool(this._store);
+      this._store.activeTool = new KritzelEraserTool(this._store);
       this._store.deselectAllObjects();
     }
 
     if (event.key === 'i' && event.ctrlKey) {
-      this._store.state.activeTool = new KritzelImageTool(this._store);
+      this._store.activeTool = new KritzelImageTool(this._store);
       this._store.deselectAllObjects();
     }
 
     if (event.key === 'x' && event.ctrlKey) {
-      this._store.state.activeTool = new KritzelTextTool(this._store);
+      this._store.activeTool = new KritzelTextTool(this._store);
       this._store.deselectAllObjects();
     }
 

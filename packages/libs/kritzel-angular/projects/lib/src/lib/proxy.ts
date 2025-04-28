@@ -1,20 +1,21 @@
 /* tslint:disable */
 /* auto-generated angular directive proxies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, NgZone } from '@angular/core';
 
-import { ProxyCmp } from './angular-component-lib/utils';
+import { ProxyCmp, proxyOutputs } from './angular-component-lib/utils';
 
 import { Components } from 'kritzel-stencil';
 
 
 @ProxyCmp({
+  inputs: ['selectedControl']
 })
 @Component({
   selector: 'kritzel-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [],
+  inputs: ['selectedControl'],
 })
 export class KritzelControls {
   protected el: HTMLKritzelControlsElement;
@@ -65,11 +66,17 @@ export class KritzelEngine {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['activeToolChange']);
   }
 }
 
 
-export declare interface KritzelEngine extends Components.KritzelEngine {}
+import type { KritzelTool as IKritzelEngineKritzelTool } from 'kritzel-stencil';
+
+export declare interface KritzelEngine extends Components.KritzelEngine {
+
+  activeToolChange: EventEmitter<CustomEvent<IKritzelEngineKritzelTool>>;
+}
 
 
 @ProxyCmp({
