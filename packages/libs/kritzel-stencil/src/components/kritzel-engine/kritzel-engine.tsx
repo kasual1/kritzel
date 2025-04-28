@@ -1,4 +1,4 @@
-import { Component, Host, h, Listen, Element, Prop, Method, State } from '@stencil/core';
+import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventEmitter } from '@stencil/core';
 import { KritzelTool } from '../../interfaces/tool.interface';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelViewport } from '../../classes/viewport.class';
@@ -26,8 +26,11 @@ export class KritzelEngine {
   @Prop()
   activeTool: KritzelTool;
 
-  @State() 
+  @State()
   forceUpdate: number = 0;
+
+  @Event()
+  activeToolChange: EventEmitter<KritzelTool>;
 
   store: KritzelStore;
 
@@ -47,6 +50,11 @@ export class KritzelEngine {
     this.store = new KritzelStore(this);
     this.store.state.activeTool = new KritzelBrushTool(this.store);
     this.keyHandler = new KritzelKeyHandler(this.store);
+
+    this.store.onStateChange('activeTool', (newValue: KritzelTool) => {
+      this.activeToolChange.emit(newValue);
+    });
+    
   }
 
   componentDidLoad() {
@@ -108,7 +116,7 @@ export class KritzelEngine {
     this.viewport.handleResize();
   }
 
-  @Listen('keydown', { target: 'window'  })
+  @Listen('keydown', { target: 'window' })
   handleKeyDown(ev) {
     this.keyHandler.handleKeyDown(ev);
   }
@@ -129,24 +137,25 @@ export class KritzelEngine {
   async changeActiveTool(tool: string) {
     switch (tool) {
       case 'selection':
-        this.store.state.activeTool = new KritzelSelectionTool(this.store);
+        this.store.activeTool = new KritzelSelectionTool(this.store);
         break;
-      case 'pen':
-        this.store.state.activeTool = new KritzelBrushTool(this.store);
+      case 'brush':
+        this.store.activeTool = new KritzelBrushTool(this.store);
         break;
       case 'eraser':
-        this.store.state.activeTool = new KritzelEraserTool(this.store);
+        this.store.activeTool = new KritzelEraserTool(this.store);
         break;
       case 'text':
-        this.store.state.activeTool = new KritzelTextTool(this.store);
+        this.store.activeTool = new KritzelTextTool(this.store);
         break;
       case 'image':
-        this.store.state.activeTool = new KritzelImageTool(this.store);
+        this.store.activeTool = new KritzelImageTool(this.store);
         break;
       default:
-        this.store.state.activeTool = new KritzelSelectionTool(this.store);
+        this.store.activeTool = new KritzelSelectionTool(this.store);
         break;
     }
+
     this.store.deselectAllObjects();
   }
 

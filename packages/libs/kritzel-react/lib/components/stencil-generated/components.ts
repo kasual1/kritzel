@@ -7,9 +7,10 @@
 
 /* eslint-disable */
 
-import type { StencilReactComponent } from '@stencil/react-output-target/runtime';
+import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
+import { type KritzelEngineCustomEvent, type KritzelTool } from "../../../../kritzel-stencil";
 import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
@@ -37,14 +38,14 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     defineCustomElement: defineKritzelEditor
 });
 
-export type KritzelEngineEvents = NonNullable<unknown>;
+export type KritzelEngineEvents = { onActiveToolChange: EventName<KritzelEngineCustomEvent<KritzelTool>> };
 
 export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelEngineEvents> = /*@__PURE__*/ createComponent<KritzelEngineElement, KritzelEngineEvents>({
     tagName: 'kritzel-engine',
     elementClass: KritzelEngineElement,
     // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
     react: React,
-    events: {} as KritzelEngineEvents,
+    events: { onActiveToolChange: 'activeToolChange' } as KritzelEngineEvents,
     defineCustomElement: defineKritzelEngine
 });
 

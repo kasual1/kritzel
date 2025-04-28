@@ -1,4 +1,4 @@
-import { Component, h, State } from '@stencil/core';
+import { Component, h, Prop, State } from '@stencil/core';
 import { KritzelIconName } from '../../enums/icon-name.enum';
 import { Element } from '@stencil/core';
 
@@ -13,13 +13,14 @@ interface KritzelToolbarControl {
   assetsDirs: ['../assets'],
 })
 export class KritzelControls {
-  @State() controls: KritzelToolbarControl[] = [
+  @State() 
+  controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
       icon: KritzelIconName.cursor,
     },
     {
-      name: 'pen',
+      name: 'brush',
       icon: KritzelIconName.pen,
     },
     {
@@ -36,9 +37,11 @@ export class KritzelControls {
     },
   ];
 
-  @State() selectedControl: string | null = null;
+  @Prop()
+  selectedControl: string | null = null;
 
-  @Element() host!: HTMLElement;
+  @Element() 
+  host!: HTMLElement;
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
 
@@ -50,8 +53,8 @@ export class KritzelControls {
       throw new Error('kritzel-engine not found in parent element.');
     }
     
-    this.kritzelEngine?.changeActiveTool('pen');
-    this.selectedControl = 'pen';
+    this.kritzelEngine?.changeActiveTool('brush');
+    this.selectedControl = 'brush';
   }
 
   preventDefault(event: Event) {

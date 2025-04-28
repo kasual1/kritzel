@@ -7,6 +7,9 @@ import { KritzelOctree } from './structures/octree.structure';
 import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 import { KrtizelSelectionBox } from './objects/selection-box.class';
 import { KritzelEngine } from '../components/kritzel-engine/kritzel-engine';
+import { UpdateActiveToolCommand } from './commands/update-active-tool.command';
+import { KritzelBaseTool } from './tools/base-tool.class';
+import { StateChangeListener, StatePropertyKey } from '../types/state.types';
 
 const initialState: KritzelEngineState = {
   activeTool: null,
@@ -29,7 +32,7 @@ const initialState: KritzelEngineState = {
   hasViewportChanged: false,
   debugInfo: {
     showObjectInfo: false,
-    showViewportInfo: true,
+    showViewportInfo: false,
     logCommands: false,
   },
   host: null,
@@ -50,11 +53,13 @@ const initialState: KritzelEngineState = {
 };
 export class KritzelStore {
 
-  private _kritzelEngine: KritzelEngine;
+  private readonly _kritzelEngine: KritzelEngine;
 
-  private _state: KritzelEngineState;
+  private readonly _state: KritzelEngineState;
 
   private readonly _history: KritzelHistory;
+
+  private readonly _listeners: Map<StatePropertyKey, Set<StateChangeListener<any>>> = new Map();
 
   objects: KritzelBaseObject<any>[] = [];
 
@@ -84,6 +89,10 @@ export class KritzelStore {
 
   get offsetY() {
     return this._state.host.getBoundingClientRect().top;
+  }
+
+  set activeTool(tool: KritzelBaseTool) {
+    this._history.executeCommand(new UpdateActiveToolCommand(this, this, tool));
   }
 
   constructor(kritzelEngine: KritzelEngine) {
@@ -137,6 +146,27 @@ export class KritzelStore {
   deselectAllObjects(): void {
     if (this._state.selectionGroup) {
       this._history.executeCommand(new RemoveSelectionGroupCommand(this, this));
+    }
+  }
+
+  onStateChange<K extends StatePropertyKey>(property: K, listener: StateChangeListener<KritzelEngineState[K]>): void {
+    if (!this._listeners.has(property)) {
+      this._listeners.set(property, new Set());
+    }
+    this._listeners.get(property).add(listener);
+  }
+
+  setState<K extends StatePropertyKey>(property: K, value: KritzelEngineState[K]): void {
+    const oldValue = this._state[property];
+
+    if (oldValue !== value) {
+      this._state[property] = value;
+
+      if (this._listeners.has(property)) {
+        this._listeners.get(property).forEach(listener => 
+          listener(value, oldValue, String(property))
+        );
+      }
     }
   }
 
