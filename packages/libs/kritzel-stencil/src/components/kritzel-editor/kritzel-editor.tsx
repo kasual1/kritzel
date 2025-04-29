@@ -12,8 +12,6 @@ export class KritzelEditor {
 
   onActiveToolChange(event: CustomEvent) {
     this.selectedControl = event.detail.name;
-
-    console.log('Selected control:', this.selectedControl);
   }
 
   render() {

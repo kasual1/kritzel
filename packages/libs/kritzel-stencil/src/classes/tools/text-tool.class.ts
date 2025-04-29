@@ -5,7 +5,6 @@ import { AddObjectCommand } from '../commands/add-object.command';
 
 export class KritzelTextTool extends KritzelBaseTool {
   name: string = 'text';
-  icon: string = 'text';
 
   isWriting: boolean = false;
 

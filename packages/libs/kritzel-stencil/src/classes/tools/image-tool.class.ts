@@ -11,7 +11,6 @@ import imageCompression from "browser-image-compression";
 
 export class KritzelImageTool extends KritzelBaseTool {
   name: string = 'image';
-  icon: string = 'image';
 
   fileInput: HTMLInputElement;
 

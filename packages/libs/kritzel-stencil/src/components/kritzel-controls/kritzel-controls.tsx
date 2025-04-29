@@ -1,11 +1,12 @@
-import { Component, h, Prop, State } from '@stencil/core';
+import { Component, h, Prop } from '@stencil/core';
 import { KritzelIconName } from '../../enums/icon-name.enum';
 import { Element } from '@stencil/core';
+import { KritzelSelectionTool as KritzelImageTool } from '../../classes/tools/selection-tool.class';
+import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
+import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
+import { KritzelTextTool } from '../../classes/tools/text-tool.class';
+import { KritzelToolbarControl } from '../../interfaces/toolbar-control.interface';
 
-interface KritzelToolbarControl {
-  name: string;
-  icon: KritzelIconName;
-}
 @Component({
   tag: 'kritzel-controls',
   styleUrl: 'kritzel-controls.css',
@@ -13,26 +14,33 @@ interface KritzelToolbarControl {
   assetsDirs: ['../assets'],
 })
 export class KritzelControls {
-  @State() 
+
+  @Prop()
   controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
+      class: KritzelImageTool,
       icon: KritzelIconName.cursor,
     },
     {
       name: 'brush',
+      class: KritzelBrushTool,
       icon: KritzelIconName.pen,
+      isDefault: true
     },
     {
       name: 'eraser',
+      class: KritzelEraserTool,
       icon: KritzelIconName.eraser,
     },
     {
       name: 'text',
+      class: KritzelTextTool,
       icon: KritzelIconName.type,
     },
     {
       name: 'image',
+      class: KritzelImageTool,
       icon: KritzelIconName.image,
     },
   ];
@@ -53,8 +61,13 @@ export class KritzelControls {
       throw new Error('kritzel-engine not found in parent element.');
     }
     
-    this.kritzelEngine?.changeActiveTool('brush');
-    this.selectedControl = 'brush';
+    this.controls.forEach(async c => {
+      await this.kritzelEngine.registerTool(c.name, c.class);
+
+      if(c.isDefault) {
+        await this.kritzelEngine.changeActiveTool(c.name);
+      }
+    });
   }
 
   preventDefault(event: Event) {
