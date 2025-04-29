@@ -52,10 +52,31 @@
   background-color: hsl(0, 0%, 0%, 4.3%);
 }
 
+.kritzel-config-container {
+  position: relative; /* Added for tooltip positioning */
+}
+
 .kritzel-config {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 8px;
   cursor: pointer;
+}
+
+.kritzel-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%; 
+  transform: translateX(-50%);
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: black;
+  color: white;
+  align-items: center;
+  padding: 4px;
+  border-radius: 4px;
+  white-space: nowrap;
 }

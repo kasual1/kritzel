@@ -1,6 +1,5 @@
-import { Component, h, Prop } from '@stencil/core';
+import { Component, h, Prop, State, Element } from '@stencil/core';
 import { KritzelIconName } from '../../enums/icon-name.enum';
-import { Element } from '@stencil/core';
 import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
@@ -62,10 +61,14 @@ export class KritzelControls {
   @Prop()
   selectedControl: string | null = null;
 
+  @State()
+  activeTooltip: string | null = null;
+
   @Element()
   host!: HTMLElement;
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
+  private configContainerRefs = new Map<string, HTMLDivElement>();
 
   async componentWillLoad() {
     await customElements.whenDefined('kritzel-engine');
@@ -86,6 +89,15 @@ export class KritzelControls {
     });
   }
 
+  componentDidLoad() {
+    document.addEventListener('click', this.handleOutsideClick);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('click', this.handleOutsideClick);
+    this.configContainerRefs.clear();
+  }
+
   preventDefault(event: Event) {
     event.preventDefault();
     event.stopPropagation();
@@ -97,6 +109,22 @@ export class KritzelControls {
       this.kritzelEngine?.changeActiveTool(control.name);
     }
   }
+
+  handleConfigClick(event: MouseEvent, name: string) {
+    event.stopPropagation();
+    this.activeTooltip = this.activeTooltip === name ? null : name;
+  }
+
+  handleOutsideClick = (event: MouseEvent) => {
+    if (!this.activeTooltip) {
+      return;
+    }
+
+    const activeContainer = this.configContainerRefs.get(this.activeTooltip);
+    if (activeContainer && !activeContainer.contains(event.target as Node)) {
+      this.activeTooltip = null;
+    }
+  };
 
   render() {
     return (
@@ -127,19 +155,37 @@ export class KritzelControls {
           if (control.type === 'config') {
             return (
               <div
-                class="kritzel-config"
+                class="kritzel-config-container"
                 key={control.name}
+                ref={el => this.configContainerRefs.set(control.name, el as HTMLDivElement)}
               >
+                {this.activeTooltip === control.name && (
+                  <div class="kritzel-tooltip" onClick={e => e.stopPropagation()}>
+                    {/* Placeholder for tooltip content/controls */}
+                    <span>Tooltip Content Here</span>
+                    <span>Tooltip Content Here</span>
+                    <span>Tooltip Content Here</span>
+                    <span>Tooltip Content Here</span>
+                    <span>Tooltip Content Here</span>
+                    <span>Tooltip Content Here</span>
+                    <span>Tooltip Content Here</span>
+
+                  </div>
+                )}
                 <div
-                 style={{
-                  backgroundColor: control.color || 'transparent',
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  display: 'inline-block',
-                }}
-                ></div>
-                
+                  class="kritzel-config"
+                  onClick={event => this.handleConfigClick(event, control.name)}
+                >
+                  <div
+                    style={{
+                      backgroundColor: control.color || 'transparent',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'inline-block',
+                    }}
+                  ></div>
+                </div>
               </div>
             );
           }
