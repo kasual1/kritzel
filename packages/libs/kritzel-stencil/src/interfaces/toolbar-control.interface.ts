@@ -3,7 +3,9 @@ import { KritzelIconName } from '../enums/icon-name.enum';
 
 export interface KritzelToolbarControl {
   name: string;
-  class: new (...args: any[]) => KritzelBaseTool;
-  icon: KritzelIconName;
+  type: 'tool' | 'divider' | 'config'
+  tool?: new (...args: any[]) => KritzelBaseTool;
+  icon?: KritzelIconName;
   isDefault?: boolean;
+  color?: string;
 }
