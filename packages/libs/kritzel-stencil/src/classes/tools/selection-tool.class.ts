@@ -11,7 +11,6 @@ import { KritzelBaseTool } from './base-tool.class';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
   name: string = 'selection';
-  icon: string = 'selection';
 
   selectionHandler: KritzelSelectionHandler;
   moveHandler: KritzelMoveHandler;

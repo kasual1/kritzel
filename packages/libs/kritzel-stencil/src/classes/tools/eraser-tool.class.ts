@@ -6,7 +6,6 @@ import { KritzelBaseTool } from './base-tool.class';
 
 export class KritzelEraserTool extends KritzelBaseTool {
   name: string = 'eraser';
-  icon: string = 'eraser';
 
   constructor(store: KritzelStore) {
     super(store);

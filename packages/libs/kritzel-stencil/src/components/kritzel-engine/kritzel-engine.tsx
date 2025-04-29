@@ -1,6 +1,5 @@
 import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventEmitter } from '@stencil/core';
 import { KritzelTool } from '../../interfaces/tool.interface';
-import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelViewport } from '../../classes/viewport.class';
 import { KritzelPath } from '../../classes/objects/path.class';
 import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
@@ -10,9 +9,8 @@ import { KritzelSelectionGroup } from '../../classes/objects/selection-group.cla
 import { KrtizelSelectionBox } from '../../classes/objects/selection-box.class';
 import { KritzelStore } from '../../classes/store.class';
 import { KritzelKeyHandler } from '../../classes/handlers/key.handler';
-import { KritzelTextTool } from '../../classes/tools/text-tool.class';
-import { KritzelImageTool } from '../../classes/tools/image-tool.class';
-import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
+import { KritzelToolFactory } from '../../classes/factories/tool.factory';
+import { KritzelBaseTool } from '../../classes/tools/base-tool.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -48,7 +46,6 @@ export class KritzelEngine {
 
   constructor() {
     this.store = new KritzelStore(this);
-    this.store.state.activeTool = new KritzelBrushTool(this.store);
     this.keyHandler = new KritzelKeyHandler(this.store);
 
     this.store.onStateChange('activeTool', (newValue: KritzelTool) => {
@@ -133,28 +130,19 @@ export class KritzelEngine {
   }
 
   @Method()
-  async changeActiveTool(tool: string) {
-    switch (tool) {
-      case 'selection':
-        this.store.setState('activeTool', new KritzelSelectionTool(this.store));
-        break;
-      case 'brush':
-        this.store.setState('activeTool', new KritzelBrushTool(this.store));
-        break;
-      case 'eraser':
-        this.store.setState('activeTool', new KritzelEraserTool(this.store));
-        break;
-      case 'text':
-        this.store.setState('activeTool', new KritzelTextTool(this.store));
-        break;
-      case 'image':
-        this.store.setState('activeTool', new KritzelImageTool(this.store));
-        break;
-      default:
-        this.store.setState('activeTool', new KritzelSelectionTool(this.store));
-        break;
+  async registerTool(toolName: string, toolClass: any) {
+    if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
+      console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
+      return false;
     }
+    
+    KritzelToolFactory.registerTool(toolName, toolClass);
+    return true;
+  }
 
+  @Method()
+  async changeActiveTool(tool: string) {
+    this.store.setState('activeTool', KritzelToolFactory.createTool(tool, this.store));
     this.store.deselectAllObjects();
   }
 

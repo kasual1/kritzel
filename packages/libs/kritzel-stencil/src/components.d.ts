@@ -5,10 +5,13 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelTool } from "./interfaces/tool.interface";
+export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelTool } from "./interfaces/tool.interface";
 export namespace Components {
     interface KritzelControls {
+        "controls": KritzelToolbarControl[];
         "selectedControl": string | null;
     }
     interface KritzelEditor {
@@ -16,6 +19,7 @@ export namespace Components {
     interface KritzelEngine {
         "activeTool": KritzelTool;
         "changeActiveTool": (tool: string) => Promise<void>;
+        "registerTool": (toolName: string, toolClass: any) => Promise<boolean>;
     }
     interface KritzelIcon {
         "label"?: string;
@@ -71,6 +75,7 @@ declare global {
 }
 declare namespace LocalJSX {
     interface KritzelControls {
+        "controls"?: KritzelToolbarControl[];
         "selectedControl"?: string | null;
     }
     interface KritzelEditor {

@@ -12,6 +12,7 @@ import { defineCustomElement as defineKritzelIcon } from '../../kritzel-stencil/
 
 
 export const KritzelControls: StencilVueComponent<JSX.KritzelControls> = /*@__PURE__*/ defineContainer<JSX.KritzelControls>('kritzel-controls', defineKritzelControls, [
+  'controls',
   'selectedControl'
 ]);
 

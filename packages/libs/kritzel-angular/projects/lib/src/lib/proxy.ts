@@ -8,14 +8,14 @@ import { Components } from 'kritzel-stencil';
 
 
 @ProxyCmp({
-  inputs: ['selectedControl']
+  inputs: ['controls', 'selectedControl']
 })
 @Component({
   selector: 'kritzel-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['selectedControl'],
+  inputs: ['controls', 'selectedControl'],
 })
 export class KritzelControls {
   protected el: HTMLKritzelControlsElement;
@@ -52,7 +52,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {}
 
 @ProxyCmp({
   inputs: ['activeTool'],
-  methods: ['changeActiveTool']
+  methods: ['registerTool', 'changeActiveTool']
 })
 @Component({
   selector: 'kritzel-engine',

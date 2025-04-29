@@ -6,7 +6,6 @@ export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
   __class__: string = this.constructor.name;
 
   name: string = 'base-tool';
-  icon: string = 'base-tool';
 
   protected readonly _store: KritzelStore;
 
