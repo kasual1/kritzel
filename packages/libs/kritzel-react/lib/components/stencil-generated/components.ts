@@ -16,6 +16,7 @@ import { KritzelControls as KritzelControlsElement, defineCustomElement as defin
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
 import { KritzelIcon as KritzelIconElement, defineCustomElement as defineKritzelIcon } from "../../../../kritzel-stencil/dist/components/kritzel-icon.js";
+import { KritzelStrokeSize as KritzelStrokeSizeElement, defineCustomElement as defineKritzelStrokeSize } from "../../../../kritzel-stencil/dist/components/kritzel-stroke-size.js";
 
 export type KritzelColorPaletteEvents = { onColorChange: EventName<CustomEvent<string>> };
 
@@ -70,4 +71,15 @@ export const KritzelIcon: StencilReactComponent<KritzelIconElement, KritzelIconE
     react: React,
     events: {} as KritzelIconEvents,
     defineCustomElement: defineKritzelIcon
+});
+
+export type KritzelStrokeSizeEvents = { onSizeChange: EventName<CustomEvent<number>> };
+
+export const KritzelStrokeSize: StencilReactComponent<KritzelStrokeSizeElement, KritzelStrokeSizeEvents> = /*@__PURE__*/ createComponent<KritzelStrokeSizeElement, KritzelStrokeSizeEvents>({
+    tagName: 'kritzel-stroke-size',
+    elementClass: KritzelStrokeSizeElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: { onSizeChange: 'sizeChange' } as KritzelStrokeSizeEvents,
+    defineCustomElement: defineKritzelStrokeSize
 });

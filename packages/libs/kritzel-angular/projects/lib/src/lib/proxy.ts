@@ -127,3 +127,31 @@ export class KritzelIcon {
 export declare interface KritzelIcon extends Components.KritzelIcon {}
 
 
+@ProxyCmp({
+  inputs: ['selectedSize', 'sizes']
+})
+@Component({
+  selector: 'kritzel-stroke-size',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['selectedSize', 'sizes'],
+})
+export class KritzelStrokeSize {
+  protected el: HTMLKritzelStrokeSizeElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sizeChange']);
+  }
+}
+
+
+export declare interface KritzelStrokeSize extends Components.KritzelStrokeSize {
+  /**
+   * Emitted when a stroke size is selected.
+   */
+  sizeChange: EventEmitter<CustomEvent<number>>;
+}
+
+

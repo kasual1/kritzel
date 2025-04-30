@@ -7,7 +7,7 @@
 
 .color-grid {
   display: grid;
-  grid-template-columns: repeat(7, 24px);
+  grid-template-columns: repeat(7, 32px);
   gap: 8px;
   justify-items: center;
 }
@@ -25,30 +25,36 @@
   color: #333;
 }
 
-.color-circle {
-  width: 24px;
-  height: 24px;
+.color-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid transparent;
   box-sizing: border-box;
-  transition: transform 0.1s ease-in-out, border-color 0.1s ease-in-out;
+  transition: background-color 0.1s ease-in-out, border-color 0.1s ease-in-out;
 }
 
-.color-circle:hover {
-  transform: scale(1.1);
+.color-container:hover {
+  background-color: #f0f0f0;
 }
 
-.color-circle.selected {
+.color-container.selected {
   border-color: #4a90e2;
+}
+
+.color-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: block;
 }
 
 .color-circle[style*="background-color: #FFFFFF"],
 .color-circle[style*="background-color: white"] {
-  border-color: #e0e0e0;
-}
-
-.color-circle[style*="background-color: #FFFFFF"].selected,
-.color-circle[style*="background-color: white"].selected {
-  border-color: #4a90e2;
+  border: 1px solid #e0e0e0;
 }
