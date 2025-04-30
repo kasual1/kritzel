@@ -48,12 +48,17 @@ export class KritzelColorPalette {
           {displayedColors.map(color => (
             <div
               class={{
-                'color-circle': true,
+                'color-container': true,
                 'selected': this.selectedColor === color,
               }}
-              style={{ backgroundColor: color }}
               onClick={() => this.handleColorClick(color)}
-            ></div>
+              title={color}
+            >
+              <div
+                class='color-circle'
+                style={{ backgroundColor: color }}
+              ></div>
+            </div>
           ))}
         </div>
 

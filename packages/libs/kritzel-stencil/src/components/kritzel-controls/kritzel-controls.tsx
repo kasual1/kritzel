@@ -112,7 +112,6 @@ export class KritzelControls {
 
   handleControlClick(control: KritzelToolbarControl) {
     if (control.tool) {
-      debugger;
       this.kritzelEngine?.changeActiveTool(control.name);
     }
   }
@@ -165,6 +164,7 @@ export class KritzelControls {
                 {this.activeTooltip === control.name && (
                   <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
                     <kritzel-color-palette></kritzel-color-palette>
+                    <kritzel-stroke-size></kritzel-stroke-size>
                   </div>
                 )}
                 <div class="kritzel-config" onClick={event => this.handleConfigClick(event, control.name)}>

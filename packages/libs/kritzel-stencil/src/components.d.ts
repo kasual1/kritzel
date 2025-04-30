@@ -29,6 +29,16 @@ export namespace Components {
         "label"?: string;
         "name": keyof typeof this.icons;
     }
+    interface KritzelStrokeSize {
+        /**
+          * The currently selected stroke size.
+         */
+        "selectedSize": number | null;
+        /**
+          * Array of stroke sizes (numeric values in pixels).
+         */
+        "sizes": number[];
+    }
 }
 export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -37,6 +47,10 @@ export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelEngineElement;
+}
+export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelStrokeSizeElement;
 }
 declare global {
     interface HTMLKritzelColorPaletteElementEventMap {
@@ -91,12 +105,30 @@ declare global {
         prototype: HTMLKritzelIconElement;
         new (): HTMLKritzelIconElement;
     };
+    interface HTMLKritzelStrokeSizeElementEventMap {
+        "sizeChange": number;
+    }
+    interface HTMLKritzelStrokeSizeElement extends Components.KritzelStrokeSize, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelStrokeSizeElementEventMap>(type: K, listener: (this: HTMLKritzelStrokeSizeElement, ev: KritzelStrokeSizeCustomEvent<HTMLKritzelStrokeSizeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelStrokeSizeElementEventMap>(type: K, listener: (this: HTMLKritzelStrokeSizeElement, ev: KritzelStrokeSizeCustomEvent<HTMLKritzelStrokeSizeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelStrokeSizeElement: {
+        prototype: HTMLKritzelStrokeSizeElement;
+        new (): HTMLKritzelStrokeSizeElement;
+    };
     interface HTMLElementTagNameMap {
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
         "kritzel-icon": HTMLKritzelIconElement;
+        "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
     }
 }
 declare namespace LocalJSX {
@@ -119,12 +151,27 @@ declare namespace LocalJSX {
         "label"?: string;
         "name"?: keyof typeof this.icons;
     }
+    interface KritzelStrokeSize {
+        /**
+          * Emitted when a stroke size is selected.
+         */
+        "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
+        /**
+          * The currently selected stroke size.
+         */
+        "selectedSize"?: number | null;
+        /**
+          * Array of stroke sizes (numeric values in pixels).
+         */
+        "sizes"?: number[];
+    }
     interface IntrinsicElements {
         "kritzel-color-palette": KritzelColorPalette;
         "kritzel-controls": KritzelControls;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
         "kritzel-icon": KritzelIcon;
+        "kritzel-stroke-size": KritzelStrokeSize;
     }
 }
 export { LocalJSX as JSX };
@@ -136,6 +183,7 @@ declare module "@stencil/core" {
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
+            "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
         }
     }
 }

@@ -1,0 +1,38 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+}
+
+.size-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  transition: background-color 0.1s ease-in-out, border-color 0.1s ease-in-out;
+}
+
+.size-container:hover {
+  background-color: #f0f0f0;
+}
+
+.size-container.selected {
+  border-color: #4a90e2;
+  background-color: #e7f1fc;
+}
+
+.size-circle {
+  background-color: black;
+  border-radius: 50%;
+  display: block;
+}
+
+.size-container:last-child {
+  margin-right: 42px;
+}

@@ -6,5 +6,6 @@ export const DIRECTIVES = [
   d.KritzelControls,
   d.KritzelEditor,
   d.KritzelEngine,
-  d.KritzelIcon
+  d.KritzelIcon,
+  d.KritzelStrokeSize
 ];
