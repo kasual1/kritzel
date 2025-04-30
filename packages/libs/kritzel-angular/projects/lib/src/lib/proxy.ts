@@ -8,6 +8,32 @@ import { Components } from 'kritzel-stencil';
 
 
 @ProxyCmp({
+  inputs: ['colors', 'selectedColor']
+})
+@Component({
+  selector: 'kritzel-color-palette',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['colors', 'selectedColor'],
+})
+export class KritzelColorPalette {
+  protected el: HTMLKritzelColorPaletteElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['colorChange']);
+  }
+}
+
+
+export declare interface KritzelColorPalette extends Components.KritzelColorPalette {
+
+  colorChange: EventEmitter<CustomEvent<string>>;
+}
+
+
+@ProxyCmp({
   inputs: ['controls', 'selectedControl']
 })
 @Component({
