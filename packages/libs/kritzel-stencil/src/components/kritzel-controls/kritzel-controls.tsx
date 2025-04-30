@@ -71,13 +71,20 @@ export class KritzelControls {
   private configContainerRefs = new Map<string, HTMLDivElement>();
 
   async componentWillLoad() {
+    await this.initializeEngine();
+    this.initializeTools();
+  }
+
+  private async initializeEngine() {
     await customElements.whenDefined('kritzel-engine');
     this.kritzelEngine = this.host.parentElement.querySelector('kritzel-engine');
 
     if (!this.kritzelEngine) {
       throw new Error('kritzel-engine not found in parent element.');
     }
+  }
 
+  private initializeTools() {
     this.controls.forEach(async c => {
       if (c.tool) {
         await this.kritzelEngine.registerTool(c.name, c.tool);
@@ -154,14 +161,9 @@ export class KritzelControls {
 
           if (control.type === 'config') {
             return (
-              <div
-                class="kritzel-config-container"
-                key={control.name}
-                ref={el => this.configContainerRefs.set(control.name, el as HTMLDivElement)}
-              >
+              <div class="kritzel-config-container" key={control.name} ref={el => this.configContainerRefs.set(control.name, el as HTMLDivElement)}>
                 {this.activeTooltip === control.name && (
-                  <div class="kritzel-tooltip" onClick={e => e.stopPropagation()}>
-                    {/* Placeholder for tooltip content/controls */}
+                  <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
                     <span>Tooltip Content Here</span>
                     <span>Tooltip Content Here</span>
                     <span>Tooltip Content Here</span>
@@ -169,13 +171,9 @@ export class KritzelControls {
                     <span>Tooltip Content Here</span>
                     <span>Tooltip Content Here</span>
                     <span>Tooltip Content Here</span>
-
                   </div>
                 )}
-                <div
-                  class="kritzel-config"
-                  onClick={event => this.handleConfigClick(event, control.name)}
-                >
+                <div class="kritzel-config" onClick={event => this.handleConfigClick(event, control.name)}>
                   <div
                     style={{
                       backgroundColor: control.color || 'transparent',
