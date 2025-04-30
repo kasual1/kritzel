@@ -11,10 +11,22 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 import { type KritzelEngineCustomEvent, type KritzelTool } from "../../../../kritzel-stencil";
+import { KritzelColorPalette as KritzelColorPaletteElement, defineCustomElement as defineKritzelColorPalette } from "../../../../kritzel-stencil/dist/components/kritzel-color-palette.js";
 import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
 import { KritzelIcon as KritzelIconElement, defineCustomElement as defineKritzelIcon } from "../../../../kritzel-stencil/dist/components/kritzel-icon.js";
+
+export type KritzelColorPaletteEvents = { onColorChange: EventName<CustomEvent<string>> };
+
+export const KritzelColorPalette: StencilReactComponent<KritzelColorPaletteElement, KritzelColorPaletteEvents> = /*@__PURE__*/ createComponent<KritzelColorPaletteElement, KritzelColorPaletteEvents>({
+    tagName: 'kritzel-color-palette',
+    elementClass: KritzelColorPaletteElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: { onColorChange: 'colorChange' } as KritzelColorPaletteEvents,
+    defineCustomElement: defineKritzelColorPalette
+});
 
 export type KritzelControlsEvents = NonNullable<unknown>;
 

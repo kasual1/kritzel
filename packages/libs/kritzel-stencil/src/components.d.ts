@@ -10,6 +10,10 @@ import { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelTool } from "./interfaces/tool.interface";
 export namespace Components {
+    interface KritzelColorPalette {
+        "colors": string[];
+        "selectedColor": string | null;
+    }
     interface KritzelControls {
         "controls": KritzelToolbarControl[];
         "selectedControl": string | null;
@@ -26,11 +30,32 @@ export namespace Components {
         "name": keyof typeof this.icons;
     }
 }
+export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelColorPaletteElement;
+}
 export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelEngineElement;
 }
 declare global {
+    interface HTMLKritzelColorPaletteElementEventMap {
+        "colorChange": string;
+    }
+    interface HTMLKritzelColorPaletteElement extends Components.KritzelColorPalette, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelColorPaletteElementEventMap>(type: K, listener: (this: HTMLKritzelColorPaletteElement, ev: KritzelColorPaletteCustomEvent<HTMLKritzelColorPaletteElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelColorPaletteElementEventMap>(type: K, listener: (this: HTMLKritzelColorPaletteElement, ev: KritzelColorPaletteCustomEvent<HTMLKritzelColorPaletteElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelColorPaletteElement: {
+        prototype: HTMLKritzelColorPaletteElement;
+        new (): HTMLKritzelColorPaletteElement;
+    };
     interface HTMLKritzelControlsElement extends Components.KritzelControls, HTMLStencilElement {
     }
     var HTMLKritzelControlsElement: {
@@ -67,6 +92,7 @@ declare global {
         new (): HTMLKritzelIconElement;
     };
     interface HTMLElementTagNameMap {
+        "kritzel-color-palette": HTMLKritzelColorPaletteElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
@@ -74,6 +100,11 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface KritzelColorPalette {
+        "colors"?: string[];
+        "onColorChange"?: (event: KritzelColorPaletteCustomEvent<string>) => void;
+        "selectedColor"?: string | null;
+    }
     interface KritzelControls {
         "controls"?: KritzelToolbarControl[];
         "selectedControl"?: string | null;
@@ -89,6 +120,7 @@ declare namespace LocalJSX {
         "name"?: keyof typeof this.icons;
     }
     interface IntrinsicElements {
+        "kritzel-color-palette": KritzelColorPalette;
         "kritzel-controls": KritzelControls;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
@@ -99,6 +131,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "kritzel-color-palette": LocalJSX.KritzelColorPalette & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;

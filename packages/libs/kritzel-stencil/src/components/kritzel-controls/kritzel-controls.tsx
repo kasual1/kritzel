@@ -164,13 +164,7 @@ export class KritzelControls {
               <div class="kritzel-config-container" key={control.name} ref={el => this.configContainerRefs.set(control.name, el as HTMLDivElement)}>
                 {this.activeTooltip === control.name && (
                   <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
-                    <span>Tooltip Content Here</span>
-                    <span>Tooltip Content Here</span>
-                    <span>Tooltip Content Here</span>
-                    <span>Tooltip Content Here</span>
-                    <span>Tooltip Content Here</span>
-                    <span>Tooltip Content Here</span>
-                    <span>Tooltip Content Here</span>
+                    <kritzel-color-palette></kritzel-color-palette>
                   </div>
                 )}
                 <div class="kritzel-config" onClick={event => this.handleConfigClick(event, control.name)}>
