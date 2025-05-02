@@ -1,13 +1,14 @@
 :host {
   display: flex;
   align-items: flex-start;
+  justify-content: space-around;
   gap: 8px;
   padding: 8px;
 }
 
 .color-grid {
   display: grid;
-  grid-template-columns: repeat(7, 32px);
+  grid-template-columns: repeat(6, 32px);
   gap: 8px;
   justify-items: center;
 }

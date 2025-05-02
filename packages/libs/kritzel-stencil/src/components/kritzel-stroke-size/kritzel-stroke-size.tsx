@@ -6,7 +6,7 @@ import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
   shadow: true,
 })
 export class KritzelStrokeSize {
-  @Prop() sizes: number[] = [2, 4, 6, 8, 12, 16, 24];
+  @Prop() sizes: number[] = [4, 6, 8, 12, 16, 24];
 
   @Prop({ mutable: true }) selectedSize: number | null = null;
 
@@ -27,7 +27,6 @@ export class KritzelStrokeSize {
               'selected': this.selectedSize === size,
             }}
             onClick={() => this.handleSizeClick(size)}
-            title={`${size}px`}
           >
             <div
               class="size-circle"

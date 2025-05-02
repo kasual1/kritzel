@@ -44,7 +44,7 @@ export class KritzelColorPalette {
   };
 
   render() {
-    const displayedColors = this.isExpanded ? this.colors : this.colors.slice(0, 7);
+    const displayedColors = this.isExpanded ? this.colors : this.colors.slice(0, 6);
 
     return (
       <Host>

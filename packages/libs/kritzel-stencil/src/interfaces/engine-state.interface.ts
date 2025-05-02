@@ -15,6 +15,7 @@ export interface KritzelEngineState {
   selectionBox?: KrtizelSelectionBox;
   selectionGroup?: KritzelSelectionGroup;
   resizeHandleType: KritzelHandleType;
+  isEnabled: boolean;
   isScaling: boolean;
   isFocused: boolean;
   isSelecting: boolean;
