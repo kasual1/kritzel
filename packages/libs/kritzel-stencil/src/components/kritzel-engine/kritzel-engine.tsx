@@ -11,6 +11,7 @@ import { KritzelStore } from '../../classes/store.class';
 import { KritzelKeyHandler } from '../../classes/handlers/key.handler';
 import { KritzelToolFactory } from '../../classes/factories/tool.factory';
 import { KritzelBaseTool } from '../../classes/tools/base-tool.class';
+import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -23,9 +24,6 @@ export class KritzelEngine {
 
   @Prop()
   activeTool: KritzelTool;
-
-  @Prop()
-  strokeColor: string = 'red';
 
   @State()
   forceUpdate: number = 0;
@@ -149,6 +147,13 @@ export class KritzelEngine {
     this.store.deselectAllObjects();
   }
 
+  @Method()
+  async changeColor(color: string) {
+    if (this.store.state.activeTool instanceof KritzelBrushTool) {
+      this.store.state.activeTool.color = color;
+    }
+  }
+
   render() {
     return (
       <Host>
@@ -222,7 +227,7 @@ export class KritzelEngine {
                         }}
                         viewBox={object?.viewBox}
                       >
-                        <path d={object?.d} fill={this.strokeColor} stroke={object?.stroke} />
+                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} />
                       </svg>
                     )}
 

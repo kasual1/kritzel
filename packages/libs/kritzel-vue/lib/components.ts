@@ -24,7 +24,7 @@ export const KritzelColorPalette: StencilVueComponent<JSX.KritzelColorPalette> =
 
 export const KritzelControls: StencilVueComponent<JSX.KritzelControls> = /*@__PURE__*/ defineContainer<JSX.KritzelControls>('kritzel-controls', defineKritzelControls, [
   'controls',
-  'selectedControl'
+  'activeControl'
 ]);
 
 
@@ -33,7 +33,6 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
 
 export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__*/ defineContainer<JSX.KritzelEngine>('kritzel-engine', defineKritzelEngine, [
   'activeTool',
-  'strokeColor',
   'activeToolChange'
 ], [
   'activeToolChange'

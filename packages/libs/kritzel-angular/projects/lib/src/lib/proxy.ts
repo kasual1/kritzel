@@ -34,14 +34,14 @@ export declare interface KritzelColorPalette extends Components.KritzelColorPale
 
 
 @ProxyCmp({
-  inputs: ['controls', 'selectedControl']
+  inputs: ['activeControl', 'controls']
 })
 @Component({
   selector: 'kritzel-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['controls', 'selectedControl'],
+  inputs: ['activeControl', 'controls'],
 })
 export class KritzelControls {
   protected el: HTMLKritzelControlsElement;
@@ -77,15 +77,15 @@ export declare interface KritzelEditor extends Components.KritzelEditor {}
 
 
 @ProxyCmp({
-  inputs: ['activeTool', 'strokeColor'],
-  methods: ['registerTool', 'changeActiveTool']
+  inputs: ['activeTool'],
+  methods: ['registerTool', 'changeActiveTool', 'changeColor']
 })
 @Component({
   selector: 'kritzel-engine',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeTool', 'strokeColor'],
+  inputs: ['activeTool'],
 })
 export class KritzelEngine {
   protected el: HTMLKritzelEngineElement;
