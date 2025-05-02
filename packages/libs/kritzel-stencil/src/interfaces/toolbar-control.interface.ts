@@ -1,18 +1,30 @@
 import { KritzelBaseTool } from '../classes/tools/base-tool.class';
 import { KritzelIconName } from '../enums/icon-name.enum';
 
-export interface KritzelToolbarControlBase {
+interface KritzelToolbarControlBase {
   name: string;
-  isDefault?: boolean;
 }
 
-export interface KritzelToolbarControlTool extends KritzelToolbarControlBase {
-  icon: KritzelIconName;
+interface KritzelToolbarToolControl extends KritzelToolbarControlBase {
+  type: 'tool';
   tool: new (...args: any[]) => KritzelBaseTool;
+  icon: KritzelIconName;
+  isDefault?: boolean;
+  config?: {
+    color?: string;
+    size?: number;
+  }
 }
 
-export interface KritzelToolbarControlDivider extends KritzelToolbarControlBase {
+interface KritzelToolbarDividerControl extends KritzelToolbarControlBase {
+  type: 'divider';
 }
 
-export interface KritzelToolbarControlConfig extends KritzelToolbarControlBase {
+interface KritzelToolbarConfigControl extends KritzelToolbarControlBase {
+  type: 'config';
 }
+
+export type KritzelToolbarControl =
+  | KritzelToolbarToolControl
+  | KritzelToolbarDividerControl
+  | KritzelToolbarConfigControl;

@@ -5,9 +5,9 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { KritzelToolbarControlBase } from "./interfaces/toolbar-control.interface";
+import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelTool } from "./interfaces/tool.interface";
-export { KritzelToolbarControlBase } from "./interfaces/toolbar-control.interface";
+export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelTool } from "./interfaces/tool.interface";
 export namespace Components {
     interface KritzelColorPalette {
@@ -15,16 +15,16 @@ export namespace Components {
         "selectedColor": string | null;
     }
     interface KritzelControls {
-        "controls": KritzelToolbarControlBase[];
-        "selectedControl": string | null;
+        "activeControl": string | null;
+        "controls": KritzelToolbarControl[];
     }
     interface KritzelEditor {
     }
     interface KritzelEngine {
         "activeTool": KritzelTool;
         "changeActiveTool": (tool: string) => Promise<void>;
+        "changeColor": (color: string) => Promise<void>;
         "registerTool": (toolName: string, toolClass: any) => Promise<boolean>;
-        "strokeColor": string;
     }
     interface KritzelIcon {
         "label"?: string;
@@ -133,15 +133,14 @@ declare namespace LocalJSX {
         "selectedColor"?: string | null;
     }
     interface KritzelControls {
-        "controls"?: KritzelToolbarControlBase[];
-        "selectedControl"?: string | null;
+        "activeControl"?: string | null;
+        "controls"?: KritzelToolbarControl[];
     }
     interface KritzelEditor {
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelTool>) => void;
-        "strokeColor"?: string;
     }
     interface KritzelIcon {
         "label"?: string;

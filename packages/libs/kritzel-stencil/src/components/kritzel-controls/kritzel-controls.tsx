@@ -1,11 +1,13 @@
-import { Component, h, Prop, State, Element } from '@stencil/core';
+import { Component, h, Prop, State, Element, Watch } from '@stencil/core';
 import { KritzelIconName } from '../../enums/icon-name.enum';
 import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
 import { KritzelTextTool } from '../../classes/tools/text-tool.class';
-import { KritzelToolbarControlBase } from '../../interfaces/toolbar-control.interface';
+import { KritzelToolbarControl } from '../../interfaces/toolbar-control.interface';
 import { KritzelImageTool } from '../../classes/tools/image-tool.class';
+
+type ToolConfig = Record<string, any>;
 
 @Component({
   tag: 'kritzel-controls',
@@ -15,9 +17,10 @@ import { KritzelImageTool } from '../../classes/tools/image-tool.class';
 })
 export class KritzelControls {
   @Prop()
-  controls: KritzelToolbarControlBase[] = [
+  controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
+      type: 'tool',
       tool: KritzelSelectionTool,
       icon: KritzelIconName.cursor,
     },
@@ -27,6 +30,10 @@ export class KritzelControls {
       tool: KritzelBrushTool,
       icon: KritzelIconName.pen,
       isDefault: true,
+      config: {
+        color: 'black',
+        size: 2,
+      }
     },
     {
       name: 'eraser',
@@ -39,6 +46,10 @@ export class KritzelControls {
       type: 'tool',
       tool: KritzelTextTool,
       icon: KritzelIconName.type,
+      config: {
+        color: 'red',
+        size: 2,
+      }
     },
     {
       name: 'image',
@@ -53,21 +64,33 @@ export class KritzelControls {
     {
       name: 'test',
       type: 'config',
-      color: 'black',
     },
   ];
 
   @Prop()
-  selectedControl: string | null = null;
+  activeControl: string | null = null;
 
   @State()
   activeTooltip: string | null = null;
 
+  @State()
+  activeConfig: ToolConfig | null = null;
+
   @Element()
   host!: HTMLElement;
 
+  @Watch('activeControl')
+  handleActiveControlChange(newValue: string | null) {
+    this.controls.forEach(control => {
+      if (control.type === 'tool' && control.name === newValue) {
+        this.activeConfig = {...control.config};
+      }
+    });
+  }
+
   kritzelEngine: HTMLKritzelEngineElement | null = null;
-  private configContainerRefs = new Map<string, HTMLDivElement>();
+
+  configContainerRefs = new Map<string, HTMLDivElement>();
 
   async componentWillLoad() {
     await this.initializeEngine();
@@ -85,11 +108,11 @@ export class KritzelControls {
 
   private initializeTools() {
     this.controls.forEach(async c => {
-      if (c.tool) {
+      if (c.type === 'tool' && c.tool) {
         await this.kritzelEngine.registerTool(c.name, c.tool);
       }
 
-      if (c.isDefault) {
+      if (c.type === 'tool' && c.isDefault) {
         await this.kritzelEngine.changeActiveTool(c.name);
       }
     });
@@ -109,8 +132,9 @@ export class KritzelControls {
     event.stopPropagation();
   }
 
-  handleControlClick(control: KritzelToolbarControlBase) {
-    if (control.tool) {
+  handleControlClick(control: KritzelToolbarControl) {
+    if (control.type === 'tool') {
+      this.activeConfig = {...control.config};
       this.kritzelEngine?.changeActiveTool(control.name);
     }
   }
@@ -131,11 +155,13 @@ export class KritzelControls {
     }
   };
 
-  handleColorChange(control: KritzelToolbarControlBase, event: CustomEvent){
-    this.controls.find(c => c.name === control.name).color = event.detail;
-     if(this.kritzelEngine.activeTool instanceof KritzelBrushTool){
-      (this.kritzelEngine.activeTool as KritzelBrushTool).fillColor = event.detail;
-    }
+  handleColorChange(event: CustomEvent){
+    this.kritzelEngine.changeColor(event.detail);
+    
+    this.activeConfig = {
+      ...this.activeConfig,
+      color: event.detail
+    };
   }
 
   render() {
@@ -147,7 +173,7 @@ export class KritzelControls {
               <button
                 class={{
                   'kritzel-control': true,
-                  'selected': this.selectedControl === control.name,
+                  'selected': this.activeControl === control.name,
                 }}
                 key={control.name}
                 onClick={event => {
@@ -169,14 +195,14 @@ export class KritzelControls {
               <div class="kritzel-config-container" key={control.name} ref={el => this.configContainerRefs.set(control.name, el as HTMLDivElement)}>
                 {this.activeTooltip === control.name && (
                   <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
-                    <kritzel-color-palette onColorChange={color => this.handleColorChange(control, color)}></kritzel-color-palette>
+                    <kritzel-color-palette onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
                     <kritzel-stroke-size></kritzel-stroke-size>
                   </div>
                 )}
                 <div class="kritzel-config" onClick={event => this.handleConfigClick(event, control.name)}>
                   <div
                     style={{
-                      backgroundColor: control.color || 'transparent',
+                      backgroundColor: this.activeConfig?.color || 'transparent',
                       width: '24px',
                       height: '24px',
                       borderRadius: '50%',

@@ -8,17 +8,17 @@ import { Component, Host, State, h} from '@stencil/core';
 export class KritzelEditor {
 
   @State()
-  selectedControl: string | null = null;
+  activeControl: string | null = null;
 
   onActiveToolChange(event: CustomEvent) {
-    this.selectedControl = event.detail.name;
+    this.activeControl = event.detail.name;
   }
 
   render() {
     return (
       <Host>
         <kritzel-engine onActiveToolChange={ev => this.onActiveToolChange(ev)}></kritzel-engine>
-        <kritzel-controls selectedControl={this.selectedControl}></kritzel-controls>
+        <kritzel-controls activeControl={this.activeControl}></kritzel-controls>
       </Host>
     );
   }
