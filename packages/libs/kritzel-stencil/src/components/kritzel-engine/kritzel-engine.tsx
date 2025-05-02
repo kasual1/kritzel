@@ -154,9 +154,21 @@ export class KritzelEngine {
     }
   }
 
+  @Method()
+  async disable() {
+    this.store.state.isEnabled = false;
+    this.forceUpdate++;
+  }
+
+  @Method()
+  async enable() {
+    this.store.state.isEnabled = true;
+    this.forceUpdate++;
+  }
+
   render() {
     return (
-      <Host>
+      <Host style={{ pointerEvents: this.store.state.isEnabled ? 'auto' : 'none' }}>
         <div class="debug-panel" style={{ display: this.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
           <div>TranslateX: {this.store.state?.translateX}</div>
           <div>TranslateY: {this.store.state?.translateY}</div>

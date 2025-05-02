@@ -1,19 +1,21 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   z-index: 1;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid hsl(0, 0%, 0%, 4.3%);
   border-radius: 8px;
 }
 
 .kritzel-controls {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
   height: 100%;
   padding: 8px;
   background-color: #ffffff;
-  border: 1px solid hsl(0, 0%, 0%, 4.3%);
   border-radius: 8px;
 }
 
@@ -64,6 +66,10 @@
   align-items: center;
   padding: 8px;
   cursor: pointer;
+}
+
+.kritzel-config-mobile{
+  border-top: 1px solid hsl(0, 0%, 0%, 4.3%);
 }
 
 .kritzel-tooltip {

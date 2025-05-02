@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Element, Watch } from '@stencil/core';
+import { Component, h, Prop, State, Element, Watch, Host } from '@stencil/core';
 import { KritzelIconName } from '../../enums/icon-name.enum';
 import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
@@ -23,6 +23,7 @@ export class KritzelControls {
       type: 'tool',
       tool: KritzelSelectionTool,
       icon: KritzelIconName.cursor,
+      onClick: (control: KritzelToolbarControl) => this.handleControlClick(control),
     },
     {
       name: 'brush',
@@ -33,13 +34,15 @@ export class KritzelControls {
       config: {
         color: 'black',
         size: 2,
-      }
+      },
+      onClick: (control: KritzelToolbarControl) => this.handleControlClick(control),
     },
     {
       name: 'eraser',
       type: 'tool',
       tool: KritzelEraserTool,
       icon: KritzelIconName.eraser,
+      onClick: (control: KritzelToolbarControl) => this.handleControlClick(control),
     },
     {
       name: 'text',
@@ -49,13 +52,15 @@ export class KritzelControls {
       config: {
         color: 'red',
         size: 2,
-      }
+      },
+      onClick: (control: KritzelToolbarControl) => this.handleControlClick(control),
     },
     {
       name: 'image',
       type: 'tool',
       tool: KritzelImageTool,
       icon: KritzelIconName.image,
+      onClick: (control: KritzelToolbarControl) => this.handleControlClick(control),
     },
     {
       name: 'divider',
@@ -64,6 +69,7 @@ export class KritzelControls {
     {
       name: 'test',
       type: 'config',
+      onClick: (_control: KritzelToolbarControl, event: MouseEvent) => this.handleConfigClick(event),
     },
   ];
 
@@ -71,10 +77,10 @@ export class KritzelControls {
   activeControl: string | null = null;
 
   @State()
-  activeTooltip: string | null = null;
+  activeConfig: ToolConfig | null = null;
 
   @State()
-  activeConfig: ToolConfig | null = null;
+  tooltipVisible: boolean = false;
 
   @Element()
   host!: HTMLElement;
@@ -83,7 +89,7 @@ export class KritzelControls {
   handleActiveControlChange(newValue: string | null) {
     this.controls.forEach(control => {
       if (control.type === 'tool' && control.name === newValue) {
-        this.activeConfig = {...control.config};
+        this.activeConfig = { ...control.config };
       }
     });
   }
@@ -124,7 +130,6 @@ export class KritzelControls {
 
   disconnectedCallback() {
     document.removeEventListener('click', this.handleOutsideClick);
-    this.configContainerRefs.clear();
   }
 
   preventDefault(event: Event) {
@@ -134,87 +139,96 @@ export class KritzelControls {
 
   handleControlClick(control: KritzelToolbarControl) {
     if (control.type === 'tool') {
-      this.activeConfig = {...control.config};
-      this.kritzelEngine?.changeActiveTool(control.name);
+      this.activeConfig = { ...control.config };
+      this.kritzelEngine.changeActiveTool(control.name);
+      this.kritzelEngine.changeColor(this.activeConfig.color);
     }
   }
 
-  handleConfigClick(event: MouseEvent, name: string) {
+  handleConfigClick(event: MouseEvent) {
     event.stopPropagation();
-    this.activeTooltip = this.activeTooltip === name ? null : name;
+    this.tooltipVisible = !this.tooltipVisible;
+    this.kritzelEngine.disable();
   }
 
   handleOutsideClick = (event: MouseEvent) => {
-    if (!this.activeTooltip) {
+    if ((event.target as HTMLElement).closest('.kritzel-tooltip')) {
       return;
     }
-
-    const activeContainer = this.configContainerRefs.get(this.activeTooltip);
-    if (activeContainer && !activeContainer.contains(event.target as Node)) {
-      this.activeTooltip = null;
-    }
+    this.tooltipVisible = false;
+    this.kritzelEngine.enable();
   };
 
-  handleColorChange(event: CustomEvent){
-    this.kritzelEngine.changeColor(event.detail);
-    
+  handleColorChange(event: CustomEvent) {
     this.activeConfig = {
       ...this.activeConfig,
-      color: event.detail
+      color: event.detail,
     };
+
+    this.controls.find(control => {
+      if (control.name === this.activeControl && control.type === 'tool') {
+        control.config = this.activeConfig;
+      }
+    });
+
+    this.kritzelEngine.changeColor(this.activeConfig.color);
   }
 
   render() {
     return (
-      <div class="kritzel-controls">
-        {this.controls.map(control => {
-          if (control.type === 'tool') {
-            return (
-              <button
-                class={{
-                  'kritzel-control': true,
-                  'selected': this.activeControl === control.name,
-                }}
-                key={control.name}
-                onClick={event => {
-                  this.preventDefault(event);
-                  this.handleControlClick(control);
-                }}
-              >
-                <kritzel-icon name={control.icon}></kritzel-icon>
-              </button>
-            );
-          }
+      <Host>
+        <div class="kritzel-controls">
+          {this.controls.map(control => {
+            if (control.type === 'tool') {
+              return (
+                <button
+                  class={{
+                    'kritzel-control': true,
+                    'selected': this.activeControl === control.name,
+                  }}
+                  key={control.name}
+                  onClick={event => control.onClick?.(control, event)}
+                >
+                  <kritzel-icon name={control.icon}></kritzel-icon>
+                </button>
+              );
+            }
 
-          if (control.type === 'divider') {
-            return <div class="kritzel-divider" key={control.name}></div>;
-          }
+            if (control.type === 'divider') {
+              return <div class="kritzel-divider" key={control.name}></div>;
+            }
 
-          if (control.type === 'config') {
-            return (
-              <div class="kritzel-config-container" key={control.name} ref={el => this.configContainerRefs.set(control.name, el as HTMLDivElement)}>
-                {this.activeTooltip === control.name && (
-                  <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
-                    <kritzel-color-palette onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
-                    <kritzel-stroke-size></kritzel-stroke-size>
+            if (control.type === 'config') {
+              return (
+                <div class="kritzel-config-container" key={control.name} ref={el => this.configContainerRefs.set(control.name, el as HTMLDivElement)}>
+                  {this.tooltipVisible && (
+                    <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
+                      <kritzel-color-palette onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
+                      <kritzel-stroke-size></kritzel-stroke-size>
+                    </div>
+                  )}
+                  <div class="kritzel-config" onClick={event => control.onClick?.(control, event)}>
+                    <div
+                      style={{
+                        backgroundColor: this.activeConfig?.color || 'transparent',
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        display: 'inline-block',
+                      }}
+                    ></div>
                   </div>
-                )}
-                <div class="kritzel-config" onClick={event => this.handleConfigClick(event, control.name)}>
-                  <div
-                    style={{
-                      backgroundColor: this.activeConfig?.color || 'transparent',
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '50%',
-                      display: 'inline-block',
-                    }}
-                  ></div>
                 </div>
-              </div>
-            );
-          }
-        })}
-      </div>
+              );
+            }
+          })}
+        </div>
+
+        <div class="kritzel-config-mobile">
+          <kritzel-color-palette onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
+          <kritzel-stroke-size></kritzel-stroke-size>
+        </div>
+      </Host>
     );
   }
 }

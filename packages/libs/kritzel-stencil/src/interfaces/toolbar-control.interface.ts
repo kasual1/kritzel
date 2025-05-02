@@ -3,6 +3,8 @@ import { KritzelIconName } from '../enums/icon-name.enum';
 
 interface KritzelToolbarControlBase {
   name: string;
+  onClick?: (control: KritzelToolbarControl, event: MouseEvent) => void;
+  onChange?: (control: KritzelToolbarControl) => void;
 }
 
 interface KritzelToolbarToolControl extends KritzelToolbarControlBase {

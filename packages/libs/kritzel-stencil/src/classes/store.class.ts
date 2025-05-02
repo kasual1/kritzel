@@ -16,6 +16,7 @@ const initialState: KritzelEngineState = {
   selectionBox: null,
   selectionGroup: null,
   resizeHandleType: null,
+  isEnabled: true,
   isScaling: false,
   isFocused: false,
   isSelecting: false,
