@@ -4,7 +4,7 @@ import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
 import { KritzelTextTool } from '../../classes/tools/text-tool.class';
-import { KritzelToolbarControl } from '../../interfaces/toolbar-control.interface';
+import { KritzelToolbarControlBase } from '../../interfaces/toolbar-control.interface';
 import { KritzelImageTool } from '../../classes/tools/image-tool.class';
 
 @Component({
@@ -15,10 +15,9 @@ import { KritzelImageTool } from '../../classes/tools/image-tool.class';
 })
 export class KritzelControls {
   @Prop()
-  controls: KritzelToolbarControl[] = [
+  controls: KritzelToolbarControlBase[] = [
     {
       name: 'selection',
-      type: 'tool',
       tool: KritzelSelectionTool,
       icon: KritzelIconName.cursor,
     },
@@ -110,7 +109,7 @@ export class KritzelControls {
     event.stopPropagation();
   }
 
-  handleControlClick(control: KritzelToolbarControl) {
+  handleControlClick(control: KritzelToolbarControlBase) {
     if (control.tool) {
       this.kritzelEngine?.changeActiveTool(control.name);
     }
@@ -131,6 +130,13 @@ export class KritzelControls {
       this.activeTooltip = null;
     }
   };
+
+  handleColorChange(control: KritzelToolbarControlBase, event: CustomEvent){
+    this.controls.find(c => c.name === control.name).color = event.detail;
+     if(this.kritzelEngine.activeTool instanceof KritzelBrushTool){
+      (this.kritzelEngine.activeTool as KritzelBrushTool).fillColor = event.detail;
+    }
+  }
 
   render() {
     return (
@@ -163,7 +169,7 @@ export class KritzelControls {
               <div class="kritzel-config-container" key={control.name} ref={el => this.configContainerRefs.set(control.name, el as HTMLDivElement)}>
                 {this.activeTooltip === control.name && (
                   <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
-                    <kritzel-color-palette></kritzel-color-palette>
+                    <kritzel-color-palette onColorChange={color => this.handleColorChange(control, color)}></kritzel-color-palette>
                     <kritzel-stroke-size></kritzel-stroke-size>
                   </div>
                 )}

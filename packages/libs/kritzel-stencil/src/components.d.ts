@@ -5,9 +5,9 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+import { KritzelToolbarControlBase } from "./interfaces/toolbar-control.interface";
 import { KritzelTool } from "./interfaces/tool.interface";
-export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+export { KritzelToolbarControlBase } from "./interfaces/toolbar-control.interface";
 export { KritzelTool } from "./interfaces/tool.interface";
 export namespace Components {
     interface KritzelColorPalette {
@@ -15,7 +15,7 @@ export namespace Components {
         "selectedColor": string | null;
     }
     interface KritzelControls {
-        "controls": KritzelToolbarControl[];
+        "controls": KritzelToolbarControlBase[];
         "selectedControl": string | null;
     }
     interface KritzelEditor {
@@ -24,19 +24,14 @@ export namespace Components {
         "activeTool": KritzelTool;
         "changeActiveTool": (tool: string) => Promise<void>;
         "registerTool": (toolName: string, toolClass: any) => Promise<boolean>;
+        "strokeColor": string;
     }
     interface KritzelIcon {
         "label"?: string;
         "name": keyof typeof this.icons;
     }
     interface KritzelStrokeSize {
-        /**
-          * The currently selected stroke size.
-         */
         "selectedSize": number | null;
-        /**
-          * Array of stroke sizes (numeric values in pixels).
-         */
         "sizes": number[];
     }
 }
@@ -138,7 +133,7 @@ declare namespace LocalJSX {
         "selectedColor"?: string | null;
     }
     interface KritzelControls {
-        "controls"?: KritzelToolbarControl[];
+        "controls"?: KritzelToolbarControlBase[];
         "selectedControl"?: string | null;
     }
     interface KritzelEditor {
@@ -146,23 +141,15 @@ declare namespace LocalJSX {
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelTool>) => void;
+        "strokeColor"?: string;
     }
     interface KritzelIcon {
         "label"?: string;
         "name"?: keyof typeof this.icons;
     }
     interface KritzelStrokeSize {
-        /**
-          * Emitted when a stroke size is selected.
-         */
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
-        /**
-          * The currently selected stroke size.
-         */
         "selectedSize"?: number | null;
-        /**
-          * Array of stroke sizes (numeric values in pixels).
-         */
         "sizes"?: number[];
     }
     interface IntrinsicElements {
