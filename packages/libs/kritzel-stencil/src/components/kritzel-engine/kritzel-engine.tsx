@@ -24,6 +24,9 @@ export class KritzelEngine {
   @Prop()
   activeTool: KritzelTool;
 
+  @Prop()
+  strokeColor: string = 'red';
+
   @State()
   forceUpdate: number = 0;
 
@@ -219,7 +222,7 @@ export class KritzelEngine {
                         }}
                         viewBox={object?.viewBox}
                       >
-                        <path d={object?.d} fill={object?.fill} stroke={object?.stroke} />
+                        <path d={object?.d} fill={this.strokeColor} stroke={object?.stroke} />
                       </svg>
                     )}
 

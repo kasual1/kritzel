@@ -77,7 +77,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {}
 
 
 @ProxyCmp({
-  inputs: ['activeTool'],
+  inputs: ['activeTool', 'strokeColor'],
   methods: ['registerTool', 'changeActiveTool']
 })
 @Component({
@@ -85,7 +85,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeTool'],
+  inputs: ['activeTool', 'strokeColor'],
 })
 export class KritzelEngine {
   protected el: HTMLKritzelEngineElement;
@@ -148,9 +148,7 @@ export class KritzelStrokeSize {
 
 
 export declare interface KritzelStrokeSize extends Components.KritzelStrokeSize {
-  /**
-   * Emitted when a stroke size is selected.
-   */
+
   sizeChange: EventEmitter<CustomEvent<number>>;
 }
 

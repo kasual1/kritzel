@@ -6,7 +6,8 @@ import { Component, Host, h, Prop, EventEmitter, Event, State } from '@stencil/c
   shadow: true,
 })
 export class KritzelColorPalette {
-  @Prop() colors: string[] = [
+  @Prop()
+  colors: string[] = [
     '#000000',
     '#FFFFFF',
     '#FF0000',
@@ -24,11 +25,14 @@ export class KritzelColorPalette {
     '#800080',
   ];
 
-  @Prop({ mutable: true }) selectedColor: string | null = null;
+  @Prop({ mutable: true })
+  selectedColor: string | null = null;
 
-  @State() isExpanded: boolean = false;
+  @State() 
+  isExpanded: boolean = false;
 
-  @Event() colorChange: EventEmitter<string>;
+  @Event() 
+  colorChange: EventEmitter<string>;
 
   private handleColorClick(color: string) {
     this.selectedColor = color;
