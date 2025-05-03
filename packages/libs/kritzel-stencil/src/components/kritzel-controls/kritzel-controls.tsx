@@ -23,7 +23,6 @@ export class KritzelControls {
       type: 'tool',
       tool: KritzelSelectionTool,
       icon: KritzelIconName.cursor,
-      onClick: (control: KritzelToolbarControl) => this.handleControlClick(control),
     },
     {
       name: 'brush',
@@ -33,16 +32,14 @@ export class KritzelControls {
       isDefault: true,
       config: {
         color: 'black',
-        size: 2,
+        size: 6,
       },
-      onClick: (control: KritzelToolbarControl) => this.handleControlClick(control),
     },
     {
       name: 'eraser',
       type: 'tool',
       tool: KritzelEraserTool,
       icon: KritzelIconName.eraser,
-      onClick: (control: KritzelToolbarControl) => this.handleControlClick(control),
     },
     {
       name: 'text',
@@ -53,14 +50,12 @@ export class KritzelControls {
         color: 'red',
         size: 2,
       },
-      onClick: (control: KritzelToolbarControl) => this.handleControlClick(control),
     },
     {
       name: 'image',
       type: 'tool',
       tool: KritzelImageTool,
       icon: KritzelIconName.image,
-      onClick: (control: KritzelToolbarControl) => this.handleControlClick(control),
     },
     {
       name: 'divider',
@@ -69,7 +64,6 @@ export class KritzelControls {
     {
       name: 'test',
       type: 'config',
-      onClick: (_control: KritzelToolbarControl, event: MouseEvent) => this.handleConfigClick(event),
     },
   ];
 
@@ -81,6 +75,9 @@ export class KritzelControls {
 
   @State()
   tooltipVisible: boolean = false;
+
+  @State()
+  tooltipPosition: { x: number; y: number } | null = null;
 
   @Element()
   host!: HTMLElement;
@@ -174,6 +171,22 @@ export class KritzelControls {
     this.kritzelEngine.changeColor(this.activeConfig.color);
   }
 
+  handleSizeChange(event: CustomEvent) {
+    this.activeConfig = {
+      ...this.activeConfig,
+      size: event.detail,
+    };
+
+    this.controls.find(control => {
+      if (control.name === this.activeControl && control.type === 'tool') {
+        control.config = this.activeConfig;
+      }
+    });
+
+    this.kritzelEngine.changeStrokeSize(this.activeConfig.size);
+  }
+
+
   render() {
     return (
       <Host>
@@ -187,7 +200,7 @@ export class KritzelControls {
                     'selected': this.activeControl === control.name,
                   }}
                   key={control.name}
-                  onClick={event => control.onClick?.(control, event)}
+                  onClick={_event => this.handleControlClick?.(control)}
                 >
                   <kritzel-icon name={control.icon}></kritzel-icon>
                 </button>
@@ -204,15 +217,18 @@ export class KritzelControls {
                   {this.tooltipVisible && (
                     <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
                       <kritzel-color-palette onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
-                      <kritzel-stroke-size></kritzel-stroke-size>
+                      <kritzel-stroke-size onSizeChange={size => this.handleSizeChange(size)}></kritzel-stroke-size>
                     </div>
                   )}
-                  <div class="kritzel-config" onClick={event => control.onClick?.(control, event)}>
+
+                  {this.tooltipVisible && <div class="kritzel-tooltip-arrow"></div>}
+
+                  <div class="kritzel-config" onClick={event => this.handleConfigClick?.(event)}>
                     <div
                       style={{
                         backgroundColor: this.activeConfig?.color || 'transparent',
-                        width: '24px',
-                        height: '24px',
+                        width: this.activeConfig?.size + 'px',
+                        height: this.activeConfig?.size + 'px',
                         borderRadius: '50%',
                         display: 'inline-block',
                       }}
@@ -222,11 +238,6 @@ export class KritzelControls {
               );
             }
           })}
-        </div>
-
-        <div class="kritzel-config-mobile">
-          <kritzel-color-palette onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
-          <kritzel-stroke-size></kritzel-stroke-size>
         </div>
       </Host>
     );
