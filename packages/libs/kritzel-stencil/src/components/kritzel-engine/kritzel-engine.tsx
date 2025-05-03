@@ -65,24 +65,40 @@ export class KritzelEngine {
 
   @Listen('mousedown', { passive: true })
   handleMouseDown(ev) {
+    if(this.store.state.isEnabled === false) {
+      return;
+    }
+
     this.viewport.handleMouseDown(ev);
     this.store.state?.activeTool?.handleMouseDown(ev);
   }
 
   @Listen('mousemove', { passive: true })
   handleMouseMove(ev) {
+    if(this.store.state.isEnabled === false) {
+      return;
+    }
+
     this.viewport.handleMouseMove(ev);
     this.store.state?.activeTool?.handleMouseMove(ev);
   }
 
   @Listen('mouseup', { passive: true })
   handleMouseUp(ev) {
+    if(this.store.state.isEnabled === false) {
+      return;
+    }
+
     this.viewport.handleMouseUp(ev);
     this.store.state?.activeTool?.handleMouseUp(ev);
   }
 
   @Listen('touchstart', { passive: false })
   handleTouchStart(ev) {
+    if(this.store.state.isEnabled === false) {
+      return;
+    }
+
     ev.preventDefault();
     this.viewport.handleTouchStart(ev);
     this.store.state?.activeTool?.handleTouchStart(ev);
@@ -90,6 +106,10 @@ export class KritzelEngine {
 
   @Listen('touchmove', { passive: false })
   handleTouchMove(ev) {
+    if(this.store.state.isEnabled === false) {
+      return;
+    }
+
     ev.preventDefault();
     this.viewport.handleTouchMove(ev);
     this.store.state?.activeTool?.handleTouchMove(ev);
@@ -97,6 +117,10 @@ export class KritzelEngine {
 
   @Listen('touchend', { passive: false })
   handleTouchEnd(ev) {
+    if(this.store.state.isEnabled === false) {
+      return;
+    }
+    
     ev.preventDefault();
     this.viewport.handleTouchEnd(ev);
     this.store.state?.activeTool?.handleTouchEnd(ev);
@@ -175,7 +199,7 @@ export class KritzelEngine {
 
   render() {
     return (
-      <Host style={{ pointerEvents: this.store.state.isEnabled ? 'auto' : 'none' }}>
+      <Host>
         <div class="debug-panel" style={{ display: this.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
           <div>TranslateX: {this.store.state?.translateX}</div>
           <div>TranslateY: {this.store.state?.translateY}</div>
@@ -185,6 +209,7 @@ export class KritzelEngine {
           <div>Scale: {this.store.state?.scale}</div>
           <div>ActiveTool: {this.store.state?.activeTool?.name}</div>
           <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
+          <div>IsEnabled: {this.store.state?.isEnabled ? 'true': 'false'}</div>
           <div>IsScaling: {this.store.state?.isScaling ? 'true' : 'false'}</div>
           <div>IsFocused: {this.store.state.isFocused ? 'true' : 'false'}</div>
           <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
