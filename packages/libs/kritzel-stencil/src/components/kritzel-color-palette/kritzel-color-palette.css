@@ -4,9 +4,12 @@
   justify-content: space-around;
   gap: 8px;
   padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .color-grid {
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(6, 32px);
   gap: 8px;
