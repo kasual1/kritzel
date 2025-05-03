@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Element, Watch, Host } from '@stencil/core';
+import { Component, h, Prop, State, Element, Watch, Host, Listen } from '@stencil/core';
 import { KritzelIconName } from '../../enums/icon-name.enum';
 import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
@@ -31,8 +31,8 @@ export class KritzelControls {
       icon: KritzelIconName.pen,
       isDefault: true,
       config: {
-        color: 'black',
-        size: 6,
+        color: '#000000',
+        size: 24,
       },
     },
     {
@@ -47,8 +47,8 @@ export class KritzelControls {
       tool: KritzelTextTool,
       icon: KritzelIconName.type,
       config: {
-        color: 'red',
-        size: 2,
+        color: '00FFFF',
+        size: 4,
       },
     },
     {
@@ -121,12 +121,17 @@ export class KritzelControls {
     });
   }
 
-  componentDidLoad() {
-    document.addEventListener('click', this.handleOutsideClick);
-  }
 
-  disconnectedCallback() {
-    document.removeEventListener('click', this.handleOutsideClick);
+  @Listen('click', { target: 'document' })
+  handleClick(event: MouseEvent) {
+    const element = event.target as HTMLElement;
+
+    if (!this.kritzelEngine || element.closest('.kritzel-tooltip')) {
+      return;
+    }
+
+    this.tooltipVisible = false;
+    this.kritzelEngine.enable();
   }
 
   preventDefault(event: Event) {
@@ -147,14 +152,6 @@ export class KritzelControls {
     this.tooltipVisible = !this.tooltipVisible;
     this.kritzelEngine.disable();
   }
-
-  handleOutsideClick = (event: MouseEvent) => {
-    if ((event.target as HTMLElement).closest('.kritzel-tooltip')) {
-      return;
-    }
-    this.tooltipVisible = false;
-    this.kritzelEngine.enable();
-  };
 
   handleColorChange(event: CustomEvent) {
     this.activeConfig = {
@@ -186,7 +183,6 @@ export class KritzelControls {
     this.kritzelEngine.changeStrokeSize(this.activeConfig.size);
   }
 
-
   render() {
     return (
       <Host>
@@ -216,8 +212,8 @@ export class KritzelControls {
                 <div class="kritzel-config-container" key={control.name} ref={el => this.configContainerRefs.set(control.name, el as HTMLDivElement)}>
                   {this.tooltipVisible && (
                     <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
-                      <kritzel-color-palette onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
-                      <kritzel-stroke-size onSizeChange={size => this.handleSizeChange(size)}></kritzel-stroke-size>
+                      <kritzel-color-palette selectedColor={this.activeConfig?.color} onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
+                      <kritzel-stroke-size selectedSize={this.activeConfig?.size} onSizeChange={size => this.handleSizeChange(size)}></kritzel-stroke-size>
                     </div>
                   )}
 
