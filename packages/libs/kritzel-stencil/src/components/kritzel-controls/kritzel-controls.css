@@ -65,6 +65,7 @@
   width: 40px;
   height: 40px;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .kritzel-config {
@@ -91,6 +92,7 @@
   white-space: nowrap;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
   z-index: 10;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .kritzel-tooltip-arrow {

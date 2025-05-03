@@ -13,7 +13,7 @@ export class KritzelEditor {
   controls: KritzelToolbarControl[];
 
   @Prop()
-  customSvgIcons: Record<string, string>;
+  customSvgIcons: Record<string, string> = {};
 
   @State()
   activeControl: string | null = null;
