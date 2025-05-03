@@ -9,6 +9,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
   color: string = 'black';
 
+  size: number = 6;
+
   constructor(store: KritzelStore) {
     super(store);
   }
@@ -26,6 +28,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
         scale: this._store.state.scale,
         stroke: this.color,
         fill: this.color,
+        strokeWidth: this.size
       });
     }
   }
@@ -41,7 +44,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
         stroke: this.color,
-        fill: this.color
+        fill: this.color,
+        strokeWidth: this.size
       });
 
       this._store.rerender();
@@ -73,7 +77,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
         stroke: this.color,
-        fill: this.color
+        fill: this.color,
+        strokeWidth: this.size
       });
 
       this._store.rerender();
@@ -91,7 +96,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
         stroke: this.color,
-        fill: this.color
+        fill: this.color,
+        strokeWidth: this.size
       });
 
       this._store.rerender();

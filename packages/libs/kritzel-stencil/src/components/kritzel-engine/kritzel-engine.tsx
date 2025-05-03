@@ -155,6 +155,13 @@ export class KritzelEngine {
   }
 
   @Method()
+  async changeStrokeSize(size: number) {
+    if (this.store.state.activeTool instanceof KritzelBrushTool) {
+      this.store.state.activeTool.size = size;
+    }
+  }
+
+  @Method()
   async disable() {
     this.store.state.isEnabled = false;
     this.forceUpdate++;

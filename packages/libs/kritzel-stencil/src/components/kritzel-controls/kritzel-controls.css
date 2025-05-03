@@ -17,6 +17,7 @@
   padding: 8px;
   background-color: #ffffff;
   border-radius: 8px;
+  position: relative;
 }
 
 .kritzel-control {
@@ -57,7 +58,7 @@
 }
 
 .kritzel-config-container {
-  position: relative; /* Added for tooltip positioning */
+  position: relative;
 }
 
 .kritzel-config {
@@ -68,13 +69,9 @@
   cursor: pointer;
 }
 
-.kritzel-config-mobile{
-  border-top: 1px solid hsl(0, 0%, 0%, 4.3%);
-}
-
 .kritzel-tooltip {
   position: absolute;
-  bottom: 100%;
+  bottom: 100%; 
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 14px;
@@ -88,16 +85,26 @@
   border-radius: 8px;
   white-space: nowrap;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+  z-index: 10;
 }
 
-.kritzel-tooltip::after {
-  content: '';
+.kritzel-tooltip-arrow {
   position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 40px;
+  left: 12px;
   border-width: 8px;
   border-style: solid;
   border-color: white transparent transparent transparent;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12));
+  z-index: 10;
+}
+
+
+@media (max-width: 600px) {
+  .kritzel-tooltip {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% + 14px);
+    margin-bottom: 0;
+  }
 }

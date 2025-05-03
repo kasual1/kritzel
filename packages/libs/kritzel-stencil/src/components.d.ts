@@ -24,6 +24,7 @@ export namespace Components {
         "activeTool": KritzelTool;
         "changeActiveTool": (tool: string) => Promise<void>;
         "changeColor": (color: string) => Promise<void>;
+        "changeStrokeSize": (size: number) => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
         "registerTool": (toolName: string, toolClass: any) => Promise<boolean>;
