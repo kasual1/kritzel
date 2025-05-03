@@ -56,13 +56,14 @@ export declare interface KritzelControls extends Components.KritzelControls {}
 
 
 @ProxyCmp({
+  inputs: ['controls', 'customSvgIcons']
 })
 @Component({
   selector: 'kritzel-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [],
+  inputs: ['controls', 'customSvgIcons'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
