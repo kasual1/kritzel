@@ -6,8 +6,10 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+import { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 import { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+export { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 export { KritzelTool } from "./interfaces/tool.interface";
 export namespace Components {
     interface KritzelColorPalette {
@@ -19,6 +21,8 @@ export namespace Components {
         "controls": KritzelToolbarControl[];
     }
     interface KritzelEditor {
+        "controls": KritzelToolbarControl1[];
+        "customSvgIcons": Record<string, string>;
     }
     interface KritzelEngine {
         "activeTool": KritzelTool;
@@ -140,6 +144,8 @@ declare namespace LocalJSX {
         "controls"?: KritzelToolbarControl[];
     }
     interface KritzelEditor {
+        "controls"?: KritzelToolbarControl1[];
+        "customSvgIcons"?: Record<string, string>;
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;

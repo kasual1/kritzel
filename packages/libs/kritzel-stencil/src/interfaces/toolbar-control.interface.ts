@@ -1,5 +1,4 @@
 import { KritzelBaseTool } from '../classes/tools/base-tool.class';
-import { KritzelIconName } from '../enums/icon-name.enum';
 
 interface KritzelToolbarControlBase {
   name: string;
@@ -8,7 +7,7 @@ interface KritzelToolbarControlBase {
 interface KritzelToolbarToolControl extends KritzelToolbarControlBase {
   type: 'tool';
   tool: new (...args: any[]) => KritzelBaseTool;
-  icon: KritzelIconName;
+  icon: string;
   isDefault?: boolean;
   config?: {
     color?: string;

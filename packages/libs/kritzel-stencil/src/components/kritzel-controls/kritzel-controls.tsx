@@ -1,5 +1,4 @@
 import { Component, h, Prop, State, Element, Watch, Host, Listen } from '@stencil/core';
-import { KritzelIconName } from '../../enums/icon-name.enum';
 import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
@@ -22,13 +21,13 @@ export class KritzelControls {
       name: 'selection',
       type: 'tool',
       tool: KritzelSelectionTool,
-      icon: KritzelIconName.cursor,
+      icon: 'cursor',
     },
     {
       name: 'brush',
       type: 'tool',
       tool: KritzelBrushTool,
-      icon: KritzelIconName.pen,
+      icon: 'pen',
       isDefault: true,
       config: {
         color: '#000000',
@@ -39,14 +38,14 @@ export class KritzelControls {
       name: 'eraser',
       type: 'tool',
       tool: KritzelEraserTool,
-      icon: KritzelIconName.eraser,
+      icon: 'eraser',
     },
 
     {
       name: 'text',
       type: 'tool',
       tool: KritzelTextTool,
-      icon: KritzelIconName.type,
+      icon: 'type',
       config: {
         color: '00FFFF',
         size: 4,
@@ -56,14 +55,14 @@ export class KritzelControls {
       name: 'image',
       type: 'tool',
       tool: KritzelImageTool,
-      icon: KritzelIconName.image,
+      icon: 'image',
     },
     {
       name: 'divider',
       type: 'divider',
     },
     {
-      name: 'test',
+      name: 'config',
       type: 'config',
     },
   ];
