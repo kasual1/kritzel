@@ -59,19 +59,24 @@
 
 .kritzel-config-container {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 .kritzel-config {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 8px;
   cursor: pointer;
 }
 
 .kritzel-tooltip {
   position: absolute;
-  bottom: 100%; 
+  bottom: 40px; 
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 14px;
@@ -102,7 +107,7 @@
 @media (max-width: 768px) {
   .kritzel-tooltip {
     position: fixed;
-    bottom: 64px;
+    bottom: 66px;
   }
 }
 

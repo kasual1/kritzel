@@ -41,7 +41,7 @@ export class KritzelControls {
       tool: KritzelEraserTool,
       icon: KritzelIconName.eraser,
     },
-    
+
     {
       name: 'text',
       type: 'tool',
@@ -66,7 +66,6 @@ export class KritzelControls {
       name: 'test',
       type: 'config',
     },
-    
   ];
 
   @Prop()
@@ -76,26 +75,15 @@ export class KritzelControls {
   activeConfig: ToolConfig | null = null;
 
   @State()
-  tooltipVisible: boolean = false;
+  firstConfig: ToolConfig | null = null;
 
   @State()
-  tooltipPosition: { x: number; y: number } | null = null;
+  tooltipVisible: boolean = false;
 
   @Element()
   host!: HTMLElement;
 
-  @Watch('activeControl')
-  handleActiveControlChange(newValue: string | null) {
-    this.controls.forEach(control => {
-      if (control.type === 'tool' && control.name === newValue) {
-        this.activeConfig = { ...control.config };
-      }
-    });
-  }
-
   kritzelEngine: HTMLKritzelEngineElement | null = null;
-
-  configContainerRefs = new Map<string, HTMLDivElement>();
 
   async componentWillLoad() {
     await this.initializeEngine();
@@ -120,9 +108,16 @@ export class KritzelControls {
       if (c.type === 'tool' && c.isDefault) {
         await this.kritzelEngine.changeActiveTool(c.name);
       }
+
+      if (c.type === 'config') {
+        if (this.firstConfig === null) {
+          this.firstConfig = c;
+        } else {
+          console.warn('Only one config control is allowed. The first one will be used.');
+        }
+      }
     });
   }
-
 
   @Listen('click', { target: 'document' })
   handleClick(event: MouseEvent) {
@@ -134,6 +129,15 @@ export class KritzelControls {
 
     this.tooltipVisible = false;
     this.kritzelEngine.enable();
+  }
+
+  @Watch('activeControl')
+  handleActiveControlChange(newValue: string | null) {
+    this.controls.forEach(control => {
+      if (control.type === 'tool' && control.name === newValue) {
+        this.activeConfig = { ...control.config };
+      }
+    });
   }
 
   preventDefault(event: Event) {
@@ -209,9 +213,9 @@ export class KritzelControls {
               return <div class="kritzel-divider" key={control.name}></div>;
             }
 
-            if (control.type === 'config') {
+            if (control.type === 'config' && control.name === this.firstConfig?.name) {
               return (
-                <div class="kritzel-config-container" key={control.name} ref={el => this.configContainerRefs.set(control.name, el as HTMLDivElement)}>
+                <div class="kritzel-config-container" key={control.name}>
                   {this.tooltipVisible && (
                     <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
                       <kritzel-color-palette selectedColor={this.activeConfig?.color} onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
