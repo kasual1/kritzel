@@ -99,12 +99,10 @@
   z-index: 10;
 }
 
-
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .kritzel-tooltip {
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: calc(100% + 14px);
-    margin-bottom: 0;
+    position: fixed;
+    bottom: 64px;
   }
 }
+

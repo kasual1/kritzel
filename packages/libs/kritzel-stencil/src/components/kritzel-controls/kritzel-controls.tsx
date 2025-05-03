@@ -41,6 +41,7 @@ export class KritzelControls {
       tool: KritzelEraserTool,
       icon: KritzelIconName.eraser,
     },
+    
     {
       name: 'text',
       type: 'tool',
@@ -65,6 +66,7 @@ export class KritzelControls {
       name: 'test',
       type: 'config',
     },
+    
   ];
 
   @Prop()
