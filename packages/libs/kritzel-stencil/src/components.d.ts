@@ -31,7 +31,7 @@ export namespace Components {
     }
     interface KritzelIcon {
         "label"?: string;
-        "name": keyof typeof this.icons;
+        "name": string;
     }
     interface KritzelStrokeSize {
         "selectedSize": number | null;
@@ -147,7 +147,7 @@ declare namespace LocalJSX {
     }
     interface KritzelIcon {
         "label"?: string;
-        "name"?: keyof typeof this.icons;
+        "name"?: string;
     }
     interface KritzelStrokeSize {
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
