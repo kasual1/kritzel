@@ -56,6 +56,8 @@ export class KritzelEngine {
 
   keyHandler: KritzelKeyHandler;
 
+  contextMenuElement: HTMLKritzelContextMenuElement | null = null;
+
   get isSelecting() {
     return this.store.state.activeTool instanceof KritzelSelectionTool && this.store.state.isSelecting;
   }
@@ -114,17 +116,12 @@ export class KritzelEngine {
     this.contextMenuX = x;
     this.contextMenuY = y;
     this.isContextMenuVisible = true;
+
+    this.store.state.isEnabled = false;
   }
 
   @Listen('mousedown', { passive: true })
   handleMouseDown(ev: MouseEvent) {
-    if (this.isContextMenuVisible) {
-      const clickedElement = ev.target as HTMLElement;
-      if (!clickedElement.closest('kritzel-context-menu')) {
-        this.isContextMenuVisible = false;
-      }
-    }
-
     if (this.store.state.isEnabled === false) {
       return;
     }
@@ -180,7 +177,7 @@ export class KritzelEngine {
     if (this.store.state.isEnabled === false) {
       return;
     }
-    
+
     ev.preventDefault();
     this.viewport.handleTouchEnd(ev);
     this.store.state?.activeTool?.handleTouchEnd(ev);
@@ -190,6 +187,7 @@ export class KritzelEngine {
   handleWheel(ev) {
     if (this.isContextMenuVisible) {
       this.isContextMenuVisible = false;
+      this.store.state.isEnabled = true;
     }
     this.viewport.handleWheel(ev);
     this.store.state?.activeTool?.handleWheel(ev);
@@ -217,13 +215,23 @@ export class KritzelEngine {
     this.store.state.isFocused = isInside;
   }
 
+  @Listen('mousedown', { passive: true })
+  closeContextMenu(ev: MouseEvent) {
+    const isInside = ev.composedPath().includes(this.contextMenuElement);
+
+    if (this.isContextMenuVisible && isInside === false && ev.button === 0) {
+      this.isContextMenuVisible = false;
+      this.store.state.isEnabled = true;
+    }
+  }
+
   @Method()
   async registerTool(toolName: string, toolClass: any) {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return false;
     }
-    
+
     KritzelToolFactory.registerTool(toolName, toolClass);
     return true;
   }
@@ -260,10 +268,17 @@ export class KritzelEngine {
     this.forceUpdate++;
   }
 
+  @Method()
+  async deleteSelecedObjects() {
+    this.store.delete();
+  }
+
+
   handleContextMenuAction(event: CustomEvent<string>) {
     const actionId = event.detail;
-    console.log('Context menu action selected:', actionId);
     this.isContextMenuVisible = false;
+    this.store.state.isEnabled = true;
+    console.log('Action selected:', actionId);
   }
 
   render() {
@@ -278,7 +293,7 @@ export class KritzelEngine {
           <div>Scale: {this.store.state?.scale}</div>
           <div>ActiveTool: {this.store.state?.activeTool?.name}</div>
           <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
-          <div>IsEnabled: {this.store.state?.isEnabled ? 'true': 'false'}</div>
+          <div>IsEnabled: {this.store.state?.isEnabled ? 'true' : 'false'}</div>
           <div>IsScaling: {this.store.state?.isScaling ? 'true' : 'false'}</div>
           <div>IsFocused: {this.store.state.isFocused ? 'true' : 'false'}</div>
           <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
@@ -525,14 +540,15 @@ export class KritzelEngine {
 
         {this.isContextMenuVisible && (
           <kritzel-context-menu
+            ref={el => (this.contextMenuElement = el)}
             items={this.contextMenuItems}
             style={{
               position: 'fixed',
               left: `${this.contextMenuX}px`,
               top: `${this.contextMenuY}px`,
-              zIndex: '1000',
+              zIndex: '10000',
             }}
-            onActionSelected={ev => this.handleContextMenuAction(ev)}
+            onActionSelected={event => this.handleContextMenuAction(event)}
           ></kritzel-context-menu>
         )}
       </Host>

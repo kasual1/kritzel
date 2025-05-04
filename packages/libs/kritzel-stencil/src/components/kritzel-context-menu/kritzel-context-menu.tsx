@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, Event, EventEmitter, Listen } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
 
 @Component({
@@ -11,7 +11,7 @@ export class KritzelContextMenu {
   items: ContextMenuItem[] = [
     { id: 'cut', label: 'Cut', icon: 'cut' },
     { id: 'copy', label: 'Copy', icon: 'copy' },
-    { id: 'paste', label: 'Paste', icon: 'paste', disabled: true }, // Example disabled item
+    { id: 'paste', label: 'Paste', icon: 'paste', disabled: true },
     { id: 'delete', label: 'Delete', icon: 'delete' },
     { id: 'bring-to-front', label: 'Bring to Front', icon: 'bring-to-front' },
     { id: 'send-to-back', label: 'Send to Back', icon: 'send-to-back' },
@@ -19,11 +19,6 @@ export class KritzelContextMenu {
 
   @Event() 
   actionSelected: EventEmitter<string>;
-
-  @Listen('click', { capture: true })
-  handleClickInside(event: MouseEvent) {
-    event.stopPropagation();
-  }
 
   private handleItemClick(item: ContextMenuItem) {
     if (!item.disabled) {
@@ -33,10 +28,11 @@ export class KritzelContextMenu {
 
   render() {
     return (
-      <Host onClick={ev => ev.stopPropagation()}>
+      <Host>
         <div class="menu-container">
           {this.items.map(item => (
             <button
+              key={item.id}
               class={{ 'menu-item': true, 'disabled': item.disabled }}
               onClick={() => this.handleItemClick(item)}
               disabled={item.disabled}
