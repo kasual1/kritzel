@@ -8,6 +8,11 @@ import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 import { KrtizelSelectionBox } from './objects/selection-box.class';
 import { KritzelEngine } from '../components/kritzel-engine/kritzel-engine';
 import { StateChangeListener, StatePropertyKey } from '../types/state.types';
+import { RemoveObjectCommand } from './commands/remove-object.command';
+import { BatchCommand } from './commands/batch.command';
+import { AddObjectCommand } from './commands/add-object.command';
+import { AddSelectionGroupCommand } from './commands/add-selection-group.command';
+import { UpdateObjectCommand } from './commands/update-object.command';
 
 const initialState: KritzelEngineState = {
   activeTool: null,
@@ -48,10 +53,9 @@ const initialState: KritzelEngineState = {
   viewportWidth: 0,
   viewportHeight: 0,
   historyBufferSize: 1000,
-  touchCount: 0
+  touchCount: 0,
 };
 export class KritzelStore {
-
   private readonly _kritzelEngine: KritzelEngine;
 
   private readonly _state: KritzelEngineState;
@@ -123,8 +127,8 @@ export class KritzelStore {
     });
 
     this.objects = allObjects;
-    
-    if(this._kritzelEngine){
+
+    if (this._kritzelEngine) {
       this._kritzelEngine.forceUpdate++;
     }
   }
@@ -158,11 +162,79 @@ export class KritzelStore {
       this._state[property] = value;
 
       if (this._listeners.has(property)) {
-        this._listeners.get(property).forEach(listener => 
-          listener(value, oldValue, String(property))
-        );
+        this._listeners.get(property).forEach(listener => listener(value, oldValue, String(property)));
       }
     }
   }
 
+  clearSelection() {
+    this.history.executeCommand(new RemoveSelectionGroupCommand(this, this.state.selectionGroup));
+  }
+
+  delete() {
+    const deleteSelectedObjectsCommand = this.state.selectionGroup.objects.map(obj => new RemoveObjectCommand(this, this.state.selectionGroup, obj));
+    const removeSelectionGroupCommand = new RemoveSelectionGroupCommand(this, this.state.selectionGroup);
+    const commands = [...deleteSelectedObjectsCommand, removeSelectionGroupCommand];
+
+    this.history.executeCommand(new BatchCommand(this, this.state.selectionGroup, commands));
+  }
+
+  copy() {
+    this.state.copiedObjects = this.state.selectionGroup.copy() as KritzelSelectionGroup;
+  }
+
+  paste() {
+    this.state.copiedObjects.selected = true;
+
+    const removeCurrentSelectionGroupCommand = new RemoveSelectionGroupCommand(this, this.state.selectionGroup);
+    const addCopiedObjectsCommands = this.state.copiedObjects.objects.map(obj => new AddObjectCommand(this, this, obj));
+    const addCopiedObjectsAsSelectionGroupCommand = new AddSelectionGroupCommand(this, this, this.state.copiedObjects);
+
+    this.history.executeCommand(new BatchCommand(this, this, [removeCurrentSelectionGroupCommand, ...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand]));
+    this.state.copiedObjects = this.state.selectionGroup.copy() as KritzelSelectionGroup;
+  }
+
+  moveUp() {
+    const max = this.allObjects.length + 1;
+    const increaseZIndexCommands = this.state.selectionGroup.objects.map(obj => {
+      if (obj.zIndex === max) {
+        return;
+      }
+
+      return new UpdateObjectCommand(this, this, obj, { zIndex: obj.zIndex + 1 });
+    });
+
+    this.history.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
+  }
+
+  moveDown() {
+    const min = 0;
+    const decreaseZIndexCommands = this.state.selectionGroup.objects.map(obj => {
+      if (obj.zIndex === min) {
+        return;
+      }
+
+      return new UpdateObjectCommand(this, this, obj, { zIndex: obj.zIndex - 1 });
+    });
+
+    this.history.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
+  }
+
+  moveToTop() {
+    const max = this.allObjects.length + 1;
+    const increaseZIndexCommands = this.state.selectionGroup.objects.map(obj => {
+      return new UpdateObjectCommand(this, this, obj, { zIndex: max });
+    });
+
+    this.history.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
+  }
+
+  moveToBottom() {
+    const min = -1;
+    const decreaseZIndexCommands = this.state.selectionGroup.objects.map(obj => {
+      return new UpdateObjectCommand(this, this, obj, { zIndex: min });
+    });
+
+    this.history.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
+  }
 }

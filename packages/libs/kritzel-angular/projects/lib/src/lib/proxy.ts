@@ -105,7 +105,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {}
 
 @ProxyCmp({
   inputs: ['activeTool'],
-  methods: ['registerTool', 'changeActiveTool', 'changeColor', 'changeStrokeSize', 'disable', 'enable']
+  methods: ['registerTool', 'changeActiveTool', 'changeColor', 'changeStrokeSize', 'disable', 'enable', 'deleteSelecedObjects']
 })
 @Component({
   selector: 'kritzel-engine',
