@@ -5,9 +5,11 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 import { KritzelTool } from "./interfaces/tool.interface";
+export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 export { KritzelTool } from "./interfaces/tool.interface";
@@ -15,6 +17,9 @@ export namespace Components {
     interface KritzelColorPalette {
         "colors": string[];
         "selectedColor": string | null;
+    }
+    interface KritzelContextMenu {
+        "items": ContextMenuItem[];
     }
     interface KritzelControls {
         "activeControl": string | null;
@@ -36,6 +41,7 @@ export namespace Components {
     interface KritzelIcon {
         "label"?: string;
         "name": string;
+        "size": number;
     }
     interface KritzelStrokeSize {
         "selectedSize": number | null;
@@ -45,6 +51,10 @@ export namespace Components {
 export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelColorPaletteElement;
+}
+export interface KritzelContextMenuCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelContextMenuElement;
 }
 export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -71,6 +81,23 @@ declare global {
     var HTMLKritzelColorPaletteElement: {
         prototype: HTMLKritzelColorPaletteElement;
         new (): HTMLKritzelColorPaletteElement;
+    };
+    interface HTMLKritzelContextMenuElementEventMap {
+        "actionSelected": string;
+    }
+    interface HTMLKritzelContextMenuElement extends Components.KritzelContextMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelContextMenuElementEventMap>(type: K, listener: (this: HTMLKritzelContextMenuElement, ev: KritzelContextMenuCustomEvent<HTMLKritzelContextMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelContextMenuElementEventMap>(type: K, listener: (this: HTMLKritzelContextMenuElement, ev: KritzelContextMenuCustomEvent<HTMLKritzelContextMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelContextMenuElement: {
+        prototype: HTMLKritzelContextMenuElement;
+        new (): HTMLKritzelContextMenuElement;
     };
     interface HTMLKritzelControlsElement extends Components.KritzelControls, HTMLStencilElement {
     }
@@ -126,6 +153,7 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
+        "kritzel-context-menu": HTMLKritzelContextMenuElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
@@ -138,6 +166,10 @@ declare namespace LocalJSX {
         "colors"?: string[];
         "onColorChange"?: (event: KritzelColorPaletteCustomEvent<string>) => void;
         "selectedColor"?: string | null;
+    }
+    interface KritzelContextMenu {
+        "items"?: ContextMenuItem[];
+        "onActionSelected"?: (event: KritzelContextMenuCustomEvent<string>) => void;
     }
     interface KritzelControls {
         "activeControl"?: string | null;
@@ -154,6 +186,7 @@ declare namespace LocalJSX {
     interface KritzelIcon {
         "label"?: string;
         "name"?: string;
+        "size"?: number;
     }
     interface KritzelStrokeSize {
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
@@ -162,6 +195,7 @@ declare namespace LocalJSX {
     }
     interface IntrinsicElements {
         "kritzel-color-palette": KritzelColorPalette;
+        "kritzel-context-menu": KritzelContextMenu;
         "kritzel-controls": KritzelControls;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
@@ -174,6 +208,7 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "kritzel-color-palette": LocalJSX.KritzelColorPalette & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
+            "kritzel-context-menu": LocalJSX.KritzelContextMenu & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;

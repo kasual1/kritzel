@@ -34,6 +34,32 @@ export declare interface KritzelColorPalette extends Components.KritzelColorPale
 
 
 @ProxyCmp({
+  inputs: ['items']
+})
+@Component({
+  selector: 'kritzel-context-menu',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['items'],
+})
+export class KritzelContextMenu {
+  protected el: HTMLKritzelContextMenuElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['actionSelected']);
+  }
+}
+
+
+export declare interface KritzelContextMenu extends Components.KritzelContextMenu {
+
+  actionSelected: EventEmitter<CustomEvent<string>>;
+}
+
+
+@ProxyCmp({
   inputs: ['activeControl', 'controls']
 })
 @Component({
@@ -107,14 +133,14 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
 
 
 @ProxyCmp({
-  inputs: ['label', 'name']
+  inputs: ['label', 'name', 'size']
 })
 @Component({
   selector: 'kritzel-icon',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['label', 'name'],
+  inputs: ['label', 'name', 'size'],
 })
 export class KritzelIcon {
   protected el: HTMLKritzelIconElement;
