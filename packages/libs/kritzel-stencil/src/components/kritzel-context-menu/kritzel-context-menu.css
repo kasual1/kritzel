@@ -39,7 +39,7 @@
 
 .menu-item.disabled {
   color: #aaa;
-  cursor: not-allowed;
+  cursor: default;
 }
 
 .menu-item kritzel-icon {

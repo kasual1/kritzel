@@ -26,8 +26,26 @@ export class KritzelEngine {
   @Prop()
   activeTool: KritzelTool;
 
+  @Prop()
+  globalContextMenuItems: ContextMenuItem[] = [
+    { label: 'Select All', icon: 'select-all', action: () => {} },
+    { label: 'Save as SVG', icon: 'download', action: () => {} },
+  ];
+
+  @Prop()
+  objectContextMenuItems: ContextMenuItem[] = [
+    { label: 'Copy', icon: 'copy', action: () => this.copy() },
+    { label: 'Paste', icon: 'paste', disabled: () => this.store.state.copiedObjects === null, action: () => this.paste() },
+    { label: 'Delete', icon: 'delete', action: () => this.delete() },
+    { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },
+    { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },
+  ];
+
   @State()
   forceUpdate: number = 0;
+
+  @State()
+  contextMenuItems: ContextMenuItem[] = [];
 
   @State()
   isContextMenuVisible: boolean = false;
@@ -37,15 +55,6 @@ export class KritzelEngine {
 
   @State()
   contextMenuY: number = 0;
-
-  @State()
-  contextMenuItems: ContextMenuItem[] = [
-    { id: 'copy', label: 'Copy', icon: 'copy' },
-    { id: 'paste', label: 'Paste', icon: 'paste', disabled: true },
-    { id: 'delete', label: 'Delete', icon: 'delete' },
-    { id: 'bring-to-front', label: 'Bring to Front', icon: 'bring-to-front' },
-    { id: 'send-to-back', label: 'Send to Back', icon: 'send-to-back' },
-  ];
 
   @Event()
   activeToolChange: EventEmitter<KritzelTool>;
@@ -86,14 +95,7 @@ export class KritzelEngine {
       return;
     }
 
-    this.contextMenuItems = [
-      { id: 'cut', label: 'Cut', icon: 'cut' },
-      { id: 'copy', label: 'Copy', icon: 'copy' },
-      { id: 'paste', label: 'Paste', icon: 'paste', disabled: true },
-      { id: 'delete', label: 'Delete', icon: 'delete' },
-      { id: 'bring-to-front', label: 'Bring to Front', icon: 'bring-to-front' },
-      { id: 'send-to-back', label: 'Send to Back', icon: 'send-to-back' },
-    ];
+    this.contextMenuItems = this.store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
 
     let x = ev.clientX;
     let y = ev.clientY;
@@ -269,16 +271,34 @@ export class KritzelEngine {
   }
 
   @Method()
-  async deleteSelecedObjects() {
+  async delete() {
     this.store.delete();
   }
 
+  @Method()
+  async copy() {
+    this.store.copy();
+  }
 
-  handleContextMenuAction(event: CustomEvent<string>) {
-    const actionId = event.detail;
+  @Method()
+  async paste() {
+    this.store.paste();
+  }
+
+  @Method()
+  async moveToTop() {
+    this.store.moveToTop();
+  }
+
+  @Method()
+  async moveToBottom() {
+    this.store.moveToBottom();
+  }
+
+  handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
+    event.detail.action();
     this.isContextMenuVisible = false;
     this.store.state.isEnabled = true;
-    console.log('Action selected:', actionId);
   }
 
   render() {

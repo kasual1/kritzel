@@ -17,6 +17,7 @@ import { UpdateObjectCommand } from './commands/update-object.command';
 const initialState: KritzelEngineState = {
   activeTool: null,
   currentPath: null,
+  copiedObjects: null,
   objectsOctree: null,
   selectionBox: null,
   selectionGroup: null,
