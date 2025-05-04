@@ -10,7 +10,7 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type KritzelEngineCustomEvent, type KritzelTool } from "../../../../kritzel-stencil";
+import { type ContextMenuItem, type KritzelContextMenuCustomEvent, type KritzelEngineCustomEvent, type KritzelTool } from "../../../../kritzel-stencil";
 import { KritzelColorPalette as KritzelColorPaletteElement, defineCustomElement as defineKritzelColorPalette } from "../../../../kritzel-stencil/dist/components/kritzel-color-palette.js";
 import { KritzelContextMenu as KritzelContextMenuElement, defineCustomElement as defineKritzelContextMenu } from "../../../../kritzel-stencil/dist/components/kritzel-context-menu.js";
 import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
@@ -30,7 +30,7 @@ export const KritzelColorPalette: StencilReactComponent<KritzelColorPaletteEleme
     defineCustomElement: defineKritzelColorPalette
 });
 
-export type KritzelContextMenuEvents = { onActionSelected: EventName<CustomEvent<string>> };
+export type KritzelContextMenuEvents = { onActionSelected: EventName<KritzelContextMenuCustomEvent<ContextMenuItem>> };
 
 export const KritzelContextMenu: StencilReactComponent<KritzelContextMenuElement, KritzelContextMenuEvents> = /*@__PURE__*/ createComponent<KritzelContextMenuElement, KritzelContextMenuEvents>({
     tagName: 'kritzel-context-menu',

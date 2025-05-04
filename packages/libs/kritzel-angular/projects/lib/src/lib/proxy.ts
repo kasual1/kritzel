@@ -53,9 +53,11 @@ export class KritzelContextMenu {
 }
 
 
+import type { ContextMenuItem as IKritzelContextMenuContextMenuItem } from 'kritzel-stencil';
+
 export declare interface KritzelContextMenu extends Components.KritzelContextMenu {
 
-  actionSelected: EventEmitter<CustomEvent<string>>;
+  actionSelected: EventEmitter<CustomEvent<IKritzelContextMenuContextMenuItem>>;
 }
 
 
@@ -104,15 +106,15 @@ export declare interface KritzelEditor extends Components.KritzelEditor {}
 
 
 @ProxyCmp({
-  inputs: ['activeTool'],
-  methods: ['registerTool', 'changeActiveTool', 'changeColor', 'changeStrokeSize', 'disable', 'enable', 'deleteSelecedObjects']
+  inputs: ['activeTool', 'globalContextMenuItems', 'objectContextMenuItems'],
+  methods: ['registerTool', 'changeActiveTool', 'changeColor', 'changeStrokeSize', 'disable', 'enable', 'delete', 'copy', 'paste', 'moveToTop', 'moveToBottom']
 })
 @Component({
   selector: 'kritzel-engine',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeTool'],
+  inputs: ['activeTool', 'globalContextMenuItems', 'objectContextMenuItems'],
 })
 export class KritzelEngine {
   protected el: HTMLKritzelEngineElement;

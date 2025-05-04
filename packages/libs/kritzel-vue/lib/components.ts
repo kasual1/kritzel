@@ -45,6 +45,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
 
 export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__*/ defineContainer<JSX.KritzelEngine>('kritzel-engine', defineKritzelEngine, [
   'activeTool',
+  'globalContextMenuItems',
+  'objectContextMenuItems',
   'activeToolChange'
 ], [
   'activeToolChange'

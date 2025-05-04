@@ -8,21 +8,14 @@ import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
 })
 export class KritzelContextMenu {
   @Prop() 
-  items: ContextMenuItem[] = [
-    { id: 'cut', label: 'Cut', icon: 'cut' },
-    { id: 'copy', label: 'Copy', icon: 'copy' },
-    { id: 'paste', label: 'Paste', icon: 'paste', disabled: true },
-    { id: 'delete', label: 'Delete', icon: 'delete' },
-    { id: 'bring-to-front', label: 'Bring to Front', icon: 'bring-to-front' },
-    { id: 'send-to-back', label: 'Send to Back', icon: 'send-to-back' },
-  ];
+  items: ContextMenuItem[];
 
   @Event() 
-  actionSelected: EventEmitter<string>;
+  actionSelected: EventEmitter<ContextMenuItem>;
 
   private handleItemClick(item: ContextMenuItem) {
     if (!item.disabled) {
-      this.actionSelected.emit(item.id);
+      this.actionSelected.emit(item);
     }
   }
 
@@ -32,10 +25,10 @@ export class KritzelContextMenu {
         <div class="menu-container">
           {this.items.map(item => (
             <button
-              key={item.id}
-              class={{ 'menu-item': true, 'disabled': item.disabled }}
+              key={`${item.label}-${this.items.indexOf(item)}`}
+              class={{ 'menu-item': true, 'disabled': typeof item.disabled === 'function' ? item.disabled() : item.disabled }}
               onClick={() => this.handleItemClick(item)}
-              disabled={item.disabled}
+              disabled={typeof item.disabled === 'function' ? item.disabled() : item.disabled}
             >
               {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
               <span class="label">{item.label}</span>

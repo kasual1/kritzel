@@ -40,7 +40,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     },
     handles: {
       color: 'black',
-      size: 12,
+      size: 6,
     },
   };
 

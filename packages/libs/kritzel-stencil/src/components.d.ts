@@ -34,9 +34,15 @@ export namespace Components {
         "changeActiveTool": (tool: string) => Promise<void>;
         "changeColor": (color: string) => Promise<void>;
         "changeStrokeSize": (size: number) => Promise<void>;
-        "deleteSelecedObjects": () => Promise<void>;
+        "copy": () => Promise<void>;
+        "delete": () => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
+        "globalContextMenuItems": ContextMenuItem[];
+        "moveToBottom": () => Promise<void>;
+        "moveToTop": () => Promise<void>;
+        "objectContextMenuItems": ContextMenuItem[];
+        "paste": () => Promise<void>;
         "registerTool": (toolName: string, toolClass: any) => Promise<boolean>;
     }
     interface KritzelIcon {
@@ -84,7 +90,7 @@ declare global {
         new (): HTMLKritzelColorPaletteElement;
     };
     interface HTMLKritzelContextMenuElementEventMap {
-        "actionSelected": string;
+        "actionSelected": ContextMenuItem;
     }
     interface HTMLKritzelContextMenuElement extends Components.KritzelContextMenu, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelContextMenuElementEventMap>(type: K, listener: (this: HTMLKritzelContextMenuElement, ev: KritzelContextMenuCustomEvent<HTMLKritzelContextMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -170,7 +176,7 @@ declare namespace LocalJSX {
     }
     interface KritzelContextMenu {
         "items"?: ContextMenuItem[];
-        "onActionSelected"?: (event: KritzelContextMenuCustomEvent<string>) => void;
+        "onActionSelected"?: (event: KritzelContextMenuCustomEvent<ContextMenuItem>) => void;
     }
     interface KritzelControls {
         "activeControl"?: string | null;
@@ -182,6 +188,8 @@ declare namespace LocalJSX {
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
+        "globalContextMenuItems"?: ContextMenuItem[];
+        "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelTool>) => void;
     }
     interface KritzelIcon {
