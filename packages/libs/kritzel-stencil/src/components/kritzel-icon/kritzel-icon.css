@@ -1,7 +1,17 @@
 :host {
-  display: block;
+  display: inline-flex; /* Changed from block to inline-flex for better alignment */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
 }
 
 span {
   display: flex;
+  align-items: center;
+  width: 100%; /* Make span fill host width */
+  height: 100%; /* Make span fill host height */
+}
+
+span > svg { /* Ensure SVG scales within the span */
+  width: 100%;
+  height: 100%;
 }

@@ -12,6 +12,7 @@ import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 import { type KritzelEngineCustomEvent, type KritzelTool } from "../../../../kritzel-stencil";
 import { KritzelColorPalette as KritzelColorPaletteElement, defineCustomElement as defineKritzelColorPalette } from "../../../../kritzel-stencil/dist/components/kritzel-color-palette.js";
+import { KritzelContextMenu as KritzelContextMenuElement, defineCustomElement as defineKritzelContextMenu } from "../../../../kritzel-stencil/dist/components/kritzel-context-menu.js";
 import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
@@ -27,6 +28,17 @@ export const KritzelColorPalette: StencilReactComponent<KritzelColorPaletteEleme
     react: React,
     events: { onColorChange: 'colorChange' } as KritzelColorPaletteEvents,
     defineCustomElement: defineKritzelColorPalette
+});
+
+export type KritzelContextMenuEvents = { onActionSelected: EventName<CustomEvent<string>> };
+
+export const KritzelContextMenu: StencilReactComponent<KritzelContextMenuElement, KritzelContextMenuEvents> = /*@__PURE__*/ createComponent<KritzelContextMenuElement, KritzelContextMenuEvents>({
+    tagName: 'kritzel-context-menu',
+    elementClass: KritzelContextMenuElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: { onActionSelected: 'actionSelected' } as KritzelContextMenuEvents,
+    defineCustomElement: defineKritzelContextMenu
 });
 
 export type KritzelControlsEvents = NonNullable<unknown>;

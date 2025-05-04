@@ -12,6 +12,7 @@ import { KritzelKeyHandler } from '../../classes/handlers/key.handler';
 import { KritzelToolFactory } from '../../classes/factories/tool.factory';
 import { KritzelBaseTool } from '../../classes/tools/base-tool.class';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
+import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -27,6 +28,24 @@ export class KritzelEngine {
 
   @State()
   forceUpdate: number = 0;
+
+  @State()
+  isContextMenuVisible: boolean = false;
+
+  @State()
+  contextMenuX: number = 0;
+
+  @State()
+  contextMenuY: number = 0;
+
+  @State()
+  contextMenuItems: ContextMenuItem[] = [
+    { id: 'copy', label: 'Copy', icon: 'copy' },
+    { id: 'paste', label: 'Paste', icon: 'paste', disabled: true },
+    { id: 'delete', label: 'Delete', icon: 'delete' },
+    { id: 'bring-to-front', label: 'Bring to Front', icon: 'bring-to-front' },
+    { id: 'send-to-back', label: 'Send to Back', icon: 'send-to-back' },
+  ];
 
   @Event()
   activeToolChange: EventEmitter<KritzelTool>;
@@ -59,13 +78,54 @@ export class KritzelEngine {
   }
 
   @Listen('contextmenu')
-  handleContextMenu(ev) {
+  handleContextMenu(ev: MouseEvent) {
     ev.preventDefault();
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    this.contextMenuItems = [
+      { id: 'cut', label: 'Cut', icon: 'cut' },
+      { id: 'copy', label: 'Copy', icon: 'copy' },
+      { id: 'paste', label: 'Paste', icon: 'paste', disabled: true },
+      { id: 'delete', label: 'Delete', icon: 'delete' },
+      { id: 'bring-to-front', label: 'Bring to Front', icon: 'bring-to-front' },
+      { id: 'send-to-back', label: 'Send to Back', icon: 'send-to-back' },
+    ];
+
+    let x = ev.clientX;
+    let y = ev.clientY;
+
+    const menuWidthEstimate = 150;
+    const menuHeightEstimate = 200;
+    const margin = 10;
+
+    if (x + menuWidthEstimate > window.innerWidth - margin) {
+      x = window.innerWidth - menuWidthEstimate - margin;
+    }
+
+    if (y + menuHeightEstimate > window.innerHeight - margin) {
+      y = window.innerHeight - menuHeightEstimate - margin;
+    }
+
+    x = Math.max(margin, x);
+    y = Math.max(margin, y);
+
+    this.contextMenuX = x;
+    this.contextMenuY = y;
+    this.isContextMenuVisible = true;
   }
 
   @Listen('mousedown', { passive: true })
-  handleMouseDown(ev) {
-    if(this.store.state.isEnabled === false) {
+  handleMouseDown(ev: MouseEvent) {
+    if (this.isContextMenuVisible) {
+      const clickedElement = ev.target as HTMLElement;
+      if (!clickedElement.closest('kritzel-context-menu')) {
+        this.isContextMenuVisible = false;
+      }
+    }
+
+    if (this.store.state.isEnabled === false) {
       return;
     }
 
@@ -75,7 +135,7 @@ export class KritzelEngine {
 
   @Listen('mousemove', { passive: true })
   handleMouseMove(ev) {
-    if(this.store.state.isEnabled === false) {
+    if (this.store.state.isEnabled === false) {
       return;
     }
 
@@ -85,7 +145,7 @@ export class KritzelEngine {
 
   @Listen('mouseup', { passive: true })
   handleMouseUp(ev) {
-    if(this.store.state.isEnabled === false) {
+    if (this.store.state.isEnabled === false) {
       return;
     }
 
@@ -95,7 +155,7 @@ export class KritzelEngine {
 
   @Listen('touchstart', { passive: false })
   handleTouchStart(ev) {
-    if(this.store.state.isEnabled === false) {
+    if (this.store.state.isEnabled === false) {
       return;
     }
 
@@ -106,7 +166,7 @@ export class KritzelEngine {
 
   @Listen('touchmove', { passive: false })
   handleTouchMove(ev) {
-    if(this.store.state.isEnabled === false) {
+    if (this.store.state.isEnabled === false) {
       return;
     }
 
@@ -117,7 +177,7 @@ export class KritzelEngine {
 
   @Listen('touchend', { passive: false })
   handleTouchEnd(ev) {
-    if(this.store.state.isEnabled === false) {
+    if (this.store.state.isEnabled === false) {
       return;
     }
     
@@ -128,6 +188,9 @@ export class KritzelEngine {
 
   @Listen('wheel', { passive: false })
   handleWheel(ev) {
+    if (this.isContextMenuVisible) {
+      this.isContextMenuVisible = false;
+    }
     this.viewport.handleWheel(ev);
     this.store.state?.activeTool?.handleWheel(ev);
   }
@@ -195,6 +258,12 @@ export class KritzelEngine {
   async enable() {
     this.store.state.isEnabled = true;
     this.forceUpdate++;
+  }
+
+  handleContextMenuAction(event: CustomEvent<string>) {
+    const actionId = event.detail;
+    console.log('Context menu action selected:', actionId);
+    this.isContextMenuVisible = false;
   }
 
   render() {
@@ -453,6 +522,19 @@ export class KritzelEngine {
             <path d={this.store.state.currentPath?.d} fill={this.store.state.currentPath?.fill} stroke={this.store.state.currentPath?.stroke} />
           </svg>
         </div>
+
+        {this.isContextMenuVisible && (
+          <kritzel-context-menu
+            items={this.contextMenuItems}
+            style={{
+              position: 'fixed',
+              left: `${this.contextMenuX}px`,
+              top: `${this.contextMenuY}px`,
+              zIndex: '1000',
+            }}
+            onActionSelected={ev => this.handleContextMenuAction(ev)}
+          ></kritzel-context-menu>
+        )}
       </Host>
     );
   }

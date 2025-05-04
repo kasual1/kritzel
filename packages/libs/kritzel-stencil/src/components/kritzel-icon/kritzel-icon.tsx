@@ -1,4 +1,4 @@
-import { Component, h, Prop } from '@stencil/core';
+import { Component, h, Prop, Host } from '@stencil/core';
 import { KritzelIconRegistry } from '../../classes/icon-registry.class';
 
 @Component({
@@ -13,6 +13,9 @@ export class KritzelIcon {
   @Prop()
   label?: string;
 
+  @Prop()
+  size: number = 24;
+
   render() {
     const svgContent = KritzelIconRegistry.get(this.name);
 
@@ -21,13 +24,20 @@ export class KritzelIcon {
       return <span class="error-icon" aria-label={`Error: Icon ${this.name} not found`}>?</span>;
     }
 
+    const styles = {
+      width: `${this.size}px`,
+      height: `${this.size}px`,
+    };
+
     return (
-      <span
-        aria-hidden={!this.label}
-        role={this.label ? 'img' : undefined}
-        aria-label={this.label}
-        innerHTML={svgContent}
-      ></span>
+      <Host style={styles}>
+        <span
+          aria-hidden={!this.label}
+          role={this.label ? 'img' : undefined}
+          aria-label={this.label}
+          innerHTML={svgContent}
+        ></span>
+      </Host>
     );
   }
 }
