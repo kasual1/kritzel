@@ -56,7 +56,6 @@ export class KritzelColorPalette {
                 'selected': this.selectedColor === color,
               }}
               onClick={() => this.handleColorClick(color)}
-              title={color}
             >
                 <div
                 class={{
