@@ -1,6 +1,5 @@
 import { KritzelBaseObject } from '../classes/objects/base-object.class';
 import { KritzelBoundingBox } from './bounding-box.interface';
-import { KritzelSelection } from './selection.interface';
 
 export interface KritzelObject<T = Element> {
   id: string;
@@ -12,13 +11,14 @@ export interface KritzelObject<T = Element> {
   height: number;
   width: number;
   backgroundColor: string;
+  borderColor: string;
+  borderWidth: number;
   opacity: number;
   scale: number;
   selected: boolean;
   resizing: boolean;
   rotation: number;
   markedForRemoval: boolean;
-  selection: KritzelSelection;
   isMounted: boolean;
   zIndex: number;
 

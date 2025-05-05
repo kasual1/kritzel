@@ -22,11 +22,11 @@
   cursor: pointer;
   font-size: 14px;
   line-height: 1;
-  color: #666;
+  color: var(--kritzel-color-palette-expand-toggle-color);
 }
 
 .expand-toggle:hover {
-  color: #333;
+  color: var(--kritzel-color-palette-expand-toggle-hover-color);
 }
 
 .color-container {
@@ -39,15 +39,15 @@
   cursor: pointer;
   border: 2px solid transparent;
   box-sizing: border-box;
-  transition: background-color 0.1s ease-in-out, border-color 0.1s ease-in-out;
 }
 
 .color-container:hover {
-  background-color: #f0f0f0;
+  background-color: var(--kritzel-color-palette-hover-background-color);
 }
 
 .color-container.selected {
-  border-color: #4a90e2;
+  border-color: var(--kritzel-selection-border-color);
+  background-color: var(--kritzel-color-palette-selected-background-color);
 }
 
 .color-circle {
@@ -58,7 +58,6 @@
   display: block;
 }
 
-.color-circle[style*="background-color: #FFFFFF"],
-.color-circle[style*="background-color: white"] {
-  border: 1px solid #e0e0e0;
+.color-circle.white {
+  border: 1px solid var(--kritzel-color-palette-circle-border-color);
 }

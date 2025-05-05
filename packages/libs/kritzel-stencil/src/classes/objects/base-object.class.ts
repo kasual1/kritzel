@@ -2,7 +2,6 @@ import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
 import { KritzelObject } from '../../interfaces/object.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
-import { KritzelSelection } from '../../interfaces/selection.interface';
 import { KritzelStore } from '../store.class';
 import { ObjectHelper } from '../../helpers/object.helper';
 
@@ -17,6 +16,8 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
   height: number;
   width: number;
   backgroundColor: string;
+  borderColor: string;
+  borderWidth: number = 0;
   opacity: number = 1;
   padding: number = 0;
   scale: number;
@@ -31,18 +32,6 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
 
   readonly _store: KritzelStore;
   _elementRef: T;
-
-  selection: KritzelSelection = {
-    stroke: {
-      color: '#009999',
-      size: 1,
-      style: 'solid',
-    },
-    handles: {
-      color: 'black',
-      size: 6,
-    },
-  };
 
   get totalWidth(): number {
     return this.width + this.padding * 2;
