@@ -458,6 +458,7 @@ export class KritzelEngine {
                     style={{
                       stroke: 'var(--kritzel-selection-border-color)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                      strokeLinecap: 'square'
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
@@ -469,6 +470,7 @@ export class KritzelEngine {
                     style={{
                       stroke: 'var(--kritzel-selection-border-color)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                      strokeLinecap: 'square'
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
@@ -480,6 +482,7 @@ export class KritzelEngine {
                     style={{
                       stroke: 'var(--kritzel-selection-border-color)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                      strokeLinecap: 'square'
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
@@ -491,6 +494,7 @@ export class KritzelEngine {
                     style={{
                       stroke: 'var(--kritzel-selection-border-color)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                      strokeLinecap: 'square'
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
@@ -500,6 +504,9 @@ export class KritzelEngine {
                     cx="0"
                     cy="0"
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'var(--kritzel-selection-handle-color)',
+                    }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
@@ -507,6 +514,9 @@ export class KritzelEngine {
                     cx={object.totalWidth}
                     cy="0"
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'var(--kritzel-selection-handle-color)',
+                    }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
@@ -514,6 +524,9 @@ export class KritzelEngine {
                     cx="0"
                     cy={object.totalHeight}
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'var(--kritzel-selection-handle-color)',
+                    }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
@@ -521,6 +534,9 @@ export class KritzelEngine {
                     cx={object.totalWidth}
                     cy={object.totalHeight}
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'var(--kritzel-selection-handle-color)',
+                    }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
@@ -540,6 +556,9 @@ export class KritzelEngine {
                     cx={object.totalWidth / 2}
                     cy="-20"
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'var(--kritzel-selection-handle-color)',
+                    }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                 </g>
