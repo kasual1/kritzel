@@ -1,10 +1,10 @@
 :host {
   display: flex;
   flex-direction: column;
-  z-index: 1;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid hsl(0, 0%, 0%, 4.3%);
-  border-radius: 8px;
+  box-shadow: var(--kritzel-controls-box-shadow);
+  border: var(--kritzel-controls-border);
+  border-radius: var(--kritzel-controls-border-radius);
+  z-index: 10000;
 }
 
 .kritzel-controls {
@@ -12,11 +12,11 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  gap: 8px;
+  gap: var(--kritzel-controls-gap);
   height: 100%;
-  padding: 8px;
-  background-color: #ffffff;
-  border-radius: 8px;
+  padding: var(--kritzel-controls-padding);
+  background-color: var(--kritzel-controls-background-color);
+  border-radius: var(--kritzel-controls-border-radius);
   position: relative;
 }
 
@@ -24,37 +24,35 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 8px;
-  padding: 8px;
+  border-radius: var(--kritzel-controls-control-border-radius);
+  padding: var(--kritzel-controls-control-padding);
   border: none;
   outline: none;
   background: none;
   cursor: pointer;
-  color: black;
-  font-size: 12px;
   -webkit-tap-highlight-color: transparent;
   font-weight: bold;
 }
 
 .kritzel-control:hover {
-  background-color: hsl(0, 0%, 0%, 4.3%);
+  background-color: var(--kritzel-controls-control-hover-background-color);
 }
 
 .kritzel-control:active {
-  background-color: hsl(0, 0%, 0%, 8.6%);
+  background-color: var(--kritzel-controls-control-active-background-color);
 }
 
 .kritzel-control.selected,
 .kritzel-control.selected:hover,
 .kritzel-control.selected:active {
-  background-color: hsla(0, 0%, 0%, 0.925);
-  color: white;
+  background-color: var(--kritzel-controls-control-selected-background-color);
+  color: var(--kritzel-controls-control-selected-color);
 }
 
 .kritzel-divider {
-  width: 1px;
-  height: 24px;
-  background-color: hsl(0, 0%, 0%, 4.3%);
+  width: var(--kritzel-controls-divider-width);
+  height: var(--kritzel-controls-divider-height);
+  background-color: var(--kritzel-controls-divider-background-color);
 }
 
 .kritzel-config-container {
@@ -84,16 +82,15 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: white;
-  color: black;
+  background-color: var( --kritzel-controls-tooltip-background-color);
+  color: var(--kritzel-controls-tooltip-color);
   align-items: center;
-  padding: 8px;
-  border-radius: 8px;
+  padding: var(--kritzel-controls-tooltip-padding);
+  border-radius: var(--kritzel-controls-tooltip-border-radius);
   white-space: nowrap;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
-  z-index: 10;
+  box-shadow: var(--kritzel-controls-tooltip-box-shadow);
+  z-index: 10000;
   -webkit-tap-highlight-color: transparent;
-  min-width: 150px; /* Add a minimum width */
 }
 
 .kritzel-tooltip-arrow {
@@ -102,9 +99,9 @@
   left: 12px;
   border-width: 8px;
   border-style: solid;
-  border-color: white transparent transparent transparent;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12));
-  z-index: 10;
+  border-color: var( --kritzel-controls-tooltip-background-color) transparent transparent transparent;
+  filter: drop-shadow(var(--kritzel-controls-tooltip-box-shadow));
+  z-index: 10000;
 }
 
 @media (max-width: 768px) {

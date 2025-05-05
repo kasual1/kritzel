@@ -7,12 +7,13 @@ export class KrtizelSelectionBox extends KritzelBaseObject<HTMLElement> {
 
 	constructor(store: KritzelStore) {
 		super(store);
-		this.backgroundColor = '#009999';
-		this.opacity = 0.5;
+		this.backgroundColor = 'var(--kritzel-selection-background-color)';
+		this.borderColor = 'var(--kritzel-selection-border-color)';
+		this.borderWidth = 2;
 		this.scale = this._store.state.scale;
 		this.height = 0;
 		this.width = 0;
-    	this.zIndex = 99999;
+    	this.zIndex = 9999;
 	}
 
 }

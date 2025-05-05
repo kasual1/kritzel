@@ -302,6 +302,10 @@ export class KritzelEngine {
   }
 
   render() {
+    const computedStyle = window.getComputedStyle(this.host);
+    const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
+    const baseHandleSize = parseFloat(baseHandleSizePx);
+
     return (
       <Host>
         <div class="debug-panel" style={{ display: this.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
@@ -361,7 +365,16 @@ export class KritzelEngine {
                     y="0"
                     width={object.totalWidth.toString()}
                     height={object.totalHeight.toString()}
-                    style={{ minHeight: '0', minWidth: '0', backgroundColor: object.backgroundColor, padding: object.padding + 'px', overflow: 'visible' }}
+                    style={{
+                      minHeight: '0',
+                      minWidth: '0',
+                      backgroundColor: object.backgroundColor,
+                      borderColor: object.borderColor,
+                      borderWidth: object.borderWidth + 'px',
+                      borderStyle: 'solid',
+                      padding: object.padding + 'px',
+                      overflow: 'visible',
+                    }}
                   >
                     {object instanceof KritzelPath && (
                       <svg
@@ -442,7 +455,10 @@ export class KritzelEngine {
                     y1="0"
                     x2={object.totalWidth}
                     y2="0"
-                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.store.state?.scale}` }}
+                    style={{
+                      stroke: 'var(--kritzel-selection-border-color)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                    }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
                   <line
@@ -450,7 +466,10 @@ export class KritzelEngine {
                     y1="0"
                     x2="0"
                     y2={object.totalHeight}
-                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.store.state?.scale}` }}
+                    style={{
+                      stroke: 'var(--kritzel-selection-border-color)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                    }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
                   <line
@@ -458,7 +477,10 @@ export class KritzelEngine {
                     y1={object.totalHeight}
                     x2={object.totalWidth}
                     y2={object.totalHeight}
-                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.store.state?.scale}` }}
+                    style={{
+                      stroke: 'var(--kritzel-selection-border-color)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                    }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
                   <line
@@ -466,7 +488,10 @@ export class KritzelEngine {
                     y1="0"
                     x2={object.totalWidth}
                     y2={object.totalHeight}
-                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.store.state?.scale}` }}
+                    style={{
+                      stroke: 'var(--kritzel-selection-border-color)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                    }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
 
@@ -474,28 +499,28 @@ export class KritzelEngine {
                     class="selection-handle top-left"
                     cx="0"
                     cy="0"
-                    r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
+                    r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="selection-handle top-right"
                     cx={object.totalWidth}
                     cy="0"
-                    r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
+                    r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="selection-handle bottom-left"
                     cx="0"
                     cy={object.totalHeight}
-                    r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
+                    r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="selection-handle bottom-right"
                     cx={object.totalWidth}
                     cy={object.totalHeight}
-                    r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
+                    r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
@@ -504,14 +529,17 @@ export class KritzelEngine {
                     y1="0"
                     x2={object.totalWidth / 2}
                     y2="-20"
-                    style={{ stroke: object.selection.stroke.color, strokeWidth: `${(object.selection.stroke.size * object.scale) / this.store.state?.scale}` }}
+                    style={{
+                      stroke: 'var(--kritzel-selection-border-color)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                    }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="rotation-handle"
                     cx={object.totalWidth / 2}
                     cy="-20"
-                    r={`${(object.selection.handles.size * object.scale) / this.store.state?.scale}`}
+                    r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                 </g>

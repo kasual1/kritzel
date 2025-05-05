@@ -21,16 +21,16 @@
 }
 
 .size-container:hover {
-  background-color: #f0f0f0;
+  background-color: var(--kritzel-stroke-size-hover-background-color);
 }
 
 .size-container.selected {
-  border-color: #4a90e2;
-  background-color: #e7f1fc;
+  border-color: var(--kritzel-selection-border-color);
+  background-color: var(--kritzel-stroke-size-selected-background-color);
 }
 
 .size-circle {
-  background-color: black;
+  background-color: var(--kritzel-stroke-size-circle-color);
   border-radius: 50%;
   display: block;
 }

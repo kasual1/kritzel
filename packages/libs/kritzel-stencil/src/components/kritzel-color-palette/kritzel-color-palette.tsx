@@ -58,10 +58,13 @@ export class KritzelColorPalette {
               onClick={() => this.handleColorClick(color)}
               title={color}
             >
-              <div
-                class='color-circle'
+                <div
+                class={{
+                  'color-circle': true,
+                  'white': color === '#FFFFFF' || color.toLowerCase() === 'white',
+                }}
                 style={{ backgroundColor: color }}
-              ></div>
+                ></div>
             </div>
           ))}
         </div>
