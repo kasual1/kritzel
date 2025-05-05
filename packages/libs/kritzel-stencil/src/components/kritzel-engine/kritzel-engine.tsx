@@ -91,7 +91,7 @@ export class KritzelEngine {
   @Listen('contextmenu')
   handleContextMenu(ev: MouseEvent) {
     ev.preventDefault();
-    if (this.store.state.isEnabled === false) {
+    if (this.store.state.isEnabled === false || this.store.state.hasViewportChanged === true) {
       return;
     }
 

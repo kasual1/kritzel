@@ -25,6 +25,8 @@ export class KritzelViewport {
     const adjustedClientX = event.clientX - this._store.offsetX;
     const adjustedClientY = event.clientY - this._store.offsetY;
 
+    this._store.state.hasViewportChanged = false;
+
     if (KritzelClickHelper.isRightClick(event)) {
       this.isDragging = true;
       this._store.state.startX = adjustedClientX;
@@ -57,6 +59,8 @@ export class KritzelViewport {
 
   handleTouchStart(event: TouchEvent): void {
     this._store.state.touchCount = event.touches.length;
+
+    this._store.state.hasViewportChanged = false;
 
     if (this._store.state.touchCount === 2) {
       this._store.state.currentPath = null;
