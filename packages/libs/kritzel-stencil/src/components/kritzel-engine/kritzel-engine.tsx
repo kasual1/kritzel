@@ -35,7 +35,16 @@ export class KritzelEngine {
   @Prop()
   objectContextMenuItems: ContextMenuItem[] = [
     { label: 'Copy', icon: 'copy', action: () => this.copy() },
-    { label: 'Paste', icon: 'paste', disabled: () => this.store.state.copiedObjects === null, action: () => this.paste() },
+    {
+      label: 'Paste',
+      icon: 'paste',
+      disabled: () => this.store.state.copiedObjects === null,
+      action: () => {
+        const x = this.store.state.translateX + this.store.state.cursorX;
+        const y = this.store.state.translateY + this.store.state.cursorY;
+        this.paste(x, y);
+      },
+    },
     { label: 'Delete', icon: 'delete', action: () => this.delete() },
     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },
     { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },
@@ -281,8 +290,8 @@ export class KritzelEngine {
   }
 
   @Method()
-  async paste() {
-    this.store.paste();
+  async paste(x: number, y: number) {
+    this.store.paste(x, y);
   }
 
   @Method()
@@ -458,7 +467,7 @@ export class KritzelEngine {
                     style={{
                       stroke: 'var(--kritzel-selection-border-color)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
-                      strokeLinecap: 'square'
+                      strokeLinecap: 'square',
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
@@ -470,7 +479,7 @@ export class KritzelEngine {
                     style={{
                       stroke: 'var(--kritzel-selection-border-color)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
-                      strokeLinecap: 'square'
+                      strokeLinecap: 'square',
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
@@ -482,7 +491,7 @@ export class KritzelEngine {
                     style={{
                       stroke: 'var(--kritzel-selection-border-color)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
-                      strokeLinecap: 'square'
+                      strokeLinecap: 'square',
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />
@@ -494,7 +503,7 @@ export class KritzelEngine {
                     style={{
                       stroke: 'var(--kritzel-selection-border-color)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
-                      strokeLinecap: 'square'
+                      strokeLinecap: 'square',
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
                   />

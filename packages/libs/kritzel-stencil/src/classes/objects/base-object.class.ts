@@ -210,8 +210,6 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     Object.assign(copiedObject, this);
     copiedObject.id = this.generateId();
     copiedObject.isMounted = true;
-    copiedObject.translateX += 25;
-    copiedObject.translateY += 25;
     return copiedObject;
   }
 

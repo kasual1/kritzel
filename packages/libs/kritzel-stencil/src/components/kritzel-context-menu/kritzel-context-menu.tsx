@@ -14,7 +14,9 @@ export class KritzelContextMenu {
   actionSelected: EventEmitter<ContextMenuItem>;
 
   private handleItemClick(item: ContextMenuItem) {
-    if (!item.disabled) {
+    const isDisabled = typeof item.disabled === 'function' ? item.disabled() : item.disabled;
+    
+    if (!isDisabled) {
       this.actionSelected.emit(item);
     }
   }

@@ -65,6 +65,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
 
     if (event.key === 'c' && event.ctrlKey && this._store.state.selectionGroup) {
       this._store.copy();
+      this._store.rerender();
     }
 
     if (event.key === 'v' && event.ctrlKey && this._store.state.selectionGroup) {

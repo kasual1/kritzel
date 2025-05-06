@@ -42,7 +42,7 @@ export namespace Components {
         "moveToBottom": () => Promise<void>;
         "moveToTop": () => Promise<void>;
         "objectContextMenuItems": ContextMenuItem[];
-        "paste": () => Promise<void>;
+        "paste": (x: number, y: number) => Promise<void>;
         "registerTool": (toolName: string, toolClass: any) => Promise<boolean>;
     }
     interface KritzelIcon {
