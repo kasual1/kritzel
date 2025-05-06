@@ -245,4 +245,31 @@ export class KritzelStore {
 
     this.history.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
   }
+
+  selectAllInViewport() {
+    const objectsInViewport = this._state.objectsOctree.query({
+      x: -this._state.translateX / this._state.scale,
+      y: -this._state.translateY / this._state.scale,
+      z: this._state.scale,
+      width: this._state.viewportWidth / this._state.scale,
+      height: this._state.viewportHeight / this._state.scale,
+      depth: 100,
+    });
+
+    
+
+    if (objectsInViewport.length > 0) {
+
+      const selectionGroup = new KritzelSelectionGroup(this);
+
+      objectsInViewport.forEach(obj => {
+        obj.selected = false;
+        selectionGroup.addOrRemove(obj);
+      });
+
+      selectionGroup.selected = true;
+
+      this.history.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
+    }
+  }
 }
