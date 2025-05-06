@@ -44,6 +44,7 @@ export namespace Components {
         "objectContextMenuItems": ContextMenuItem[];
         "paste": (x: number, y: number) => Promise<void>;
         "registerTool": (toolName: string, toolClass: any) => Promise<boolean>;
+        "selectAllInViewport": () => Promise<void>;
     }
     interface KritzelIcon {
         "label"?: string;

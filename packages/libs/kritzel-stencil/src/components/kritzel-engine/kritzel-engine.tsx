@@ -28,7 +28,7 @@ export class KritzelEngine {
 
   @Prop()
   globalContextMenuItems: ContextMenuItem[] = [
-    { label: 'Select All', icon: 'select-all', action: () => {} },
+    { label: 'Select All', icon: 'select-all', action: () => this.selectAllInViewport() },
     { label: 'Save as SVG', icon: 'download', action: () => {} },
   ];
 
@@ -302,6 +302,12 @@ export class KritzelEngine {
   @Method()
   async moveToBottom() {
     this.store.moveToBottom();
+  }
+
+  @Method()
+  async selectAllInViewport() {
+    this.store.selectAllInViewport();
+    this.store.setState('activeTool', KritzelToolFactory.createTool('selection', this.store));
   }
 
   handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
