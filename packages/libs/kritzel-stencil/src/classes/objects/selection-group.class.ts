@@ -31,7 +31,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     this.unchangedObjects = ObjectHelper.clone(this.objects);
-    this.updateDimensions();
+    this.refreshObjectDimensions();
   }
 
   deselectAllChildren() {
@@ -77,7 +77,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this._store.state.objectsOctree.update(obj);
     });
 
-    this.updateDimensions();
+    this.refreshObjectDimensions();
     this.unchangedObjects = ObjectHelper.clone(this.objects);
   }
 
@@ -126,7 +126,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return selectionGroup;
   }
 
-  private updateDimensions() {
+  refreshObjectDimensions() {
     if (this.objects.length === 1) {
       const obj = this.objects[0];
       this.minX = obj.boundingBox.x / this.scale;

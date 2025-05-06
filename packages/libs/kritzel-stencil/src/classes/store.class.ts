@@ -184,8 +184,15 @@ export class KritzelStore {
     this.state.copiedObjects = this.state.selectionGroup.copy() as KritzelSelectionGroup;
   }
 
-  paste() {
+  paste(x?: number, y?: number) {
+    debugger;
     this.state.copiedObjects.selected = true;
+
+    this.state.copiedObjects.objects.forEach(obj => {
+      obj.translateX = x !== undefined ? x : obj.translateX + 25;
+      obj.translateY = y !== undefined ? y : obj.translateY + 25;
+    });
+    this.state.copiedObjects.refreshObjectDimensions();
 
     const removeCurrentSelectionGroupCommand = new RemoveSelectionGroupCommand(this, this.state.selectionGroup);
     const addCopiedObjectsCommands = this.state.copiedObjects.objects.map(obj => new AddObjectCommand(this, this, obj));
