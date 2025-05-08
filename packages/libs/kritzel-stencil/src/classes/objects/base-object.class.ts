@@ -154,6 +154,14 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     return this.rotation * (180 / Math.PI);
   }
 
+  get centerX(): number {
+    return this.translateX + this.totalWidth / 2;
+  }
+
+  get centerY(): number {
+    return this.translateY + this.totalHeight / 2;
+  }
+
   constructor(store: KritzelStore) {
     this._store = store;
     this.id = this.generateId();

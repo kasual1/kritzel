@@ -28,8 +28,17 @@ export class KritzelEngine {
 
   @Prop()
   globalContextMenuItems: ContextMenuItem[] = [
+    {
+      label: 'Paste',
+      icon: 'paste',
+      disabled: () => this.store.state.copiedObjects === null,
+      action: () => {
+        const x = ((-this.store.state.translateX + this.contextMenuX) / this.store.state.scale);
+        const y = ((-this.store.state.translateY + this.contextMenuY) / this.store.state.scale);
+        this.paste(x, y);
+      },
+    },
     { label: 'Select All', icon: 'select-all', action: () => this.selectAllInViewport() },
-    { label: 'Save as SVG', icon: 'download', action: () => {} },
   ];
 
   @Prop()
@@ -40,8 +49,8 @@ export class KritzelEngine {
       icon: 'paste',
       disabled: () => this.store.state.copiedObjects === null,
       action: () => {
-        const x = this.store.state.translateX + this.store.state.cursorX;
-        const y = this.store.state.translateY + this.store.state.cursorY;
+        const x = ((-this.store.state.translateX + this.contextMenuX) / this.store.state.scale);
+        const y = ((-this.store.state.translateY + this.contextMenuY) / this.store.state.scale);
         this.paste(x, y);
       },
     },
@@ -307,7 +316,6 @@ export class KritzelEngine {
   @Method()
   async selectAllInViewport() {
     this.store.selectAllInViewport();
-    this.store.setState('activeTool', KritzelToolFactory.createTool('selection', this.store));
   }
 
   handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {

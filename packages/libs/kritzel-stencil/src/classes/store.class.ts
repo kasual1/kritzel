@@ -13,6 +13,7 @@ import { BatchCommand } from './commands/batch.command';
 import { AddObjectCommand } from './commands/add-object.command';
 import { AddSelectionGroupCommand } from './commands/add-selection-group.command';
 import { UpdateObjectCommand } from './commands/update-object.command';
+import { KritzelToolFactory } from './factories/tool.factory';
 
 const initialState: KritzelEngineState = {
   activeTool: null,
@@ -185,21 +186,27 @@ export class KritzelStore {
   }
 
   paste(x?: number, y?: number) {
-    debugger;
     this.state.copiedObjects.selected = true;
 
-    this.state.copiedObjects.objects.forEach(obj => {
-      obj.translateX = x !== undefined ? x : obj.translateX + 25;
-      obj.translateY = y !== undefined ? y : obj.translateY + 25;
-    });
-    this.state.copiedObjects.refreshObjectDimensions();
+    const adjustedX = x !== undefined ? x : this.state.copiedObjects.translateX + 25;
+    const adjustedY = y !== undefined ? y : this.state.copiedObjects.translateY + 25;
 
-    const removeCurrentSelectionGroupCommand = new RemoveSelectionGroupCommand(this, this.state.selectionGroup);
+    this.state.copiedObjects.updatePosition(adjustedX, adjustedY);
+
+    const commands = [];
+    if (this.state.selectionGroup !== null) {
+      commands.push(new RemoveSelectionGroupCommand(this, this.state.selectionGroup));
+    }
+
     const addCopiedObjectsCommands = this.state.copiedObjects.objects.map(obj => new AddObjectCommand(this, this, obj));
     const addCopiedObjectsAsSelectionGroupCommand = new AddSelectionGroupCommand(this, this, this.state.copiedObjects);
 
-    this.history.executeCommand(new BatchCommand(this, this, [removeCurrentSelectionGroupCommand, ...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand]));
+    commands.push(...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand);
+
+    this.history.executeCommand(new BatchCommand(this, this, commands));
+
     this.state.copiedObjects = this.state.selectionGroup.copy() as KritzelSelectionGroup;
+    this.setState('activeTool', KritzelToolFactory.createTool('selection', this));      
   }
 
   moveUp() {
@@ -270,6 +277,7 @@ export class KritzelStore {
       selectionGroup.selected = true;
 
       this.history.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
+      this.setState('activeTool', KritzelToolFactory.createTool('selection', this));      
     }
   }
 }

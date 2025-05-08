@@ -30,6 +30,8 @@ export interface KritzelObject<T = Element> {
   get totalWidth(): number;
   get totalHeight(): number;
   get rotationDegrees(): number;
+  get centerX(): number;
+  get centerY(): number;
 
   mount(element: T): void;
   generateId(): string;
