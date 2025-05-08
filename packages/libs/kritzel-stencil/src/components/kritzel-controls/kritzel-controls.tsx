@@ -226,6 +226,10 @@ export class KritzelControls {
 
                   <div class="kritzel-config" onClick={event => this.handleConfigClick?.(event)}>
                     <div
+                      class={{
+                        'color-circle': true,
+                        'white': this.activeConfig?.color === '#FFFFFF' || this.activeConfig?.color?.toLowerCase() === 'white',
+                      }}
                       style={{
                         backgroundColor: this.activeConfig?.color || 'transparent',
                         width: this.activeConfig?.size + 'px',
