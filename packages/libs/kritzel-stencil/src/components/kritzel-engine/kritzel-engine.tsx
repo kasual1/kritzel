@@ -33,8 +33,8 @@ export class KritzelEngine {
       icon: 'paste',
       disabled: () => this.store.state.copiedObjects === null,
       action: () => {
-        const x = ((-this.store.state.translateX + this.contextMenuX) / this.store.state.scale);
-        const y = ((-this.store.state.translateY + this.contextMenuY) / this.store.state.scale);
+        const x = (-this.store.state.translateX + this.contextMenuX) / this.store.state.scale;
+        const y = (-this.store.state.translateY + this.contextMenuY) / this.store.state.scale;
         this.paste(x, y);
       },
     },
@@ -49,8 +49,8 @@ export class KritzelEngine {
       icon: 'paste',
       disabled: () => this.store.state.copiedObjects === null,
       action: () => {
-        const x = ((-this.store.state.translateX + this.contextMenuX) / this.store.state.scale);
-        const y = ((-this.store.state.translateY + this.contextMenuY) / this.store.state.scale);
+        const x = (-this.store.state.translateX + this.contextMenuX) / this.store.state.scale;
+        const y = (-this.store.state.translateY + this.contextMenuY) / this.store.state.scale;
         this.paste(x, y);
       },
     },
@@ -106,10 +106,15 @@ export class KritzelEngine {
     this.viewport = new KritzelViewport(this.store, this.host);
   }
 
-  @Listen('contextmenu')
+  @Listen('contextmenu', { capture: false })
   handleContextMenu(ev: MouseEvent) {
     ev.preventDefault();
-    if (this.store.state.isEnabled === false || this.store.state.hasViewportChanged === true) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    if(this.store.state.skipContextMenu === true){
+      this.store.state.skipContextMenu = false;
       return;
     }
 
@@ -342,6 +347,7 @@ export class KritzelEngine {
           <div>HasViewportChanged: {this.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
           <div>IsEnabled: {this.store.state?.isEnabled ? 'true' : 'false'}</div>
           <div>IsScaling: {this.store.state?.isScaling ? 'true' : 'false'}</div>
+          <div>IsPanning: {this.store.state?.isPanning ? 'true' : 'false'}</div>
           <div>IsFocused: {this.store.state.isFocused ? 'true' : 'false'}</div>
           <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
           <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
