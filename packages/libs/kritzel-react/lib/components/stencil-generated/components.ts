@@ -14,6 +14,7 @@ import { type ContextMenuItem, type KritzelContextMenuCustomEvent, type KritzelE
 import { KritzelColorPalette as KritzelColorPaletteElement, defineCustomElement as defineKritzelColorPalette } from "../../../../kritzel-stencil/dist/components/kritzel-color-palette.js";
 import { KritzelContextMenu as KritzelContextMenuElement, defineCustomElement as defineKritzelContextMenu } from "../../../../kritzel-stencil/dist/components/kritzel-context-menu.js";
 import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
+import { KritzelCursorTrail as KritzelCursorTrailElement, defineCustomElement as defineKritzelCursorTrail } from "../../../../kritzel-stencil/dist/components/kritzel-cursor-trail.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
 import { KritzelIcon as KritzelIconElement, defineCustomElement as defineKritzelIcon } from "../../../../kritzel-stencil/dist/components/kritzel-icon.js";
@@ -50,6 +51,17 @@ export const KritzelControls: StencilReactComponent<KritzelControlsElement, Krit
     react: React,
     events: {} as KritzelControlsEvents,
     defineCustomElement: defineKritzelControls
+});
+
+export type KritzelCursorTrailEvents = NonNullable<unknown>;
+
+export const KritzelCursorTrail: StencilReactComponent<KritzelCursorTrailElement, KritzelCursorTrailEvents> = /*@__PURE__*/ createComponent<KritzelCursorTrailElement, KritzelCursorTrailEvents>({
+    tagName: 'kritzel-cursor-trail',
+    elementClass: KritzelCursorTrailElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {} as KritzelCursorTrailEvents,
+    defineCustomElement: defineKritzelCursorTrail
 });
 
 export type KritzelEditorEvents = NonNullable<unknown>;

@@ -66,6 +66,9 @@ kritzel-editor {
   --kritzel-stroke-size-selected-border-color: var(--kritzel-primary-color);
   --kritzel-stroke-size-selected-background-color: transparent;
   --kritzel-stroke-size-circle-color: #000;
+
+  --kritzel-cursor-trail-color: rgb(228, 228, 228);
+  --kritzel-cursor-trail-opacity: 0.6;
 }
 
 kritzel-controls{
