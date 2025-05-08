@@ -42,8 +42,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       this._store.state.selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
       this.dragStartX = clientX;
       this.dragStartY = clientY;
-
-      this._store.rerender();
     }
   }
 
