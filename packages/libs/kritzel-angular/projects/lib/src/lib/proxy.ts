@@ -84,6 +84,27 @@ export declare interface KritzelControls extends Components.KritzelControls {}
 
 
 @ProxyCmp({
+})
+@Component({
+  selector: 'kritzel-cursor-trail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: [],
+})
+export class KritzelCursorTrail {
+  protected el: HTMLKritzelCursorTrailElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelCursorTrail extends Components.KritzelCursorTrail {}
+
+
+@ProxyCmp({
   inputs: ['controls', 'customSvgIcons']
 })
 @Component({

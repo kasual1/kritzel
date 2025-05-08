@@ -25,6 +25,8 @@ export namespace Components {
         "activeControl": string | null;
         "controls": KritzelToolbarControl[];
     }
+    interface KritzelCursorTrail {
+    }
     interface KritzelEditor {
         "controls": KritzelToolbarControl1[];
         "customSvgIcons": Record<string, string>;
@@ -113,6 +115,12 @@ declare global {
         prototype: HTMLKritzelControlsElement;
         new (): HTMLKritzelControlsElement;
     };
+    interface HTMLKritzelCursorTrailElement extends Components.KritzelCursorTrail, HTMLStencilElement {
+    }
+    var HTMLKritzelCursorTrailElement: {
+        prototype: HTMLKritzelCursorTrailElement;
+        new (): HTMLKritzelCursorTrailElement;
+    };
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
     }
     var HTMLKritzelEditorElement: {
@@ -163,6 +171,7 @@ declare global {
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
         "kritzel-controls": HTMLKritzelControlsElement;
+        "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
         "kritzel-icon": HTMLKritzelIconElement;
@@ -182,6 +191,8 @@ declare namespace LocalJSX {
     interface KritzelControls {
         "activeControl"?: string | null;
         "controls"?: KritzelToolbarControl[];
+    }
+    interface KritzelCursorTrail {
     }
     interface KritzelEditor {
         "controls"?: KritzelToolbarControl1[];
@@ -207,6 +218,7 @@ declare namespace LocalJSX {
         "kritzel-color-palette": KritzelColorPalette;
         "kritzel-context-menu": KritzelContextMenu;
         "kritzel-controls": KritzelControls;
+        "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
         "kritzel-icon": KritzelIcon;
@@ -220,6 +232,7 @@ declare module "@stencil/core" {
             "kritzel-color-palette": LocalJSX.KritzelColorPalette & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
             "kritzel-context-menu": LocalJSX.KritzelContextMenu & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
+            "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;

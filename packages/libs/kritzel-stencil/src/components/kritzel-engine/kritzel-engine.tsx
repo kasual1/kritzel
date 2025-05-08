@@ -13,6 +13,7 @@ import { KritzelToolFactory } from '../../classes/factories/tool.factory';
 import { KritzelBaseTool } from '../../classes/tools/base-tool.class';
 import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
+import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -113,7 +114,7 @@ export class KritzelEngine {
       return;
     }
 
-    if(this.store.state.skipContextMenu === true){
+    if (this.store.state.skipContextMenu === true) {
       this.store.state.skipContextMenu = false;
       return;
     }
@@ -647,6 +648,8 @@ export class KritzelEngine {
             onActionSelected={event => this.handleContextMenuAction(event)}
           ></kritzel-context-menu>
         )}
+
+        {this.store.state?.activeTool instanceof KritzelEraserTool && <kritzel-cursor-trail></kritzel-cursor-trail>}
       </Host>
     );
   }
