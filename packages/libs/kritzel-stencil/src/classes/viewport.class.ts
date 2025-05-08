@@ -4,7 +4,6 @@ import { KritzelStore } from './store.class';
 export class KritzelViewport {
   private readonly _store: KritzelStore;
 
-  isDragging: boolean = false;
 
   initialTouchDistance: number = 0;
   startX: number = 0;
@@ -25,10 +24,9 @@ export class KritzelViewport {
     const adjustedClientX = event.clientX - this._store.offsetX;
     const adjustedClientY = event.clientY - this._store.offsetY;
 
-    this._store.state.hasViewportChanged = false;
-
+    
     if (KritzelClickHelper.isRightClick(event)) {
-      this.isDragging = true;
+      this._store.state.isPanning = true;
       this._store.state.startX = adjustedClientX;
       this._store.state.startY = adjustedClientY;
     }
@@ -41,26 +39,26 @@ export class KritzelViewport {
     this._store.state.cursorX = adjustedClientX;
     this._store.state.cursorY = adjustedClientY;
 
-    if (this.isDragging) {
+    if (this._store.state.isPanning) {
       this._store.state.translateX -= this._store.state.startX - adjustedClientX;
       this._store.state.translateY -= this._store.state.startY - adjustedClientY;
       this._store.state.startX = adjustedClientX;
       this._store.state.startY = adjustedClientY;
       this._store.state.hasViewportChanged = true;
+      this._store.state.skipContextMenu = true;
       this._store.rerender();
     }
   }
 
   handleMouseUp(_event: MouseEvent): void {
-    if (this.isDragging) {
-      this.isDragging = false;
+    if (this._store.state.isPanning) {
+      this._store.state.isPanning = false;
+      this._store.rerender();
     }
   }
 
   handleTouchStart(event: TouchEvent): void {
     this._store.state.touchCount = event.touches.length;
-
-    this._store.state.hasViewportChanged = false;
 
     if (this._store.state.touchCount === 2) {
       this._store.state.currentPath = null;

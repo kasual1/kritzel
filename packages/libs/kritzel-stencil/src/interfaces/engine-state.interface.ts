@@ -17,6 +17,7 @@ export interface KritzelEngineState {
   resizeHandleType: KritzelHandleType;
   isEnabled: boolean;
   isScaling: boolean;
+  isPanning: boolean;
   isFocused: boolean;
   isSelecting: boolean;
   isResizing: boolean;
@@ -28,6 +29,7 @@ export interface KritzelEngineState {
   isErasing: boolean;
   isCtrlKeyPressed: boolean;
   hasViewportChanged: boolean;
+  skipContextMenu: boolean;
   debugInfo: KritzelDebugInfo;
   host: HTMLElement;
   cursorX: number;
