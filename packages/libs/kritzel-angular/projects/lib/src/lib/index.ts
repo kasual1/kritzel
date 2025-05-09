@@ -8,6 +8,7 @@ export const DIRECTIVES = [
   d.KritzelCursorTrail,
   d.KritzelEditor,
   d.KritzelEngine,
+  d.KritzelFontSize,
   d.KritzelIcon,
   d.KritzelStrokeSize
 ];

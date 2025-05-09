@@ -45,8 +45,12 @@ export namespace Components {
         "moveToTop": () => Promise<void>;
         "objectContextMenuItems": ContextMenuItem[];
         "paste": (x: number, y: number) => Promise<void>;
+        "redo": () => Promise<void>;
         "registerTool": (toolName: string, toolClass: any) => Promise<boolean>;
         "selectAllInViewport": () => Promise<void>;
+        "undo": () => Promise<void>;
+    }
+    interface KritzelFontSize {
     }
     interface KritzelIcon {
         "label"?: string;
@@ -144,6 +148,12 @@ declare global {
         prototype: HTMLKritzelEngineElement;
         new (): HTMLKritzelEngineElement;
     };
+    interface HTMLKritzelFontSizeElement extends Components.KritzelFontSize, HTMLStencilElement {
+    }
+    var HTMLKritzelFontSizeElement: {
+        prototype: HTMLKritzelFontSizeElement;
+        new (): HTMLKritzelFontSizeElement;
+    };
     interface HTMLKritzelIconElement extends Components.KritzelIcon, HTMLStencilElement {
     }
     var HTMLKritzelIconElement: {
@@ -174,6 +184,7 @@ declare global {
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
+        "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
     }
@@ -204,6 +215,8 @@ declare namespace LocalJSX {
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelTool>) => void;
     }
+    interface KritzelFontSize {
+    }
     interface KritzelIcon {
         "label"?: string;
         "name"?: string;
@@ -221,6 +234,7 @@ declare namespace LocalJSX {
         "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
+        "kritzel-font-size": KritzelFontSize;
         "kritzel-icon": KritzelIcon;
         "kritzel-stroke-size": KritzelStrokeSize;
     }
@@ -235,6 +249,7 @@ declare module "@stencil/core" {
             "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
+            "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
         }

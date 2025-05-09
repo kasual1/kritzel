@@ -5,6 +5,7 @@ import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
 import { KritzelTextTool } from '../../classes/tools/text-tool.class';
 import { KritzelToolbarControl } from '../../interfaces/toolbar-control.interface';
 import { KritzelImageTool } from '../../classes/tools/image-tool.class';
+import { ObjectHelper } from '../../helpers/object.helper';
 
 type ToolConfig = Record<string, any>;
 
@@ -47,8 +48,8 @@ export class KritzelControls {
       tool: KritzelTextTool,
       icon: 'type',
       config: {
-        color: '00FFFF',
-        size: 4,
+        color: '#000000',
+        size: 24,
       },
     },
     {
@@ -146,9 +147,10 @@ export class KritzelControls {
 
   handleControlClick(control: KritzelToolbarControl) {
     if (control.type === 'tool') {
-      this.activeConfig = { ...control.config };
+      this.activeConfig = control.config ? { ...control.config } : null;
       this.kritzelEngine.changeActiveTool(control.name);
-      this.kritzelEngine.changeColor(this.activeConfig.color);
+      this.kritzelEngine.changeColor(this.activeConfig?.color);
+      console.log('activeConfig', this.activeConfig === null);
     }
   }
 
@@ -174,6 +176,8 @@ export class KritzelControls {
   }
 
   handleSizeChange(event: CustomEvent) {
+    debugger;
+
     this.activeConfig = {
       ...this.activeConfig,
       size: event.detail,
@@ -191,6 +195,21 @@ export class KritzelControls {
   render() {
     return (
       <Host>
+        <div class="kritzel-history-panel">
+          <button class="kritzel-history-button"  onClick={() => this.kritzelEngine?.undo()}>
+            <kritzel-icon name="undo"></kritzel-icon>
+          </button>
+          <button class="kritzel-history-button" onClick={() => this.kritzelEngine?.redo()}>
+            <kritzel-icon name="redo"></kritzel-icon>
+          </button>
+
+          <div class="kritzel-history-separator"></div>
+
+          <button class="kritzel-history-button">
+            <kritzel-icon name="delete" onClick={() => this.kritzelEngine?.delete()}></kritzel-icon>
+          </button>
+        </div>
+
         <div class="kritzel-controls">
           {this.controls.map(control => {
             if (control.type === 'tool') {
@@ -212,7 +231,7 @@ export class KritzelControls {
               return <div class="kritzel-divider" key={control.name}></div>;
             }
 
-            if (control.type === 'config' && control.name === this.firstConfig?.name) {
+            if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
                 <div class="kritzel-config-container" key={control.name}>
                   {this.tooltipVisible && (
@@ -224,18 +243,23 @@ export class KritzelControls {
 
                   {this.tooltipVisible && <div class="kritzel-tooltip-arrow"></div>}
 
-                  <div class="kritzel-config" onClick={event => this.handleConfigClick?.(event)}>
+                  <div
+                    class="kritzel-config"
+                    onClick={event => (!ObjectHelper.isEmpty(this.activeConfig) ? this.handleConfigClick?.(event) : null)}
+                    style={{ cursor: ObjectHelper.isEmpty(this.activeConfig) ? 'default' : 'pointer' }}
+                  >
                     <div
                       class={{
-                        'color-circle': true,
-                        'white': this.activeConfig?.color === '#FFFFFF' || this.activeConfig?.color?.toLowerCase() === 'white',
+                        "color-circle": true,
+                        "white": this.activeConfig?.color === '#FFFFFF' || this.activeConfig?.color?.toLowerCase() === 'white',
                       }}
                       style={{
-                        backgroundColor: this.activeConfig?.color || 'transparent',
-                        width: this.activeConfig?.size + 'px',
-                        height: this.activeConfig?.size + 'px',
+                        backgroundColor: this.activeConfig?.color,
+                        width: `${this.activeConfig?.size || 24}px`,
+                        height: `${this.activeConfig?.size || 24}px`,
                         borderRadius: '50%',
                         display: 'inline-block',
+                        border: ObjectHelper.isEmpty(this.activeConfig) ? '1px dashed gray' : 'none',
                       }}
                     ></div>
                   </div>
