@@ -324,6 +324,16 @@ export class KritzelEngine {
     this.store.selectAllInViewport();
   }
 
+  @Method()
+  async undo() {
+    this.store.history.undo();
+  }
+
+  @Method()
+  async redo() {
+    this.store.history.redo();
+  }
+
   handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
     event.detail.action();
     this.isContextMenuVisible = false;

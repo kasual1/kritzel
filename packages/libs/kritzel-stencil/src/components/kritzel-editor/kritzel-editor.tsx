@@ -32,6 +32,7 @@ export class KritzelEditor {
     return (
       <Host>
         <kritzel-engine onActiveToolChange={ev => this.onActiveToolChange(ev)}></kritzel-engine>
+        <kritzel-history-toolbar></kritzel-history-toolbar>
         <kritzel-controls controls={this.controls} activeControl={this.activeControl}></kritzel-controls>
       </Host>
     );

@@ -128,7 +128,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {}
 
 @ProxyCmp({
   inputs: ['activeTool', 'globalContextMenuItems', 'objectContextMenuItems'],
-  methods: ['registerTool', 'changeActiveTool', 'changeColor', 'changeStrokeSize', 'disable', 'enable', 'delete', 'copy', 'paste', 'moveToTop', 'moveToBottom', 'selectAllInViewport']
+  methods: ['registerTool', 'changeActiveTool', 'changeColor', 'changeStrokeSize', 'disable', 'enable', 'delete', 'copy', 'paste', 'moveToTop', 'moveToBottom', 'selectAllInViewport', 'undo', 'redo']
 })
 @Component({
   selector: 'kritzel-engine',
@@ -153,6 +153,27 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
 
   activeToolChange: EventEmitter<CustomEvent<IKritzelEngineKritzelTool>>;
 }
+
+
+@ProxyCmp({
+})
+@Component({
+  selector: 'kritzel-font-size',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: [],
+})
+export class KritzelFontSize {
+  protected el: HTMLKritzelFontSizeElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelFontSize extends Components.KritzelFontSize {}
 
 
 @ProxyCmp({
