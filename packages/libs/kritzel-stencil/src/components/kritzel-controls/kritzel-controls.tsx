@@ -50,6 +50,7 @@ export class KritzelControls {
       config: {
         color: '#000000',
         size: 24,
+        fontFamily: 'Arial',
       },
     },
     {
@@ -170,6 +171,13 @@ export class KritzelControls {
     this.kritzelEngine.disable();
   }
 
+  handleFontFamilyChange(event: CustomEvent) {
+    this.activeConfig = {
+      ...this.activeConfig,
+      fontFamily: event.detail,
+    };
+  }
+
   handleColorChange(event: CustomEvent) {
     this.activeConfig = {
       ...this.activeConfig,
@@ -255,7 +263,12 @@ export class KritzelControls {
                       >
                         {this.activeControl === 'brush' && <kritzel-brush-style></kritzel-brush-style>}
 
-                        {this.activeControl === 'text' && <kritzel-font-family></kritzel-font-family>}
+                        {this.activeControl === 'text' && (
+                          <kritzel-font-family
+                            selectedFontFamily={this.activeConfig?.fontFamily}
+                            onFontFamilyChange={event => this.handleFontFamilyChange(event)}
+                          ></kritzel-font-family>
+                        )}
 
                         <button class="expand-toggle" onClick={this.toggleExpand} title={this.isExpanded ? 'Collapse' : 'Expand'}>
                           <kritzel-icon name={this.isExpanded ? 'chevron-up' : 'chevron-down'}></kritzel-icon>
@@ -269,11 +282,15 @@ export class KritzelControls {
                       ></kritzel-color-palette>
 
                       {this.activeControl === 'brush' && (
-                        <kritzel-stroke-size selectedSize={this.activeConfig?.size} onSizeChange={size => this.handleSizeChange(size)}></kritzel-stroke-size>
+                        <kritzel-stroke-size selectedSize={this.activeConfig?.size} onSizeChange={event => this.handleSizeChange(event)}></kritzel-stroke-size>
                       )}
 
                       {this.activeControl === 'text' && (
-                        <kritzel-font-size selectedSize={this.activeConfig?.size} onSizeChange={size => this.handleSizeChange(size)}></kritzel-font-size>
+                        <kritzel-font-size
+                          selectedSize={this.activeConfig?.size}
+                          fontFamily={this.activeConfig?.fontFamily}
+                          onSizeChange={event => this.handleSizeChange(event)}
+                        ></kritzel-font-size>
                       )}
                     </div>
                   )}
@@ -285,20 +302,35 @@ export class KritzelControls {
                     onClick={event => (!ObjectHelper.isEmpty(this.activeConfig) ? this.handleConfigClick?.(event) : null)}
                     style={{ cursor: ObjectHelper.isEmpty(this.activeConfig) ? 'default' : 'pointer' }}
                   >
-                    <div
-                      class={{
-                        'color-circle': true,
-                        'white': this.activeConfig?.color === '#FFFFFF' || this.activeConfig?.color?.toLowerCase() === 'white',
-                      }}
-                      style={{
-                        backgroundColor: this.activeConfig?.color,
-                        width: `${this.activeConfig?.size || 24}px`,
-                        height: `${this.activeConfig?.size || 24}px`,
-                        borderRadius: '50%',
-                        display: 'inline-block',
-                        border: ObjectHelper.isEmpty(this.activeConfig) ? '1px dashed gray' : 'none',
-                      }}
-                    ></div>
+                    {this.activeControl !== 'text' && (
+                      <div
+                        class={{
+                          'color-circle': true,
+                          'white': this.activeConfig?.color === '#FFFFFF' || this.activeConfig?.color?.toLowerCase() === 'white',
+                        }}
+                        style={{
+                          backgroundColor: this.activeConfig?.color,
+                          width: `${this.activeConfig?.size || 24}px`,
+                          height: `${this.activeConfig?.size || 24}px`,
+                          borderRadius: '50%',
+                          display: 'inline-block',
+                          border: ObjectHelper.isEmpty(this.activeConfig) ? '1px dashed gray' : 'none',
+                        }}
+                      ></div>
+                    )}
+
+                    {this.activeControl === 'text' && (
+                      <div
+                        class="font-style-button"
+                        style={{
+                          fontFamily: this.activeConfig?.fontFamily,
+                          fontSize: `${this.activeConfig?.size || 24}px`,
+                          color: this.activeConfig?.color,
+                        }}
+                      >
+                        A
+                      </div>
+                    )}
                   </div>
                 </div>
               );

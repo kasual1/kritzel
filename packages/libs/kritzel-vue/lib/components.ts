@@ -79,13 +79,18 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
 
 
 export const KritzelFontFamily: StencilVueComponent<JSX.KritzelFontFamily> = /*@__PURE__*/ defineContainer<JSX.KritzelFontFamily>('kritzel-font-family', defineKritzelFontFamily, [
-  'fontOptions'
+  'fontOptions',
+  'selectedFontFamily',
+  'fontFamilyChange'
+], [
+  'fontFamilyChange'
 ]);
 
 
 export const KritzelFontSize: StencilVueComponent<JSX.KritzelFontSize> = /*@__PURE__*/ defineContainer<JSX.KritzelFontSize>('kritzel-font-size', defineKritzelFontSize, [
   'sizes',
   'selectedSize',
+  'fontFamily',
   'sizeChange'
 ], [
   'sizeChange'

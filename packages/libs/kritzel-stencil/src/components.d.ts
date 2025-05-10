@@ -68,8 +68,10 @@ export namespace Components {
     }
     interface KritzelFontFamily {
         "fontOptions": FontOption[];
+        "selectedFontFamily": string;
     }
     interface KritzelFontSize {
+        "fontFamily": string;
         "selectedSize": number | null;
         "sizes": number[];
     }
@@ -98,6 +100,10 @@ export interface KritzelDropdownCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelEngineElement;
+}
+export interface KritzelFontFamilyCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelFontFamilyElement;
 }
 export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -200,7 +206,18 @@ declare global {
         prototype: HTMLKritzelEngineElement;
         new (): HTMLKritzelEngineElement;
     };
+    interface HTMLKritzelFontFamilyElementEventMap {
+        "fontFamilyChange": string;
+    }
     interface HTMLKritzelFontFamilyElement extends Components.KritzelFontFamily, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelFontFamilyElementEventMap>(type: K, listener: (this: HTMLKritzelFontFamilyElement, ev: KritzelFontFamilyCustomEvent<HTMLKritzelFontFamilyElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelFontFamilyElementEventMap>(type: K, listener: (this: HTMLKritzelFontFamilyElement, ev: KritzelFontFamilyCustomEvent<HTMLKritzelFontFamilyElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelFontFamilyElement: {
         prototype: HTMLKritzelFontFamilyElement;
@@ -300,8 +317,11 @@ declare namespace LocalJSX {
     }
     interface KritzelFontFamily {
         "fontOptions"?: FontOption[];
+        "onFontFamilyChange"?: (event: KritzelFontFamilyCustomEvent<string>) => void;
+        "selectedFontFamily"?: string;
     }
     interface KritzelFontSize {
+        "fontFamily"?: string;
         "onSizeChange"?: (event: KritzelFontSizeCustomEvent<number>) => void;
         "selectedSize"?: number | null;
         "sizes"?: number[];

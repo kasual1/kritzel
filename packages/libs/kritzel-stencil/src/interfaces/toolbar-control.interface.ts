@@ -12,6 +12,7 @@ interface KritzelToolbarToolControl extends KritzelToolbarControlBase {
   config?: {
     color?: string;
     size?: number;
+    fontFamily?: string;
   }
 }
 

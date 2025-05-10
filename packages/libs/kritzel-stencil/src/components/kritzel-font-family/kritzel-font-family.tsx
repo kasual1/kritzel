@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, State } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 export interface FontOption {
   value: string;
@@ -11,7 +11,8 @@ export interface FontOption {
   shadow: true,
 })
 export class KritzelFontFamily {
-  @Prop() fontOptions: FontOption[] = [
+  @Prop() 
+  fontOptions: FontOption[] = [
     { value: 'arial', label: 'Arial' },
     { value: 'verdana', label: 'Verdana' },
     { value: 'helvetica', label: 'Helvetica' },
@@ -24,19 +25,24 @@ export class KritzelFontFamily {
     { value: 'brush script mt', label: 'Brush Script MT' },
   ];
 
-  @State() currentFontFamily: string;
+  @Prop() 
+  selectedFontFamily: string;
+
+  @Event()
+  fontFamilyChange: EventEmitter<string>;
 
   componentWillLoad() {
     if (this.fontOptions && this.fontOptions.length > 0) {
-      const isValidCurrentFont = this.fontOptions.some(opt => opt.value === this.currentFontFamily);
-      if (!this.currentFontFamily || !isValidCurrentFont) {
-        this.currentFontFamily = this.fontOptions[0].value;
+      const isValidCurrentFont = this.fontOptions.some(opt => opt.value === this.selectedFontFamily);
+      if (!this.selectedFontFamily || !isValidCurrentFont) {
+        this.selectedFontFamily = this.fontOptions[0].value;
       }
     }
   }
 
   private handleDropdownValueChange = (event: CustomEvent<string>) => {
-    this.currentFontFamily = event.detail;
+    debugger;
+    this.fontFamilyChange.emit(event.detail);
   };
 
   render() {
@@ -50,9 +56,9 @@ export class KritzelFontFamily {
       <Host>
         <kritzel-dropdown
           options={dropdownOptions}
-          value={this.currentFontFamily}
+          value={this.selectedFontFamily}
           onValueChanged={this.handleDropdownValueChange}
-          selectStyles={{ fontFamily: this.currentFontFamily }}
+          selectStyles={{ fontFamily: this.selectedFontFamily }}
           width="172px"
         >
           <button class="font-style-button" slot="suffix">B</button>
