@@ -24,16 +24,16 @@ export class KritzelTextTool extends KritzelBaseTool {
       return;
     }
 
-    if(this._store.state.activeText !== null &&  object instanceof KritzelText){
+    if (this._store.state.activeText !== null && object instanceof KritzelText) {
       return;
     }
 
     if (this._store.state.activeText !== null) {
-      this._store.state.activeText = null;
+      this._store.resetActiveText();
       return;
     }
 
-    if(KritzelClickHelper.isLeftClick(event) === false){
+    if (KritzelClickHelper.isLeftClick(event) === false) {
       return;
     }
 
@@ -44,6 +44,8 @@ export class KritzelTextTool extends KritzelBaseTool {
     text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;
     text.translateY = (clientY - this._store.state.translateY) / this._store.state.scale;
     text.zIndex = this._store.currentZIndex;
+
+    text.adjustTextareaSize();
 
     this._store.state.activeText = text;
 
@@ -59,6 +61,8 @@ export class KritzelTextTool extends KritzelBaseTool {
       text.translateX = (x - this._store.state.translateX) / this._store.state.scale;
       text.translateY = (y - this._store.state.translateY) / this._store.state.scale;
       text.zIndex = this._store.currentZIndex;
+
+      text.adjustTextareaSize();
 
       this._store.state.isWriting = true;
 
