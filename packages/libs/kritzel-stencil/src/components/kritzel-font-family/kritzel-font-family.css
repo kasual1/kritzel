@@ -1,0 +1,74 @@
+:host {
+  display: flex; /* Updated from block */
+  align-items: center; /* New: Align items vertically */
+  gap: 8px; /* New: Consistent gap between child elements */
+  padding: 8px; /* New: Consistent padding around the component */
+  box-sizing: border-box; /* New: Consistent box model */
+  --control-padding: var(--kritzel-controls-control-padding, 8px);
+  --control-border-radius: var(--kritzel-controls-control-border-radius, 4px);
+  --control-hover-bg: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 90%));
+  --control-active-bg: var(--kritzel-controls-control-active-background-color, hsl(0, 0%, 80%));
+  --control-selected-bg: var(--kritzel-controls-control-selected-background-color, hsl(0, 0%, 70%));
+  --control-selected-color: var(--kritzel-controls-control-selected-color, #000);
+  --control-text-color: var(--kritzel-controls-text-color, #333333);
+}
+
+.font-family-dropdown {
+  padding: 0 8px; /* Adjusted padding for fixed height */
+  height: 32px; /* Consistent height with buttons */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  border-radius: var(--control-border-radius);
+  border: 1px solid #ccc; /* A common border for select elements */
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  font-size: inherit; /* Match surrounding text size */
+  color: var(--control-text-color);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.font-family-dropdown:hover {
+  border-color: #bbb;
+}
+
+.font-family-dropdown:focus {
+  border-color: var(--kritzel-controls-focus-ring-color, #007bff); /* Example focus color */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Example focus shadow */
+}
+
+.font-style-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px; /* Consistent clickable area */
+  height: 32px; /* Consistent clickable area */
+  padding: 0; /* Adjusted padding as content is centered by flex */
+  border: none; /* Matches .kritzel-control */
+  outline: none; /* Matches .kritzel-control */
+  background: none; /* Matches .kritzel-control */
+  cursor: pointer;
+  border-radius: var(--control-border-radius);
+  color: var(--control-text-color);
+  font-weight: bold; /* For the 'B' button, italic for 'I' can be handled by class or state */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.font-style-button:hover {
+  background-color: var(--control-hover-bg);
+}
+
+.font-style-button:active {
+  background-color: var(--control-active-bg);
+}
+
+.font-style-button.selected,
+.font-style-button.selected:hover,
+.font-style-button.selected:active {
+  background-color: var(--control-selected-bg);
+  color: var(--control-selected-color);
+}
+
+/* Specific style for italic button text if needed, or handle via JS toggle */
+.font-style-button.italic-text {
+  font-style: italic;
+}

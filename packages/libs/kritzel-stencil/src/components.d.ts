@@ -50,6 +50,8 @@ export namespace Components {
         "selectAllInViewport": () => Promise<void>;
         "undo": () => Promise<void>;
     }
+    interface KritzelFontFamily {
+    }
     interface KritzelFontSize {
         "selectedSize": number | null;
         "sizes": number[];
@@ -154,6 +156,12 @@ declare global {
         prototype: HTMLKritzelEngineElement;
         new (): HTMLKritzelEngineElement;
     };
+    interface HTMLKritzelFontFamilyElement extends Components.KritzelFontFamily, HTMLStencilElement {
+    }
+    var HTMLKritzelFontFamilyElement: {
+        prototype: HTMLKritzelFontFamilyElement;
+        new (): HTMLKritzelFontFamilyElement;
+    };
     interface HTMLKritzelFontSizeElementEventMap {
         "sizeChange": number;
     }
@@ -201,6 +209,7 @@ declare global {
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
+        "kritzel-font-family": HTMLKritzelFontFamilyElement;
         "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
@@ -232,6 +241,8 @@ declare namespace LocalJSX {
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelTool>) => void;
     }
+    interface KritzelFontFamily {
+    }
     interface KritzelFontSize {
         "onSizeChange"?: (event: KritzelFontSizeCustomEvent<number>) => void;
         "selectedSize"?: number | null;
@@ -254,6 +265,7 @@ declare namespace LocalJSX {
         "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
+        "kritzel-font-family": KritzelFontFamily;
         "kritzel-font-size": KritzelFontSize;
         "kritzel-icon": KritzelIcon;
         "kritzel-stroke-size": KritzelStrokeSize;
@@ -269,6 +281,7 @@ declare module "@stencil/core" {
             "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
+            "kritzel-font-family": LocalJSX.KritzelFontFamily & JSXBase.HTMLAttributes<HTMLKritzelFontFamilyElement>;
             "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
