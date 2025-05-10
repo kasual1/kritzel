@@ -6,6 +6,7 @@ export const DIRECTIVES = [
   d.KritzelContextMenu,
   d.KritzelControls,
   d.KritzelCursorTrail,
+  d.KritzelDropdown,
   d.KritzelEditor,
   d.KritzelEngine,
   d.KritzelFontFamily,

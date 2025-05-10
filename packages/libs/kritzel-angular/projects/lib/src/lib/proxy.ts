@@ -105,6 +105,32 @@ export declare interface KritzelCursorTrail extends Components.KritzelCursorTrai
 
 
 @ProxyCmp({
+  inputs: ['options', 'selectStyles', 'value', 'width']
+})
+@Component({
+  selector: 'kritzel-dropdown',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['options', 'selectStyles', 'value', 'width'],
+})
+export class KritzelDropdown {
+  protected el: HTMLKritzelDropdownElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['valueChanged']);
+  }
+}
+
+
+export declare interface KritzelDropdown extends Components.KritzelDropdown {
+
+  valueChanged: EventEmitter<CustomEvent<string>>;
+}
+
+
+@ProxyCmp({
   inputs: ['controls', 'customSvgIcons']
 })
 @Component({
