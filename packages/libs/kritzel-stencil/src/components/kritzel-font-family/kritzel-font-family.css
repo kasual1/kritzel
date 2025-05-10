@@ -13,15 +13,7 @@
   --control-text-color: var(--kritzel-controls-text-color, #333333);
 }
 
-.control-group {
-  display: flex;
-  align-items: center;
-  border: 1px solid #333333;
-  border-radius: var(--control-border-radius);
-  overflow: hidden; 
-}
-
-/* .font-family-dropdown styles removed as they are now in kritzel-dropdown.css */
+/* .control-group styles removed as its role is taken by .dropdown-wrapper in kritzel-dropdown.css */
 
 .font-style-button {
   display: flex;
@@ -40,7 +32,9 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.control-group > .font-style-button:not(:last-child) {
+/* This rule will apply to the 'B' button when slotted, as it's not the last child 
+   among its font-style-button siblings in the light DOM before slotting. */
+.font-style-button:not(:last-child) {
   border-right: 1px solid #333333; 
 }
 

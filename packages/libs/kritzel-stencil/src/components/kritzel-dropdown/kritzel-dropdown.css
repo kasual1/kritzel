@@ -1,6 +1,15 @@
 :host {
-  display: inline-block; /* Allows it to fit in flex layouts like other controls */
-  height: 32px; /* Match height of buttons */
+  display: inline-flex; /* Ensures the host shrinks/grows with the wrapper */
+  vertical-align: middle; /* Aligns with other inline-block or inline-flex elements */
+}
+
+.dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #333333;
+  border-radius: var(--kritzel-controls-control-border-radius, 4px);
+  overflow: hidden;
+  height: 32px; /* Match height of buttons and select */
 }
 
 .custom-select {
@@ -10,7 +19,6 @@
   box-sizing: border-box;
   border-radius: 0; 
   border: none; 
-  border-right: 1px solid #333333; /* Separator for use in control groups */
   background-color: #fff;
   cursor: pointer;
   outline: none;
@@ -26,4 +34,14 @@
   background-size: 16px 16px;
   background-repeat: no-repeat;
   background-position: right 8px center; 
+}
+
+.custom-select.has-suffix-border {
+  border-right: 1px solid #333333; 
+}
+
+::slotted(*) {
+  /* Ensures slotted items participate correctly in the flex layout */
+  height: 100%; 
+  box-sizing: border-box;
 }
