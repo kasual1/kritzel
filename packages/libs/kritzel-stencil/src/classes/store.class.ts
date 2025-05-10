@@ -17,6 +17,7 @@ import { KritzelToolFactory } from './factories/tool.factory';
 
 const initialState: KritzelEngineState = {
   activeTool: null,
+  activeText: null,
   currentPath: null,
   copiedObjects: null,
   objectsOctree: null,
@@ -35,6 +36,7 @@ const initialState: KritzelEngineState = {
   isDragging: false,
   isDrawing: false,
   isErasing: false,
+  isWriting: false,
   isCtrlKeyPressed: false,
   hasViewportChanged: false,
   skipContextMenu: false,

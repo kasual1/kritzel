@@ -41,7 +41,6 @@ export class KritzelFontFamily {
   }
 
   private handleDropdownValueChange = (event: CustomEvent<string>) => {
-    debugger;
     this.fontFamilyChange.emit(event.detail);
   };
 

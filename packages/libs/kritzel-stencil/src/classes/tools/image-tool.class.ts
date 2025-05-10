@@ -65,7 +65,6 @@ export class KritzelImageTool extends KritzelBaseTool {
     const { scaledWidth, scaledHeight } = this.calculateScaledDimensions(img);
     const image = this.createKritzelImage(img, scaledWidth, scaledHeight);
     this.addImageToStore(image);
-    this.switchToSelectionTool();
   }
 
   private calculateScaledDimensions(img: HTMLImageElement): { scaledWidth: number; scaledHeight: number } {
@@ -100,10 +99,9 @@ export class KritzelImageTool extends KritzelBaseTool {
 
     const addImageCommand = new AddObjectCommand(this._store, this, image);
     const addSelectionGroupCommand = new AddSelectionGroupCommand(this._store, this, selectionGroup);
-    this._store.history.executeCommand(new BatchCommand(this._store, this, [addImageCommand, addSelectionGroupCommand]));
-  }
 
-  private switchToSelectionTool(): void {
-    this._store.state.activeTool = new KritzelSelectionTool(this._store);
+    this._store.history.executeCommand(new BatchCommand(this._store, this, [addImageCommand, addSelectionGroupCommand]));
+
+    this._store.setState('activeTool',new KritzelSelectionTool(this._store));
   }
 }

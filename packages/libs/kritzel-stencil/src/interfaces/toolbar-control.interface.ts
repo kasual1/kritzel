@@ -1,10 +1,10 @@
 import { KritzelBaseTool } from '../classes/tools/base-tool.class';
 
-interface KritzelToolbarControlBase {
+interface KritzelBaseToolbarControl {
   name: string;
 }
 
-interface KritzelToolbarToolControl extends KritzelToolbarControlBase {
+interface KritzelToolbarToolControl extends KritzelBaseToolbarControl {
   type: 'tool';
   tool: new (...args: any[]) => KritzelBaseTool;
   icon: string;
@@ -16,11 +16,11 @@ interface KritzelToolbarToolControl extends KritzelToolbarControlBase {
   }
 }
 
-interface KritzelToolbarDividerControl extends KritzelToolbarControlBase {
+interface KritzelToolbarDividerControl extends KritzelBaseToolbarControl {
   type: 'divider';
 }
 
-interface KritzelToolbarConfigControl extends KritzelToolbarControlBase {
+interface KritzelToolbarConfigControl extends KritzelBaseToolbarControl {
   type: 'config';
 }
 
