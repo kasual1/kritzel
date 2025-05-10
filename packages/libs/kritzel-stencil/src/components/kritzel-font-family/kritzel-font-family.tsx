@@ -48,18 +48,16 @@ export class KritzelFontFamily {
 
     return (
       <Host>
-        <div class="control-group">
-          <kritzel-dropdown
-            options={dropdownOptions}
-            value={this.currentFontFamily}
-            onValueChanged={this.handleDropdownValueChange}
-            selectStyles={{ fontFamily: this.currentFontFamily }}
-            width="172px"
-          >
-          </kritzel-dropdown>
-          <button class="font-style-button">B</button>
-          <button class="font-style-button italic-text">I</button>
-        </div>
+        <kritzel-dropdown
+          options={dropdownOptions}
+          value={this.currentFontFamily}
+          onValueChanged={this.handleDropdownValueChange}
+          selectStyles={{ fontFamily: this.currentFontFamily }}
+          width="172px"
+        >
+          <button class="font-style-button" slot="suffix">B</button>
+          <button class="font-style-button italic-text" slot="suffix">I</button>
+        </kritzel-dropdown>
       </Host>
     );
   }

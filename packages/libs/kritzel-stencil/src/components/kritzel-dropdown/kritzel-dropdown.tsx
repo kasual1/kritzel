@@ -12,17 +12,35 @@ export interface DropdownOption {
   shadow: true,
 })
 export class KritzelDropdown {
-  @Prop() options: DropdownOption[] = [];
-  @Prop() value: string;
-  @Prop() width?: string;
-  @Prop() selectStyles?: any = {}; // Styles for the select element itself
+  @Prop() 
+  options: DropdownOption[] = [];
+  
+  @Prop() 
+  value: string;
+  
+  @Prop() 
+  width?: string;
+  
+  @Prop() 
+  selectStyles?: any = {}; 
 
-  @State() internalValue: string;
+  @State() 
+  internalValue: string;
 
-  @Event() valueChanged: EventEmitter<string>;
+  @State() 
+  hasSuffixContent: boolean = false;
+
+  @Event() 
+  valueChanged: EventEmitter<string>;
+
+  private suffixSlotElement?: HTMLSlotElement;
 
   componentWillLoad() {
     this.updateInternalValue(this.value, false);
+  }
+
+  componentDidLoad() {
+    this.evaluateSuffixContent();
   }
 
   @Watch('value')
@@ -34,7 +52,6 @@ export class KritzelDropdown {
   
   @Watch('options')
   optionsChanged() {
-    // Re-validate internalValue if options change
     this.updateInternalValue(this.internalValue, true);
   }
 
@@ -46,12 +63,12 @@ export class KritzelDropdown {
         finalValue = this.options[0].value;
       }
     } else {
-      finalValue = undefined; // No options, no value
+      finalValue = undefined;
     }
 
     if (this.internalValue !== finalValue) {
       this.internalValue = finalValue;
-      if (emitChange || (proposedValue !== finalValue && proposedValue !== undefined)) { // Emit if defaulted or explicitly told to
+      if (emitChange || (proposedValue !== finalValue && proposedValue !== undefined)) {
         this.valueChanged.emit(this.internalValue);
       }
     }
@@ -65,31 +82,49 @@ export class KritzelDropdown {
     }
   };
 
-  render() {
-    const hostStyles = {};
-    if (this.width) {
-      // Apply width to host if you want the component itself to have the width
-      // hostStyles['width'] = this.width; 
-      // Or apply to select element directly as done below
+  private evaluateSuffixContent = () => {
+    if (this.suffixSlotElement) {
+      const newHasContent = this.suffixSlotElement.assignedNodes({ flatten: true }).length > 0;
+      if (this.hasSuffixContent !== newHasContent) {
+        this.hasSuffixContent = newHasContent;
+      }
+    } else {
+      if (this.hasSuffixContent !== false) {
+        this.hasSuffixContent = false;
+      }
     }
+  }
+
+  render() {
+    const selectClasses = {
+      'custom-select': true,
+      'has-suffix-border': this.hasSuffixContent,
+    };
 
     return (
-      <Host style={hostStyles}>
-        <select
-          class="custom-select"
-          style={{ ...this.selectStyles, width: this.width }}
-          onInput={this.handleSelectChange}
-        >
-          {this.options.map(option => (
-            <option
-              value={option.value}
-              style={option.style}
-              selected={option.value === this.internalValue} // Explicitly set selected
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
+      <Host>
+        <div class="dropdown-wrapper">
+          <select
+            class={selectClasses}
+            style={{ ...this.selectStyles, width: this.width }}
+            onInput={this.handleSelectChange}
+          >
+            {this.options.map(option => (
+              <option
+                value={option.value}
+                style={option.style}
+                selected={option.value === this.internalValue}
+              >
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <slot 
+            name="suffix"
+            ref={el => this.suffixSlotElement = el as HTMLSlotElement}
+            onSlotchange={this.evaluateSuffixContent}
+          ></slot>
+        </div>
       </Host>
     );
   }
