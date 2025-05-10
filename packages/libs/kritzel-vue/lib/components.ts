@@ -20,6 +20,7 @@ import { defineCustomElement as defineKritzelStrokeSize } from '../../kritzel-st
 export const KritzelColorPalette: StencilVueComponent<JSX.KritzelColorPalette> = /*@__PURE__*/ defineContainer<JSX.KritzelColorPalette>('kritzel-color-palette', defineKritzelColorPalette, [
   'colors',
   'selectedColor',
+  'isExpanded',
   'colorChange'
 ], [
   'colorChange'
@@ -59,7 +60,9 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
 ]);
 
 
-export const KritzelFontFamily: StencilVueComponent<JSX.KritzelFontFamily> = /*@__PURE__*/ defineContainer<JSX.KritzelFontFamily>('kritzel-font-family', defineKritzelFontFamily);
+export const KritzelFontFamily: StencilVueComponent<JSX.KritzelFontFamily> = /*@__PURE__*/ defineContainer<JSX.KritzelFontFamily>('kritzel-font-family', defineKritzelFontFamily, [
+  'fontOptions'
+]);
 
 
 export const KritzelFontSize: StencilVueComponent<JSX.KritzelFontSize> = /*@__PURE__*/ defineContainer<JSX.KritzelFontSize>('kritzel-font-size', defineKritzelFontSize, [

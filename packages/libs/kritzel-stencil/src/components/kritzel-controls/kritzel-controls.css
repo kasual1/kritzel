@@ -131,7 +131,7 @@
   justify-content: center;
   background-color: var( --kritzel-controls-tooltip-background-color);
   color: var(--kritzel-controls-tooltip-color);
-  align-items: center;
+  align-items: flex-start;
   padding: var(--kritzel-controls-tooltip-padding);
   border-radius: var(--kritzel-controls-tooltip-border-radius);
   white-space: nowrap;
@@ -149,6 +149,19 @@
   border-color: var( --kritzel-controls-tooltip-background-color) transparent transparent transparent;
   filter: drop-shadow(var(--kritzel-controls-tooltip-box-shadow));
   z-index: 10000;
+}
+
+.expand-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--kritzel-color-palette-expand-toggle-color);
+}
+
+.expand-toggle:hover {
+  color: var(--kritzel-color-palette-expand-toggle-hover-color);
 }
 
 @media (max-width: 768px) {

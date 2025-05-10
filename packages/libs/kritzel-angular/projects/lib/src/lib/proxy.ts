@@ -8,14 +8,14 @@ import { Components } from 'kritzel-stencil';
 
 
 @ProxyCmp({
-  inputs: ['colors', 'selectedColor']
+  inputs: ['colors', 'isExpanded', 'selectedColor']
 })
 @Component({
   selector: 'kritzel-color-palette',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['colors', 'selectedColor'],
+  inputs: ['colors', 'isExpanded', 'selectedColor'],
 })
 export class KritzelColorPalette {
   protected el: HTMLKritzelColorPaletteElement;
@@ -156,13 +156,14 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
 
 
 @ProxyCmp({
+  inputs: ['fontOptions']
 })
 @Component({
   selector: 'kritzel-font-family',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [],
+  inputs: ['fontOptions'],
 })
 export class KritzelFontFamily {
   protected el: HTMLKritzelFontFamilyElement;

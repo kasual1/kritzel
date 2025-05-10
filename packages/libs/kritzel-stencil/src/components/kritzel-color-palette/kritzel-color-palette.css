@@ -16,19 +16,6 @@
   justify-items: center;
 }
 
-.expand-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
-  color: var(--kritzel-color-palette-expand-toggle-color);
-}
-
-.expand-toggle:hover {
-  color: var(--kritzel-color-palette-expand-toggle-hover-color);
-}
-
 .color-container {
   display: flex;
   justify-content: center;

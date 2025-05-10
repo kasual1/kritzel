@@ -80,10 +80,18 @@ export class KritzelControls {
   @State()
   tooltipVisible: boolean = true;
 
+  @State()
+  isExpanded: boolean = false;
+
   @Element()
   host!: HTMLElement;
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
+
+  private toggleExpand = () => {
+    this.isExpanded = !this.isExpanded;
+    console.log('isExpanded', this.isExpanded);
+  };
 
   async componentWillLoad() {
     await this.initializeEngine();
@@ -178,8 +186,6 @@ export class KritzelControls {
   }
 
   handleSizeChange(event: CustomEvent) {
-    debugger;
-
     this.activeConfig = {
       ...this.activeConfig,
       size: event.detail,
@@ -238,8 +244,27 @@ export class KritzelControls {
                 <div class="kritzel-config-container" key={control.name}>
                   {this.tooltipVisible && (
                     <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '100%',
+                        }}
+                      >
+                        {this.activeControl === 'text' && <kritzel-font-family></kritzel-font-family>}
 
-                      <kritzel-color-palette selectedColor={this.activeConfig?.color} onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
+                        <button class="expand-toggle" onClick={this.toggleExpand} title={this.isExpanded ? 'Collapse' : 'Expand'}>
+                          <kritzel-icon name={this.isExpanded ? 'chevron-up' : 'chevron-down'}></kritzel-icon>
+                        </button>
+                      </div>
+
+                      <kritzel-color-palette
+                        selectedColor={this.activeConfig?.color}
+                        isExpanded={this.isExpanded}
+                        onColorChange={color => this.handleColorChange(color)}
+                      ></kritzel-color-palette>
 
                       {this.activeControl === 'brush' && (
                         <kritzel-stroke-size selectedSize={this.activeConfig?.size} onSizeChange={size => this.handleSizeChange(size)}></kritzel-stroke-size>
@@ -247,10 +272,6 @@ export class KritzelControls {
 
                       {this.activeControl === 'text' && (
                         <kritzel-font-size selectedSize={this.activeConfig?.size} onSizeChange={size => this.handleSizeChange(size)}></kritzel-font-size>
-                      )}
-
-                      {this.activeControl === 'text' && (
-                        <kritzel-font-family></kritzel-font-family>
                       )}
                     </div>
                   )}
