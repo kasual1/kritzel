@@ -11,7 +11,6 @@ import { KritzelStore } from '../../classes/store.class';
 import { KritzelKeyHandler } from '../../classes/handlers/key.handler';
 import { KritzelToolFactory } from '../../classes/factories/tool.factory';
 import { KritzelBaseTool } from '../../classes/tools/base-tool.class';
-import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
 import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
 import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
 
@@ -98,8 +97,15 @@ export class KritzelEngine {
     this.store = new KritzelStore(this);
     this.keyHandler = new KritzelKeyHandler(this.store);
 
-    this.store.onStateChange('activeTool', (newValue: KritzelTool) => {
-      this.activeToolChange.emit(newValue);
+    this.store.onStateChange('activeTool', (activeTool: KritzelBaseTool) => {
+      this.activeToolChange.emit(activeTool);
+    });
+
+    this.store.onStateChange('isFocused', (isFocused: boolean) => {
+      debugger;
+      if(!isFocused) {
+        this.store.state.activeText = null;
+      }
     });
   }
 
@@ -238,7 +244,12 @@ export class KritzelEngine {
   updateFocus(ev) {
     const rect = this.store.state.host.getBoundingClientRect();
     const isInside = ev.clientX >= rect.left && ev.clientX <= rect.right && ev.clientY >= rect.top && ev.clientY <= rect.bottom;
-    this.store.state.isFocused = isInside;
+   
+    const path = ev.composedPath();
+    const kritzelEngineElement = this.host.closest('kritzel-engine');
+    const isInKritzelEngine = path.includes(kritzelEngineElement || this.host);
+    
+    this.store.setState('isFocused', isInside && isInKritzelEngine);
   }
 
   @Listen('mousedown', { passive: true })
@@ -269,17 +280,8 @@ export class KritzelEngine {
   }
 
   @Method()
-  async changeColor(color: string) {
-    if (this.store.state.activeTool instanceof KritzelBrushTool) {
-      this.store.state.activeTool.color = color;
-    }
-  }
-
-  @Method()
-  async changeStrokeSize(size: number) {
-    if (this.store.state.activeTool instanceof KritzelBrushTool) {
-      this.store.state.activeTool.size = size;
-    }
+  async getActiveTool(): Promise<KritzelBaseTool> {
+    return Promise.resolve(this.store.state.activeTool);
   }
 
   @Method()
@@ -364,6 +366,8 @@ export class KritzelEngine {
           <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
           <div>IsResizeHandleSelected: {this.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
           <div>IsRotationHandleSelected: {this.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
+          <div>IsDrawing: {this.store.state.isDrawing ? 'ture' : 'false'}</div>
+          <div>IsWriting: {this.store.state.isWriting ? 'ture' : 'false'}</div>
           <div>CursorX: {this.store.state?.cursorX}</div>
           <div>CursorY: {this.store.state?.cursorY}</div>
         </div>
@@ -458,6 +462,7 @@ export class KritzelEngine {
                           width: '100%',
                           height: '100%',
                           fontSize: object.fontSize?.toString() + 'px',
+                          fontFamily: object.fontFamily,
                           border: 'none',
                           outline: 'none',
                           resize: 'none',

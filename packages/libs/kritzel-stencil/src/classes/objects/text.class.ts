@@ -4,6 +4,8 @@ import { KritzelBaseObject } from './base-object.class';
 export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   value: string = '';
 
+  fontFamily: string = 'Arial';
+
   fontSize: number = 16;
 
   initialWidth: number = 2;
@@ -22,8 +24,10 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     return this._store.state.activeTool?.name !== 'text';
   }
 
-  constructor(store: KritzelStore) {
+  constructor(store: KritzelStore, fontSize: number, fontFamily: string) {
     super(store);
+    this.fontSize = fontSize;
+    this.fontFamily = fontFamily;
     this.translateX = 0;
     this.translateY = 0;
     this.width = this.initialWidth * this._store.state.scale;

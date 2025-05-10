@@ -2,13 +2,15 @@ import { KritzelBaseObject } from "../classes/objects/base-object.class";
 import { KritzelPath } from "../classes/objects/path.class";
 import { KrtizelSelectionBox } from "../classes/objects/selection-box.class";
 import { KritzelSelectionGroup } from "../classes/objects/selection-group.class";
+import { KritzelText } from "../classes/objects/text.class";
 import { KritzelOctree } from "../classes/structures/octree.structure";
+import { KritzelBaseTool } from "../classes/tools/base-tool.class";
 import { KritzelHandleType } from "../enums/handle-type.enum";
 import { KritzelDebugInfo } from "./debug-info.interface";
-import { KritzelTool } from "./tool.interface";
 
 export interface KritzelEngineState {
-  activeTool: KritzelTool;
+  activeTool: KritzelBaseTool;
+  activeText: KritzelText;
   currentPath?: KritzelPath;
   copiedObjects?: KritzelSelectionGroup;
   objectsOctree: KritzelOctree<KritzelBaseObject<Element>>;
@@ -27,6 +29,7 @@ export interface KritzelEngineState {
   isDragging: boolean;
   isDrawing: boolean;
   isErasing: boolean;
+  isWriting: boolean;
   isCtrlKeyPressed: boolean;
   hasViewportChanged: boolean;
   skipContextMenu: boolean;

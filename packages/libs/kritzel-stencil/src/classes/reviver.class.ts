@@ -26,7 +26,7 @@ export class KritzelReviver {
             revivedObj = new KritzelPath(this._store).revive(obj);
             break;
           case 'KritzelText':
-            revivedObj = new KritzelText(this._store).revive(obj);
+            revivedObj = new KritzelText(this._store, obj.fontSize, obj.fontFamily).revive(obj);
             break;
           case 'KritzelImage':
             revivedObj = new KritzelImage(this._store, obj.img).revive(obj);

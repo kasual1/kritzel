@@ -2,49 +2,65 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelStore } from '../store.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
+import { KritzelClickHelper } from '../../helpers/click.helper';
 
 export class KritzelTextTool extends KritzelBaseTool {
   name: string = 'text';
 
-  isWriting: boolean = false;
+  fontFamily: string = 'Arial';
+  fontSize: number = 16;
 
   constructor(store: KritzelStore) {
     super(store);
   }
 
   handleMouseUp(event: MouseEvent): void {
-    if (this.isWriting === false) {
-      const clientX = event.clientX - this._store.offsetX;
-      const clientY = event.clientY - this._store.offsetY;
-      const text = new KritzelText(this._store);
+    const path = event.composedPath().slice(1) as HTMLElement[];
+    const objectElement = path.find(element => element.classList && element.classList.contains('object'));
+    const object = this._store.findObjectById(objectElement?.id);
 
-      text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;
-      text.translateY = (clientY - this._store.state.translateY) / this._store.state.scale;
-      text.width = text.width / this._store.state.scale;
-      text.height = text.height / this._store.state.scale;
-      text.fontSize = 16;
-      text.zIndex = this._store.currentZIndex;
-
-      this.isWriting = true;
-
-      this._store.history.executeCommand(new AddObjectCommand(this._store, this, text));
+    if (this._store.state.activeText === null && object && object instanceof KritzelText) {
+      this._store.state.activeText = object;
+      return;
     }
+
+    if(this._store.state.activeText !== null &&  object instanceof KritzelText){
+      return;
+    }
+
+    if (this._store.state.activeText !== null) {
+      this._store.state.activeText = null;
+      return;
+    }
+
+    if(KritzelClickHelper.isLeftClick(event) === false){
+      return;
+    }
+
+    const clientX = event.clientX - this._store.offsetX;
+    const clientY = event.clientY - this._store.offsetY;
+    const text = new KritzelText(this._store, this.fontSize, this.fontFamily);
+
+    text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;
+    text.translateY = (clientY - this._store.state.translateY) / this._store.state.scale;
+    text.zIndex = this._store.currentZIndex;
+
+    this._store.state.activeText = text;
+
+    this._store.history.executeCommand(new AddObjectCommand(this._store, this, text));
   }
 
   handleTouchStart(event: TouchEvent): void {
-    if (this.isWriting === false) {
+    if (this._store.state.isWriting === false) {
       const x = Math.round(event.touches[0].clientX - this._store.offsetX);
       const y = Math.round(event.touches[0].clientY - this._store.offsetY);
-      const text = new KritzelText(this._store);
+      const text = new KritzelText(this._store, this.fontSize, this.fontFamily);
 
       text.translateX = (x - this._store.state.translateX) / this._store.state.scale;
       text.translateY = (y - this._store.state.translateY) / this._store.state.scale;
-      text.width = text.width / this._store.state.scale;
-      text.height = text.height / this._store.state.scale;
-      text.fontSize = 16;
       text.zIndex = this._store.currentZIndex;
 
-      this.isWriting = true;
+      this._store.state.isWriting = true;
 
       this._store.history.executeCommand(new AddObjectCommand(this._store, this, text));
     }

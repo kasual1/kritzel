@@ -159,9 +159,23 @@ export class KritzelControls {
   handleControlClick(control: KritzelToolbarControl) {
     if (control.type === 'tool') {
       this.activeConfig = control.config ? { ...control.config } : null;
+
       this.kritzelEngine.changeActiveTool(control.name);
-      this.kritzelEngine.changeColor(this.activeConfig?.color);
-      console.log('activeConfig', this.activeConfig === null);
+
+      this.kritzelEngine.getActiveTool().then(activeTool => {
+        if (activeTool) {
+
+          if (activeTool instanceof KritzelBrushTool) {
+            activeTool.size = this.activeConfig?.size;
+            activeTool.color = this.activeConfig?.color;
+          }
+
+          if (activeTool instanceof KritzelTextTool) {
+            activeTool.fontFamily = this.activeConfig?.fontFamily;
+            activeTool.fontSize = this.activeConfig?.size;
+          }
+        }
+      });
     }
   }
 
@@ -176,6 +190,18 @@ export class KritzelControls {
       ...this.activeConfig,
       fontFamily: event.detail,
     };
+
+    this.controls.find(control => {
+      if (control.name === this.activeControl && control.type === 'tool') {
+        control.config = this.activeConfig;
+      }
+    });
+
+    this.kritzelEngine.getActiveTool().then(activeTool => {
+      if (activeTool instanceof KritzelTextTool) {
+        activeTool.fontFamily = this.activeConfig?.fontFamily;
+      }
+    });
   }
 
   handleColorChange(event: CustomEvent) {
@@ -190,7 +216,15 @@ export class KritzelControls {
       }
     });
 
-    this.kritzelEngine.changeColor(this.activeConfig.color);
+    this.kritzelEngine.getActiveTool().then(activeTool => {
+      if (activeTool instanceof KritzelBrushTool) {
+        activeTool.color = this.activeConfig?.color;
+      }
+
+      if (activeTool instanceof KritzelTextTool) {
+        // activeTool.color = this.activeConfig?.color;
+      }
+    });
   }
 
   handleSizeChange(event: CustomEvent) {
@@ -205,7 +239,30 @@ export class KritzelControls {
       }
     });
 
-    this.kritzelEngine.changeStrokeSize(this.activeConfig.size);
+    this.kritzelEngine.getActiveTool().then(activeTool => {
+      if (activeTool instanceof KritzelBrushTool) {
+        activeTool.size = this.activeConfig?.size;
+      }
+    });
+  }
+
+  handleFontSizeChange(event: CustomEvent) {
+    this.activeConfig = {
+      ...this.activeConfig,
+      size: event.detail,
+    };
+
+    this.controls.find(control => {
+      if (control.name === this.activeControl && control.type === 'tool') {
+        control.config = this.activeConfig;
+      }
+    });
+
+    this.kritzelEngine.getActiveTool().then(activeTool => {
+      if (activeTool instanceof KritzelTextTool) {
+        activeTool.fontSize = this.activeConfig.size;
+      }
+    });
   }
 
   render() {

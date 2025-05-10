@@ -11,6 +11,7 @@ import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
 import { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 import { KritzelTool } from "./interfaces/tool.interface";
+import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
 export { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
@@ -18,6 +19,7 @@ export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
 export { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 export { KritzelTool } from "./interfaces/tool.interface";
+export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
 export namespace Components {
     interface KritzelBrushStyle {
@@ -50,12 +52,11 @@ export namespace Components {
     interface KritzelEngine {
         "activeTool": KritzelTool;
         "changeActiveTool": (tool: string) => Promise<void>;
-        "changeColor": (color: string) => Promise<void>;
-        "changeStrokeSize": (size: number) => Promise<void>;
         "copy": () => Promise<void>;
         "delete": () => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
+        "getActiveTool": () => Promise<KritzelBaseTool>;
         "globalContextMenuItems": ContextMenuItem[];
         "moveToBottom": () => Promise<void>;
         "moveToTop": () => Promise<void>;
