@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, EventEmitter, Event, State } from '@stencil/core';
+import { Component, Host, h, Prop, EventEmitter, Event} from '@stencil/core';
 
 @Component({
   tag: 'kritzel-color-palette',
@@ -28,7 +28,7 @@ export class KritzelColorPalette {
   @Prop({ mutable: true })
   selectedColor: string | null = null;
 
-  @State() 
+  @Prop() 
   isExpanded: boolean = false;
 
   @Event() 
@@ -38,10 +38,6 @@ export class KritzelColorPalette {
     this.selectedColor = color;
     this.colorChange.emit(color);
   }
-
-  private toggleExpand = () => {
-    this.isExpanded = !this.isExpanded;
-  };
 
   render() {
     const displayedColors = this.isExpanded ? this.colors : this.colors.slice(0, 6);
@@ -67,10 +63,7 @@ export class KritzelColorPalette {
             </div>
           ))}
         </div>
-
-        <button class="expand-toggle" onClick={this.toggleExpand} title={this.isExpanded ? 'Collapse' : 'Expand'}>
-          <kritzel-icon name={this.isExpanded ? 'chevron-up' : 'chevron-down'}></kritzel-icon>
-        </button>
+        
       </Host>
     );
   }

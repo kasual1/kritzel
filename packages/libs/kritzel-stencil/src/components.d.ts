@@ -9,13 +9,16 @@ import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 import { KritzelTool } from "./interfaces/tool.interface";
+import { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 export { KritzelTool } from "./interfaces/tool.interface";
+export { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
 export namespace Components {
     interface KritzelColorPalette {
         "colors": string[];
+        "isExpanded": boolean;
         "selectedColor": string | null;
     }
     interface KritzelContextMenu {
@@ -51,6 +54,7 @@ export namespace Components {
         "undo": () => Promise<void>;
     }
     interface KritzelFontFamily {
+        "fontOptions": FontOption[];
     }
     interface KritzelFontSize {
         "selectedSize": number | null;
@@ -218,6 +222,7 @@ declare global {
 declare namespace LocalJSX {
     interface KritzelColorPalette {
         "colors"?: string[];
+        "isExpanded"?: boolean;
         "onColorChange"?: (event: KritzelColorPaletteCustomEvent<string>) => void;
         "selectedColor"?: string | null;
     }
@@ -242,6 +247,7 @@ declare namespace LocalJSX {
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelTool>) => void;
     }
     interface KritzelFontFamily {
+        "fontOptions"?: FontOption[];
     }
     interface KritzelFontSize {
         "onSizeChange"?: (event: KritzelFontSizeCustomEvent<number>) => void;

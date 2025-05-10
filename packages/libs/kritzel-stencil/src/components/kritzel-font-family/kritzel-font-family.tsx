@@ -1,4 +1,9 @@
-import { Component, Host, h } from '@stencil/core';
+import { Component, Host, h, Prop, State } from '@stencil/core';
+
+export interface FontOption {
+  value: string;
+  label: string;
+}
 
 @Component({
   tag: 'kritzel-font-family',
@@ -6,23 +11,59 @@ import { Component, Host, h } from '@stencil/core';
   shadow: true,
 })
 export class KritzelFontFamily {
+  @Prop() fontOptions: FontOption[] = [
+    { value: 'arial', label: 'Arial' },
+    { value: 'verdana', label: 'Verdana' },
+    { value: 'helvetica', label: 'Helvetica' },
+    { value: 'tahoma', label: 'Tahoma' },
+    { value: 'trebuchet ms', label: 'Trebuchet MS' },
+    { value: 'times new roman', label: 'Times New Roman' },
+    { value: 'georgia', label: 'Georgia' },
+    { value: 'garamond', label: 'Garamond' },
+    { value: 'courier new', label: 'Courier New' },
+    { value: 'brush script mt', label: 'Brush Script MT' },
+  ];
+
+  @State() currentFontFamily: string;
+
+  componentWillLoad() {
+    if (this.fontOptions && this.fontOptions.length > 0) {
+      // Initialize with the first font option if no specific value is set
+      // or if currentFontFamily is not a valid option value.
+      const isValidCurrentFont = this.fontOptions.some(opt => opt.value === this.currentFontFamily);
+      if (!this.currentFontFamily || !isValidCurrentFont) {
+        this.currentFontFamily = this.fontOptions[0].value;
+      }
+    }
+  }
+
+  private handleFontChange = (event: Event) => {
+    this.currentFontFamily = (event.target as HTMLSelectElement).value;
+  };
+
   render() {
     return (
       <Host>
-        <select class="font-family-dropdown">
-          <option value="arial">Arial</option>
-          <option value="verdana">Verdana</option>
-          <option value="helvetica">Helvetica</option>
-          <option value="tahoma">Tahoma</option>
-          <option value="trebuchet ms">Trebuchet MS</option>
-          <option value="times new roman">Times New Roman</option>
-          <option value="georgia">Georgia</option>
-          <option value="garamond">Garamond</option>
-          <option value="courier new">Courier New</option>
-          <option value="brush script mt">Brush Script MT</option>
-        </select>
-        <button class="font-style-button">B</button>
-        <button class="font-style-button italic-text">I</button>
+        <div class="control-group">
+          <select
+            class="font-family-dropdown"
+            // value={this.currentFontFamily}
+            style={{ fontFamily: this.currentFontFamily, width: '172px' }}
+            onInput={this.handleFontChange}
+          >
+            {this.fontOptions.map(option => (
+              <option
+                value={option.value}
+                style={{ fontFamily: option.value }}
+                selected={option.value === this.currentFontFamily}
+              >
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <button class="font-style-button">B</button>
+          <button class="font-style-button italic-text">I</button>
+        </div>
       </Host>
     );
   }
