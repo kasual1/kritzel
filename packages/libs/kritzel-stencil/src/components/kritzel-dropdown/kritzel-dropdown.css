@@ -40,8 +40,11 @@
   border-right: 1px solid #333333; 
 }
 
+.custom-select.has-prefix-border {
+  border-left: 1px solid #333333; 
+}
+
 ::slotted(*) {
-  /* Ensures slotted items participate correctly in the flex layout */
   height: 100%; 
   box-sizing: border-box;
 }

@@ -253,6 +253,8 @@ export class KritzelControls {
                           width: '100%',
                         }}
                       >
+                        {this.activeControl === 'brush' && <kritzel-brush-style></kritzel-brush-style>}
+
                         {this.activeControl === 'text' && <kritzel-font-family></kritzel-font-family>}
 
                         <button class="expand-toggle" onClick={this.toggleExpand} title={this.isExpanded ? 'Collapse' : 'Expand'}>

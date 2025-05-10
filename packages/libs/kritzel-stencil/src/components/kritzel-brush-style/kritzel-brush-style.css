@@ -1,19 +1,11 @@
 :host {
   display: flex; 
   align-items: center; 
-  gap: 8px; 
-  padding: 8px; 
+  padding: 8px; /* Optional: if you want padding around the component */
   box-sizing: border-box; 
-  --control-padding: var(--kritzel-controls-control-padding, 8px);
-  --control-border-radius: var(--kritzel-controls-control-border-radius, 4px);
-  --control-hover-bg: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 90%));
-  --control-active-bg: var(--kritzel-controls-control-active-background-color, hsl(0, 0%, 80%));
-  --control-selected-bg: var(--kritzel-controls-control-selected-background-color, hsl(0, 0%, 70%));
-  --control-selected-color: var(--kritzel-controls-control-selected-color, #000);
-  --control-text-color: var(--kritzel-controls-text-color, #333333);
 }
 
-.font-style-button {
+.brush-style-button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,7 +15,7 @@
   border: none;
   outline: none;
   background: none;
-  cursor: pointer;
+  cursor: default;
   border-radius: 0; 
   color: var(--control-text-color);
   font-weight: bold;
@@ -47,8 +39,4 @@
 .font-style-button.selected:active {
   background-color: var(--control-selected-bg);
   color: var(--control-selected-color);
-}
-
-.font-style-button.italic-text {
-  font-style: italic;
 }

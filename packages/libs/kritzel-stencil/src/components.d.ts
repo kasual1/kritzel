@@ -5,12 +5,14 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
 import { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
+export { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
@@ -18,6 +20,9 @@ export { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
 export namespace Components {
+    interface KritzelBrushStyle {
+        "brushOptions": BrushStyleOption[];
+    }
     interface KritzelColorPalette {
         "colors": string[];
         "isExpanded": boolean;
@@ -103,6 +108,12 @@ export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
     target: HTMLKritzelStrokeSizeElement;
 }
 declare global {
+    interface HTMLKritzelBrushStyleElement extends Components.KritzelBrushStyle, HTMLStencilElement {
+    }
+    var HTMLKritzelBrushStyleElement: {
+        prototype: HTMLKritzelBrushStyleElement;
+        new (): HTMLKritzelBrushStyleElement;
+    };
     interface HTMLKritzelColorPaletteElementEventMap {
         "colorChange": string;
     }
@@ -236,6 +247,7 @@ declare global {
         new (): HTMLKritzelStrokeSizeElement;
     };
     interface HTMLElementTagNameMap {
+        "kritzel-brush-style": HTMLKritzelBrushStyleElement;
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
         "kritzel-controls": HTMLKritzelControlsElement;
@@ -250,6 +262,9 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface KritzelBrushStyle {
+        "brushOptions"?: BrushStyleOption[];
+    }
     interface KritzelColorPalette {
         "colors"?: string[];
         "isExpanded"?: boolean;
@@ -302,6 +317,7 @@ declare namespace LocalJSX {
         "sizes"?: number[];
     }
     interface IntrinsicElements {
+        "kritzel-brush-style": KritzelBrushStyle;
         "kritzel-color-palette": KritzelColorPalette;
         "kritzel-context-menu": KritzelContextMenu;
         "kritzel-controls": KritzelControls;
@@ -319,6 +335,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "kritzel-brush-style": LocalJSX.KritzelBrushStyle & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
             "kritzel-color-palette": LocalJSX.KritzelColorPalette & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
             "kritzel-context-menu": LocalJSX.KritzelContextMenu & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
