@@ -29,7 +29,6 @@ export class KritzelControls {
       type: 'tool',
       tool: KritzelBrushTool,
       icon: 'pen',
-      isDefault: true,
       config: {
         color: '#000000',
         size: 24,
@@ -46,6 +45,7 @@ export class KritzelControls {
       name: 'text',
       type: 'tool',
       tool: KritzelTextTool,
+      isDefault: true,
       icon: 'type',
       config: {
         color: '#000000',
@@ -69,16 +69,16 @@ export class KritzelControls {
   ];
 
   @Prop()
-  activeControl: string | null = null;
+  activeControl: string | null = 'text';
 
   @State()
-  activeConfig: ToolConfig | null = null;
+  activeConfig: ToolConfig | null = (this.controls.find(control => control.name === this.activeControl) as any)?.config || null;
 
   @State()
   firstConfig: ToolConfig | null = null;
 
   @State()
-  tooltipVisible: boolean = false;
+  tooltipVisible: boolean = true;
 
   @Element()
   host!: HTMLElement;
@@ -238,6 +238,7 @@ export class KritzelControls {
                 <div class="kritzel-config-container" key={control.name}>
                   {this.tooltipVisible && (
                     <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
+
                       <kritzel-color-palette selectedColor={this.activeConfig?.color} onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
 
                       {this.activeControl === 'brush' && (
@@ -246,6 +247,10 @@ export class KritzelControls {
 
                       {this.activeControl === 'text' && (
                         <kritzel-font-size selectedSize={this.activeConfig?.size} onSizeChange={size => this.handleSizeChange(size)}></kritzel-font-size>
+                      )}
+
+                      {this.activeControl === 'text' && (
+                        <kritzel-font-family></kritzel-font-family>
                       )}
                     </div>
                   )}

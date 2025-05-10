@@ -17,6 +17,7 @@ import { KritzelControls as KritzelControlsElement, defineCustomElement as defin
 import { KritzelCursorTrail as KritzelCursorTrailElement, defineCustomElement as defineKritzelCursorTrail } from "../../../../kritzel-stencil/dist/components/kritzel-cursor-trail.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
+import { KritzelFontFamily as KritzelFontFamilyElement, defineCustomElement as defineKritzelFontFamily } from "../../../../kritzel-stencil/dist/components/kritzel-font-family.js";
 import { KritzelFontSize as KritzelFontSizeElement, defineCustomElement as defineKritzelFontSize } from "../../../../kritzel-stencil/dist/components/kritzel-font-size.js";
 import { KritzelIcon as KritzelIconElement, defineCustomElement as defineKritzelIcon } from "../../../../kritzel-stencil/dist/components/kritzel-icon.js";
 import { KritzelStrokeSize as KritzelStrokeSizeElement, defineCustomElement as defineKritzelStrokeSize } from "../../../../kritzel-stencil/dist/components/kritzel-stroke-size.js";
@@ -85,6 +86,17 @@ export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelE
     react: React,
     events: { onActiveToolChange: 'activeToolChange' } as KritzelEngineEvents,
     defineCustomElement: defineKritzelEngine
+});
+
+export type KritzelFontFamilyEvents = NonNullable<unknown>;
+
+export const KritzelFontFamily: StencilReactComponent<KritzelFontFamilyElement, KritzelFontFamilyEvents> = /*@__PURE__*/ createComponent<KritzelFontFamilyElement, KritzelFontFamilyEvents>({
+    tagName: 'kritzel-font-family',
+    elementClass: KritzelFontFamilyElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {} as KritzelFontFamilyEvents,
+    defineCustomElement: defineKritzelFontFamily
 });
 
 export type KritzelFontSizeEvents = { onSizeChange: EventName<CustomEvent<number>> };

@@ -11,6 +11,7 @@ import { defineCustomElement as defineKritzelControls } from '../../kritzel-sten
 import { defineCustomElement as defineKritzelCursorTrail } from '../../kritzel-stencil/dist/components/kritzel-cursor-trail.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelEngine } from '../../kritzel-stencil/dist/components/kritzel-engine.js';
+import { defineCustomElement as defineKritzelFontFamily } from '../../kritzel-stencil/dist/components/kritzel-font-family.js';
 import { defineCustomElement as defineKritzelFontSize } from '../../kritzel-stencil/dist/components/kritzel-font-size.js';
 import { defineCustomElement as defineKritzelIcon } from '../../kritzel-stencil/dist/components/kritzel-icon.js';
 import { defineCustomElement as defineKritzelStrokeSize } from '../../kritzel-stencil/dist/components/kritzel-stroke-size.js';
@@ -56,6 +57,9 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
 ], [
   'activeToolChange'
 ]);
+
+
+export const KritzelFontFamily: StencilVueComponent<JSX.KritzelFontFamily> = /*@__PURE__*/ defineContainer<JSX.KritzelFontFamily>('kritzel-font-family', defineKritzelFontFamily);
 
 
 export const KritzelFontSize: StencilVueComponent<JSX.KritzelFontSize> = /*@__PURE__*/ defineContainer<JSX.KritzelFontSize>('kritzel-font-size', defineKritzelFontSize, [

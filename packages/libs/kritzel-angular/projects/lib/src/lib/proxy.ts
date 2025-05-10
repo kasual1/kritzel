@@ -156,6 +156,27 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
 
 
 @ProxyCmp({
+})
+@Component({
+  selector: 'kritzel-font-family',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: [],
+})
+export class KritzelFontFamily {
+  protected el: HTMLKritzelFontFamilyElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelFontFamily extends Components.KritzelFontFamily {}
+
+
+@ProxyCmp({
   inputs: ['selectedSize', 'sizes']
 })
 @Component({
