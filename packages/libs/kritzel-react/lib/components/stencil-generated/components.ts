@@ -87,14 +87,14 @@ export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelE
     defineCustomElement: defineKritzelEngine
 });
 
-export type KritzelFontSizeEvents = NonNullable<unknown>;
+export type KritzelFontSizeEvents = { onSizeChange: EventName<CustomEvent<number>> };
 
 export const KritzelFontSize: StencilReactComponent<KritzelFontSizeElement, KritzelFontSizeEvents> = /*@__PURE__*/ createComponent<KritzelFontSizeElement, KritzelFontSizeEvents>({
     tagName: 'kritzel-font-size',
     elementClass: KritzelFontSizeElement,
     // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
     react: React,
-    events: {} as KritzelFontSizeEvents,
+    events: { onSizeChange: 'sizeChange' } as KritzelFontSizeEvents,
     defineCustomElement: defineKritzelFontSize
 });
 

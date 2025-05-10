@@ -156,24 +156,29 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
 
 
 @ProxyCmp({
+  inputs: ['selectedSize', 'sizes']
 })
 @Component({
   selector: 'kritzel-font-size',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [],
+  inputs: ['selectedSize', 'sizes'],
 })
 export class KritzelFontSize {
   protected el: HTMLKritzelFontSizeElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sizeChange']);
   }
 }
 
 
-export declare interface KritzelFontSize extends Components.KritzelFontSize {}
+export declare interface KritzelFontSize extends Components.KritzelFontSize {
+
+  sizeChange: EventEmitter<CustomEvent<number>>;
+}
 
 
 @ProxyCmp({
