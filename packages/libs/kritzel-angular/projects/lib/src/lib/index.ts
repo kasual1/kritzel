@@ -2,6 +2,7 @@
 import * as d from './proxy';
 
 export const DIRECTIVES = [
+  d.KritzelBrushStyle,
   d.KritzelColorPalette,
   d.KritzelContextMenu,
   d.KritzelControls,

@@ -8,6 +8,28 @@ import { Components } from 'kritzel-stencil';
 
 
 @ProxyCmp({
+  inputs: ['brushOptions']
+})
+@Component({
+  selector: 'kritzel-brush-style',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['brushOptions'],
+})
+export class KritzelBrushStyle {
+  protected el: HTMLKritzelBrushStyleElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelBrushStyle extends Components.KritzelBrushStyle {}
+
+
+@ProxyCmp({
   inputs: ['colors', 'isExpanded', 'selectedColor']
 })
 @Component({

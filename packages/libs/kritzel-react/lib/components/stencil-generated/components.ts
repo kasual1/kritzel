@@ -11,6 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 import { type ContextMenuItem, type KritzelContextMenuCustomEvent, type KritzelEngineCustomEvent, type KritzelTool } from "../../../../kritzel-stencil";
+import { KritzelBrushStyle as KritzelBrushStyleElement, defineCustomElement as defineKritzelBrushStyle } from "../../../../kritzel-stencil/dist/components/kritzel-brush-style.js";
 import { KritzelColorPalette as KritzelColorPaletteElement, defineCustomElement as defineKritzelColorPalette } from "../../../../kritzel-stencil/dist/components/kritzel-color-palette.js";
 import { KritzelContextMenu as KritzelContextMenuElement, defineCustomElement as defineKritzelContextMenu } from "../../../../kritzel-stencil/dist/components/kritzel-context-menu.js";
 import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
@@ -22,6 +23,17 @@ import { KritzelFontFamily as KritzelFontFamilyElement, defineCustomElement as d
 import { KritzelFontSize as KritzelFontSizeElement, defineCustomElement as defineKritzelFontSize } from "../../../../kritzel-stencil/dist/components/kritzel-font-size.js";
 import { KritzelIcon as KritzelIconElement, defineCustomElement as defineKritzelIcon } from "../../../../kritzel-stencil/dist/components/kritzel-icon.js";
 import { KritzelStrokeSize as KritzelStrokeSizeElement, defineCustomElement as defineKritzelStrokeSize } from "../../../../kritzel-stencil/dist/components/kritzel-stroke-size.js";
+
+export type KritzelBrushStyleEvents = NonNullable<unknown>;
+
+export const KritzelBrushStyle: StencilReactComponent<KritzelBrushStyleElement, KritzelBrushStyleEvents> = /*@__PURE__*/ createComponent<KritzelBrushStyleElement, KritzelBrushStyleEvents>({
+    tagName: 'kritzel-brush-style',
+    elementClass: KritzelBrushStyleElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {} as KritzelBrushStyleEvents,
+    defineCustomElement: defineKritzelBrushStyle
+});
 
 export type KritzelColorPaletteEvents = { onColorChange: EventName<CustomEvent<string>> };
 

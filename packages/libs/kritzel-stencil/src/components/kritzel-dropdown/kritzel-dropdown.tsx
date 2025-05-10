@@ -30,10 +30,14 @@ export class KritzelDropdown {
   @State() 
   hasSuffixContent: boolean = false;
 
+  @State()
+  hasPrefixContent: boolean = false;
+
   @Event() 
   valueChanged: EventEmitter<string>;
 
   private suffixSlotElement?: HTMLSlotElement;
+  private prefixSlotElement?: HTMLSlotElement;
 
   componentWillLoad() {
     this.updateInternalValue(this.value, false);
@@ -41,6 +45,7 @@ export class KritzelDropdown {
 
   componentDidLoad() {
     this.evaluateSuffixContent();
+    this.evaluatePrefixContent();
   }
 
   @Watch('value')
@@ -95,15 +100,34 @@ export class KritzelDropdown {
     }
   }
 
+  private evaluatePrefixContent = () => {
+    if (this.prefixSlotElement) {
+      const newHasContent = this.prefixSlotElement.assignedNodes({ flatten: true }).length > 0;
+      if (this.hasPrefixContent !== newHasContent) {
+        this.hasPrefixContent = newHasContent;
+      }
+    } else {
+      if (this.hasPrefixContent !== false) {
+        this.hasPrefixContent = false;
+      }
+    }
+  }
+
   render() {
     const selectClasses = {
       'custom-select': true,
       'has-suffix-border': this.hasSuffixContent,
+      'has-prefix-border': this.hasPrefixContent,
     };
 
     return (
       <Host>
         <div class="dropdown-wrapper">
+          <slot
+            name="prefix"
+            ref={el => this.prefixSlotElement = el as HTMLSlotElement}
+            onSlotchange={this.evaluatePrefixContent}
+          ></slot>
           <select
             class={selectClasses}
             style={{ ...this.selectStyles, width: this.width }}

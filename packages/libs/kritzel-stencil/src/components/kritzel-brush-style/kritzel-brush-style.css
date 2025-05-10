@@ -1,0 +1,42 @@
+:host {
+  display: flex; 
+  align-items: center; 
+  padding: 8px; /* Optional: if you want padding around the component */
+  box-sizing: border-box; 
+}
+
+.brush-style-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: none;
+  cursor: default;
+  border-radius: 0; 
+  color: var(--control-text-color);
+  font-weight: bold;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.font-style-button:not(:last-child) {
+  border-right: 1px solid #333333; 
+}
+
+.font-style-button:hover {
+  background-color: var(--control-hover-bg);
+}
+
+.font-style-button:active {
+  background-color: var(--control-active-bg);
+}
+
+.font-style-button.selected,
+.font-style-button.selected:hover,
+.font-style-button.selected:active {
+  background-color: var(--control-selected-bg);
+  color: var(--control-selected-color);
+}
