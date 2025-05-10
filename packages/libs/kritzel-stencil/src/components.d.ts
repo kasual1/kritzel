@@ -51,6 +51,8 @@ export namespace Components {
         "undo": () => Promise<void>;
     }
     interface KritzelFontSize {
+        "selectedSize": number | null;
+        "sizes": number[];
     }
     interface KritzelIcon {
         "label"?: string;
@@ -73,6 +75,10 @@ export interface KritzelContextMenuCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelEngineElement;
+}
+export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelFontSizeElement;
 }
 export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -148,7 +154,18 @@ declare global {
         prototype: HTMLKritzelEngineElement;
         new (): HTMLKritzelEngineElement;
     };
+    interface HTMLKritzelFontSizeElementEventMap {
+        "sizeChange": number;
+    }
     interface HTMLKritzelFontSizeElement extends Components.KritzelFontSize, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelFontSizeElementEventMap>(type: K, listener: (this: HTMLKritzelFontSizeElement, ev: KritzelFontSizeCustomEvent<HTMLKritzelFontSizeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelFontSizeElementEventMap>(type: K, listener: (this: HTMLKritzelFontSizeElement, ev: KritzelFontSizeCustomEvent<HTMLKritzelFontSizeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelFontSizeElement: {
         prototype: HTMLKritzelFontSizeElement;
@@ -216,6 +233,9 @@ declare namespace LocalJSX {
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelTool>) => void;
     }
     interface KritzelFontSize {
+        "onSizeChange"?: (event: KritzelFontSizeCustomEvent<number>) => void;
+        "selectedSize"?: number | null;
+        "sizes"?: number[];
     }
     interface KritzelIcon {
         "label"?: string;

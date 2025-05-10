@@ -138,6 +138,8 @@ export class KritzelControls {
         this.activeConfig = { ...control.config };
       }
     });
+
+    console.log('activeControl', newValue);
   }
 
   preventDefault(event: Event) {
@@ -196,7 +198,7 @@ export class KritzelControls {
     return (
       <Host>
         <div class="kritzel-history-panel">
-          <button class="kritzel-history-button"  onClick={() => this.kritzelEngine?.undo()}>
+          <button class="kritzel-history-button" onClick={() => this.kritzelEngine?.undo()}>
             <kritzel-icon name="undo"></kritzel-icon>
           </button>
           <button class="kritzel-history-button" onClick={() => this.kritzelEngine?.redo()}>
@@ -237,7 +239,14 @@ export class KritzelControls {
                   {this.tooltipVisible && (
                     <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
                       <kritzel-color-palette selectedColor={this.activeConfig?.color} onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
-                      <kritzel-stroke-size selectedSize={this.activeConfig?.size} onSizeChange={size => this.handleSizeChange(size)}></kritzel-stroke-size>
+
+                      {this.activeControl === 'brush' && (
+                        <kritzel-stroke-size selectedSize={this.activeConfig?.size} onSizeChange={size => this.handleSizeChange(size)}></kritzel-stroke-size>
+                      )}
+
+                      {this.activeControl === 'text' && (
+                        <kritzel-font-size selectedSize={this.activeConfig?.size} onSizeChange={size => this.handleSizeChange(size)}></kritzel-font-size>
+                      )}
                     </div>
                   )}
 
@@ -250,8 +259,8 @@ export class KritzelControls {
                   >
                     <div
                       class={{
-                        "color-circle": true,
-                        "white": this.activeConfig?.color === '#FFFFFF' || this.activeConfig?.color?.toLowerCase() === 'white',
+                        'color-circle': true,
+                        'white': this.activeConfig?.color === '#FFFFFF' || this.activeConfig?.color?.toLowerCase() === 'white',
                       }}
                       style={{
                         backgroundColor: this.activeConfig?.color,
