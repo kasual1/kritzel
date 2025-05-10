@@ -98,13 +98,13 @@ export class KritzelEngine {
     this.keyHandler = new KritzelKeyHandler(this.store);
 
     this.store.onStateChange('activeTool', (activeTool: KritzelBaseTool) => {
+      this.store.state.skipContextMenu = false;
       this.activeToolChange.emit(activeTool);
     });
 
     this.store.onStateChange('isFocused', (isFocused: boolean) => {
-      debugger;
       if(!isFocused) {
-        this.store.state.activeText = null;
+        this.store.resetActiveText();
       }
     });
   }
@@ -116,7 +116,7 @@ export class KritzelEngine {
   @Listen('contextmenu', { capture: false })
   handleContextMenu(ev: MouseEvent) {
     ev.preventDefault();
-    if (this.store.state.isEnabled === false) {
+    if (this.store.state.isEnabled === false || !(this.store.state.activeTool instanceof KritzelSelectionTool)) {
       return;
     }
 

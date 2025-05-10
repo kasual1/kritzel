@@ -31,7 +31,7 @@ export class KritzelControls {
       icon: 'pen',
       config: {
         color: '#000000',
-        size: 24,
+        size: 8,
       },
     },
     {
@@ -49,7 +49,7 @@ export class KritzelControls {
       icon: 'type',
       config: {
         color: '#000000',
-        size: 24,
+        size: 8,
         fontFamily: 'Arial',
       },
     },
@@ -70,7 +70,7 @@ export class KritzelControls {
   ];
 
   @Prop()
-  activeControl: string | null = 'text';
+  activeControl: string | null = null;
 
   @State()
   activeConfig: ToolConfig | null = (this.controls.find(control => control.name === this.activeControl) as any)?.config || null;
@@ -79,7 +79,7 @@ export class KritzelControls {
   firstConfig: ToolConfig | null = null;
 
   @State()
-  tooltipVisible: boolean = true;
+  tooltipVisible: boolean = false;
 
   @State()
   isExpanded: boolean = false;
@@ -91,7 +91,6 @@ export class KritzelControls {
 
   private toggleExpand = () => {
     this.isExpanded = !this.isExpanded;
-    console.log('isExpanded', this.isExpanded);
   };
 
   async componentWillLoad() {
@@ -116,6 +115,22 @@ export class KritzelControls {
 
       if (c.type === 'tool' && c.isDefault) {
         await this.kritzelEngine.changeActiveTool(c.name);
+
+        const activeTool = await this.kritzelEngine.getActiveTool();
+
+        this.activeConfig = (this.controls.find(control => control.name === c.name) as any)?.config || null;
+
+        if (activeTool) {
+          if (activeTool instanceof KritzelBrushTool) {
+            activeTool.size = this.activeConfig?.size;
+            activeTool.color = this.activeConfig?.color;
+          }
+
+          if (activeTool instanceof KritzelTextTool) {
+            activeTool.fontFamily = this.activeConfig?.fontFamily;
+            activeTool.fontSize = this.activeConfig?.size;
+          }
+        }
       }
 
       if (c.type === 'config') {
@@ -156,26 +171,25 @@ export class KritzelControls {
     event.stopPropagation();
   }
 
-  handleControlClick(control: KritzelToolbarControl) {
+  async handleControlClick(control: KritzelToolbarControl) {
     if (control.type === 'tool') {
       this.activeConfig = control.config ? { ...control.config } : null;
 
-      this.kritzelEngine.changeActiveTool(control.name);
+      await this.kritzelEngine.changeActiveTool(control.name);
 
-      this.kritzelEngine.getActiveTool().then(activeTool => {
-        if (activeTool) {
+      const activeTool = await this.kritzelEngine.getActiveTool();
 
-          if (activeTool instanceof KritzelBrushTool) {
-            activeTool.size = this.activeConfig?.size;
-            activeTool.color = this.activeConfig?.color;
-          }
-
-          if (activeTool instanceof KritzelTextTool) {
-            activeTool.fontFamily = this.activeConfig?.fontFamily;
-            activeTool.fontSize = this.activeConfig?.size;
-          }
+      if (activeTool) {
+        if (activeTool instanceof KritzelBrushTool) {
+          activeTool.size = this.activeConfig?.size;
+          activeTool.color = this.activeConfig?.color;
         }
-      });
+
+        if (activeTool instanceof KritzelTextTool) {
+          activeTool.fontFamily = this.activeConfig?.fontFamily;
+          activeTool.fontSize = this.activeConfig?.size;
+        }
+      }
     }
   }
 
@@ -185,7 +199,7 @@ export class KritzelControls {
     this.kritzelEngine.disable();
   }
 
-  handleFontFamilyChange(event: CustomEvent) {
+  async handleFontFamilyChange(event: CustomEvent) {
     this.activeConfig = {
       ...this.activeConfig,
       fontFamily: event.detail,
@@ -197,14 +211,24 @@ export class KritzelControls {
       }
     });
 
-    this.kritzelEngine.getActiveTool().then(activeTool => {
+    await this.kritzelEngine.changeActiveTool(this.activeControl);
+
+    const activeTool = await this.kritzelEngine.getActiveTool();
+
+    if (activeTool) {
+      if (activeTool instanceof KritzelBrushTool) {
+        activeTool.size = this.activeConfig?.size;
+        activeTool.color = this.activeConfig?.color;
+      }
+
       if (activeTool instanceof KritzelTextTool) {
         activeTool.fontFamily = this.activeConfig?.fontFamily;
+        activeTool.fontSize = this.activeConfig?.size;
       }
-    });
+    }
   }
 
-  handleColorChange(event: CustomEvent) {
+  async handleColorChange(event: CustomEvent) {
     this.activeConfig = {
       ...this.activeConfig,
       color: event.detail,
@@ -216,18 +240,24 @@ export class KritzelControls {
       }
     });
 
-    this.kritzelEngine.getActiveTool().then(activeTool => {
+    await this.kritzelEngine.changeActiveTool(this.activeControl);
+
+    const activeTool = await this.kritzelEngine.getActiveTool();
+
+    if (activeTool) {
       if (activeTool instanceof KritzelBrushTool) {
+        activeTool.size = this.activeConfig?.size;
         activeTool.color = this.activeConfig?.color;
       }
 
       if (activeTool instanceof KritzelTextTool) {
-        // activeTool.color = this.activeConfig?.color;
+        activeTool.fontFamily = this.activeConfig?.fontFamily;
+        activeTool.fontSize = this.activeConfig?.size;
       }
-    });
+    }
   }
 
-  handleSizeChange(event: CustomEvent) {
+  async handleSizeChange(event: CustomEvent) {
     this.activeConfig = {
       ...this.activeConfig,
       size: event.detail,
@@ -239,14 +269,24 @@ export class KritzelControls {
       }
     });
 
-    this.kritzelEngine.getActiveTool().then(activeTool => {
+    await this.kritzelEngine.changeActiveTool(this.activeControl);
+
+    const activeTool = await this.kritzelEngine.getActiveTool();
+
+    if (activeTool) {
       if (activeTool instanceof KritzelBrushTool) {
         activeTool.size = this.activeConfig?.size;
+        activeTool.color = this.activeConfig?.color;
       }
-    });
+
+      if (activeTool instanceof KritzelTextTool) {
+        activeTool.fontFamily = this.activeConfig?.fontFamily;
+        activeTool.fontSize = this.activeConfig?.size;
+      }
+    }
   }
 
-  handleFontSizeChange(event: CustomEvent) {
+  async handleFontSizeChange(event: CustomEvent) {
     this.activeConfig = {
       ...this.activeConfig,
       size: event.detail,
@@ -258,11 +298,21 @@ export class KritzelControls {
       }
     });
 
-    this.kritzelEngine.getActiveTool().then(activeTool => {
-      if (activeTool instanceof KritzelTextTool) {
-        activeTool.fontSize = this.activeConfig.size;
+    await this.kritzelEngine.changeActiveTool(this.activeControl);
+
+    const activeTool = await this.kritzelEngine.getActiveTool();
+
+    if (activeTool) {
+      if (activeTool instanceof KritzelBrushTool) {
+        activeTool.size = this.activeConfig?.size;
+        activeTool.color = this.activeConfig?.color;
       }
-    });
+
+      if (activeTool instanceof KritzelTextTool) {
+        activeTool.fontFamily = this.activeConfig?.fontFamily;
+        activeTool.fontSize = this.activeConfig?.size;
+      }
+    }
   }
 
   render() {

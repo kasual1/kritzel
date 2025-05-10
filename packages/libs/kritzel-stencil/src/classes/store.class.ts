@@ -185,6 +185,19 @@ export class KritzelStore {
     this.history.executeCommand(new BatchCommand(this, this.state.selectionGroup, commands));
   }
 
+  deleteObject(id: string, isHistoryUpdated: boolean = true) {
+    const object = this.findObjectById(id);
+    if (object) {
+      if (isHistoryUpdated) {
+        const removeObjectCommand = new RemoveObjectCommand(this, this, object);
+        this.history.executeCommand(removeObjectCommand);
+      } else {
+        this._state.objectsOctree.remove(obj => obj.id === id);
+        this.rerender();
+      }
+    }
+  }
+
   copy() {
     this.state.copiedObjects = this.state.selectionGroup.copy() as KritzelSelectionGroup;
   }
@@ -210,7 +223,7 @@ export class KritzelStore {
     this.history.executeCommand(new BatchCommand(this, this, commands));
 
     this.state.copiedObjects = this.state.selectionGroup.copy() as KritzelSelectionGroup;
-    this.setState('activeTool', KritzelToolFactory.createTool('selection', this));      
+    this.setState('activeTool', KritzelToolFactory.createTool('selection', this));
   }
 
   moveUp() {
@@ -267,10 +280,7 @@ export class KritzelStore {
       depth: 100,
     });
 
-    
-
     if (objectsInViewport.length > 0) {
-
       const selectionGroup = new KritzelSelectionGroup(this);
 
       objectsInViewport.forEach(obj => {
@@ -281,7 +291,16 @@ export class KritzelStore {
       selectionGroup.selected = true;
 
       this.history.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
-      this.setState('activeTool', KritzelToolFactory.createTool('selection', this));      
+      this.setState('activeTool', KritzelToolFactory.createTool('selection', this));
     }
+  }
+
+  resetActiveText() {
+    if (this.state.activeText && this.state.activeText.value === '') {
+      this.deleteObject(this.state.activeText.id, false);
+      this.history.undoStack.pop();
+    }
+
+    this.state.activeText = null;
   }
 }
