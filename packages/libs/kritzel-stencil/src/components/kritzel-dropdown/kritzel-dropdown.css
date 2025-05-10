@@ -1,0 +1,29 @@
+:host {
+  display: inline-block; /* Allows it to fit in flex layouts like other controls */
+  height: 32px; /* Match height of buttons */
+}
+
+.custom-select {
+  padding: 0 8px;
+  padding-right: 30px; 
+  height: 100%; /* Fill host height */
+  box-sizing: border-box;
+  border-radius: 0; 
+  border: none; 
+  border-right: 1px solid #333333; /* Separator for use in control groups */
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  font-size: inherit;
+  color: var(--kritzel-controls-text-color, #333333); /* Use CSS var with fallback */
+  -webkit-tap-highlight-color: transparent;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-position: right 8px center; 
+}

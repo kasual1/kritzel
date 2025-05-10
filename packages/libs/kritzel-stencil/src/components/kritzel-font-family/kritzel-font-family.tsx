@@ -28,8 +28,6 @@ export class KritzelFontFamily {
 
   componentWillLoad() {
     if (this.fontOptions && this.fontOptions.length > 0) {
-      // Initialize with the first font option if no specific value is set
-      // or if currentFontFamily is not a valid option value.
       const isValidCurrentFont = this.fontOptions.some(opt => opt.value === this.currentFontFamily);
       if (!this.currentFontFamily || !isValidCurrentFont) {
         this.currentFontFamily = this.fontOptions[0].value;
@@ -37,30 +35,28 @@ export class KritzelFontFamily {
     }
   }
 
-  private handleFontChange = (event: Event) => {
-    this.currentFontFamily = (event.target as HTMLSelectElement).value;
+  private handleDropdownValueChange = (event: CustomEvent<string>) => {
+    this.currentFontFamily = event.detail;
   };
 
   render() {
+    const dropdownOptions = this.fontOptions.map(option => ({
+      value: option.value,
+      label: option.label,
+      style: { fontFamily: option.value },
+    }));
+
     return (
       <Host>
         <div class="control-group">
-          <select
-            class="font-family-dropdown"
-            // value={this.currentFontFamily}
-            style={{ fontFamily: this.currentFontFamily, width: '172px' }}
-            onInput={this.handleFontChange}
+          <kritzel-dropdown
+            options={dropdownOptions}
+            value={this.currentFontFamily}
+            onValueChanged={this.handleDropdownValueChange}
+            selectStyles={{ fontFamily: this.currentFontFamily }}
+            width="172px"
           >
-            {this.fontOptions.map(option => (
-              <option
-                value={option.value}
-                style={{ fontFamily: option.value }}
-                selected={option.value === this.currentFontFamily}
-              >
-                {option.label}
-              </option>
-            ))}
-          </select>
+          </kritzel-dropdown>
           <button class="font-style-button">B</button>
           <button class="font-style-button italic-text">I</button>
         </div>

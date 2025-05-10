@@ -7,11 +7,13 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
 import { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
 export { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
@@ -29,6 +31,12 @@ export namespace Components {
         "controls": KritzelToolbarControl[];
     }
     interface KritzelCursorTrail {
+    }
+    interface KritzelDropdown {
+        "options": DropdownOption[];
+        "selectStyles"?: any;
+        "value": string;
+        "width"?: string;
     }
     interface KritzelEditor {
         "controls": KritzelToolbarControl1[];
@@ -77,6 +85,10 @@ export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelContextMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelContextMenuElement;
+}
+export interface KritzelDropdownCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelDropdownElement;
 }
 export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -136,6 +148,23 @@ declare global {
     var HTMLKritzelCursorTrailElement: {
         prototype: HTMLKritzelCursorTrailElement;
         new (): HTMLKritzelCursorTrailElement;
+    };
+    interface HTMLKritzelDropdownElementEventMap {
+        "valueChanged": string;
+    }
+    interface HTMLKritzelDropdownElement extends Components.KritzelDropdown, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelDropdownElementEventMap>(type: K, listener: (this: HTMLKritzelDropdownElement, ev: KritzelDropdownCustomEvent<HTMLKritzelDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelDropdownElementEventMap>(type: K, listener: (this: HTMLKritzelDropdownElement, ev: KritzelDropdownCustomEvent<HTMLKritzelDropdownElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelDropdownElement: {
+        prototype: HTMLKritzelDropdownElement;
+        new (): HTMLKritzelDropdownElement;
     };
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
     }
@@ -211,6 +240,7 @@ declare global {
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
+        "kritzel-dropdown": HTMLKritzelDropdownElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
         "kritzel-font-family": HTMLKritzelFontFamilyElement;
@@ -235,6 +265,13 @@ declare namespace LocalJSX {
         "controls"?: KritzelToolbarControl[];
     }
     interface KritzelCursorTrail {
+    }
+    interface KritzelDropdown {
+        "onValueChanged"?: (event: KritzelDropdownCustomEvent<string>) => void;
+        "options"?: DropdownOption[];
+        "selectStyles"?: any;
+        "value"?: string;
+        "width"?: string;
     }
     interface KritzelEditor {
         "controls"?: KritzelToolbarControl1[];
@@ -269,6 +306,7 @@ declare namespace LocalJSX {
         "kritzel-context-menu": KritzelContextMenu;
         "kritzel-controls": KritzelControls;
         "kritzel-cursor-trail": KritzelCursorTrail;
+        "kritzel-dropdown": KritzelDropdown;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
         "kritzel-font-family": KritzelFontFamily;
@@ -285,6 +323,7 @@ declare module "@stencil/core" {
             "kritzel-context-menu": LocalJSX.KritzelContextMenu & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
+            "kritzel-dropdown": LocalJSX.KritzelDropdown & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
             "kritzel-font-family": LocalJSX.KritzelFontFamily & JSXBase.HTMLAttributes<HTMLKritzelFontFamilyElement>;

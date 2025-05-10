@@ -21,30 +21,7 @@
   overflow: hidden; 
 }
 
-.font-family-dropdown {
-  padding: 0 8px;
-  padding-right: 30px; 
-  height: 32px;
-  box-sizing: border-box;
-  border-radius: 0; 
-  border: none; 
-  border-right: 1px solid #333333; 
-  background-color: #fff;
-  cursor: pointer;
-  outline: none;
-  font-size: inherit;
-  color: var(--control-text-color);
-  -webkit-tap-highlight-color: transparent;
-
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
-  background-size: 16px 16px;
-  background-repeat: no-repeat;
-  background-position: right 8px center; 
-}
+/* .font-family-dropdown styles removed as they are now in kritzel-dropdown.css */
 
 .font-style-button {
   display: flex;

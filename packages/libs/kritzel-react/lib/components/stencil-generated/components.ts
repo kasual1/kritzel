@@ -15,6 +15,7 @@ import { KritzelColorPalette as KritzelColorPaletteElement, defineCustomElement 
 import { KritzelContextMenu as KritzelContextMenuElement, defineCustomElement as defineKritzelContextMenu } from "../../../../kritzel-stencil/dist/components/kritzel-context-menu.js";
 import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
 import { KritzelCursorTrail as KritzelCursorTrailElement, defineCustomElement as defineKritzelCursorTrail } from "../../../../kritzel-stencil/dist/components/kritzel-cursor-trail.js";
+import { KritzelDropdown as KritzelDropdownElement, defineCustomElement as defineKritzelDropdown } from "../../../../kritzel-stencil/dist/components/kritzel-dropdown.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
 import { KritzelFontFamily as KritzelFontFamilyElement, defineCustomElement as defineKritzelFontFamily } from "../../../../kritzel-stencil/dist/components/kritzel-font-family.js";
@@ -64,6 +65,17 @@ export const KritzelCursorTrail: StencilReactComponent<KritzelCursorTrailElement
     react: React,
     events: {} as KritzelCursorTrailEvents,
     defineCustomElement: defineKritzelCursorTrail
+});
+
+export type KritzelDropdownEvents = { onValueChanged: EventName<CustomEvent<string>> };
+
+export const KritzelDropdown: StencilReactComponent<KritzelDropdownElement, KritzelDropdownEvents> = /*@__PURE__*/ createComponent<KritzelDropdownElement, KritzelDropdownEvents>({
+    tagName: 'kritzel-dropdown',
+    elementClass: KritzelDropdownElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: { onValueChanged: 'valueChanged' } as KritzelDropdownEvents,
+    defineCustomElement: defineKritzelDropdown
 });
 
 export type KritzelEditorEvents = NonNullable<unknown>;
