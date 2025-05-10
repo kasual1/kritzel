@@ -204,36 +204,40 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
 
 
 @ProxyCmp({
-  inputs: ['fontOptions']
+  inputs: ['fontOptions', 'selectedFontFamily']
 })
 @Component({
   selector: 'kritzel-font-family',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['fontOptions'],
+  inputs: ['fontOptions', 'selectedFontFamily'],
 })
 export class KritzelFontFamily {
   protected el: HTMLKritzelFontFamilyElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['fontFamilyChange']);
   }
 }
 
 
-export declare interface KritzelFontFamily extends Components.KritzelFontFamily {}
+export declare interface KritzelFontFamily extends Components.KritzelFontFamily {
+
+  fontFamilyChange: EventEmitter<CustomEvent<string>>;
+}
 
 
 @ProxyCmp({
-  inputs: ['selectedSize', 'sizes']
+  inputs: ['fontFamily', 'selectedSize', 'sizes']
 })
 @Component({
   selector: 'kritzel-font-size',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['selectedSize', 'sizes'],
+  inputs: ['fontFamily', 'selectedSize', 'sizes'],
 })
 export class KritzelFontSize {
   protected el: HTMLKritzelFontSizeElement;

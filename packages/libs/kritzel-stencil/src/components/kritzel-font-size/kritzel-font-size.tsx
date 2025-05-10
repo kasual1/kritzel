@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter, Watch } from '@stencil/core';
 
 @Component({
   tag: 'kritzel-font-size',
@@ -12,14 +12,15 @@ export class KritzelFontSize {
   @Prop({ mutable: true })
   selectedSize: number | null = null;
 
+  @Prop()
+  fontFamily: string = 'Arial';
+
   @Event()
   sizeChange: EventEmitter<number>;
 
-  componentWillLoad() {
-    if (!this.selectedSize && this.sizes.length > 0) {
-      // Optionally, select the first size by default
-      // this.selectedSize = this.sizes[0];
-    }
+  @Watch('fontFamily')
+  fontFamilyChanged(newFontFamily: string) {
+    console.log('Font family changed to:', newFontFamily);
   }
 
   private handleSizeClick(size: number) {
@@ -42,6 +43,7 @@ export class KritzelFontSize {
             <div
               class="size-display"
               style={{
+                fontFamily: this.fontFamily,
                 fontSize: `${size}px`,
               }}
             >
