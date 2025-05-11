@@ -8,6 +8,8 @@ import { KritzelRotationHandler } from '../handlers/rotation.handler';
 import { KritzelSelectionHandler } from '../handlers/selection.handler';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseTool } from './base-tool.class';
+import { KritzelText } from '../objects/text.class';
+import { KritzelTextTool } from './text-tool.class';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
   name: string = 'selection';
@@ -70,8 +72,29 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this._store.rerender();
   }
 
+  handleDoubleClick(event: MouseEvent): void {
+    if (KritzelClickHelper.isLeftClick(event)) {
+      console.log(this._store.state.selectionGroup);
+      
+      if (this._store.state.selectionGroup && this._store.state.selectionGroup?.objects.length === 1) {
+        const selectedObject = this._store.state.selectionGroup.objects[0];
+        
+        if(selectedObject instanceof KritzelText){
+          this._store.state.activeText = selectedObject;
+          this._store.setState('activeTool', new KritzelTextTool(this._store));
+          this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+
+          setTimeout(() => {
+            selectedObject.focus();
+          }, 300);
+        }
+
+      }
+    }
+  }
+
   handleTouchStart(event: TouchEvent): void {
-    if(this._store.state.isScaling === true) {
+    if (this._store.state.isScaling === true) {
       return;
     }
 
@@ -97,24 +120,23 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.resizeHandler.handleTouchStart(event);
     this.moveHandler.handleTouchStart(event);
     this.selectionHandler.handleTouchStart(event);
-
   }
-  
+
   handleTouchMove(event: TouchEvent): void {
-    if(this._store.state.isScaling === true) {
+    if (this._store.state.isScaling === true) {
       return;
     }
-    
+
     this.rotationHandler.handleTouchMove(event);
     this.resizeHandler.handleTouchMove(event);
     this.moveHandler.handleTouchMove(event);
     this.selectionHandler.handleTouchMove(event);
-    
+
     this._store.rerender();
   }
 
   handleTouchEnd(event: TouchEvent): void {
-    if(this._store.state.isScaling === true) {
+    if (this._store.state.isScaling === true) {
       return;
     }
 

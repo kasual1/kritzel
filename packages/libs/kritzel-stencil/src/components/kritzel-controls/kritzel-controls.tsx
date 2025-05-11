@@ -162,8 +162,6 @@ export class KritzelControls {
         this.activeConfig = { ...control.config };
       }
     });
-
-    console.log('activeControl', newValue);
   }
 
   preventDefault(event: Event) {

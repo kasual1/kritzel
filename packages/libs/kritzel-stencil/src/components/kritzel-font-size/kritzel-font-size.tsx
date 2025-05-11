@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, Event, EventEmitter, Watch } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 
 @Component({
   tag: 'kritzel-font-size',
@@ -17,11 +17,6 @@ export class KritzelFontSize {
 
   @Event()
   sizeChange: EventEmitter<number>;
-
-  @Watch('fontFamily')
-  fontFamilyChanged(newFontFamily: string) {
-    console.log('Font family changed to:', newFontFamily);
-  }
 
   private handleSizeClick(size: number) {
     this.selectedSize = size;

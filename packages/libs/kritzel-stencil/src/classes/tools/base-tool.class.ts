@@ -26,6 +26,10 @@ export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
     // default implementation
   }
 
+  handleDoubleClick(_event: MouseEvent): void {
+    // default implementation
+  }
+
   handleTouchStart(_event: TouchEvent): void {
     // default implementation
   }
