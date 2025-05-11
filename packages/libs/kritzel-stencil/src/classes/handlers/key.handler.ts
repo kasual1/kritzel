@@ -87,6 +87,14 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     if (event.key === '_' && event.shiftKey && this._store.state.selectionGroup) {
       this._store.moveToBottom();
     }
+
+    if(event.key === 'a' && event.ctrlKey && this._store.state.activeText) {
+      this._store.state.activeText.selectAll();
+    }
+
+    if(event.key === 'v' && event.ctrlKey && this._store.state.activeText) {
+      this._store.state.activeText.insertFromClipboard();
+    }
   }
 
   handleKeyUp(event: KeyboardEvent): void {

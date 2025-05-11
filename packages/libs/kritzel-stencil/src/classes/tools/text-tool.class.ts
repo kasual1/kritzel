@@ -3,6 +3,7 @@ import { KritzelStore } from '../store.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { KritzelClickHelper } from '../../helpers/click.helper';
+import { KritzelSelectionTool } from './selection-tool.class';
 
 export class KritzelTextTool extends KritzelBaseTool {
   name: string = 'text';
@@ -31,6 +32,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
     if (this._store.state.activeText !== null) {
       this._store.resetActiveText();
+      this._store.setState('activeTool', new KritzelSelectionTool(this._store));
       return;
     }
 
