@@ -93,4 +93,31 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     }
   }
 
+  selectAll(): void {
+    if (this.elementRef) {
+      this.elementRef.select();
+    }
+  }
+
+  insertFromClipboard(): void {
+    if (this.elementRef) {
+      this.elementRef.focus();
+      try {
+        navigator.clipboard.readText().then((text) => {
+          const start = this.elementRef.selectionStart;
+          const end = this.elementRef.selectionEnd;
+          const value = this.elementRef.value;
+          
+          this.elementRef.value = value.substring(0, start) + text + value.substring(end);
+          
+          this.elementRef.selectionStart = this.elementRef.selectionEnd = start + text.length;
+          this.value = this.elementRef.value;
+          this.adjustTextareaSize();
+        });
+      } catch (err) {
+        console.error('Failed to read clipboard contents:', err);
+      }
+    }
+  }
+
 }
