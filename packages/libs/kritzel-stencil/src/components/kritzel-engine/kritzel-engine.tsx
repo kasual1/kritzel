@@ -103,7 +103,7 @@ export class KritzelEngine {
     });
 
     this.store.onStateChange('isFocused', (isFocused: boolean) => {
-      if(!isFocused) {
+      if (!isFocused) {
         this.store.resetActiveText();
       }
     });
@@ -244,11 +244,11 @@ export class KritzelEngine {
   updateFocus(ev) {
     const rect = this.store.state.host.getBoundingClientRect();
     const isInside = ev.clientX >= rect.left && ev.clientX <= rect.right && ev.clientY >= rect.top && ev.clientY <= rect.bottom;
-   
+
     const path = ev.composedPath();
     const kritzelEngineElement = this.host.closest('kritzel-engine');
     const isInKritzelEngine = path.includes(kritzelEngineElement || this.host);
-    
+
     this.store.setState('isFocused', isInside && isInKritzelEngine);
   }
 
@@ -471,6 +471,8 @@ export class KritzelEngine {
                           display: 'block',
                           whiteSpace: object.isReadonly ? 'pre-wrap' : 'nowrap',
                           cursor: object.isReadonly ? 'default' : 'text',
+                          padding: '0',
+                          boxSizing: 'border-box',
                         }}
                       ></textarea>
                     )}
