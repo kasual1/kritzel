@@ -87,4 +87,10 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     }
   }
 
+  focus(): void {
+    if (this.elementRef) {
+      this.elementRef.focus();
+    }
+  }
+
 }

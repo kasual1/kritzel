@@ -109,6 +109,7 @@ export class KritzelEngine {
     });
   }
 
+
   componentDidLoad() {
     this.viewport = new KritzelViewport(this.store, this.host);
   }
@@ -180,6 +181,15 @@ export class KritzelEngine {
 
     this.viewport.handleMouseUp(ev);
     this.store.state?.activeTool?.handleMouseUp(ev);
+  }
+
+   @Listen('dblclick')
+  handleDoubleClick(ev: MouseEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    this.store.state?.activeTool?.handleDoubleClick(ev);
   }
 
   @Listen('touchstart', { passive: false })
@@ -457,7 +467,6 @@ export class KritzelEngine {
                         value={object.value}
                         onInput={event => object.handleInput(event)}
                         rows={object.rows}
-                        readOnly={object.isReadonly}
                         style={{
                           width: '100%',
                           height: '100%',
@@ -469,10 +478,9 @@ export class KritzelEngine {
                           resize: 'none',
                           overflow: 'hidden',
                           display: 'block',
-                          whiteSpace: object.isReadonly ? 'pre-wrap' : 'nowrap',
+                          whiteSpace: 'nowrap',
                           cursor: object.isReadonly ? 'default' : 'text',
-                          padding: '0',
-                          boxSizing: 'border-box',
+                          caretColor: object.isReadonly ? 'transparent' : 'auto',
                         }}
                       ></textarea>
                     )}
