@@ -26,8 +26,8 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.fontFamily = fontFamily;
     this.translateX = 0;
     this.translateY = 0;
-    this.width = this.initialWidth * this._store.state.scale;
-    this.height = this.fontSize * 1.2 * this._store.state.scale;
+    this.width = this.initialWidth / (this._store.state.scale < 0 ? this._store.state.scale : 1);
+    this.height = this.fontSize * 1.2 / (this._store.state.scale < 0 ? this._store.state.scale : 1);
     this.padding = 5;
     this.backgroundColor = 'red';
     this.scale = this._store.state.scale;
