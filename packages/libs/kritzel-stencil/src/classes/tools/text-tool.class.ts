@@ -9,6 +9,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
   fontFamily: string = 'Arial';
   fontSize: number = 16;
+  fontColor: string = 'black';
 
   constructor(store: KritzelStore) {
     super(store);
@@ -41,6 +42,7 @@ export class KritzelTextTool extends KritzelBaseTool {
     const clientY = event.clientY - this._store.offsetY;
     const text = new KritzelText(this._store, this.fontSize, this.fontFamily);
 
+    text.fontColor = this.fontColor;
     text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;
     text.translateY = (clientY - this._store.state.translateY) / this._store.state.scale;
     text.zIndex = this._store.currentZIndex;
@@ -58,6 +60,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       const y = Math.round(event.touches[0].clientY - this._store.offsetY);
       const text = new KritzelText(this._store, this.fontSize, this.fontFamily);
 
+      text.fontColor = this.fontColor;
       text.translateX = (x - this._store.state.translateX) / this._store.state.scale;
       text.translateY = (y - this._store.state.translateY) / this._store.state.scale;
       text.zIndex = this._store.currentZIndex;

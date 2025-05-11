@@ -224,6 +224,7 @@ export class KritzelControls {
       if (activeTool instanceof KritzelTextTool) {
         activeTool.fontFamily = this.activeConfig?.fontFamily;
         activeTool.fontSize = this.activeConfig?.size;
+        activeTool.fontColor = this.activeConfig?.color;
       }
     }
   }
@@ -253,6 +254,7 @@ export class KritzelControls {
       if (activeTool instanceof KritzelTextTool) {
         activeTool.fontFamily = this.activeConfig?.fontFamily;
         activeTool.fontSize = this.activeConfig?.size;
+        activeTool.fontColor = this.activeConfig?.color;
       }
     }
   }
@@ -282,6 +284,7 @@ export class KritzelControls {
       if (activeTool instanceof KritzelTextTool) {
         activeTool.fontFamily = this.activeConfig?.fontFamily;
         activeTool.fontSize = this.activeConfig?.size;
+        activeTool.fontColor = this.activeConfig?.color;
       }
     }
   }
@@ -311,6 +314,7 @@ export class KritzelControls {
       if (activeTool instanceof KritzelTextTool) {
         activeTool.fontFamily = this.activeConfig?.fontFamily;
         activeTool.fontSize = this.activeConfig?.size;
+        activeTool.fontColor = this.activeConfig?.color;
       }
     }
   }

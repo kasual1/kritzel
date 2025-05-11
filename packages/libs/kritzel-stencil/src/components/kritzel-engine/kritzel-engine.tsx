@@ -461,6 +461,7 @@ export class KritzelEngine {
                         style={{
                           width: '100%',
                           height: '100%',
+                          color: object.fontColor,
                           fontSize: object.fontSize?.toString() + 'px',
                           fontFamily: object.fontFamily,
                           border: 'none',

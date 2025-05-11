@@ -6,19 +6,15 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   fontFamily: string = 'Arial';
 
-  fontSize: number = 16;
+  fontSize: number = 8;
+
+  fontColor: string = 'black';
 
   initialWidth: number = 2;
-
-  initalHeight: number = this.lineHeight;
 
 	override debugInfoVisible: boolean = true;
 
   readonly rows: number = 1;
-
-  get lineHeight(): number {
-    return this.fontSize * 1.2;
-  }
 
   get isReadonly(): boolean {
     return this._store.state.activeTool?.name !== 'text';
@@ -31,7 +27,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.translateX = 0;
     this.translateY = 0;
     this.width = this.initialWidth * this._store.state.scale;
-    this.height = this.initalHeight * this._store.state.scale;
+    this.height = this.fontSize * 1.2 * this._store.state.scale;
     this.padding = 5;
     this.backgroundColor = 'red';
     this.scale = this._store.state.scale;
@@ -90,4 +86,5 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       this._store.rerender();
     }
   }
+
 }
