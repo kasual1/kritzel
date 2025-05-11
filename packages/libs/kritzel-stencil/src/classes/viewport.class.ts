@@ -4,7 +4,6 @@ import { KritzelStore } from './store.class';
 export class KritzelViewport {
   private readonly _store: KritzelStore;
 
-
   initialTouchDistance: number = 0;
   startX: number = 0;
   startY: number = 0;
