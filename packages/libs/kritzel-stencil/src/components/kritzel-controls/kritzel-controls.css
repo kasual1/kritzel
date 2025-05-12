@@ -124,6 +124,7 @@
   position: absolute;
   bottom: 40px;
   left: 50%;
+  width: 290px;
   transform: translateX(-50%);
   margin-bottom: 14px;
   display: flex;

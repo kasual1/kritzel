@@ -366,8 +366,9 @@ export class KritzelControls {
                           display: 'flex',
                           flexDirection: 'row',
                           alignItems: 'center',
-                          justifyContent: 'center',
+                          justifyContent: 'flex-start',
                           width: '100%',
+                          gap: '8px'
                         }}
                       >
                         {this.activeControl === 'brush' && <kritzel-brush-style></kritzel-brush-style>}

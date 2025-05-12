@@ -29,7 +29,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.width = this.initialWidth / (this._store.state.scale < 0 ? this._store.state.scale : 1);
     this.height = this.fontSize * 1.2 / (this._store.state.scale < 0 ? this._store.state.scale : 1);
     this.padding = 5;
-    this.backgroundColor = 'red';
+    this.backgroundColor = 'transparent';
     this.scale = this._store.state.scale;
     this.value = 'Teststring to fix resizing';
   }

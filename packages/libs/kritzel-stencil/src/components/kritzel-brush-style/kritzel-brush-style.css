@@ -1,15 +1,17 @@
 :host {
   display: flex; 
   align-items: center; 
-  padding: 8px; /* Optional: if you want padding around the component */
+  gap: 8px; 
+  padding: 8px; 
   box-sizing: border-box; 
+  width: 100%
 }
 
 .brush-style-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 32px;
+  width: 42px;
   height: 32px;
   padding: 0;
   border: none;

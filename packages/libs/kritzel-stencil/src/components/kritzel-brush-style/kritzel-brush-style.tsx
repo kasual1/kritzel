@@ -37,7 +37,7 @@ export class KritzelBrushStyle {
 
     return (
       <Host>
-        <kritzel-dropdown options={dropdownOptions} value={this.currentBrushStyle} onValueChanged={this.handleDropdownValueChange} width="172px">
+        <kritzel-dropdown options={dropdownOptions} value={this.currentBrushStyle} onValueChanged={this.handleDropdownValueChange}>
           <button class="brush-style-button" slot="prefix">
             <kritzel-icon name={this.currentBrushStyle} size={16} ></kritzel-icon>
           </button>
