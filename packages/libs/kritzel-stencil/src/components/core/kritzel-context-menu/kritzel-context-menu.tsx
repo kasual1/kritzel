@@ -1,5 +1,5 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
-import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
+import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 
 @Component({
   tag: 'kritzel-context-menu',

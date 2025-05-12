@@ -1,11 +1,11 @@
 import { Component, h, Prop, State, Element, Watch, Host, Listen } from '@stencil/core';
-import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
-import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
-import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
-import { KritzelTextTool } from '../../classes/tools/text-tool.class';
-import { KritzelToolbarControl } from '../../interfaces/toolbar-control.interface';
-import { KritzelImageTool } from '../../classes/tools/image-tool.class';
-import { ObjectHelper } from '../../helpers/object.helper';
+import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
+import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
+import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
+import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
+import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
+import { KritzelImageTool } from '../../../classes/tools/image-tool.class';
+import { ObjectHelper } from '../../../helpers/object.helper';
 
 type ToolConfig = Record<string, any>;
 
