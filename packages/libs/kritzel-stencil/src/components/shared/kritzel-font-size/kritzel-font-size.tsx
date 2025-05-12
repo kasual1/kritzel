@@ -33,17 +33,8 @@ export class KritzelFontSize {
               'selected': this.selectedSize === size,
             }}
             onClick={() => this.handleSizeClick(size)}
-            title={`${size}px`}
           >
-            <div
-              class="size-display"
-              style={{
-                fontFamily: this.fontFamily,
-                fontSize: `${size}px`,
-              }}
-            >
-              A
-            </div>
+            <kritzel-font fontFamily={this.fontFamily} size={size}></kritzel-font>
           </div>
         ))}
       </Host>

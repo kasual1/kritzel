@@ -6,6 +6,7 @@ import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-t
 import type { JSX } from '../../kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelBrushStyle } from '../../kritzel-stencil/dist/components/kritzel-brush-style.js';
+import { defineCustomElement as defineKritzelColor } from '../../kritzel-stencil/dist/components/kritzel-color.js';
 import { defineCustomElement as defineKritzelColorPalette } from '../../kritzel-stencil/dist/components/kritzel-color-palette.js';
 import { defineCustomElement as defineKritzelContextMenu } from '../../kritzel-stencil/dist/components/kritzel-context-menu.js';
 import { defineCustomElement as defineKritzelControlBrushConfig } from '../../kritzel-stencil/dist/components/kritzel-control-brush-config.js';
@@ -15,6 +16,7 @@ import { defineCustomElement as defineKritzelCursorTrail } from '../../kritzel-s
 import { defineCustomElement as defineKritzelDropdown } from '../../kritzel-stencil/dist/components/kritzel-dropdown.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelEngine } from '../../kritzel-stencil/dist/components/kritzel-engine.js';
+import { defineCustomElement as defineKritzelFont } from '../../kritzel-stencil/dist/components/kritzel-font.js';
 import { defineCustomElement as defineKritzelFontFamily } from '../../kritzel-stencil/dist/components/kritzel-font-family.js';
 import { defineCustomElement as defineKritzelFontSize } from '../../kritzel-stencil/dist/components/kritzel-font-size.js';
 import { defineCustomElement as defineKritzelIcon } from '../../kritzel-stencil/dist/components/kritzel-icon.js';
@@ -23,6 +25,12 @@ import { defineCustomElement as defineKritzelStrokeSize } from '../../kritzel-st
 
 export const KritzelBrushStyle: StencilVueComponent<JSX.KritzelBrushStyle> = /*@__PURE__*/ defineContainer<JSX.KritzelBrushStyle>('kritzel-brush-style', defineKritzelBrushStyle, [
   'brushOptions'
+]);
+
+
+export const KritzelColor: StencilVueComponent<JSX.KritzelColor> = /*@__PURE__*/ defineContainer<JSX.KritzelColor>('kritzel-color', defineKritzelColor, [
+  'value',
+  'size'
 ]);
 
 
@@ -109,6 +117,13 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'activeToolChange'
 ], [
   'activeToolChange'
+]);
+
+
+export const KritzelFont: StencilVueComponent<JSX.KritzelFont> = /*@__PURE__*/ defineContainer<JSX.KritzelFont>('kritzel-font', defineKritzelFont, [
+  'fontFamily',
+  'size',
+  'color'
 ]);
 
 

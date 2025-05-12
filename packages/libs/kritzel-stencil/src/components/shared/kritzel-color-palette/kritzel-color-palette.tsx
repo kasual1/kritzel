@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, EventEmitter, Event} from '@stencil/core';
+import { Component, Host, h, Prop, EventEmitter, Event } from '@stencil/core';
 
 @Component({
   tag: 'kritzel-color-palette',
@@ -28,10 +28,10 @@ export class KritzelColorPalette {
   @Prop({ mutable: true })
   selectedColor: string | null = null;
 
-  @Prop() 
+  @Prop()
   isExpanded: boolean = false;
 
-  @Event() 
+  @Event()
   colorChange: EventEmitter<string>;
 
   private handleColorClick(color: string) {
@@ -53,13 +53,7 @@ export class KritzelColorPalette {
               }}
               onClick={() => this.handleColorClick(color)}
             >
-                <div
-                class={{
-                  'color-circle': true,
-                  'white': color === '#FFFFFF' || color.toLowerCase() === 'white',
-                }}
-                style={{ backgroundColor: color }}
-                ></div>
+              <kritzel-color value={color}></kritzel-color>
             </div>
           ))}
         </div>

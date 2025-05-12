@@ -364,7 +364,7 @@ export class KritzelControls {
                         ></kritzel-control-brush-config>
                       )}
 
-                       {this.activeControl === 'text' && (
+                      {this.activeControl === 'text' && (
                         <kritzel-control-text-config
                           family={this.activeConfig?.fontFamily}
                           color={this.activeConfig?.color}
@@ -385,33 +385,15 @@ export class KritzelControls {
                     style={{ cursor: ObjectHelper.isEmpty(this.activeConfig) ? 'default' : 'pointer' }}
                   >
                     {this.activeControl !== 'text' && (
-                      <div
-                        class={{
-                          'color-circle': true,
-                          'white': this.activeConfig?.color === '#FFFFFF' || this.activeConfig?.color?.toLowerCase() === 'white',
-                        }}
-                        style={{
-                          backgroundColor: this.activeConfig?.color,
-                          width: `${this.activeConfig?.size || 24}px`,
-                          height: `${this.activeConfig?.size || 24}px`,
-                          borderRadius: '50%',
-                          display: 'inline-block',
-                          border: ObjectHelper.isEmpty(this.activeConfig) ? '1px dashed gray' : 'default',
-                        }}
-                      ></div>
+                      <kritzel-color
+                        value={this.activeConfig?.color}
+                        size={this.activeConfig?.size}
+                        style={{ border: ObjectHelper.isEmpty(this.activeConfig) ? '1px dashed gray' : 'default' }}
+                      ></kritzel-color>
                     )}
 
                     {this.activeControl === 'text' && (
-                      <div
-                        class="font-style-button"
-                        style={{
-                          fontFamily: this.activeConfig?.fontFamily,
-                          fontSize: `${this.activeConfig?.size || 24}px`,
-                          color: this.activeConfig?.color,
-                        }}
-                      >
-                        A
-                      </div>
+                      <kritzel-font fontFamily={this.activeConfig?.fontFamily} size={this.activeConfig?.size} color={this.activeConfig?.color}></kritzel-font>
                     )}
                   </div>
                 </div>

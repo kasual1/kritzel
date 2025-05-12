@@ -30,6 +30,28 @@ export declare interface KritzelBrushStyle extends Components.KritzelBrushStyle 
 
 
 @ProxyCmp({
+  inputs: ['size', 'value']
+})
+@Component({
+  selector: 'kritzel-color',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['size', 'value'],
+})
+export class KritzelColor {
+  protected el: HTMLKritzelColorElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelColor extends Components.KritzelColor {}
+
+
+@ProxyCmp({
   inputs: ['colors', 'isExpanded', 'selectedColor']
 })
 @Component({
@@ -261,6 +283,28 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
 
   activeToolChange: EventEmitter<CustomEvent<IKritzelEngineKritzelTool>>;
 }
+
+
+@ProxyCmp({
+  inputs: ['color', 'fontFamily', 'size']
+})
+@Component({
+  selector: 'kritzel-font',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['color', 'fontFamily', 'size'],
+})
+export class KritzelFont {
+  protected el: HTMLKritzelFontElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelFont extends Components.KritzelFont {}
 
 
 @ProxyCmp({
