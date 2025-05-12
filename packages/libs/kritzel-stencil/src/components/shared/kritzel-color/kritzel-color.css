@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+}
+
+.color-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: block;
+}
+
+.color-circle.white {
+  border: 1px solid var(--kritzel-color-palette-circle-border-color);
+}

@@ -26,9 +26,3 @@
   border-color: var(--kritzel-selection-border-color);
   background-color: var(--kritzel-stroke-size-selected-background-color);
 }
-
-.size-circle {
-  background-color: var(--kritzel-stroke-size-circle-color);
-  border-radius: 50%;
-  display: block;
-}

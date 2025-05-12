@@ -31,15 +31,7 @@ export class KritzelStrokeSize {
             }}
             onClick={() => this.handleSizeClick(size)}
           >
-            <div
-              class="size-circle"
-              style={{
-                width: `${size}px`,
-                height: `${size}px`,
-                minWidth: '2px',
-                minHeight: '2px',
-              }}
-            ></div>
+            <kritzel-color value='#000000' size={size}></kritzel-color>
           </div>
         ))}
       </Host>
