@@ -6,13 +6,12 @@ import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { BatchCommand } from '../commands/batch.command';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
-import imageCompression from "browser-image-compression";
-
+import imageCompression from 'browser-image-compression';
 
 export class KritzelImageTool extends KritzelBaseTool {
   name: string = 'image';
 
-  fileInput: HTMLInputElement;
+  fileInput: HTMLInputElement | null = null;
 
   maxWidth: number = 300;
   maxHeight: number = 300;
@@ -36,7 +35,15 @@ export class KritzelImageTool extends KritzelBaseTool {
     this.fileInput.style.display = 'none';
 
     this.fileInput.addEventListener('change', this.handleFileSelect.bind(this));
+    this.fileInput.addEventListener('cancel', this.handleCancel.bind(this));
     document.body.appendChild(this.fileInput);
+  }
+
+  private cleanupFileInput(): void {
+    if (this.fileInput && this.fileInput.parentNode) {
+      this.fileInput.parentNode.removeChild(this.fileInput);
+    }
+    this.fileInput = null;
   }
 
   private handleFileSelect(event: Event): void {
@@ -44,10 +51,22 @@ export class KritzelImageTool extends KritzelBaseTool {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       imageCompression(file, {
-         maxWidthOrHeight: this.maxCompressionSize
-      }).then((compressedFile) => {
-        this.readFile(compressedFile);
-      });
+        maxWidthOrHeight: this.maxCompressionSize,
+      })
+        .then(compressedFile => {
+          this.readFile(compressedFile);
+        })
+        .catch(error => {
+          console.error('Error during image compression or processing:', error);
+          this.handleCancel();
+        });
+    } else {
+      console.log('File selection cancelled by user.');
+      this.handleCancel();
+    }
+
+    if (input) {
+      input.value = '';
     }
   }
 
@@ -102,6 +121,12 @@ export class KritzelImageTool extends KritzelBaseTool {
 
     this._store.history.executeCommand(new BatchCommand(this._store, this, [addImageCommand, addSelectionGroupCommand]));
 
-    this._store.setState('activeTool',new KritzelSelectionTool(this._store));
+    this._store.setState('activeTool', new KritzelSelectionTool(this._store));
+    this.cleanupFileInput();
+  }
+
+  private handleCancel(): void {
+    this._store.setState('activeTool', new KritzelSelectionTool(this._store));
+    this.cleanupFileInput();
   }
 }

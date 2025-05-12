@@ -1,6 +1,7 @@
 :host {
   display: inline-flex; /* Ensures the host shrinks/grows with the wrapper */
   vertical-align: middle; /* Aligns with other inline-block or inline-flex elements */
+  width: 100%; /* Ensures the host takes full width of the parent */
 }
 
 .dropdown-wrapper {
@@ -9,13 +10,15 @@
   border: 1px solid #333333;
   border-radius: var(--kritzel-controls-control-border-radius, 4px);
   overflow: hidden;
-  height: 32px; /* Match height of buttons and select */
+  height: 32px;
+  width: 100%;
 }
 
 .custom-select {
   padding: 0 8px;
   padding-right: 30px; 
-  height: 100%; /* Fill host height */
+  height: 100%;
+  width: 100%;
   box-sizing: border-box;
   border-radius: 0; 
   border: none; 

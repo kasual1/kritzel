@@ -4,20 +4,13 @@
   gap: 8px; 
   padding: 8px; 
   box-sizing: border-box; 
-  --control-padding: var(--kritzel-controls-control-padding, 8px);
-  --control-border-radius: var(--kritzel-controls-control-border-radius, 4px);
-  --control-hover-bg: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 90%));
-  --control-active-bg: var(--kritzel-controls-control-active-background-color, hsl(0, 0%, 80%));
-  --control-selected-bg: var(--kritzel-controls-control-selected-background-color, hsl(0, 0%, 70%));
-  --control-selected-color: var(--kritzel-controls-control-selected-color, #000);
-  --control-text-color: var(--kritzel-controls-text-color, #333333);
 }
 
 .font-style-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 32px;
+  width: 42px;
   height: 32px;
   padding: 0;
   border: none;
