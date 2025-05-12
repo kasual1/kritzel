@@ -5,6 +5,8 @@ export const DIRECTIVES = [
   d.KritzelBrushStyle,
   d.KritzelColorPalette,
   d.KritzelContextMenu,
+  d.KritzelControlBrushConfig,
+  d.KritzelControlTextConfig,
   d.KritzelControls,
   d.KritzelCursorTrail,
   d.KritzelDropdown,

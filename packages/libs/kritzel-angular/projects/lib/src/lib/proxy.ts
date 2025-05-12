@@ -84,6 +84,66 @@ export declare interface KritzelContextMenu extends Components.KritzelContextMen
 
 
 @ProxyCmp({
+  inputs: ['activeControl', 'color', 'isExpanded', 'size', 'type']
+})
+@Component({
+  selector: 'kritzel-control-brush-config',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['activeControl', 'color', 'isExpanded', 'size', 'type'],
+})
+export class KritzelControlBrushConfig {
+  protected el: HTMLKritzelControlBrushConfigElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['familyChange', 'colorChange', 'sizeChange']);
+  }
+}
+
+
+export declare interface KritzelControlBrushConfig extends Components.KritzelControlBrushConfig {
+
+  familyChange: EventEmitter<CustomEvent<string>>;
+
+  colorChange: EventEmitter<CustomEvent<string>>;
+
+  sizeChange: EventEmitter<CustomEvent<number>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['activeControl', 'color', 'family', 'isExpanded', 'size']
+})
+@Component({
+  selector: 'kritzel-control-text-config',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['activeControl', 'color', 'family', 'isExpanded', 'size'],
+})
+export class KritzelControlTextConfig {
+  protected el: HTMLKritzelControlTextConfigElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['familyChange', 'colorChange', 'sizeChange']);
+  }
+}
+
+
+export declare interface KritzelControlTextConfig extends Components.KritzelControlTextConfig {
+
+  familyChange: EventEmitter<CustomEvent<string>>;
+
+  colorChange: EventEmitter<CustomEvent<string>>;
+
+  sizeChange: EventEmitter<CustomEvent<number>>;
+}
+
+
+@ProxyCmp({
   inputs: ['activeControl', 'controls']
 })
 @Component({
