@@ -5,22 +5,20 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
+import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
-import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
-import { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
+import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
-import { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
-export { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
+import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
+export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
-export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
-export { KritzelToolbarControl as KritzelToolbarControl1 } from "./components";
+export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
-export { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
+export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export namespace Components {
     interface KritzelBrushStyle {
         "brushOptions": BrushStyleOption[];
@@ -60,7 +58,7 @@ export namespace Components {
         "width"?: string;
     }
     interface KritzelEditor {
-        "controls": KritzelToolbarControl1[];
+        "controls": KritzelToolbarControl[];
         "customSvgIcons": Record<string, string>;
     }
     interface KritzelEngine {
@@ -389,7 +387,7 @@ declare namespace LocalJSX {
         "width"?: string;
     }
     interface KritzelEditor {
-        "controls"?: KritzelToolbarControl1[];
+        "controls"?: KritzelToolbarControl[];
         "customSvgIcons"?: Record<string, string>;
     }
     interface KritzelEngine {

@@ -6,7 +6,6 @@ import { KritzelEngineState } from '../interfaces/engine-state.interface';
 import { KritzelOctree } from './structures/octree.structure';
 import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 import { KrtizelSelectionBox } from './objects/selection-box.class';
-import { KritzelEngine } from '../components/kritzel-engine/kritzel-engine';
 import { StateChangeListener, StatePropertyKey } from '../types/state.types';
 import { RemoveObjectCommand } from './commands/remove-object.command';
 import { BatchCommand } from './commands/batch.command';
@@ -14,6 +13,7 @@ import { AddObjectCommand } from './commands/add-object.command';
 import { AddSelectionGroupCommand } from './commands/add-selection-group.command';
 import { UpdateObjectCommand } from './commands/update-object.command';
 import { KritzelToolFactory } from './factories/tool.factory';
+import { KritzelEngine } from '../components/core/kritzel-engine/kritzel-engine';
 
 const initialState: KritzelEngineState = {
   activeTool: null,

@@ -1,18 +1,18 @@
 import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventEmitter } from '@stencil/core';
-import { KritzelTool } from '../../interfaces/tool.interface';
-import { KritzelViewport } from '../../classes/viewport.class';
-import { KritzelPath } from '../../classes/objects/path.class';
-import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
-import { KritzelImage } from '../../classes/objects/image.class';
-import { KritzelText } from '../../classes/objects/text.class';
-import { KritzelSelectionGroup } from '../../classes/objects/selection-group.class';
-import { KrtizelSelectionBox } from '../../classes/objects/selection-box.class';
-import { KritzelStore } from '../../classes/store.class';
-import { KritzelKeyHandler } from '../../classes/handlers/key.handler';
-import { KritzelToolFactory } from '../../classes/factories/tool.factory';
-import { KritzelBaseTool } from '../../classes/tools/base-tool.class';
-import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
-import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
+import { KritzelTool } from '../../../interfaces/tool.interface';
+import { KritzelViewport } from '../../../classes/viewport.class';
+import { KritzelPath } from '../../../classes/objects/path.class';
+import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
+import { KritzelImage } from '../../../classes/objects/image.class';
+import { KritzelText } from '../../../classes/objects/text.class';
+import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
+import { KrtizelSelectionBox } from '../../../classes/objects/selection-box.class';
+import { KritzelStore } from '../../../classes/store.class';
+import { KritzelKeyHandler } from '../../../classes/handlers/key.handler';
+import { KritzelToolFactory } from '../../../classes/factories/tool.factory';
+import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
+import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
+import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 
 @Component({
   tag: 'kritzel-engine',

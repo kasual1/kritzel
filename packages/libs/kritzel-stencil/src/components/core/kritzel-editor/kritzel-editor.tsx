@@ -1,6 +1,6 @@
 import { Component, Host, Prop, State, h} from '@stencil/core';
-import { KritzelIconRegistry } from '../../classes/icon-registry.class';
-import { KritzelToolbarControl } from '../../components';
+import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
+import { KritzelIconRegistry } from '../../../classes/icon-registry.class';
 
 @Component({
   tag: 'kritzel-editor',
