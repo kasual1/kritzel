@@ -361,46 +361,16 @@ export class KritzelControls {
                 <div class="kritzel-config-container" key={control.name}>
                   {this.tooltipVisible && (
                     <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          justifyContent: 'flex-start',
-                          width: '100%',
-                          gap: '8px'
-                        }}
-                      >
-                        {this.activeControl === 'brush' && <kritzel-brush-style></kritzel-brush-style>}
-
-                        {this.activeControl === 'text' && (
-                          <kritzel-font-family
-                            selectedFontFamily={this.activeConfig?.fontFamily}
-                            onFontFamilyChange={event => this.handleFontFamilyChange(event)}
-                          ></kritzel-font-family>
-                        )}
-
-                        <button class="expand-toggle" onClick={this.toggleExpand} title={this.isExpanded ? 'Collapse' : 'Expand'}>
-                          <kritzel-icon name={this.isExpanded ? 'chevron-up' : 'chevron-down'}></kritzel-icon>
-                        </button>
-                      </div>
-
-                      <kritzel-color-palette
-                        selectedColor={this.activeConfig?.color}
-                        isExpanded={this.isExpanded}
-                        onColorChange={color => this.handleColorChange(color)}
-                      ></kritzel-color-palette>
-
-                      {this.activeControl === 'brush' && (
-                        <kritzel-stroke-size selectedSize={this.activeConfig?.size} onSizeChange={event => this.handleSizeChange(event)}></kritzel-stroke-size>
+                      {this.activeControl === 'text' && (
+                        <kritzel-control-text-config
+                          family={this.activeConfig?.fontFamily}
+                          color={this.activeConfig?.color}
+                          size={this.activeConfig?.size}
+                        ></kritzel-control-text-config>
                       )}
 
-                      {this.activeControl === 'text' && (
-                        <kritzel-font-size
-                          selectedSize={this.activeConfig?.size}
-                          fontFamily={this.activeConfig?.fontFamily}
-                          onSizeChange={event => this.handleSizeChange(event)}
-                        ></kritzel-font-size>
+                      {this.activeControl === 'brush' && (
+                        <kritzel-control-brush-config type={this.activeConfig?.type} color={this.activeConfig?.color} size={this.activeConfig?.size}></kritzel-control-brush-config>
                       )}
                     </div>
                   )}

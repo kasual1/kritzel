@@ -33,6 +33,20 @@ export namespace Components {
     interface KritzelContextMenu {
         "items": ContextMenuItem[];
     }
+    interface KritzelControlBrushConfig {
+        "activeControl": string;
+        "color": string;
+        "isExpanded": boolean;
+        "size": number;
+        "type": string;
+    }
+    interface KritzelControlTextConfig {
+        "activeControl": string;
+        "color": string;
+        "family": string;
+        "isExpanded": boolean;
+        "size": number;
+    }
     interface KritzelControls {
         "activeControl": string | null;
         "controls": KritzelToolbarControl[];
@@ -94,6 +108,14 @@ export interface KritzelContextMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelContextMenuElement;
 }
+export interface KritzelControlBrushConfigCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelControlBrushConfigElement;
+}
+export interface KritzelControlTextConfigCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelControlTextConfigElement;
+}
 export interface KritzelDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelDropdownElement;
@@ -154,6 +176,44 @@ declare global {
     var HTMLKritzelContextMenuElement: {
         prototype: HTMLKritzelContextMenuElement;
         new (): HTMLKritzelContextMenuElement;
+    };
+    interface HTMLKritzelControlBrushConfigElementEventMap {
+        "familyChange": string;
+        "colorChange": string;
+        "sizeChange": number;
+    }
+    interface HTMLKritzelControlBrushConfigElement extends Components.KritzelControlBrushConfig, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelControlBrushConfigElementEventMap>(type: K, listener: (this: HTMLKritzelControlBrushConfigElement, ev: KritzelControlBrushConfigCustomEvent<HTMLKritzelControlBrushConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelControlBrushConfigElementEventMap>(type: K, listener: (this: HTMLKritzelControlBrushConfigElement, ev: KritzelControlBrushConfigCustomEvent<HTMLKritzelControlBrushConfigElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelControlBrushConfigElement: {
+        prototype: HTMLKritzelControlBrushConfigElement;
+        new (): HTMLKritzelControlBrushConfigElement;
+    };
+    interface HTMLKritzelControlTextConfigElementEventMap {
+        "familyChange": string;
+        "colorChange": string;
+        "sizeChange": number;
+    }
+    interface HTMLKritzelControlTextConfigElement extends Components.KritzelControlTextConfig, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelControlTextConfigElementEventMap>(type: K, listener: (this: HTMLKritzelControlTextConfigElement, ev: KritzelControlTextConfigCustomEvent<HTMLKritzelControlTextConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelControlTextConfigElementEventMap>(type: K, listener: (this: HTMLKritzelControlTextConfigElement, ev: KritzelControlTextConfigCustomEvent<HTMLKritzelControlTextConfigElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelControlTextConfigElement: {
+        prototype: HTMLKritzelControlTextConfigElement;
+        new (): HTMLKritzelControlTextConfigElement;
     };
     interface HTMLKritzelControlsElement extends Components.KritzelControls, HTMLStencilElement {
     }
@@ -268,6 +328,8 @@ declare global {
         "kritzel-brush-style": HTMLKritzelBrushStyleElement;
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
+        "kritzel-control-brush-config": HTMLKritzelControlBrushConfigElement;
+        "kritzel-control-text-config": HTMLKritzelControlTextConfigElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-dropdown": HTMLKritzelDropdownElement;
@@ -292,6 +354,26 @@ declare namespace LocalJSX {
     interface KritzelContextMenu {
         "items"?: ContextMenuItem[];
         "onActionSelected"?: (event: KritzelContextMenuCustomEvent<ContextMenuItem>) => void;
+    }
+    interface KritzelControlBrushConfig {
+        "activeControl"?: string;
+        "color"?: string;
+        "isExpanded"?: boolean;
+        "onColorChange"?: (event: KritzelControlBrushConfigCustomEvent<string>) => void;
+        "onFamilyChange"?: (event: KritzelControlBrushConfigCustomEvent<string>) => void;
+        "onSizeChange"?: (event: KritzelControlBrushConfigCustomEvent<number>) => void;
+        "size"?: number;
+        "type"?: string;
+    }
+    interface KritzelControlTextConfig {
+        "activeControl"?: string;
+        "color"?: string;
+        "family"?: string;
+        "isExpanded"?: boolean;
+        "onColorChange"?: (event: KritzelControlTextConfigCustomEvent<string>) => void;
+        "onFamilyChange"?: (event: KritzelControlTextConfigCustomEvent<string>) => void;
+        "onSizeChange"?: (event: KritzelControlTextConfigCustomEvent<number>) => void;
+        "size"?: number;
     }
     interface KritzelControls {
         "activeControl"?: string | null;
@@ -341,6 +423,8 @@ declare namespace LocalJSX {
         "kritzel-brush-style": KritzelBrushStyle;
         "kritzel-color-palette": KritzelColorPalette;
         "kritzel-context-menu": KritzelContextMenu;
+        "kritzel-control-brush-config": KritzelControlBrushConfig;
+        "kritzel-control-text-config": KritzelControlTextConfig;
         "kritzel-controls": KritzelControls;
         "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-dropdown": KritzelDropdown;
@@ -359,6 +443,8 @@ declare module "@stencil/core" {
             "kritzel-brush-style": LocalJSX.KritzelBrushStyle & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
             "kritzel-color-palette": LocalJSX.KritzelColorPalette & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
             "kritzel-context-menu": LocalJSX.KritzelContextMenu & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
+            "kritzel-control-brush-config": LocalJSX.KritzelControlBrushConfig & JSXBase.HTMLAttributes<HTMLKritzelControlBrushConfigElement>;
+            "kritzel-control-text-config": LocalJSX.KritzelControlTextConfig & JSXBase.HTMLAttributes<HTMLKritzelControlTextConfigElement>;
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-dropdown": LocalJSX.KritzelDropdown & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;

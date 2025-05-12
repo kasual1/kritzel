@@ -8,6 +8,8 @@ import type { JSX } from '../../kritzel-stencil/dist/components';
 import { defineCustomElement as defineKritzelBrushStyle } from '../../kritzel-stencil/dist/components/kritzel-brush-style.js';
 import { defineCustomElement as defineKritzelColorPalette } from '../../kritzel-stencil/dist/components/kritzel-color-palette.js';
 import { defineCustomElement as defineKritzelContextMenu } from '../../kritzel-stencil/dist/components/kritzel-context-menu.js';
+import { defineCustomElement as defineKritzelControlBrushConfig } from '../../kritzel-stencil/dist/components/kritzel-control-brush-config.js';
+import { defineCustomElement as defineKritzelControlTextConfig } from '../../kritzel-stencil/dist/components/kritzel-control-text-config.js';
 import { defineCustomElement as defineKritzelControls } from '../../kritzel-stencil/dist/components/kritzel-controls.js';
 import { defineCustomElement as defineKritzelCursorTrail } from '../../kritzel-stencil/dist/components/kritzel-cursor-trail.js';
 import { defineCustomElement as defineKritzelDropdown } from '../../kritzel-stencil/dist/components/kritzel-dropdown.js';
@@ -39,6 +41,38 @@ export const KritzelContextMenu: StencilVueComponent<JSX.KritzelContextMenu> = /
   'actionSelected'
 ], [
   'actionSelected'
+]);
+
+
+export const KritzelControlBrushConfig: StencilVueComponent<JSX.KritzelControlBrushConfig> = /*@__PURE__*/ defineContainer<JSX.KritzelControlBrushConfig>('kritzel-control-brush-config', defineKritzelControlBrushConfig, [
+  'activeControl',
+  'type',
+  'color',
+  'size',
+  'isExpanded',
+  'familyChange',
+  'colorChange',
+  'sizeChange'
+], [
+  'familyChange',
+  'colorChange',
+  'sizeChange'
+]);
+
+
+export const KritzelControlTextConfig: StencilVueComponent<JSX.KritzelControlTextConfig> = /*@__PURE__*/ defineContainer<JSX.KritzelControlTextConfig>('kritzel-control-text-config', defineKritzelControlTextConfig, [
+  'activeControl',
+  'family',
+  'color',
+  'size',
+  'isExpanded',
+  'familyChange',
+  'colorChange',
+  'sizeChange'
+], [
+  'familyChange',
+  'colorChange',
+  'sizeChange'
 ]);
 
 

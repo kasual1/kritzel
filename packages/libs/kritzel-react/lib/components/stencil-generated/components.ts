@@ -14,6 +14,8 @@ import { type ContextMenuItem, type KritzelContextMenuCustomEvent, type KritzelE
 import { KritzelBrushStyle as KritzelBrushStyleElement, defineCustomElement as defineKritzelBrushStyle } from "../../../../kritzel-stencil/dist/components/kritzel-brush-style.js";
 import { KritzelColorPalette as KritzelColorPaletteElement, defineCustomElement as defineKritzelColorPalette } from "../../../../kritzel-stencil/dist/components/kritzel-color-palette.js";
 import { KritzelContextMenu as KritzelContextMenuElement, defineCustomElement as defineKritzelContextMenu } from "../../../../kritzel-stencil/dist/components/kritzel-context-menu.js";
+import { KritzelControlBrushConfig as KritzelControlBrushConfigElement, defineCustomElement as defineKritzelControlBrushConfig } from "../../../../kritzel-stencil/dist/components/kritzel-control-brush-config.js";
+import { KritzelControlTextConfig as KritzelControlTextConfigElement, defineCustomElement as defineKritzelControlTextConfig } from "../../../../kritzel-stencil/dist/components/kritzel-control-text-config.js";
 import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
 import { KritzelCursorTrail as KritzelCursorTrailElement, defineCustomElement as defineKritzelCursorTrail } from "../../../../kritzel-stencil/dist/components/kritzel-cursor-trail.js";
 import { KritzelDropdown as KritzelDropdownElement, defineCustomElement as defineKritzelDropdown } from "../../../../kritzel-stencil/dist/components/kritzel-dropdown.js";
@@ -55,6 +57,44 @@ export const KritzelContextMenu: StencilReactComponent<KritzelContextMenuElement
     react: React,
     events: { onActionSelected: 'actionSelected' } as KritzelContextMenuEvents,
     defineCustomElement: defineKritzelContextMenu
+});
+
+export type KritzelControlBrushConfigEvents = {
+    onFamilyChange: EventName<CustomEvent<string>>,
+    onColorChange: EventName<CustomEvent<string>>,
+    onSizeChange: EventName<CustomEvent<number>>
+};
+
+export const KritzelControlBrushConfig: StencilReactComponent<KritzelControlBrushConfigElement, KritzelControlBrushConfigEvents> = /*@__PURE__*/ createComponent<KritzelControlBrushConfigElement, KritzelControlBrushConfigEvents>({
+    tagName: 'kritzel-control-brush-config',
+    elementClass: KritzelControlBrushConfigElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {
+        onFamilyChange: 'familyChange',
+        onColorChange: 'colorChange',
+        onSizeChange: 'sizeChange'
+    } as KritzelControlBrushConfigEvents,
+    defineCustomElement: defineKritzelControlBrushConfig
+});
+
+export type KritzelControlTextConfigEvents = {
+    onFamilyChange: EventName<CustomEvent<string>>,
+    onColorChange: EventName<CustomEvent<string>>,
+    onSizeChange: EventName<CustomEvent<number>>
+};
+
+export const KritzelControlTextConfig: StencilReactComponent<KritzelControlTextConfigElement, KritzelControlTextConfigEvents> = /*@__PURE__*/ createComponent<KritzelControlTextConfigElement, KritzelControlTextConfigEvents>({
+    tagName: 'kritzel-control-text-config',
+    elementClass: KritzelControlTextConfigElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {
+        onFamilyChange: 'familyChange',
+        onColorChange: 'colorChange',
+        onSizeChange: 'sizeChange'
+    } as KritzelControlTextConfigEvents,
+    defineCustomElement: defineKritzelControlTextConfig
 });
 
 export type KritzelControlsEvents = NonNullable<unknown>;
