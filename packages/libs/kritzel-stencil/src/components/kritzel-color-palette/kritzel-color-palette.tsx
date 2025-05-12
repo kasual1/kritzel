@@ -63,7 +63,6 @@ export class KritzelColorPalette {
             </div>
           ))}
         </div>
-        
       </Host>
     );
   }
