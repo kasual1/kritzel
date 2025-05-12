@@ -1,7 +1,6 @@
 :host {
   display: flex;
-  align-items: center;
-  justify-content: space-around;
+  align-items: flex-start;
   gap: 8px;
   padding: 8px;
   box-sizing: border-box;

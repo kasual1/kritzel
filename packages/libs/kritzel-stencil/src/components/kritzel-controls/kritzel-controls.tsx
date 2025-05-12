@@ -81,17 +81,10 @@ export class KritzelControls {
   @State()
   tooltipVisible: boolean = false;
 
-  @State()
-  isExpanded: boolean = false;
-
   @Element()
   host!: HTMLElement;
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
-
-  private toggleExpand = () => {
-    this.isExpanded = !this.isExpanded;
-  };
 
   async componentWillLoad() {
     await this.initializeEngine();
@@ -361,16 +354,25 @@ export class KritzelControls {
                 <div class="kritzel-config-container" key={control.name}>
                   {this.tooltipVisible && (
                     <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
-                      {this.activeControl === 'text' && (
+                      {this.activeControl === 'brush' && (
+                        <kritzel-control-brush-config
+                          type={this.activeConfig?.type}
+                          color={this.activeConfig?.color}
+                          size={this.activeConfig?.size}
+                          onColorChange={event => this.handleColorChange?.(event)}
+                          onSizeChange={event => this.handleFontSizeChange?.(event)}
+                        ></kritzel-control-brush-config>
+                      )}
+
+                       {this.activeControl === 'text' && (
                         <kritzel-control-text-config
                           family={this.activeConfig?.fontFamily}
                           color={this.activeConfig?.color}
                           size={this.activeConfig?.size}
+                          onFamilyChange={event => this.handleFontFamilyChange?.(event)}
+                          onColorChange={event => this.handleColorChange?.(event)}
+                          onSizeChange={event => this.handleFontSizeChange?.(event)}
                         ></kritzel-control-text-config>
-                      )}
-
-                      {this.activeControl === 'brush' && (
-                        <kritzel-control-brush-config type={this.activeConfig?.type} color={this.activeConfig?.color} size={this.activeConfig?.size}></kritzel-control-brush-config>
                       )}
                     </div>
                   )}
@@ -394,7 +396,7 @@ export class KritzelControls {
                           height: `${this.activeConfig?.size || 24}px`,
                           borderRadius: '50%',
                           display: 'inline-block',
-                          border: ObjectHelper.isEmpty(this.activeConfig) ? '1px dashed gray' : 'none',
+                          border: ObjectHelper.isEmpty(this.activeConfig) ? '1px dashed gray' : 'default',
                         }}
                       ></div>
                     )}
