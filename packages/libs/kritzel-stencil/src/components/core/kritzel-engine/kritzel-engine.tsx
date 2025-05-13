@@ -9,10 +9,10 @@ import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.
 import { KrtizelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelStore } from '../../../classes/store.class';
 import { KritzelKeyHandler } from '../../../classes/handlers/key.handler';
-import { KritzelToolFactory } from '../../../classes/factories/tool.factory';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
+import { KritzelToolRegistry } from '../../../classes/tool.registry';
 
 @Component({
   tag: 'kritzel-engine',
@@ -75,7 +75,7 @@ export class KritzelEngine {
   contextMenuY: number = 0;
 
   @Event()
-  activeToolChange: EventEmitter<KritzelTool>;
+  activeToolChange: EventEmitter<KritzelBaseTool>;
 
   store: KritzelStore;
 
@@ -108,7 +108,6 @@ export class KritzelEngine {
       }
     });
   }
-
 
   componentDidLoad() {
     this.viewport = new KritzelViewport(this.store, this.host);
@@ -273,19 +272,19 @@ export class KritzelEngine {
   }
 
   @Method()
-  async registerTool(toolName: string, toolClass: any) {
+  async registerTool(toolName: string, toolClass: any): Promise<KritzelBaseTool> {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
-      return false;
+      return null;
     }
 
-    KritzelToolFactory.registerTool(toolName, toolClass);
-    return true;
+    const registerdTool = KritzelToolRegistry.registerTool(toolName, toolClass, this.store);
+    return Promise.resolve(registerdTool);
   }
 
   @Method()
-  async changeActiveTool(tool: string) {
-    this.store.setState('activeTool', KritzelToolFactory.createTool(tool, this.store));
+  async changeActiveTool(tool: KritzelBaseTool) {
+    this.store.setState('activeTool', tool);
     this.store.deselectAllObjects();
   }
 

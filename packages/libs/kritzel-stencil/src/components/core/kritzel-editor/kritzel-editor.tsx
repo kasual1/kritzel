@@ -1,6 +1,7 @@
 import { Component, Host, Prop, State, h} from '@stencil/core';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { KritzelIconRegistry } from '../../../classes/icon-registry.class';
+import { KritzelBaseTool } from '../../../components';
 
 @Component({
   tag: 'kritzel-editor',
@@ -16,7 +17,7 @@ export class KritzelEditor {
   customSvgIcons: Record<string, string> = {};
 
   @State()
-  activeControl: string | null = null;
+  activeTool: KritzelBaseTool | null = null;
 
   componentWillLoad() {
     for (const [name, svg] of Object.entries(this.customSvgIcons)) {
@@ -25,14 +26,14 @@ export class KritzelEditor {
   }
 
   onActiveToolChange(event: CustomEvent) {
-    this.activeControl = event.detail.name;
+    this.activeTool = event.detail;
   }
 
   render() {
     return (
       <Host>
         <kritzel-engine onActiveToolChange={ev => this.onActiveToolChange(ev)}></kritzel-engine>
-        <kritzel-controls controls={this.controls} activeControl={this.activeControl}></kritzel-controls>
+        <kritzel-controls controls={this.controls} activeTool={this.activeTool}></kritzel-controls>
       </Host>
     );
   }

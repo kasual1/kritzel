@@ -10,7 +10,7 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type ContextMenuItem, type KritzelContextMenuCustomEvent, type KritzelEngineCustomEvent, type KritzelTool } from "../../../../kritzel-stencil";
+import { type ContextMenuItem, type KritzelBaseTool, type KritzelContextMenuCustomEvent, type KritzelEngineCustomEvent } from "../../../../kritzel-stencil";
 import { KritzelBrushStyle as KritzelBrushStyleElement, defineCustomElement as defineKritzelBrushStyle } from "../../../../kritzel-stencil/dist/components/kritzel-brush-style.js";
 import { KritzelColorPalette as KritzelColorPaletteElement, defineCustomElement as defineKritzelColorPalette } from "../../../../kritzel-stencil/dist/components/kritzel-color-palette.js";
 import { KritzelColor as KritzelColorElement, defineCustomElement as defineKritzelColor } from "../../../../kritzel-stencil/dist/components/kritzel-color.js";
@@ -155,7 +155,7 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     defineCustomElement: defineKritzelEditor
 });
 
-export type KritzelEngineEvents = { onActiveToolChange: EventName<KritzelEngineCustomEvent<KritzelTool>> };
+export type KritzelEngineEvents = { onActiveToolChange: EventName<KritzelEngineCustomEvent<KritzelBaseTool>> };
 
 export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelEngineEvents> = /*@__PURE__*/ createComponent<KritzelEngineElement, KritzelEngineEvents>({
     tagName: 'kritzel-engine',

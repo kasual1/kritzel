@@ -6,6 +6,7 @@ import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { KritzelImageTool } from '../../../classes/tools/image-tool.class';
 import { ObjectHelper } from '../../../helpers/object.helper';
+import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 
 type ToolConfig = Record<string, any>;
 
@@ -70,10 +71,13 @@ export class KritzelControls {
   ];
 
   @Prop()
-  activeControl: string | null = null;
+  activeControl: KritzelToolbarControl | null = null;
+
+  @Prop()
+  activeTool: KritzelBaseTool | null = null;
 
   @State()
-  activeConfig: ToolConfig | null = (this.controls.find(control => control.name === this.activeControl) as any)?.config || null;
+  activeConfig: ToolConfig | null = this.activeControl?.config || null;
 
   @State()
   firstConfig: ToolConfig | null = null;
@@ -103,11 +107,11 @@ export class KritzelControls {
   private initializeTools() {
     this.controls.forEach(async c => {
       if (c.type === 'tool' && c.tool) {
-        await this.kritzelEngine.registerTool(c.name, c.tool);
+        c.tool = await this.kritzelEngine.registerTool(c.name, c.tool);
       }
 
-      if (c.type === 'tool' && c.isDefault) {
-        await this.kritzelEngine.changeActiveTool(c.name);
+      if (c.type === 'tool' && c.isDefault && c.tool) {
+        await this.kritzelEngine.changeActiveTool(c.tool as KritzelBaseTool);
 
         const activeTool = await this.kritzelEngine.getActiveTool();
 
@@ -148,10 +152,11 @@ export class KritzelControls {
     this.kritzelEngine.enable();
   }
 
-  @Watch('activeControl')
-  handleActiveControlChange(newValue: string | null) {
+  @Watch('activeTool')
+  handleActiveControlChange(tool: KritzelBaseTool | null) {
+    this.activeControl = this.controls.find(control => control.name === tool.name) || null;
     this.controls.forEach(control => {
-      if (control.type === 'tool' && control.name === newValue) {
+      if (control.type === 'tool' && control.name === tool.name) {
         this.activeConfig = { ...control.config };
       }
     });
@@ -166,7 +171,7 @@ export class KritzelControls {
     if (control.type === 'tool') {
       this.activeConfig = control.config ? { ...control.config } : null;
 
-      await this.kritzelEngine.changeActiveTool(control.name);
+      await this.kritzelEngine.changeActiveTool(control.tool as KritzelBaseTool);
 
       const activeTool = await this.kritzelEngine.getActiveTool();
 
@@ -196,13 +201,9 @@ export class KritzelControls {
       fontFamily: event.detail,
     };
 
-    this.controls.find(control => {
-      if (control.name === this.activeControl && control.type === 'tool') {
-        control.config = this.activeConfig;
-      }
-    });
+    this.activeControl.config = this.activeConfig;
 
-    await this.kritzelEngine.changeActiveTool(this.activeControl);
+    await this.kritzelEngine.changeActiveTool((this.activeControl as any).tool);
 
     const activeTool = await this.kritzelEngine.getActiveTool();
 
@@ -226,13 +227,9 @@ export class KritzelControls {
       color: event.detail,
     };
 
-    this.controls.find(control => {
-      if (control.name === this.activeControl && control.type === 'tool') {
-        control.config = this.activeConfig;
-      }
-    });
+    this.activeControl.config = this.activeConfig;
 
-    await this.kritzelEngine.changeActiveTool(this.activeControl);
+    await this.kritzelEngine.changeActiveTool((this.activeControl as any).tool);
 
     const activeTool = await this.kritzelEngine.getActiveTool();
 
@@ -256,13 +253,9 @@ export class KritzelControls {
       size: event.detail,
     };
 
-    this.controls.find(control => {
-      if (control.name === this.activeControl && control.type === 'tool') {
-        control.config = this.activeConfig;
-      }
-    });
+     this.activeControl.config = this.activeConfig;
 
-    await this.kritzelEngine.changeActiveTool(this.activeControl);
+    await this.kritzelEngine.changeActiveTool((this.activeControl as any).tool);
 
     const activeTool = await this.kritzelEngine.getActiveTool();
 
@@ -286,13 +279,9 @@ export class KritzelControls {
       size: event.detail,
     };
 
-    this.controls.find(control => {
-      if (control.name === this.activeControl && control.type === 'tool') {
-        control.config = this.activeConfig;
-      }
-    });
+    this.activeControl.config = this.activeConfig;
 
-    await this.kritzelEngine.changeActiveTool(this.activeControl);
+    await this.kritzelEngine.changeActiveTool((this.activeControl as any).tool);
 
     const activeTool = await this.kritzelEngine.getActiveTool();
 
@@ -326,7 +315,7 @@ export class KritzelControls {
                 <button
                   class={{
                     'kritzel-control': true,
-                    'selected': this.activeControl === control.name,
+                    'selected': this.activeControl?.name === control?.name,
                   }}
                   key={control.name}
                   onClick={_event => this.handleControlClick?.(control)}
@@ -345,7 +334,7 @@ export class KritzelControls {
                 <div class="kritzel-config-container" key={control.name}>
                   {this.tooltipVisible && (
                     <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
-                      {this.activeControl === 'brush' && (
+                      {this.activeControl.name === 'brush' && (
                         <kritzel-control-brush-config
                           type={this.activeConfig?.type}
                           color={this.activeConfig?.color}
@@ -355,7 +344,7 @@ export class KritzelControls {
                         ></kritzel-control-brush-config>
                       )}
 
-                      {this.activeControl === 'text' && (
+                      {this.activeControl.name === 'text' && (
                         <kritzel-control-text-config
                           family={this.activeConfig?.fontFamily}
                           color={this.activeConfig?.color}
@@ -375,7 +364,7 @@ export class KritzelControls {
                     onClick={event => (!ObjectHelper.isEmpty(this.activeConfig) ? this.handleConfigClick?.(event) : null)}
                     style={{ cursor: ObjectHelper.isEmpty(this.activeConfig) ? 'default' : 'pointer' }}
                   >
-                    {this.activeControl !== 'text' && (
+                    {this.activeControl.name !== 'text' && (
                       <kritzel-color
                         value={this.activeConfig?.color}
                         size={this.activeConfig?.size}
@@ -386,7 +375,7 @@ export class KritzelControls {
                       ></kritzel-color>
                     )}
 
-                    {this.activeControl === 'text' && (
+                    {this.activeControl.name === 'text' && (
                       <kritzel-font fontFamily={this.activeConfig?.fontFamily} size={this.activeConfig?.size} color={this.activeConfig?.color}></kritzel-font>
                     )}
                   </div>
