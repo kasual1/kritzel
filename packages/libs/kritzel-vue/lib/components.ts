@@ -87,7 +87,8 @@ export const KritzelControlTextConfig: StencilVueComponent<JSX.KritzelControlTex
 
 export const KritzelControls: StencilVueComponent<JSX.KritzelControls> = /*@__PURE__*/ defineContainer<JSX.KritzelControls>('kritzel-controls', defineKritzelControls, [
   'controls',
-  'activeControl'
+  'activeControl',
+  'activeTool'
 ]);
 
 

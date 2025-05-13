@@ -166,14 +166,14 @@ export declare interface KritzelControlTextConfig extends Components.KritzelCont
 
 
 @ProxyCmp({
-  inputs: ['activeControl', 'controls']
+  inputs: ['activeControl', 'activeTool', 'controls']
 })
 @Component({
   selector: 'kritzel-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeControl', 'controls'],
+  inputs: ['activeControl', 'activeTool', 'controls'],
 })
 export class KritzelControls {
   protected el: HTMLKritzelControlsElement;
@@ -277,11 +277,11 @@ export class KritzelEngine {
 }
 
 
-import type { KritzelTool as IKritzelEngineKritzelTool } from 'kritzel-stencil';
+import type { KritzelBaseTool as IKritzelEngineKritzelBaseTool } from 'kritzel-stencil';
 
 export declare interface KritzelEngine extends Components.KritzelEngine {
 
-  activeToolChange: EventEmitter<CustomEvent<IKritzelEngineKritzelTool>>;
+  activeToolChange: EventEmitter<CustomEvent<IKritzelEngineKritzelBaseTool>>;
 }
 
 

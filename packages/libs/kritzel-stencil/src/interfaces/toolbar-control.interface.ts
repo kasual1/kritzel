@@ -1,19 +1,19 @@
-import { KritzelBaseTool } from '../classes/tools/base-tool.class';
+import { KritzelBaseTool } from "../classes/tools/base-tool.class";
 
 interface KritzelBaseToolbarControl {
   name: string;
-}
-
-interface KritzelToolbarToolControl extends KritzelBaseToolbarControl {
-  type: 'tool';
-  tool: new (...args: any[]) => KritzelBaseTool;
-  icon: string;
-  isDefault?: boolean;
   config?: {
     color?: string;
     size?: number;
     fontFamily?: string;
   }
+}
+
+interface KritzelToolbarToolControl extends KritzelBaseToolbarControl {
+  type: 'tool';
+  tool: (new (...args: any[]) => KritzelBaseTool) | KritzelBaseTool;
+  icon: string;
+  isDefault?: boolean;
 }
 
 interface KritzelToolbarDividerControl extends KritzelBaseToolbarControl {

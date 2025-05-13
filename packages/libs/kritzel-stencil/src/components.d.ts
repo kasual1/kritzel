@@ -8,16 +8,16 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelTool } from "./interfaces/tool.interface";
-import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelTool } from "./interfaces/tool.interface";
-export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export namespace Components {
     interface KritzelBrushStyle {
@@ -50,7 +50,8 @@ export namespace Components {
         "size": number;
     }
     interface KritzelControls {
-        "activeControl": string | null;
+        "activeControl": KritzelToolbarControl | null;
+        "activeTool": KritzelBaseTool | null;
         "controls": KritzelToolbarControl[];
     }
     interface KritzelCursorTrail {
@@ -67,7 +68,7 @@ export namespace Components {
     }
     interface KritzelEngine {
         "activeTool": KritzelTool;
-        "changeActiveTool": (tool: string) => Promise<void>;
+        "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "copy": () => Promise<void>;
         "delete": () => Promise<void>;
         "disable": () => Promise<void>;
@@ -79,7 +80,7 @@ export namespace Components {
         "objectContextMenuItems": ContextMenuItem[];
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
-        "registerTool": (toolName: string, toolClass: any) => Promise<boolean>;
+        "registerTool": (toolName: string, toolClass: any) => Promise<KritzelBaseTool>;
         "selectAllInViewport": () => Promise<void>;
         "undo": () => Promise<void>;
     }
@@ -270,7 +271,7 @@ declare global {
         new (): HTMLKritzelEditorElement;
     };
     interface HTMLKritzelEngineElementEventMap {
-        "activeToolChange": KritzelTool;
+        "activeToolChange": KritzelBaseTool;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -427,7 +428,8 @@ declare namespace LocalJSX {
         "size"?: number;
     }
     interface KritzelControls {
-        "activeControl"?: string | null;
+        "activeControl"?: KritzelToolbarControl | null;
+        "activeTool"?: KritzelBaseTool | null;
         "controls"?: KritzelToolbarControl[];
     }
     interface KritzelCursorTrail {
@@ -447,7 +449,7 @@ declare namespace LocalJSX {
         "activeTool"?: KritzelTool;
         "globalContextMenuItems"?: ContextMenuItem[];
         "objectContextMenuItems"?: ContextMenuItem[];
-        "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelTool>) => void;
+        "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
     }
     interface KritzelFont {
         "color"?: string;
