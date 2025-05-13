@@ -27,6 +27,7 @@ import { KritzelFontSize as KritzelFontSizeElement, defineCustomElement as defin
 import { KritzelFont as KritzelFontElement, defineCustomElement as defineKritzelFont } from "../../../../kritzel-stencil/dist/components/kritzel-font.js";
 import { KritzelIcon as KritzelIconElement, defineCustomElement as defineKritzelIcon } from "../../../../kritzel-stencil/dist/components/kritzel-icon.js";
 import { KritzelStrokeSize as KritzelStrokeSizeElement, defineCustomElement as defineKritzelStrokeSize } from "../../../../kritzel-stencil/dist/components/kritzel-stroke-size.js";
+import { KritzelUtilityPanel as KritzelUtilityPanelElement, defineCustomElement as defineKritzelUtilityPanel } from "../../../../kritzel-stencil/dist/components/kritzel-utility-panel.js";
 
 export type KritzelBrushStyleEvents = NonNullable<unknown>;
 
@@ -218,4 +219,23 @@ export const KritzelStrokeSize: StencilReactComponent<KritzelStrokeSizeElement, 
     react: React,
     events: { onSizeChange: 'sizeChange' } as KritzelStrokeSizeEvents,
     defineCustomElement: defineKritzelStrokeSize
+});
+
+export type KritzelUtilityPanelEvents = {
+    onUndo: EventName<CustomEvent<void>>,
+    onRedo: EventName<CustomEvent<void>>,
+    onDelete: EventName<CustomEvent<void>>
+};
+
+export const KritzelUtilityPanel: StencilReactComponent<KritzelUtilityPanelElement, KritzelUtilityPanelEvents> = /*@__PURE__*/ createComponent<KritzelUtilityPanelElement, KritzelUtilityPanelEvents>({
+    tagName: 'kritzel-utility-panel',
+    elementClass: KritzelUtilityPanelElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {
+        onUndo: 'undo',
+        onRedo: 'redo',
+        onDelete: 'delete'
+    } as KritzelUtilityPanelEvents,
+    defineCustomElement: defineKritzelUtilityPanel
 });

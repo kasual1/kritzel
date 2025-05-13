@@ -17,5 +17,6 @@ export const DIRECTIVES = [
   d.KritzelFontFamily,
   d.KritzelFontSize,
   d.KritzelIcon,
-  d.KritzelStrokeSize
+  d.KritzelStrokeSize,
+  d.KritzelUtilityPanel
 ];
