@@ -1,0 +1,33 @@
+:host {
+   display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px;
+  gap: 8px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  margin-left: 12px;
+  background-color: rgb(226, 226, 226);
+  width: fit-content;
+}
+
+.utility-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 8px 4px;
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
+  color: #333333;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.utility-separator {
+  width: 1px;
+  height: 16px;
+  background-color: hsl(0, 0%, 0%, 4.3%);
+}

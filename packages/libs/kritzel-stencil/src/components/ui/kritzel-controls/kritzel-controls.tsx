@@ -313,20 +313,11 @@ export class KritzelControls {
   render() {
     return (
       <Host>
-        <div class="kritzel-history-panel">
-          <button class="kritzel-history-button" onClick={() => this.kritzelEngine?.undo()}>
-            <kritzel-icon name="undo"></kritzel-icon>
-          </button>
-          <button class="kritzel-history-button" onClick={() => this.kritzelEngine?.redo()}>
-            <kritzel-icon name="redo"></kritzel-icon>
-          </button>
-
-          <div class="kritzel-history-separator"></div>
-
-          <button class="kritzel-history-button">
-            <kritzel-icon name="delete" onClick={() => this.kritzelEngine?.delete()}></kritzel-icon>
-          </button>
-        </div>
+        <kritzel-utility-panel
+          onUndo={() => this.kritzelEngine?.undo()}
+          onRedo={() => this.kritzelEngine?.redo()}
+          onDelete={() => this.kritzelEngine?.delete()}
+        ></kritzel-utility-panel>
 
         <div class="kritzel-controls">
           {this.controls.map(control => {
@@ -388,7 +379,10 @@ export class KritzelControls {
                       <kritzel-color
                         value={this.activeConfig?.color}
                         size={this.activeConfig?.size}
-                        style={{ border: ObjectHelper.isEmpty(this.activeConfig) ? '1px dashed gray' : 'default' }}
+                        style={{
+                          borderRadius: '50%',
+                          border: ObjectHelper.isEmpty(this.activeConfig) ? '1px dashed gray' : 'default',
+                        }}
                       ></kritzel-color>
                     )}
 

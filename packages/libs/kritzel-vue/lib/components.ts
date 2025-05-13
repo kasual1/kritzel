@@ -21,6 +21,7 @@ import { defineCustomElement as defineKritzelFontFamily } from '../../kritzel-st
 import { defineCustomElement as defineKritzelFontSize } from '../../kritzel-stencil/dist/components/kritzel-font-size.js';
 import { defineCustomElement as defineKritzelIcon } from '../../kritzel-stencil/dist/components/kritzel-icon.js';
 import { defineCustomElement as defineKritzelStrokeSize } from '../../kritzel-stencil/dist/components/kritzel-stroke-size.js';
+import { defineCustomElement as defineKritzelUtilityPanel } from '../../kritzel-stencil/dist/components/kritzel-utility-panel.js';
 
 
 export const KritzelBrushStyle: StencilVueComponent<JSX.KritzelBrushStyle> = /*@__PURE__*/ defineContainer<JSX.KritzelBrushStyle>('kritzel-brush-style', defineKritzelBrushStyle, [
@@ -159,5 +160,16 @@ export const KritzelStrokeSize: StencilVueComponent<JSX.KritzelStrokeSize> = /*@
   'sizeChange'
 ], [
   'sizeChange'
+]);
+
+
+export const KritzelUtilityPanel: StencilVueComponent<JSX.KritzelUtilityPanel> = /*@__PURE__*/ defineContainer<JSX.KritzelUtilityPanel>('kritzel-utility-panel', defineKritzelUtilityPanel, [
+  'undo',
+  'redo',
+  'delete'
+], [
+  'undo',
+  'redo',
+  'delete'
 ]);
 

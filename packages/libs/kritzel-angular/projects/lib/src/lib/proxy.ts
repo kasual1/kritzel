@@ -407,3 +407,32 @@ export declare interface KritzelStrokeSize extends Components.KritzelStrokeSize 
 }
 
 
+@ProxyCmp({
+})
+@Component({
+  selector: 'kritzel-utility-panel',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: [],
+})
+export class KritzelUtilityPanel {
+  protected el: HTMLKritzelUtilityPanelElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['undo', 'redo', 'delete']);
+  }
+}
+
+
+export declare interface KritzelUtilityPanel extends Components.KritzelUtilityPanel {
+
+  undo: EventEmitter<CustomEvent<void>>;
+
+  redo: EventEmitter<CustomEvent<void>>;
+
+  delete: EventEmitter<CustomEvent<void>>;
+}
+
+

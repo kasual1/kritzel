@@ -106,6 +106,8 @@ export namespace Components {
         "selectedSize": number | null;
         "sizes": number[];
     }
+    interface KritzelUtilityPanel {
+    }
 }
 export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -142,6 +144,10 @@ export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelStrokeSizeElement;
+}
+export interface KritzelUtilityPanelCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelUtilityPanelElement;
 }
 declare global {
     interface HTMLKritzelBrushStyleElement extends Components.KritzelBrushStyle, HTMLStencilElement {
@@ -343,6 +349,25 @@ declare global {
         prototype: HTMLKritzelStrokeSizeElement;
         new (): HTMLKritzelStrokeSizeElement;
     };
+    interface HTMLKritzelUtilityPanelElementEventMap {
+        "undo": void;
+        "redo": void;
+        "delete": void;
+    }
+    interface HTMLKritzelUtilityPanelElement extends Components.KritzelUtilityPanel, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelUtilityPanelElementEventMap>(type: K, listener: (this: HTMLKritzelUtilityPanelElement, ev: KritzelUtilityPanelCustomEvent<HTMLKritzelUtilityPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelUtilityPanelElementEventMap>(type: K, listener: (this: HTMLKritzelUtilityPanelElement, ev: KritzelUtilityPanelCustomEvent<HTMLKritzelUtilityPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelUtilityPanelElement: {
+        prototype: HTMLKritzelUtilityPanelElement;
+        new (): HTMLKritzelUtilityPanelElement;
+    };
     interface HTMLElementTagNameMap {
         "kritzel-brush-style": HTMLKritzelBrushStyleElement;
         "kritzel-color": HTMLKritzelColorElement;
@@ -360,6 +385,7 @@ declare global {
         "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
+        "kritzel-utility-panel": HTMLKritzelUtilityPanelElement;
     }
 }
 declare namespace LocalJSX {
@@ -449,6 +475,11 @@ declare namespace LocalJSX {
         "selectedSize"?: number | null;
         "sizes"?: number[];
     }
+    interface KritzelUtilityPanel {
+        "onDelete"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
+        "onRedo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
+        "onUndo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
+    }
     interface IntrinsicElements {
         "kritzel-brush-style": KritzelBrushStyle;
         "kritzel-color": KritzelColor;
@@ -466,6 +497,7 @@ declare namespace LocalJSX {
         "kritzel-font-size": KritzelFontSize;
         "kritzel-icon": KritzelIcon;
         "kritzel-stroke-size": KritzelStrokeSize;
+        "kritzel-utility-panel": KritzelUtilityPanel;
     }
 }
 export { LocalJSX as JSX };
@@ -488,6 +520,7 @@ declare module "@stencil/core" {
             "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
+            "kritzel-utility-panel": LocalJSX.KritzelUtilityPanel & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;
         }
     }
 }
