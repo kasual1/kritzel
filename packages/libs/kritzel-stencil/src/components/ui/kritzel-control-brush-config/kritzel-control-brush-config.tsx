@@ -1,4 +1,5 @@
 import { Component, Host, Prop, h, Event, EventEmitter } from '@stencil/core';
+import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 
 @Component({
   tag: 'kritzel-control-brush-config',
@@ -6,44 +7,28 @@ import { Component, Host, Prop, h, Event, EventEmitter } from '@stencil/core';
   shadow: true,
 })
 export class KritzelControlBrushConfig {
-  @Prop()
-  activeControl: string;
-
-  @Prop()
-  type: string;
-
-  @Prop()
-  color: string;
-
-  @Prop()
-  size: number;
+  @Prop({mutable: true})
+  tool: KritzelBrushTool;
 
   @Prop()
   isExpanded: boolean = false;
 
   @Event()
-  familyChange: EventEmitter<string>;
-
-  @Event()
-  colorChange: EventEmitter<string>;
-
-  @Event()
-  sizeChange: EventEmitter<number>;
+  toolChange: EventEmitter<KritzelBrushTool>;
 
   handleToggleExpand() {
     this.isExpanded = !this.isExpanded;
   }
 
-  handleFamilyChange(event: CustomEvent<string>) {
-    this.familyChange.emit(event.detail);
-  }
-
   handleColorChange(event: CustomEvent<string>) {
-    this.colorChange.emit(event.detail);
+    debugger;
+    this.tool.color = event.detail;
+    this.toolChange.emit(this.tool);
   }
 
   handleSizeChange(event: CustomEvent<number>) {
-    this.sizeChange.emit(event.detail);
+    this.tool.size = event.detail;
+    this.toolChange.emit(this.tool);
   }
 
   render() {
@@ -66,9 +51,9 @@ export class KritzelControlBrushConfig {
           </button>
         </div>
 
-        <kritzel-color-palette selectedColor={this.color} isExpanded={this.isExpanded} onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
+        <kritzel-color-palette selectedColor={this.tool.color} isExpanded={this.isExpanded} onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
 
-        <kritzel-stroke-size selectedSize={this.size} onSizeChange={event => this.handleSizeChange(event)}></kritzel-stroke-size>
+        <kritzel-stroke-size selectedSize={this.tool.size} onSizeChange={event => this.handleSizeChange(event)}></kritzel-stroke-size>
       </Host>
     );
   }

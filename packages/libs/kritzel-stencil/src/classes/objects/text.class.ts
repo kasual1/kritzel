@@ -8,7 +8,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   fontSize: number = 8;
 
-  fontColor: string = 'black';
+  fontColor: string = '#000000';
 
   initialWidth: number = 2;
 

@@ -106,74 +106,70 @@ export declare interface KritzelContextMenu extends Components.KritzelContextMen
 
 
 @ProxyCmp({
-  inputs: ['activeControl', 'color', 'isExpanded', 'size', 'type']
+  inputs: ['isExpanded', 'tool']
 })
 @Component({
   selector: 'kritzel-control-brush-config',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeControl', 'color', 'isExpanded', 'size', 'type'],
+  inputs: ['isExpanded', 'tool'],
 })
 export class KritzelControlBrushConfig {
   protected el: HTMLKritzelControlBrushConfigElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['familyChange', 'colorChange', 'sizeChange']);
+    proxyOutputs(this, this.el, ['toolChange']);
   }
 }
 
 
+import type { KritzelBrushTool as IKritzelControlBrushConfigKritzelBrushTool } from 'kritzel-stencil';
+
 export declare interface KritzelControlBrushConfig extends Components.KritzelControlBrushConfig {
 
-  familyChange: EventEmitter<CustomEvent<string>>;
-
-  colorChange: EventEmitter<CustomEvent<string>>;
-
-  sizeChange: EventEmitter<CustomEvent<number>>;
+  toolChange: EventEmitter<CustomEvent<IKritzelControlBrushConfigKritzelBrushTool>>;
 }
 
 
 @ProxyCmp({
-  inputs: ['activeControl', 'color', 'family', 'isExpanded', 'size']
+  inputs: ['isExpanded', 'tool']
 })
 @Component({
   selector: 'kritzel-control-text-config',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeControl', 'color', 'family', 'isExpanded', 'size'],
+  inputs: ['isExpanded', 'tool'],
 })
 export class KritzelControlTextConfig {
   protected el: HTMLKritzelControlTextConfigElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['familyChange', 'colorChange', 'sizeChange']);
+    proxyOutputs(this, this.el, ['toolChange']);
   }
 }
 
 
+import type { KritzelTextTool as IKritzelControlTextConfigKritzelTextTool } from 'kritzel-stencil';
+
 export declare interface KritzelControlTextConfig extends Components.KritzelControlTextConfig {
 
-  familyChange: EventEmitter<CustomEvent<string>>;
-
-  colorChange: EventEmitter<CustomEvent<string>>;
-
-  sizeChange: EventEmitter<CustomEvent<number>>;
+  toolChange: EventEmitter<CustomEvent<IKritzelControlTextConfigKritzelTextTool>>;
 }
 
 
 @ProxyCmp({
-  inputs: ['activeControl', 'activeTool', 'controls']
+  inputs: ['activeControl', 'controls']
 })
 @Component({
   selector: 'kritzel-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeControl', 'activeTool', 'controls'],
+  inputs: ['activeControl', 'controls'],
 })
 export class KritzelControls {
   protected el: HTMLKritzelControlsElement;

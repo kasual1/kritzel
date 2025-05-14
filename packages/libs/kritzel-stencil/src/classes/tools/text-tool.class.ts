@@ -10,7 +10,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
   fontFamily: string = 'Arial';
   fontSize: number = 16;
-  fontColor: string = 'black';
+  fontColor: string = '#000000';
 
   constructor(store: KritzelStore) {
     super(store);
