@@ -14,6 +14,14 @@ export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
     void this._store; // Avoid unused variable warning
   }
 
+  onActivate(): void {
+    // default implementation
+  }
+
+  onDeactivate(): void {
+    // default implementation
+  }
+
   handleMouseDown(_event: MouseEvent): void {
     // default implementation
   }

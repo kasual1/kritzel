@@ -286,14 +286,16 @@ export class KritzelEngine {
         registeredTool[key] = value;
       });
     }
-    
+
     return Promise.resolve(registeredTool);
   }
 
   @Method()
   async changeActiveTool(tool: KritzelBaseTool) {
+    this.store.state.activeTool?.onDeactivate();
     this.store.setState('activeTool', tool);
     this.store.deselectAllObjects();
+    tool.onActivate();
   }
 
   @Method()
