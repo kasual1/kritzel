@@ -54,41 +54,26 @@ export const KritzelContextMenu: StencilVueComponent<JSX.KritzelContextMenu> = /
 
 
 export const KritzelControlBrushConfig: StencilVueComponent<JSX.KritzelControlBrushConfig> = /*@__PURE__*/ defineContainer<JSX.KritzelControlBrushConfig>('kritzel-control-brush-config', defineKritzelControlBrushConfig, [
-  'activeControl',
-  'type',
-  'color',
-  'size',
+  'tool',
   'isExpanded',
-  'familyChange',
-  'colorChange',
-  'sizeChange'
+  'toolChange'
 ], [
-  'familyChange',
-  'colorChange',
-  'sizeChange'
+  'toolChange'
 ]);
 
 
 export const KritzelControlTextConfig: StencilVueComponent<JSX.KritzelControlTextConfig> = /*@__PURE__*/ defineContainer<JSX.KritzelControlTextConfig>('kritzel-control-text-config', defineKritzelControlTextConfig, [
-  'activeControl',
-  'family',
-  'color',
-  'size',
+  'tool',
   'isExpanded',
-  'familyChange',
-  'colorChange',
-  'sizeChange'
+  'toolChange'
 ], [
-  'familyChange',
-  'colorChange',
-  'sizeChange'
+  'toolChange'
 ]);
 
 
 export const KritzelControls: StencilVueComponent<JSX.KritzelControls> = /*@__PURE__*/ defineContainer<JSX.KritzelControls>('kritzel-controls', defineKritzelControls, [
   'controls',
-  'activeControl',
-  'activeTool'
+  'activeControl'
 ]);
 
 

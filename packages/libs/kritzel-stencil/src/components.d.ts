@@ -7,17 +7,21 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
+import { KritzelBrushTool } from "./classes/tools/brush-tool.class";
+import { KritzelTextTool } from "./classes/tools/text-tool.class";
 import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
-import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelTool } from "./interfaces/tool.interface";
+import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
+export { KritzelBrushTool } from "./classes/tools/brush-tool.class";
+export { KritzelTextTool } from "./classes/tools/text-tool.class";
 export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
-export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelTool } from "./interfaces/tool.interface";
+export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export namespace Components {
     interface KritzelBrushStyle {
@@ -36,22 +40,15 @@ export namespace Components {
         "items": ContextMenuItem[];
     }
     interface KritzelControlBrushConfig {
-        "activeControl": string;
-        "color": string;
         "isExpanded": boolean;
-        "size": number;
-        "type": string;
+        "tool": KritzelBrushTool;
     }
     interface KritzelControlTextConfig {
-        "activeControl": string;
-        "color": string;
-        "family": string;
         "isExpanded": boolean;
-        "size": number;
+        "tool": KritzelTextTool;
     }
     interface KritzelControls {
         "activeControl": KritzelToolbarControl | null;
-        "activeTool": KritzelBaseTool | null;
         "controls": KritzelToolbarControl[];
     }
     interface KritzelCursorTrail {
@@ -198,9 +195,7 @@ declare global {
         new (): HTMLKritzelContextMenuElement;
     };
     interface HTMLKritzelControlBrushConfigElementEventMap {
-        "familyChange": string;
-        "colorChange": string;
-        "sizeChange": number;
+        "toolChange": KritzelBrushTool;
     }
     interface HTMLKritzelControlBrushConfigElement extends Components.KritzelControlBrushConfig, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelControlBrushConfigElementEventMap>(type: K, listener: (this: HTMLKritzelControlBrushConfigElement, ev: KritzelControlBrushConfigCustomEvent<HTMLKritzelControlBrushConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -217,9 +212,7 @@ declare global {
         new (): HTMLKritzelControlBrushConfigElement;
     };
     interface HTMLKritzelControlTextConfigElementEventMap {
-        "familyChange": string;
-        "colorChange": string;
-        "sizeChange": number;
+        "toolChange": KritzelTextTool;
     }
     interface HTMLKritzelControlTextConfigElement extends Components.KritzelControlTextConfig, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelControlTextConfigElementEventMap>(type: K, listener: (this: HTMLKritzelControlTextConfigElement, ev: KritzelControlTextConfigCustomEvent<HTMLKritzelControlTextConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -408,28 +401,17 @@ declare namespace LocalJSX {
         "onActionSelected"?: (event: KritzelContextMenuCustomEvent<ContextMenuItem>) => void;
     }
     interface KritzelControlBrushConfig {
-        "activeControl"?: string;
-        "color"?: string;
         "isExpanded"?: boolean;
-        "onColorChange"?: (event: KritzelControlBrushConfigCustomEvent<string>) => void;
-        "onFamilyChange"?: (event: KritzelControlBrushConfigCustomEvent<string>) => void;
-        "onSizeChange"?: (event: KritzelControlBrushConfigCustomEvent<number>) => void;
-        "size"?: number;
-        "type"?: string;
+        "onToolChange"?: (event: KritzelControlBrushConfigCustomEvent<KritzelBrushTool>) => void;
+        "tool"?: KritzelBrushTool;
     }
     interface KritzelControlTextConfig {
-        "activeControl"?: string;
-        "color"?: string;
-        "family"?: string;
         "isExpanded"?: boolean;
-        "onColorChange"?: (event: KritzelControlTextConfigCustomEvent<string>) => void;
-        "onFamilyChange"?: (event: KritzelControlTextConfigCustomEvent<string>) => void;
-        "onSizeChange"?: (event: KritzelControlTextConfigCustomEvent<number>) => void;
-        "size"?: number;
+        "onToolChange"?: (event: KritzelControlTextConfigCustomEvent<KritzelTextTool>) => void;
+        "tool"?: KritzelTextTool;
     }
     interface KritzelControls {
         "activeControl"?: KritzelToolbarControl | null;
-        "activeTool"?: KritzelBaseTool | null;
         "controls"?: KritzelToolbarControl[];
     }
     interface KritzelCursorTrail {
