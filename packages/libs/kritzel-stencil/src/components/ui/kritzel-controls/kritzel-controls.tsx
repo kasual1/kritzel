@@ -68,7 +68,7 @@ export class KritzelControls {
     },
   ];
 
-  @Prop()
+  @Prop({ mutable: true })
   activeControl: KritzelToolbarControl | null = null;
 
   @State()
@@ -157,7 +157,7 @@ export class KritzelControls {
   }
 
   async handleToolChange(event: CustomEvent) {
-    this.activeControl = {...this.activeControl, tool: event.detail}
+    this.activeControl = { ...this.activeControl, tool: event.detail };
     await this.kritzelEngine.changeActiveTool((this.activeControl as any).tool);
   }
 
@@ -208,7 +208,7 @@ export class KritzelControls {
 
                   {this.tooltipVisible && <div class="kritzel-tooltip-arrow"></div>}
 
-                  <div class="kritzel-config" onClick={event => this.handleConfigClick?.(event)} style={{ cursor: this.activeControl.tool ? 'default' : 'pointer' }}>
+                  <div class="kritzel-config" onClick={event => this.handleConfigClick?.(event)} style={{ cursor: this.activeControl.config ? 'pointer' : 'default' }}>
                     {this.activeControl.name !== 'text' && (
                       <kritzel-color
                         value={this.activeToolAsBrushTool?.color}

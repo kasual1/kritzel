@@ -21,6 +21,9 @@ export class KritzelImageTool extends KritzelBaseTool {
   constructor(store: KritzelStore) {
     super(store);
     this.setupFileInput();
+  }
+
+  override onActivate(): void {
     this.openFilePicker();
   }
 
