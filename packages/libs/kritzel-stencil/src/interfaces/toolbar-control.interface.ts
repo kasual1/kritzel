@@ -6,9 +6,16 @@ export interface KritzelToolbarControl {
   icon?: string;
   isDefault?: boolean;
   name: string;
-  config?: {
-    color?: string;
-    size?: number;
-    fontFamily?: string;
-  };
+  config?: KritzelTextToolConfig | KritzelBrushToolConfig;
+}
+
+export interface KritzelTextToolConfig {
+  color: string;
+  size: number;
+  fontFamily: string;
+}
+
+export interface KritzelBrushToolConfig {
+  color: string;
+  size: number;
 }
