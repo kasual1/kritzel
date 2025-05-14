@@ -13,6 +13,7 @@ import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelToolRegistry } from '../../../classes/tool.registry';
+import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -272,25 +273,27 @@ export class KritzelEngine {
   }
 
   @Method()
-  async registerTool(toolName: string, toolClass: any): Promise<KritzelBaseTool> {
+  async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig): Promise<KritzelBaseTool> {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return null;
     }
 
-    const registerdTool = KritzelToolRegistry.registerTool(toolName, toolClass, this.store);
-    return Promise.resolve(registerdTool);
+    const registeredTool = KritzelToolRegistry.registerTool(toolName, toolClass, this.store);
+
+    if (toolConfig) {
+      Object.entries(toolConfig).forEach(([key, value]) => {
+        registeredTool[key] = value;
+      });
+    }
+    
+    return Promise.resolve(registeredTool);
   }
 
   @Method()
   async changeActiveTool(tool: KritzelBaseTool) {
     this.store.setState('activeTool', tool);
     this.store.deselectAllObjects();
-  }
-
-  @Method()
-  async getActiveTool(): Promise<KritzelBaseTool> {
-    return Promise.resolve(this.store.state.activeTool);
   }
 
   @Method()

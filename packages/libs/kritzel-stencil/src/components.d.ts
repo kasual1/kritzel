@@ -9,7 +9,7 @@ import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritze
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBrushTool } from "./classes/tools/brush-tool.class";
 import { KritzelTextTool } from "./classes/tools/text-tool.class";
-import { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
@@ -18,7 +18,7 @@ export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritze
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBrushTool } from "./classes/tools/brush-tool.class";
 export { KritzelTextTool } from "./classes/tools/text-tool.class";
-export { KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+export { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
@@ -70,14 +70,13 @@ export namespace Components {
         "delete": () => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
-        "getActiveTool": () => Promise<KritzelBaseTool>;
         "globalContextMenuItems": ContextMenuItem[];
         "moveToBottom": () => Promise<void>;
         "moveToTop": () => Promise<void>;
         "objectContextMenuItems": ContextMenuItem[];
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
-        "registerTool": (toolName: string, toolClass: any) => Promise<KritzelBaseTool>;
+        "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig) => Promise<KritzelBaseTool>;
         "selectAllInViewport": () => Promise<void>;
         "undo": () => Promise<void>;
     }

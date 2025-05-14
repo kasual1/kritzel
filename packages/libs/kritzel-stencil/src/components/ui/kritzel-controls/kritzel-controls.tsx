@@ -30,8 +30,8 @@ export class KritzelControls {
       tool: KritzelBrushTool,
       icon: 'pen',
       config: {
-        color: '#000000',
-        size: 8,
+        color: '#ffffff',
+        size: 24,
       },
     },
     {
@@ -40,7 +40,6 @@ export class KritzelControls {
       tool: KritzelEraserTool,
       icon: 'eraser',
     },
-
     {
       name: 'text',
       type: 'tool',
@@ -93,7 +92,7 @@ export class KritzelControls {
 
   async componentWillLoad() {
     await this.initializeEngine();
-    this.initializeTools();
+    await this.initializeTools();
   }
 
   private async initializeEngine() {
@@ -105,15 +104,14 @@ export class KritzelControls {
     }
   }
 
-  private initializeTools() {
-    this.controls.forEach(async c => {
+  private async initializeTools() {
+    for (const c of this.controls) {
       if (c.type === 'tool' && c.tool) {
-        c.tool = await this.kritzelEngine.registerTool(c.name, c.tool);
+        c.tool = await this.kritzelEngine.registerTool(c.name, c.tool, c.config);
       }
 
       if (c.type === 'tool' && c.isDefault && c.tool) {
         await this.kritzelEngine.changeActiveTool(c.tool as KritzelBaseTool);
-
         this.activeControl = c;
       }
 
@@ -124,7 +122,7 @@ export class KritzelControls {
           console.warn('Only one config control is allowed. The first one will be used.');
         }
       }
-    });
+    }
   }
 
   @Listen('click', { target: 'document' })
