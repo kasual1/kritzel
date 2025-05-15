@@ -224,22 +224,26 @@ export class KritzelControls {
                     }}
                   >
                     {this.activeControl.tool instanceof KritzelBrushTool && (
-                      <kritzel-color
-                        value={this.activeToolAsBrushTool?.color}
-                        size={this.activeToolAsBrushTool?.size}
-                        style={{
-                          borderRadius: '50%',
-                          border: 'none',
-                        }}
-                      ></kritzel-color>
+                      <div class="color-container">
+                        <kritzel-color
+                          value={this.activeToolAsBrushTool?.color}
+                          size={this.activeToolAsBrushTool?.size}
+                          style={{
+                            borderRadius: '50%',
+                            border: 'none',
+                          }}
+                        ></kritzel-color>
+                      </div>
                     )}
 
                     {this.activeControl.tool instanceof KritzelTextTool && (
-                      <kritzel-font
-                        fontFamily={this.activeToolAsTextTool?.fontFamily}
-                        size={this.activeToolAsTextTool?.fontSize}
-                        color={this.activeToolAsTextTool?.fontColor}
-                      ></kritzel-font>
+                      <div class="font-container">
+                        <kritzel-font
+                          fontFamily={this.activeToolAsTextTool?.fontFamily}
+                          size={this.activeToolAsTextTool?.fontSize}
+                          color={this.activeToolAsTextTool?.fontColor}
+                        ></kritzel-font>
+                      </div>
                     )}
 
                     {hasNoConfig && (

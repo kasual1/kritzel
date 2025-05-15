@@ -295,7 +295,7 @@ export class KritzelEngine {
     this.store.state.activeTool?.onDeactivate();
     this.store.setState('activeTool', tool);
     this.store.deselectAllObjects();
-    tool.onActivate();
+    tool?.onActivate();
   }
 
   @Method()

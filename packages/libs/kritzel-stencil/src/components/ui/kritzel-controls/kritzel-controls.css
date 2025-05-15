@@ -25,6 +25,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  color: var(--kritzel-controls-control-color);
   border-radius: var(--kritzel-controls-control-border-radius);
   padding: var(--kritzel-controls-control-padding);
   border: none;
@@ -74,16 +75,30 @@
   cursor: pointer;
 }
 
-.color-circle {
-  width: 24px;
-  height: 24px;
+.color-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
   box-sizing: border-box;
-  display: block;
+  background-color: var(--kritzel-color-palette-hover-background-color);
 }
 
-.color-circle.white {
-  border: 1px solid var(--kritzel-color-palette-circle-border-color);
+.font-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  background-color: var(--kritzel-color-palette-hover-background-color);
 }
 
 .kritzel-tooltip {
