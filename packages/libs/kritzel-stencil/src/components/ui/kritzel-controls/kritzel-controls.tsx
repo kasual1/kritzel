@@ -28,10 +28,11 @@ export class KritzelControls {
       name: 'brush',
       type: 'tool',
       tool: KritzelBrushTool,
+      isDefault: true,
       icon: 'pen',
       config: {
-        color: '#ffffff',
-        size: 24,
+        color: '#000000',
+        size: 16,
       },
     },
     {
@@ -44,7 +45,6 @@ export class KritzelControls {
       name: 'text',
       type: 'tool',
       tool: KritzelTextTool,
-      isDefault: true,
       icon: 'type',
       config: {
         color: '#000000',
@@ -162,6 +162,8 @@ export class KritzelControls {
   }
 
   render() {
+    const hasNoConfig = this.activeControl?.config === undefined || this.activeControl?.config === null;
+
     return (
       <Host>
         <kritzel-utility-panel
@@ -194,38 +196,70 @@ export class KritzelControls {
             if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
                 <div class="kritzel-config-container" key={control.name}>
-                  {this.tooltipVisible && (
-                    <div class="kritzel-tooltip" onClick={event => this.preventDefault(event)}>
-                      {this.activeControl.name === 'brush' && (
-                        <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
-                      )}
+                  <div
+                    class="kritzel-tooltip"
+                    style={{ display: this.tooltipVisible ? 'block' : 'none' }}
+                    onClick={event => this.preventDefault(event)}
+                  >
+                    {this.activeControl.name === 'brush' && (
+                      <kritzel-control-brush-config
+                        tool={this.activeToolAsBrushTool}
+                        onToolChange={event => this.handleToolChange?.(event)}
+                      ></kritzel-control-brush-config>
+                    )}
 
-                      {this.activeControl.name === 'text' && (
-                        <kritzel-control-text-config tool={this.activeToolAsTextTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-text-config>
-                      )}
-                    </div>
-                  )}
+                    {this.activeControl.name === 'text' && (
+                      <kritzel-control-text-config
+                        tool={this.activeToolAsTextTool}
+                        onToolChange={event => this.handleToolChange?.(event)}
+                      ></kritzel-control-text-config>
+                    )}
+                  </div>
 
-                  {this.tooltipVisible && <div class="kritzel-tooltip-arrow"></div>}
+                  <div
+                    class={{
+                      'kritzel-tooltip-arrow': true,
+                      'visible': this.tooltipVisible,
+                      'hidden': !this.tooltipVisible,
+                    }}
+                  ></div>
 
-                  <div class="kritzel-config" onClick={event => this.handleConfigClick?.(event)} style={{ cursor: this.activeControl.config ? 'pointer' : 'default' }}>
-                    {this.activeControl.name !== 'text' && (
+                  <div
+                    class="kritzel-config"
+                    onClick={event => this.handleConfigClick?.(event)}
+                    style={{
+                      cursor: this.activeControl.config ? 'pointer' : 'default',
+                      pointerEvents: hasNoConfig ? 'none' : 'auto',
+                    }}
+                  >
+                    {this.activeControl.tool instanceof KritzelBrushTool && (
                       <kritzel-color
                         value={this.activeToolAsBrushTool?.color}
                         size={this.activeToolAsBrushTool?.size}
                         style={{
                           borderRadius: '50%',
-                          border: this.activeControl?.name === 'text' || this.activeControl?.name === 'brush' ? 'default' : '1px dashed gray',
+                          border: 'none',
                         }}
                       ></kritzel-color>
                     )}
 
-                    {this.activeControl.name === 'text' && (
+                    {this.activeControl.tool instanceof KritzelTextTool && (
                       <kritzel-font
                         fontFamily={this.activeToolAsTextTool?.fontFamily}
                         size={this.activeToolAsTextTool?.fontSize}
                         color={this.activeToolAsTextTool?.fontColor}
                       ></kritzel-font>
+                    )}
+
+                    {hasNoConfig && (
+                      <kritzel-color
+                        value={this.activeToolAsBrushTool?.color}
+                        size={24}
+                        style={{
+                          borderRadius: '50%',
+                          border: '1px dashed gray',
+                        }}
+                      ></kritzel-color>
                     )}
                   </div>
                 </div>
