@@ -39,12 +39,29 @@ export class KritzelColorPalette {
     this.colorChange.emit(color);
   }
 
+  private calculateHeight(): string {
+    const colorsPerRow = 6; // Matches the grid-template-columns
+    const rowHeight = 32; // Matches the height of each color-container
+    const gap = 8; // Matches the gap between rows
+    const rowCount = Math.ceil(this.colors.length / colorsPerRow);
+    return `${rowCount * rowHeight + (rowCount - 1) * gap}px`;
+  }
+
   render() {
     const displayedColors = this.isExpanded ? this.colors : this.colors.slice(0, 6);
+    const expandedHeight = this.isExpanded ? this.calculateHeight() : '40px';
 
     return (
       <Host>
-        <div class="color-grid">
+        <div
+          class={{
+            'color-grid': true,
+            'expanded': this.isExpanded,
+          }}
+          style={{
+            height: expandedHeight
+          }}
+        >
           {displayedColors.map(color => (
             <div
               class={{

@@ -13,6 +13,13 @@
   grid-template-columns: repeat(6, 32px);
   gap: 8px;
   justify-items: center;
+  overflow: hidden;
+  height: 40px;
+  transition: height 0.1s ease-in-out;
+}
+
+.color-grid.expanded {
+  height: 500px;
 }
 
 .color-container {
