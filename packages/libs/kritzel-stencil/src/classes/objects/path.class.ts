@@ -7,7 +7,7 @@ import { KritzelStore } from '../store.class';
 export class KritzelPath extends KritzelBaseObject<SVGElement> {
   points: number[][];
   d: string;
-  stroke: string;
+  stroke: string = 'none';
   strokeWidth: number;
   lineSlack: number = 0.5;
   fill: string;
@@ -34,7 +34,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateX = options?.translateX ?? 0;
     this.translateY = options?.translateY ?? 0;
     this.scale = options?.scale ?? 1;
-    this.stroke = options?.stroke ?? '#000000';
     this.strokeWidth = options?.strokeWidth ?? 8;
     this.fill = options?.fill ?? '#000000';
     this.zIndex = 9999;

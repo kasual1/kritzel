@@ -21,7 +21,6 @@ export class KritzelControlBrushConfig {
   }
 
   handleColorChange(event: CustomEvent<string>) {
-    debugger;
     this.tool.color = event.detail;
     this.toolChange.emit(this.tool);
   }
@@ -51,7 +50,7 @@ export class KritzelControlBrushConfig {
           </button>
         </div>
 
-        <kritzel-color-palette selectedColor={this.tool.color} isExpanded={this.isExpanded} onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
+        <kritzel-color-palette selectedColor={this.tool.color} isExpanded={this.isExpanded} isOpaque={true} onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
 
         <kritzel-stroke-size selectedSize={this.tool.size} onSizeChange={event => this.handleSizeChange(event)}></kritzel-stroke-size>
       </Host>

@@ -16,6 +16,7 @@ export interface KritzelTextToolConfig {
 }
 
 export interface KritzelBrushToolConfig {
+  type: 'pen' | 'highlighter';
   color: string;
   size: number;
 }

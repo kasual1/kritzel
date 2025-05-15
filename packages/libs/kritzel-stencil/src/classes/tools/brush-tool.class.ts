@@ -5,6 +5,8 @@ import { KritzelPath } from '../objects/path.class';
 import { KritzelBaseTool } from './base-tool.class';
 
 export class KritzelBrushTool extends KritzelBaseTool {
+  type: 'pen' | 'highlighter' = 'pen';
+
   color: string = '#000000';
 
   size: number = 6;
@@ -24,7 +26,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateX: -this._store.state.translateX,
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
-        stroke: this.color,
         fill: this.color,
         strokeWidth: this.size
       });
@@ -41,7 +42,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateX: -this._store.state.translateX,
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
-        stroke: this.color,
         fill: this.color,
         strokeWidth: this.size
       });
@@ -74,7 +74,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateX: -this._store.state.translateX,
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
-        stroke: this.color,
         fill: this.color,
         strokeWidth: this.size
       });
@@ -93,7 +92,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateX: -this._store.state.translateX,
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
-        stroke: this.color,
         fill: this.color,
         strokeWidth: this.size
       });

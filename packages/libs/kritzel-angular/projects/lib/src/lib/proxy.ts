@@ -52,14 +52,14 @@ export declare interface KritzelColor extends Components.KritzelColor {}
 
 
 @ProxyCmp({
-  inputs: ['colors', 'isExpanded', 'selectedColor']
+  inputs: ['colors', 'isExpanded', 'isOpaque', 'selectedColor']
 })
 @Component({
   selector: 'kritzel-color-palette',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['colors', 'isExpanded', 'selectedColor'],
+  inputs: ['colors', 'isExpanded', 'isOpaque', 'selectedColor'],
 })
 export class KritzelColorPalette {
   protected el: HTMLKritzelColorPaletteElement;

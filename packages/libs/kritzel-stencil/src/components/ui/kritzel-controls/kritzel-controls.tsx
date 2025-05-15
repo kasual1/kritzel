@@ -31,6 +31,7 @@ export class KritzelControls {
       isDefault: true,
       icon: 'pen',
       config: {
+        type: 'pen',
         color: '#000000',
         size: 16,
       },

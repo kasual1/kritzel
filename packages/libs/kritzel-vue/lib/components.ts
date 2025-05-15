@@ -39,6 +39,7 @@ export const KritzelColorPalette: StencilVueComponent<JSX.KritzelColorPalette> =
   'colors',
   'selectedColor',
   'isExpanded',
+  'isOpaque',
   'colorChange'
 ], [
   'colorChange'
