@@ -3,11 +3,9 @@ import { KritzelStore } from '../store.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { KritzelClickHelper } from '../../helpers/click.helper';
-import { KritzelSelectionTool } from './selection-tool.class';
+import { KritzelToolRegistry } from '../tool.registry';
 
 export class KritzelTextTool extends KritzelBaseTool {
-  name: string = 'text';
-
   fontFamily: string = 'Arial';
   fontSize: number = 16;
   fontColor: string = '#000000';
@@ -32,7 +30,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
     if (this._store.state.activeText !== null) {
       this._store.resetActiveText();
-      this._store.setState('activeTool', new KritzelSelectionTool(this._store));
+      this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'))
       return;
     }
 

@@ -183,7 +183,7 @@ export class KritzelEngine {
     this.store.state?.activeTool?.handleMouseUp(ev);
   }
 
-   @Listen('dblclick')
+  @Listen('dblclick')
   handleDoubleClick(ev: MouseEvent) {
     if (this.store.state.isEnabled === false) {
       return;
@@ -296,6 +296,12 @@ export class KritzelEngine {
     this.store.setState('activeTool', tool);
     this.store.deselectAllObjects();
     tool.onActivate();
+  }
+
+  @Method()
+  async setFocus() {
+    this.host.focus();
+    this.store.state.isFocused = true;
   }
 
   @Method()

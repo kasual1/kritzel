@@ -125,6 +125,12 @@ export class KritzelControls {
     }
   }
 
+  @Listen('activeToolChange', { target: 'document' })
+  async handleActiveToolChange(event: CustomEvent) {
+    this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
+    await this.kritzelEngine?.setFocus();
+  }
+
   @Listen('click', { target: 'document' })
   handleClick(event: MouseEvent) {
     const element = event.target as HTMLElement;
@@ -196,33 +202,17 @@ export class KritzelControls {
             if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
                 <div class="kritzel-config-container" key={control.name}>
-                  <div
-                    class="kritzel-tooltip"
-                    style={{ display: this.tooltipVisible ? 'block' : 'none' }}
-                    onClick={event => this.preventDefault(event)}
-                  >
+                  <div class="kritzel-tooltip" style={{ display: this.tooltipVisible ? 'block' : 'none' }} onClick={event => this.preventDefault(event)}>
                     {this.activeControl.name === 'brush' && (
-                      <kritzel-control-brush-config
-                        tool={this.activeToolAsBrushTool}
-                        onToolChange={event => this.handleToolChange?.(event)}
-                      ></kritzel-control-brush-config>
+                      <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
                     )}
 
                     {this.activeControl.name === 'text' && (
-                      <kritzel-control-text-config
-                        tool={this.activeToolAsTextTool}
-                        onToolChange={event => this.handleToolChange?.(event)}
-                      ></kritzel-control-text-config>
+                      <kritzel-control-text-config tool={this.activeToolAsTextTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-text-config>
                     )}
                   </div>
 
-                  <div
-                    class={{
-                      'kritzel-tooltip-arrow': true,
-                      'visible': this.tooltipVisible,
-                      'hidden': !this.tooltipVisible,
-                    }}
-                  ></div>
+                  <div class="kritzel-tooltip-arrow" style={{ display: this.tooltipVisible ? 'block' : 'none' }}></div>
 
                   <div
                     class="kritzel-config"

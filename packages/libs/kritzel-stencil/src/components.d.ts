@@ -78,6 +78,7 @@ export namespace Components {
         "redo": () => Promise<void>;
         "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig) => Promise<KritzelBaseTool>;
         "selectAllInViewport": () => Promise<void>;
+        "setFocus": () => Promise<void>;
         "undo": () => Promise<void>;
     }
     interface KritzelFont {

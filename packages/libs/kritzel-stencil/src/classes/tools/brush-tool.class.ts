@@ -5,8 +5,6 @@ import { KritzelPath } from '../objects/path.class';
 import { KritzelBaseTool } from './base-tool.class';
 
 export class KritzelBrushTool extends KritzelBaseTool {
-  name: string = 'brush';
-
   color: string = '#000000';
 
   size: number = 6;
