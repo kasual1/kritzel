@@ -37,17 +37,9 @@ export class KritzelColorPalette {
   @Event()
   colorChange: EventEmitter<string>;
 
-  opacity: number = 0.6;
-
   private handleColorClick(color: string) {
-    const adjustedColor = this.isOpaque ? this.applyOpacity(color, this.opacity) : color;
-    this.selectedColor = adjustedColor;
-    this.colorChange.emit(adjustedColor);
-  }
-
-  private applyOpacity(color: string, opacity: number): string {
-    const hexOpacity = Math.round(opacity * 255).toString(16).padStart(2, '0');
-    return color + hexOpacity;
+    this.selectedColor = color;
+    this.colorChange.emit(color);
   }
 
   private calculateHeight(): string {
@@ -60,7 +52,7 @@ export class KritzelColorPalette {
 
   render() {
     const displayedColors = this.isExpanded ? this.colors : this.colors.slice(0, 6);
-    const expandedHeight = this.isExpanded ? this.calculateHeight() : '40px';
+    const expandedHeight = this.isExpanded ? this.calculateHeight() : '32px';
 
     return (
       <Host>
@@ -80,9 +72,6 @@ export class KritzelColorPalette {
                 'selected': this.selectedColor === color,
               }}
               onClick={() => this.handleColorClick(color)}
-              style={{
-                opacity: this.isOpaque ? '' + this.opacity : '1',
-              }}
             >
               <kritzel-color value={color}></kritzel-color>
             </div>
