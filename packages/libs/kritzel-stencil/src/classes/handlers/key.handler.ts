@@ -1,9 +1,5 @@
 import { KritzelStore } from '../store.class';
-import { KritzelBrushTool } from '../tools/brush-tool.class';
-import { KritzelEraserTool } from '../tools/eraser-tool.class';
-import { KritzelImageTool } from '../tools/image-tool.class';
-import { KritzelSelectionTool } from '../tools/selection-tool.class';
-import { KritzelTextTool } from '../tools/text-tool.class';
+import { KritzelToolRegistry } from '../tool.registry';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelKeyHandler extends KritzelBaseHandler {
@@ -39,27 +35,30 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     }
 
     if (event.key === 's' && event.ctrlKey) {
-      this._store.setState('activeTool', new KritzelSelectionTool(this._store));
+      this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
       this._store.deselectAllObjects();
     }
 
     if (event.key === 'b' && event.ctrlKey) {
-      this._store.setState('activeTool', new KritzelBrushTool(this._store));
+      this._store.setState('activeTool', KritzelToolRegistry.getTool('brush'));
       this._store.deselectAllObjects();
     }
 
     if (event.key === 'e' && event.ctrlKey) {
-      this._store.setState('activeTool', new KritzelEraserTool(this._store));
+      this._store.setState('activeTool', KritzelToolRegistry.getTool('eraser'));
+
       this._store.deselectAllObjects();
     }
 
     if (event.key === 'i' && event.ctrlKey) {
-      this._store.setState('activeTool', new KritzelImageTool(this._store));
+      this._store.setState('activeTool', KritzelToolRegistry.getTool('image'));
+
       this._store.deselectAllObjects();
     }
 
     if (event.key === 'x' && event.ctrlKey) {
-      this._store.setState('activeTool', new KritzelTextTool(this._store));
+      this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
+
       this._store.deselectAllObjects();
     }
 

@@ -1,4 +1,5 @@
 import { KritzelStore } from '../store.class';
+import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
 
 export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
@@ -17,7 +18,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   readonly rows: number = 1;
 
   get isReadonly(): boolean {
-    return this._store.state.activeTool?.name !== 'text';
+    return !(this._store.state.activeTool instanceof KritzelTextTool);
   }
 
   constructor(store: KritzelStore, fontSize: number, fontFamily: string) {

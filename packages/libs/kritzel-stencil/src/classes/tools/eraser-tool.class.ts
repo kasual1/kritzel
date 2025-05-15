@@ -5,7 +5,6 @@ import { RemoveObjectCommand } from '../commands/remove-object.command';
 import { KritzelBaseTool } from './base-tool.class';
 
 export class KritzelEraserTool extends KritzelBaseTool {
-  name: string = 'eraser';
 
   constructor(store: KritzelStore) {
     super(store);

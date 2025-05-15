@@ -12,8 +12,6 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelTextTool } from './text-tool.class';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
-  name: string = 'selection';
-
   selectionHandler: KritzelSelectionHandler;
   moveHandler: KritzelMoveHandler;
   resizeHandler: KritzelResizeHandler;

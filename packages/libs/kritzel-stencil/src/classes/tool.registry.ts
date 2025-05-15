@@ -6,6 +6,7 @@ private static registry: Record<string, KritzelBaseTool> = {};
 
   static registerTool(toolName: string, constructor: new (store: KritzelStore) => KritzelBaseTool, store: KritzelStore): KritzelBaseTool {
     const toolInstance = new constructor(store);
+    toolInstance.name = toolName;
     this.registry[toolName] = toolInstance;
     return toolInstance;
   }

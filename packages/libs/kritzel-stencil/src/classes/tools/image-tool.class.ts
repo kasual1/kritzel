@@ -1,16 +1,14 @@
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelImage } from '../objects/image.class';
-import { KritzelSelectionTool } from './selection-tool.class';
 import { KritzelStore } from '../store.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { BatchCommand } from '../commands/batch.command';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import imageCompression from 'browser-image-compression';
+import { KritzelToolRegistry } from '../tool.registry';
 
 export class KritzelImageTool extends KritzelBaseTool {
-  name: string = 'image';
-
   fileInput: HTMLInputElement | null = null;
 
   maxWidth: number = 300;
@@ -124,12 +122,12 @@ export class KritzelImageTool extends KritzelBaseTool {
 
     this._store.history.executeCommand(new BatchCommand(this._store, this, [addImageCommand, addSelectionGroupCommand]));
 
-    this._store.setState('activeTool', new KritzelSelectionTool(this._store));
+    this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     this.cleanupFileInput();
   }
 
   private handleCancel(): void {
-    this._store.setState('activeTool', new KritzelSelectionTool(this._store));
+    this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     this.cleanupFileInput();
   }
 }

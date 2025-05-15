@@ -254,7 +254,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {}
 
 @ProxyCmp({
   inputs: ['activeTool', 'globalContextMenuItems', 'objectContextMenuItems'],
-  methods: ['registerTool', 'changeActiveTool', 'disable', 'enable', 'delete', 'copy', 'paste', 'moveToTop', 'moveToBottom', 'selectAllInViewport', 'undo', 'redo']
+  methods: ['registerTool', 'changeActiveTool', 'setFocus', 'disable', 'enable', 'delete', 'copy', 'paste', 'moveToTop', 'moveToBottom', 'selectAllInViewport', 'undo', 'redo']
 })
 @Component({
   selector: 'kritzel-engine',
