@@ -9,7 +9,7 @@ import { KritzelSelectionHandler } from '../handlers/selection.handler';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelText } from '../objects/text.class';
-import { KritzelTextTool } from './text-tool.class';
+import { KritzelToolRegistry } from '../tool.registry';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
   selectionHandler: KritzelSelectionHandler;
@@ -79,7 +79,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         
         if(selectedObject instanceof KritzelText){
           this._store.state.activeText = selectedObject;
-          this._store.setState('activeTool', new KritzelTextTool(this._store));
+          this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
           this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
 
           setTimeout(() => {

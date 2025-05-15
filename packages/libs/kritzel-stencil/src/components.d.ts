@@ -34,6 +34,7 @@ export namespace Components {
     interface KritzelColorPalette {
         "colors": string[];
         "isExpanded": boolean;
+        "isOpaque": boolean;
         "selectedColor": string | null;
     }
     interface KritzelContextMenu {
@@ -393,6 +394,7 @@ declare namespace LocalJSX {
     interface KritzelColorPalette {
         "colors"?: string[];
         "isExpanded"?: boolean;
+        "isOpaque"?: boolean;
         "onColorChange"?: (event: KritzelColorPaletteCustomEvent<string>) => void;
         "selectedColor"?: string | null;
     }

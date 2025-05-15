@@ -31,18 +31,29 @@ export class KritzelColorPalette {
   @Prop()
   isExpanded: boolean = false;
 
+  @Prop()
+  isOpaque: boolean = false;
+
   @Event()
   colorChange: EventEmitter<string>;
 
+  opacity: number = 0.6;
+
   private handleColorClick(color: string) {
-    this.selectedColor = color;
-    this.colorChange.emit(color);
+    const adjustedColor = this.isOpaque ? this.applyOpacity(color, this.opacity) : color;
+    this.selectedColor = adjustedColor;
+    this.colorChange.emit(adjustedColor);
+  }
+
+  private applyOpacity(color: string, opacity: number): string {
+    const hexOpacity = Math.round(opacity * 255).toString(16).padStart(2, '0');
+    return color + hexOpacity;
   }
 
   private calculateHeight(): string {
-    const colorsPerRow = 6; // Matches the grid-template-columns
-    const rowHeight = 32; // Matches the height of each color-container
-    const gap = 8; // Matches the gap between rows
+    const colorsPerRow = 6;
+    const rowHeight = 32;
+    const gap = 8;
     const rowCount = Math.ceil(this.colors.length / colorsPerRow);
     return `${rowCount * rowHeight + (rowCount - 1) * gap}px`;
   }
@@ -69,6 +80,9 @@ export class KritzelColorPalette {
                 'selected': this.selectedColor === color,
               }}
               onClick={() => this.handleColorClick(color)}
+              style={{
+                opacity: this.isOpaque ? '' + this.opacity : '1',
+              }}
             >
               <kritzel-color value={color}></kritzel-color>
             </div>
