@@ -71,7 +71,7 @@ kritzel-editor {
   --kritzel-cursor-trail-opacity: 0.6;
 }
 
-kritzel-controls{
+kritzel-controls {
   position: absolute;
   bottom: 16px;
 }
