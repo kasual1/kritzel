@@ -7,7 +7,9 @@ kritzel-editor {
   height: 100%;
   align-items: center;
   justify-content: center;
+  touch-action: manipulation;
   user-select: none;
+
 
   --kritzel-primary-color: blue;
 

@@ -9,14 +9,15 @@
   margin-left: 12px;
   background-color: rgb(226, 226, 226);
   width: fit-content;
+  user-select: none;
 }
 
 .utility-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   padding: 8px 4px;
   border: none;
   outline: none;
