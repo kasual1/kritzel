@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h} from '@stencil/core';
+import { Component, Host, Listen, Prop, h } from '@stencil/core';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { KritzelIconRegistry } from '../../../classes/icon-registry.class';
 
@@ -8,12 +8,16 @@ import { KritzelIconRegistry } from '../../../classes/icon-registry.class';
   shadow: false,
 })
 export class KritzelEditor {
-
   @Prop()
   controls: KritzelToolbarControl[];
 
   @Prop()
   customSvgIcons: Record<string, string> = {};
+
+  @Listen('dblclick', { passive: false })
+  handleTouchStart(event: TouchEvent) {
+    event.preventDefault();
+  }
 
   componentWillLoad() {
     for (const [name, svg] of Object.entries(this.customSvgIcons)) {
