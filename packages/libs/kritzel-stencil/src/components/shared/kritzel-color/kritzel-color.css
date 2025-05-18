@@ -2,6 +2,12 @@
   display: flex;
 }
 
+.checkerboard-bg {
+  background: repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 50% / 8px 8px;
+  position: relative;
+  overflow: hidden;
+}
+
 .color-circle {
   width: 24px;
   height: 24px;
