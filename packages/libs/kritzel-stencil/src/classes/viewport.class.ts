@@ -1,4 +1,4 @@
-import { KritzelClickHelper } from '../helpers/click.helper';
+import { KritzelMouseHelper } from '../helpers/click.helper';
 import { KritzelStore } from './store.class';
 
 export class KritzelViewport {
@@ -19,12 +19,18 @@ export class KritzelViewport {
     this._store.state.translateY = 0;
   }
 
+  handleResize(): void {
+    this._store.state.viewportWidth = this._store.state.host.clientWidth;
+    this._store.state.viewportHeight = this._store.state.host.clientHeight;
+    this._store.state.hasViewportChanged = true;
+    this._store.rerender();
+  }
+
   handleMouseDown(event: MouseEvent): void {
     const adjustedClientX = event.clientX - this._store.offsetX;
     const adjustedClientY = event.clientY - this._store.offsetY;
 
-    
-    if (KritzelClickHelper.isRightClick(event)) {
+    if (KritzelMouseHelper.isRightClick(event)) {
       this._store.state.isPanning = true;
       this._store.state.startX = adjustedClientX;
       this._store.state.startY = adjustedClientY;
@@ -116,14 +122,24 @@ export class KritzelViewport {
   }
 
   handleTouchEnd(_event: TouchEvent): void {
-      this._store.state.touchCount = 0;
-      this._store.state.isScaling = false;
-      this._store.rerender();
+    this._store.state.touchCount = 0;
+    this._store.state.isScaling = false;
+    this._store.rerender();
   }
 
   handleWheel(event: WheelEvent): void {
     event.preventDefault();
 
+    if (event.ctrlKey === true && KritzelMouseHelper.isMainMouseWheel(event)) {
+      this.handleZoom(event);
+    }
+
+    if (!event.ctrlKey) {
+      this.handlePan(event);
+    }
+  }
+
+  private handleZoom(event: WheelEvent): void {
     const rect = this._store.state.host.getBoundingClientRect();
     this._store.state.cursorX = event.clientX - rect.left;
     this._store.state.cursorY = event.clientY - rect.top;
@@ -144,9 +160,12 @@ export class KritzelViewport {
     this._store.rerender();
   }
 
-  handleResize(): void {
-    this._store.state.viewportWidth = this._store.state.host.clientWidth;
-    this._store.state.viewportHeight = this._store.state.host.clientHeight;
+  private handlePan(event: WheelEvent): void {
+    const panSpeed = 0.8;
+
+    this._store.state.translateX -= event.deltaX * panSpeed;
+    this._store.state.translateY -= event.deltaY * panSpeed;
+
     this._store.state.hasViewportChanged = true;
     this._store.rerender();
   }

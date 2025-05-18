@@ -1,4 +1,4 @@
-import { KritzelClickHelper } from '../../helpers/click.helper';
+import { KritzelMouseHelper } from '../../helpers/click.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelStore } from '../store.class';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
@@ -23,7 +23,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   handleMouseDown(event) {
-    if (KritzelClickHelper.isLeftClick(event) && !this._store.state.selectionGroup) {
+    if (KritzelMouseHelper.isLeftClick(event) && !this._store.state.selectionGroup) {
       this.startMouseSelection(event);
     }
   }
@@ -35,7 +35,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   handleMouseUp(event) {
-    if (KritzelClickHelper.isLeftClick(event) && this._store.state.isSelecting) {
+    if (KritzelMouseHelper.isLeftClick(event) && this._store.state.isSelecting) {
       if (this.isSelectionClick) {
         this.updateMouseSelection(event);
         this.addSelectedObjectAtIndexToSelectionGroup(0);

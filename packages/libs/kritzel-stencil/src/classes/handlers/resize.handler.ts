@@ -1,5 +1,5 @@
 import { KritzelHandleType } from "../../enums/handle-type.enum";
-import { KritzelClickHelper } from "../../helpers/click.helper";
+import { KritzelMouseHelper } from "../../helpers/click.helper";
 import { ResizeSelectionGroupCommand } from "../commands/resize-selection-group.command";
 import { KritzelStore } from "../store.class";
 import { KritzelBaseHandler } from "./base.handler";
@@ -18,7 +18,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   }
 
   handleMouseDown(event: MouseEvent): void {
-    if (KritzelClickHelper.isLeftClick(event)) {
+    if (KritzelMouseHelper.isLeftClick(event)) {
 
       if (this._store.state.selectionGroup && this._store.state.isResizeHandleSelected) {
         const clientX = event.clientX - this._store.offsetX;
