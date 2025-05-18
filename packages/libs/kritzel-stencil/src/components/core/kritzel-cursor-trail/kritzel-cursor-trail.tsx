@@ -65,6 +65,40 @@ export class KritzelCursorTrail {
     }
   }
 
+  @Listen('touchstart', { target: 'window' })
+  handleTouchStart(ev: TouchEvent) {
+    if (ev.touches.length === 1) {
+      this.isLeftButtonDown = true;
+      this.cursorTrailPoints = [];
+    }
+  }
+
+  @Listen('touchmove', { target: 'window', passive: true })
+  handleTouchMove(ev: TouchEvent) {
+    if (!this.isLeftButtonDown) {
+      return;
+    }
+
+    const touch = ev.touches[0];
+    const newPoint = { x: touch.clientX, y: touch.clientY, timestamp: Date.now() };
+    const updatedTrail = [newPoint, ...this.cursorTrailPoints];
+    if (updatedTrail.length > this.MAX_TRAIL_POINTS) {
+      this.cursorTrailPoints = updatedTrail.slice(0, this.MAX_TRAIL_POINTS);
+    }
+    else {
+      this.cursorTrailPoints = updatedTrail;
+    }
+  }
+
+  @Listen('touchend', { target: 'window' })
+  handleTouchEnd(ev: TouchEvent) {
+    if (ev.touches.length === 0) {
+      this.isLeftButtonDown = false;
+      this.cursorTrailPoints = [];
+    }
+  }
+  
+
   render() {
     return (
       <Host>
