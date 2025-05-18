@@ -406,7 +406,6 @@ export class KritzelEngine {
                 id={object.id}
                 class="object"
                 style={{
-                  display: object.visible ? 'block' : 'none',
                   height: object?.totalHeight.toString(),
                   width: object?.totalWidth.toString(),
                   left: '0',

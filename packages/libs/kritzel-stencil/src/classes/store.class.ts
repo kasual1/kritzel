@@ -42,7 +42,7 @@ const initialState: KritzelEngineState = {
   skipContextMenu: false,
   debugInfo: {
     showObjectInfo: false,
-    showViewportInfo: false,
+    showViewportInfo: true,
     logCommands: false,
   },
   host: null,
@@ -124,15 +124,7 @@ export class KritzelStore {
       depth: 100,
     };
 
-    const objectsInViewport = this._state.objectsOctree.query(viewportBounds);
-
-    const allObjects = this._state.objectsOctree.allObjects();
-
-    allObjects.forEach(object => {
-      object.visible = objectsInViewport.find(o => o.id === object.id) ? true : false;
-    });
-
-    this.objects = allObjects;
+    this.objects = this._state.objectsOctree.query(viewportBounds);
 
     if (this._kritzelEngine) {
       this._kritzelEngine.forceUpdate++;
