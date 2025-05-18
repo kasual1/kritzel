@@ -386,8 +386,8 @@ export class KritzelEngine {
           <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
           <div>IsResizeHandleSelected: {this.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
           <div>IsRotationHandleSelected: {this.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
-          <div>IsDrawing: {this.store.state.isDrawing ? 'ture' : 'false'}</div>
-          <div>IsWriting: {this.store.state.isWriting ? 'ture' : 'false'}</div>
+          <div>IsDrawing: {this.store.state.isDrawing ? 'true' : 'false'}</div>
+          <div>IsWriting: {this.store.state.isWriting ? 'true' : 'false'}</div>
           <div>CursorX: {this.store.state?.cursorX}</div>
           <div>CursorY: {this.store.state?.cursorY}</div>
         </div>
