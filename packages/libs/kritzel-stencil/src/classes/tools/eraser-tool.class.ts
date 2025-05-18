@@ -5,6 +5,7 @@ import { RemoveObjectCommand } from '../commands/remove-object.command';
 import { KritzelBaseTool } from './base-tool.class';
 
 export class KritzelEraserTool extends KritzelBaseTool {
+  touchStartTimeout: any = null;
 
   constructor(store: KritzelStore) {
     super(store);
@@ -56,11 +57,15 @@ export class KritzelEraserTool extends KritzelBaseTool {
   }
 
   handleTouchStart(_event: TouchEvent): void {
-    this._store.state.isErasing = true;
+    this.touchStartTimeout = setTimeout(() => {
+      if (this._store.state.touchCount === 1 && !this._store.state.isScaling) {
+        this._store.state.isErasing = true;
+      }
+    }, 80);
   }
 
   handleTouchMove(event: TouchEvent): void {
-    if (this._store.state.isErasing) {
+    if (this._store.state.touchCount === 1 && this._store.state.isErasing) {
       const shadowRoot = this._store.state.host?.shadowRoot;
       if (!shadowRoot) return;
 
@@ -83,6 +88,8 @@ export class KritzelEraserTool extends KritzelBaseTool {
   }
 
   handleTouchEnd(_event: TouchEvent): void {
+    clearTimeout(this.touchStartTimeout);
+    
     if (this._store.state.isErasing) {
       const removeCommands = this._store.allObjects
         .filter(object => object.markedForRemoval)
