@@ -2,7 +2,7 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelStore } from '../store.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
-import { KritzelClickHelper } from '../../helpers/click.helper';
+import { KritzelMouseHelper } from '../../helpers/click.helper';
 import { KritzelToolRegistry } from '../tool.registry';
 
 export class KritzelTextTool extends KritzelBaseTool {
@@ -34,7 +34,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       return;
     }
 
-    if (KritzelClickHelper.isLeftClick(event) === false) {
+    if (KritzelMouseHelper.isLeftClick(event) === false) {
       return;
     }
 

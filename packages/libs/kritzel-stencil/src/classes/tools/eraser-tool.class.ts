@@ -1,4 +1,4 @@
-import { KritzelClickHelper } from '../../helpers/click.helper';
+import { KritzelMouseHelper } from '../../helpers/click.helper';
 import { KritzelStore } from '../store.class';
 import { BatchCommand } from '../commands/batch.command';
 import { RemoveObjectCommand } from '../commands/remove-object.command';
@@ -12,7 +12,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
   }
 
   handleMouseDown(event: MouseEvent): void {
-    if (KritzelClickHelper.isLeftClick(event)) {
+    if (KritzelMouseHelper.isLeftClick(event)) {
       this._store.state.isErasing = true;
     }
   }
@@ -89,7 +89,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
 
   handleTouchEnd(_event: TouchEvent): void {
     clearTimeout(this.touchStartTimeout);
-    
+
     if (this._store.state.isErasing) {
       const removeCommands = this._store.allObjects
         .filter(object => object.markedForRemoval)

@@ -1,5 +1,5 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
-import { KritzelClickHelper } from '../../helpers/click.helper';
+import { KritzelMouseHelper } from '../../helpers/click.helper';
 import { KritzelStore } from '../store.class';
 import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
 import { KritzelMoveHandler } from '../handlers/move.handler';
@@ -26,7 +26,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handleMouseDown(event: MouseEvent): void {
-    if (KritzelClickHelper.isLeftClick(event)) {
+    if (KritzelMouseHelper.isLeftClick(event)) {
       this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
       this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
       this._store.state.resizeHandleType = this.getHandleType(event);
@@ -71,7 +71,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handleDoubleClick(event: MouseEvent): void {
-    if (KritzelClickHelper.isLeftClick(event)) {
+    if (KritzelMouseHelper.isLeftClick(event)) {
       console.log(this._store.state.selectionGroup);
       
       if (this._store.state.selectionGroup && this._store.state.selectionGroup?.objects.length === 1) {
