@@ -247,14 +247,14 @@ export class KritzelControls {
                     )}
 
                     {hasNoConfig && (
-                      <kritzel-color
-                        value={this.activeToolAsBrushTool?.color}
-                        size={24}
+                      <div
                         style={{
+                          height: '24px',
+                          width: '24px',
                           borderRadius: '50%',
                           border: '1px dashed gray',
                         }}
-                      ></kritzel-color>
+                      ></div>
                     )}
                   </div>
                 </div>
