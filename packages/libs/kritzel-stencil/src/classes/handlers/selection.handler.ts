@@ -10,6 +10,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   selectionStartX: number;
   selectionStartY: number;
 
+  touchStartTimeout: any = null;
+
   get isSelectionClick() {
     return this._store.state.selectionBox && this._store.state.selectionBox.width === 0 && this._store.state.selectionBox.height === 0;
   }
@@ -51,9 +53,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   handleTouchStart(event: TouchEvent) {
-    if (this._store.state.touchCount === 1 && !this._store.state.selectionGroup) {
-      this.startTouchSelection(event);
-    }
+    this.touchStartTimeout = setTimeout(() => {
+      if (this._store.state.touchCount === 1 && !this._store.state.isScaling  && !this._store.state.selectionGroup) {
+        this.startTouchSelection(event);
+      }
+    }, 80);
   }
 
   handleTouchMove(event: TouchEvent) {
@@ -63,6 +67,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   handleTouchEnd(event: TouchEvent) {
+    clearTimeout(this.touchStartTimeout);
+
     if (this._store.state.isSelecting) {
       if (this.isSelectionClick) {
         this.updateTouchSelection(event);
