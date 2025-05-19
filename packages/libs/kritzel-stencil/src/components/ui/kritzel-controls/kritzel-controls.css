@@ -101,6 +101,13 @@
   background-color: var(--kritzel-color-palette-hover-background-color);
 }
 
+.no-config {
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    border: 1px dashed gray;
+}
+
 .kritzel-tooltip {
   position: absolute;
   bottom: 40px;
@@ -120,6 +127,19 @@
   box-shadow: var(--kritzel-controls-tooltip-box-shadow);
   z-index: 10000;
   -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(10px) scale(0.98);
+  transition:
+    opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Show state */
+.kritzel-tooltip.kritzel-tooltip--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0) scale(1);
 }
 
 .kritzel-tooltip-arrow {
@@ -131,6 +151,16 @@
   border-color: var(--kritzel-controls-tooltip-background-color) transparent transparent transparent;
   filter: drop-shadow(var(--kritzel-controls-tooltip-box-shadow));
   z-index: 10000;
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+  transition:
+    opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kritzel-tooltip-arrow.kritzel-tooltip-arrow--visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 @media (max-width: 768px) {

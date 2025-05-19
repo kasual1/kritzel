@@ -13,6 +13,7 @@ export interface KritzelTextToolConfig {
   color: string;
   size: number;
   fontFamily: string;
+  palette: string[];
 }
 
 export interface KritzelBrushToolConfig {

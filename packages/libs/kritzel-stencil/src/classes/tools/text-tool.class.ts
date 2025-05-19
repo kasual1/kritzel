@@ -10,6 +10,24 @@ export class KritzelTextTool extends KritzelBaseTool {
   fontSize: number = 16;
   fontColor: string = '#000000';
 
+  palette: string[] = [
+    '#000000',
+    '#FFFFFF',
+    '#FF0000',
+    '#00FF00',
+    '#0000FF',
+    '#FFFF00',
+    '#FF00FF',
+    '#00FFFF',
+    '#808080',
+    '#C0C0C0',
+    '#800000',
+    '#008000',
+    '#000080',
+    '#808000',
+    '#800080',
+  ];
+
   constructor(store: KritzelStore) {
     super(store);
   }
@@ -30,7 +48,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
     if (this._store.state.activeText !== null) {
       this._store.resetActiveText();
-      this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'))
+      this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
       return;
     }
 

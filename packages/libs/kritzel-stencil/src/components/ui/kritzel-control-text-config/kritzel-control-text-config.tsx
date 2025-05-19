@@ -7,7 +7,7 @@ import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
   shadow: true,
 })
 export class KritzelControlTextConfig {
-  @Prop({mutable: true})
+  @Prop({ mutable: true })
   tool: KritzelTextTool;
 
   @Prop()
@@ -15,7 +15,6 @@ export class KritzelControlTextConfig {
 
   @Event()
   toolChange: EventEmitter<KritzelTextTool>;
-
 
   handleToggleExpand() {
     this.isExpanded = !this.isExpanded;
@@ -56,7 +55,12 @@ export class KritzelControlTextConfig {
           </button>
         </div>
 
-        <kritzel-color-palette selectedColor={this.tool.fontColor} isExpanded={this.isExpanded} onColorChange={event => this.handleColorChange(event)}></kritzel-color-palette>
+        <kritzel-color-palette
+          colors={this.tool.palette}
+          selectedColor={this.tool.fontColor}
+          isExpanded={this.isExpanded}
+          onColorChange={event => this.handleColorChange(event)}
+        ></kritzel-color-palette>
 
         <kritzel-font-size selectedSize={this.tool.fontSize} fontFamily={this.tool.fontFamily} onSizeChange={event => this.handleSizeChange(event)}></kritzel-font-size>
       </Host>
