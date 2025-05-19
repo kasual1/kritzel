@@ -22,8 +22,6 @@ export class KritzelControlBrushConfig {
   @Watch('tool')
   handleToolChange(newTool: KritzelBrushTool) {
     this.palette = newTool.palettes[newTool.type];
-
-    console.log(this.palette);
   }
 
   componentWillLoad() {
