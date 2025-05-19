@@ -86,7 +86,7 @@ export class KritzelControls {
           '#008000',
           '#000080',
           '#808000',
-          '#800080'
+          '#800080',
         ],
       },
     },
@@ -211,6 +211,11 @@ export class KritzelControls {
     return (
       <Host>
         <kritzel-utility-panel
+          style={{
+            position: 'absolute',
+            bottom: '56px',
+            left: '12px',
+          }}
           onUndo={() => this.kritzelEngine?.undo()}
           onRedo={() => this.kritzelEngine?.redo()}
           onDelete={() => this.kritzelEngine?.delete()}
