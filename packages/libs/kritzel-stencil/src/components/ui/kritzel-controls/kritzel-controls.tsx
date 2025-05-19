@@ -71,6 +71,23 @@ export class KritzelControls {
         color: '#000000',
         size: 8,
         fontFamily: 'Arial',
+        palette: [
+          '#000000',
+          '#FFFFFF',
+          '#FF0000',
+          '#00FF00',
+          '#0000FF',
+          '#FFFF00',
+          '#FF00FF',
+          '#00FFFF',
+          '#808080',
+          '#C0C0C0',
+          '#800000',
+          '#008000',
+          '#000080',
+          '#808000',
+          '#800080'
+        ],
       },
     },
     {
@@ -223,12 +240,15 @@ export class KritzelControls {
             if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
                 <div class="kritzel-config-container" key={control.name}>
-                  <div class="kritzel-tooltip" style={{ display: this.tooltipVisible ? 'block' : 'none' }} onClick={event => this.preventDefault(event)}>
+                  <div
+                    class={{
+                      'kritzel-tooltip': true,
+                      'kritzel-tooltip--visible': this.tooltipVisible,
+                    }}
+                    onClick={event => this.preventDefault(event)}
+                  >
                     {this.activeControl.name === 'brush' && (
-                      <kritzel-control-brush-config
-                        tool={this.activeToolAsBrushTool}
-                        onToolChange={event => this.handleToolChange?.(event)}
-                      ></kritzel-control-brush-config>
+                      <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
                     )}
 
                     {this.activeControl.name === 'text' && (
@@ -236,7 +256,12 @@ export class KritzelControls {
                     )}
                   </div>
 
-                  <div class="kritzel-tooltip-arrow" style={{ display: this.tooltipVisible ? 'block' : 'none' }}></div>
+                  <div
+                    class={{
+                      'kritzel-tooltip-arrow': true,
+                      'kritzel-tooltip-arrow--visible': this.tooltipVisible,
+                    }}
+                  ></div>
 
                   <div
                     class="kritzel-config"
@@ -269,16 +294,7 @@ export class KritzelControls {
                       </div>
                     )}
 
-                    {hasNoConfig && (
-                      <div
-                        style={{
-                          height: '24px',
-                          width: '24px',
-                          borderRadius: '50%',
-                          border: '1px dashed gray',
-                        }}
-                      ></div>
-                    )}
+                    {hasNoConfig && <div class="no-config"></div>}
                   </div>
                 </div>
               );
