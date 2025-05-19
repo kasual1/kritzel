@@ -26,6 +26,7 @@ export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font
 export namespace Components {
     interface KritzelBrushStyle {
         "brushOptions": BrushStyleOption[];
+        "type": 'pen' | 'highlighter';
     }
     interface KritzelColor {
         "size": number;
@@ -108,6 +109,10 @@ export namespace Components {
     interface KritzelUtilityPanel {
     }
 }
+export interface KritzelBrushStyleCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelBrushStyleElement;
+}
 export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelColorPaletteElement;
@@ -149,7 +154,18 @@ export interface KritzelUtilityPanelCustomEvent<T> extends CustomEvent<T> {
     target: HTMLKritzelUtilityPanelElement;
 }
 declare global {
+    interface HTMLKritzelBrushStyleElementEventMap {
+        "typeChange": 'pen' | 'highlighter';
+    }
     interface HTMLKritzelBrushStyleElement extends Components.KritzelBrushStyle, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelBrushStyleElementEventMap>(type: K, listener: (this: HTMLKritzelBrushStyleElement, ev: KritzelBrushStyleCustomEvent<HTMLKritzelBrushStyleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelBrushStyleElementEventMap>(type: K, listener: (this: HTMLKritzelBrushStyleElement, ev: KritzelBrushStyleCustomEvent<HTMLKritzelBrushStyleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelBrushStyleElement: {
         prototype: HTMLKritzelBrushStyleElement;
@@ -386,6 +402,8 @@ declare global {
 declare namespace LocalJSX {
     interface KritzelBrushStyle {
         "brushOptions"?: BrushStyleOption[];
+        "onTypeChange"?: (event: KritzelBrushStyleCustomEvent<'pen' | 'highlighter'>) => void;
+        "type"?: 'pen' | 'highlighter';
     }
     interface KritzelColor {
         "size"?: number;

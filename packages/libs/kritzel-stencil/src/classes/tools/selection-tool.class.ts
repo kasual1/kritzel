@@ -72,7 +72,6 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
   handleDoubleClick(event: MouseEvent): void {
     if (KritzelMouseHelper.isLeftClick(event)) {
-      console.log(this._store.state.selectionGroup);
       
       if (this._store.state.selectionGroup && this._store.state.selectionGroup?.objects.length === 1) {
         const selectedObject = this._store.state.selectionGroup.objects[0];

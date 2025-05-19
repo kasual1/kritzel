@@ -29,14 +29,14 @@ import { KritzelIcon as KritzelIconElement, defineCustomElement as defineKritzel
 import { KritzelStrokeSize as KritzelStrokeSizeElement, defineCustomElement as defineKritzelStrokeSize } from "../../../../kritzel-stencil/dist/components/kritzel-stroke-size.js";
 import { KritzelUtilityPanel as KritzelUtilityPanelElement, defineCustomElement as defineKritzelUtilityPanel } from "../../../../kritzel-stencil/dist/components/kritzel-utility-panel.js";
 
-export type KritzelBrushStyleEvents = NonNullable<unknown>;
+export type KritzelBrushStyleEvents = { onTypeChange: EventName<CustomEvent<'pen' | 'highlighter'>> };
 
 export const KritzelBrushStyle: StencilReactComponent<KritzelBrushStyleElement, KritzelBrushStyleEvents> = /*@__PURE__*/ createComponent<KritzelBrushStyleElement, KritzelBrushStyleEvents>({
     tagName: 'kritzel-brush-style',
     elementClass: KritzelBrushStyleElement,
     // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
     react: React,
-    events: {} as KritzelBrushStyleEvents,
+    events: { onTypeChange: 'typeChange' } as KritzelBrushStyleEvents,
     defineCustomElement: defineKritzelBrushStyle
 });
 

@@ -19,4 +19,7 @@ export interface KritzelBrushToolConfig {
   type: 'pen' | 'highlighter';
   color: string;
   size: number;
+  palettes: {
+    [brushType: string]: string[]; 
+  }
 }
