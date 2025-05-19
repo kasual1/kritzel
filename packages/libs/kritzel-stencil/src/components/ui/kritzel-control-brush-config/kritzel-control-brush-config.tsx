@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, Prop, h, Event, EventEmitter, Watch, State } from '@stencil/core';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 
 @Component({
@@ -7,7 +7,7 @@ import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
   shadow: true,
 })
 export class KritzelControlBrushConfig {
-  @Prop({mutable: true})
+  @Prop({ mutable: true })
   tool: KritzelBrushTool;
 
   @Prop()
@@ -16,8 +16,29 @@ export class KritzelControlBrushConfig {
   @Event()
   toolChange: EventEmitter<KritzelBrushTool>;
 
+  @State()
+  palette: string[] = [];
+
+  @Watch('tool')
+  handleToolChange(newTool: KritzelBrushTool) {
+    this.palette = newTool.palettes[newTool.type];
+
+    console.log(this.palette);
+  }
+
+  componentWillLoad() {
+    this.palette = this.tool.palettes[this.tool.type];
+  }
+
   handleToggleExpand() {
     this.isExpanded = !this.isExpanded;
+  }
+
+  handleTypeChange(event: CustomEvent<'pen' | 'highlighter'>) {
+    this.palette = this.tool.palettes[event.detail];
+    this.tool.type = event.detail;
+    this.tool.color = this.palette[0];
+    this.toolChange.emit(this.tool);
   }
 
   handleColorChange(event: CustomEvent<string>) {
@@ -43,14 +64,20 @@ export class KritzelControlBrushConfig {
             gap: '8px',
           }}
         >
-          <kritzel-brush-style></kritzel-brush-style>
+          <kritzel-brush-style type={this.tool.type} onTypeChange={event => this.handleTypeChange(event)}></kritzel-brush-style>
 
-          <button class="expand-toggle" onClick={() => this.handleToggleExpand()} title={this.isExpanded ? 'Collapse' : 'Expand'}>
+          <button class="expand-toggle" onClick={() => this.handleToggleExpand()} title={this.isExpanded ? 'Collapse' : 'Expand'} style={this.palette.length > 6 ? { visibillity: 'visible' } : { visibility: 'hidden' }}>
             <kritzel-icon name={this.isExpanded ? 'chevron-up' : 'chevron-down'}></kritzel-icon>
           </button>
         </div>
 
-        <kritzel-color-palette selectedColor={this.tool.color} isExpanded={this.isExpanded} isOpaque={true} onColorChange={color => this.handleColorChange(color)}></kritzel-color-palette>
+        <kritzel-color-palette
+          colors={this.palette}
+          selectedColor={this.tool.color}
+          isExpanded={this.isExpanded}
+          isOpaque={true}
+          onColorChange={color => this.handleColorChange(color)}
+        ></kritzel-color-palette>
 
         <kritzel-stroke-size selectedSize={this.tool.size} onSizeChange={event => this.handleSizeChange(event)}></kritzel-stroke-size>
       </Host>

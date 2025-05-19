@@ -62,7 +62,7 @@ export class KritzelImageTool extends KritzelBaseTool {
           this.handleCancel();
         });
     } else {
-      console.log('File selection cancelled by user.');
+      console.info('File selection cancelled by user.');
       this.handleCancel();
     }
 

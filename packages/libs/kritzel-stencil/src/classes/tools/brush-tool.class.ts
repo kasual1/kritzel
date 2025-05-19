@@ -11,6 +11,13 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
   size: number = 6;
 
+  palettes: {
+    [brushType: string]: string[];
+  } = {
+    pen: ['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#808080', '#C0C0C0', '#800000', '#008000', '#000080', '#808000', '#800080'],
+    highlighter: ['#ffff00', '#ffb347', '#b4ffb4'],
+  };
+
   constructor(store: KritzelStore) {
     super(store);
   }
@@ -27,7 +34,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
         fill: this.color,
-        strokeWidth: this.size
+        strokeWidth: this.size,
       });
     }
   }
@@ -37,13 +44,13 @@ export class KritzelBrushTool extends KritzelBaseTool {
       const x = event.clientX - this._store.offsetX;
       const y = event.clientY - this._store.offsetY;
 
-      this._store.state.currentPath = new KritzelPath(this._store,{
+      this._store.state.currentPath = new KritzelPath(this._store, {
         points: [...this._store.state.currentPath.points, [x, y]],
         translateX: -this._store.state.translateX,
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
         fill: this.color,
-        strokeWidth: this.size
+        strokeWidth: this.size,
       });
 
       this._store.rerender();
@@ -54,7 +61,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
     if (this._store.state.isDrawing) {
       this._store.state.isDrawing = false;
 
-      if(this._store.state.currentPath){
+      if (this._store.state.currentPath) {
         this._store.state.currentPath.zIndex = this._store.currentZIndex;
         this._store.history.executeCommand(new AddObjectCommand(this._store, this, this._store.state.currentPath));
       }
@@ -75,7 +82,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
         fill: this.color,
-        strokeWidth: this.size
+        strokeWidth: this.size,
       });
 
       this._store.rerender();
@@ -93,7 +100,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
         translateY: -this._store.state.translateY,
         scale: this._store.state.scale,
         fill: this.color,
-        strokeWidth: this.size
+        strokeWidth: this.size,
       });
 
       this._store.rerender();

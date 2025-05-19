@@ -34,6 +34,26 @@ export class KritzelControls {
         type: 'pen',
         color: '#000000',
         size: 16,
+        palettes: {
+          pen: [
+            '#000000',
+            '#FFFFFF',
+            '#FF0000',
+            '#00FF00',
+            '#0000FF',
+            '#FFFF00',
+            '#FF00FF',
+            '#00FFFF',
+            '#808080',
+            '#C0C0C0',
+            '#800000',
+            '#008000',
+            '#000080',
+            '#808000',
+            '#800080',
+          ],
+          highlighter: ['#ffff00cc', '#ffb347cc', '#b3ffb3cc'],
+        },
       },
     },
     {
@@ -205,7 +225,10 @@ export class KritzelControls {
                 <div class="kritzel-config-container" key={control.name}>
                   <div class="kritzel-tooltip" style={{ display: this.tooltipVisible ? 'block' : 'none' }} onClick={event => this.preventDefault(event)}>
                     {this.activeControl.name === 'brush' && (
-                      <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
+                      <kritzel-control-brush-config
+                        tool={this.activeToolAsBrushTool}
+                        onToolChange={event => this.handleToolChange?.(event)}
+                      ></kritzel-control-brush-config>
                     )}
 
                     {this.activeControl.name === 'text' && (

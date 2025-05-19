@@ -8,25 +8,29 @@ import { Components } from 'kritzel-stencil';
 
 
 @ProxyCmp({
-  inputs: ['brushOptions']
+  inputs: ['brushOptions', 'type']
 })
 @Component({
   selector: 'kritzel-brush-style',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['brushOptions'],
+  inputs: ['brushOptions', 'type'],
 })
 export class KritzelBrushStyle {
   protected el: HTMLKritzelBrushStyleElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['typeChange']);
   }
 }
 
 
-export declare interface KritzelBrushStyle extends Components.KritzelBrushStyle {}
+export declare interface KritzelBrushStyle extends Components.KritzelBrushStyle {
+
+  typeChange: EventEmitter<CustomEvent<'pen' | 'highlighter'>>;
+}
 
 
 @ProxyCmp({

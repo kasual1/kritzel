@@ -25,7 +25,11 @@ import { defineCustomElement as defineKritzelUtilityPanel } from '../../kritzel-
 
 
 export const KritzelBrushStyle: StencilVueComponent<JSX.KritzelBrushStyle> = /*@__PURE__*/ defineContainer<JSX.KritzelBrushStyle>('kritzel-brush-style', defineKritzelBrushStyle, [
-  'brushOptions'
+  'type',
+  'brushOptions',
+  'typeChange'
+], [
+  'typeChange'
 ]);
 
 
