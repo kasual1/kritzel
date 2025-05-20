@@ -14,6 +14,7 @@ import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelToolRegistry } from '../../../classes/tool.registry';
 import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
+import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 
 @Component({
   tag: 'kritzel-engine',
@@ -101,6 +102,7 @@ export class KritzelEngine {
     this.store.onStateChange('activeTool', (activeTool: KritzelBaseTool) => {
       this.store.state.skipContextMenu = false;
       this.activeToolChange.emit(activeTool);
+      KritzelKeyboardHelper.forceHideKeyboard();
     });
 
     this.store.onStateChange('isFocused', (isFocused: boolean) => {
