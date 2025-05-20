@@ -11,7 +11,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   fontColor: string = '#000000';
 
-  initialWidth: number = 2;
+  initialWidth: number = 3;
 
 	override debugInfoVisible: boolean = true;
 
@@ -32,7 +32,6 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.padding = 5;
     this.backgroundColor = 'transparent';
     this.scale = this._store.state.scale;
-    this.value = 'Teststring to fix resizing';
   }
 
   override mount(element: HTMLTextAreaElement): void {
