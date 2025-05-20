@@ -13,6 +13,8 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   initialWidth: number = 3;
 
+  isNew: boolean = true;
+
 	override debugInfoVisible: boolean = true;
 
   readonly rows: number = 1;
@@ -32,6 +34,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.padding = 5;
     this.backgroundColor = 'transparent';
     this.scale = this._store.state.scale;
+    this.value = ' ';
   }
 
   override mount(element: HTMLTextAreaElement): void {
@@ -62,7 +65,13 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   handleInput(event: InputEvent): void {
     const target = event.target as HTMLTextAreaElement;
-    this.value = target.value;
+
+    if (this.isNew) {
+      target.value = target.value.slice(1);
+      this.isNew = false;
+    }
+
+    this.value =  target.value;
     this.adjustTextareaSize();
   }
 
