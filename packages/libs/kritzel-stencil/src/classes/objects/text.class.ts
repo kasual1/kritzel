@@ -15,7 +15,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   isNew: boolean = true;
 
-	override debugInfoVisible: boolean = true;
+  override debugInfoVisible: boolean = true;
 
   readonly rows: number = 1;
 
@@ -30,7 +30,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.translateX = 0;
     this.translateY = 0;
     this.width = this.initialWidth / (this._store.state.scale < 0 ? this._store.state.scale : 1);
-    this.height = this.fontSize * 1.2 / (this._store.state.scale < 0 ? this._store.state.scale : 1);
+    this.height = (this.fontSize * 1.2) / (this._store.state.scale < 0 ? this._store.state.scale : 1);
     this.padding = 5;
     this.backgroundColor = 'transparent';
     this.scale = this._store.state.scale;
@@ -45,6 +45,12 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
     requestAnimationFrame(() => {
       this.elementRef.focus();
+
+      if (this.isNew) {
+        this.value = this.value.slice(1);
+        this.isNew = false;
+      }
+
       this.adjustTextareaSize();
     });
   }
@@ -65,13 +71,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   handleInput(event: InputEvent): void {
     const target = event.target as HTMLTextAreaElement;
-
-    if (this.isNew) {
-      target.value = target.value.slice(1);
-      this.isNew = false;
-    }
-
-    this.value =  target.value;
+    this.value = target.value;
     this.adjustTextareaSize();
   }
 
@@ -112,13 +112,13 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     if (this.elementRef) {
       this.elementRef.focus();
       try {
-        navigator.clipboard.readText().then((text) => {
+        navigator.clipboard.readText().then(text => {
           const start = this.elementRef.selectionStart;
           const end = this.elementRef.selectionEnd;
           const value = this.elementRef.value;
-          
+
           this.elementRef.value = value.substring(0, start) + text + value.substring(end);
-          
+
           this.elementRef.selectionStart = this.elementRef.selectionEnd = start + text.length;
           this.value = this.elementRef.value;
           this.adjustTextareaSize();
@@ -128,5 +128,4 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       }
     }
   }
-
 }
