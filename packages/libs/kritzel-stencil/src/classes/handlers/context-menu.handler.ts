@@ -20,7 +20,14 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       return;
     }
 
-    if (this._store.state.isResizing || this._store.state.isRotating || this._store.state.isDragging || this._store.state.isDrawing || this._store.state.isErasing || this._store.state.isWriting) {
+    if (
+      this._store.state.isResizing ||
+      this._store.state.isRotating ||
+      this._store.state.isDragging ||
+      this._store.state.isDrawing ||
+      this._store.state.isErasing ||
+      this._store.state.isWriting
+    ) {
       return;
     }
 
@@ -70,6 +77,10 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     this._store.state.isContextMenuVisible = true;
 
     this._store.state.isEnabled = false;
+
+    if ('vibrate' in navigator) {
+      navigator.vibrate(25);
+    }
 
     this._store.rerender();
   }
