@@ -58,7 +58,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         const x = Math.round(event.touches[0].clientX - this._store.offsetX);
         const y = Math.round(event.touches[0].clientY - this._store.offsetY);
 
-        this._store.state.isDragging = true;
         this.dragStartX = x;
         this.dragStartY = y;
         this.startX = x;
@@ -72,6 +71,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       const x = Math.round(event.touches[0].clientX - this._store.offsetX);
       const y = Math.round(event.touches[0].clientY - this._store.offsetY);
 
+      this._store.state.isDragging = true;
       this.endX = x;
       this.endY = y;
       this._store.state.selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
