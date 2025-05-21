@@ -103,6 +103,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       const selectedObject = this.getSelectedObject(event);
       const isDifferentObject = selectedObject && this._store.state.selectionGroup && selectedObject.id !== this._store.state.selectionGroup.id;
 
+      if(!this._store.state.selectionGroup && selectedObject){
+        this._store.state.skipContextMenu = true;
+      }
+      
       if (
         (selectedObject === null || isDifferentObject) &&
         this._store.state.selectionGroup &&
@@ -111,7 +115,9 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       ) {
         this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
       }
+      
     }
+
 
     this.rotationHandler.handleTouchStart(event);
     this.resizeHandler.handleTouchStart(event);
