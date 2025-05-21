@@ -15,6 +15,7 @@ import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelToolRegistry } from '../../../classes/tool.registry';
 import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
+import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
 
 @Component({
   tag: 'kritzel-engine',
@@ -35,8 +36,8 @@ export class KritzelEngine {
       icon: 'paste',
       disabled: () => this.store.state.copiedObjects === null,
       action: () => {
-        const x = (-this.store.state.translateX + this.contextMenuX) / this.store.state.scale;
-        const y = (-this.store.state.translateY + this.contextMenuY) / this.store.state.scale;
+        const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;
+        const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;
         this.paste(x, y);
       },
     },
@@ -51,8 +52,8 @@ export class KritzelEngine {
       icon: 'paste',
       disabled: () => this.store.state.copiedObjects === null,
       action: () => {
-        const x = (-this.store.state.translateX + this.contextMenuX) / this.store.state.scale;
-        const y = (-this.store.state.translateY + this.contextMenuY) / this.store.state.scale;
+        const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;
+        const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;
         this.paste(x, y);
       },
     },
@@ -64,24 +65,14 @@ export class KritzelEngine {
   @State()
   forceUpdate: number = 0;
 
-  @State()
-  contextMenuItems: ContextMenuItem[] = [];
-
-  @State()
-  isContextMenuVisible: boolean = false;
-
-  @State()
-  contextMenuX: number = 0;
-
-  @State()
-  contextMenuY: number = 0;
-
   @Event()
   activeToolChange: EventEmitter<KritzelBaseTool>;
 
   store: KritzelStore;
 
   viewport: KritzelViewport;
+
+  contextMenuHandler: KritzelContextMenuHandler;
 
   keyHandler: KritzelKeyHandler;
 
@@ -97,8 +88,8 @@ export class KritzelEngine {
 
   constructor() {
     this.store = new KritzelStore(this);
+    this.contextMenuHandler = new KritzelContextMenuHandler(this.store, this.globalContextMenuItems, this.objectContextMenuItems);
     this.keyHandler = new KritzelKeyHandler(this.store);
-
     this.store.onStateChange('activeTool', (activeTool: KritzelBaseTool) => {
       this.store.state.skipContextMenu = false;
       this.activeToolChange.emit(activeTool);
@@ -118,41 +109,11 @@ export class KritzelEngine {
 
   @Listen('contextmenu', { capture: false })
   handleContextMenu(ev: MouseEvent) {
-    ev.preventDefault();
-    if (this.store.state.isEnabled === false || !(this.store.state.activeTool instanceof KritzelSelectionTool)) {
+    if (this.store.state.isEnabled === false) {
       return;
     }
 
-    if (this.store.state.skipContextMenu === true) {
-      this.store.state.skipContextMenu = false;
-      return;
-    }
-
-    this.contextMenuItems = this.store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
-
-    let x = ev.clientX;
-    let y = ev.clientY;
-
-    const menuWidthEstimate = 150;
-    const menuHeightEstimate = 200;
-    const margin = 10;
-
-    if (x + menuWidthEstimate > window.innerWidth - margin) {
-      x = window.innerWidth - menuWidthEstimate - margin;
-    }
-
-    if (y + menuHeightEstimate > window.innerHeight - margin) {
-      y = window.innerHeight - menuHeightEstimate - margin;
-    }
-
-    x = Math.max(margin, x);
-    y = Math.max(margin, y);
-
-    this.contextMenuX = x;
-    this.contextMenuY = y;
-    this.isContextMenuVisible = true;
-
-    this.store.state.isEnabled = false;
+    this.contextMenuHandler.handleContextMenu(ev);
   }
 
   @Listen('mousedown', { passive: true })
@@ -195,10 +156,12 @@ export class KritzelEngine {
   }
 
   @Listen('touchstart', { passive: false })
-  handleTouchStart(ev) {
+  handleTouchStart(ev: TouchEvent) {
     if (this.store.state.isEnabled === false) {
       return;
     }
+
+    this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenu(ev), this.store.state.longTouchDelay);
 
     ev.preventDefault();
     this.viewport.handleTouchStart(ev);
@@ -222,15 +185,22 @@ export class KritzelEngine {
       return;
     }
 
+    clearTimeout(this.store.state.longTouchTimeout);
+
     ev.preventDefault();
     this.viewport.handleTouchEnd(ev);
     this.store.state?.activeTool?.handleTouchEnd(ev);
   }
 
+  @Listen('touchcancel', { passive: false })
+  handleTouchCancel(_ev) {
+    clearTimeout(this.store.state.longTouchTimeout);
+  }
+
   @Listen('wheel', { passive: false })
   handleWheel(ev) {
-    if (this.isContextMenuVisible) {
-      this.isContextMenuVisible = false;
+    if (this.store.state.isContextMenuVisible) {
+      this.store.state.isContextMenuVisible = false;
       this.store.state.isEnabled = true;
     }
     this.viewport.handleWheel(ev);
@@ -268,8 +238,8 @@ export class KritzelEngine {
   closeContextMenu(ev: MouseEvent) {
     const isInside = ev.composedPath().includes(this.contextMenuElement);
 
-    if (this.isContextMenuVisible && isInside === false && ev.button === 0) {
-      this.isContextMenuVisible = false;
+    if (this.store.state.isContextMenuVisible && isInside === false && ev.button === 0) {
+      this.store.state.isContextMenuVisible = false;
       this.store.state.isEnabled = true;
     }
   }
@@ -360,7 +330,7 @@ export class KritzelEngine {
 
   handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
     event.detail.action();
-    this.isContextMenuVisible = false;
+    this.store.state.isContextMenuVisible = false;
     this.store.state.isEnabled = true;
   }
 
@@ -672,14 +642,14 @@ export class KritzelEngine {
           </svg>
         </div>
 
-        {this.isContextMenuVisible && (
+        {this.store.state.isContextMenuVisible && (
           <kritzel-context-menu
             ref={el => (this.contextMenuElement = el)}
-            items={this.contextMenuItems}
+            items={this.store.state.contextMenuItems}
             style={{
               position: 'fixed',
-              left: `${this.contextMenuX}px`,
-              top: `${this.contextMenuY}px`,
+              left: `${this.store.state.contextMenuX}px`,
+              top: `${this.store.state.contextMenuY}px`,
               zIndex: '10000',
             }}
             onActionSelected={event => this.handleContextMenuAction(event)}

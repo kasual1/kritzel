@@ -64,6 +64,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   handleTouchMove(event: TouchEvent) {
     if (this._store.state.isSelecting) {
       this.updateTouchSelection(event);
+
+      if(this._store.state.selectionBox) {
+        this._store.state.skipContextMenu = true;
+      }
     }
   }
 
@@ -82,6 +86,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
         this.addSelectedObjectsToSelectionGroup();
         this.removeSelectionBox();
       }
+
+      this._store.state.skipContextMenu = false;
     }
   }
 
@@ -179,18 +185,17 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     const selectionBox = this._store.state.selectionBox;
 
+    
     if (selectionBox) {
       const currentX = (clientX - this._store.state.translateX) / selectionBox.scale;
       const currentY = (clientY - this._store.state.translateY) / selectionBox.scale;
-
+      
       selectionBox.width = Math.abs(currentX - this.selectionStartX) * selectionBox.scale;
       selectionBox.height = Math.abs(currentY - this.selectionStartY) * selectionBox.scale;
       selectionBox.translateX = Math.min(currentX, this.selectionStartX);
       selectionBox.translateY = Math.min(currentY, this.selectionStartY);
-
+      
       this.updateSelectedObjects();
-
-      this._store.rerender();
     }
   }
 

@@ -6,6 +6,7 @@ import { KritzelText } from "../classes/objects/text.class";
 import { KritzelOctree } from "../classes/structures/octree.structure";
 import { KritzelBaseTool } from "../classes/tools/base-tool.class";
 import { KritzelHandleType } from "../enums/handle-type.enum";
+import { ContextMenuItem } from "./context-menu-item.interface";
 import { KritzelDebugInfo } from "./debug-info.interface";
 
 export interface KritzelEngineState {
@@ -17,6 +18,7 @@ export interface KritzelEngineState {
   selectionBox?: KrtizelSelectionBox;
   selectionGroup?: KritzelSelectionGroup;
   resizeHandleType: KritzelHandleType;
+  hasViewportChanged: boolean;
   isEnabled: boolean;
   isScaling: boolean;
   isPanning: boolean;
@@ -31,7 +33,10 @@ export interface KritzelEngineState {
   isErasing: boolean;
   isWriting: boolean;
   isCtrlKeyPressed: boolean;
-  hasViewportChanged: boolean;
+  isContextMenuVisible: boolean;
+  contextMenuItems: ContextMenuItem[];
+  contextMenuX: number;
+  contextMenuY: number;
   skipContextMenu: boolean;
   debugInfo: KritzelDebugInfo;
   host: HTMLElement;
@@ -49,4 +54,6 @@ export interface KritzelEngineState {
   viewportHeight: number;
   historyBufferSize: number;
   touchCount: number;
+  longTouchTimeout: NodeJS.Timeout;
+  longTouchDelay: number;
 }
