@@ -14,6 +14,7 @@ import { AddSelectionGroupCommand } from './commands/add-selection-group.command
 import { UpdateObjectCommand } from './commands/update-object.command';
 import { KritzelEngine } from '../components/core/kritzel-engine/kritzel-engine';
 import { KritzelToolRegistry } from './tool.registry';
+import { KritzelContextMenu } from '../components/ui/kritzel-context-menu/kritzel-context-menu';
 
 const initialState: KritzelEngineState = {
   activeTool: null,
@@ -24,6 +25,7 @@ const initialState: KritzelEngineState = {
   selectionBox: null,
   selectionGroup: null,
   resizeHandleType: null,
+  hasViewportChanged: false,
   isEnabled: true,
   isScaling: false,
   isPanning: false,
@@ -38,7 +40,10 @@ const initialState: KritzelEngineState = {
   isErasing: false,
   isWriting: false,
   isCtrlKeyPressed: false,
-  hasViewportChanged: false,
+  isContextMenuVisible: false,
+  contextMenuItems: [],
+  contextMenuX: 0,
+  contextMenuY: 0,
   skipContextMenu: false,
   debugInfo: {
     showObjectInfo: false,
@@ -60,6 +65,8 @@ const initialState: KritzelEngineState = {
   viewportHeight: 0,
   historyBufferSize: 1000,
   touchCount: 0,
+  longTouchTimeout: null,
+  longTouchDelay: 500,
 };
 export class KritzelStore {
   private readonly _kritzelEngine: KritzelEngine;
@@ -263,14 +270,16 @@ export class KritzelStore {
   }
 
   selectAllInViewport() {
-    const objectsInViewport = this._state.objectsOctree.query({
-      x: -this._state.translateX / this._state.scale,
-      y: -this._state.translateY / this._state.scale,
-      z: this._state.scale,
-      width: this._state.viewportWidth / this._state.scale,
-      height: this._state.viewportHeight / this._state.scale,
-      depth: 100,
-    });
+    const objectsInViewport = this._state.objectsOctree
+      .query({
+        x: -this._state.translateX / this._state.scale,
+        y: -this._state.translateY / this._state.scale,
+        z: this._state.scale,
+        width: this._state.viewportWidth / this._state.scale,
+        height: this._state.viewportHeight / this._state.scale,
+        depth: 100,
+      })
+      .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox) && !(o instanceof KritzelContextMenu));
 
     if (objectsInViewport.length > 0) {
       const selectionGroup = new KritzelSelectionGroup(this);
@@ -281,6 +290,8 @@ export class KritzelStore {
       });
 
       selectionGroup.selected = true;
+
+      this.state.isSelecting = false;
 
       this.history.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
       this.setState('activeTool', KritzelToolRegistry.getTool('selection'));
