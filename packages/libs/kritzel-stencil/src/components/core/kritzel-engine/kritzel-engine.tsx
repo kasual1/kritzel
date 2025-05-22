@@ -147,12 +147,25 @@ export class KritzelEngine {
 
   @Listen('touchstart', { passive: false })
   handleTouchStart(ev: TouchEvent) {
+    debugger;
+
+    if (this.store.state.isContextMenuVisible) {
+      this.store.state.isContextMenuVisible = false;
+      this.store.state.isEnabled = true;
+      return;
+    }
+
     if (this.store.state.isEnabled === false) {
       return;
     }
 
+    if (this.store.state.isContextMenuVisible) {
+      this.store.state.isContextMenuVisible = false;
+      return;
+    }
+
     this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenu(ev), this.store.state.longTouchDelay);
-    
+
     ev.preventDefault();
     this.viewport.handleTouchStart(ev);
     this.store.state?.activeTool?.handleTouchStart(ev);
@@ -225,15 +238,9 @@ export class KritzelEngine {
     this.store.setState('isFocused', isInside && isInKritzelEngine);
   }
 
-  @Listen('mousedown', { passive: true })
-  closeContextMenu(ev: MouseEvent) {
-    const isInside = ev.composedPath().includes(this.contextMenuElement);
-
-    if (this.store.state.isContextMenuVisible && isInside === false && ev.button === 0) {
-      this.store.state.selectionBox = null;
-      this.store.state.isContextMenuVisible = false;
-      this.store.state.isEnabled = true;
-    }
+  handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
+    event.detail.action();
+    this.store.state.isContextMenuVisible = false;
   }
 
   @Method()
@@ -318,12 +325,6 @@ export class KritzelEngine {
   @Method()
   async redo() {
     this.store.history.redo();
-  }
-
-  handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
-    event.detail.action();
-    this.store.state.isContextMenuVisible = false;
-    this.store.state.isEnabled = true;
   }
 
   render() {

@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter, Element } from '@stencil/core';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 
 @Component({
@@ -7,15 +7,22 @@ import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface
   shadow: true,
 })
 export class KritzelContextMenu {
-  @Prop() 
+  @Prop()
   items: ContextMenuItem[];
 
-  @Event() 
+  @Event()
   actionSelected: EventEmitter<ContextMenuItem>;
 
+  @Event()
+  close: EventEmitter<void>;
+
+  @Element()
+  hostElement: HTMLElement;
+
   private handleItemClick(item: ContextMenuItem) {
-    const isDisabled = typeof item.disabled === 'function' ? item.disabled() : item.disabled;
     
+    const isDisabled = typeof item.disabled === 'function' ? item.disabled() : item.disabled;
+
     if (!isDisabled) {
       this.actionSelected.emit(item);
     }
@@ -30,6 +37,7 @@ export class KritzelContextMenu {
               key={`${item.label}-${this.items.indexOf(item)}`}
               class={{ 'menu-item': true, 'disabled': typeof item.disabled === 'function' ? item.disabled() : item.disabled }}
               onClick={() => this.handleItemClick(item)}
+              onTouchStart={() => this.handleItemClick(item)}
               disabled={typeof item.disabled === 'function' ? item.disabled() : item.disabled}
             >
               {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}

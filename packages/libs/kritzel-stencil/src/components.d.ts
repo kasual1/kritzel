@@ -196,6 +196,7 @@ declare global {
     };
     interface HTMLKritzelContextMenuElementEventMap {
         "actionSelected": ContextMenuItem;
+        "close": void;
     }
     interface HTMLKritzelContextMenuElement extends Components.KritzelContextMenu, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelContextMenuElementEventMap>(type: K, listener: (this: HTMLKritzelContextMenuElement, ev: KritzelContextMenuCustomEvent<HTMLKritzelContextMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -419,6 +420,7 @@ declare namespace LocalJSX {
     interface KritzelContextMenu {
         "items"?: ContextMenuItem[];
         "onActionSelected"?: (event: KritzelContextMenuCustomEvent<ContextMenuItem>) => void;
+        "onClose"?: (event: KritzelContextMenuCustomEvent<void>) => void;
     }
     interface KritzelControlBrushConfig {
         "isExpanded"?: boolean;

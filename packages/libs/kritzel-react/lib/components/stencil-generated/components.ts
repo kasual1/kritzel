@@ -62,14 +62,20 @@ export const KritzelColorPalette: StencilReactComponent<KritzelColorPaletteEleme
     defineCustomElement: defineKritzelColorPalette
 });
 
-export type KritzelContextMenuEvents = { onActionSelected: EventName<KritzelContextMenuCustomEvent<ContextMenuItem>> };
+export type KritzelContextMenuEvents = {
+    onActionSelected: EventName<KritzelContextMenuCustomEvent<ContextMenuItem>>,
+    onClose: EventName<CustomEvent<void>>
+};
 
 export const KritzelContextMenu: StencilReactComponent<KritzelContextMenuElement, KritzelContextMenuEvents> = /*@__PURE__*/ createComponent<KritzelContextMenuElement, KritzelContextMenuEvents>({
     tagName: 'kritzel-context-menu',
     elementClass: KritzelContextMenuElement,
     // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
     react: React,
-    events: { onActionSelected: 'actionSelected' } as KritzelContextMenuEvents,
+    events: {
+        onActionSelected: 'actionSelected',
+        onClose: 'close'
+    } as KritzelContextMenuEvents,
     defineCustomElement: defineKritzelContextMenu
 });
 
