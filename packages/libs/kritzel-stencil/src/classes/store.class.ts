@@ -66,7 +66,7 @@ const initialState: KritzelEngineState = {
   historyBufferSize: 1000,
   touchCount: 0,
   longTouchTimeout: null,
-  longTouchDelay: 500,
+  longTouchDelay: 300,
 };
 export class KritzelStore {
   private readonly _kritzelEngine: KritzelEngine;
@@ -305,5 +305,34 @@ export class KritzelStore {
     }
 
     this.state.activeText = null;
+  }
+
+  getObjectFromPointerEvent(event: TouchEvent | MouseEvent, selector = '.object'): KritzelBaseObject<any> | null {
+    const shadowRoot = this.state.host?.shadowRoot;
+    if (!shadowRoot) return null;
+
+    let clientX: number;
+    let clientY: number;
+
+    if ('touches' in event) {
+      const touch = event.touches[0];
+      if (!touch) return null;
+      clientX = touch.clientX;
+      clientY = touch.clientY;
+    } else {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    }
+    
+    const elementAtPoint = shadowRoot.elementFromPoint(clientX, clientY);
+    if (!elementAtPoint) return null;
+
+    const selectedObject = elementAtPoint.closest(selector) as HTMLElement | null;
+
+    if (selectedObject) {
+      return this.allObjects.find(object => selectedObject.id === object.id);
+    }
+
+    return null;
   }
 }

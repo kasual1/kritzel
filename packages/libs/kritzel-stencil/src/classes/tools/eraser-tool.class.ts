@@ -22,18 +22,10 @@ export class KritzelEraserTool extends KritzelBaseTool {
       const shadowRoot = this._store.state.host?.shadowRoot;
       if (!shadowRoot) return;
 
-      const elementAtPoint = shadowRoot.elementFromPoint(event.clientX, event.clientY);
-      if (!elementAtPoint) return;
+      const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
+      if (!selectedObject) return;
 
-      const selectedObject = elementAtPoint.closest('.object') as HTMLElement | null;
-
-      if (selectedObject) {
-        for (const object of this._store.allObjects) {
-          if (selectedObject.id === object.id) {
-            object.markedForRemoval = true;
-          }
-        }
-      }
+      selectedObject.markedForRemoval = true;
 
       this._store.rerender();
     }
@@ -69,19 +61,10 @@ export class KritzelEraserTool extends KritzelBaseTool {
       const shadowRoot = this._store.state.host?.shadowRoot;
       if (!shadowRoot) return;
 
-      const touch = event.touches[0];
-      const elementAtPoint = shadowRoot.elementFromPoint(touch.clientX, touch.clientY);
-      if (!elementAtPoint) return;
+      const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
+      if (!selectedObject) return;
 
-      const selectedObject = elementAtPoint.closest('.object') as HTMLElement | null;
-
-      if (selectedObject) {
-        for (const object of this._store.allObjects) {
-          if (selectedObject.id === object.id) {
-            object.markedForRemoval = true;
-          }
-        }
-      }
+      selectedObject.markedForRemoval = true;
 
       this._store.rerender();
     }
