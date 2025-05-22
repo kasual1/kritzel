@@ -2,21 +2,23 @@ import { cloneDeep } from 'lodash-es';
 import { KritzelBaseObject } from '../classes/objects/base-object.class';
 
 export class ObjectHelper {
-
   static safeStringify(obj, indent = 2) {
     const seen = new WeakSet();
-  
-    return JSON.stringify(obj, (_key, value) => {
-      if (typeof value === "object" && value !== null) {
-        if (seen.has(value)) {
-          return undefined;
-        }
-        seen.add(value);
-      }
-      return value;
-    }, indent);
-  }
 
+    return JSON.stringify(
+      obj,
+      (_key, value) => {
+        if (typeof value === 'object' && value !== null) {
+          if (seen.has(value)) {
+            return undefined;
+          }
+          seen.add(value);
+        }
+        return value;
+      },
+      indent,
+    );
+  }
 
   static generateUUID(): string {
     return Math.random().toString(36).substr(2, 9);
@@ -42,7 +44,5 @@ export class ObjectHelper {
     }
     return Object?.keys(obj).length === 0 && obj?.constructor === Object;
   }
-  
-
 
 }
