@@ -80,6 +80,7 @@ export class KritzelEngine {
     this.store = new KritzelStore(this);
     this.contextMenuHandler = new KritzelContextMenuHandler(this.store, this.globalContextMenuItems, this.objectContextMenuItems);
     this.keyHandler = new KritzelKeyHandler(this.store);
+
     this.store.onStateChange('activeTool', (activeTool: KritzelBaseTool) => {
       this.store.state.skipContextMenu = false;
       this.activeToolChange.emit(activeTool);

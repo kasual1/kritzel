@@ -1,3 +1,4 @@
+import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelStore } from '../store.class';
 import { KritzelSelectionTool } from '../tools/selection-tool.class';
@@ -35,13 +36,17 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     if (event instanceof TouchEvent) {
       const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
 
-      if (selectedObject) {
+      if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup)) {
         this._store.state.selectionGroup = new KritzelSelectionGroup(this._store);
         this._store.state.selectionGroup.addOrRemove(selectedObject);
         this._store.state.selectionGroup.selected = true;
         this._store.state.selectionGroup.rotation = selectedObject.rotation;
         this._store.state.isSelecting = false;
+
+        this._store.history.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
       }
+
+
     }
 
     this._store.state.contextMenuItems = this._store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;

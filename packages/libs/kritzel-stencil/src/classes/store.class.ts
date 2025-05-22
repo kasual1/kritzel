@@ -47,7 +47,7 @@ const initialState: KritzelEngineState = {
   skipContextMenu: false,
   debugInfo: {
     showObjectInfo: false,
-    showViewportInfo: true,
+    showViewportInfo: false,
     logCommands: false,
   },
   host: null,
@@ -177,6 +177,10 @@ export class KritzelStore {
   }
 
   delete() {
+    if (!this.state.selectionGroup) {
+      return;
+    }
+
     const deleteSelectedObjectsCommand = this.state.selectionGroup.objects.map(obj => new RemoveObjectCommand(this, this.state.selectionGroup, obj));
     const removeSelectionGroupCommand = new RemoveSelectionGroupCommand(this, this.state.selectionGroup);
     const commands = [...deleteSelectedObjectsCommand, removeSelectionGroupCommand];
@@ -202,6 +206,7 @@ export class KritzelStore {
   }
 
   paste(x?: number, y?: number) {
+    debugger
     this.state.copiedObjects.selected = true;
 
     const adjustedX = x !== undefined ? x : this.state.copiedObjects.translateX + 25;
@@ -221,6 +226,7 @@ export class KritzelStore {
 
     this.history.executeCommand(new BatchCommand(this, this, commands));
 
+    this.state.isSelecting = false;
     this.state.copiedObjects = this.state.selectionGroup.copy() as KritzelSelectionGroup;
     this.setState('activeTool', KritzelToolRegistry.getTool('selection'));
   }
