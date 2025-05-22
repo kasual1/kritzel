@@ -230,6 +230,7 @@ export class KritzelEngine {
     const isInside = ev.composedPath().includes(this.contextMenuElement);
 
     if (this.store.state.isContextMenuVisible && isInside === false && ev.button === 0) {
+      this.store.state.selectionBox = null;
       this.store.state.isContextMenuVisible = false;
       this.store.state.isEnabled = true;
     }
