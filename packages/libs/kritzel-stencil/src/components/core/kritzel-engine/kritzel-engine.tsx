@@ -47,16 +47,6 @@ export class KritzelEngine {
   @Prop()
   objectContextMenuItems: ContextMenuItem[] = [
     { label: 'Copy', icon: 'copy', action: () => this.copy() },
-    {
-      label: 'Paste',
-      icon: 'paste',
-      disabled: () => this.store.state.copiedObjects === null,
-      action: () => {
-        const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;
-        const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;
-        this.paste(x, y);
-      },
-    },
     { label: 'Delete', icon: 'delete', action: () => this.delete() },
     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },
     { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },
@@ -162,7 +152,7 @@ export class KritzelEngine {
     }
 
     this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenu(ev), this.store.state.longTouchDelay);
-
+    
     ev.preventDefault();
     this.viewport.handleTouchStart(ev);
     this.store.state?.activeTool?.handleTouchStart(ev);
@@ -203,6 +193,7 @@ export class KritzelEngine {
       this.store.state.isContextMenuVisible = false;
       this.store.state.isEnabled = true;
     }
+
     this.viewport.handleWheel(ev);
     this.store.state?.activeTool?.handleWheel(ev);
   }

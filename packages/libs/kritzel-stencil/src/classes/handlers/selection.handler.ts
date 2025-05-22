@@ -7,8 +7,11 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelSelectionHandler extends KritzelBaseHandler {
-  selectionStartX: number;
-  selectionStartY: number;
+  startX: number;
+  startY: number;
+
+  touchStartX: number = 0;
+  touchStartY: number = 0;
 
   touchStartTimeout: any = null;
 
@@ -53,19 +56,26 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   handleTouchStart(event: TouchEvent) {
-    if (this._store.state.touchCount === 1 && !this._store.state.isScaling  && !this._store.state.selectionGroup) {
+    this.touchStartTimeout = setTimeout(() => {
+      if (this._store.state.touchCount === 1 && !this._store.state.isScaling  && !this._store.state.selectionGroup) {
         this.startTouchSelection(event);
         this.updateTouchSelection(event);
       }
+    }, 80);
   }
 
   handleTouchMove(event: TouchEvent) {
-    if (this._store.state.isSelecting) {
+    const x = Math.round(event.touches[0].clientX - this._store.offsetX);
+    const y = Math.round(event.touches[0].clientY - this._store.offsetY);
+
+    const moveDeltaX = Math.abs(x - this.touchStartX);
+    const moveDeltaY = Math.abs(y - this.touchStartY);
+    const moveThreshold = 5;
+
+    if ((moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) && this._store.state.isSelecting) {
       this.updateTouchSelection(event);
 
-      if(this._store.state.selectionBox) {
-        this._store.state.skipContextMenu = true;
-      }
+      clearTimeout(this._store.state.longTouchTimeout);
     }
   }
 
@@ -104,11 +114,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     const selectionBox = new KrtizelSelectionBox(this._store);
 
-    this.selectionStartX = (clientX - this._store.state.translateX) / this._store.state.scale;
-    this.selectionStartY = (clientY - this._store.state.translateY) / this._store.state.scale;
+    this.startX = (clientX - this._store.state.translateX) / this._store.state.scale;
+    this.startY = (clientY - this._store.state.translateY) / this._store.state.scale;
 
-    selectionBox.translateX = this.selectionStartX;
-    selectionBox.translateY = this.selectionStartY;
+    selectionBox.translateX = this.startX;
+    selectionBox.translateY = this.startY;
 
     this._store.state.selectionGroup = null;
     this._store.state.selectionBox = selectionBox;
@@ -121,7 +131,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   private startTouchSelection(event: TouchEvent): void {
     const firstTouch = event.touches[0];
 
-    if(!firstTouch) {
+    if (!firstTouch) {
       return;
     }
 
@@ -129,14 +139,16 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     clientX = Math.round(firstTouch.clientX - this._store.offsetX);
     clientY = Math.round(firstTouch.clientY - this._store.offsetY);
+    this.touchStartX = clientX;
+    this.touchStartY = clientY;
 
     const selectionBox = new KrtizelSelectionBox(this._store);
 
-    this.selectionStartX = (clientX - this._store.state.translateX) / this._store.state.scale;
-    this.selectionStartY = (clientY - this._store.state.translateY) / this._store.state.scale;
+    this.startX = (clientX - this._store.state.translateX) / this._store.state.scale;
+    this.startY = (clientY - this._store.state.translateY) / this._store.state.scale;
 
-    selectionBox.translateX = this.selectionStartX;
-    selectionBox.translateY = this.selectionStartY;
+    selectionBox.translateX = this.startX;
+    selectionBox.translateY = this.startY;
 
     this._store.state.selectionGroup = null;
     this._store.state.selectionBox = selectionBox;
@@ -158,10 +170,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       const currentX = (clientX - this._store.state.translateX) / selectionBox.scale;
       const currentY = (clientY - this._store.state.translateY) / selectionBox.scale;
 
-      selectionBox.width = Math.abs(currentX - this.selectionStartX) * selectionBox.scale;
-      selectionBox.height = Math.abs(currentY - this.selectionStartY) * selectionBox.scale;
-      selectionBox.translateX = Math.min(currentX, this.selectionStartX);
-      selectionBox.translateY = Math.min(currentY, this.selectionStartY);
+      selectionBox.width = Math.abs(currentX - this.startX) * selectionBox.scale;
+      selectionBox.height = Math.abs(currentY - this.startY) * selectionBox.scale;
+      selectionBox.translateX = Math.min(currentX, this.startX);
+      selectionBox.translateY = Math.min(currentY, this.startY);
 
       this.updateSelectedObjects();
 
@@ -172,7 +184,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   private updateTouchSelection(event: TouchEvent): void {
     const firstTouch = event.touches[0];
 
-    if(!firstTouch) {
+    if (!firstTouch) {
       return;
     }
 
@@ -183,16 +195,15 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     const selectionBox = this._store.state.selectionBox;
 
-    
     if (selectionBox) {
       const currentX = (clientX - this._store.state.translateX) / selectionBox.scale;
       const currentY = (clientY - this._store.state.translateY) / selectionBox.scale;
-      
-      selectionBox.width = Math.abs(currentX - this.selectionStartX) * selectionBox.scale;
-      selectionBox.height = Math.abs(currentY - this.selectionStartY) * selectionBox.scale;
-      selectionBox.translateX = Math.min(currentX, this.selectionStartX);
-      selectionBox.translateY = Math.min(currentY, this.selectionStartY);
-      
+
+      selectionBox.width = Math.abs(currentX - this.startX) * selectionBox.scale;
+      selectionBox.height = Math.abs(currentY - this.startY) * selectionBox.scale;
+      selectionBox.translateX = Math.min(currentX, this.startX);
+      selectionBox.translateY = Math.min(currentY, this.startY);
+
       this.updateSelectedObjects();
     }
   }
