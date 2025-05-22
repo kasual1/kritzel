@@ -147,8 +147,6 @@ export class KritzelEngine {
 
   @Listen('touchstart', { passive: false })
   handleTouchStart(ev: TouchEvent) {
-    debugger;
-
     if (this.store.state.isContextMenuVisible) {
       this.store.state.isContextMenuVisible = false;
       this.store.state.isEnabled = true;

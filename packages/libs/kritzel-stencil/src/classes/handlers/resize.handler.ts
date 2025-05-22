@@ -154,6 +154,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
       }
 
       this._store.state.selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+      
+      clearTimeout(this._store.state.longTouchTimeout);
     }
   }
 
