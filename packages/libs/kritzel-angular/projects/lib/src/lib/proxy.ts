@@ -96,7 +96,7 @@ export class KritzelContextMenu {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['actionSelected']);
+    proxyOutputs(this, this.el, ['actionSelected', 'close']);
   }
 }
 
@@ -106,6 +106,8 @@ import type { ContextMenuItem as IKritzelContextMenuContextMenuItem } from 'krit
 export declare interface KritzelContextMenu extends Components.KritzelContextMenu {
 
   actionSelected: EventEmitter<CustomEvent<IKritzelContextMenuContextMenuItem>>;
+
+  close: EventEmitter<CustomEvent<void>>;
 }
 
 
