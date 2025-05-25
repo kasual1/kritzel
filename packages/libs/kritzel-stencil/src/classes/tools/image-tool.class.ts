@@ -40,13 +40,6 @@ export class KritzelImageTool extends KritzelBaseTool {
     document.body.appendChild(this.fileInput);
   }
 
-  private cleanupFileInput(): void {
-    if (this.fileInput && this.fileInput.parentNode) {
-      this.fileInput.parentNode.removeChild(this.fileInput);
-    }
-    this.fileInput = null;
-  }
-
   private handleFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -123,11 +116,9 @@ export class KritzelImageTool extends KritzelBaseTool {
     this._store.history.executeCommand(new BatchCommand(this._store, this, [addImageCommand, addSelectionGroupCommand]));
 
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
-    this.cleanupFileInput();
   }
 
   private handleCancel(): void {
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
-    this.cleanupFileInput();
   }
 }

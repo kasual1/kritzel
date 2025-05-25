@@ -47,6 +47,16 @@ export class KritzelEngine {
   @Prop()
   objectContextMenuItems: ContextMenuItem[] = [
     { label: 'Copy', icon: 'copy', action: () => this.copy() },
+    {
+      label: 'Paste',
+      icon: 'paste',
+      disabled: () => this.store.state.copiedObjects === null,
+      action: () => {
+        const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;
+        const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;
+        this.paste(x, y);
+      },
+    },
     { label: 'Delete', icon: 'delete', action: () => this.delete() },
     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },
     { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },
@@ -82,9 +92,11 @@ export class KritzelEngine {
     this.keyHandler = new KritzelKeyHandler(this.store);
 
     this.store.onStateChange('activeTool', (activeTool: KritzelBaseTool) => {
-      console.log('activeTool changed', activeTool);
+      if(!(activeTool instanceof KritzelSelectionTool)){
+        this.store.resetSelection();
+      }
+      
       this.store.state.skipContextMenu = false;
-      this.store.resetSelection();
       this.activeToolChange.emit(activeTool);
       KritzelKeyboardHelper.forceHideKeyboard();
     });
@@ -111,6 +123,12 @@ export class KritzelEngine {
 
   @Listen('mousedown', { passive: true })
   handleMouseDown(ev: MouseEvent) {
+     if (this.store.state.isContextMenuVisible) {
+      this.store.state.isContextMenuVisible = false;
+      this.store.state.isEnabled = true;
+      return;
+    }
+
     if (this.store.state.isEnabled === false) {
       return;
     }
