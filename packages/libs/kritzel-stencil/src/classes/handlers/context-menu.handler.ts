@@ -16,17 +16,8 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
   }
 
   handleContextMenu(event: MouseEvent | TouchEvent): void {
-    event.preventDefault();
-
     if (this._store.state.touchCount > 1 || !(this._store.state.activeTool instanceof KritzelSelectionTool)) {
       return;
-    }
-
-    if (event instanceof MouseEvent) {
-      if (this._store.state.skipContextMenu === true) {
-        this._store.state.skipContextMenu = false;
-        return;
-      }
     }
 
     if ('vibrate' in navigator) {
