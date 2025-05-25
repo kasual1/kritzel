@@ -117,6 +117,7 @@ export class KritzelViewport {
       this.startY = midpointY;
 
       this._store.state.hasViewportChanged = true;
+
       this._store.rerender();
     }
   }
