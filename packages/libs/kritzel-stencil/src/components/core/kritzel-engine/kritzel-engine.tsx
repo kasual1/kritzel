@@ -170,16 +170,12 @@ export class KritzelEngine {
   handleTouchStart(ev: TouchEvent) {
     if (this.store.state.isContextMenuVisible) {
       this.store.state.isContextMenuVisible = false;
+      this.store.state.selectionBox = null;
       this.store.state.isEnabled = true;
       return;
     }
 
     if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    if (this.store.state.isContextMenuVisible) {
-      this.store.state.isContextMenuVisible = false;
       return;
     }
 
