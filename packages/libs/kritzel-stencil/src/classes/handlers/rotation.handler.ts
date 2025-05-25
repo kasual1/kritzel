@@ -84,6 +84,8 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
         const cursorY = (clientY - this._store.state.translateY) / this._store.state.scale;
 
         this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - this._store.state.selectionGroup.rotation;
+
+        clearTimeout(this._store.state.longTouchTimeout);
       }
     }
   }
@@ -110,7 +112,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
       this.rotation = currentRotation - this.initialRotation;
 
       this._store.state.selectionGroup.rotate(this.rotation);
-      
+
       clearTimeout(this._store.state.longTouchTimeout);
     }
   }
@@ -123,6 +125,8 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
       this.initialRotation = 0;
       this.rotation = 0;
+
+      clearTimeout(this._store.state.longTouchTimeout);
     }
   }
 }
