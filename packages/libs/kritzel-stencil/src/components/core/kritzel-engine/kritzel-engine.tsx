@@ -172,6 +172,10 @@ export class KritzelEngine {
       return;
     }
 
+    if(ev.touches.length > 1) {
+      clearTimeout(this.store.state.longTouchTimeout);
+    }
+
     this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenu(ev), this.store.state.longTouchDelay);
     
     ev.preventDefault();
