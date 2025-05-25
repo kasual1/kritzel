@@ -92,10 +92,10 @@ export class KritzelEngine {
     this.keyHandler = new KritzelKeyHandler(this.store);
 
     this.store.onStateChange('activeTool', (activeTool: KritzelBaseTool) => {
-      if(!(activeTool instanceof KritzelSelectionTool)){
+      if (!(activeTool instanceof KritzelSelectionTool)) {
         this.store.resetSelection();
       }
-      
+
       this.store.state.skipContextMenu = false;
       this.activeToolChange.emit(activeTool);
       KritzelKeyboardHelper.forceHideKeyboard();
@@ -123,7 +123,7 @@ export class KritzelEngine {
 
   @Listen('mousedown', { passive: true })
   handleMouseDown(ev: MouseEvent) {
-     if (this.store.state.isContextMenuVisible) {
+    if (this.store.state.isContextMenuVisible) {
       this.store.state.isContextMenuVisible = false;
       this.store.state.isEnabled = true;
       return;
@@ -180,7 +180,7 @@ export class KritzelEngine {
     }
 
     this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenu(ev), this.store.state.longTouchDelay);
-
+    
     ev.preventDefault();
     this.viewport.handleTouchStart(ev);
     this.store.state?.activeTool?.handleTouchStart(ev);
@@ -589,7 +589,7 @@ export class KritzelEngine {
                     x1={object.totalWidth / 2}
                     y1="0"
                     x2={object.totalWidth / 2}
-                    y2="-20"
+                    y2={-((15 * object.scale) / this.store.state?.scale)}
                     style={{
                       stroke: 'var(--kritzel-selection-border-color)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
@@ -599,7 +599,7 @@ export class KritzelEngine {
                   <circle
                     class="rotation-handle"
                     cx={object.totalWidth / 2}
-                    cy="-20"
+                    cy={-((15 * object.scale) / this.store.state?.scale)}
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     style={{
                       fill: 'var(--kritzel-selection-handle-color)',
