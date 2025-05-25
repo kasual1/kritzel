@@ -56,7 +56,7 @@ const initialState: KritzelEngineState = {
   scale: 1,
   scaleMax: 1000,
   scaleMin: 0.0001,
-  scaleStep: 0.025,
+  scaleStep: 0.05,
   startX: 0,
   startY: 0,
   translateX: 0,
@@ -347,6 +347,7 @@ export class KritzelStore {
     this.state.isSelecting = false;
     this.state.isResizeHandleSelected = false;
     this.state.isRotationHandleSelected = false;
+    this._state.objectsOctree.remove(obj => obj instanceof KritzelSelectionGroup);
     this.rerender();
   }
 }
