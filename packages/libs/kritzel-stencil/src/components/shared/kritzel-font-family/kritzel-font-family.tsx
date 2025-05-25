@@ -25,7 +25,7 @@ export class KritzelFontFamily {
     { value: 'brush script mt', label: 'Brush Script MT' },
   ];
 
-  @Prop() 
+  @Prop({ mutable: true }) 
   selectedFontFamily: string;
 
   @Event()

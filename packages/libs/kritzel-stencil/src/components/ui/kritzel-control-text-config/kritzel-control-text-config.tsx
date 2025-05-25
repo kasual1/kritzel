@@ -10,7 +10,7 @@ export class KritzelControlTextConfig {
   @Prop({ mutable: true })
   tool: KritzelTextTool;
 
-  @Prop()
+  @Prop({ mutable: true })
   isExpanded: boolean = false;
 
   @Event()

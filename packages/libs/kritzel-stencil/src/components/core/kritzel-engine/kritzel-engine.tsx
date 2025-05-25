@@ -82,10 +82,9 @@ export class KritzelEngine {
     this.keyHandler = new KritzelKeyHandler(this.store);
 
     this.store.onStateChange('activeTool', (activeTool: KritzelBaseTool) => {
+      console.log('activeTool changed', activeTool);
       this.store.state.skipContextMenu = false;
-      this.store.state.selectionGroup = null;
-      this.store.state.selectionBox = null;
-      this.store.rerender();
+      this.store.resetSelection();
       this.activeToolChange.emit(activeTool);
       KritzelKeyboardHelper.forceHideKeyboard();
     });

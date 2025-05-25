@@ -10,7 +10,7 @@ export class KritzelControlBrushConfig {
   @Prop({ mutable: true })
   tool: KritzelBrushTool;
 
-  @Prop()
+  @Prop({ mutable: true })
   isExpanded: boolean = false;
 
   @Event()
