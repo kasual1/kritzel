@@ -41,9 +41,6 @@ export class KritzelDropdown {
 
   componentWillLoad() {
     this.updateInternalValue(this.value, false);
-  }
-
-  componentDidLoad() {
     this.evaluateSuffixContent();
     this.evaluatePrefixContent();
   }

@@ -206,7 +206,6 @@ export class KritzelStore {
   }
 
   paste(x?: number, y?: number) {
-    debugger
     this.state.copiedObjects.selected = true;
 
     const adjustedX = x !== undefined ? x : this.state.copiedObjects.translateX + 25;
@@ -340,5 +339,14 @@ export class KritzelStore {
     }
 
     return null;
+  }
+
+  resetSelection() {
+    this.state.selectionGroup = null;
+    this.state.selectionBox = null;
+    this.state.isSelecting = false;
+    this.state.isResizeHandleSelected = false;
+    this.state.isRotationHandleSelected = false;
+    this.rerender();
   }
 }
