@@ -56,7 +56,7 @@ const initialState: KritzelEngineState = {
   scale: 1,
   scaleMax: 1000,
   scaleMin: 0.0001,
-  scaleStep: 0.05,
+  scaleStep: 0.025,
   startX: 0,
   startY: 0,
   translateX: 0,
