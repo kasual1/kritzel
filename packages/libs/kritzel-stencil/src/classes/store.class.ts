@@ -304,7 +304,7 @@ export class KritzelStore {
   }
 
   resetActiveText() {
-    if (this.state.activeText && this.state.activeText.value === '') {
+    if (this.state.activeText && this.state.activeText.value === ' ') {
       this.deleteObject(this.state.activeText.id, false);
       this.history.undoStack.pop();
     }

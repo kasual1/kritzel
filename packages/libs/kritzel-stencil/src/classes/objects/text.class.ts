@@ -45,12 +45,6 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
     requestAnimationFrame(() => {
       this.elementRef.focus();
-
-      if (this.isNew) {
-        this.value = this.value.slice(1);
-        this.isNew = false;
-      }
-
       this.adjustTextareaSize();
     });
   }
@@ -71,7 +65,15 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   handleInput(event: InputEvent): void {
     const target = event.target as HTMLTextAreaElement;
-    this.value = target.value;
+    if (target.value === '') {
+      this.value = ' ';
+      target.value = ' ';
+      target.selectionStart = target.selectionEnd = target.value.length;
+    } else {
+      this.value = target.value.trim();
+    }
+
+    console.log('Text input:', this.value);
     this.adjustTextareaSize();
   }
 
@@ -79,18 +81,24 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     if (this.elementRef) {
       const span = document.createElement('span');
       span.style.position = 'absolute';
-      span.style.whiteSpace = 'pre';
+      span.style.whiteSpace = 'pre-wrap'; 
       span.style.visibility = 'hidden';
       span.style.fontSize = window.getComputedStyle(this.elementRef).fontSize;
       span.style.fontFamily = window.getComputedStyle(this.elementRef).fontFamily;
-      span.textContent = this.elementRef.value;
+
+      span.innerHTML = this.elementRef.value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br>') + '<br>';
 
       document.body.appendChild(span);
       const textWidth = span.offsetWidth;
+      const textHeight = span.offsetHeight;
       document.body.removeChild(span);
 
       this.width = textWidth;
-      this.height = this.elementRef.scrollHeight;
+      this.height = textHeight;
 
       this._store.rerender();
     }
