@@ -217,7 +217,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     const copiedObject: KritzelBaseObject<T> = Object.create(Object.getPrototypeOf(this));
     Object.assign(copiedObject, this);
     copiedObject.id = this.generateId();
-    copiedObject.isMounted = true;
+    copiedObject.isMounted = false;
     return copiedObject;
   }
 

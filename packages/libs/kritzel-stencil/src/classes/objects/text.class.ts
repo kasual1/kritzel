@@ -73,7 +73,6 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       this.value = target.value.trim();
     }
 
-    console.log('Text input:', this.value);
     this.adjustTextareaSize();
   }
 
