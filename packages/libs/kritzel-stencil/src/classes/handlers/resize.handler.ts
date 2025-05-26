@@ -1,4 +1,3 @@
-import { clear } from 'console';
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelMouseHelper } from '../../helpers/click.helper';
 import { ResizeSelectionGroupCommand } from '../commands/resize-selection-group.command';
