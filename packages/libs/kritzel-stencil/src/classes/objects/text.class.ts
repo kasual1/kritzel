@@ -38,15 +38,19 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   }
 
   override mount(element: HTMLTextAreaElement): void {
-    if (this.isMounted) {
+    if ((this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
       return;
     }
-    super.mount(element);
 
-    requestAnimationFrame(() => {
-      this.elementRef.focus();
-      this.adjustTextareaSize();
-    });
+    if (!this.isMounted) {
+      requestAnimationFrame(() => {
+        this.elementRef.focus();
+        this.adjustTextareaSize();
+      });
+    }
+
+    this.elementRef = element;
+    this.isMounted = true;
   }
 
   override resize(x: number, y: number, width: number, height: number): void {
@@ -80,16 +84,12 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     if (this.elementRef) {
       const span = document.createElement('span');
       span.style.position = 'absolute';
-      span.style.whiteSpace = 'pre-wrap'; 
+      span.style.whiteSpace = 'pre-wrap';
       span.style.visibility = 'hidden';
       span.style.fontSize = window.getComputedStyle(this.elementRef).fontSize;
       span.style.fontFamily = window.getComputedStyle(this.elementRef).fontFamily;
 
-      span.innerHTML = this.elementRef.value
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\n/g, '<br>') + '<br>';
+      span.innerHTML = this.elementRef.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') + '<br>';
 
       document.body.appendChild(span);
       const textWidth = span.offsetWidth;

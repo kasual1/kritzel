@@ -180,8 +180,20 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     return ObjectHelper.generateUUID();
   }
 
-  isInViewport(_viewport: KritzelBoundingBox, _scale: number): boolean {
-    return true;
+  isInViewport(): boolean {
+    const viewportBounds: KritzelBoundingBox = {
+      x: -this._store.state.translateX / this._store.state.scale,
+      y: -this._store.state.translateY / this._store.state.scale,
+      z: this._store.state.scale,
+      width: this._store.state.viewportWidth / this._store.state.scale,
+      height: this._store.state.viewportHeight / this._store.state.scale,
+      depth: 100,
+    };
+
+    return this.boundingBox.x < viewportBounds.x + viewportBounds.width &&
+           this.boundingBox.x + this.boundingBox.width > viewportBounds.x &&
+           this.boundingBox.y < viewportBounds.y + viewportBounds.height &&
+           this.boundingBox.y + this.boundingBox.height > viewportBounds.y;
   }
 
   centerInViewport(): void {

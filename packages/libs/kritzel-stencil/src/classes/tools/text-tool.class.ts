@@ -79,6 +79,8 @@ export class KritzelTextTool extends KritzelBaseTool {
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = this._store.findObjectById(objectElement?.id);
 
+    debugger;
+
     if (this._store.state.activeText === null && object && object instanceof KritzelText) {
       this._store.state.activeText = object;
       object.focus();

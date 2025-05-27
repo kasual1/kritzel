@@ -463,6 +463,7 @@ export class KritzelEngine {
                           outline: 'none',
                           resize: 'none',
                           overflow: 'hidden',
+                          backgroundColor: 'var(--kritzel-engine-background-color)',
                           display: 'block',
                           whiteSpace: 'nowrap',
                           cursor: object.isReadonly ? 'default' : 'text',

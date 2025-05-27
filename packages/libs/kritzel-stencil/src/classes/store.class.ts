@@ -350,4 +350,5 @@ export class KritzelStore {
     this._state.objectsOctree.remove(obj => obj instanceof KritzelSelectionGroup);
     this.rerender();
   }
+
 }
