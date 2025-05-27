@@ -1,6 +1,6 @@
 {
   "name": "kritzel-stencil",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "description": "Stencil Component Starter",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -42,7 +42,7 @@
     "release": "npm publish"
   },
   "devDependencies": {
-    "@stencil/core": "^4.29.2",
+    "@stencil/core": "^4.31.0",
     "@stencil/angular-output-target": "^0.10.2",
     "@stencil/react-output-target": "^1.0.2",
     "@stencil/vue-output-target": "0.10.7",
