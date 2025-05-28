@@ -56,7 +56,6 @@
   "dependencies": {
     "@types/lodash-es": "^4.17.12",
     "browser-image-compression": "^2.0.2",
-    "lodash-es": "^4.17.21",
     "perfect-freehand": "^1.2.2"
   }
 }
