@@ -3,7 +3,6 @@ import { KritzelMouseHelper } from '../../helpers/click.helper';
 import { ResizeSelectionGroupCommand } from '../commands/resize-selection-group.command';
 import { KritzelStore } from '../store.class';
 import { KritzelBaseHandler } from './base.handler';
-import { cloneDeep } from 'lodash-es';
 
 export class KritzelResizeHandler extends KritzelBaseHandler {
   initialMouseX: number = 0;
@@ -76,7 +75,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
   handleMouseUp(_event: MouseEvent): void {
     if (this._store.state.isResizing) {
-      const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._store, this, cloneDeep(this.initialSize), cloneDeep(this.newSize));
+      const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._store, this, structuredClone(this.initialSize), structuredClone(this.newSize));
       this._store.history.executeCommand(resizeSelectionGroupCommand);
       this._store.state.isResizing = false;
       this._store.rerender();
@@ -157,7 +156,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
   handleTouchEnd(_event: TouchEvent): void {
     if (this._store.state.isResizing) {
-      const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._store, this, cloneDeep(this.initialSize), cloneDeep(this.newSize));
+      const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._store, this, structuredClone(this.initialSize), structuredClone(this.newSize));
       this._store.history.executeCommand(resizeSelectionGroupCommand);
       this._store.state.isResizing = false;
 

@@ -1,4 +1,3 @@
-import { cloneDeep } from 'lodash-es';
 import { KritzelBaseObject } from '../classes/objects/base-object.class';
 
 export class ObjectHelper {
@@ -26,9 +25,8 @@ export class ObjectHelper {
 
   static clone(objOrObjs: KritzelBaseObject<any> | KritzelBaseObject<any>[]): any {
     const cloneObject = (obj: KritzelBaseObject<any>) => {
-      const { _store, ...rest } = obj;
-      delete rest._elementRef;
-      return cloneDeep(rest);
+      const { _store, _elementRef, ...rest } = obj;
+      return structuredClone(rest);
     };
 
     if (Array.isArray(objOrObjs)) {
