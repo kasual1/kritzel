@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { KritzelEditor } from 'kritzel-angular';
 @Component({
     selector: 'app-root',
@@ -7,6 +7,15 @@ import { KritzelEditor } from 'kritzel-angular';
     styleUrl: './app.component.scss',
     standalone: true,
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'angular';
+
+  ngOnInit(): void {
+    document.body.style.height = window.innerHeight + 'px';
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    document.body.style.height = window.innerHeight + 'px';
+  }
 }

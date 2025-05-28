@@ -25,6 +25,7 @@
     "build": "npm run build --workspaces --if-present",
     "publish": "npm run release --workspaces --if-present",
     "tunnel": "concurrently \"lt --port 3333\" \"npm run start -w packages/libs/kritzel-stencil\"",
+    "tunnel-angular": "concurrently \"lt --port 4200\" \"npm run start -w packages/demos/angular\"",
     "start": "npm run start -w packages/libs/kritzel-stencil",
     "start-demo-angular": "npm run start -w packages/demos/angular",
     "start-demo-react": "npm run start -w packages/demos/react",
