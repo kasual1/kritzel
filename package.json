@@ -27,8 +27,12 @@
     "tunnel": "concurrently \"lt --port 3333\" \"npm run start -w packages/libs/kritzel-stencil\"",
     "tunnel-angular": "concurrently \"lt --port 4200\" \"npm run start -w packages/demos/angular\"",
     "start": "npm run start -w packages/libs/kritzel-stencil",
-    "start-demo-angular": "npm run start -w packages/demos/angular",
-    "start-demo-react": "npm run start -w packages/demos/react",
-    "start-demo-vue": "npm run start -w packages/demos/vue"
+    "demo:angular": "npm run start -w packages/demos/angular",
+    "demo:react": "npm run start -w packages/demos/react",
+    "demo:vue": "npm run start -w packages/demos/vue",
+    "docs:copy-components": "node ./scripts/copy-component-docs.js",
+    "docs:start": "npm run docs:copy-components && cd website && npm run start",
+    "docs:build": "npm run docs:copy-components && cd website && npm run build",
+    "docs:serve": "cd website && npm run serve"
   }
 }
