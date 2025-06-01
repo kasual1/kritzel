@@ -19,7 +19,23 @@ h2 {
 }
 
 h3 {
-  font-size: 1.75rem;
+  font-size: 1.55rem;
+  opacity: 1;
+}
+
+p {
+  font-size: 1.1rem;
+  opacity: 0.75;
+}
+
+::selection {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: inherit;
+}
+
+[data-theme='dark'] ::selection {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: inherit;
 }
 
 :root {
@@ -33,6 +49,7 @@ h3 {
   --ifm-code-font-size: 95%;
   --ifm-background-color: #ffffff;
   --ifm-text-color: #000000;
+  --ifm-text-color-light: hsla(0, 0%, 0%, 0.75);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   --button-icon-color: #ffffff;
 }
@@ -47,6 +64,7 @@ h3 {
   --ifm-color-primary-lightest: #ffffff;
   --ifm-background-color: #000000;
   --ifm-text-color: #ffffff;
+  --ifm-text-color-light: hsla(0, 0%, 100%, 0.75);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
   --button-icon-color: #000000;
 }
@@ -60,6 +78,10 @@ h3 {
 
 [data-theme='dark'] .buttonIcon {
   --button-icon-color: #000000;
+}
+
+header.hero.hero--primary{
+  padding: 6rem 0;
 }
 
 .hero {

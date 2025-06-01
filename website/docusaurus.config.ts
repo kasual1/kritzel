@@ -3,14 +3,15 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
-  title: "Infinite Canvas",
+  title: "Kritzel - Free Infinite Canvas Library",
   tagline: "Kritzel is a open-source infinite canvas editor",
-  favicon: "img/favicon.ico",
+  favicon: "img/favicon.svg",
   future: {
     v4: true,
   },
   url: "https://your-docusaurus-site.example.com",
   baseUrl: "/",
+  
   organizationName: "facebook",
   projectName: "docusaurus",
   onBrokenLinks: "throw",
@@ -41,7 +42,7 @@ const config: Config = {
     navbar: {
       title: "Kritzel",
       logo: {
-        alt: "My Site Logo",
+        alt: "Kritzel Infinite Canvas",
         src: "img/logo.svg",
         srcDark: "img/logo_dark.svg",
       },
@@ -50,7 +51,7 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
-    },
+    }
   } satisfies Preset.ThemeConfig,
   headTags: [
     {

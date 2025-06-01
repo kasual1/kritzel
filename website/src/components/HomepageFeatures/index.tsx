@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import clsx from "clsx";
 import Heading from "@theme/Heading";
 import styles from "./styles.module.css";
-import useBaseUrl from "@docusaurus/useBaseUrl";
 
 type FeatureItem = {
   title: string;
@@ -16,9 +15,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/infinite.svg").default,
     description: (
       <>
-        Kritzel provides an infinite canvas experience, allowing you to create
-        and explore without boundaries. Whether you&apos;re sketching, painting,
-        or designing, the canvas expands to fit your creativity.
+        Experience an infinite canvas that expands with your creativity,
+        perfect for sketching, painting, or designing without limits.
       </>
     ),
   },
@@ -27,9 +25,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/lock.svg").default,
     description: (
       <>
-        Kritzel is free and open source, built with the community in mind. You
-        can contribute to its development, suggest features, or simply use it in
-        your projects. Join us in making Kritzel better for everyone!
+        Kritzel is free, open source, and community-driven. Contribute,
+        suggest features, or just use it in your projects.
       </>
     ),
   },
@@ -38,10 +35,38 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/code.svg").default,
     description: (
       <>
-        Kritzel is designed to work with any JavaScript framework or library.
-        Whether you&apos;re using React, Vue, Angular, or even plain JavaScript,
-        Kritzel integrates seamlessly, allowing you to focus on your creative
-        projects without worrying about compatibility.
+        Integrates seamlessly with any JavaScript framework like React, Vue,
+        Angular, or plain JavaScript. Focus on creativity, not compatibility.
+      </>
+    ),
+  },
+  {
+    title: "Customizable",
+    Svg: require("@site/static/img/code.svg").default,
+    description: (
+      <>
+        Tailor Kritzel to your needs with a wide range of customizable tools,
+        brushes, and settings.
+      </>
+    ),
+  },
+  {
+    title: "Cross-Platform",
+    Svg: require("@site/static/img/code.svg").default,
+    description: (
+      <>
+        Kritzel works on any platform that supports JavaScript, including
+        desktops, tablets, and mobile devices. Create anywhere, anytime.
+      </>
+    ),
+  },
+  {
+    title: "Simple Interface",
+    Svg: require("@site/static/img/code.svg").default,
+    description: (
+      <>
+        Enjoy a clean and intuitive interface that makes it easy to integrate Kritzel
+        into your projects.
       </>
     ),
   },
