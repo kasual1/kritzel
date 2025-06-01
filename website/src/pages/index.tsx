@@ -14,9 +14,6 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        {/* <Heading as="h1" className="hero__title">
-          {siteConfig.title}
-        </Heading> */}
         <Heading as="h1" className={clsx('hero__title', styles.heroTitle)}>
           Infinite Canvas,
           <br />
@@ -32,7 +29,10 @@ function HomepageHeader() {
             to="/docs/intro"
             className="button button--primary button--lg"
             style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            Get started <ArrowRight style={{ width: '24px', height: '24px' }} />
+            Get started 
+            <span className="buttonIcon">
+              <ArrowRight style={{ width: '24px', height: '24px' }} />
+            </span>
           </Link>
         </div>
       </div>
