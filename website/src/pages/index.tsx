@@ -5,6 +5,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
+import ArrowRight from '@site/static/img/arrow_right.svg';
 
 import styles from './index.module.css';
 
@@ -28,13 +29,11 @@ function HomepageHeader() {
         </p>
         <div className={styles.buttons}>
           <Link
-            className="button button--secondary button--lg"
-            to="/docs/intro">
-            Get started →
+            to="/docs/intro"
+            className="button button--primary button--lg"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            Get started <ArrowRight style={{ width: '24px', height: '24px' }} />
           </Link>
-          <div className={styles.npmCommand}>
-            npm init stencil <span className={styles.copyIcon}>❐</span>
-          </div>
         </div>
       </div>
     </header>

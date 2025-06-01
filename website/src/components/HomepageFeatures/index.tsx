@@ -24,7 +24,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "Open Source",
-    imgSrc: "/img/open_source.svg",
+    imgSrc: "/img/lock.svg",
     description: (
       <>
         Kritzel is free and open source, built with the community in mind. You
