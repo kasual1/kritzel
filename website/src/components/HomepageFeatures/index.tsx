@@ -1,54 +1,63 @@
-import type {ReactNode} from 'react';
-import clsx from 'clsx';
-import Heading from '@theme/Heading';
-import styles from './styles.module.css';
+import type { ReactNode } from "react";
+import clsx from "clsx";
+import Heading from "@theme/Heading";
+import styles from "./styles.module.css";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  imgSrc: string;
   description: ReactNode;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: "Infinite",
+    imgSrc: "/img/infinite.svg",
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Kritzel provides an infinite canvas experience, allowing you to create
+        and explore without boundaries. Whether you&apos;re sketching, painting,
+        or designing, the canvas expands to fit your creativity.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: "Open Source",
+    imgSrc: "/img/open_source.svg",
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Kritzel is free and open source, built with the community in mind. You
+        can contribute to its development, suggest features, or simply use it in
+        your projects. Join us in making Kritzel better for everyone!
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: "Framework Agnostic",
+    imgSrc: "/img/code.svg",
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Kritzel is designed to work with any JavaScript framework or library.
+        Whether you&apos;re using React, Vue, Angular, or even plain JavaScript,
+        Kritzel integrates seamlessly, allowing you to focus on your creative
+        projects without worrying about compatibility.
       </>
     ),
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({ title, imgSrc, description }: FeatureItem) {
+  const resolvedImgSrc = useBaseUrl(imgSrc);
   return (
-    <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
+    <div className={clsx("col col--4")}>
       <div className="text--center padding-horiz--md">
+        <img
+          src={resolvedImgSrc}
+          className={styles.featureSvg}
+          alt={title}
+          role="img"
+        />
         <Heading as="h3">{title}</Heading>
         <p>{description}</p>
       </div>

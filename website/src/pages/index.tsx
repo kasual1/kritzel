@@ -17,14 +17,14 @@ function HomepageHeader() {
           {siteConfig.title}
         </Heading> */}
         <Heading as="h1" className={clsx('hero__title', styles.heroTitle)}>
-          Build. Customize.
+          Infinite Canvas,
           <br />
-          Distribute. <span className={styles.heroTitleAdopt}>Adopt.</span>
+          unbound creativity.
         </Heading>
         <p className={clsx('hero__subtitle', styles.heroSubtitle)}>
-          Stencil is a library for building reusable, scalable component libraries.
+          Kritzel is a free and framework-agnostic infinite canvas library
           <br />
-          Generate small, blazing fast Web Components that run everywhere.
+          for creating endless creative experiences.
         </p>
         <div className={styles.buttons}>
           <Link
