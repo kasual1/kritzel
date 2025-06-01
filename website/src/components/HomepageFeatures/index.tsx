@@ -6,14 +6,14 @@ import useBaseUrl from "@docusaurus/useBaseUrl";
 
 type FeatureItem = {
   title: string;
-  imgSrc: string;
+  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
   description: ReactNode;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: "Infinite",
-    imgSrc: "/img/infinite.svg",
+    Svg: require("@site/static/img/infinite.svg").default,
     description: (
       <>
         Kritzel provides an infinite canvas experience, allowing you to create
@@ -24,7 +24,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "Open Source",
-    imgSrc: "/img/lock.svg",
+    Svg: require("@site/static/img/lock.svg").default,
     description: (
       <>
         Kritzel is free and open source, built with the community in mind. You
@@ -35,7 +35,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "Framework Agnostic",
-    imgSrc: "/img/code.svg",
+    Svg: require("@site/static/img/code.svg").default,
     description: (
       <>
         Kritzel is designed to work with any JavaScript framework or library.
@@ -47,17 +47,13 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({ title, imgSrc, description }: FeatureItem) {
-  const resolvedImgSrc = useBaseUrl(imgSrc);
+function Feature({ title,  Svg, description }: FeatureItem) {
   return (
-    <div className={clsx("col col--4")}>
+    <div className={clsx('col col--4')}>
+      <div style={{height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <Svg className={styles.featureSvg} role="img" style={{height: '64px', width: '64px'}}/>
+      </div>
       <div className="text--center padding-horiz--md">
-        <img
-          src={resolvedImgSrc}
-          className={styles.featureSvg}
-          alt={title}
-          role="img"
-        />
         <Heading as="h3">{title}</Heading>
         <p>{description}</p>
       </div>

@@ -42,7 +42,8 @@ const config: Config = {
       title: "Kritzel",
       logo: {
         alt: "My Site Logo",
-        src: "img/logo_new.svg",
+        src: "img/logo.svg",
+        srcDark: "img/logo_dark.svg",
       },
       items: [],
     },
