@@ -13,16 +13,28 @@ function HomepageHeader() {
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <Heading as="h1" className="hero__title">
+        {/* <Heading as="h1" className="hero__title">
           {siteConfig.title}
+        </Heading> */}
+        <Heading as="h1" className={clsx('hero__title', styles.heroTitle)}>
+          Build. Customize.
+          <br />
+          Distribute. <span className={styles.heroTitleAdopt}>Adopt.</span>
         </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <p className={clsx('hero__subtitle', styles.heroSubtitle)}>
+          Stencil is a library for building reusable, scalable component libraries.
+          <br />
+          Generate small, blazing fast Web Components that run everywhere.
+        </p>
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
             to="/docs/intro">
-            Docusaurus Tutorial - 5min ⏱️
+            Get started →
           </Link>
+          <div className={styles.npmCommand}>
+            npm init stencil <span className={styles.copyIcon}>❐</span>
+          </div>
         </div>
       </div>
     </header>
