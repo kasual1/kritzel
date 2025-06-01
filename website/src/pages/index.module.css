@@ -1,8 +1,3 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
-
 .heroBanner {
   padding: 4rem 0;
   text-align: center;
@@ -10,9 +5,31 @@
   overflow: hidden;
 }
 
+.heroTitle {
+  font-size: 4rem; /* Adjusted for prominence */
+  font-weight: bold;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.heroTitleAdopt {
+  color: #7f00ff; /* Purple color for Adopt, adjust as needed */
+}
+
+.heroSubtitle {
+  font-size: 1.25rem; /* Adjusted for prominence */
+  margin-bottom: 2rem;
+}
+
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 2rem;
+  }
+  .heroTitle {
+    font-size: 2.5rem; /* Adjust for smaller screens */
+  }
+  .heroSubtitle {
+    font-size: 1rem; /* Adjust for smaller screens */
   }
 }
 
@@ -20,4 +37,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1rem; /* Space between buttons */
 }
+
+.npmCommand {
+  background-color: var(--ifm-color-emphasis-200);
+  border-radius: var(--ifm-button-border-radius);
+  color: var(--ifm-font-color-base);
+  padding: 0.75rem 1.5rem; /* Match button padding */
+  font-family: var(--ifm-font-family-monospace);
+  font-size: var(--ifm-button-font-size);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between text and icon */
+  border: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.copyIcon {
+  font-size: 1.2em; /* Make icon slightly larger */
+  cursor: pointer;
+}
+
