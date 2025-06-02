@@ -29,6 +29,7 @@ const config: Config = {
           sidebarPath: "./sidebars.ts",
           editUrl:
             "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
+          breadcrumbs: false,
         },
         theme: {
           customCss: "./src/css/custom.css",
