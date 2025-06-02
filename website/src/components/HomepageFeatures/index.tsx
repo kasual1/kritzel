@@ -42,7 +42,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "Customizable",
-    Svg: require("@site/static/img/code.svg").default,
+    Svg: require("@site/static/img/palette.svg").default,
     description: (
       <>
         Tailor Kritzel to your needs with a wide range of customizable tools,
@@ -52,7 +52,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "Cross-Platform",
-    Svg: require("@site/static/img/code.svg").default,
+    Svg: require("@site/static/img/cross-device.svg").default,
     description: (
       <>
         Kritzel works on any platform that supports JavaScript, including
@@ -62,7 +62,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: "Simple Interface",
-    Svg: require("@site/static/img/code.svg").default,
+    Svg: require("@site/static/img/cable.svg").default,
     description: (
       <>
         Enjoy a clean and intuitive interface that makes it easy to integrate Kritzel
