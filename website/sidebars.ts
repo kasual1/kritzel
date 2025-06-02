@@ -17,8 +17,26 @@ const sidebars: SidebarsConfig = {
 
   // But you can create a sidebar manually
   tutorialSidebar: [
-    'components/core/kritzel-engine',
-    'components/core/kritzel-editor',
+    'intro',
+    {
+      type: 'category',
+      label: 'Configuration',
+      items: [
+        'configuration/editor',
+        'configuration/toolbar',
+        'configuration/icons',
+        'configuration/fonts',
+      ],
+    },
+    'theming',
+    // {
+    //   type: 'category',
+    //   label: 'Components',
+    //   items: [
+    //     'components/core/kritzel-engine',
+    //     'components/core/kritzel-editor',
+    //   ],
+    // },
   ],
 };
 

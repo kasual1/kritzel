@@ -28,12 +28,16 @@ p {
   opacity: 0.75;
 }
 
+nav.menu {
+  font-size: 0.8rem;
+}
+
 ::selection {
   background-color: rgba(0, 0, 0, 0.2);
   color: inherit;
 }
 
-[data-theme='dark'] ::selection {
+[data-theme="dark"] ::selection {
   background-color: rgba(255, 255, 255, 0.2);
   color: inherit;
 }
@@ -76,11 +80,11 @@ p {
   --button-icon-color: #ffffff;
 }
 
-[data-theme='dark'] .buttonIcon {
+[data-theme="dark"] .buttonIcon {
   --button-icon-color: #000000;
 }
 
-header.hero.hero--primary{
+header.hero.hero--primary {
   padding: 6rem 0;
 }
 
@@ -88,4 +92,17 @@ header.hero.hero--primary{
   align-items: center;
   background-color: var(--ifm-background-color);
   color: var(--ifm-text-color);
+}
+
+.menu__link--sublist-caret::after {
+  content: "";
+  display: inline-block;
+  width: 16px; /* Adjust to your icon's size */
+  height: 16px; /* Adjust to your icon's size */
+  margin-right: 8px; /* Space between icon and label */
+  background-image: url("/img/arrow_right.svg"); /* Path to your collapsed icon */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle; /* Adjust alignment if necessary */
 }
