@@ -47,7 +47,14 @@ const config: Config = {
         src: "img/logo.svg",
         srcDark: "img/logo_dark.svg",
       },
-      items: [],
+      items: [
+        {
+          href: 'https://github.com/your-username/your-repo-name', // Replace with your GitHub repo URL
+          position: 'right',
+          className: 'header-github-link',
+          'aria-label': 'GitHub repository',
+        },
+      ],
     },
     prism: {
       theme: prismThemes.github,

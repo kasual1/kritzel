@@ -97,12 +97,30 @@ header.hero.hero--primary {
 .menu__link--sublist-caret::after {
   content: "";
   display: inline-block;
-  width: 16px; /* Adjust to your icon's size */
-  height: 16px; /* Adjust to your icon's size */
-  margin-right: 8px; /* Space between icon and label */
-  background-image: url("/img/arrow_right.svg"); /* Path to your collapsed icon */
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  background-image: url("/img/chevron_up.svg");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  vertical-align: middle; /* Adjust alignment if necessary */
+  vertical-align: middle;
+  opacity: 0.6;
+}
+
+.header-github-link:hover {
+  opacity: 0.6;
+}
+
+.header-github-link::before {
+  content: '';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-image: url('/img/github.svg');
+
+  background-repeat: no-repeat;
+  background-size: contain;
 }
