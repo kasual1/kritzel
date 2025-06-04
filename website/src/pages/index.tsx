@@ -8,9 +8,21 @@ import Heading from '@theme/Heading';
 import ArrowRight from '@site/static/img/arrow_right.svg';
 
 import styles from './index.module.css';
+import React from 'react';
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+
+  function hideNavbarToggle() {
+    const toggle = document.querySelector('.navbar__toggle') as HTMLElement | null;
+    if (toggle) {
+      toggle.style.display = 'none';
+    }
+  }
+
+  React.useEffect(() => {
+    hideNavbarToggle();
+  }, []);
+
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">

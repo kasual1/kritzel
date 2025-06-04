@@ -1,0 +1,22 @@
+.header-github-link:hover {
+  opacity: 0.6;
+}
+
+.header-github-link::before {
+  content: "";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.header-github-link::before {
+  background-image: url("/img/github.svg");
+}
+
+[data-theme="dark"] .header-github-link::before {
+  background-image: url("/img/github_dark.svg");
+}

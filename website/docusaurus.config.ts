@@ -32,7 +32,15 @@ const config: Config = {
           breadcrumbs: false,
         },
         theme: {
-          customCss: "./src/css/custom.css",
+          customCss: [
+            require.resolve("./src/css/theming.css"),
+            require.resolve("./src/css/typography.css"),
+            require.resolve("./src/css/header.css"),
+            require.resolve("./src/css/navbar.css"),
+            require.resolve("./src/css/hero.css"),
+            require.resolve("./src/css/buttons.css"),
+            require.resolve("./src/css/general.css"),
+          ],
         },
       } satisfies Preset.Options,
     ],
@@ -47,12 +55,19 @@ const config: Config = {
         src: "img/logo.svg",
         srcDark: "img/logo_dark.svg",
       },
-      items: [],
+      items: [
+        {
+          href: 'https://github.com/your-username/your-repo-name', // Replace with your GitHub repo URL
+          position: 'right',
+          className: 'header-github-link',
+          'aria-label': 'GitHub repository',
+        },
+      ],
     },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
-    }
+    },
   } satisfies Preset.ThemeConfig,
   headTags: [
     {
