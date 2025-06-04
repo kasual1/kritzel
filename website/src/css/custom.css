@@ -119,10 +119,16 @@ header.hero.hero--primary {
   justify-content: center;
   width: 32px;
   height: 32px;
-  background-image: url("/img/github.svg");
-
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+.header-github-link::before {
+  background-image: url("/img/github.svg");
+}
+
+[data-theme="dark"] .header-github-link::before {
+  background-image: url("/img/github_dark.svg");
 }
 
 .theme-back-to-top-button {
@@ -137,14 +143,29 @@ header.hero.hero--primary {
   color: transparent !important; /* Hide default icon/text */
 }
 
+.navbar__toggle {
+    background-image: url("/img/menu.svg") !important;
+}
+
+[data-theme="dark"] .navbar__toggle {
+    background-image: url("/img/menu_dark.svg") !important;
+}
+
 button.navbar-sidebar__close {
-  background-image: url("/img/close.svg") !important;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 32px 32px;
   color: transparent !important; /* Hide default icon/text */
   height: 32px;
   width: 32px;
+}
+
+button.navbar-sidebar__close {
+  background-image: url("/img/close.svg") !important;
+}
+
+[data-theme="dark"] button.navbar-sidebar__close {
+  background-image: url("/img/close_dark.svg") !important;
 }
 
 button.navbar-sidebar__close>svg {
