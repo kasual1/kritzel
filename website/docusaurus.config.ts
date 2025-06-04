@@ -32,7 +32,15 @@ const config: Config = {
           breadcrumbs: false,
         },
         theme: {
-          customCss: "./src/css/custom.css",
+          customCss: [
+            require.resolve("./src/css/theming.css"),
+            require.resolve("./src/css/typography.css"),
+            require.resolve("./src/css/header.css"),
+            require.resolve("./src/css/navbar.css"),
+            require.resolve("./src/css/hero.css"),
+            require.resolve("./src/css/buttons.css"),
+            require.resolve("./src/css/general.css"),
+          ],
         },
       } satisfies Preset.Options,
     ],
