@@ -1,0 +1,9 @@
+header.hero.hero--primary {
+  padding: 6rem 0;
+}
+
+.hero {
+  align-items: center;
+  background-color: var(--ifm-background-color);
+  color: var(--ifm-text-color);
+}

@@ -1,0 +1,67 @@
+.navbar__toggle {
+  background-image: url("/img/menu.svg") !important;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 32px 32px;
+  color: transparent !important; /* Hide default icon/text */
+}
+
+.navbar__toggle {
+    background-image: url("/img/menu.svg") !important;
+}
+
+[data-theme="dark"] .navbar__toggle {
+    background-image: url("/img/menu_dark.svg") !important;
+}
+
+button.navbar-sidebar__close {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 32px 32px;
+  color: transparent !important; /* Hide default icon/text */
+  height: 32px;
+  width: 32px;
+}
+
+button.navbar-sidebar__close {
+  background-image: url("/img/close.svg") !important;
+}
+
+[data-theme="dark"] button.navbar-sidebar__close {
+  background-image: url("/img/close_dark.svg") !important;
+}
+
+button.navbar-sidebar__close>svg {
+  visibility: hidden !important; /* Hide SVG icon */
+}
+
+.menu__link--sublist-caret::after {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  background-image: url("/img/chevron_up.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+  opacity: 0.6;
+}
+
+@media (max-width: 996px) {
+  .navbar__inner .navbar__brand,
+  .navbar__inner .navbar__logo,
+  .navbar__inner .navbar__title,
+  .navbar-sidebar__back {
+    display: none !important;
+  }
+
+  [class*="toggleButton"] {
+    display: none !important;
+  }
+
+  [class*="tocCollapsibleButton"] {
+    display: none !important;
+  }
+}
