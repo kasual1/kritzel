@@ -113,14 +113,60 @@ header.hero.hero--primary {
 }
 
 .header-github-link::before {
-  content: '';
+  content: "";
   display: flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
-  background-image: url('/img/github.svg');
+  background-image: url("/img/github.svg");
 
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+.theme-back-to-top-button {
+  display: none !important;
+}
+
+.navbar__toggle {
+  background-image: url("/img/menu.svg") !important;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 32px 32px;
+  color: transparent !important; /* Hide default icon/text */
+}
+
+button.navbar-sidebar__close {
+  background-image: url("/img/close.svg") !important;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 32px 32px;
+  color: transparent !important; /* Hide default icon/text */
+  height: 32px;
+  width: 32px;
+}
+
+button.navbar-sidebar__close>svg {
+  visibility: hidden !important; /* Hide SVG icon */
+}
+
+@media (max-width: 996px) {
+  .navbar__inner .navbar__brand,
+  .navbar__inner .navbar__logo,
+  .navbar__inner .navbar__title,
+  .navbar-sidebar__back {
+    display: none !important;
+  }
+  [class*="toggleButton"] {
+    display: none !important;
+  }
+
+  body.homepage .navbar__toggle {
+    display: none !important;
+  }
+
+  [class*="tocCollapsibleButton"] {
+    display: none !important;
+  }
 }
