@@ -9,6 +9,7 @@ import ArrowRight from '@site/static/img/arrow_right.svg';
 
 import styles from './index.module.css';
 import React from 'react';
+import Head from '@docusaurus/Head';
 
 function HomepageHeader() {
 
@@ -27,6 +28,13 @@ function HomepageHeader() {
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
         <Heading as="h1" className={clsx('hero__title', styles.heroTitle)}>
+          Kritzel Documentation
+          <br />
+        </Heading>
+         <p className={clsx('hero__subtitle', styles.heroSubtitle)}>
+          Coming soon!
+        </p>
+        {/* <Heading as="h1" className={clsx('hero__title', styles.heroTitle)}>
           Infinite Canvas,
           <br />
           unbound creativity.
@@ -45,8 +53,9 @@ function HomepageHeader() {
             <span className="buttonIcon">
               <ArrowRight style={{ width: '24px', height: '24px' }} />
             </span>
-          </Link>
+          </Link> 
         </div>
+        */}
       </div>
     </header>
   );
