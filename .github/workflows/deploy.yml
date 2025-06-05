@@ -1,19 +1,8 @@
 name: Deploy Docusaurus Docs and Angular App to GitHub Pages
-
 on:
   push:
     branches:
       - main
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "github-pages"
-  cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -67,7 +56,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: "_site"
-
   deploy:
     environment:
       name: github-pages
