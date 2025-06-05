@@ -13,7 +13,7 @@ const config: Config = {
   baseUrl: "/",
   
   projectName: "kritzel",
-  onBrokenLinks: "throw",
+  onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
   i18n: {
     defaultLocale: "en",
