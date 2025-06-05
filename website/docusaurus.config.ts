@@ -9,9 +9,8 @@ const config: Config = {
   future: {
     v4: true,
   },
-  url: "https://your-docusaurus-site.example.com",
-  baseUrl: "/",
-  
+  url: "https://kasual1.github.io",
+  baseUrl: "/kritzel/",
   projectName: "kritzel",
   onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
@@ -56,7 +55,7 @@ const config: Config = {
       },
       items: [
         {
-          href: 'https://github.com/your-username/your-repo-name', // Replace with your GitHub repo URL
+          href: 'https://github.com/kasual1/kritzel',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
