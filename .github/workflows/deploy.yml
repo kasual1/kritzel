@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.14.0'
+          node-version: "22.14.0"
 
       # --- Build Docusaurus Documentation ---
       - name: Install Docusaurus dependencies
@@ -43,3 +43,35 @@ jobs:
         run: |
           mkdir -p _site
           cp -r website/build/. _site/
+
+      # --- Build Angular Application ---
+      - name: Install Angular app dependencies
+        run: |
+          cd app
+          npm install
+
+      - name: Build Angular application
+        run: |
+          cd demo
+          npm run build -- --base-href=/${{ github.event.repository.name }}/app/
+        env: mkdir -p _site/app
+          cp -r "demo/dist/demo/browser" _site/demo/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "_site"
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
