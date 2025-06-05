@@ -1,12 +1,23 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
+import { KritzelEditor } from 'kritzel-angular';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [KritzelEditor],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-  title = 'demo';
+  title = 'kritzel.io';
+
+  ngOnInit(): void {
+    document.body.style.height = window.innerHeight + 'px';
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    document.body.style.height = window.innerHeight + 'px';
+  }
 }
