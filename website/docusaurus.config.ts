@@ -12,8 +12,7 @@ const config: Config = {
   url: "https://your-docusaurus-site.example.com",
   baseUrl: "/",
   
-  organizationName: "facebook",
-  projectName: "docusaurus",
+  projectName: "kritzel",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   i18n: {

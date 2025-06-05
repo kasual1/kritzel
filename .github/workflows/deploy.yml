@@ -1,0 +1,45 @@
+name: Deploy Docusaurus Docs and Angular App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "github-pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.14.0'
+
+      # --- Build Docusaurus Documentation ---
+      - name: Install Docusaurus dependencies
+        run: |
+          cd website
+          npm install
+
+      - name: Build Docusaurus documentation
+        run: |
+          cd website
+          npm run build
+        env:
+          Docusaurus_BASE_URL: /${{ github.event.repository.name }}/
+
+      - name: Copy Docusaurus build to _site root
+        run: |
+          mkdir -p _site
+          cp -r website/build/. _site/
