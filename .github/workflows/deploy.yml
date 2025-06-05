@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -47,7 +47,7 @@ jobs:
       # --- Build Angular Application ---
       - name: Install Angular app dependencies
         run: |
-          cd app
+          cd demo
           npm install
 
       - name: Build Angular application
@@ -73,7 +73,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build-and-deploy
+    needs: build # Corrected from build-and-deploy
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
