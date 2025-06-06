@@ -5,6 +5,8 @@ import { KritzelBaseObject } from './base-object.class';
 import { KritzelStore } from '../store.class';
 
 export class KritzelPath extends KritzelBaseObject<SVGElement> {
+  override __class__: string = 'KritzelPath';
+
   points: number[][];
   d: string;
   stroke: string = 'none';
