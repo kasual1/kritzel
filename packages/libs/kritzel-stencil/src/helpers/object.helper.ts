@@ -26,7 +26,7 @@ export class ObjectHelper {
 
   static clone(objOrObjs: KritzelBaseObject<any> | KritzelBaseObject<any>[]): any {
     const cloneObject = (obj: KritzelBaseObject<any>) => {
-      const { _store, _elementRef, ...rest } = obj;
+      const { _store, _elementRef, totalWidth, totalHeight, ...rest } = obj;
       return cloneDeep(rest);
     };
 

@@ -18,7 +18,7 @@
     "@angular/platform-browser": "^19.1.0",
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
-    "kritzel-angular": "^0.0.46",
+    "kritzel-angular": "^0.0.47",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
