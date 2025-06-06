@@ -3,6 +3,8 @@ import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
 
 export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
+  override __class__: string = 'KritzelText';
+  
   value: string = '';
 
   fontFamily: string = 'Arial';

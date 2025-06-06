@@ -3,6 +3,8 @@ import { KritzelStore } from '../store.class';
 import { KritzelReviver } from '../reviver.class';
 import { KritzelBaseObject } from './base-object.class';
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
+  override __class__: string = 'KritzelSelectionGroup';
+
   objects: KritzelBaseObject<any>[] = [];
   unchangedObjects: KritzelBaseObject<any>[] = [];
 

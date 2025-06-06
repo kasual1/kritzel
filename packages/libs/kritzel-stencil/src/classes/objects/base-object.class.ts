@@ -6,7 +6,7 @@ import { KritzelStore } from '../store.class';
 import { ObjectHelper } from '../../helpers/object.helper';
 
 export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, KritzelSerializable {
-  __class__: string = this.constructor.name;
+  __class__: string = 'KritzelBaseObject';
   id: string;
   visible: boolean = true;
   x: number;
