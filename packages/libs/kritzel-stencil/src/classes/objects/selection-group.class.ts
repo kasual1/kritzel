@@ -118,13 +118,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.objects.forEach(child => {
       const unchangedChild = this.getUnchangedObject(child.id);
 
-      console.log('Rotating child object:', child.id, 'with unchanged object:', unchangedChild);
-
-      debugger;
       const offsetX = this.getOffsetXToCenter(unchangedChild);
       const offsetY = this.getOffsetYToCenter(unchangedChild);
-
-      console.log('Offset to center:', offsetX, offsetY);
 
       const rotatedX = cos * offsetX - sin * offsetY;
       const rotatedY = sin * offsetX + cos * offsetY;
