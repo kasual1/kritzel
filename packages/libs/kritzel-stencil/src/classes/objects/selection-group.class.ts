@@ -39,7 +39,6 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   updatePosition(x: number, y: number) {
-
     this.objects.forEach(obj => {
       const deltaX = obj.translateX - this.translateX;
       const deltaY = obj.translateY - this.translateY;
@@ -114,10 +113,19 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
 
+    console.log('Rotating selection group', this.objects.length, 'objects by', value, 'radians');
+    console.log('Center:', centerX, centerY);
+    console.log('Angle:', angle, 'cos:', cos, 'sin:', sin);
+
     this.objects.forEach(child => {
       const unchangedChild = this.getUnchangedObject(child.id);
+
+      console.log('Rotating child object:', child.id, 'with unchanged object:', unchangedChild.id);
+
       const offsetX = this.getOffsetXToCenter(unchangedChild);
       const offsetY = this.getOffsetYToCenter(unchangedChild);
+
+      console.log('Offset to center:', offsetX, offsetY);
 
       const rotatedX = cos * offsetX - sin * offsetY;
       const rotatedY = sin * offsetX + cos * offsetY;
