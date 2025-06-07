@@ -172,12 +172,12 @@ export class KritzelEngine {
       return;
     }
 
-    if(ev.touches.length > 1) {
+    if (ev.touches.length > 1) {
       clearTimeout(this.store.state.longTouchTimeout);
     }
 
     this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenuTouch(ev), this.store.state.longTouchDelay);
-    
+
     ev.preventDefault();
     this.viewport.handleTouchStart(ev);
     this.store.state?.activeTool?.handleTouchStart(ev);
@@ -343,6 +343,7 @@ export class KritzelEngine {
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
+    const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
 
     return (
       <Host>
@@ -543,7 +544,7 @@ export class KritzelEngine {
                   />
 
                   <circle
-                    class="selection-handle top-left"
+                    class="resize-handle top-left"
                     cx="0"
                     cy="0"
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
@@ -553,7 +554,18 @@ export class KritzelEngine {
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="selection-handle top-right"
+                    class="resize-handle-touch top-left"
+                    cx="0"
+                    cy="0"
+                    r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'transparent',
+                    }}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                  />
+
+                  <circle
+                    class="resize-handle top-right"
                     cx={object.totalWidth}
                     cy="0"
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
@@ -563,7 +575,18 @@ export class KritzelEngine {
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="selection-handle bottom-left"
+                    class="resize-handle-touch top-right"
+                    cx={object.totalWidth}
+                    cy="0"
+                    r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'transparent',
+                    }}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                  />
+
+                  <circle
+                    class="resize-handle bottom-left"
                     cx="0"
                     cy={object.totalHeight}
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
@@ -573,12 +596,33 @@ export class KritzelEngine {
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="selection-handle bottom-right"
+                    class="resize-handle-touch bottom-left"
+                    cx="0"
+                    cy={object.totalHeight}
+                    r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'transparent',
+                    }}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                  />
+
+                  <circle
+                    class="resize-handle bottom-right"
                     cx={object.totalWidth}
                     cy={object.totalHeight}
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     style={{
                       fill: 'var(--kritzel-selection-handle-color)',
+                    }}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                  />
+                  <circle
+                    class="resize-handle-touch bottom-right"
+                    cx={object.totalWidth}
+                    cy={object.totalHeight}
+                    r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'transparent',
                     }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
@@ -601,6 +645,16 @@ export class KritzelEngine {
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     style={{
                       fill: 'var(--kritzel-selection-handle-color)',
+                    }}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                  />
+                  <circle
+                    class="rotation-handle-touch"
+                    cx={object.totalWidth / 2}
+                    cy={-((15 * object.scale) / this.store.state?.scale)}
+                    r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'transparent',
                     }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
