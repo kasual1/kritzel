@@ -176,9 +176,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const point = event instanceof TouchEvent ? event.touches[0] : event;
     const elementAtPoint = shadowRoot.elementFromPoint(point.clientX, point.clientY);
 
-    const className = event instanceof TouchEvent ? '.resize-handle-touch' : '.resize-handle';
-
-    const handle = elementAtPoint.closest(className) as HTMLElement | null;
+    const handle = elementAtPoint.closest('.resize-handle-overlay') as HTMLElement | null;
 
     return handle?.classList[1] as KritzelHandleType;
   }
@@ -190,16 +188,12 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const point = event instanceof TouchEvent ? event.touches[0] : event;
     const elementAtPoint = shadowRoot.elementFromPoint(point.clientX, point.clientY);
 
-    const className = event instanceof TouchEvent ? 'resize-handle-touch' : 'resize-handle';
-
-    return elementAtPoint?.classList.contains(className);
+    return elementAtPoint?.classList.contains('resize-handle-overlay');
   }
 
   private isRotationHandleSelected(event: MouseEvent | TouchEvent): boolean {
     const path = event.composedPath() as HTMLElement[];
 
-    const className = event instanceof TouchEvent ? 'rotation-handle-touch' : 'rotation-handle';
-    
-    return !!path.find(element => element.classList && element.classList.contains(className));
+    return !!path.find(element => element.classList && element.classList.contains('rotation-handle-overlay'));
   }
 }
