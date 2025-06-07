@@ -415,6 +415,7 @@ export class KritzelEngine {
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
                       overflow: 'visible',
+                      willChange: 'transform'
                     }}
                   >
                     {object instanceof KritzelPath && (
@@ -464,7 +465,6 @@ export class KritzelEngine {
                           outline: 'none',
                           resize: 'none',
                           overflow: 'hidden',
-                          backgroundColor: 'var(--kritzel-engine-background-color)',
                           display: 'block',
                           whiteSpace: 'nowrap',
                           cursor: object.isReadonly ? 'default' : 'text',
@@ -554,7 +554,7 @@ export class KritzelEngine {
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="resize-handle-touch top-left"
+                    class="resize-handle-overlay top-left"
                     cx="0"
                     cy="0"
                     r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
@@ -575,7 +575,7 @@ export class KritzelEngine {
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="resize-handle-touch top-right"
+                    class="resize-handle-overlay top-right"
                     cx={object.totalWidth}
                     cy="0"
                     r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
@@ -596,7 +596,7 @@ export class KritzelEngine {
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="resize-handle-touch bottom-left"
+                    class="resize-handle-overlay bottom-left"
                     cx="0"
                     cy={object.totalHeight}
                     r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
@@ -617,7 +617,7 @@ export class KritzelEngine {
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="resize-handle-touch bottom-right"
+                    class="resize-handle-overlay bottom-right"
                     cx={object.totalWidth}
                     cy={object.totalHeight}
                     r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
@@ -649,12 +649,13 @@ export class KritzelEngine {
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
-                    class="rotation-handle-touch"
+                    class="rotation-handle-overlay"
                     cx={object.totalWidth / 2}
                     cy={-((15 * object.scale) / this.store.state?.scale)}
                     r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
                     style={{
                       fill: 'transparent',
+                      cursor: 'grab',
                     }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />

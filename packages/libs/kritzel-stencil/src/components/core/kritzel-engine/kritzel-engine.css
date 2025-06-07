@@ -40,16 +40,16 @@ textarea {
   overflow: visible;
 }
 
-.selection-handle.top-left,
-.selection-handle.bottom-right {
+.resize-handle-overlay.top-left,
+.resize-handle-overlay.bottom-right {
   cursor: nwse-resize;
 }
 
-.selection-handle.top-right,
-.selection-handle.bottom-left {
+.resize-handle-overlay.top-right,
+.resize-handle-overlay.bottom-left {
   cursor: nesw-resize;
 }
 
-.rotation-handle {
+.rotation-handle-overlay {
   cursor: grab;
 }
