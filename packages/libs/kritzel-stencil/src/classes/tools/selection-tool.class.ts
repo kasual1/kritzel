@@ -77,9 +77,9 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         const selectedObject = this._store.state.selectionGroup.objects[0];
         
         if(selectedObject instanceof KritzelText){
-          this._store.state.activeText = selectedObject;
-          this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
           this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+          this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
+          this._store.state.activeText = selectedObject;
 
           setTimeout(() => {
             selectedObject.focus();
