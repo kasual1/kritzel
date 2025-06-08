@@ -69,6 +69,13 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.translateY = y;
   }
 
+  handleKeyDown(event: KeyboardEvent): void {
+    if (this.isReadonly) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
   handleInput(event: InputEvent): void {
     const target = event.target as HTMLTextAreaElement;
     if (target.value === '') {

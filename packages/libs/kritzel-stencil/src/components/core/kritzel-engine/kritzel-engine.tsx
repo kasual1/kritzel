@@ -452,6 +452,7 @@ export class KritzelEngine {
                       <textarea
                         ref={el => object.mount(el)}
                         value={object.value}
+                        onKeyDown={event => object.handleKeyDown(event)}
                         onInput={event => object.handleInput(event)}
                         rows={object.rows}
                         style={{
