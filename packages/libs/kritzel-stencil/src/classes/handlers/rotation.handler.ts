@@ -1,4 +1,4 @@
-import { KritzelMouseHelper } from '../../helpers/click.helper';
+import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelStore } from '../store.class';
 import { RotateSelectionGroupCommand } from '../commands/rotate-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
@@ -13,7 +13,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   }
 
   handleMouseDown(event: MouseEvent): void {
-    if (KritzelMouseHelper.isLeftClick(event)) {
+    if (KritzelEventHelper.isLeftClick(event)) {
       if (this._store.state.selectionGroup && this._store.state.isRotationHandleSelected) {
         const clientX = event.clientX - this._store.offsetX;
         const clientY = event.clientY - this._store.offsetY;

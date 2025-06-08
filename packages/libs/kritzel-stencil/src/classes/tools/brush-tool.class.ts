@@ -1,4 +1,4 @@
-import { KritzelMouseHelper } from '../../helpers/click.helper';
+import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelStore } from '../store.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { KritzelPath } from '../objects/path.class';
@@ -23,7 +23,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
   }
 
   handleMouseDown(event: MouseEvent) {
-    if (KritzelMouseHelper.isLeftClick(event)) {
+    if (KritzelEventHelper.isLeftClick(event)) {
       this._store.state.isDrawing = true;
       const x = event.clientX - this._store.offsetX;
       const y = event.clientY - this._store.offsetY;
