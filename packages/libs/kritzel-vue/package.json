@@ -1,6 +1,6 @@
 {
   "name": "kritzel-vue",
-  "version": "0.0.51",
+  "version": "0.0.52",
   "homepage": "https://gitlab.com/kasual1/kritzel#readme",
   "license": "ISC",
   "main": "dist/index.js",
@@ -34,6 +34,6 @@
     "@stencil/vue-output-target": "0.10.7"
   },
   "peerDependencies": {
-    "kritzel-stencil": "^0.0.51"
+    "kritzel-stencil": "^0.0.52"
   }
 }
