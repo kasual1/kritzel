@@ -415,7 +415,6 @@ export class KritzelEngine {
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
                       overflow: 'visible',
-                      willChange: 'transform'
                     }}
                   >
                     {object instanceof KritzelPath && (
@@ -466,6 +465,7 @@ export class KritzelEngine {
                           resize: 'none',
                           overflow: 'hidden',
                           display: 'block',
+                          padding: '1px',
                           whiteSpace: 'nowrap',
                           cursor: object.isReadonly ? 'default' : 'text',
                           caretColor: object.isReadonly ? 'transparent' : 'auto',
