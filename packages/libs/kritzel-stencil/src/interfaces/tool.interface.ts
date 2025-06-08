@@ -4,6 +4,7 @@ export interface KritzelTool {
   handleMouseMove(event: MouseEvent): void;
   handleMouseUp(event: MouseEvent): void;
   handleDoubleClick(event: MouseEvent): void;
+  handleDoubleTap(event: TouchEvent): void;
   handleTouchStart(event: TouchEvent): void;
   handleTouchMove(event: TouchEvent): void;
   handleTouchEnd(event: TouchEvent): void;

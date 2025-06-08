@@ -1,5 +1,5 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
-import { KritzelMouseHelper } from '../../helpers/click.helper';
+import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelStore } from '../store.class';
 import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
 import { KritzelMoveHandler } from '../handlers/move.handler';
@@ -26,7 +26,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handleMouseDown(event: MouseEvent): void {
-    if (KritzelMouseHelper.isLeftClick(event)) {
+    if (KritzelEventHelper.isLeftClick(event)) {
       this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
       this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
       this._store.state.resizeHandleType = this.getHandleType(event);
@@ -71,12 +71,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handleDoubleClick(event: MouseEvent): void {
-    if (KritzelMouseHelper.isLeftClick(event)) {
-      
+    if (KritzelEventHelper.isLeftClick(event)) {
       if (this._store.state.selectionGroup && this._store.state.selectionGroup?.objects.length === 1) {
         const selectedObject = this._store.state.selectionGroup.objects[0];
-        
-        if(selectedObject instanceof KritzelText){
+
+        if (selectedObject instanceof KritzelText) {
           this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
           this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
           this._store.state.activeText = selectedObject;
@@ -85,8 +84,26 @@ export class KritzelSelectionTool extends KritzelBaseTool {
             selectedObject.focus();
           }, 300);
         }
-
       }
+    }
+  }
+
+  handleDoubleTap(event: TouchEvent): void {
+    const selectionGroup = this.getSelectedObject(event);
+    
+    if (!selectionGroup || selectionGroup.objects.length !== 1) {
+      return;
+    }
+
+    const selectedObject = selectionGroup.objects[0];
+
+    if (selectedObject instanceof KritzelText) {
+      this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
+      this._store.state.activeText = selectedObject;
+
+      setTimeout(() => {
+        selectedObject.focus();
+      }, 300);
     }
   }
 
@@ -103,10 +120,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       const selectedObject = this.getSelectedObject(event);
       const isDifferentObject = selectedObject && this._store.state.selectionGroup && selectedObject.id !== this._store.state.selectionGroup.id;
 
-      if(!this._store.state.selectionGroup && selectedObject){
+      if (!this._store.state.selectionGroup && selectedObject) {
         this._store.state.skipContextMenu = true;
       }
-      
+
       if (
         (selectedObject === null || isDifferentObject) &&
         this._store.state.selectionGroup &&
@@ -115,9 +132,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       ) {
         this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
       }
-      
     }
-
 
     this.rotationHandler.handleTouchStart(event);
     this.resizeHandler.handleTouchStart(event);

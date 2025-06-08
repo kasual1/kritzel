@@ -1,4 +1,4 @@
-import { KritzelMouseHelper } from '../helpers/click.helper';
+import { KritzelEventHelper } from '../helpers/event.helper';
 import { KritzelStore } from './store.class';
 
 export class KritzelViewport {
@@ -30,7 +30,7 @@ export class KritzelViewport {
     const adjustedClientX = event.clientX - this._store.offsetX;
     const adjustedClientY = event.clientY - this._store.offsetY;
 
-    if (KritzelMouseHelper.isRightClick(event)) {
+    if (KritzelEventHelper.isRightClick(event)) {
       this._store.state.isPanning = true;
       this._store.state.startX = adjustedClientX;
       this._store.state.startY = adjustedClientY;
@@ -131,7 +131,7 @@ export class KritzelViewport {
   handleWheel(event: WheelEvent): void {
     event.preventDefault();
 
-    if (event.ctrlKey === true && KritzelMouseHelper.isMainMouseWheel(event)) {
+    if (event.ctrlKey === true && KritzelEventHelper.isMainMouseWheel(event)) {
       this.handleZoom(event);
     }
 

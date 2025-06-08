@@ -16,6 +16,7 @@ import { KritzelToolRegistry } from '../../../classes/tool.registry';
 import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
+import { KritzelEventHelper } from '../../../helpers/event.helper';
 
 @Component({
   tag: 'kritzel-engine',
@@ -166,10 +167,25 @@ export class KritzelEngine {
     this.store.state?.activeTool?.handleDoubleClick(ev);
   }
 
+   @Listen('doubletap')
+  handleDoubleTap(ev: CustomEvent<TouchEvent> | TouchEvent) { // Handles both CustomEvent and direct TouchEvent
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    const touchEvent = (ev instanceof CustomEvent && ev.detail) ? ev.detail : ev as TouchEvent;
+
+    this.store.state?.activeTool?.handleDoubleTap(touchEvent);
+  }
+
   @Listen('touchstart', { passive: false })
   handleTouchStart(ev: TouchEvent) {
     if (this.store.state.isEnabled === false) {
       return;
+    }
+
+    if (KritzelEventHelper.detectDoubleTap(ev, this.host)) {
+      ev.preventDefault(); 
     }
 
     if (ev.touches.length > 1) {
