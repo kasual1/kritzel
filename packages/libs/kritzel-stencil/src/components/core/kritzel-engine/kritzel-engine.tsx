@@ -184,8 +184,10 @@ export class KritzelEngine {
       return;
     }
 
-    if (KritzelEventHelper.detectDoubleTap(ev, this.host)) {
+    if (KritzelEventHelper.detectDoubleTap()) {
       ev.preventDefault(); 
+      const doubleTapEvent = new CustomEvent('doubletap', { detail: event, bubbles: true, composed: true });
+      this.host.dispatchEvent(doubleTapEvent);
     }
 
     if (ev.touches.length > 1) {
