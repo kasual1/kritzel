@@ -16,9 +16,11 @@ export class KritzelUtilityPanel {
   delete: EventEmitter<void>;
 
   handleUndo(event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.undo.emit();
+    if (event.cancelable) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.undo.emit();
+    }
   }
 
   handleRedo(event: Event) {
@@ -30,10 +32,10 @@ export class KritzelUtilityPanel {
   render() {
     return (
       <Host>
-        <button class="utility-button" onClick={(event) => this.handleUndo(event)}>
+        <button class="utility-button" onClick={event => this.handleUndo(event)}>
           <kritzel-icon name="undo"></kritzel-icon>
         </button>
-        <button class="utility-button" onClick={(event) => this.handleRedo(event)}>
+        <button class="utility-button" onClick={event => this.handleRedo(event)}>
           <kritzel-icon name="redo"></kritzel-icon>
         </button>
 
