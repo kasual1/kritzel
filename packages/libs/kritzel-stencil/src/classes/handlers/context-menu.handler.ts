@@ -16,7 +16,9 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
   }
 
   handleContextMenu(event: MouseEvent): void {
-    event.preventDefault();
+    if(event.cancelable){
+      event.preventDefault();
+    }
 
     if (!(this._store.state.activeTool instanceof KritzelSelectionTool)) {
       return;
@@ -57,7 +59,9 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
   }
 
   handleContextMenuTouch(event: TouchEvent): void {
-    event.preventDefault();
+    if(event.cancelable){
+      event.preventDefault();
+    }
 
     if (this._store.state.touchCount > 1 || !(this._store.state.activeTool instanceof KritzelSelectionTool)) {
       return;
