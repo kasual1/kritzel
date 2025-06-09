@@ -109,8 +109,6 @@ export class KritzelTextTool extends KritzelBaseTool {
     text.translateY = (clientY - this._store.state.translateY) / this._store.state.scale;
     text.zIndex = this._store.currentZIndex;
 
-    text.adjustTextareaSize();
-
     this._store.state.activeText = text;
 
     this._store.history.executeCommand(new AddObjectCommand(this._store, this, text));

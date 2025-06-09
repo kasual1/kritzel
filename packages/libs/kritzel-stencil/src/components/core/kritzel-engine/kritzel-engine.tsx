@@ -167,13 +167,13 @@ export class KritzelEngine {
     this.store.state?.activeTool?.handleDoubleClick(ev);
   }
 
-   @Listen('doubletap')
-  handleDoubleTap(ev: CustomEvent<TouchEvent> | TouchEvent) { // Handles both CustomEvent and direct TouchEvent
+  @Listen('doubletap')
+  handleDoubleTap(ev: CustomEvent<TouchEvent> | TouchEvent) {
     if (this.store.state.isEnabled === false) {
       return;
     }
 
-    const touchEvent = (ev instanceof CustomEvent && ev.detail) ? ev.detail : ev as TouchEvent;
+    const touchEvent = ev instanceof CustomEvent && ev.detail ? ev.detail : (ev as TouchEvent);
 
     this.store.state?.activeTool?.handleDoubleTap(touchEvent);
   }
@@ -185,7 +185,6 @@ export class KritzelEngine {
     }
 
     if (KritzelEventHelper.detectDoubleTap()) {
-      ev.preventDefault(); 
       const doubleTapEvent = new CustomEvent('doubletap', { detail: event, bubbles: true, composed: true });
       this.host.dispatchEvent(doubleTapEvent);
     }
@@ -194,9 +193,12 @@ export class KritzelEngine {
       clearTimeout(this.store.state.longTouchTimeout);
     }
 
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
     this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenuTouch(ev), this.store.state.longTouchDelay);
 
-    ev.preventDefault();
     this.viewport.handleTouchStart(ev);
     this.store.state?.activeTool?.handleTouchStart(ev);
   }
@@ -207,7 +209,10 @@ export class KritzelEngine {
       return;
     }
 
-    ev.preventDefault();
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
     this.viewport.handleTouchMove(ev);
     this.store.state?.activeTool?.handleTouchMove(ev);
   }
@@ -218,9 +223,12 @@ export class KritzelEngine {
       return;
     }
 
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
     clearTimeout(this.store.state.longTouchTimeout);
 
-    ev.preventDefault();
     this.viewport.handleTouchEnd(ev);
     this.store.state?.activeTool?.handleTouchEnd(ev);
   }
