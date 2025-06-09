@@ -225,8 +225,10 @@ export class KritzelControls {
   }
 
   preventDefault(event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
+    if (event.cancelable) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
   }
 
   async handleControlClick(control: KritzelToolbarControl) {
