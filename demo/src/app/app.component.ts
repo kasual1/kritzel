@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core'; // Removed HostListener
+import { Component } from '@angular/core'; // Removed HostListener
 import { KritzelEditor } from 'kritzel-angular';
 
 @Component({
