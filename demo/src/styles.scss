@@ -1,10 +1,13 @@
 html,
 body {
+  height: 100%;
   margin: 0;
   padding: 0;
-  width: 100%;
-  overflow: hidden;
-  overscroll-behavior: none;
+  overflow-x: hidden;
+}
+
+body {
+  height: 100dvh;
 }
 
 kritzel-controls {
@@ -30,4 +33,10 @@ kritzel-controls {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* You might also want to ensure app-root takes up this space if it's your main container */
+app-root {
+  display: block;
+  height: 100%; /* Inherit height from body */
 }

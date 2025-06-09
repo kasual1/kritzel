@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core'; // Removed HostListener
 import { KritzelEditor } from 'kritzel-angular';
 
 @Component({
@@ -11,13 +11,4 @@ import { KritzelEditor } from 'kritzel-angular';
 })
 export class AppComponent {
   title = 'kritzel.io';
-
-  ngOnInit(): void {
-    document.body.style.height = window.innerHeight + 'px';
-  }
-
-  @HostListener('window:resize')
-  onResize(): void {
-    document.body.style.height = window.innerHeight + 'px';
-  }
 }
