@@ -40,6 +40,6 @@
     "last 2 versions",
     "not dead",
     "not IE 11",
-    "ios_saf >= 16"
+    "ios_saf >= 13"
   ]
 }
