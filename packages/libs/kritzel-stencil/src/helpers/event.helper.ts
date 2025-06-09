@@ -17,7 +17,7 @@ export class KritzelEventHelper {
   private static tapTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private static doubleTapTimeout: number = 300; 
 
-  public static detectDoubleTap(event: TouchEvent, host: EventTarget): boolean {
+  public static detectDoubleTap(): boolean {
     const currentTime = Date.now();
     const tapLength = currentTime - KritzelEventHelper.lastTapTimestamp;
 
@@ -28,8 +28,6 @@ export class KritzelEventHelper {
 
     if (tapLength < KritzelEventHelper.doubleTapTimeout && tapLength > 0) {
       KritzelEventHelper.lastTapTimestamp = 0;
-      const doubleTapEvent = new CustomEvent('doubletap', { detail: event, bubbles: true, composed: true });
-      host.dispatchEvent(doubleTapEvent);
       return true;
     } else {
       KritzelEventHelper.lastTapTimestamp = currentTime;
