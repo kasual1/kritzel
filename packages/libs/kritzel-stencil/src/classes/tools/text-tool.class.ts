@@ -32,7 +32,7 @@ export class KritzelTextTool extends KritzelBaseTool {
     super(store);
   }
 
-  handleMouseUp(event: MouseEvent): void {
+  handleMouseDown(event: MouseEvent): void {
     const path = event.composedPath().slice(1) as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = this._store.findObjectById(objectElement?.id);
@@ -74,6 +74,11 @@ export class KritzelTextTool extends KritzelBaseTool {
     this._store.history.executeCommand(new AddObjectCommand(this._store, this, text));
   }
 
+  handleMouseUp(_event: MouseEvent): void {
+    this._store.state.activeText?.focus();
+    this._store.state.activeText?.adjustTextareaSize();
+  }
+
   handleTouchStart(event: TouchEvent): void {
     const path = event.composedPath().slice(1) as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
@@ -112,5 +117,11 @@ export class KritzelTextTool extends KritzelBaseTool {
     this._store.state.activeText = text;
 
     this._store.history.executeCommand(new AddObjectCommand(this._store, this, text));
+  }
+
+
+  handleTouchEnd(_event: TouchEvent): void {
+    this._store.state.activeText?.focus();
+    this._store.state.activeText?.adjustTextareaSize();
   }
 }

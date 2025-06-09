@@ -4,7 +4,7 @@ import { KritzelBaseObject } from './base-object.class';
 
 export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   override __class__: string = 'KritzelText';
-  
+
   value: string = '';
 
   fontFamily: string = 'Arial';
@@ -42,13 +42,6 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   override mount(element: HTMLTextAreaElement): void {
     if ((this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
       return;
-    }
-
-    if (!this.isMounted) {
-      requestAnimationFrame(() => {
-        this.elementRef.focus();
-        this.adjustTextareaSize();
-      });
     }
 
     this.elementRef = element;
