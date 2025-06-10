@@ -73,6 +73,7 @@ export namespace Components {
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
         "globalContextMenuItems": ContextMenuItem[];
+        "hideContextMenu": () => Promise<void>;
         "moveToBottom": () => Promise<void>;
         "moveToTop": () => Promise<void>;
         "objectContextMenuItems": ContextMenuItem[];
