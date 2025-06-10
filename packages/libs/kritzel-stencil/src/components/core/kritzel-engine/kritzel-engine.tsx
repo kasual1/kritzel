@@ -125,8 +125,7 @@ export class KritzelEngine {
   @Listen('mousedown', { passive: true })
   handleMouseDown(ev: MouseEvent) {
     if (this.store.state.isContextMenuVisible) {
-      this.store.state.isContextMenuVisible = false;
-      this.store.state.isEnabled = true;
+      this.hideContextMenu();
       return;
     }
 
@@ -241,8 +240,7 @@ export class KritzelEngine {
   @Listen('wheel', { passive: false })
   handleWheel(ev) {
     if (this.store.state.isContextMenuVisible) {
-      this.store.state.isContextMenuVisible = false;
-      this.store.state.isEnabled = true;
+      this.hideContextMenu();
     }
 
     this.viewport.handleWheel(ev);
@@ -278,7 +276,7 @@ export class KritzelEngine {
 
   handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
     event.detail.action();
-    this.store.state.isContextMenuVisible = false;
+    this.hideContextMenu();
   }
 
   @Method()
@@ -363,6 +361,13 @@ export class KritzelEngine {
   @Method()
   async redo() {
     this.store.history.redo();
+  }
+
+  @Method()
+  async hideContextMenu() {
+    this.store.state.isContextMenuVisible = false;
+    this.store.state.selectionBox = null;
+    this.store.state.isSelecting = false;
   }
 
   render() {
