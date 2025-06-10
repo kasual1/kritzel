@@ -79,6 +79,16 @@ Type: `Promise<void>`
 
 
 
+### `hideContextMenu() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `moveToBottom() => Promise<void>`
 
 
