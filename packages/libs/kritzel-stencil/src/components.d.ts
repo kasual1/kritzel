@@ -107,6 +107,11 @@ export namespace Components {
         "selectedSize": number | null;
         "sizes": number[];
     }
+    interface KritzelTooltip {
+        "anchorElement": HTMLElement;
+        "isVisible": boolean;
+        "offsetY": number;
+    }
     interface KritzelUtilityPanel {
     }
 }
@@ -362,6 +367,12 @@ declare global {
         prototype: HTMLKritzelStrokeSizeElement;
         new (): HTMLKritzelStrokeSizeElement;
     };
+    interface HTMLKritzelTooltipElement extends Components.KritzelTooltip, HTMLStencilElement {
+    }
+    var HTMLKritzelTooltipElement: {
+        prototype: HTMLKritzelTooltipElement;
+        new (): HTMLKritzelTooltipElement;
+    };
     interface HTMLKritzelUtilityPanelElementEventMap {
         "undo": void;
         "redo": void;
@@ -398,6 +409,7 @@ declare global {
         "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
+        "kritzel-tooltip": HTMLKritzelTooltipElement;
         "kritzel-utility-panel": HTMLKritzelUtilityPanelElement;
     }
 }
@@ -482,6 +494,11 @@ declare namespace LocalJSX {
         "selectedSize"?: number | null;
         "sizes"?: number[];
     }
+    interface KritzelTooltip {
+        "anchorElement"?: HTMLElement;
+        "isVisible"?: boolean;
+        "offsetY"?: number;
+    }
     interface KritzelUtilityPanel {
         "onDelete"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
         "onRedo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
@@ -504,6 +521,7 @@ declare namespace LocalJSX {
         "kritzel-font-size": KritzelFontSize;
         "kritzel-icon": KritzelIcon;
         "kritzel-stroke-size": KritzelStrokeSize;
+        "kritzel-tooltip": KritzelTooltip;
         "kritzel-utility-panel": KritzelUtilityPanel;
     }
 }
@@ -527,6 +545,7 @@ declare module "@stencil/core" {
             "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
+            "kritzel-tooltip": LocalJSX.KritzelTooltip & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
             "kritzel-utility-panel": LocalJSX.KritzelUtilityPanel & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;
         }
     }

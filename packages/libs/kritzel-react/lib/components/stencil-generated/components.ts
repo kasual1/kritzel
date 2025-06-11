@@ -27,6 +27,7 @@ import { KritzelFontSize as KritzelFontSizeElement, defineCustomElement as defin
 import { KritzelFont as KritzelFontElement, defineCustomElement as defineKritzelFont } from "../../../../kritzel-stencil/dist/components/kritzel-font.js";
 import { KritzelIcon as KritzelIconElement, defineCustomElement as defineKritzelIcon } from "../../../../kritzel-stencil/dist/components/kritzel-icon.js";
 import { KritzelStrokeSize as KritzelStrokeSizeElement, defineCustomElement as defineKritzelStrokeSize } from "../../../../kritzel-stencil/dist/components/kritzel-stroke-size.js";
+import { KritzelTooltip as KritzelTooltipElement, defineCustomElement as defineKritzelTooltip } from "../../../../kritzel-stencil/dist/components/kritzel-tooltip.js";
 import { KritzelUtilityPanel as KritzelUtilityPanelElement, defineCustomElement as defineKritzelUtilityPanel } from "../../../../kritzel-stencil/dist/components/kritzel-utility-panel.js";
 
 export type KritzelBrushStyleEvents = { onTypeChange: EventName<CustomEvent<'pen' | 'highlighter'>> };
@@ -209,6 +210,17 @@ export const KritzelStrokeSize: StencilReactComponent<KritzelStrokeSizeElement, 
     react: React,
     events: { onSizeChange: 'sizeChange' } as KritzelStrokeSizeEvents,
     defineCustomElement: defineKritzelStrokeSize
+});
+
+export type KritzelTooltipEvents = NonNullable<unknown>;
+
+export const KritzelTooltip: StencilReactComponent<KritzelTooltipElement, KritzelTooltipEvents> = /*@__PURE__*/ createComponent<KritzelTooltipElement, KritzelTooltipEvents>({
+    tagName: 'kritzel-tooltip',
+    elementClass: KritzelTooltipElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {} as KritzelTooltipEvents,
+    defineCustomElement: defineKritzelTooltip
 });
 
 export type KritzelUtilityPanelEvents = {

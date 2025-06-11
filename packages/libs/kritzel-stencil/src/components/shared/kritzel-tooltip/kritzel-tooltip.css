@@ -1,0 +1,29 @@
+:host {
+  display: block; /* Make the host element behave like a block for positioning */
+}
+
+.tooltip-container {
+  white-space: normal; /* Allow text wrapping */
+}
+
+.tooltip-content {
+  position: relative; /* Needed for absolute positioning of the arrow */
+  /* Add your existing tooltip-content styles here */
+  background-color: #333; /* Example background */
+  color: white; /* Example text color */
+  padding: 8px 12px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.tooltip-arrow {
+  position: absolute;
+  bottom: -8px; /* Adjusted for larger arrow */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;  /* Increased by 3px */
+  border-right: 8px solid transparent; /* Increased by 3px */
+  border-top: 8px solid #333;          /* Increased by 3px, should match tooltip-content background-color */
+}

@@ -410,6 +410,28 @@ export declare interface KritzelStrokeSize extends Components.KritzelStrokeSize 
 
 
 @ProxyCmp({
+  inputs: ['anchorElement', 'isVisible', 'offsetY']
+})
+@Component({
+  selector: 'kritzel-tooltip',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['anchorElement', 'isVisible', 'offsetY'],
+})
+export class KritzelTooltip {
+  protected el: HTMLKritzelTooltipElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelTooltip extends Components.KritzelTooltip {}
+
+
+@ProxyCmp({
 })
 @Component({
   selector: 'kritzel-utility-panel',

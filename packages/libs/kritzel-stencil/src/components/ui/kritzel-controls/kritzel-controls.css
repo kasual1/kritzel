@@ -108,73 +108,11 @@
     border: 1px dashed gray;
 }
 
-.kritzel-tooltip {
-  position: absolute;
-  bottom: 40px;
+kritzel-tooltip {
+  position: fixed;
+  bottom: 66px; /* Adjusted to ensure it appears above the controls */
   left: 50%;
-  width: 290px;
   transform: translateX(-50%);
-  margin-bottom: 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background-color: var(--kritzel-controls-tooltip-background-color);
-  color: var(--kritzel-controls-tooltip-color);
-  align-items: flex-start;
-  padding: var(--kritzel-controls-tooltip-padding);
-  border-radius: var(--kritzel-controls-tooltip-border-radius);
-  white-space: nowrap;
-  box-shadow: var(--kritzel-controls-tooltip-box-shadow);
-  z-index: 10000;
-  -webkit-tap-highlight-color: transparent;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(-50%) translateY(10px) scale(0.98);
-  transition:
-    opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Show state */
-.kritzel-tooltip.kritzel-tooltip--visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0) scale(1);
-}
-
-.kritzel-tooltip-arrow {
-  position: absolute;
-  bottom: 40px;
-  left: 12px;
-  border-width: 8px;
-  border-style: solid;
-  border-color: var(--kritzel-controls-tooltip-background-color) transparent transparent transparent;
-  filter: drop-shadow(var(--kritzel-controls-tooltip-box-shadow));
-  z-index: 10000;
-  opacity: 0;
-  transform: translateY(10px) scale(0.98);
-  transition:
-    opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.kritzel-tooltip-arrow.kritzel-tooltip-arrow--visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-@media (max-width: 768px) {
-  .kritzel-tooltip {
-    position: fixed;
-    bottom: 66px;
-  }
-
-  .kritzel-control:hover {
-    background-color: transparent;
-  }
-
-  .kritzel-control:active {
-    background-color: transparent;
-  }
-  
+  z-index: 10001; /* Ensure tooltip is above controls */
+  max-width: 200px; /* Limit width for better readability */
 }
