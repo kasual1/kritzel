@@ -143,10 +143,11 @@ export class KritzelControls {
       name: 'divider',
       type: 'divider',
     },
-    {
+      {
       name: 'config',
       type: 'config',
-    }
+    },
+    
   ];
 
   @Prop({ mutable: true })
