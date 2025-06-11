@@ -146,7 +146,7 @@ export class KritzelControls {
     {
       name: 'config',
       type: 'config',
-    },
+    }
   ];
 
   @Prop({ mutable: true })
@@ -290,28 +290,17 @@ export class KritzelControls {
             if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
                 <div class="kritzel-config-container" key={control.name}>
-                  <div
-                    class={{
-                      'kritzel-tooltip': true,
-                      'kritzel-tooltip--visible': this.tooltipVisible,
-                    }}
-                    onClick={event => this.preventDefault(event)}
-                  >
-                    {this.activeControl.name === 'brush' && (
-                      <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
-                    )}
+                  <kritzel-tooltip isVisible={this.tooltipVisible} anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}>
+                    <div style={{ width: '294px', height: '100%' }}>
+                      {this.activeControl.name === 'brush' && (
+                        <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
+                      )}
 
-                    {this.activeControl.name === 'text' && (
-                      <kritzel-control-text-config tool={this.activeToolAsTextTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-text-config>
-                    )}
-                  </div>
-
-                  <div
-                    class={{
-                      'kritzel-tooltip-arrow': true,
-                      'kritzel-tooltip-arrow--visible': this.tooltipVisible,
-                    }}
-                  ></div>
+                      {this.activeControl.name === 'text' && (
+                        <kritzel-control-text-config tool={this.activeToolAsTextTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-text-config>
+                      )}
+                    </div>
+                  </kritzel-tooltip>
 
                   <div
                     class="kritzel-config"

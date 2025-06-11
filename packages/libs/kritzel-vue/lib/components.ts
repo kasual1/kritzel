@@ -21,6 +21,7 @@ import { defineCustomElement as defineKritzelFontFamily } from '../../kritzel-st
 import { defineCustomElement as defineKritzelFontSize } from '../../kritzel-stencil/dist/components/kritzel-font-size.js';
 import { defineCustomElement as defineKritzelIcon } from '../../kritzel-stencil/dist/components/kritzel-icon.js';
 import { defineCustomElement as defineKritzelStrokeSize } from '../../kritzel-stencil/dist/components/kritzel-stroke-size.js';
+import { defineCustomElement as defineKritzelTooltip } from '../../kritzel-stencil/dist/components/kritzel-tooltip.js';
 import { defineCustomElement as defineKritzelUtilityPanel } from '../../kritzel-stencil/dist/components/kritzel-utility-panel.js';
 
 
@@ -153,6 +154,13 @@ export const KritzelStrokeSize: StencilVueComponent<JSX.KritzelStrokeSize> = /*@
   'sizeChange'
 ], [
   'sizeChange'
+]);
+
+
+export const KritzelTooltip: StencilVueComponent<JSX.KritzelTooltip> = /*@__PURE__*/ defineContainer<JSX.KritzelTooltip>('kritzel-tooltip', defineKritzelTooltip, [
+  'isVisible',
+  'anchorElement',
+  'offsetY'
 ]);
 
 
