@@ -4,9 +4,32 @@
 
 .tooltip-content {
   position: relative;
-  background-color: #333;
-  color: white; 
   padding: 8px 12px;
   border-radius: 4px;
   width: fit-content;
+  background-color: var(--kritzel-controls-tooltip-background-color);
+  color: var(--kritzel-controls-tooltip-color);
+  padding: var(--kritzel-controls-tooltip-padding);
+  border-radius: var(--kritzel-controls-tooltip-border-radius);
+  white-space: nowrap;
+  box-shadow: var(--kritzel-controls-tooltip-box-shadow);
+}
+
+.tooltip-arrow {
+  position: absolute;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid var(--kritzel-controls-tooltip-background-color);
+  bottom: -8px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.tooltip-arrow-rect {
+  position: absolute;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 8px;
+  bottom: 0;
+  background-color: var(--kritzel-controls-tooltip-background-color);
 }

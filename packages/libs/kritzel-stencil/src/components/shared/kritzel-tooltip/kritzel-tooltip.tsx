@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h, Element, State } from '@stencil/core';
+import { Component, Host, Prop, h, Element, State, Listen } from '@stencil/core';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -26,6 +26,12 @@ export class KritzelTooltip {
   @State()
   private isMobileView: boolean = window.innerWidth < MOBILE_BREAKPOINT;
 
+  @Listen('resize', { target: 'window' })
+  handleWindowResize() {
+    this.isMobileView = window.innerWidth < MOBILE_BREAKPOINT;
+    this.calculateAdjustedPosition();
+  }
+
   componentWillLoad() {
     this.isMobileView = window.innerWidth < MOBILE_BREAKPOINT;
     this.calculateAdjustedPosition();
@@ -37,13 +43,12 @@ export class KritzelTooltip {
 
   private calculateAdjustedPosition() {
     if (this.isVisible && this.anchorElement) {
-
       const anchorRect = this.anchorElement.getBoundingClientRect();
 
       if (!this.isMobileView) {
-        this.positionX  = anchorRect.left + anchorRect.width / 2;
+        this.positionX = anchorRect.left + anchorRect.width / 2;
       } else {
-        this.positionX  = anchorRect.left - 8;
+        this.positionX = anchorRect.left - 8;
       }
     }
   }
@@ -65,13 +70,13 @@ export class KritzelTooltip {
           <div
             class="tooltip-arrow"
             style={{
-              position: 'absolute',
-              transform: 'translateX(-50%)',
-              borderLeft: '8px solid transparent',
-              borderRight: '8px solid transparent',
-              borderTop: '8px solid #333',
               left: !this.isMobileView ? '50%' : `${this.positionX}px`,
-              bottom: `-8px`,
+            }}
+          ></div>
+          <div
+            class="tooltip-arrow-rect"
+            style={{
+              left: !this.isMobileView ? '50%' : `${this.positionX}px`,
             }}
           ></div>
         </div>
