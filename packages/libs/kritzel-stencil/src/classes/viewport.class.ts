@@ -17,6 +17,7 @@ export class KritzelViewport {
     this._store.state.startY = 0;
     this._store.state.translateX = 0;
     this._store.state.translateY = 0;
+    this._store.rerender();
   }
 
   handleResize(): void {
