@@ -22,14 +22,17 @@ export class KritzelControls {
   @Event()
   controlsReady: EventEmitter<void>;
 
+  @Element()
+  host!: HTMLElement;
+
   @State()
   firstConfig: ToolConfig | null = null;
 
   @State()
   tooltipVisible: boolean = false;
 
-  @Element()
-  host!: HTMLElement;
+  @State()
+  forceUpdate: number = 0;
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
 
@@ -42,11 +45,14 @@ export class KritzelControls {
   }
 
   async componentDidLoad() {
+    console.log('KritzelControls componentDidLoad');
+    this.forceUpdate++;
     this.controlsReady.emit();
     this.initializeEngine().then(() => {
       this.initializeTools()
         .then(() => {
           console.info('KritzelControls initialized with tools:', this.controls);
+          this.forceUpdate++;
         })
         .catch(error => {
           console.error('Error initializing tools:', error);
