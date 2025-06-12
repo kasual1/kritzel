@@ -41,12 +41,9 @@ export class KritzelControls {
     return this.activeControl?.tool as KritzelBrushTool;
   }
 
-  async componentWillLoad() {
+  async componentDidLoad() {
     await this.initializeEngine();
     await this.initializeTools();
-  }
-
-  componentDidLoad() {
     this.controlsReady.emit();
   }
 
