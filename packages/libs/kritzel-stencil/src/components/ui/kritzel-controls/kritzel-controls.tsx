@@ -146,7 +146,7 @@ export class KritzelControls {
      {
       name: 'config',
       type: 'config',
-    },
+    }
   ];
 
   @Prop({ mutable: true })

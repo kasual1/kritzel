@@ -15,13 +15,19 @@ export class KritzelTooltip {
   anchorElement: HTMLElement;
 
   @Prop()
-  offsetY: number = 20;
+  arrowSize: number = 8;
+
+  @Prop()
+  offsetY: number = 12;
 
   @Element()
   el: HTMLElement;
 
   @State()
   positionX: number = 0;
+
+  @State()
+  arrowOffset: string = '0px';
 
   @State()
   private isMobileView: boolean = window.innerWidth < MOBILE_BREAKPOINT;
@@ -44,11 +50,15 @@ export class KritzelTooltip {
   private calculateAdjustedPosition() {
     if (this.isVisible && this.anchorElement) {
       const anchorRect = this.anchorElement.getBoundingClientRect();
+      const tooltipContent = this.el.shadowRoot?.querySelector('.tooltip-content') as HTMLElement;
 
       if (!this.isMobileView) {
         this.positionX = anchorRect.left + anchorRect.width / 2;
+        this.arrowOffset = `calc(${50}% - ${this.arrowSize}px)`; 
       } else {
-        this.positionX = anchorRect.left - 8;
+        const tooltipRect = tooltipContent.getBoundingClientRect();
+        this.positionX = anchorRect.left + anchorRect.width / 2 - tooltipRect.width / 2;
+        this.arrowOffset = `${anchorRect.left + anchorRect.width / 2 - tooltipRect.left - this.arrowSize}px`;
       }
     }
   }
@@ -60,25 +70,41 @@ export class KritzelTooltip {
           position: 'fixed',
           zIndex: '9999',
           transition: 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out',
-          display: this.isVisible ? 'inline-block' : 'none',
+          visibility: this.isVisible ? 'visible' : 'hidden',
           left: !this.isMobileView ? `${this.positionX}px` : '50%',
-          marginBottom: `${this.offsetY}px`,
+          marginBottom: `${this.offsetY + this.arrowSize}px`,
         }}
       >
         <div class="tooltip-content" onClick={event => event.stopPropagation()}>
           <slot></slot>
           <div
-            class="tooltip-arrow"
+            class="tooltip-arrow-wrapper"
             style={{
-              left: !this.isMobileView ? '50%' : `${this.positionX}px`,
+              position: 'fixed',
+              left: this.arrowOffset,
+              bottom: `-${this.arrowSize * 2}px`,
             }}
-          ></div>
-          <div
-            class="tooltip-arrow-rect"
-            style={{
-              left: !this.isMobileView ? '50%' : `${this.positionX}px`,
-            }}
-          ></div>
+          >
+            <div
+              class="tooltip-arrow"
+              style={{
+              borderLeft: `${this.arrowSize}px solid transparent`,
+              borderRight: `${this.arrowSize}px solid transparent`,
+              borderTop: `${this.arrowSize}px solid var(--kritzel-controls-tooltip-background-color)`,
+              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))',
+              }}
+            ></div>
+            <div
+              class="tooltip-arrow-rect"
+              style={{
+              position: 'relative',
+              width: `${this.arrowSize * 2}px`,
+              height: `${this.arrowSize}px`,
+              backgroundColor: 'var(--kritzel-controls-tooltip-background-color)',
+              bottom: `${this.arrowSize * 2}px`,
+              }}
+            ></div>
+          </div>
         </div>
       </Host>
     );

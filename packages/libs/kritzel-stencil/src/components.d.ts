@@ -25,44 +25,86 @@ export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export namespace Components {
     interface KritzelBrushStyle {
+        /**
+          * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
+         */
         "brushOptions": BrushStyleOption[];
+        /**
+          * @default 'pen'
+         */
         "type": 'pen' | 'highlighter';
     }
     interface KritzelColor {
+        /**
+          * @default 24
+         */
         "size": number;
         "value": string;
     }
     interface KritzelColorPalette {
+        /**
+          * @default []
+         */
         "colors": string[];
+        /**
+          * @default false
+         */
         "isExpanded": boolean;
+        /**
+          * @default false
+         */
         "isOpaque": boolean;
+        /**
+          * @default null
+         */
         "selectedColor": string | null;
     }
     interface KritzelContextMenu {
         "items": ContextMenuItem[];
     }
     interface KritzelControlBrushConfig {
+        /**
+          * @default false
+         */
         "isExpanded": boolean;
         "tool": KritzelBrushTool;
     }
     interface KritzelControlTextConfig {
+        /**
+          * @default false
+         */
         "isExpanded": boolean;
         "tool": KritzelTextTool;
     }
     interface KritzelControls {
+        /**
+          * @default null
+         */
         "activeControl": KritzelToolbarControl | null;
+        /**
+          * @default [     {       name: 'selection',       type: 'tool',       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       isDefault: true,       icon: 'pen',       config: {         type: 'pen',         color: '#000000',         size: 16,         palettes: {           pen: [             '#000000',             '#ff5252',             '#ffbc00',             '#00c853',             '#0000FF',             '#d500f9',             '#fafafa',             '#a52714',             '#ee8100',             '#558b2f',             '#01579b',             '#8e24aa',             '#90a4ae',             '#ff4081',             '#ff6e40',             '#aeea00',             '#304ffe',             '#7c4dff',             '#cfd8dc',             '#f8bbd0',             '#ffccbc',             '#f0f4c3',             '#9fa8da',             '#d1c4e9',           ],           highlighter: [             '#0000006e',             '#ff52526e',             '#ffbb006e',             '#00c8536e',             '#0000FF6e',             '#d500f96e',             '#fafafa6e',             '#a527146e',             '#ee81006e',             '#558b2f6e',             '#01579b6e',             '#8e24aa6e',             '#90a4ae6e',             '#ff40816e',             '#ff6e406e',             '#aeea006e',             '#304ffe6e',             '#7c4dff6e',             '#cfd8dc6e',             '#f8bbd06e',             '#ffccbc6e',             '#f0f4c36e',             '#9fa8da6e',             '#d1c4e96e',           ],         },       },     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: {         color: '#000000',         size: 8,         fontFamily: 'Arial',         palette: [           '#000000',           '#ff5252',           '#ffbc00',           '#00c853',           '#0000FF',           '#d500f9',           '#fafafa',           '#a52714',           '#ee8100',           '#558b2f',           '#01579b',           '#8e24aa',           '#90a4ae',           '#ff4081',           '#ff6e40',           '#aeea00',           '#304ffe',           '#7c4dff',           '#cfd8dc',           '#f8bbd0',           '#ffccbc',           '#f0f4c3',           '#9fa8da',           '#d1c4e9',         ],       },     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'divider',       type: 'divider',     },      {       name: 'config',       type: 'config',     }   ]
+         */
         "controls": KritzelToolbarControl[];
     }
     interface KritzelCursorTrail {
     }
     interface KritzelDropdown {
+        /**
+          * @default []
+         */
         "options": DropdownOption[];
+        /**
+          * @default {}
+         */
         "selectStyles"?: any;
         "value": string;
         "width"?: string;
     }
     interface KritzelEditor {
         "controls": KritzelToolbarControl[];
+        /**
+          * @default {}
+         */
         "customSvgIcons": Record<string, string>;
     }
     interface KritzelEngine {
@@ -72,10 +114,16 @@ export namespace Components {
         "delete": () => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
+        /**
+          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllInViewport() },   ]
+         */
         "globalContextMenuItems": ContextMenuItem[];
         "hideContextMenu": () => Promise<void>;
         "moveToBottom": () => Promise<void>;
         "moveToTop": () => Promise<void>;
+        /**
+          * @default [     { label: 'Copy', icon: 'copy', action: () => this.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Delete', icon: 'delete', action: () => this.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },   ]
+         */
         "objectContextMenuItems": ContextMenuItem[];
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
@@ -85,31 +133,71 @@ export namespace Components {
         "undo": () => Promise<void>;
     }
     interface KritzelFont {
+        /**
+          * @default '#000000'
+         */
         "color": string;
+        /**
+          * @default 'Arial, sans-serif'
+         */
         "fontFamily": string;
+        /**
+          * @default 24
+         */
         "size": number;
     }
     interface KritzelFontFamily {
+        /**
+          * @default [     { value: 'arial', label: 'Arial' },     { value: 'verdana', label: 'Verdana' },     { value: 'helvetica', label: 'Helvetica' },     { value: 'tahoma', label: 'Tahoma' },     { value: 'trebuchet ms', label: 'Trebuchet MS' },     { value: 'times new roman', label: 'Times New Roman' },     { value: 'georgia', label: 'Georgia' },     { value: 'garamond', label: 'Garamond' },     { value: 'courier new', label: 'Courier New' },     { value: 'brush script mt', label: 'Brush Script MT' },   ]
+         */
         "fontOptions": FontOption[];
         "selectedFontFamily": string;
     }
     interface KritzelFontSize {
+        /**
+          * @default 'Arial'
+         */
         "fontFamily": string;
+        /**
+          * @default null
+         */
         "selectedSize": number | null;
+        /**
+          * @default [8, 10, 12, 16, 20, 24]
+         */
         "sizes": number[];
     }
     interface KritzelIcon {
         "label"?: string;
         "name": string;
+        /**
+          * @default 24
+         */
         "size": number;
     }
     interface KritzelStrokeSize {
+        /**
+          * @default null
+         */
         "selectedSize": number | null;
+        /**
+          * @default [4, 6, 8, 12, 16, 24]
+         */
         "sizes": number[];
     }
     interface KritzelTooltip {
         "anchorElement": HTMLElement;
+        /**
+          * @default 8
+         */
+        "arrowSize": number;
+        /**
+          * @default false
+         */
         "isVisible": boolean;
+        /**
+          * @default 12
+         */
         "offsetY": number;
     }
     interface KritzelUtilityPanel {
@@ -415,19 +503,40 @@ declare global {
 }
 declare namespace LocalJSX {
     interface KritzelBrushStyle {
+        /**
+          * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
+         */
         "brushOptions"?: BrushStyleOption[];
         "onTypeChange"?: (event: KritzelBrushStyleCustomEvent<'pen' | 'highlighter'>) => void;
+        /**
+          * @default 'pen'
+         */
         "type"?: 'pen' | 'highlighter';
     }
     interface KritzelColor {
+        /**
+          * @default 24
+         */
         "size"?: number;
         "value"?: string;
     }
     interface KritzelColorPalette {
+        /**
+          * @default []
+         */
         "colors"?: string[];
+        /**
+          * @default false
+         */
         "isExpanded"?: boolean;
+        /**
+          * @default false
+         */
         "isOpaque"?: boolean;
         "onColorChange"?: (event: KritzelColorPaletteCustomEvent<string>) => void;
+        /**
+          * @default null
+         */
         "selectedColor"?: string | null;
     }
     interface KritzelContextMenu {
@@ -436,67 +545,134 @@ declare namespace LocalJSX {
         "onClose"?: (event: KritzelContextMenuCustomEvent<void>) => void;
     }
     interface KritzelControlBrushConfig {
+        /**
+          * @default false
+         */
         "isExpanded"?: boolean;
         "onToolChange"?: (event: KritzelControlBrushConfigCustomEvent<KritzelBrushTool>) => void;
         "tool"?: KritzelBrushTool;
     }
     interface KritzelControlTextConfig {
+        /**
+          * @default false
+         */
         "isExpanded"?: boolean;
         "onToolChange"?: (event: KritzelControlTextConfigCustomEvent<KritzelTextTool>) => void;
         "tool"?: KritzelTextTool;
     }
     interface KritzelControls {
+        /**
+          * @default null
+         */
         "activeControl"?: KritzelToolbarControl | null;
+        /**
+          * @default [     {       name: 'selection',       type: 'tool',       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       isDefault: true,       icon: 'pen',       config: {         type: 'pen',         color: '#000000',         size: 16,         palettes: {           pen: [             '#000000',             '#ff5252',             '#ffbc00',             '#00c853',             '#0000FF',             '#d500f9',             '#fafafa',             '#a52714',             '#ee8100',             '#558b2f',             '#01579b',             '#8e24aa',             '#90a4ae',             '#ff4081',             '#ff6e40',             '#aeea00',             '#304ffe',             '#7c4dff',             '#cfd8dc',             '#f8bbd0',             '#ffccbc',             '#f0f4c3',             '#9fa8da',             '#d1c4e9',           ],           highlighter: [             '#0000006e',             '#ff52526e',             '#ffbb006e',             '#00c8536e',             '#0000FF6e',             '#d500f96e',             '#fafafa6e',             '#a527146e',             '#ee81006e',             '#558b2f6e',             '#01579b6e',             '#8e24aa6e',             '#90a4ae6e',             '#ff40816e',             '#ff6e406e',             '#aeea006e',             '#304ffe6e',             '#7c4dff6e',             '#cfd8dc6e',             '#f8bbd06e',             '#ffccbc6e',             '#f0f4c36e',             '#9fa8da6e',             '#d1c4e96e',           ],         },       },     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: {         color: '#000000',         size: 8,         fontFamily: 'Arial',         palette: [           '#000000',           '#ff5252',           '#ffbc00',           '#00c853',           '#0000FF',           '#d500f9',           '#fafafa',           '#a52714',           '#ee8100',           '#558b2f',           '#01579b',           '#8e24aa',           '#90a4ae',           '#ff4081',           '#ff6e40',           '#aeea00',           '#304ffe',           '#7c4dff',           '#cfd8dc',           '#f8bbd0',           '#ffccbc',           '#f0f4c3',           '#9fa8da',           '#d1c4e9',         ],       },     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'divider',       type: 'divider',     },      {       name: 'config',       type: 'config',     }   ]
+         */
         "controls"?: KritzelToolbarControl[];
     }
     interface KritzelCursorTrail {
     }
     interface KritzelDropdown {
         "onValueChanged"?: (event: KritzelDropdownCustomEvent<string>) => void;
+        /**
+          * @default []
+         */
         "options"?: DropdownOption[];
+        /**
+          * @default {}
+         */
         "selectStyles"?: any;
         "value"?: string;
         "width"?: string;
     }
     interface KritzelEditor {
         "controls"?: KritzelToolbarControl[];
+        /**
+          * @default {}
+         */
         "customSvgIcons"?: Record<string, string>;
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
+        /**
+          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllInViewport() },   ]
+         */
         "globalContextMenuItems"?: ContextMenuItem[];
+        /**
+          * @default [     { label: 'Copy', icon: 'copy', action: () => this.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Delete', icon: 'delete', action: () => this.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },   ]
+         */
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
     }
     interface KritzelFont {
+        /**
+          * @default '#000000'
+         */
         "color"?: string;
+        /**
+          * @default 'Arial, sans-serif'
+         */
         "fontFamily"?: string;
+        /**
+          * @default 24
+         */
         "size"?: number;
     }
     interface KritzelFontFamily {
+        /**
+          * @default [     { value: 'arial', label: 'Arial' },     { value: 'verdana', label: 'Verdana' },     { value: 'helvetica', label: 'Helvetica' },     { value: 'tahoma', label: 'Tahoma' },     { value: 'trebuchet ms', label: 'Trebuchet MS' },     { value: 'times new roman', label: 'Times New Roman' },     { value: 'georgia', label: 'Georgia' },     { value: 'garamond', label: 'Garamond' },     { value: 'courier new', label: 'Courier New' },     { value: 'brush script mt', label: 'Brush Script MT' },   ]
+         */
         "fontOptions"?: FontOption[];
         "onFontFamilyChange"?: (event: KritzelFontFamilyCustomEvent<string>) => void;
         "selectedFontFamily"?: string;
     }
     interface KritzelFontSize {
+        /**
+          * @default 'Arial'
+         */
         "fontFamily"?: string;
         "onSizeChange"?: (event: KritzelFontSizeCustomEvent<number>) => void;
+        /**
+          * @default null
+         */
         "selectedSize"?: number | null;
+        /**
+          * @default [8, 10, 12, 16, 20, 24]
+         */
         "sizes"?: number[];
     }
     interface KritzelIcon {
         "label"?: string;
         "name"?: string;
+        /**
+          * @default 24
+         */
         "size"?: number;
     }
     interface KritzelStrokeSize {
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
+        /**
+          * @default null
+         */
         "selectedSize"?: number | null;
+        /**
+          * @default [4, 6, 8, 12, 16, 24]
+         */
         "sizes"?: number[];
     }
     interface KritzelTooltip {
         "anchorElement"?: HTMLElement;
+        /**
+          * @default 8
+         */
+        "arrowSize"?: number;
+        /**
+          * @default false
+         */
         "isVisible"?: boolean;
+        /**
+          * @default 12
+         */
         "offsetY"?: number;
     }
     interface KritzelUtilityPanel {

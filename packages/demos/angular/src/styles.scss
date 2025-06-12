@@ -1,8 +1,41 @@
 html,
 body {
+  height: 100%;
   margin: 0;
   padding: 0;
-  width: 100%;
-  overflow: hidden;
-  overscroll-behavior: none;
+  overflow-x: hidden;
+}
+
+body {
+  height: 100dvh;
+}
+
+kritzel-controls {
+  position: fixed;
+  opacity: 0;
+  transform: translateY(100vh);
+  animation: slideInFromBottom 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideInFromBottom {
+   0% {
+    opacity: 0;
+    transform: translateY(100vh);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+  90% {
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+app-root {
+  display: block;
+  height: 100%;
 }

@@ -160,6 +160,7 @@ export const KritzelStrokeSize: StencilVueComponent<JSX.KritzelStrokeSize> = /*@
 export const KritzelTooltip: StencilVueComponent<JSX.KritzelTooltip> = /*@__PURE__*/ defineContainer<JSX.KritzelTooltip>('kritzel-tooltip', defineKritzelTooltip, [
   'isVisible',
   'anchorElement',
+  'arrowSize',
   'offsetY'
 ]);
 
