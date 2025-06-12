@@ -42,9 +42,16 @@ export class KritzelControls {
   }
 
   async componentDidLoad() {
-    await this.initializeEngine();
-    await this.initializeTools();
     this.controlsReady.emit();
+    this.initializeEngine().then(() => {
+      this.initializeTools()
+        .then(() => {
+          console.info('KritzelControls initialized with tools:', this.controls);
+        })
+        .catch(error => {
+          console.error('Error initializing tools:', error);
+        });
+    });
   }
 
   private async initializeEngine() {
