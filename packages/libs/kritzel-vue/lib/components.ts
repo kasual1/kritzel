@@ -104,7 +104,8 @@ export const KritzelDropdown: StencilVueComponent<JSX.KritzelDropdown> = /*@__PU
 
 export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__*/ defineContainer<JSX.KritzelEditor>('kritzel-editor', defineKritzelEditor, [
   'controls',
-  'customSvgIcons'
+  'customSvgIcons',
+  'hideControls'
 ]);
 
 
