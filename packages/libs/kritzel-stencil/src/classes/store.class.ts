@@ -47,7 +47,7 @@ const initialState: KritzelEngineState = {
   skipContextMenu: false,
   debugInfo: {
     showObjectInfo: false,
-    showViewportInfo: true,
+    showViewportInfo: false,
     logCommands: false,
   },
   host: null,

@@ -10,8 +10,9 @@
 | Property        | Attribute        | Description | Type          | Default     |
 | --------------- | ---------------- | ----------- | ------------- | ----------- |
 | `anchorElement` | `anchor-element` |             | `HTMLElement` | `undefined` |
+| `arrowSize`     | `arrow-size`     |             | `number`      | `8`         |
 | `isVisible`     | `is-visible`     |             | `boolean`     | `false`     |
-| `offsetY`       | `offset-y`       |             | `number`      | `20`        |
+| `offsetY`       | `offset-y`       |             | `number`      | `12`        |
 
 
 ## Dependencies
