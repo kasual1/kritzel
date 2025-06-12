@@ -1,4 +1,4 @@
-import { Component, Host, Listen, Prop, h } from '@stencil/core';
+import { Component, Host, Listen, Prop, State, h } from '@stencil/core';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelImageTool } from '../../../classes/tools/image-tool.class';
@@ -149,6 +149,13 @@ export class KritzelEditor {
   @Prop()
   customSvgIcons: Record<string, string> = {};
 
+  @State()
+  forceUpdate: number = 0;
+
+  private engineReady: boolean = false;
+
+  private controlsReady: boolean = false;
+
   @Listen('dblclick', { passive: false })
   handleTouchStart(event: TouchEvent) {
     if (event.cancelable) {
@@ -162,11 +169,28 @@ export class KritzelEditor {
     }
   }
 
+  handleEngineReady() {
+    this.engineReady = true;
+    this.checkReadiness();
+  }
+
+  handleControlsReady() {
+    this.controlsReady = true;
+    this.checkReadiness();
+  }
+
+  checkReadiness() {
+    if (this.engineReady && this.controlsReady) {
+      console.info('KritzelEditor is ready');
+      this.forceUpdate++;
+    }
+  }
+
   render() {
     return (
       <Host>
-        <kritzel-engine></kritzel-engine>
-        <kritzel-controls controls={this.controls}></kritzel-controls>
+        <kritzel-engine onEngineReady={() => this.handleEngineReady()}></kritzel-engine>
+        <kritzel-controls controls={this.controls} onControlsReady={() => this.handleControlsReady()}></kritzel-controls>
       </Host>
     );
   }

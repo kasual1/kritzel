@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Element, Host, Listen } from '@stencil/core';
+import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter } from '@stencil/core';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
@@ -18,6 +18,9 @@ export class KritzelControls {
 
   @Prop({ mutable: true })
   activeControl: KritzelToolbarControl | null = null;
+
+  @Event()
+  controlsReady: EventEmitter<void>;
 
   @State()
   firstConfig: ToolConfig | null = null;
@@ -41,6 +44,10 @@ export class KritzelControls {
   async componentWillLoad() {
     await this.initializeEngine();
     await this.initializeTools();
+  }
+
+  componentDidLoad() {
+    this.controlsReady.emit();
   }
 
   private async initializeEngine() {

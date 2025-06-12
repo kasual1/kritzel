@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --disable-host-check",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "tunnel": "concurrently \"lt --port 4200\" \"npm run start\""
   },
   "private": true,
   "dependencies": {
@@ -18,8 +19,9 @@
     "@angular/platform-browser": "^19.1.0",
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
-    "kritzel-angular": "^0.0.58",
+    "kritzel-angular": "^0.0.61",
     "rxjs": "~7.8.0",
+    "save": "^2.9.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },
@@ -34,12 +36,8 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.7.2"
-  },
-  "browserslist": [
-    "last 2 versions",
-    "not dead",
-    "not IE 11",
-    "ios_saf >= 13"
-  ]
+    "typescript": "~5.7.2",
+    "concurrently": "^9.1.2"
+
+  }
 }

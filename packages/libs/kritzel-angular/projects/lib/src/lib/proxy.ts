@@ -182,11 +182,15 @@ export class KritzelControls {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['controlsReady']);
   }
 }
 
 
-export declare interface KritzelControls extends Components.KritzelControls {}
+export declare interface KritzelControls extends Components.KritzelControls {
+
+  controlsReady: EventEmitter<CustomEvent<void>>;
+}
 
 
 @ProxyCmp({
@@ -274,7 +278,7 @@ export class KritzelEngine {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['activeToolChange']);
+    proxyOutputs(this, this.el, ['engineReady', 'activeToolChange']);
   }
 }
 
@@ -282,6 +286,8 @@ export class KritzelEngine {
 import type { KritzelBaseTool as IKritzelEngineKritzelBaseTool } from 'kritzel-stencil';
 
 export declare interface KritzelEngine extends Components.KritzelEngine {
+
+  engineReady: EventEmitter<CustomEvent<void>>;
 
   activeToolChange: EventEmitter<CustomEvent<IKritzelEngineKritzelBaseTool>>;
 }

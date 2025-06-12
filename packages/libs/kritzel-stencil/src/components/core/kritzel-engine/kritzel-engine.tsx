@@ -67,6 +67,9 @@ export class KritzelEngine {
   forceUpdate: number = 0;
 
   @Event()
+  engineReady: EventEmitter<void>;
+
+  @Event()
   activeToolChange: EventEmitter<KritzelBaseTool>;
 
   store: KritzelStore;
@@ -111,6 +114,7 @@ export class KritzelEngine {
 
   componentDidLoad() {
     this.viewport = new KritzelViewport(this.store, this.host);
+    this.engineReady.emit();
   }
 
   @Listen('contextmenu', { capture: false })
