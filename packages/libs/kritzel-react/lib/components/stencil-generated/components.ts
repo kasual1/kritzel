@@ -102,14 +102,14 @@ export const KritzelControlTextConfig: StencilReactComponent<KritzelControlTextC
     defineCustomElement: defineKritzelControlTextConfig
 });
 
-export type KritzelControlsEvents = NonNullable<unknown>;
+export type KritzelControlsEvents = { onControlsReady: EventName<CustomEvent<void>> };
 
 export const KritzelControls: StencilReactComponent<KritzelControlsElement, KritzelControlsEvents> = /*@__PURE__*/ createComponent<KritzelControlsElement, KritzelControlsEvents>({
     tagName: 'kritzel-controls',
     elementClass: KritzelControlsElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: {} as KritzelControlsEvents,
+    events: { onControlsReady: 'controlsReady' } as KritzelControlsEvents,
     defineCustomElement: defineKritzelControls
 });
 
@@ -146,14 +146,20 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     defineCustomElement: defineKritzelEditor
 });
 
-export type KritzelEngineEvents = { onActiveToolChange: EventName<KritzelEngineCustomEvent<KritzelBaseTool>> };
+export type KritzelEngineEvents = {
+    onEngineReady: EventName<CustomEvent<void>>,
+    onActiveToolChange: EventName<KritzelEngineCustomEvent<KritzelBaseTool>>
+};
 
 export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelEngineEvents> = /*@__PURE__*/ createComponent<KritzelEngineElement, KritzelEngineEvents>({
     tagName: 'kritzel-engine',
     elementClass: KritzelEngineElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: { onActiveToolChange: 'activeToolChange' } as KritzelEngineEvents,
+    events: {
+        onEngineReady: 'engineReady',
+        onActiveToolChange: 'activeToolChange'
+    } as KritzelEngineEvents,
     defineCustomElement: defineKritzelEngine
 });
 
