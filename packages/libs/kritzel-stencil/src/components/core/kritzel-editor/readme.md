@@ -30,6 +30,7 @@ graph TD;
   kritzel-context-menu --> kritzel-icon
   kritzel-controls --> kritzel-utility-panel
   kritzel-controls --> kritzel-icon
+  kritzel-controls --> kritzel-tooltip
   kritzel-controls --> kritzel-control-brush-config
   kritzel-controls --> kritzel-control-text-config
   kritzel-controls --> kritzel-color

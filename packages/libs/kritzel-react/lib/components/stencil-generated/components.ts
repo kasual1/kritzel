@@ -35,7 +35,7 @@ export type KritzelBrushStyleEvents = { onTypeChange: EventName<CustomEvent<'pen
 export const KritzelBrushStyle: StencilReactComponent<KritzelBrushStyleElement, KritzelBrushStyleEvents> = /*@__PURE__*/ createComponent<KritzelBrushStyleElement, KritzelBrushStyleEvents>({
     tagName: 'kritzel-brush-style',
     elementClass: KritzelBrushStyleElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onTypeChange: 'typeChange' } as KritzelBrushStyleEvents,
     defineCustomElement: defineKritzelBrushStyle
@@ -46,7 +46,7 @@ export type KritzelColorEvents = NonNullable<unknown>;
 export const KritzelColor: StencilReactComponent<KritzelColorElement, KritzelColorEvents> = /*@__PURE__*/ createComponent<KritzelColorElement, KritzelColorEvents>({
     tagName: 'kritzel-color',
     elementClass: KritzelColorElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as KritzelColorEvents,
     defineCustomElement: defineKritzelColor
@@ -57,7 +57,7 @@ export type KritzelColorPaletteEvents = { onColorChange: EventName<CustomEvent<s
 export const KritzelColorPalette: StencilReactComponent<KritzelColorPaletteElement, KritzelColorPaletteEvents> = /*@__PURE__*/ createComponent<KritzelColorPaletteElement, KritzelColorPaletteEvents>({
     tagName: 'kritzel-color-palette',
     elementClass: KritzelColorPaletteElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onColorChange: 'colorChange' } as KritzelColorPaletteEvents,
     defineCustomElement: defineKritzelColorPalette
@@ -71,7 +71,7 @@ export type KritzelContextMenuEvents = {
 export const KritzelContextMenu: StencilReactComponent<KritzelContextMenuElement, KritzelContextMenuEvents> = /*@__PURE__*/ createComponent<KritzelContextMenuElement, KritzelContextMenuEvents>({
     tagName: 'kritzel-context-menu',
     elementClass: KritzelContextMenuElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onActionSelected: 'actionSelected',
@@ -85,7 +85,7 @@ export type KritzelControlBrushConfigEvents = { onToolChange: EventName<KritzelC
 export const KritzelControlBrushConfig: StencilReactComponent<KritzelControlBrushConfigElement, KritzelControlBrushConfigEvents> = /*@__PURE__*/ createComponent<KritzelControlBrushConfigElement, KritzelControlBrushConfigEvents>({
     tagName: 'kritzel-control-brush-config',
     elementClass: KritzelControlBrushConfigElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onToolChange: 'toolChange' } as KritzelControlBrushConfigEvents,
     defineCustomElement: defineKritzelControlBrushConfig
@@ -96,7 +96,7 @@ export type KritzelControlTextConfigEvents = { onToolChange: EventName<KritzelCo
 export const KritzelControlTextConfig: StencilReactComponent<KritzelControlTextConfigElement, KritzelControlTextConfigEvents> = /*@__PURE__*/ createComponent<KritzelControlTextConfigElement, KritzelControlTextConfigEvents>({
     tagName: 'kritzel-control-text-config',
     elementClass: KritzelControlTextConfigElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onToolChange: 'toolChange' } as KritzelControlTextConfigEvents,
     defineCustomElement: defineKritzelControlTextConfig
@@ -107,7 +107,7 @@ export type KritzelControlsEvents = NonNullable<unknown>;
 export const KritzelControls: StencilReactComponent<KritzelControlsElement, KritzelControlsEvents> = /*@__PURE__*/ createComponent<KritzelControlsElement, KritzelControlsEvents>({
     tagName: 'kritzel-controls',
     elementClass: KritzelControlsElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as KritzelControlsEvents,
     defineCustomElement: defineKritzelControls
@@ -118,7 +118,7 @@ export type KritzelCursorTrailEvents = NonNullable<unknown>;
 export const KritzelCursorTrail: StencilReactComponent<KritzelCursorTrailElement, KritzelCursorTrailEvents> = /*@__PURE__*/ createComponent<KritzelCursorTrailElement, KritzelCursorTrailEvents>({
     tagName: 'kritzel-cursor-trail',
     elementClass: KritzelCursorTrailElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as KritzelCursorTrailEvents,
     defineCustomElement: defineKritzelCursorTrail
@@ -129,7 +129,7 @@ export type KritzelDropdownEvents = { onValueChanged: EventName<CustomEvent<stri
 export const KritzelDropdown: StencilReactComponent<KritzelDropdownElement, KritzelDropdownEvents> = /*@__PURE__*/ createComponent<KritzelDropdownElement, KritzelDropdownEvents>({
     tagName: 'kritzel-dropdown',
     elementClass: KritzelDropdownElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onValueChanged: 'valueChanged' } as KritzelDropdownEvents,
     defineCustomElement: defineKritzelDropdown
@@ -140,7 +140,7 @@ export type KritzelEditorEvents = NonNullable<unknown>;
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents>({
     tagName: 'kritzel-editor',
     elementClass: KritzelEditorElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
@@ -151,7 +151,7 @@ export type KritzelEngineEvents = { onActiveToolChange: EventName<KritzelEngineC
 export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelEngineEvents> = /*@__PURE__*/ createComponent<KritzelEngineElement, KritzelEngineEvents>({
     tagName: 'kritzel-engine',
     elementClass: KritzelEngineElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onActiveToolChange: 'activeToolChange' } as KritzelEngineEvents,
     defineCustomElement: defineKritzelEngine
@@ -162,7 +162,7 @@ export type KritzelFontEvents = NonNullable<unknown>;
 export const KritzelFont: StencilReactComponent<KritzelFontElement, KritzelFontEvents> = /*@__PURE__*/ createComponent<KritzelFontElement, KritzelFontEvents>({
     tagName: 'kritzel-font',
     elementClass: KritzelFontElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as KritzelFontEvents,
     defineCustomElement: defineKritzelFont
@@ -173,7 +173,7 @@ export type KritzelFontFamilyEvents = { onFontFamilyChange: EventName<CustomEven
 export const KritzelFontFamily: StencilReactComponent<KritzelFontFamilyElement, KritzelFontFamilyEvents> = /*@__PURE__*/ createComponent<KritzelFontFamilyElement, KritzelFontFamilyEvents>({
     tagName: 'kritzel-font-family',
     elementClass: KritzelFontFamilyElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onFontFamilyChange: 'fontFamilyChange' } as KritzelFontFamilyEvents,
     defineCustomElement: defineKritzelFontFamily
@@ -184,7 +184,7 @@ export type KritzelFontSizeEvents = { onSizeChange: EventName<CustomEvent<number
 export const KritzelFontSize: StencilReactComponent<KritzelFontSizeElement, KritzelFontSizeEvents> = /*@__PURE__*/ createComponent<KritzelFontSizeElement, KritzelFontSizeEvents>({
     tagName: 'kritzel-font-size',
     elementClass: KritzelFontSizeElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onSizeChange: 'sizeChange' } as KritzelFontSizeEvents,
     defineCustomElement: defineKritzelFontSize
@@ -195,7 +195,7 @@ export type KritzelIconEvents = NonNullable<unknown>;
 export const KritzelIcon: StencilReactComponent<KritzelIconElement, KritzelIconEvents> = /*@__PURE__*/ createComponent<KritzelIconElement, KritzelIconEvents>({
     tagName: 'kritzel-icon',
     elementClass: KritzelIconElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as KritzelIconEvents,
     defineCustomElement: defineKritzelIcon
@@ -206,7 +206,7 @@ export type KritzelStrokeSizeEvents = { onSizeChange: EventName<CustomEvent<numb
 export const KritzelStrokeSize: StencilReactComponent<KritzelStrokeSizeElement, KritzelStrokeSizeEvents> = /*@__PURE__*/ createComponent<KritzelStrokeSizeElement, KritzelStrokeSizeEvents>({
     tagName: 'kritzel-stroke-size',
     elementClass: KritzelStrokeSizeElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onSizeChange: 'sizeChange' } as KritzelStrokeSizeEvents,
     defineCustomElement: defineKritzelStrokeSize
@@ -217,7 +217,7 @@ export type KritzelTooltipEvents = NonNullable<unknown>;
 export const KritzelTooltip: StencilReactComponent<KritzelTooltipElement, KritzelTooltipEvents> = /*@__PURE__*/ createComponent<KritzelTooltipElement, KritzelTooltipEvents>({
     tagName: 'kritzel-tooltip',
     elementClass: KritzelTooltipElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as KritzelTooltipEvents,
     defineCustomElement: defineKritzelTooltip
@@ -232,7 +232,7 @@ export type KritzelUtilityPanelEvents = {
 export const KritzelUtilityPanel: StencilReactComponent<KritzelUtilityPanelElement, KritzelUtilityPanelEvents> = /*@__PURE__*/ createComponent<KritzelUtilityPanelElement, KritzelUtilityPanelEvents>({
     tagName: 'kritzel-utility-panel',
     elementClass: KritzelUtilityPanelElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onUndo: 'undo',

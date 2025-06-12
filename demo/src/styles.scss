@@ -9,34 +9,3 @@ body {
 body {
   height: 100dvh;
 }
-
-kritzel-controls {
-  position: fixed;
-  opacity: 0;
-  transform: translateY(100vh);
-  animation: slideInFromBottom 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes slideInFromBottom {
-   0% {
-    opacity: 0;
-    transform: translateY(100vh);
-  }
-  80% {
-    opacity: 1;
-    transform: translateY(-4px);
-  }
-  90% {
-    transform: translateY(2px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* You might also want to ensure app-root takes up this space if it's your main container */
-app-root {
-  display: block;
-  height: 100%; /* Inherit height from body */
-}
