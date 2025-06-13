@@ -45,7 +45,7 @@ jobs:
       # --- Build Angular Application ---
       - name: Install Angular app dependencies
         run: |
-          cd demo
+          cd packages/demos/angular
           npm install
 
       - name: Build Angular application
