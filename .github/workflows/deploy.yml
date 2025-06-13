@@ -34,8 +34,12 @@ jobs:
           cp -r website/build/. _site/
 
       # --- Build Kritzel Stencil + Output ---
-      - name: Install Kritzel Stencil dependencies
-          npm i
+      - name: Install Stencil dependencies
+        run: |
+          npm install
+
+      - name: Build Kritzel Stencil components
+        run: |
           npm run build
 
       # --- Build Angular Application ---
