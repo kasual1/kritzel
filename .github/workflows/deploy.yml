@@ -33,6 +33,11 @@ jobs:
           mkdir -p _site
           cp -r website/build/. _site/
 
+      # --- Build Kritzel Stencil + Output targets ---
+      - name: Install Kritzel Stencil dependencies
+        run: |
+          npm run build
+
       # --- Build Angular Application ---
       - name: Install Angular app dependencies
         run: |
