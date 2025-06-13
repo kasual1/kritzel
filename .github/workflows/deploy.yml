@@ -41,13 +41,13 @@ jobs:
 
       - name: Build Angular application
         run: |
-          cd demo
+          cd packages/demos/angular
           npm run build -- --base-href=/${{ github.event.repository.name }}/demo/
 
       - name: Copy Angular build to _site/demo
         run: |
           mkdir -p _site/demo
-          cp -r demo/dist/demo/browser/* _site/demo/
+          cp -r packages/demos/angular/dist/angular/browser/* _site/demo/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
