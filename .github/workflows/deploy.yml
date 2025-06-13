@@ -51,7 +51,7 @@ jobs:
       - name: Build Angular application
         run: |
           cd packages/demos/angular
-          npm run build -- --base-href=/${{ github.event.repository.name }}/demo/
+          npm run build-app -- --base-href=/${{ github.event.repository.name }}/demo/
 
       - name: Copy Angular build to _site/demo
         run: |

@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "start": "ng serve --no-hmr --disable-host-check",
-    "clean": "rimraf dist .angular node_modules"
+    "clean": "rimraf dist .angular node_modules",
+    "build-app": "ng build"
   },
   "private": true,
   "dependencies": {
