@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "vite",
-    "clean": "rimraf dist node_modules"
+    "clean": "rimraf dist node_modules",
+    "build-app": "vite build"
   },
   "dependencies": {
     "kritzel-react": "file:../../libs/kritzel-react/dist",
