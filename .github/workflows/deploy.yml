@@ -51,7 +51,7 @@ jobs:
       - name: Build React application
         run: |
           cd packages/demos/react
-          npm run build -- --base=/demo/
+          npm run build-app -- --base=/demo/
 
       - name: Copy React build to _site/demo
         run: |
