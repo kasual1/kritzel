@@ -58,25 +58,7 @@ export class KritzelEditor {
   render() {
     return (
       <Host>
-        <kritzel-engine onEngineReady={() => this.handleEngineReady()}></kritzel-engine>
-
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '0',
-            left: '0',
-            backgroundColor: 'red',
-          }}
-        >
-          Hello World
-        </div>
-        <kritzel-controls
-          controls={this.controls}
-          onControlsReady={() => this.handleControlsReady()}
-          style={{
-            visibility: 'hidden',
-          }}
-        ></kritzel-controls>
+        <kritzel-dummy></kritzel-dummy>
       </Host>
     );
   }

@@ -14,6 +14,7 @@ import { defineCustomElement as defineKritzelControlTextConfig } from '../../kri
 import { defineCustomElement as defineKritzelControls } from '../../kritzel-stencil/dist/components/kritzel-controls.js';
 import { defineCustomElement as defineKritzelCursorTrail } from '../../kritzel-stencil/dist/components/kritzel-cursor-trail.js';
 import { defineCustomElement as defineKritzelDropdown } from '../../kritzel-stencil/dist/components/kritzel-dropdown.js';
+import { defineCustomElement as defineKritzelDummy } from '../../kritzel-stencil/dist/components/kritzel-dummy.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelEngine } from '../../kritzel-stencil/dist/components/kritzel-engine.js';
 import { defineCustomElement as defineKritzelFont } from '../../kritzel-stencil/dist/components/kritzel-font.js';
@@ -100,6 +101,9 @@ export const KritzelDropdown: StencilVueComponent<JSX.KritzelDropdown> = /*@__PU
 ], [
   'valueChanged'
 ]);
+
+
+export const KritzelDummy: StencilVueComponent<JSX.KritzelDummy> = /*@__PURE__*/ defineContainer<JSX.KritzelDummy>('kritzel-dummy', defineKritzelDummy);
 
 
 export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__*/ defineContainer<JSX.KritzelEditor>('kritzel-editor', defineKritzelEditor, [
