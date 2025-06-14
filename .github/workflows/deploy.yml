@@ -1,4 +1,4 @@
-name: Deploy Docusaurus Docs and React App to GitHub Pages
+name: Deploy Docusaurus Docs and Angular App to GitHub Pages
 on:
   push:
     branches:
@@ -42,21 +42,21 @@ jobs:
         run: |
           npm run build
 
-      # --- Build React Application ---
-      - name: Install React app dependencies
+      # --- Build Angular Application ---
+      - name: Install Angular app dependencies
         run: |
-          cd packages/demos/react
+          cd packages/demos/angular
           npm install
 
-      - name: Build React application
+      - name: Build Angular application
         run: |
-          cd packages/demos/react
-          npm run build-app -- --base=/demo/
+          cd packages/demos/angular
+          npm run build-app -- --base-href=/${{ github.event.repository.name }}/demo/
 
-      - name: Copy React build to _site/demo
+      - name: Copy Angular build to _site/demo
         run: |
           mkdir -p _site/demo
-          cp -r packages/demos/react/dist/* _site/demo/
+          cp -r packages/demos/angular/dist/angular/browser/* _site/demo/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

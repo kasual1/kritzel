@@ -60,10 +60,22 @@ export class KritzelEditor {
       <Host>
         <kritzel-engine onEngineReady={() => this.handleEngineReady()}></kritzel-engine>
 
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '0',
+            left: '0',
+            backgroundColor: 'red',
+          }}
+        >
+          Hello World
+        </div>
         <kritzel-controls
           controls={this.controls}
           onControlsReady={() => this.handleControlsReady()}
-          style={this.hideControls ? { display: 'none' } : {}}
+          style={{
+            visibility: 'hidden',
+          }}
         ></kritzel-controls>
       </Host>
     );
