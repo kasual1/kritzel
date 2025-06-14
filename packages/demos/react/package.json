@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://kasual1.github.io/kritzel/demo/",
   "scripts": {
     "start": "vite",
     "clean": "rimraf dist node_modules",
