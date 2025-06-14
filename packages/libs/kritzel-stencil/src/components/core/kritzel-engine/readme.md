@@ -188,6 +188,10 @@ Type: `Promise<void>`
 
 ## Dependencies
 
+### Used by
+
+ - [kritzel-editor](../kritzel-editor)
+
 ### Depends on
 
 - [kritzel-context-menu](../../ui/kritzel-context-menu)
@@ -199,6 +203,7 @@ graph TD;
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-cursor-trail
   kritzel-context-menu --> kritzel-icon
+  kritzel-editor --> kritzel-engine
   style kritzel-engine fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

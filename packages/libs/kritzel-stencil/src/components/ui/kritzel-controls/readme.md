@@ -22,6 +22,10 @@
 
 ## Dependencies
 
+### Used by
+
+ - [kritzel-editor](../../core/kritzel-editor)
+
 ### Depends on
 
 - [kritzel-utility-panel](../kritzel-utility-panel)
@@ -57,6 +61,7 @@ graph TD;
   kritzel-control-text-config --> kritzel-font-size
   kritzel-font-family --> kritzel-dropdown
   kritzel-font-size --> kritzel-font
+  kritzel-editor --> kritzel-controls
   style kritzel-controls fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
