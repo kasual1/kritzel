@@ -61,7 +61,6 @@ export class KritzelControls {
   }
 
   private async initializeEngine() {
-    await customElements.whenDefined('kritzel-engine');
     this.kritzelEngine = this.host.parentElement.querySelector('kritzel-engine');
 
     if (!this.kritzelEngine) {
