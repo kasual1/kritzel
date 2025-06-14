@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property         | Attribute          | Description | Type                       | Default                    |
-| ---------------- | ------------------ | ----------- | -------------------------- | -------------------------- |
-| `controls`       | `controls`         |             | `KritzelToolbarControl[]`  | `DEFAULT_KRITZEL_CONTROLS` |
-| `customSvgIcons` | `custom-svg-icons` |             | `{ [x: string]: string; }` | `{}`                       |
-| `hideControls`   | `hide-controls`    |             | `boolean`                  | `false`                    |
+| Property         | Attribute          | Description | Type                       | Default |
+| ---------------- | ------------------ | ----------- | -------------------------- | ------- |
+| `controls`       | `controls`         |             | `KritzelToolbarControl[]`  | `[]`    |
+| `customSvgIcons` | `custom-svg-icons` |             | `{ [x: string]: string; }` | `{}`    |
+| `hideControls`   | `hide-controls`    |             | `boolean`                  | `false` |
 
 
 ## Dependencies
