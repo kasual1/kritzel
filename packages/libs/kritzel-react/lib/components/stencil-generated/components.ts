@@ -20,6 +20,7 @@ import { KritzelControlTextConfig as KritzelControlTextConfigElement, defineCust
 import { KritzelControls as KritzelControlsElement, defineCustomElement as defineKritzelControls } from "../../../../kritzel-stencil/dist/components/kritzel-controls.js";
 import { KritzelCursorTrail as KritzelCursorTrailElement, defineCustomElement as defineKritzelCursorTrail } from "../../../../kritzel-stencil/dist/components/kritzel-cursor-trail.js";
 import { KritzelDropdown as KritzelDropdownElement, defineCustomElement as defineKritzelDropdown } from "../../../../kritzel-stencil/dist/components/kritzel-dropdown.js";
+import { KritzelDummy as KritzelDummyElement, defineCustomElement as defineKritzelDummy } from "../../../../kritzel-stencil/dist/components/kritzel-dummy.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "../../../../kritzel-stencil/dist/components/kritzel-engine.js";
 import { KritzelFontFamily as KritzelFontFamilyElement, defineCustomElement as defineKritzelFontFamily } from "../../../../kritzel-stencil/dist/components/kritzel-font-family.js";
@@ -133,6 +134,17 @@ export const KritzelDropdown: StencilReactComponent<KritzelDropdownElement, Krit
     react: React,
     events: { onValueChanged: 'valueChanged' } as KritzelDropdownEvents,
     defineCustomElement: defineKritzelDropdown
+});
+
+export type KritzelDummyEvents = NonNullable<unknown>;
+
+export const KritzelDummy: StencilReactComponent<KritzelDummyElement, KritzelDummyEvents> = /*@__PURE__*/ createComponent<KritzelDummyElement, KritzelDummyEvents>({
+    tagName: 'kritzel-dummy',
+    elementClass: KritzelDummyElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as KritzelDummyEvents,
+    defineCustomElement: defineKritzelDummy
 });
 
 export type KritzelEditorEvents = NonNullable<unknown>;
