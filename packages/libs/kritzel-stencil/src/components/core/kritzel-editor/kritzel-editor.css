@@ -77,5 +77,7 @@ kritzel-editor {
 
 kritzel-controls {
   position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   bottom: 16px;
 }
