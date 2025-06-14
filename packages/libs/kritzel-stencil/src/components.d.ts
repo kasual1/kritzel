@@ -102,7 +102,7 @@ export namespace Components {
     }
     interface KritzelEditor {
         /**
-          * @default DEFAULT_KRITZEL_CONTROLS
+          * @default []
          */
         "controls": KritzelToolbarControl[];
         /**
@@ -611,7 +611,7 @@ declare namespace LocalJSX {
     }
     interface KritzelEditor {
         /**
-          * @default DEFAULT_KRITZEL_CONTROLS
+          * @default []
          */
         "controls"?: KritzelToolbarControl[];
         /**
