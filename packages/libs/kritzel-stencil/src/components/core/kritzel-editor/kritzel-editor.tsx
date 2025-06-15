@@ -6,7 +6,7 @@ import { DEFAULT_KRITZEL_CONTROLS } from '../../../configs/default-toolbar-contr
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
-  shadow: true,
+  shadow: false,
 })
 export class KritzelEditor {
   @Prop()
@@ -58,16 +58,13 @@ export class KritzelEditor {
   render() {
     return (
       <Host>
-
-         <kritzel-controls
-          class="dummy-top"
-          controls={this.controls}
-          onControlsReady={() => this.handleControlsReady()}
-        ></kritzel-controls>
-
         <kritzel-engine onEngineReady={() => this.handleEngineReady()}></kritzel-engine>
 
-        <kritzel-dummy class="dummy-bottom"></kritzel-dummy>
+        <kritzel-controls
+          controls={this.controls}
+          onControlsReady={() => this.handleControlsReady()}
+          style={this.hideControls ? { display: 'none' } : {}}
+        ></kritzel-controls>
       </Host>
     );
   }
