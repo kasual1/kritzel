@@ -44,50 +44,50 @@ export class KritzelControls {
     return this.activeControl?.tool as KritzelBrushTool;
   }
 
-  // async componentDidLoad() {
-  //   console.log('KritzelControls componentDidLoad');
-  //   this.forceUpdate++;
-  //   this.controlsReady.emit();
-  //   this.initializeEngine().then(() => {
-  //     this.initializeTools()
-  //       .then(() => {
-  //         console.info('KritzelControls initialized with tools:', this.controls);
-  //         this.forceUpdate++;
-  //       })
-  //       .catch(error => {
-  //         console.error('Error initializing tools:', error);
-  //       });
-  //   });
-  // }
+  async componentDidLoad() {
+    console.log('KritzelControls componentDidLoad');
+    this.forceUpdate++;
+    this.controlsReady.emit();
+    this.initializeEngine().then(() => {
+      this.initializeTools()
+        .then(() => {
+          console.info('KritzelControls initialized with tools:', this.controls);
+          this.forceUpdate++;
+        })
+        .catch(error => {
+          console.error('Error initializing tools:', error);
+        });
+    });
+  }
 
-  // private async initializeEngine() {
-  //   this.kritzelEngine = this.host.parentElement.querySelector('kritzel-engine');
+  private async initializeEngine() {
+    this.kritzelEngine = this.host.parentElement.querySelector('kritzel-engine');
 
-  //   if (!this.kritzelEngine) {
-  //     throw new Error('kritzel-engine not found in parent element.');
-  //   }
-  // }
+    if (!this.kritzelEngine) {
+      throw new Error('kritzel-engine not found in parent element.');
+    }
+  }
 
-  // private async initializeTools() {
-  //   for (const c of this.controls) {
-  //     if (c.type === 'tool' && c.tool) {
-  //       c.tool = await this.kritzelEngine.registerTool(c.name, c.tool, c.config);
-  //     }
+  private async initializeTools() {
+    for (const c of this.controls) {
+      if (c.type === 'tool' && c.tool) {
+        c.tool = await this.kritzelEngine.registerTool(c.name, c.tool, c.config);
+      }
 
-  //     if (c.type === 'tool' && c.isDefault && c.tool) {
-  //       await this.kritzelEngine.changeActiveTool(c.tool as KritzelBaseTool);
-  //       this.activeControl = c;
-  //     }
+      if (c.type === 'tool' && c.isDefault && c.tool) {
+        await this.kritzelEngine.changeActiveTool(c.tool as KritzelBaseTool);
+        this.activeControl = c;
+      }
 
-  //     if (c.type === 'config') {
-  //       if (this.firstConfig === null) {
-  //         this.firstConfig = c;
-  //       } else {
-  //         console.warn('Only one config control is allowed. The first one will be used.');
-  //       }
-  //     }
-  //   }
-  // }
+      if (c.type === 'config') {
+        if (this.firstConfig === null) {
+          this.firstConfig = c;
+        } else {
+          console.warn('Only one config control is allowed. The first one will be used.');
+        }
+      }
+    }
+  }
 
   @Listen('activeToolChange', { target: 'document' })
   async handleActiveToolChange(event: CustomEvent) {
