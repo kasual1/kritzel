@@ -1,4 +1,4 @@
-:host {
+kritzel-editor {
   display: flex;
   margin: 0;
   position: relative;
@@ -80,6 +80,6 @@ kritzel-controls{
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 16px;
+  top: 48px;
   z-index: 1000;
 }
