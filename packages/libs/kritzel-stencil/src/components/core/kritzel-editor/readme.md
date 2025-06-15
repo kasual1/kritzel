@@ -18,12 +18,14 @@
 
 ### Depends on
 
+- [kritzel-dummy](../../ui/kritzel-dummy)
 - [kritzel-engine](../kritzel-engine)
 - [kritzel-controls](../../ui/kritzel-controls)
 
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-editor --> kritzel-dummy
   kritzel-editor --> kritzel-engine
   kritzel-editor --> kritzel-controls
   kritzel-engine --> kritzel-context-menu

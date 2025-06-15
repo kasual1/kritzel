@@ -58,12 +58,19 @@ export class KritzelEditor {
   render() {
     return (
       <Host>
+
+        <kritzel-dummy class="dummy-top"></kritzel-dummy>
+
         <kritzel-engine onEngineReady={() => this.handleEngineReady()}></kritzel-engine>
+
+        <kritzel-dummy class="dummy-bottom"></kritzel-dummy>
 
         <kritzel-controls
           controls={this.controls}
           onControlsReady={() => this.handleControlsReady()}
-          style={this.hideControls ? { display: 'none' } : {}}
+          style={{
+            visibility: 'hidden'
+          }}
         ></kritzel-controls>
       </Host>
     );
