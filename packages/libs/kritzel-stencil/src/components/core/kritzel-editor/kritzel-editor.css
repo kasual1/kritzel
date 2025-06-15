@@ -75,25 +75,11 @@
   --kritzel-engine-background-color: #ffffff;
 }
 
-.dummy-top {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 16px;
-  z-index: 1;
-}
-
-.dummy-bottom {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 16px;
-  z-index: 1;
-}
 
 kritzel-controls{
-  position: absolute;
+  position: fixed;
   left: 50%;
   transform: translateX(-50%);
   bottom: 16px;
+  z-index: 1000;
 }
