@@ -6,7 +6,7 @@ import { DEFAULT_KRITZEL_CONTROLS } from '../../../configs/default-toolbar-contr
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
-  shadow: false,
+  shadow: true,
 })
 export class KritzelEditor {
   @Prop()
