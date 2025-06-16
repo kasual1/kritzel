@@ -76,10 +76,7 @@ kritzel-editor {
 }
 
 
-kritzel-controls{
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 48px;
-  z-index: 1000;
+kritzel-controls {
+  position: absolute;
+  bottom: 116px;
 }
