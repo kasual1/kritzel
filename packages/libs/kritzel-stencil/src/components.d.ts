@@ -85,6 +85,12 @@ export namespace Components {
           * @default []
          */
         "controls": KritzelToolbarControl[];
+        /**
+          * @default null
+         */
+        "firstConfig": KritzelToolbarControl | null;
+        "setActiveControl": (control: KritzelToolbarControl) => Promise<void>;
+        "setFirstConfig": (control: KritzelToolbarControl) => Promise<void>;
     }
     interface KritzelCursorTrail {
     }
@@ -601,6 +607,10 @@ declare namespace LocalJSX {
           * @default []
          */
         "controls"?: KritzelToolbarControl[];
+        /**
+          * @default null
+         */
+        "firstConfig"?: KritzelToolbarControl | null;
         "onControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
     }
     interface KritzelCursorTrail {

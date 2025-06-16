@@ -168,14 +168,15 @@ export declare interface KritzelControlTextConfig extends Components.KritzelCont
 
 
 @ProxyCmp({
-  inputs: ['activeControl', 'controls']
+  inputs: ['activeControl', 'controls', 'firstConfig'],
+  methods: ['setActiveControl', 'setFirstConfig']
 })
 @Component({
   selector: 'kritzel-controls',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeControl', 'controls'],
+  inputs: ['activeControl', 'controls', 'firstConfig'],
 })
 export class KritzelControls {
   protected el: HTMLKritzelControlsElement;

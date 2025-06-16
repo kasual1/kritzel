@@ -11,6 +11,7 @@
 | --------------- | ---------------- | ----------- | ------------------------- | ------- |
 | `activeControl` | `active-control` |             | `KritzelToolbarControl`   | `null`  |
 | `controls`      | `controls`       |             | `KritzelToolbarControl[]` | `[]`    |
+| `firstConfig`   | `first-config`   |             | `KritzelToolbarControl`   | `null`  |
 
 
 ## Events
@@ -18,6 +19,41 @@
 | Event           | Description | Type                |
 | --------------- | ----------- | ------------------- |
 | `controlsReady` |             | `CustomEvent<void>` |
+
+
+## Methods
+
+### `setActiveControl(control: KritzelToolbarControl) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name      | Type                    | Description |
+| --------- | ----------------------- | ----------- |
+| `control` | `KritzelToolbarControl` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setFirstConfig(control: KritzelToolbarControl) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name      | Type                    | Description |
+| --------- | ----------------------- | ----------- |
+| `control` | `KritzelToolbarControl` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 
 ## Dependencies
