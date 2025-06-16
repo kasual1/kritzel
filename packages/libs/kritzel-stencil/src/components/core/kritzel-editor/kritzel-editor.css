@@ -13,6 +13,6 @@
 
 
 kritzel-controls {
-  position: fixed;
+  position: absolute;
   bottom: 32px;
 }
