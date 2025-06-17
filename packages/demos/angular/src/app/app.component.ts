@@ -12,12 +12,12 @@ export class AppComponent implements AfterViewInit{
  title = 'angular';
 
   ngAfterViewInit(): void {
-    document.body.style.height = 300 + 'px';
+    document.body.style.height = window.innerHeight + 'px';
   }
 
   @HostListener('window:resize')
   onResize(): void {
-    document.body.style.height = 300 + 'px';
+    document.body.style.height = window.innerHeight + 'px';
   }
 
 }
