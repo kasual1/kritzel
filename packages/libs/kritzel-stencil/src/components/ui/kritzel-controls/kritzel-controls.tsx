@@ -1,8 +1,10 @@
-import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method } from '@stencil/core';
+import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter } from '@stencil/core';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
+import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 
+type ToolConfig = Record<string, any>;
 
 @Component({
   tag: 'kritzel-controls',
@@ -17,20 +19,19 @@ export class KritzelControls {
   @Prop({ mutable: true })
   activeControl: KritzelToolbarControl | null = null;
 
-  @Prop({ mutable: true })
-  firstConfig: KritzelToolbarControl | null = null;
-
   @Event()
   controlsReady: EventEmitter<void>;
 
-  @Element()
-  host!: HTMLElement;
+  @State()
+  firstConfig: ToolConfig | null = null;
 
   @State()
   tooltipVisible: boolean = false;
 
-  @State()
-  forceUpdate: number = 0;
+  @Element()
+  host!: HTMLElement;
+
+  kritzelEngine: HTMLKritzelEngineElement | null = null;
 
   get activeToolAsTextTool() {
     return this.activeControl?.tool as KritzelTextTool;
@@ -40,32 +41,61 @@ export class KritzelControls {
     return this.activeControl?.tool as KritzelBrushTool;
   }
 
-  @Method()
-  setActiveControl(control: KritzelToolbarControl) {
-    this.activeControl = control;
+  async componentWillLoad() {
+    await this.initializeEngine();
+    await this.initializeTools();
   }
 
-  @Method()
-  setFirstConfig(control: KritzelToolbarControl) {
-    this.firstConfig = control;
+  componentDidLoad() {
+    this.controlsReady.emit();
+  }
+
+  private async initializeEngine() {
+    await customElements.whenDefined('kritzel-engine');
+    this.kritzelEngine = this.host.parentElement.querySelector('kritzel-engine');
+
+    if (!this.kritzelEngine) {
+      throw new Error('kritzel-engine not found in parent element.');
+    }
+  }
+
+  private async initializeTools() {
+    for (const c of this.controls) {
+      if (c.type === 'tool' && c.tool) {
+        c.tool = await this.kritzelEngine.registerTool(c.name, c.tool, c.config);
+      }
+
+      if (c.type === 'tool' && c.isDefault && c.tool) {
+        await this.kritzelEngine.changeActiveTool(c.tool as KritzelBaseTool);
+        this.activeControl = c;
+      }
+
+      if (c.type === 'config') {
+        if (this.firstConfig === null) {
+          this.firstConfig = c;
+        } else {
+          console.warn('Only one config control is allowed. The first one will be used.');
+        }
+      }
+    }
   }
 
   @Listen('activeToolChange', { target: 'document' })
   async handleActiveToolChange(event: CustomEvent) {
     this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
-    // await this.kritzelEngine?.setFocus();
+    await this.kritzelEngine?.setFocus();
   }
 
   @Listen('click', { target: 'document' })
-  handleClick(_event: MouseEvent) {
-    // const element = event.target as HTMLElement;
+  handleClick(event: MouseEvent) {
+    const element = event.target as HTMLElement;
 
-    // if (!this.kritzelEngine || element.closest('.kritzel-tooltip')) {
-    //   return;
-    // }
+    if (!this.kritzelEngine || element.closest('.kritzel-tooltip')) {
+      return;
+    }
 
     this.tooltipVisible = false;
-    // this.kritzelEngine.enable();
+    this.kritzelEngine.enable();
   }
 
   preventDefault(event: Event) {
@@ -79,19 +109,19 @@ export class KritzelControls {
     this.activeControl = control;
 
     if (this.activeControl.type === 'tool') {
-      // await this.kritzelEngine.changeActiveTool(this.activeControl.tool as KritzelBaseTool);
+      await this.kritzelEngine.changeActiveTool(this.activeControl.tool as KritzelBaseTool);
     }
   }
 
   handleConfigClick(event: MouseEvent) {
     event.stopPropagation();
     this.tooltipVisible = !this.tooltipVisible;
-    // this.kritzelEngine.disable();
+    this.kritzelEngine.disable();
   }
 
   async handleToolChange(event: CustomEvent) {
     this.activeControl = { ...this.activeControl, tool: event.detail };
-    // await this.kritzelEngine.changeActiveTool((this.activeControl as any).tool);
+    await this.kritzelEngine.changeActiveTool((this.activeControl as any).tool);
   }
 
   render() {
@@ -105,9 +135,9 @@ export class KritzelControls {
             bottom: '56px',
             left: '12px',
           }}
-          // onUndo={() => this.kritzelEngine?.undo()}
-          // onRedo={() => this.kritzelEngine?.redo()}
-          // onDelete={() => this.kritzelEngine?.delete()}
+          onUndo={() => this.kritzelEngine?.undo()}
+          onRedo={() => this.kritzelEngine?.redo()}
+          onDelete={() => this.kritzelEngine?.delete()}
         ></kritzel-utility-panel>
 
         <div class="kritzel-controls">
