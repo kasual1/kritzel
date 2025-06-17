@@ -85,12 +85,6 @@ export namespace Components {
           * @default []
          */
         "controls": KritzelToolbarControl[];
-        /**
-          * @default null
-         */
-        "firstConfig": KritzelToolbarControl | null;
-        "setActiveControl": (control: KritzelToolbarControl) => Promise<void>;
-        "setFirstConfig": (control: KritzelToolbarControl) => Promise<void>;
     }
     interface KritzelCursorTrail {
     }
@@ -105,8 +99,6 @@ export namespace Components {
         "selectStyles"?: any;
         "value": string;
         "width"?: string;
-    }
-    interface KritzelDummy {
     }
     interface KritzelEditor {
         /**
@@ -399,12 +391,6 @@ declare global {
         prototype: HTMLKritzelDropdownElement;
         new (): HTMLKritzelDropdownElement;
     };
-    interface HTMLKritzelDummyElement extends Components.KritzelDummy, HTMLStencilElement {
-    }
-    var HTMLKritzelDummyElement: {
-        prototype: HTMLKritzelDummyElement;
-        new (): HTMLKritzelDummyElement;
-    };
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
     }
     var HTMLKritzelEditorElement: {
@@ -527,7 +513,6 @@ declare global {
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-dropdown": HTMLKritzelDropdownElement;
-        "kritzel-dummy": HTMLKritzelDummyElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
         "kritzel-font": HTMLKritzelFontElement;
@@ -607,10 +592,6 @@ declare namespace LocalJSX {
           * @default []
          */
         "controls"?: KritzelToolbarControl[];
-        /**
-          * @default null
-         */
-        "firstConfig"?: KritzelToolbarControl | null;
         "onControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
     }
     interface KritzelCursorTrail {
@@ -627,8 +608,6 @@ declare namespace LocalJSX {
         "selectStyles"?: any;
         "value"?: string;
         "width"?: string;
-    }
-    interface KritzelDummy {
     }
     interface KritzelEditor {
         /**
@@ -743,7 +722,6 @@ declare namespace LocalJSX {
         "kritzel-controls": KritzelControls;
         "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-dropdown": KritzelDropdown;
-        "kritzel-dummy": KritzelDummy;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
         "kritzel-font": KritzelFont;
@@ -768,7 +746,6 @@ declare module "@stencil/core" {
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-dropdown": LocalJSX.KritzelDropdown & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
-            "kritzel-dummy": LocalJSX.KritzelDummy & JSXBase.HTMLAttributes<HTMLKritzelDummyElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
             "kritzel-font": LocalJSX.KritzelFont & JSXBase.HTMLAttributes<HTMLKritzelFontElement>;

@@ -110,8 +110,8 @@
 
 kritzel-tooltip {
   position: fixed;
-  bottom: 66px; /* Adjusted to ensure it appears above the controls */
+  bottom: 66px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10001; /* Ensure tooltip is above controls */
+  z-index: 10001;
 }
