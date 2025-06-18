@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { KritzelEditor } from 'kritzel-angular';
 
 @Component({
@@ -8,16 +8,6 @@ import { KritzelEditor } from 'kritzel-angular';
   styleUrl: './app.component.scss',
   standalone: true,
 })
-export class AppComponent implements AfterViewInit{
- title = 'angular';
-
-  ngAfterViewInit(): void {
-    document.body.style.height = window.innerHeight + 'px';
-  }
-
-  @HostListener('window:resize')
-  onResize(): void {
-    document.body.style.height = window.innerHeight + 'px';
-  }
+export class AppComponent {
 
 }
