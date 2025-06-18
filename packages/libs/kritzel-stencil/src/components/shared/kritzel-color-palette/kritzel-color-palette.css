@@ -35,11 +35,11 @@
 }
 
 .color-container:hover {
-  background-color: var(--kritzel-color-palette-hover-background-color);
+  background-color: var(--kritzel-color-palette-hover-background-color, #f0f0f0);
 }
 
 .color-container.selected {
-  border-color: var(--kritzel-selection-border-color);
+  border-color: var(--kritzel-selection-border-color, #0E1111);
   background-color: var(--kritzel-color-palette-selected-background-color);
 }
 

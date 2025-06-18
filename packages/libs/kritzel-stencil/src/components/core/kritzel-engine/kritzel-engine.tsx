@@ -536,8 +536,8 @@ export class KritzelEngine {
                     x2={object.totalWidth}
                     y2="0"
                     style={{
-                      stroke: 'var(--kritzel-selection-border-color)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
@@ -548,8 +548,8 @@ export class KritzelEngine {
                     x2="0"
                     y2={object.totalHeight}
                     style={{
-                      stroke: 'var(--kritzel-selection-border-color)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
@@ -560,8 +560,8 @@ export class KritzelEngine {
                     x2={object.totalWidth}
                     y2={object.totalHeight}
                     style={{
-                      stroke: 'var(--kritzel-selection-border-color)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
@@ -572,8 +572,8 @@ export class KritzelEngine {
                     x2={object.totalWidth}
                     y2={object.totalHeight}
                     style={{
-                      stroke: 'var(--kritzel-selection-border-color)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
                     visibility={object.selected ? 'visible' : 'hidden'}
@@ -585,7 +585,7 @@ export class KritzelEngine {
                     cy="0"
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     style={{
-                      fill: 'var(--kritzel-selection-handle-color)',
+                      fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
@@ -606,7 +606,7 @@ export class KritzelEngine {
                     cy="0"
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     style={{
-                      fill: 'var(--kritzel-selection-handle-color)',
+                      fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
@@ -627,7 +627,7 @@ export class KritzelEngine {
                     cy={object.totalHeight}
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     style={{
-                      fill: 'var(--kritzel-selection-handle-color)',
+                      fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
@@ -648,7 +648,7 @@ export class KritzelEngine {
                     cy={object.totalHeight}
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     style={{
-                      fill: 'var(--kritzel-selection-handle-color)',
+                      fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
@@ -669,8 +669,8 @@ export class KritzelEngine {
                     x2={object.totalWidth / 2}
                     y2={-((15 * object.scale) / this.store.state?.scale)}
                     style={{
-                      stroke: 'var(--kritzel-selection-border-color)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 1) * ${object.scale} / ${this.store.state?.scale})`,
+                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                     }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
@@ -680,7 +680,7 @@ export class KritzelEngine {
                     cy={-((15 * object.scale) / this.store.state?.scale)}
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
                     style={{
-                      fill: 'var(--kritzel-selection-handle-color)',
+                      fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />

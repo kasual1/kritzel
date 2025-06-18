@@ -11,9 +11,9 @@
   font-size: 14px;
   line-height: 1;
   padding: 8px;
-  color: var(--kritzel-color-palette-expand-toggle-color);
+  color: var(--kritzel-color-palette-expand-toggle-color, #666666);
 }
 
 .expand-toggle:hover {
-  color: var(--kritzel-color-palette-expand-toggle-hover-color);
+  color: var(--kritzel-color-palette-expand-toggle-hover-color, #333333);
 }

@@ -8,10 +8,10 @@
   border-radius: 4px;
   width: fit-content;
   background-color: var(--kritzel-controls-tooltip-background-color);
-  color: var(--kritzel-controls-tooltip-color);
-  padding: var(--kritzel-controls-tooltip-padding);
-  border-radius: var(--kritzel-controls-tooltip-border-radius);
+  color: var(--kritzel-controls-tooltip-color, #000000);
+  padding: var(--kritzel-controls-tooltip-padding, 8px);
+  border-radius: var(--kritzel-controls-tooltip-border-radius, 8px);
   white-space: nowrap;
-  box-shadow: var(--kritzel-controls-tooltip-box-shadow);
+  box-shadow: var(--kritzel-controls-tooltip-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
 }
 

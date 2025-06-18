@@ -5,39 +5,39 @@
 .menu-container {
   display: flex;
   flex-direction: column;
-  background-color: var(--kritzel-context-menu-background-color);
-  border-radius: var(--kritzel-context-menu-border-radius);
-  box-shadow: var(--kritzel-context-menu-box-shadow);
-  border: var(--kritzel-context-menu-border);
-  padding: var(--kritzel-context-menu-padding);
+  background-color: var(--kritzel-context-menu-background-color, #ffffff);
+  border-radius: var(--kritzel-context-menu-border-radius, 8px);
+  box-shadow: var(--kritzel-context-menu-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
+  border: var(--kritzel-context-menu-border, 1px solid hsl(0, 0%, 0%, 4.3%));
+  padding: var(--kritzel-context-menu-padding,4px);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  gap: var(--kritzel-context-menu-item-gap);
+  gap: var(--kritzel-context-menu-item-gap, 8px);
   background: none;
   border: none;
   text-align: left;
-  padding: var(--kritzel-context-menu-item-padding);
-  border-radius: var(--kritzel-context-menu-item-border-radius);
+  padding: var(--kritzel-context-menu-item-padding, 8px);
+  border-radius: var(--kritzel-context-menu-item-border-radius, 8px);
   cursor: pointer;
-  font-size: var(--kritzel-context-menu-item-font-size);
-  color: var(--kritzel-context-menu-item-color);
+  font-size: var(--kritzel-context-menu-item-font-size, 14px);
+  color: var(--kritzel-context-menu-item-color, #333333);
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
 }
 
 .menu-item:not(.disabled):hover {
-  background-color: var(--kritzel-context-menu-item-hover-background-color);
+  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 .menu-item:not(.disabled):active {
-  background-color: var(--kritzel-context-menu-item-active-background-color);
+  background-color: var(--kritzel-context-menu-item-active-background-color, hsl(0, 0%, 0%, 8.6%));
 }
 
 .menu-item.disabled {
-  color: var(--kritzel-context-menu-item-disabled-color);
+  color: var(--kritzel-context-menu-item-disabled-color, #aaaaaa);
   cursor: default;
 }
 
