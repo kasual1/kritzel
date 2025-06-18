@@ -19,10 +19,10 @@
 }
 
 .size-container:hover {
-  background-color: var(--kritzel-stroke-size-hover-background-color);
+  background-color: var(--kritzel-stroke-size-hover-background-color, #f0f0f0);
 }
 
 .size-container.selected {
-  border-color: var(--kritzel-selection-border-color);
-  background-color: var(--kritzel-stroke-size-selected-background-color);
+  border-color: var(--kritzel-selection-border-color, #0E1111);
+  background-color: var(--kritzel-stroke-size-selected-background-color, #f0f0f0);
 }

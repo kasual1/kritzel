@@ -8,8 +8,8 @@ export class KrtizelSelectionBox extends KritzelBaseObject<HTMLElement> {
 
   constructor(store: KritzelStore) {
     super(store);
-    this.backgroundColor = 'var(--kritzel-selection-box-background-color)';
-    this.borderColor = 'var(--kritzel-selection-box-border-color)';
+    this.backgroundColor = 'var(--kritzel-selection-box-background-color, rgba(14, 17, 17, 0.2))';
+    this.borderColor = 'var(--kritzel-selection-box-border-color, rgba(14, 17, 17, 0.5))';
     this.borderWidth = 2;
     this.scale = this._store.state.scale;
     this.height = 0;

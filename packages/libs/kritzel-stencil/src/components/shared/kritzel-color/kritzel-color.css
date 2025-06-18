@@ -17,5 +17,5 @@
 }
 
 .color-circle.white {
-  border: 1px solid var(--kritzel-color-palette-circle-border-color);
+  border: 1px solid var(--kritzel-color-palette-circle-border-color, #dddcdc);
 }

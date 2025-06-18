@@ -18,7 +18,7 @@ export class KritzelTooltip {
   arrowSize: number = 8;
 
   @Prop()
-  offsetY: number = 12;
+  offsetY: number = 24;
 
   @Element()
   el: HTMLElement;
@@ -90,7 +90,7 @@ export class KritzelTooltip {
               style={{
               borderLeft: `${this.arrowSize}px solid transparent`,
               borderRight: `${this.arrowSize}px solid transparent`,
-              borderTop: `${this.arrowSize}px solid var(--kritzel-controls-tooltip-background-color)`,
+              borderTop: `${this.arrowSize}px solid var(--kritzel-controls-tooltip-background-color, #ffffff)`,
               filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))',
               }}
             ></div>
@@ -100,7 +100,7 @@ export class KritzelTooltip {
               position: 'relative',
               width: `${this.arrowSize * 2}px`,
               height: `${this.arrowSize}px`,
-              backgroundColor: 'var(--kritzel-controls-tooltip-background-color)',
+              backgroundColor: 'var(--kritzel-controls-tooltip-background-color, #ffffff)',
               bottom: `${this.arrowSize * 2}px`,
               }}
             ></div>

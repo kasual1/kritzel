@@ -5,7 +5,6 @@ import { vueOutputTarget } from '@stencil/vue-output-target';
 
 export const config: Config = {
   namespace: 'stencil',
-  globalStyle: 'src/global.css',
   outputTargets: [
     { type: 'dist', esmLoaderPath: '../loader' },
     { type: 'docs-readme' },

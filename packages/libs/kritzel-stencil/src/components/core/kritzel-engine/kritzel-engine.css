@@ -4,7 +4,7 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: var(--kritzel-engine-background-color);
+  background-color: var(--kritzel-engine-background-color, #ffffff);
 }
 
 .debug-panel {

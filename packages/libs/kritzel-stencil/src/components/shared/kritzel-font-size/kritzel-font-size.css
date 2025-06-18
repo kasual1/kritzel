@@ -24,7 +24,7 @@
 }
 
 .size-container.selected {
-  border-color: var(--kritzel-selection-border-color, #007bff);
+  border-color: var(--kritzel-selection-border-color, #0E1111);
   background-color: var(--kritzel-font-size-selected-background-color, #e0e0e0);
 }
 

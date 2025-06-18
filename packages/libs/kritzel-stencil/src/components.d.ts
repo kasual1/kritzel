@@ -203,7 +203,7 @@ export namespace Components {
          */
         "isVisible": boolean;
         /**
-          * @default 12
+          * @default 24
          */
         "offsetY": number;
     }
@@ -703,7 +703,7 @@ declare namespace LocalJSX {
          */
         "isVisible"?: boolean;
         /**
-          * @default 12
+          * @default 24
          */
         "offsetY"?: number;
     }
