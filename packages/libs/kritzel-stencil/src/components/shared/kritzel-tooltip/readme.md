@@ -12,7 +12,7 @@
 | `anchorElement` | `anchor-element` |             | `HTMLElement` | `undefined` |
 | `arrowSize`     | `arrow-size`     |             | `number`      | `8`         |
 | `isVisible`     | `is-visible`     |             | `boolean`     | `false`     |
-| `offsetY`       | `offset-y`       |             | `number`      | `12`        |
+| `offsetY`       | `offset-y`       |             | `number`      | `24`        |
 
 
 ## Dependencies
