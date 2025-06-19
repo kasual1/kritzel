@@ -89,16 +89,16 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const deltaX = x - this.translateX;
     const deltaY = y - this.translateY;
 
-    this.objects.forEach(obj => {
-      const updatedWidth = obj.width * widthScaleFactor;
-      const updatedHeight = obj.height * heightScaleFactor;
+    this.objects.forEach(child => {
+      const updatedWidth = child.width * widthScaleFactor;
+      const updatedHeight = child.height * heightScaleFactor;
 
-      const updatedX = obj.translateX + deltaX + (obj.translateX - this.translateX) * (widthScaleFactor - 1);
-      const updatedY = obj.translateY + deltaY + (obj.translateY - this.translateY) * (heightScaleFactor - 1);
+      const updatedX = child.translateX + deltaX + (child.translateX - this.translateX) * (widthScaleFactor - 1);
+      const updatedY = child.translateY + deltaY + (child.translateY - this.translateY) * (heightScaleFactor - 1);
 
-      obj.resize(updatedX, updatedY, updatedWidth, updatedHeight);
+      child.resize(updatedX, updatedY, updatedWidth, updatedHeight);
 
-      this._store.state.objectsOctree.update(obj);
+      this._store.state.objectsOctree.update(child);
     });
 
     this.refreshObjectDimensions();
@@ -126,7 +126,10 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
       child.translateX = centerX + rotatedX - child.totalWidth / 2 / child.scale;
       child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
+
       child.rotation = this.objects.length === 1 ? value : value + unchangedChild.rotation;
+
+      this._store.state.objectsOctree.update(child);
     });
   }
 
