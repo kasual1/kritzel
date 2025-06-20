@@ -432,173 +432,172 @@ export class KritzelEngine {
                     zIndex: object.zIndex.toString(),
                   }}
                 >
-                <g>
                   <foreignObject
-                  x="0"
-                  y="0"
-                  width={object.totalWidth.toString()}
-                  height={object.totalHeight.toString()}
-                  style={{
-                    minHeight: '0',
-                    minWidth: '0',
-                    backgroundColor: object.backgroundColor,
-                    borderColor: object.borderColor,
-                    borderWidth: object.borderWidth + 'px',
-                    borderStyle: 'solid',
-                    padding: object.padding + 'px',
-                    overflow: 'visible',
-                  }}
-                  >
-                  {object instanceof KritzelPath && (
-                    <svg
-                    ref={el => object.mount(el)}
-                    xmlns="http://www.w3.org/2000/svg"
+                    x="0"
+                    y="0"
+                    width={object.totalWidth.toString()}
+                    height={object.totalHeight.toString()}
                     style={{
-                      height: object?.height.toString(),
-                      width: object?.width.toString(),
-                      position: 'absolute',
+                      minHeight: '0',
+                      minWidth: '0',
+                      backgroundColor: object.backgroundColor,
+                      borderColor: object.borderColor,
+                      borderWidth: object.borderWidth + 'px',
+                      borderStyle: 'solid',
+                      padding: object.padding + 'px',
                       overflow: 'visible',
                     }}
-                    viewBox={object?.viewBox}
-                    >
-                    <path d={object?.d} fill={object.fill} stroke={object?.stroke} />
-                    </svg>
-                  )}
+                  >
+                    {object instanceof KritzelPath && (
+                      <svg
+                        ref={el => object.mount(el)}
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{
+                          height: object?.height.toString(),
+                          width: object?.width.toString(),
+                          position: 'absolute',
+                          overflow: 'visible',
+                        }}
+                        viewBox={object?.viewBox}
+                      >
+                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} />
+                      </svg>
+                    )}
 
-                  {object instanceof KritzelImage && (
-                    <img
-                    ref={el => object.mount(el)}
-                    src={object.img.src}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      userSelect: 'none',
-                      pointerEvents: 'none',
-                    }}
-                    draggable={false}
-                    onDragStart={e => e.preventDefault()}
-                    />
-                  )}
+                    {object instanceof KritzelImage && (
+                      <img
+                        ref={el => object.mount(el)}
+                        src={object.img.src}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          userSelect: 'none',
+                          pointerEvents: 'none',
+                        }}
+                        draggable={false}
+                        onDragStart={e => e.preventDefault()}
+                      />
+                    )}
 
-                  {object instanceof KritzelText && (
-                    <textarea
-                    ref={el => object.mount(el)}
-                    value={object.value}
-                    onKeyDown={event => object.handleKeyDown(event)}
-                    onInput={event => object.handleInput(event)}
-                    rows={object.rows}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      color: object.fontColor,
-                      fontSize: object.fontSize?.toString() + 'px',
-                      fontFamily: object.fontFamily,
-                      border: 'none',
-                      outline: 'none',
-                      resize: 'none',
-                      overflow: 'hidden',
-                      display: 'block',
-                      padding: '1px',
-                      whiteSpace: 'nowrap',
-                      cursor: object.isReadonly ? 'default' : 'text',
-                      caretColor: object.isReadonly ? 'transparent' : 'auto',
-                    }}
-                    ></textarea>
-                  )}
+                    {object instanceof KritzelText && (
+                      <textarea
+                        ref={el => object.mount(el)}
+                        value={object.value}
+                        onKeyDown={event => object.handleKeyDown(event)}
+                        onInput={event => object.handleInput(event)}
+                        rows={object.rows}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          color: object.fontColor,
+                          fontSize: object.fontSize?.toString() + 'px',
+                          fontFamily: object.fontFamily,
+                          border: 'none',
+                          outline: 'none',
+                          resize: 'none',
+                          overflow: 'hidden',
+                          display: 'block',
+                          padding: '1px',
+                          whiteSpace: 'nowrap',
+                          cursor: object.isReadonly ? 'default' : 'text',
+                          caretColor: object.isReadonly ? 'transparent' : 'auto',
+                        }}
+                      ></textarea>
+                    )}
 
-                  {object instanceof KritzelSelectionGroup && (
-                    <div
-                    ref={el => object.mount(el)}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                    }}
-                    ></div>
-                  )}
+                    {object instanceof KritzelSelectionGroup && (
+                      <div
+                        ref={el => object.mount(el)}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                        }}
+                      ></div>
+                    )}
 
-                  {object instanceof KrtizelSelectionBox && (
-                    <div
-                    ref={el => object.mount(el)}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                    }}
-                    ></div>
-                  )}
+                    {object instanceof KrtizelSelectionBox && (
+                      <div
+                        ref={el => object.mount(el)}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                        }}
+                      ></div>
+                    )}
                   </foreignObject>
 
                   <line
-                  x1="0"
-                  y1="0"
-                  x2={object.totalWidth}
-                  y2="0"
-                  style={{
-                    stroke: 'var(--kritzel-selection-border-color, #0e1111)',
-                    strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
-                    strokeLinecap: 'square',
-                  }}
-                  visibility={object.selected ? 'visible' : 'hidden'}
+                    x1="0"
+                    y1="0"
+                    x2={object.totalWidth}
+                    y2="0"
+                    style={{
+                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
+                      strokeLinecap: 'square',
+                    }}
+                    visibility={object.selected ? 'visible' : 'hidden'}
                   />
                   <line
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2={object.totalHeight}
-                  style={{
-                    stroke: 'var(--kritzel-selection-border-color, #0e1111)',
-                    strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
-                    strokeLinecap: 'square',
-                  }}
-                  visibility={object.selected ? 'visible' : 'hidden'}
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2={object.totalHeight}
+                    style={{
+                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
+                      strokeLinecap: 'square',
+                    }}
+                    visibility={object.selected ? 'visible' : 'hidden'}
                   />
                   <line
-                  x1="0"
-                  y1={object.totalHeight}
-                  x2={object.totalWidth}
-                  y2={object.totalHeight}
-                  style={{
-                    stroke: 'var(--kritzel-selection-border-color, #0e1111)',
-                    strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
-                    strokeLinecap: 'square',
-                  }}
-                  visibility={object.selected ? 'visible' : 'hidden'}
+                    x1="0"
+                    y1={object.totalHeight}
+                    x2={object.totalWidth}
+                    y2={object.totalHeight}
+                    style={{
+                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
+                      strokeLinecap: 'square',
+                    }}
+                    visibility={object.selected ? 'visible' : 'hidden'}
                   />
                   <line
-                  x1={object.totalWidth}
-                  y1="0"
-                  x2={object.totalWidth}
-                  y2={object.totalHeight}
-                  style={{
-                    stroke: 'var(--kritzel-selection-border-color, #0e1111)',
-                    strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
-                    strokeLinecap: 'square',
-                  }}
-                  visibility={object.selected ? 'visible' : 'hidden'}
+                    x1={object.totalWidth}
+                    y1="0"
+                    x2={object.totalWidth}
+                    y2={object.totalHeight}
+                    style={{
+                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
+                      strokeLinecap: 'square',
+                    }}
+                    visibility={object.selected ? 'visible' : 'hidden'}
                   />
 
                   <circle
-                  class="resize-handle top-left"
-                  cx="0"
-                  cy="0"
-                  r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
-                  style={{
-                    fill: 'var(--kritzel-selection-handle-color, #000000)',
-                  }}
-                  visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    class="resize-handle top-left"
+                    cx="0"
+                    cy="0"
+                    r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'var(--kritzel-selection-handle-color, #000000)',
+                    }}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
-                  class="resize-handle-overlay top-left"
-                  cx="0"
-                  cy="0"
-                  r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
-                  style={{
-                    fill: 'transparent',
-                  }}
-                  visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    class="resize-handle-overlay top-left"
+                    cx="0"
+                    cy="0"
+                    r={`${(baseHandleTouchSize * object.scale) / this.store.state?.scale}`}
+                    style={{
+                      fill: 'transparent',
+                    }}
+                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <circle
-                  class="resize-handle top-right"
+                    class="resize-handle top-right"
                     cx={object.totalWidth}
                     cy="0"
                     r={`${(baseHandleSize * object.scale) / this.store.state?.scale}`}
