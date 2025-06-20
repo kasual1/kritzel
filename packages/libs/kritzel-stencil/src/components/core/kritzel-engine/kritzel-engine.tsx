@@ -413,23 +413,24 @@ export class KritzelEngine {
         >
           {this.store.objects?.map(object => {
             return (
+              <div style={{ transform: object?.transformationMatrix, transformOrigin: 'top left' }}>
                 <svg
-                xmlns="http://www.w3.org/2000/svg"
-                key={object.id}
-                id={object.id}
-                class="object"
-                style={{
-                  height: object?.totalHeight.toString(),
-                  width: object?.totalWidth.toString(),
-                  left: '0',
-                  top: '0',
-                  position: 'absolute',
-                  transform: `${object?.transformationMatrix} rotate(${object.rotationDegrees}deg)`,
-                  transformOrigin: 'center',
-                  opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
-                  pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                  zIndex: object.zIndex.toString(),
-                }}
+                  xmlns="http://www.w3.org/2000/svg"
+                  key={object.id}
+                  id={object.id}
+                  class="object"
+                  style={{
+                    height: object?.totalHeight.toString(),
+                    width: object?.totalWidth.toString(),
+                    left: '0',
+                    top: '0',
+                    position: 'absolute',
+                    transform: `rotate(${object.rotationDegrees}deg)`,
+                    transformOrigin: 'center',
+                    opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
+                    pointerEvents: object.markedForRemoval ? 'none' : 'auto',
+                    zIndex: object.zIndex.toString(),
+                  }}
                 >
                 <g>
                   <foreignObject
@@ -691,28 +692,28 @@ export class KritzelEngine {
                     }}
                     visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
-                </g>
 
-                <g style={{ display: this.store.state.debugInfo.showObjectInfo ? 'block' : 'none' }}>
-                  <foreignObject
-                    x={object.totalWidth.toString()}
-                    y="0"
-                    width="400px"
-                    height="160px"
-                    style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none' }}
-                  >
-                    <div style={{ width: '100%', height: '100%' }}>
-                      <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
-                      <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
-                      <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
-                      <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
-                      <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
-                      <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
-                      <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
-                    </div>
-                  </foreignObject>
-                </g>
-              </svg>
+                  <g style={{ display: this.store.state.debugInfo.showObjectInfo ? 'block' : 'none', pointerEvents: 'none' }}>
+                    <foreignObject
+                      x={object.totalWidth.toString()}
+                      y="0"
+                      width="400px"
+                      height="160px"
+                      style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none' }}
+                    >
+                      <div style={{ width: '100%', height: '100%' }}>
+                        <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
+                      </div>
+                    </foreignObject>
+                  </g>
+                </svg>
+              </div>
             );
           })}
 
@@ -727,6 +728,7 @@ export class KritzelEngine {
               zIndex: this.store.state.currentPath?.zIndex.toString(),
               position: 'absolute',
               transform: this.store.state.currentPath?.transformationMatrix,
+              transformOrigin: 'top left',
               overflow: 'visible',
             }}
             viewBox={this.store.state.currentPath?.viewBox}
