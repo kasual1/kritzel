@@ -19,7 +19,7 @@ export const config: Config = {
     reactOutputTarget({ outDir: '../kritzel-react/lib/components/stencil-generated/', stencilPackageName: '../../../../kritzel-stencil' }),
     vueOutputTarget({ componentCorePackage: '../../kritzel-stencil', proxiesFile: '../kritzel-vue/lib/components.ts', includeImportCustomElements: true, customElementsDir: 'dist/components' }),
   ],
-  testing: { browserHeadless: true },
+  testing: { browserHeadless: 'shell' },
   extras: {
     enableImportInjection: true,
   },
