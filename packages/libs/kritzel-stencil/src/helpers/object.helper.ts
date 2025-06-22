@@ -1,24 +1,7 @@
 import { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'clone-deep';
 
 export class ObjectHelper {
-  static safeStringify(obj, indent = 2) {
-    const seen = new WeakSet();
-
-    return JSON.stringify(
-      obj,
-      (_key, value) => {
-        if (typeof value === 'object' && value !== null) {
-          if (seen.has(value)) {
-            return undefined;
-          }
-          seen.add(value);
-        }
-        return value;
-      },
-      indent,
-    );
-  }
 
   static generateUUID(): string {
     return Math.random().toString(36).substr(2, 9);
@@ -26,8 +9,8 @@ export class ObjectHelper {
 
   static clone(objOrObjs: KritzelBaseObject<any> | KritzelBaseObject<any>[]): any {
     const cloneObject = (obj: KritzelBaseObject<any>) => {
-      const { _store, _elementRef, totalWidth, totalHeight, ...rest } = obj;
-      return cloneDeep(rest);
+      const { _store, _elementRef, totalWidth, totalHeight, ...remainingProps } = obj;
+      return cloneDeep(remainingProps);
     };
 
     if (Array.isArray(objOrObjs)) {

@@ -1,18 +1,29 @@
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelStore } from '../store.class';
 
-// This assumes a Jest/Vitest testing environment where 'jest' is available.
-// If you're using a different test runner, you might need to adjust the mocking strategy.
 jest.mock('../store.class');
 const MockKritzelStore = KritzelStore as jest.MockedClass<typeof KritzelStore>;
+
+jest.mock('../../helpers/object.helper', () => ({
+  ObjectHelper: {
+    generateUUID: jest.fn(() => 'test-uuid'),
+    clone: jest.fn((objOrObjs) => {
+      if (Array.isArray(objOrObjs)) {
+        return objOrObjs.map(obj => ({ ...obj, _store: undefined, _elementRef: undefined }));
+      }
+      return { ...objOrObjs, _store: undefined, _elementRef: undefined };
+    }),
+    isEmpty: jest.fn((obj) => {
+      return Object.keys(obj).length === 0 && obj.constructor === Object;
+    })
+  }
+}));
 
 describe('KritzelBaseObject', () => {
   let store: KritzelStore;
   let object: KritzelBaseObject<HTMLElement>;
 
   beforeEach(() => {
-    MockKritzelStore.mockClear();
-    
     const mockEngine = {} as any;
     store = new MockKritzelStore(mockEngine);
 
