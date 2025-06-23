@@ -4,7 +4,7 @@ import { KritzelBaseObject } from '../objects/base-object.class';
 export class KritzelOctree<T extends KritzelBaseObject<any>> {
   private bounds: KritzelBoundingBox;
   private capacity: number;
-  private objects:  T[] = [];
+  private objects: T[] = [];
   private children: KritzelOctree<T>[] | null = null;
 
   constructor(bounds: KritzelBoundingBox, capacity: number = 8) {
@@ -12,7 +12,11 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     this.capacity = capacity;
   }
 
-  insert(object: T ): boolean {
+  insert(object: T): boolean {
+    if (this.isInsideBounds(object) === false) {
+      return false;
+    }
+
     if (!this.intersects(object.rotatedBoundingBox, this.bounds)) {
       return false;
     }
@@ -35,7 +39,7 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     return false;
   }
 
-  update(object: T ): boolean {
+  update(object: T): boolean {
     const index = this.objects.findIndex(o => o.id === object.id);
 
     if (index !== -1) {
@@ -127,12 +131,17 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
 
   private intersects(a: KritzelBoundingBox, b: KritzelBoundingBox): boolean {
     return !(
-      (
-        a.x >= b.x + b.width || // a is completely to the right of b
-        a.x + a.width <= b.x || // a is completely to the left of b
-        a.y >= b.y + b.height || // a is completely below b
-        a.y + a.height <= b.y // a is completely above b
-      ) 
+      a.x >= b.x + b.width || // a is completely to the right of b
+      a.x + a.width <= b.x || // a is completely to the left of b
+      a.y >= b.y + b.height || // a is completely below b
+      a.y + a.height <= b.y // a is completely above b
     );
+  }
+
+  private isInsideBounds(object: T): boolean {
+    return (object.rotatedBoundingBox.x >= this.bounds.x &&
+      object.rotatedBoundingBox.y >= this.bounds.y &&
+      object.rotatedBoundingBox.x + object.rotatedBoundingBox.width <= this.bounds.x + this.bounds.width &&
+      object.rotatedBoundingBox.y + object.rotatedBoundingBox.height <= this.bounds.y + this.bounds.height);
   }
 }
