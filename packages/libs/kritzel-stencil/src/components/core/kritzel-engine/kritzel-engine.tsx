@@ -467,7 +467,7 @@ export class KritzelEngine {
                     {object instanceof KritzelImage && (
                       <img
                         ref={el => object.mount(el)}
-                        src={object.img.src}
+                        src={object.src}
                         style={{
                           width: '100%',
                           height: '100%',
