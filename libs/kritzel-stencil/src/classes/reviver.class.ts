@@ -23,17 +23,15 @@ export class KritzelReviver {
         let revivedObj;
         switch (obj.__class__) {
           case 'KritzelPath':
-            console.log('Reviving KritzelPath');
             revivedObj = new KritzelPath(this._store).revive(obj);
             break;
           case 'KritzelText':
             revivedObj = new KritzelText(this._store, obj.fontSize, obj.fontFamily).revive(obj);
             break;
           case 'KritzelImage':
-            revivedObj = new KritzelImage(this._store, obj.img).revive(obj);
+            revivedObj = new KritzelImage(this._store).revive(obj);
             break;
           case 'KritzelSelectionGroup':
-            console.log('Reviving KritzelSelectionGroup');
             revivedObj = new KritzelSelectionGroup(this._store).revive(obj);
             break;
           case 'KritzelBrushTool':

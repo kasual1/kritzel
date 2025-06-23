@@ -4,7 +4,7 @@
       "type": "node",
       "request": "launch",
       "name": "Spec Test Current File",
-      "cwd": "${workspaceFolder}/packages/libs/kritzel-stencil",
+      "cwd": "${workspaceFolder}/libs/kritzel-stencil",
       "program": "${workspaceFolder}/node_modules/@stencil/core/bin/stencil",
       "args": ["test", "--spec", "--", "${fileBasename}"],
       "console": "integratedTerminal",

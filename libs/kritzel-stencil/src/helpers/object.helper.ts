@@ -1,5 +1,4 @@
 import { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { cloneDeep } from 'clone-deep';
 
 export class ObjectHelper {
 
@@ -10,7 +9,7 @@ export class ObjectHelper {
   static clone(objOrObjs: KritzelBaseObject<any> | KritzelBaseObject<any>[]): any {
     const cloneObject = (obj: KritzelBaseObject<any>) => {
       const { _store, _elementRef, totalWidth, totalHeight, ...remainingProps } = obj;
-      return cloneDeep(remainingProps);
+      return structuredClone(remainingProps);
     };
 
     if (Array.isArray(objOrObjs)) {
