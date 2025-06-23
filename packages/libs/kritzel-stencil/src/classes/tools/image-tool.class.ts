@@ -97,7 +97,8 @@ export class KritzelImageTool extends KritzelBaseTool {
   }
 
   private createKritzelImage(img: HTMLImageElement, width: number, height: number): KritzelImage {
-    const image = new KritzelImage(this._store, img);
+    const image = new KritzelImage(this._store);
+    image.src = img.src;
     image.width = width;
     image.height = height;
     image.zIndex = this._store.currentZIndex;

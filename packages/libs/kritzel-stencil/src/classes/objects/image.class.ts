@@ -4,19 +4,16 @@ import { KritzelBaseObject } from './base-object.class';
 export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   override __class__: string = 'KritzelImage';
 
-  img: HTMLImageElement;
+  src: string = '';
 
   override debugInfoVisible: boolean = true;
 
-  constructor(store: KritzelStore, img?: HTMLImageElement) {
+  constructor(store: KritzelStore) {
     super(store);
-    this.img = img;
     this.x = 0;
     this.y = 0;
     this.translateX = 0;
     this.translateY = 0;
-    this.width = img.width;
-    this.height = img.height;
     this.scale = this._store.state.scale;
   }
 
