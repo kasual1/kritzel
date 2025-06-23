@@ -13,10 +13,6 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
   }
 
   insert(object: T): boolean {
-    if (this.isInsideBounds(object) === false) {
-      return false;
-    }
-
     if (!this.intersects(object.rotatedBoundingBox, this.bounds)) {
       return false;
     }
@@ -136,12 +132,5 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
       a.y >= b.y + b.height || // a is completely below b
       a.y + a.height <= b.y // a is completely above b
     );
-  }
-
-  private isInsideBounds(object: T): boolean {
-    return (object.rotatedBoundingBox.x >= this.bounds.x &&
-      object.rotatedBoundingBox.y >= this.bounds.y &&
-      object.rotatedBoundingBox.x + object.rotatedBoundingBox.width <= this.bounds.x + this.bounds.width &&
-      object.rotatedBoundingBox.y + object.rotatedBoundingBox.height <= this.bounds.y + this.bounds.height);
   }
 }
