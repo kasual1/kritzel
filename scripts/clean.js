@@ -5,13 +5,13 @@ const { execSync } = require('child_process');
 
 // Paths to clean
 const paths = [
-  '../packages/demos/angular',
-  '../packages/demos/react',
-  '../packages/demos/vue',
-  '../packages/libs/kritzel-angular',
-  '../packages/libs/kritzel-react',
-  '../packages/libs/kritzel-stencil',
-  '../packages/libs/kritzel-vue',
+  '../demos/angular',
+  '../demos/react',
+  '../demos/vue',
+  '../libs/kritzel-angular',
+  '../libs/kritzel-react',
+  '../libs/kritzel-stencil',
+  '../libs/kritzel-vue',
 ];
 
 // Helper function to delete a folder

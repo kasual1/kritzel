@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
 
-const sourceBasePath = path.resolve(__dirname, '../packages/libs/kritzel-stencil/src/components');
+const sourceBasePath = path.resolve(__dirname, '../libs/kritzel-stencil/src/components');
 const targetBasePath = path.resolve(__dirname, '../website/docs/components');
 
 // Ensure target directory exists

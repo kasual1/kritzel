@@ -1,11 +1,10 @@
 {
-  "name": "kritzel-react",
-  "version": "0.0.104",
+  "name": "kritzel-vue",
+  "version": "0.0.105",
   "homepage": "https://gitlab.com/kasual1/kritzel#readme",
   "license": "ISC",
   "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -13,31 +12,28 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@stencil/react-output-target": "^0.7.4"
-  },
-  "peerDependencies": {
-    "kritzel-stencil": "^0.0.104"
-  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@gitlab.com/kasual1/kritzel.git"
   },
   "scripts": {
-    "test": "node ./__tests__/react-library.test.js",
+    "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "npm run tsc",
     "tsc": "tsc -p . --outDir ./dist",
     "clean": "rimraf dist node_modules",
     "bump": "npm version patch",
     "release": "npm publish"
   },
-  "devDependencies": {
-    "@types/react": "^19.1.1",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "typescript": "^5.6.3"
+  "bugs": {
+    "url": "https://gitlab.com/kasual1/kritzel/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@stencil/vue-output-target": "0.10.7"
+  },
+  "peerDependencies": {
+    "kritzel-stencil": "^0.0.105"
   }
 }
