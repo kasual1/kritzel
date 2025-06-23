@@ -24,16 +24,16 @@
 		"baseUrl": ".",
 		"paths": {
 			"@kritzel/stencil": [
-				"./packages/libs/kritzel-stencil"
+				"./libs/kritzel-stencil"
 			],
 			"@kritzel/stencil/loader": [
-				"./packages/libs/kritzel-stencil/loader"
+				"./libs/kritzel-stencil/loader"
 			],
 			"@kritzel/angular": [
-				"./packages/libs/kritzel-angular/dist/lib"
+				"./libs/kritzel-angular/dist/lib"
 			],
 			"@kritzel/react": [
-				"./packages/libs/kritzel-react/dist/lib"
+				"./libs/kritzel-react/dist/lib"
 			]
 		}
 	}

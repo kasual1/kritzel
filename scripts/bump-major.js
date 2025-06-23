@@ -3,10 +3,10 @@ const path = require('path');
 
 // Paths to the package.json files
 const paths = {
-  stencil: path.resolve(__dirname, '../packages/libs/kritzel-stencil/package.json'),
-  angular: path.resolve(__dirname, '../packages/libs/kritzel-angular/projects/lib/package.json'),
-  react: path.resolve(__dirname, '../packages/libs/kritzel-react/package.json'),
-  vue: path.resolve(__dirname, '../packages/libs/kritzel-vue/package.json'),
+  stencil: path.resolve(__dirname, '../libs/kritzel-stencil/package.json'),
+  angular: path.resolve(__dirname, '../libs/kritzel-angular/projects/lib/package.json'),
+  react: path.resolve(__dirname, '../libs/kritzel-react/package.json'),
+  vue: path.resolve(__dirname, '../libs/kritzel-vue/package.json'),
 };
 
 // Helper function to read and parse a JSON file
