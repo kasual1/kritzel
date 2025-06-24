@@ -60,7 +60,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
     const clientX = event.clientX - this._store.offsetX;
     const clientY = event.clientY - this._store.offsetY;
-    const text = new KritzelText(this._store, this.fontSize, this.fontFamily);
+    const text = KritzelText.create(this._store, this.fontSize, this.fontFamily);
 
     text.fontColor = this.fontColor;
     text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;
@@ -107,7 +107,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
     const clientX = Math.round(event.touches[0].clientX - this._store.offsetX);
     const clientY = Math.round(event.touches[0].clientY - this._store.offsetY);
-    const text = new KritzelText(this._store, this.fontSize, this.fontFamily);
+    const text = KritzelText.create(this._store, this.fontSize, this.fontFamily);
 
     text.fontColor = this.fontColor;
     text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;

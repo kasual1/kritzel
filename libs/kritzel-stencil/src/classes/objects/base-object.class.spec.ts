@@ -33,7 +33,7 @@ describe('KritzelBaseObject', () => {
     store.setState('viewportWidth', 800);
     store.setState('viewportHeight', 600);
 
-    object = new KritzelBaseObject(store);
+    object = new KritzelBaseObject();
     object.x = 10;
     object.y = 20;
     object.width = 100;

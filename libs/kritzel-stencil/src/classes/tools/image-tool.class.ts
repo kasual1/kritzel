@@ -97,7 +97,7 @@ export class KritzelImageTool extends KritzelBaseTool {
   }
 
   private createKritzelImage(img: HTMLImageElement, width: number, height: number): KritzelImage {
-    const image = new KritzelImage(this._store);
+    const image = KritzelImage.create(this._store);
     image.src = img.src;
     image.width = width;
     image.height = height;
@@ -107,7 +107,7 @@ export class KritzelImageTool extends KritzelBaseTool {
   }
 
   private addImageToStore(image: KritzelImage): void {
-    const selectionGroup = new KritzelSelectionGroup(this._store);
+    const selectionGroup = KritzelSelectionGroup.create(this._store);
     selectionGroup.addOrRemove(image);
     selectionGroup.selected = true;
 

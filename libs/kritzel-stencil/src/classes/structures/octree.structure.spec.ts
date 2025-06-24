@@ -96,7 +96,7 @@ describe('KritzelOctree', () => {
     const obj = createObject(store, 10, 10);
     octree.insert(obj);
 
-    const replacement = new KritzelBaseObject(store);
+    const replacement = new KritzelBaseObject();
     replacement.id = obj.id;
     replacement.x = 20;
     replacement.y = 20;

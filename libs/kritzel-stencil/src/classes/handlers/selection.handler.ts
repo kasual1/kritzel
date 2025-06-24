@@ -112,7 +112,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     clientX = event.clientX - this._store.offsetX;
     clientY = event.clientY - this._store.offsetY;
 
-    const selectionBox = new KrtizelSelectionBox(this._store);
+    const selectionBox = KrtizelSelectionBox.create(this._store);
 
     this.startX = (clientX - this._store.state.translateX) / this._store.state.scale;
     this.startY = (clientY - this._store.state.translateY) / this._store.state.scale;
@@ -142,7 +142,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this.touchStartX = clientX;
     this.touchStartY = clientY;
 
-    const selectionBox = new KrtizelSelectionBox(this._store);
+    const selectionBox = KrtizelSelectionBox.create(this._store);
 
     this.startX = (clientX - this._store.state.translateX) / this._store.state.scale;
     this.startY = (clientY - this._store.state.translateY) / this._store.state.scale;
@@ -229,7 +229,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     selectedObjects.forEach(o => (o.selected = false));
 
-    this._store.state.selectionGroup = new KritzelSelectionGroup(this._store);
+    this._store.state.selectionGroup = KritzelSelectionGroup.create(this._store);
     this._store.state.selectionGroup.addOrRemove(selectedObject);
     this._store.state.selectionGroup.selected = true;
     this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
@@ -244,7 +244,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       return;
     }
 
-    this._store.state.selectionGroup = new KritzelSelectionGroup(this._store);
+    this._store.state.selectionGroup = KritzelSelectionGroup.create(this._store);
     selectedObjects.forEach(o => {
       o.selected = false;
       this._store.state.selectionGroup.addOrRemove(o);

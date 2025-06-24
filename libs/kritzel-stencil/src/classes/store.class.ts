@@ -287,7 +287,7 @@ export class KritzelStore {
       .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox) && !(o instanceof KritzelContextMenu));
 
     if (objectsInViewport.length > 0) {
-      const selectionGroup = new KritzelSelectionGroup(this);
+      const selectionGroup = KritzelSelectionGroup.create(this);
 
       objectsInViewport.forEach(obj => {
         obj.selected = false;
