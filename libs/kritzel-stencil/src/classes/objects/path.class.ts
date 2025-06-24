@@ -29,18 +29,23 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
-  constructor(store: KritzelStore, options?: KritzelPathOptions) {
-    super(store);
-    this.options = options;
-    this.points = options?.points ?? [];
-    this.translateX = options?.translateX ?? 0;
-    this.translateY = options?.translateY ?? 0;
-    this.scale = options?.scale ?? 1;
-    this.strokeWidth = options?.strokeWidth ?? 8;
-    this.fill = options?.fill ?? '#000000';
-    this.zIndex = 9999;
-    this.d = this.generateSvgPath();
-    this.updateDimensions();
+  static override create(store: KritzelStore, options?: KritzelPathOptions): KritzelPath {
+    const object = new KritzelPath();
+
+    object._store = store;
+    object.id = object.generateId();
+    object.options = options;
+    object.points = options?.points ?? [];
+    object.translateX = options?.translateX ?? 0;
+    object.translateY = options?.translateY ?? 0;
+    object.scale = options?.scale ?? 1;
+    object.strokeWidth = options?.strokeWidth ?? 8;
+    object.fill = options?.fill ?? '#000000';
+    object.zIndex = 9999;
+    object.d = object.generateSvgPath();
+    object.updateDimensions();
+
+    return object;
   }
 
   resize(x: number | null, y: number | null, width: number, height: number): void {

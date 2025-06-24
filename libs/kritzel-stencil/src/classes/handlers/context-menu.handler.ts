@@ -74,7 +74,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
 
     if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup)) {
-      this._store.state.selectionGroup = new KritzelSelectionGroup(this._store);
+      this._store.state.selectionGroup = KritzelSelectionGroup.create(this._store);
       this._store.state.selectionGroup.addOrRemove(selectedObject);
       this._store.state.selectionGroup.selected = true;
       this._store.state.selectionGroup.rotation = selectedObject.rotation;

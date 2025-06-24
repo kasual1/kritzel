@@ -25,19 +25,25 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     return !(this._store.state.activeTool instanceof KritzelTextTool);
   }
 
-  constructor(store: KritzelStore, fontSize: number, fontFamily: string) {
-    super(store);
-    this.fontSize = fontSize;
-    this.fontFamily = fontFamily;
-    this.translateX = 0;
-    this.translateY = 0;
-    this.width = this.initialWidth / (this._store.state.scale < 0 ? this._store.state.scale : 1);
-    this.height = (this.fontSize * 1.2) / (this._store.state.scale < 0 ? this._store.state.scale : 1);
-    this.padding = 5;
-    this.backgroundColor = 'transparent';
-    this.scale = this._store.state.scale;
-    this.value = ' ';
+
+  static override create(store: KritzelStore, fontSize?: number, fontFamily?: string): KritzelText {
+    const object = new KritzelText();
+
+    object._store = store;
+    object.fontSize = fontSize;
+    object.fontFamily = fontFamily;
+    object.translateX = 0;
+    object.translateY = 0;
+    object.width = object.initialWidth / (object._store.state.scale < 0 ? object._store.state.scale : 1);
+    object.height = (object.fontSize * 1.2) / (object._store.state.scale < 0 ? object._store.state.scale : 1);
+    object.padding = 5;
+    object.backgroundColor = 'transparent';
+    object.scale = object._store.state.scale;
+    object.value = ' ';
+
+    return object;
   }
+
 
   override mount(element: HTMLTextAreaElement): void {
     if ((this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
