@@ -41,7 +41,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     object.scale = options?.scale ?? 1;
     object.strokeWidth = options?.strokeWidth ?? 8;
     object.fill = options?.fill ?? '#000000';
-    object.zIndex = 9999;
+    object.zIndex = store.currentZIndex;
     object.d = object.generateSvgPath();
     object.updateDimensions();
 

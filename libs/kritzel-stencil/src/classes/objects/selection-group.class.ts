@@ -30,7 +30,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   addOrRemove(object: KritzelBaseObject<any>) {
-    debugger;
+    
     const index = this.objects.findIndex(obj => obj.id === object.id);
     if (index === -1) {
       this.objects.push(object);

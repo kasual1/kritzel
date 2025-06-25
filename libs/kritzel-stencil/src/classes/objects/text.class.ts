@@ -25,6 +25,31 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     return !(this._store.state.activeTool instanceof KritzelTextTool);
   }
 
+  constructor(config?: {
+    value: string;
+    translateX?: number;
+    translateY?: number;
+    fontSize?: number;
+    fontFamily?: string;
+    fontColor?: string;
+    height?: number;
+    width?: number;
+    scale?: number;
+  }) {
+    super();
+
+    if (config) {
+      this.value = config.value || ' ';
+      this.translateX = config.translateX || 0;
+      this.translateY = config.translateY || 0;
+      this.fontSize = config.fontSize || 8;
+      this.fontFamily = config.fontFamily || 'Arial';
+      this.fontColor = config.fontColor || '#000000';
+      this.height = config.height || (this.fontSize * 1.2);
+      this.width = config.width || 0;
+      this.scale = config.scale || 1;
+    }
+  }
 
   static override create(store: KritzelStore, fontSize?: number, fontFamily?: string): KritzelText {
     const object = new KritzelText();
@@ -40,6 +65,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     object.backgroundColor = 'transparent';
     object.scale = object._store.state.scale;
     object.value = ' ';
+    object.zIndex = store.currentZIndex;
 
     return object;
   }

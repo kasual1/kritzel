@@ -17,6 +17,10 @@ import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfac
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
 import { KritzelEventHelper } from '../../../helpers/event.helper';
+import { AddObjectCommand } from '../../../classes/commands/add-object.command';
+import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
+import { UpdateObjectCommand } from '../../../classes/commands/update-object.command';
+import { RemoveObjectCommand } from '../../../classes/commands/remove-object.command';
 
 @Component({
   tag: 'kritzel-engine',
@@ -42,7 +46,7 @@ export class KritzelEngine {
         this.paste(x, y);
       },
     },
-    { label: 'Select All', icon: 'select-all', action: () => this.selectAllInViewport() },
+    { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },
   ];
 
   @Prop()
@@ -97,7 +101,7 @@ export class KritzelEngine {
 
     this.store.onStateChange('activeTool', (activeTool: KritzelBaseTool) => {
       if (!(activeTool instanceof KritzelSelectionTool)) {
-        this.store.resetSelection();
+        this.store.clearSelection();
       }
 
       this.store.state.skipContextMenu = false;
@@ -353,11 +357,6 @@ export class KritzelEngine {
   }
 
   @Method()
-  async selectAllInViewport() {
-    this.store.selectAllInViewport();
-  }
-
-  @Method()
   async undo() {
     this.store.history.undo();
   }
@@ -372,6 +371,67 @@ export class KritzelEngine {
     this.store.state.isContextMenuVisible = false;
     this.store.state.selectionBox = null;
     this.store.state.isSelecting = false;
+  }
+
+  @Method()
+  async getObjectById<T extends KritzelBaseObject>(id: string): Promise<T | null> {
+    const object = this.store.objects.find(obj => obj.id === id) as T | undefined;
+    return object || null;
+  }
+
+  @Method()
+  async addObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
+    this.store.deselectAllObjects();
+
+    object.id = object.generateId();
+    object._store = this.store;
+    object.zIndex = this.store.currentZIndex;
+
+    const command = new AddObjectCommand(this.store, this, object);
+    this.store.history.executeCommand(command);
+
+    return object;
+  }
+
+  @Method()
+  async updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null> {
+    this.store.deselectAllObjects();
+
+    const command = new UpdateObjectCommand(this.store, this, object, updatedProperties);
+    this.store.history.executeCommand(command);
+
+    return object;
+  }
+
+  @Method()
+  async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
+    this.store.deselectAllObjects();
+
+    const command = new RemoveObjectCommand(this.store, this, object);
+    this.store.history.executeCommand(command);
+
+    return object;
+  }
+
+  @Method()
+  async selectObjects(objects: KritzelBaseObject[]) {
+    this.store.state.activeTool?.onDeactivate();
+    this.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this.store.deselectAllObjects();
+    this.store.selectObjects(objects);
+  }
+
+  @Method()
+  async selectAllObjectsInViewport() {
+    this.store.state.activeTool?.onDeactivate();
+    this.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this.store.deselectAllObjects();
+    this.store.selectAllObjectsInViewport();
+  }
+
+  @Method()
+  async clearSelection() {
+    this.store.clearSelection();
   }
 
   render() {
