@@ -13,6 +13,7 @@ import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } 
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
+import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
@@ -22,6 +23,7 @@ export { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } 
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
+export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export namespace Components {
     interface KritzelBrushStyle {
@@ -116,13 +118,16 @@ export namespace Components {
     }
     interface KritzelEngine {
         "activeTool": KritzelTool;
+        "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
+        "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;
         "delete": () => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
+        "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         /**
-          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllInViewport() },   ]
+          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]
          */
         "globalContextMenuItems": ContextMenuItem[];
         "hideContextMenu": () => Promise<void>;
@@ -135,9 +140,12 @@ export namespace Components {
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
         "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig) => Promise<KritzelBaseTool>;
-        "selectAllInViewport": () => Promise<void>;
+        "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "selectAllObjectsInViewport": () => Promise<void>;
+        "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
         "setFocus": () => Promise<void>;
         "undo": () => Promise<void>;
+        "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
     }
     interface KritzelFont {
         /**
@@ -626,7 +634,7 @@ declare namespace LocalJSX {
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
         /**
-          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllInViewport() },   ]
+          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**

@@ -21,7 +21,7 @@ jest.mock('../../helpers/object.helper', () => ({
 
 describe('KritzelBaseObject', () => {
   let store: KritzelStore;
-  let object: KritzelBaseObject<HTMLElement>;
+  let object: KritzelBaseObject<Element>;
 
   beforeEach(() => {
     const mockEngine = {} as any;
@@ -33,7 +33,7 @@ describe('KritzelBaseObject', () => {
     store.setState('viewportWidth', 800);
     store.setState('viewportHeight', 600);
 
-    object = new KritzelBaseObject(store);
+    object = KritzelBaseObject.create(store);
     object.x = 10;
     object.y = 20;
     object.width = 100;

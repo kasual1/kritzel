@@ -14,17 +14,23 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   minY: number;
   maxY: number;
 
-  constructor(store: KritzelStore) {
-    super(store);
-    this.scale = this._store.state.scale;
-    this.zIndex = 99999;
-  }
-
   get length(): number {
     return this.objects.length;
   }
 
+  static override create(store: KritzelStore): KritzelSelectionGroup {
+    const object = new KritzelSelectionGroup();
+
+    object._store = store;
+    object.id = object.generateId();
+    object.scale = store.state.scale;
+    object.zIndex = 99999;
+
+    return object;
+  }
+
   addOrRemove(object: KritzelBaseObject<any>) {
+    
     const index = this.objects.findIndex(obj => obj.id === object.id);
     if (index === -1) {
       this.objects.push(object);
@@ -134,7 +140,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override copy(): KritzelBaseObject<HTMLElement> {
-    const selectionGroup = new KritzelSelectionGroup(this._store);
+    const selectionGroup = KritzelSelectionGroup.create(this._store);
 
     let currentZIndex = this._store.currentZIndex;
 

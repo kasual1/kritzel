@@ -40,5 +40,5 @@ export interface KritzelObject<T = Element> {
   move(startX: number, startY: number, endX: number, endY: number): void;
   resize(x: number, y: number, width: number, height: number): void;
   rotate(value: number): void;
-  copy(): KritzelBaseObject<T>;
+  copy(): KritzelBaseObject<Element>;
 }

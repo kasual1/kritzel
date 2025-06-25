@@ -5,7 +5,7 @@ import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelStore } from '../store.class';
 import { ObjectHelper } from '../../helpers/object.helper';
 
-export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, KritzelSerializable {
+export class KritzelBaseObject<T extends Element = HTMLElement> implements KritzelObject<T>, KritzelSerializable {
   __class__: string = 'KritzelBaseObject';
   id: string;
   visible: boolean = true;
@@ -30,7 +30,7 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
 
   debugInfoVisible: boolean = false;
 
-  readonly _store: KritzelStore;
+  _store: KritzelStore;
   _elementRef: T;
 
   get totalWidth(): number {
@@ -162,9 +162,17 @@ export class KritzelBaseObject<T = HTMLElement> implements KritzelObject<T>, Kri
     return this.translateY + this.totalHeight / 2;
   }
 
-  constructor(store: KritzelStore) {
-    this._store = store;
+  constructor() {
     this.id = this.generateId();
+  }
+
+  static create(store: KritzelStore): KritzelBaseObject<Element> {
+    const object = new KritzelBaseObject();
+    
+    object._store = store;
+    object.zIndex = store.currentZIndex;
+    
+    return object;
   }
 
   mount(element: T): void {
