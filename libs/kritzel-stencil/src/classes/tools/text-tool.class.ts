@@ -4,6 +4,7 @@ import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelToolRegistry } from '../tool.registry';
+import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 
 export class KritzelTextTool extends KritzelBaseTool {
   fontFamily: string = 'Arial';
@@ -105,6 +106,8 @@ export class KritzelTextTool extends KritzelBaseTool {
       return;
     }
 
+    KritzelKeyboardHelper.disableInteractiveWidget()
+
     const clientX = Math.round(event.touches[0].clientX - this._store.offsetX);
     const clientY = Math.round(event.touches[0].clientY - this._store.offsetY);
     const text = KritzelText.create(this._store, this.fontSize, this.fontFamily);
@@ -123,5 +126,7 @@ export class KritzelTextTool extends KritzelBaseTool {
   handleTouchEnd(_event: TouchEvent): void {
     this._store.state.activeText?.focus();
     this._store.state.activeText?.adjustTextareaSize();
+
+    KritzelKeyboardHelper.enableInteractiveWidget();
   }
 }
