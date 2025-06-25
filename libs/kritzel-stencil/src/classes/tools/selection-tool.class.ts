@@ -165,6 +165,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   private getSelectedObject(event: MouseEvent | TouchEvent): KritzelSelectionGroup | null {
+    
     const path = event.composedPath().slice(1) as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = this._store.findObjectById(objectElement?.id);
@@ -176,7 +177,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     if (object instanceof KritzelSelectionGroup) {
       return object;
     } else {
-      const group = new KritzelSelectionGroup(this._store);
+      const group = KritzelSelectionGroup.create(this._store);
       group.translateX = 0;
       group.translateY = 0;
       group.addOrRemove(object);

@@ -172,10 +172,6 @@ export class KritzelStore {
     }
   }
 
-  clearSelection() {
-    this.history.executeCommand(new RemoveSelectionGroupCommand(this, this.state.selectionGroup));
-  }
-
   delete() {
     if (!this.state.selectionGroup) {
       return;
@@ -274,7 +270,29 @@ export class KritzelStore {
     this.history.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
   }
 
-  selectAllInViewport() {
+  selectObjects(objects: KritzelBaseObject<any>[]) {
+    if (objects.length === 0) {
+      return;
+    }
+
+    const selectionGroup = KritzelSelectionGroup.create(this);
+    objects.forEach(obj => {
+      obj.selected = false;
+      selectionGroup.addOrRemove(obj);
+    });
+
+    selectionGroup.selected = true;
+
+    this.state.selectionGroup = selectionGroup;
+
+    if (objects.length === 1) {
+      selectionGroup.rotation = selectionGroup.objects[0].rotation;
+    }
+
+    this.history.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
+  }
+
+  selectAllObjectsInViewport() {
     const objectsInViewport = this._state.objectsOctree
       .query({
         x: -this._state.translateX / this._state.scale,
@@ -287,7 +305,7 @@ export class KritzelStore {
       .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox) && !(o instanceof KritzelContextMenu));
 
     if (objectsInViewport.length > 0) {
-      const selectionGroup = new KritzelSelectionGroup(this);
+      const selectionGroup = KritzelSelectionGroup.create(this);
 
       objectsInViewport.forEach(obj => {
         obj.selected = false;
@@ -298,9 +316,24 @@ export class KritzelStore {
 
       this.state.isSelecting = false;
 
+      if (objectsInViewport.length === 1) {
+        selectionGroup.rotation = selectionGroup.objects[0].rotation;
+      }
+
       this.history.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
       this.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     }
+  }
+
+  clearSelection() {
+    const command = new RemoveSelectionGroupCommand(this, this.state.selectionGroup);
+    this.history.executeCommand(command);
+
+    this.state.selectionGroup = null;
+    this.state.selectionBox = null;
+    this.state.isSelecting = false;
+    this.state.isResizeHandleSelected = false;
+    this.state.isRotationHandleSelected = false;
   }
 
   resetActiveText() {
@@ -328,7 +361,7 @@ export class KritzelStore {
       clientX = event.clientX;
       clientY = event.clientY;
     }
-    
+
     const elementAtPoint = shadowRoot.elementFromPoint(clientX, clientY);
     if (!elementAtPoint) return null;
 
@@ -340,15 +373,4 @@ export class KritzelStore {
 
     return null;
   }
-
-  resetSelection() {
-    this.state.selectionGroup = null;
-    this.state.selectionBox = null;
-    this.state.isSelecting = false;
-    this.state.isResizeHandleSelected = false;
-    this.state.isRotationHandleSelected = false;
-    this._state.objectsOctree.remove(obj => obj instanceof KritzelSelectionGroup);
-    this.rerender();
-  }
-
 }

@@ -28,7 +28,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
       const x = event.clientX - this._store.offsetX;
       const y = event.clientY - this._store.offsetY;
 
-      this._store.state.currentPath = new KritzelPath(this._store, {
+      this._store.state.currentPath = KritzelPath.create(this._store, {
         points: [[x, y]],
         translateX: -this._store.state.translateX,
         translateY: -this._store.state.translateY,
@@ -44,7 +44,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
       const x = event.clientX - this._store.offsetX;
       const y = event.clientY - this._store.offsetY;
 
-      this._store.state.currentPath = new KritzelPath(this._store, {
+      this._store.state.currentPath = KritzelPath.create(this._store, {
         points: [...this._store.state.currentPath.points, [x, y]],
         translateX: -this._store.state.translateX,
         translateY: -this._store.state.translateY,
@@ -76,7 +76,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
       const y = Math.round(event.touches[0].clientY - this._store.offsetY);
 
       this._store.state.isDrawing = true;
-      this._store.state.currentPath = new KritzelPath(this._store, {
+
+      this._store.state.currentPath = KritzelPath.create(this._store, {
         points: [[x, y]],
         translateX: -this._store.state.translateX,
         translateY: -this._store.state.translateY,
@@ -94,7 +95,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
       const x = Math.round(event.touches[0].clientX - this._store.offsetX);
       const y = Math.round(event.touches[0].clientY - this._store.offsetY);
 
-      this._store.state.currentPath = new KritzelPath(this._store, {
+        this._store.state.currentPath = KritzelPath.create(this._store, {
         points: [...this._store.state.currentPath.points, [x, y]],
         translateX: -this._store.state.translateX,
         translateY: -this._store.state.translateY,

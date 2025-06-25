@@ -8,13 +8,19 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 
   override debugInfoVisible: boolean = true;
 
-  constructor(store: KritzelStore) {
-    super(store);
-    this.x = 0;
-    this.y = 0;
-    this.translateX = 0;
-    this.translateY = 0;
-    this.scale = this._store.state.scale;
+  static override create(store: KritzelStore): KritzelImage {
+    const object = new KritzelImage();
+
+    object._store = store;
+    object.id = object.generateId();
+    object.x = 0;
+    object.y = 0;
+    object.translateX = 0;
+    object.translateY = 0;
+    object.scale = object._store.state.scale;
+    object.zIndex = store.currentZIndex;
+
+    return object;
   }
 
   override resize(x: number, y: number, width: number, height: number): void {
