@@ -18,6 +18,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     object.translateX = 0;
     object.translateY = 0;
     object.scale = object._store.state.scale;
+    object.zIndex = store.currentZIndex;
 
     return object;
   }

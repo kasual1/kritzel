@@ -162,11 +162,15 @@ export class KritzelBaseObject<T extends Element = HTMLElement> implements Kritz
     return this.translateY + this.totalHeight / 2;
   }
 
+  constructor() {
+    this.id = this.generateId();
+  }
+
   static create(store: KritzelStore): KritzelBaseObject<Element> {
     const object = new KritzelBaseObject();
     
     object._store = store;
-    object.id = object.generateId();
+    object.zIndex = store.currentZIndex;
     
     return object;
   }
