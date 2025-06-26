@@ -6,7 +6,7 @@ import { AddObjectCommand } from '../commands/add-object.command';
 import { BatchCommand } from '../commands/batch.command';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import imageCompression from 'browser-image-compression';
-import { KritzelToolRegistry } from '../tool.registry';
+import { KritzelToolRegistry } from '../registries/tool.registry';
 
 export class KritzelImageTool extends KritzelBaseTool {
   fileInput: HTMLInputElement | null = null;

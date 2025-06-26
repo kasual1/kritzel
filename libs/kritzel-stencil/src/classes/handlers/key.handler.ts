@@ -1,5 +1,5 @@
+import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from '../store.class';
-import { KritzelToolRegistry } from '../tool.registry';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelKeyHandler extends KritzelBaseHandler {

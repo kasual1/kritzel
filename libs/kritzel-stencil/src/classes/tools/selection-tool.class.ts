@@ -9,7 +9,7 @@ import { KritzelSelectionHandler } from '../handlers/selection.handler';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelText } from '../objects/text.class';
-import { KritzelToolRegistry } from '../tool.registry';
+import { KritzelToolRegistry } from '../registries/tool.registry';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
   selectionHandler: KritzelSelectionHandler;

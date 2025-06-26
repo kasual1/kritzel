@@ -1,5 +1,5 @@
-import { KritzelBaseTool } from "../components";
-import { KritzelStore } from "./store.class";
+import { KritzelStore } from "../store.class";
+import { KritzelBaseTool } from "../tools/base-tool.class";
 
 export class KritzelToolRegistry {
 private static registry: Record<string, KritzelBaseTool> = {};
