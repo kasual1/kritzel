@@ -1,5 +1,5 @@
 import { Component, h, Prop, Host } from '@stencil/core';
-import { KritzelIconRegistry } from '../../../classes/icon-registry.class';
+import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
 
 @Component({
   tag: 'kritzel-icon',

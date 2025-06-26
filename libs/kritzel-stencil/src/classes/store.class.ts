@@ -13,61 +13,10 @@ import { AddObjectCommand } from './commands/add-object.command';
 import { AddSelectionGroupCommand } from './commands/add-selection-group.command';
 import { UpdateObjectCommand } from './commands/update-object.command';
 import { KritzelEngine } from '../components/core/kritzel-engine/kritzel-engine';
-import { KritzelToolRegistry } from './tool.registry';
 import { KritzelContextMenu } from '../components/ui/kritzel-context-menu/kritzel-context-menu';
+import { KritzelToolRegistry } from './registries/tool.registry';
+import { DEFAULT_ENGINE_STATE } from '../configs/default-engine-state';
 
-const initialState: KritzelEngineState = {
-  activeTool: null,
-  activeText: null,
-  currentPath: null,
-  copiedObjects: null,
-  objectsOctree: null,
-  selectionBox: null,
-  selectionGroup: null,
-  resizeHandleType: null,
-  hasViewportChanged: false,
-  isEnabled: true,
-  isScaling: false,
-  isPanning: false,
-  isFocused: false,
-  isSelecting: false,
-  isResizing: false,
-  isResizeHandleSelected: false,
-  isRotating: false,
-  isRotationHandleSelected: false,
-  isDragging: false,
-  isDrawing: false,
-  isErasing: false,
-  isWriting: false,
-  isCtrlKeyPressed: false,
-  isContextMenuVisible: false,
-  contextMenuItems: [],
-  contextMenuX: 0,
-  contextMenuY: 0,
-  skipContextMenu: false,
-  debugInfo: {
-    showObjectInfo: false,
-    showViewportInfo: false,
-    logCommands: false,
-  },
-  host: null,
-  cursorX: 0,
-  cursorY: 0,
-  scale: 1,
-  scaleMax: 1000,
-  scaleMin: 0.0001,
-  scaleStep: 0.05,
-  startX: 0,
-  startY: 0,
-  translateX: 0,
-  translateY: 0,
-  viewportWidth: 0,
-  viewportHeight: 0,
-  historyBufferSize: 1000,
-  touchCount: 0,
-  longTouchTimeout: null,
-  longTouchDelay: 300,
-};
 export class KritzelStore {
   private readonly _kritzelEngine: KritzelEngine;
 
@@ -108,7 +57,7 @@ export class KritzelStore {
   }
 
   constructor(kritzelEngine: KritzelEngine) {
-    this._state = initialState;
+    this._state = DEFAULT_ENGINE_STATE;
     this._kritzelEngine = kritzelEngine;
     this._history = new KritzelHistory(this);
     this._state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
