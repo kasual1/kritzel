@@ -12,7 +12,6 @@ import { KritzelKeyHandler } from '../../../classes/handlers/key.handler';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
-import { KritzelToolRegistry } from '../../../classes/tool.registry';
 import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
@@ -21,6 +20,7 @@ import { AddObjectCommand } from '../../../classes/commands/add-object.command';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { UpdateObjectCommand } from '../../../classes/commands/update-object.command';
 import { RemoveObjectCommand } from '../../../classes/commands/remove-object.command';
+import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
 
 @Component({
   tag: 'kritzel-engine',

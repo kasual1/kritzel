@@ -1,5 +1,5 @@
 import { Component, Host, Listen, Prop, Element, h } from '@stencil/core';
-import { KritzelIconRegistry } from '../../../classes/icon-registry.class';
+import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { DEFAULT_KRITZEL_CONTROLS } from '../../../configs/default-toolbar-controls';
 

@@ -3,8 +3,8 @@ import { KritzelStore } from '../store.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelToolRegistry } from '../tool.registry';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
+import { KritzelToolRegistry } from '../registries/tool.registry';
 
 export class KritzelTextTool extends KritzelBaseTool {
   fontFamily: string = 'Arial';
