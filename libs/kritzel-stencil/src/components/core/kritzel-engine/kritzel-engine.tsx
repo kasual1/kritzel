@@ -191,7 +191,7 @@ export class KritzelEngine {
       return;
     }
 
-    if(ev.touches.length === 2){
+    if (ev.touches.length === 2) {
       KritzelEventHelper.notifyTwoFingerTouch();
     }
 
@@ -477,7 +477,7 @@ export class KritzelEngine {
         >
           {this.store.objects?.map(object => {
             return (
-              <div style={{ transform: object?.transformationMatrix, transformOrigin: 'top left' }}>
+              <div style={{ transform: object?.transformationMatrix, transformOrigin: 'top left', zIndex: object.zIndex.toString(), position: 'absolute' }}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   key={object.id}
@@ -493,7 +493,6 @@ export class KritzelEngine {
                     transformOrigin: 'center',
                     opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                     pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                    zIndex: object.zIndex.toString(),
                   }}
                 >
                   <foreignObject
