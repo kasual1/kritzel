@@ -15,12 +15,12 @@ import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
-import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { AddObjectCommand } from '../../../classes/commands/add-object.command';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { UpdateObjectCommand } from '../../../classes/commands/update-object.command';
 import { RemoveObjectCommand } from '../../../classes/commands/remove-object.command';
 import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
+import { KritzelEventHelper } from '../../../helpers/event.helper';
 
 @Component({
   tag: 'kritzel-engine',
@@ -189,6 +189,10 @@ export class KritzelEngine {
   handleTouchStart(ev: TouchEvent) {
     if (this.store.state.isEnabled === false) {
       return;
+    }
+
+    if(ev.touches.length === 2){
+      KritzelEventHelper.notifyTwoFingerTouch();
     }
 
     if (KritzelEventHelper.detectDoubleTap()) {
