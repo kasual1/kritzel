@@ -130,38 +130,6 @@ export class KritzelEngine {
     this.contextMenuHandler.handleContextMenu(ev);
   }
 
-  @Listen('mousedown', { passive: true })
-  handleMouseDown(ev: MouseEvent) {
-    if (this.store.state.isContextMenuVisible) {
-      this.hideContextMenu();
-      return;
-    }
-
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.store.state?.activeTool?.handleMouseDown(ev);
-  }
-
-  @Listen('mousemove', { passive: true })
-  handleMouseMove(ev) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.store.state?.activeTool?.handleMouseMove(ev);
-  }
-
-  @Listen('mouseup', { passive: true })
-  handleMouseUp(ev) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.store.state?.activeTool?.handleMouseUp(ev);
-  }
-
   @Listen('dblclick')
   handleDoubleClick(ev: MouseEvent) {
     if (this.store.state.isEnabled === false) {
@@ -255,6 +223,7 @@ export class KritzelEngine {
     this.store.state.pointers.set(ev.pointerId, ev);
 
     this.viewport.handlePointerDown(ev);
+    this.store.state?.activeTool?.handlePointerDown(ev);
   }
 
   @Listen('pointermove', { passive: true })
@@ -266,6 +235,7 @@ export class KritzelEngine {
     this.store.state.pointers.set(ev.pointerId, ev);
 
     this.viewport.handlePointerMove(ev);
+    this.store.state?.activeTool?.handlePointerMove(ev);
   }
 
   @Listen('pointerup', { passive: true })
@@ -277,6 +247,7 @@ export class KritzelEngine {
     this.store.state.pointers.delete(ev.pointerId);
 
     this.viewport.handlePointerUp(ev);
+    this.store.state?.activeTool?.handlePointerUp(ev);
   }
 
   @Listen('wheel', { passive: false })
