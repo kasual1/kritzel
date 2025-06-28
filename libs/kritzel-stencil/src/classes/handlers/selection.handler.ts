@@ -63,7 +63,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   handleTouchStart(event: TouchEvent) {
     this.touchStartTimeout = setTimeout(() => {
-      if (this._store.state.touchCount === 1 && !this._store.state.isScaling  && !this._store.state.selectionGroup) {
+      if (this._store.state.pointers.size === 1 && !this._store.state.isScaling  && !this._store.state.selectionGroup) {
         this.startTouchSelection(event);
         this.updateTouchSelection(event);
       }

@@ -119,7 +119,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       return;
     }
 
-    if (this._store.state.touchCount === 1) {
+    if (this._store.state.pointers.size === 1) {
       this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
       this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
       this._store.state.resizeHandleType = this.getHandleType(event);

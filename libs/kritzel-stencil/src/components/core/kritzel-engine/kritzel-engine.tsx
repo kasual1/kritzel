@@ -120,6 +120,67 @@ export class KritzelEngine {
     this.engineReady.emit();
   }
 
+  @Listen('wheel', { passive: false })
+  handleWheel(ev) {
+    if (this.store.state.isContextMenuVisible) {
+      this.hideContextMenu();
+    }
+
+    this.viewport.handleWheel(ev);
+    this.store.state?.activeTool?.handleWheel(ev);
+  }
+
+  @Listen('pointerdown', { passive: false })
+  handlePointerDown(ev: PointerEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    this.host.setPointerCapture(ev.pointerId);
+    this.store.state.pointers.set(ev.pointerId, ev);
+
+    this.viewport.handlePointerDown(ev);
+    this.store.state?.activeTool?.handlePointerDown(ev);
+  }
+
+  @Listen('pointermove', { passive: false })
+  handlePointerMove(ev: PointerEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    this.store.state.pointers.set(ev.pointerId, ev);
+
+    this.viewport.handlePointerMove(ev);
+    this.store.state?.activeTool?.handlePointerMove(ev);
+  }
+
+  @Listen('pointerup', { passive: false })
+  handlePointerUp(ev: PointerEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    this.host.releasePointerCapture(ev.pointerId);
+    this.store.state.pointers.delete(ev.pointerId);
+
+    this.viewport.handlePointerUp(ev);
+    this.store.state?.activeTool?.handlePointerUp(ev);
+  }
+
+  @Listen('pointercancel', { passive: false })
+  handlePointerCancel(ev: PointerEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    this.host.releasePointerCapture(ev.pointerId);
+    this.store.state.pointers.delete(ev.pointerId);
+
+    this.viewport.handlePointerUp(ev);
+    this.store.state?.activeTool?.handlePointerUp(ev);
+  }
+
   @Listen('contextmenu', { capture: false })
   handleContextMenu(ev: MouseEvent) {
     if (this.store.state.isEnabled === false) {
@@ -147,113 +208,6 @@ export class KritzelEngine {
     const touchEvent = ev instanceof CustomEvent && ev.detail ? ev.detail : (ev as TouchEvent);
 
     this.store.state?.activeTool?.handleDoubleTap(touchEvent);
-  }
-
-  @Listen('touchstart', { passive: false })
-  handleTouchStart(ev: TouchEvent) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    // if (ev.touches.length === 2) {
-    //   KritzelEventHelper.notifyTwoFingerTouch();
-    // }
-
-    // if (KritzelEventHelper.detectDoubleTap()) {
-    //   const doubleTapEvent = new CustomEvent('doubletap', { detail: event, bubbles: true, composed: true });
-    //   this.host.dispatchEvent(doubleTapEvent);
-    // }
-
-    // if (ev.touches.length > 1) {
-    //   clearTimeout(this.store.state.longTouchTimeout);
-    // }
-
-    // if (ev.cancelable) {
-    //   ev.preventDefault();
-    // }
-
-    // this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenuTouch(ev), this.store.state.longTouchDelay);
-
-    this.store.state?.activeTool?.handleTouchStart(ev);
-  }
-
-  @Listen('touchmove', { passive: false })
-  handleTouchMove(ev) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    if (ev.cancelable) {
-      ev.preventDefault();
-    }
-
-    this.store.state?.activeTool?.handleTouchMove(ev);
-  }
-
-  @Listen('touchend', { passive: false })
-  handleTouchEnd(ev) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    if (ev.cancelable) {
-      ev.preventDefault();
-    }
-
-    // clearTimeout(this.store.state.longTouchTimeout);
-
-    this.store.state?.activeTool?.handleTouchEnd(ev);
-  }
-
-  @Listen('touchcancel', { passive: false })
-  handleTouchCancel(_ev) {
-    clearTimeout(this.store.state.longTouchTimeout);
-  }
-
-  @Listen('pointerdown', { passive: true })
-  handlePointerDown(ev: PointerEvent) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.store.state.pointers.set(ev.pointerId, ev);
-
-    this.viewport.handlePointerDown(ev);
-    this.store.state?.activeTool?.handlePointerDown(ev);
-  }
-
-  @Listen('pointermove', { passive: true })
-  handlePointerMove(ev: PointerEvent) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.store.state.pointers.set(ev.pointerId, ev);
-
-    this.viewport.handlePointerMove(ev);
-    this.store.state?.activeTool?.handlePointerMove(ev);
-  }
-
-  @Listen('pointerup', { passive: true })
-  handlePointerUp(ev: PointerEvent) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.store.state.pointers.delete(ev.pointerId);
-
-    this.viewport.handlePointerUp(ev);
-    this.store.state?.activeTool?.handlePointerUp(ev);
-  }
-
-  @Listen('wheel', { passive: false })
-  handleWheel(ev) {
-    if (this.store.state.isContextMenuVisible) {
-      this.hideContextMenu();
-    }
-
-    this.viewport.handleWheel(ev);
-    this.store.state?.activeTool?.handleWheel(ev);
   }
 
   @Listen('resize', { target: 'window' })

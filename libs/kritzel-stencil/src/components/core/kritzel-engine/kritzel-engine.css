@@ -5,6 +5,7 @@
   width: 100%;
   overflow: hidden;
   background-color: var(--kritzel-engine-background-color, #ffffff);
+  touch-action: none;
 }
 
 .debug-panel {

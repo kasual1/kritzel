@@ -106,7 +106,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       return;
     }
 
-    if (this._store.state.touchCount > 1) {
+    if (this._store.state.pointers.size > 1) {
       return;
     }
 
