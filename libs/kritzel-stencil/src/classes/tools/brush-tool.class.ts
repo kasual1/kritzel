@@ -89,8 +89,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
         const x = Math.round(activePointers[0].clientX - this._store.offsetX);
         const y = Math.round(activePointers[0].clientY - this._store.offsetY);
 
-        console.log('Brush tool pointer move', x, y);
-
         this._store.state.currentPath = KritzelPath.create(this._store, {
           points: [...this._store.state.currentPath.points, [x, y]],
           translateX: -this._store.state.translateX,
@@ -106,7 +104,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
   }
 
   handlePointerUp(event: PointerEvent): void {
-    console.log('Brush tool pointer up', event.pointerType);
     if (event.pointerType === 'mouse') {
       if (this._store.state.isDrawing) {
         this._store.state.isDrawing = false;
