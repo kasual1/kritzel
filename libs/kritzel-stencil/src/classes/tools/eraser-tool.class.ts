@@ -11,40 +11,46 @@ export class KritzelEraserTool extends KritzelBaseTool {
     super(store);
   }
 
-  handleMouseDown(event: MouseEvent): void {
-    if (KritzelEventHelper.isLeftClick(event)) {
-      this._store.state.isErasing = true;
-    }
-  }
-
-  handleMouseMove(event: MouseEvent): void {
-    if (this._store.state.isErasing) {
-      const shadowRoot = this._store.state.host?.shadowRoot;
-      if (!shadowRoot) return;
-
-      const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
-      if (!selectedObject) return;
-
-      selectedObject.markedForRemoval = true;
-
-      this._store.rerender();
-    }
-  }
-
-  handleMouseUp(_event: MouseEvent): void {
-    if (this._store.state.isErasing) {
-      const removeCommands = this._store.allObjects
-        .filter(object => object.markedForRemoval)
-        .map(object => {
-          object.markedForRemoval = false;
-          return new RemoveObjectCommand(this._store, this, object);
-        });
-
-      if (removeCommands.length > 0) {
-        this._store.history.executeCommand(new BatchCommand(this._store, this, removeCommands));
+  handlePointerDown(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') {
+      if (KritzelEventHelper.isLeftClick(event)) {
+        this._store.state.isErasing = true;
       }
+    }
+  }
 
-      this._store.state.isErasing = false;
+  handlePointerMove(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') {
+      if (this._store.state.isErasing) {
+        const shadowRoot = this._store.state.host?.shadowRoot;
+        if (!shadowRoot) return;
+
+        const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
+        if (!selectedObject) return;
+
+        selectedObject.markedForRemoval = true;
+
+        this._store.rerender();
+      }
+    }
+  }
+
+  handlePointerUp(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') {
+      if (this._store.state.isErasing) {
+        const removeCommands = this._store.allObjects
+          .filter(object => object.markedForRemoval)
+          .map(object => {
+            object.markedForRemoval = false;
+            return new RemoveObjectCommand(this._store, this, object);
+          });
+
+        if (removeCommands.length > 0) {
+          this._store.history.executeCommand(new BatchCommand(this._store, this, removeCommands));
+        }
+
+        this._store.state.isErasing = false;
+      }
     }
   }
 
