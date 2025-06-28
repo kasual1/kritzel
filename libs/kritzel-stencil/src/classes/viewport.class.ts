@@ -28,8 +28,7 @@ export class KritzelViewport {
   }
 
   handlePointerDown(event: PointerEvent): void {
-
-    if(event.pointerType === 'mouse') {
+    if (event.pointerType === 'mouse') {
       const adjustedClientX = event.clientX - this._store.offsetX;
       const adjustedClientY = event.clientY - this._store.offsetY;
 
@@ -39,10 +38,31 @@ export class KritzelViewport {
         this._store.state.startY = adjustedClientY;
       }
     }
+
+    if (event.pointerType === 'touch') {
+      const activePointers = Array.from(this._store.state.pointers.values());
+
+      if (activePointers.length === 2) {
+        this._store.state.currentPath = null;
+        this._store.state.isScaling = true;
+
+        const firstTouchX = activePointers[0].clientX - this._store.offsetX;
+        const firstTouchY = activePointers[0].clientY - this._store.offsetY;
+
+        const secondTouchX = activePointers[1].clientX - this._store.offsetX;
+        const secondTouchY = activePointers[1].clientY - this._store.offsetY;
+
+        this.initialTouchDistance = Math.sqrt(Math.pow(firstTouchX - secondTouchX, 2) + Math.pow(firstTouchY - secondTouchY, 2));
+
+        this.startX = (firstTouchX + secondTouchX) / 2;
+        this.startY = (firstTouchY + secondTouchY) / 2;
+        this._store.rerender();
+      }
+    }
   }
 
   handlePointerMove(event: PointerEvent): void {
-    if(event.pointerType === 'mouse') {
+    if (event.pointerType === 'mouse') {
       const adjustedClientX = event.clientX - this._store.offsetX;
       const adjustedClientY = event.clientY - this._store.offsetY;
 
@@ -59,81 +79,61 @@ export class KritzelViewport {
         this._store.rerender();
       }
     }
-  }
 
-  handlePointerUp(event: PointerEvent): void {
-    if(event.pointerType === 'mouse') {
-      if (this._store.state.isPanning) {
-        this._store.state.isPanning = false;
+    if (event.pointerType === 'touch') {
+      const activePointers = Array.from(this._store.state.pointers.values());
+
+      if (activePointers.length === 2) {
+        const firstTouchX = activePointers[0].clientX - this._store.offsetX;
+        const firstTouchY = activePointers[0].clientY - this._store.offsetY;
+
+        const secondTouchX = activePointers[1].clientX - this._store.offsetX;
+        const secondTouchY = activePointers[1].clientY - this._store.offsetY;
+
+        const currentTouchDistance = Math.sqrt(Math.pow(firstTouchX - secondTouchX, 2) + Math.pow(firstTouchY - secondTouchY, 2));
+
+        const midpointX = (firstTouchX + secondTouchX) / 2;
+        const midpointY = (firstTouchY + secondTouchY) / 2;
+
+        const scaleRatio = currentTouchDistance / this.initialTouchDistance!;
+        const newScale = this._store.state.scale * scaleRatio;
+
+        if (newScale > this._store.state.scaleMax || newScale < this._store.state.scaleMin) {
+          this._store.state.translateX += midpointX - this.startX;
+          this._store.state.translateY += midpointY - this.startY;
+        } else {
+          const translateXAdjustment = (midpointX - this._store.state.translateX) * (scaleRatio - 1);
+          const translateYAdjustment = (midpointY - this._store.state.translateY) * (scaleRatio - 1);
+
+          this._store.state.translateX += midpointX - this.startX - translateXAdjustment;
+          this._store.state.translateY += midpointY - this.startY - translateYAdjustment;
+          this._store.state.scale = newScale;
+
+          this.initialTouchDistance = currentTouchDistance;
+        }
+
+        this.startX = midpointX;
+        this.startY = midpointY;
+
+        this._store.state.hasViewportChanged = true;
+
         this._store.rerender();
       }
     }
   }
 
-  handleTouchStart(event: TouchEvent): void {
-    this._store.state.touchCount = event.touches.length;
-
-    if (this._store.state.touchCount === 2) {
-      this._store.state.currentPath = null;
-      this._store.state.isScaling = true;
-
-      const firstTouchX = event.touches[0].clientX - this._store.offsetX;
-      const firstTouchY = event.touches[0].clientY - this._store.offsetY;
-
-      const secondTouchX = event.touches[1].clientX - this._store.offsetX;
-      const secondTouchY = event.touches[1].clientY - this._store.offsetY;
-
-      this.initialTouchDistance = Math.sqrt(Math.pow(firstTouchX - secondTouchX, 2) + Math.pow(firstTouchY - secondTouchY, 2));
-
-      this.startX = (firstTouchX + secondTouchX) / 2;
-      this.startY = (firstTouchY + secondTouchY) / 2;
-      this._store.rerender();
-    }
-  }
-
-  handleTouchMove(event: TouchEvent): void {
-    if (this._store.state.touchCount === 2) {
-      const firstTouchX = event.touches[0].clientX - this._store.offsetX;
-      const firstTouchY = event.touches[0].clientY - this._store.offsetY;
-
-      const secondTouchX = event.touches[1].clientX - this._store.offsetX;
-      const secondTouchY = event.touches[1].clientY - this._store.offsetY;
-
-      const currentTouchDistance = Math.sqrt(Math.pow(firstTouchX - secondTouchX, 2) + Math.pow(firstTouchY - secondTouchY, 2));
-
-      const midpointX = (firstTouchX + secondTouchX) / 2;
-      const midpointY = (firstTouchY + secondTouchY) / 2;
-
-      const scaleRatio = currentTouchDistance / this.initialTouchDistance!;
-      const newScale = this._store.state.scale * scaleRatio;
-
-      if (newScale > this._store.state.scaleMax || newScale < this._store.state.scaleMin) {
-        this._store.state.translateX += midpointX - this.startX;
-        this._store.state.translateY += midpointY - this.startY;
-      } else {
-        const translateXAdjustment = (midpointX - this._store.state.translateX) * (scaleRatio - 1);
-        const translateYAdjustment = (midpointY - this._store.state.translateY) * (scaleRatio - 1);
-
-        this._store.state.translateX += midpointX - this.startX - translateXAdjustment;
-        this._store.state.translateY += midpointY - this.startY - translateYAdjustment;
-        this._store.state.scale = newScale;
-
-        this.initialTouchDistance = currentTouchDistance;
+  handlePointerUp(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') {
+      if (this._store.state.isPanning) {
+        this._store.state.isPanning = false;
+        this._store.rerender();
       }
+    }
 
-      this.startX = midpointX;
-      this.startY = midpointY;
-
-      this._store.state.hasViewportChanged = true;
-
+    if (event.pointerType === 'touch') {
+      this._store.state.isScaling = false;
       this._store.rerender();
     }
-  }
-
-  handleTouchEnd(_event: TouchEvent): void {
-    this._store.state.touchCount = 0;
-    this._store.state.isScaling = false;
-    this._store.rerender();
   }
 
   handleWheel(event: WheelEvent): void {
