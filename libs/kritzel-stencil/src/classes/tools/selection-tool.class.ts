@@ -25,49 +25,56 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.rotationHandler = new KritzelRotationHandler(this._store);
   }
 
-  handleMouseDown(event: MouseEvent): void {
-    if (KritzelEventHelper.isLeftClick(event)) {
-      this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
-      this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
-      this._store.state.resizeHandleType = this.getHandleType(event);
+  handlePointerDown(event: PointerEvent): void {
+    if(event.pointerType === 'mouse') {
+      if (KritzelEventHelper.isLeftClick(event)) {
+        this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
+        this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
+        this._store.state.resizeHandleType = this.getHandleType(event);
 
-      const selectedObject = this.getSelectedObject(event);
-      const isDifferentObject = selectedObject && this._store.state.selectionGroup && selectedObject.id !== this._store.state.selectionGroup.id;
+        const selectedObject = this.getSelectedObject(event);
+        const isDifferentObject = selectedObject && this._store.state.selectionGroup && selectedObject.id !== this._store.state.selectionGroup.id;
 
-      if (
-        (selectedObject === null || isDifferentObject) &&
-        this._store.state.selectionGroup &&
-        !this._store.state.isResizeHandleSelected &&
-        !this._store.state.isRotationHandleSelected
-      ) {
-        this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+        if (
+          (selectedObject === null || isDifferentObject) &&
+          this._store.state.selectionGroup &&
+          !this._store.state.isResizeHandleSelected &&
+          !this._store.state.isRotationHandleSelected
+        ) {
+          this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+        }
       }
+
+      this.moveHandler.handlePointerDown(event);
+      this.selectionHandler.handlePointerDown(event);
+      this.resizeHandler.handlePointerDown(event);
+      this.rotationHandler.handlePointerDown(event);
+
+      this._store.rerender();
     }
-
-    this.moveHandler.handleMouseDown(event);
-    this.selectionHandler.handleMouseDown(event);
-    this.resizeHandler.handleMouseDown(event);
-    this.rotationHandler.handleMouseDown(event);
-
-    this._store.rerender();
   }
 
-  handleMouseMove(event: MouseEvent): void {
-    this.moveHandler.handleMouseMove(event);
-    this.selectionHandler.handleMouseMove(event);
-    this.resizeHandler.handleMouseMove(event);
-    this.rotationHandler.handleMouseMove(event);
+  handlePointerMove(event: PointerEvent): void {
+    if(event.pointerType === 'mouse') {
+      this.moveHandler.handlePointerMove(event);
+      this.selectionHandler.handlePointerMove(event);
+      this.resizeHandler.handlePointerMove(event);
+      this.rotationHandler.handlePointerMove(event);
 
-    this._store.rerender();
+      this._store.rerender();
+    }
   }
 
-  handleMouseUp(event: MouseEvent): void {
-    this.moveHandler.handleMouseUp(event);
-    this.selectionHandler.handleMouseUp(event);
-    this.resizeHandler.handleMouseUp(event);
-    this.rotationHandler.handleMouseUp(event);
 
-    this._store.rerender();
+  handlePointerUp(event: PointerEvent): void {
+    if(event.pointerType === 'mouse') {
+      this.moveHandler.handlePointerUp(event);
+      this.selectionHandler.handlePointerUp(event);
+      this.resizeHandler.handlePointerUp(event);
+      this.rotationHandler.handlePointerUp(event);
+
+      this._store.rerender();
+    }
   }
 
   handleDoubleClick(event: MouseEvent): void {

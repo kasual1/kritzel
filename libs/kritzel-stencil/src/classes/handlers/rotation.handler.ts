@@ -12,55 +12,60 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
     super(store);
   }
 
-  handleMouseDown(event: MouseEvent): void {
-    if (KritzelEventHelper.isLeftClick(event)) {
-      if (this._store.state.selectionGroup && this._store.state.isRotationHandleSelected) {
-        const clientX = event.clientX - this._store.offsetX;
-        const clientY = event.clientY - this._store.offsetY;
+  handlePointerDown(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') {
+      if (KritzelEventHelper.isLeftClick(event)) {
+        if (this._store.state.selectionGroup && this._store.state.isRotationHandleSelected) {
+          const clientX = event.clientX - this._store.offsetX;
+          const clientY = event.clientY - this._store.offsetY;
 
-        this._store.state.isRotating = true;
+          this._store.state.isRotating = true;
 
-        const centerX = this._store.state.selectionGroup.translateX + this._store.state.selectionGroup.width / 2 / this._store.state.scale;
-        const centerY = this._store.state.selectionGroup.translateY + this._store.state.selectionGroup.height / 2 / this._store.state.scale;
+          const centerX = this._store.state.selectionGroup.translateX + this._store.state.selectionGroup.width / 2 / this._store.state.scale;
+          const centerY = this._store.state.selectionGroup.translateY + this._store.state.selectionGroup.height / 2 / this._store.state.scale;
 
-        const cursorX = (clientX - this._store.state.translateX) / this._store.state.scale;
-        const cursorY = (clientY - this._store.state.translateY) / this._store.state.scale;
+          const cursorX = (clientX - this._store.state.translateX) / this._store.state.scale;
+          const cursorY = (clientY - this._store.state.translateY) / this._store.state.scale;
 
-        this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - this._store.state.selectionGroup.rotation;
+          this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - this._store.state.selectionGroup.rotation;
+        }
       }
     }
   }
 
-  handleMouseMove(event: MouseEvent): void {
-    if (this._store.state.isRotating && this._store.state.selectionGroup) {
-      const clientX = event.clientX - this._store.offsetX;
-      const clientY = event.clientY - this._store.offsetY;
+  handlePointerMove(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') {
+      if (this._store.state.isRotating && this._store.state.selectionGroup) {
+        const clientX = event.clientX - this._store.offsetX;
+        const clientY = event.clientY - this._store.offsetY;
 
+        const groupCenterX = this._store.state.selectionGroup.translateX + this._store.state.selectionGroup.width / 2 / this._store.state.scale;
+        const groupCenterY = this._store.state.selectionGroup.translateY + this._store.state.selectionGroup.height / 2 / this._store.state.scale;
 
-      const groupCenterX = this._store.state.selectionGroup.translateX + this._store.state.selectionGroup.width / 2 / this._store.state.scale;
-      const groupCenterY = this._store.state.selectionGroup.translateY + this._store.state.selectionGroup.height / 2 / this._store.state.scale;
+        const cursorX = (clientX - this._store.state.translateX) / this._store.state.scale;
+        const cursorY = (clientY - this._store.state.translateY) / this._store.state.scale;
 
-      const cursorX = (clientX - this._store.state.translateX) / this._store.state.scale;
-      const cursorY = (clientY - this._store.state.translateY) / this._store.state.scale;
+        const currentRotation = Math.atan2(groupCenterY - cursorY, groupCenterX - cursorX);
 
-      const currentRotation = Math.atan2(groupCenterY - cursorY, groupCenterX - cursorX);
+        this.rotation = currentRotation - this.initialRotation;
 
-      this.rotation = currentRotation - this.initialRotation;
+        this._store.state.selectionGroup.rotate(this.rotation);
 
-      this._store.state.selectionGroup.rotate(this.rotation);
-
-      this._store.rerender();
+        this._store.rerender();
+      }
     }
   }
 
-  handleMouseUp(_event: MouseEvent): void {
-    if (this._store.state.isRotating) {
-      this._store.history.executeCommand(new RotateSelectionGroupCommand(this._store, this, this.rotation));
+  handlePointerUp(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') {
+      if (this._store.state.isRotating) {
+        this._store.history.executeCommand(new RotateSelectionGroupCommand(this._store, this, this.rotation));
 
-      this._store.state.isRotating = false;
+        this._store.state.isRotating = false;
 
-      this.initialRotation = 0;
-      this.rotation = 0;
+        this.initialRotation = 0;
+        this.rotation = 0;
+      }
     }
   }
 

@@ -17,38 +17,45 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     super(store);
   }
 
-  handleMouseDown(event: MouseEvent) {
-    if (KritzelEventHelper.isLeftClick(event)) {
-      if (this._store.state.selectionGroup?.selected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
-        const clientX = event.clientX - this._store.offsetX;
-        const clientY = event.clientY - this._store.offsetY;
+  handlePointerDown(event: PointerEvent) {
+    if (event.pointerType === 'mouse') {
+      if (KritzelEventHelper.isLeftClick(event)) {
+        if (this._store.state.selectionGroup?.selected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
+          const clientX = event.clientX - this._store.offsetX;
+          const clientY = event.clientY - this._store.offsetY;
 
-        this._store.state.isDragging = true;
-        this.dragStartX = clientX;
-        this.dragStartY = clientY;
-        this.startX = this.dragStartX;
-        this.startY = this.dragStartY;
+          this._store.state.isDragging = true;
+          this.dragStartX = clientX;
+          this.dragStartY = clientY;
+          this.startX = this.dragStartX;
+          this.startY = this.dragStartY;
+        }
       }
     }
   }
 
-  handleMouseMove(event: MouseEvent) {
-    if (this._store.state.isDragging && this._store.state.selectionGroup) {
-      const clientX = event.clientX - this._store.offsetX;
-      const clientY = event.clientY - this._store.offsetY;
 
-      this.endX = clientX;
-      this.endY = clientY;
-      this._store.state.selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
-      this.dragStartX = clientX;
-      this.dragStartY = clientY;
+  handlePointerMove(event: PointerEvent) {
+    if (event.pointerType === 'mouse') {
+      if (this._store.state.isDragging && this._store.state.selectionGroup) {
+        const clientX = event.clientX - this._store.offsetX;
+        const clientY = event.clientY - this._store.offsetY;
+
+        this.endX = clientX;
+        this.endY = clientY;
+        this._store.state.selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
+        this.dragStartX = clientX;
+        this.dragStartY = clientY;
+      }
     }
   }
 
-  handleMouseUp(_event: MouseEvent) {
-    if (this._store.state.isDragging) {
-      this._store.state.isDragging = false;
-      this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
+  handlePointerUp(event: PointerEvent) {
+    if (event.pointerType === 'mouse') {
+      if (this._store.state.isDragging) {
+        this._store.state.isDragging = false;
+        this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
+      }
     }
   }
 
