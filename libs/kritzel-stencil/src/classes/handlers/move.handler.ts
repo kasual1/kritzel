@@ -32,8 +32,23 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         }
       }
     }
-  }
 
+    if (event.pointerType === 'touch') {
+      const activePointers = Array.from(this._store.state.pointers.values());
+
+      if (this._store.state.pointers.size === 1) {
+        if (this._store.state.selectionGroup?.selected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
+          const x = Math.round(activePointers[0].clientX - this._store.offsetX);
+          const y = Math.round(activePointers[0].clientY - this._store.offsetY);
+
+          this.dragStartX = x;
+          this.dragStartY = y;
+          this.startX = x;
+          this.startY = y;
+        }
+      }
+    }
+  }
 
   handlePointerMove(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
@@ -48,6 +63,31 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this.dragStartY = clientY;
       }
     }
+
+    if (event.pointerType === 'touch') {
+      const activePointers = Array.from(this._store.state.pointers.values());
+
+      if (this._store.state.pointers.size === 1 && this._store.state.selectionGroup && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
+        const x = Math.round(activePointers[0].clientX - this._store.offsetX);
+        const y = Math.round(activePointers[0].clientY - this._store.offsetY);
+
+        this._store.state.isDragging = true;
+        this.endX = x;
+        this.endY = y;
+
+        const moveDeltaX = Math.abs(x - this.startX);
+        const moveDeltaY = Math.abs(y - this.startY);
+        const moveThreshold = 5;
+
+        if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
+          clearTimeout(this._store.state.longTouchTimeout);
+
+          this._store.state.selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
+          this.dragStartX = x;
+          this.dragStartY = y;
+        }
+      }
+    }
   }
 
   handlePointerUp(event: PointerEvent) {
@@ -57,49 +97,12 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
       }
     }
-  }
 
-  handleTouchStart(event: TouchEvent) {
-    if (this._store.state.pointers.size === 1) {
-      if (this._store.state.selectionGroup?.selected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
-        const x = Math.round(event.touches[0].clientX - this._store.offsetX);
-        const y = Math.round(event.touches[0].clientY - this._store.offsetY);
-
-        this.dragStartX = x;
-        this.dragStartY = y;
-        this.startX = x;
-        this.startY = y;
+    if (event.pointerType === 'touch') {
+      if (this._store.state.isDragging) {
+        this._store.state.isDragging = false;
+        this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
       }
-    }
-  }
-
-  handleTouchMove(event: TouchEvent) {
-    if (this._store.state.pointers.size === 1 && this._store.state.selectionGroup && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
-      const x = Math.round(event.touches[0].clientX - this._store.offsetX);
-      const y = Math.round(event.touches[0].clientY - this._store.offsetY);
-
-      this._store.state.isDragging = true;
-      this.endX = x;
-      this.endY = y;
-
-      const moveDeltaX = Math.abs(x - this.startX);
-      const moveDeltaY = Math.abs(y - this.startY);
-      const moveThreshold = 5;
-
-      if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
-        clearTimeout(this._store.state.longTouchTimeout);
-
-        this._store.state.selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
-        this.dragStartX = x;
-        this.dragStartY = y;
-      }
-    }
-  }
-
-  handleTouchEnd(_event: TouchEvent) {
-    if (this._store.state.isDragging) {
-      this._store.state.isDragging = false;
-      this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
     }
   }
 }

@@ -26,7 +26,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handlePointerDown(event: PointerEvent): void {
-    if(event.pointerType === 'mouse') {
+    if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
         this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
@@ -52,10 +52,43 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
       this._store.rerender();
     }
+
+    if (event.pointerType === 'touch') {
+      if (this._store.state.isScaling === true) {
+        return;
+      }
+
+      if (this._store.state.pointers.size === 1) {
+        this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
+        this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
+        this._store.state.resizeHandleType = this.getHandleType(event);
+
+        const selectedObject = this.getSelectedObject(event);
+        const isDifferentObject = selectedObject && this._store.state.selectionGroup && selectedObject.id !== this._store.state.selectionGroup.id;
+
+        if (!this._store.state.selectionGroup && selectedObject) {
+          this._store.state.skipContextMenu = true;
+        }
+
+        if (
+          (selectedObject === null || isDifferentObject) &&
+          this._store.state.selectionGroup &&
+          !this._store.state.isResizeHandleSelected &&
+          !this._store.state.isRotationHandleSelected
+        ) {
+          this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+        }
+      }
+
+      this.rotationHandler.handlePointerDown(event);
+      this.resizeHandler.handlePointerDown(event);
+      this.moveHandler.handlePointerDown(event);
+      this.selectionHandler.handlePointerDown(event);
+    }
   }
 
   handlePointerMove(event: PointerEvent): void {
-    if(event.pointerType === 'mouse') {
+    if (event.pointerType === 'mouse') {
       this.moveHandler.handlePointerMove(event);
       this.selectionHandler.handlePointerMove(event);
       this.resizeHandler.handlePointerMove(event);
@@ -63,17 +96,40 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
       this._store.rerender();
     }
+
+    if (event.pointerType === 'touch') {
+      if (this._store.state.isScaling === true) {
+        return;
+      }
+
+      this.rotationHandler.handlePointerMove(event);
+      this.resizeHandler.handlePointerMove(event);
+      this.moveHandler.handlePointerMove(event);
+      this.selectionHandler.handlePointerMove(event);
+
+      this._store.rerender();
+    }
   }
 
-
   handlePointerUp(event: PointerEvent): void {
-    if(event.pointerType === 'mouse') {
+    if (event.pointerType === 'mouse') {
       this.moveHandler.handlePointerUp(event);
       this.selectionHandler.handlePointerUp(event);
       this.resizeHandler.handlePointerUp(event);
       this.rotationHandler.handlePointerUp(event);
 
       this._store.rerender();
+    }
+
+    if (event.pointerType === 'touch') {
+      if (this._store.state.isScaling === true) {
+        return;
+      }
+
+      this.rotationHandler.handlePointerUp(event);
+      this.resizeHandler.handlePointerUp(event);
+      this.moveHandler.handlePointerUp(event);
+      this.selectionHandler.handlePointerUp(event);
     }
   }
 
@@ -97,7 +153,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
   handleDoubleTap(event: TouchEvent): void {
     const selectionGroup = this.getSelectedObject(event);
-    
+
     if (!selectionGroup || selectionGroup.objects.length !== 1) {
       return;
     }
@@ -114,65 +170,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
-  handleTouchStart(event: TouchEvent): void {
-    if (this._store.state.isScaling === true) {
-      return;
-    }
-
-    if (this._store.state.pointers.size === 1) {
-      this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
-      this._store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
-      this._store.state.resizeHandleType = this.getHandleType(event);
-
-      const selectedObject = this.getSelectedObject(event);
-      const isDifferentObject = selectedObject && this._store.state.selectionGroup && selectedObject.id !== this._store.state.selectionGroup.id;
-
-      if (!this._store.state.selectionGroup && selectedObject) {
-        this._store.state.skipContextMenu = true;
-      }
-
-      if (
-        (selectedObject === null || isDifferentObject) &&
-        this._store.state.selectionGroup &&
-        !this._store.state.isResizeHandleSelected &&
-        !this._store.state.isRotationHandleSelected
-      ) {
-        this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
-      }
-    }
-
-    this.rotationHandler.handleTouchStart(event);
-    this.resizeHandler.handleTouchStart(event);
-    this.moveHandler.handleTouchStart(event);
-    this.selectionHandler.handleTouchStart(event);
-  }
-
-  handleTouchMove(event: TouchEvent): void {
-    if (this._store.state.isScaling === true) {
-      return;
-    }
-
-    this.rotationHandler.handleTouchMove(event);
-    this.resizeHandler.handleTouchMove(event);
-    this.moveHandler.handleTouchMove(event);
-    this.selectionHandler.handleTouchMove(event);
-
-    this._store.rerender();
-  }
-
-  handleTouchEnd(event: TouchEvent): void {
-    if (this._store.state.isScaling === true) {
-      return;
-    }
-
-    this.rotationHandler.handleTouchEnd(event);
-    this.resizeHandler.handleTouchEnd(event);
-    this.moveHandler.handleTouchEnd(event);
-    this.selectionHandler.handleTouchEnd(event);
-  }
-
   private getSelectedObject(event: MouseEvent | TouchEvent): KritzelSelectionGroup | null {
-    
     const path = event.composedPath().slice(1) as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = this._store.findObjectById(objectElement?.id);
