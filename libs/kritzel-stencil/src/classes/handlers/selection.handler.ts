@@ -27,30 +27,36 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     super(store);
   }
 
-  handleMouseDown(event) {
-    if (KritzelEventHelper.isLeftClick(event) && !this._store.state.selectionGroup) {
-      this.startMouseSelection(event);
-    }
-  }
-
-  handleMouseMove(event) {
-    if (this._store.state.isSelecting) {
-      this.updateMouseSelection(event);
-    }
-  }
-
-  handleMouseUp(event) {
-    if (KritzelEventHelper.isLeftClick(event) && this._store.state.isSelecting) {
-      if (this.isSelectionClick) {
-        this.updateMouseSelection(event);
-        this.addSelectedObjectAtIndexToSelectionGroup(0);
-        this.removeSelectionBox();
+  handlePointerDown(event: PointerEvent) {
+    if (event.pointerType === 'mouse') {
+      if (KritzelEventHelper.isLeftClick(event) && !this._store.state.selectionGroup) {
+        this.startMouseSelection(event);
       }
+    }
+  }
 
-      if (this.isSelectionDrag) {
+  handlePointerMove(event: PointerEvent) {
+    if (event.pointerType === 'mouse') {
+      if (this._store.state.isSelecting) {
         this.updateMouseSelection(event);
-        this.addSelectedObjectsToSelectionGroup();
-        this.removeSelectionBox();
+      }
+    }
+  }
+
+  handlePointerUp(event: PointerEvent) {
+    if (event.pointerType === 'mouse') {
+      if (KritzelEventHelper.isLeftClick(event) && this._store.state.isSelecting) {
+        if (this.isSelectionClick) {
+          this.updateMouseSelection(event);
+          this.addSelectedObjectAtIndexToSelectionGroup(0);
+          this.removeSelectionBox();
+        }
+
+        if (this.isSelectionDrag) {
+          this.updateMouseSelection(event);
+          this.addSelectedObjectsToSelectionGroup();
+          this.removeSelectionBox();
+        }
       }
     }
   }
