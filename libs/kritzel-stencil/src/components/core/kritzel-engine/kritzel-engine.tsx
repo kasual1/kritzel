@@ -141,7 +141,6 @@ export class KritzelEngine {
       return;
     }
 
-    this.viewport.handleMouseDown(ev);
     this.store.state?.activeTool?.handleMouseDown(ev);
   }
 
@@ -151,7 +150,6 @@ export class KritzelEngine {
       return;
     }
 
-    this.viewport.handleMouseMove(ev);
     this.store.state?.activeTool?.handleMouseMove(ev);
   }
 
@@ -161,7 +159,6 @@ export class KritzelEngine {
       return;
     }
 
-    this.viewport.handleMouseUp(ev);
     this.store.state?.activeTool?.handleMouseUp(ev);
   }
 
@@ -247,6 +244,39 @@ export class KritzelEngine {
   @Listen('touchcancel', { passive: false })
   handleTouchCancel(_ev) {
     clearTimeout(this.store.state.longTouchTimeout);
+  }
+
+  @Listen('pointerdown', { passive: true })
+  handlePointerDown(ev: PointerEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    this.store.state.pointers.set(ev.pointerId, ev);
+
+    this.viewport.handlePointerDown(ev);
+  }
+
+  @Listen('pointermove', { passive: true })
+  handlePointerMove(ev: PointerEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    this.store.state.pointers.set(ev.pointerId, ev);
+
+    this.viewport.handlePointerMove(ev);
+  }
+
+  @Listen('pointerup', { passive: true })
+  handlePointerUp(ev: PointerEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    this.store.state.pointers.delete(ev.pointerId);
+
+    this.viewport.handlePointerUp(ev);
   }
 
   @Listen('wheel', { passive: false })

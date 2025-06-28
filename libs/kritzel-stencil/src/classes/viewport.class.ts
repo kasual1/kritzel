@@ -1,3 +1,4 @@
+import { KritzelMouseButton } from '../enums/event-button.enum';
 import { KritzelEventHelper } from '../helpers/event.helper';
 import { KritzelStore } from './store.class';
 
@@ -26,39 +27,46 @@ export class KritzelViewport {
     this._store.rerender();
   }
 
-  handleMouseDown(event: MouseEvent): void {
-    const adjustedClientX = event.clientX - this._store.offsetX;
-    const adjustedClientY = event.clientY - this._store.offsetY;
+  handlePointerDown(event: PointerEvent): void {
 
-    if (KritzelEventHelper.isRightClick(event)) {
-      this._store.state.isPanning = true;
-      this._store.state.startX = adjustedClientX;
-      this._store.state.startY = adjustedClientY;
+    if(event.pointerType === 'mouse') {
+      const adjustedClientX = event.clientX - this._store.offsetX;
+      const adjustedClientY = event.clientY - this._store.offsetY;
+
+      if (event.button === KritzelMouseButton.Right) {
+        this._store.state.isPanning = true;
+        this._store.state.startX = adjustedClientX;
+        this._store.state.startY = adjustedClientY;
+      }
     }
   }
 
-  handleMouseMove(event: MouseEvent): void {
-    const adjustedClientX = event.clientX - this._store.offsetX;
-    const adjustedClientY = event.clientY - this._store.offsetY;
+  handlePointerMove(event: PointerEvent): void {
+    if(event.pointerType === 'mouse') {
+      const adjustedClientX = event.clientX - this._store.offsetX;
+      const adjustedClientY = event.clientY - this._store.offsetY;
 
-    this._store.state.cursorX = adjustedClientX;
-    this._store.state.cursorY = adjustedClientY;
+      this._store.state.cursorX = adjustedClientX;
+      this._store.state.cursorY = adjustedClientY;
 
-    if (this._store.state.isPanning) {
-      this._store.state.translateX -= this._store.state.startX - adjustedClientX;
-      this._store.state.translateY -= this._store.state.startY - adjustedClientY;
-      this._store.state.startX = adjustedClientX;
-      this._store.state.startY = adjustedClientY;
-      this._store.state.hasViewportChanged = true;
-      this._store.state.skipContextMenu = true;
-      this._store.rerender();
+      if (this._store.state.isPanning) {
+        this._store.state.translateX -= this._store.state.startX - adjustedClientX;
+        this._store.state.translateY -= this._store.state.startY - adjustedClientY;
+        this._store.state.startX = adjustedClientX;
+        this._store.state.startY = adjustedClientY;
+        this._store.state.hasViewportChanged = true;
+        this._store.state.skipContextMenu = true;
+        this._store.rerender();
+      }
     }
   }
 
-  handleMouseUp(_event: MouseEvent): void {
-    if (this._store.state.isPanning) {
-      this._store.state.isPanning = false;
-      this._store.rerender();
+  handlePointerUp(event: PointerEvent): void {
+    if(event.pointerType === 'mouse') {
+      if (this._store.state.isPanning) {
+        this._store.state.isPanning = false;
+        this._store.rerender();
+      }
     }
   }
 

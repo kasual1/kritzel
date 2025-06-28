@@ -51,4 +51,5 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   touchCount: 0,
   longTouchTimeout: null,
   longTouchDelay: 300,
+  pointers: new Map<number, PointerEvent>()
 };
