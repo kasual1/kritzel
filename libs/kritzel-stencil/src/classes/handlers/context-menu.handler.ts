@@ -63,7 +63,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       event.preventDefault();
     }
 
-    if (this._store.state.touchCount > 1 || !(this._store.state.activeTool instanceof KritzelSelectionTool)) {
+    if (this._store.state.pointers.size > 1 || !(this._store.state.activeTool instanceof KritzelSelectionTool)) {
       return;
     }
 

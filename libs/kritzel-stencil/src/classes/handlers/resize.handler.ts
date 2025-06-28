@@ -96,7 +96,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
       return;
     }
 
-    if (this._store.state.touchCount === 1) {
+    if (this._store.state.pointers.size === 1) {
       if (this._store.state.selectionGroup && this._store.state.isResizeHandleSelected) {
         const clientX = Math.round(firstTouch.clientX - this._store.offsetX);
         const clientY = Math.round(firstTouch.clientY - this._store.offsetY);

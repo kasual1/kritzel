@@ -60,7 +60,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   }
 
   handleTouchStart(event: TouchEvent) {
-    if (this._store.state.touchCount === 1) {
+    if (this._store.state.pointers.size === 1) {
       if (this._store.state.selectionGroup?.selected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
         const x = Math.round(event.touches[0].clientX - this._store.offsetX);
         const y = Math.round(event.touches[0].clientY - this._store.offsetY);
@@ -74,7 +74,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   }
 
   handleTouchMove(event: TouchEvent) {
-    if (this._store.state.touchCount === 1 && this._store.state.selectionGroup && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
+    if (this._store.state.pointers.size === 1 && this._store.state.selectionGroup && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
       const x = Math.round(event.touches[0].clientX - this._store.offsetX);
       const y = Math.round(event.touches[0].clientY - this._store.offsetY);
 

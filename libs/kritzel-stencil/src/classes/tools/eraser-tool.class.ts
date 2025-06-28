@@ -56,14 +56,14 @@ export class KritzelEraserTool extends KritzelBaseTool {
 
   handleTouchStart(_event: TouchEvent): void {
     this.touchStartTimeout = setTimeout(() => {
-      if (this._store.state.touchCount === 1 && !this._store.state.isScaling) {
+      if (this._store.state.pointers.size === 1 && !this._store.state.isScaling) {
         this._store.state.isErasing = true;
       }
     }, 80);
   }
 
   handleTouchMove(event: TouchEvent): void {
-    if (this._store.state.touchCount === 1 && this._store.state.isErasing) {
+    if (this._store.state.pointers.size === 1 && this._store.state.isErasing) {
       const shadowRoot = this._store.state.host?.shadowRoot;
       if (!shadowRoot) return;
 
