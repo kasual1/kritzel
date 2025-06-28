@@ -56,4 +56,5 @@ export interface KritzelEngineState {
   touchCount: number;
   longTouchTimeout: NodeJS.Timeout;
   longTouchDelay: number;
+  pointers: Map<number, PointerEvent>;
 }
