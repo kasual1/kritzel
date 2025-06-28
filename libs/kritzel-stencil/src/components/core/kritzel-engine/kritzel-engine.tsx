@@ -20,7 +20,6 @@ import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { UpdateObjectCommand } from '../../../classes/commands/update-object.command';
 import { RemoveObjectCommand } from '../../../classes/commands/remove-object.command';
 import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
-import { KritzelEventHelper } from '../../../helpers/event.helper';
 
 @Component({
   tag: 'kritzel-engine',
@@ -156,26 +155,25 @@ export class KritzelEngine {
       return;
     }
 
-    if (ev.touches.length === 2) {
-      KritzelEventHelper.notifyTwoFingerTouch();
-    }
+    // if (ev.touches.length === 2) {
+    //   KritzelEventHelper.notifyTwoFingerTouch();
+    // }
 
-    if (KritzelEventHelper.detectDoubleTap()) {
-      const doubleTapEvent = new CustomEvent('doubletap', { detail: event, bubbles: true, composed: true });
-      this.host.dispatchEvent(doubleTapEvent);
-    }
+    // if (KritzelEventHelper.detectDoubleTap()) {
+    //   const doubleTapEvent = new CustomEvent('doubletap', { detail: event, bubbles: true, composed: true });
+    //   this.host.dispatchEvent(doubleTapEvent);
+    // }
 
-    if (ev.touches.length > 1) {
-      clearTimeout(this.store.state.longTouchTimeout);
-    }
+    // if (ev.touches.length > 1) {
+    //   clearTimeout(this.store.state.longTouchTimeout);
+    // }
 
-    if (ev.cancelable) {
-      ev.preventDefault();
-    }
+    // if (ev.cancelable) {
+    //   ev.preventDefault();
+    // }
 
-    this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenuTouch(ev), this.store.state.longTouchDelay);
+    // this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenuTouch(ev), this.store.state.longTouchDelay);
 
-    this.viewport.handleTouchStart(ev);
     this.store.state?.activeTool?.handleTouchStart(ev);
   }
 
@@ -189,7 +187,6 @@ export class KritzelEngine {
       ev.preventDefault();
     }
 
-    this.viewport.handleTouchMove(ev);
     this.store.state?.activeTool?.handleTouchMove(ev);
   }
 
@@ -203,9 +200,8 @@ export class KritzelEngine {
       ev.preventDefault();
     }
 
-    clearTimeout(this.store.state.longTouchTimeout);
+    // clearTimeout(this.store.state.longTouchTimeout);
 
-    this.viewport.handleTouchEnd(ev);
     this.store.state?.activeTool?.handleTouchEnd(ev);
   }
 
