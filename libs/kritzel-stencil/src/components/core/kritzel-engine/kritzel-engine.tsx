@@ -136,6 +136,10 @@ export class KritzelEngine {
       return;
     }
 
+     if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
     this.host.setPointerCapture(ev.pointerId);
     this.store.state.pointers.set(ev.pointerId, ev);
 
@@ -147,6 +151,10 @@ export class KritzelEngine {
   handlePointerMove(ev: PointerEvent) {
     if (this.store.state.isEnabled === false) {
       return;
+    }
+
+     if (ev.cancelable) {
+      ev.preventDefault();
     }
 
     this.store.state.pointers.set(ev.pointerId, ev);
@@ -161,6 +169,10 @@ export class KritzelEngine {
       return;
     }
 
+     if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
     this.host.releasePointerCapture(ev.pointerId);
     this.store.state.pointers.delete(ev.pointerId);
 
@@ -172,6 +184,10 @@ export class KritzelEngine {
   handlePointerCancel(ev: PointerEvent) {
     if (this.store.state.isEnabled === false) {
       return;
+    }
+
+     if (ev.cancelable) {
+      ev.preventDefault();
     }
 
     this.host.releasePointerCapture(ev.pointerId);
