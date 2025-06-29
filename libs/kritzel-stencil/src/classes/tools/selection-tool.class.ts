@@ -151,7 +151,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
-  handleDoubleTap(event: TouchEvent): void {
+  handleDoubleTap(event: PointerEvent): void {
     const selectionGroup = this.getSelectedObject(event);
 
     if (!selectionGroup || selectionGroup.objects.length !== 1) {

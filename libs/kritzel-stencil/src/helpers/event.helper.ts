@@ -1,14 +1,6 @@
 import { KritzelMouseButton } from '../enums/event-button.enum';
 
 export class KritzelEventHelper {
-  private static lastTapTimestamp: number = 0;
-
-  private static tapTimeoutId: ReturnType<typeof setTimeout> | null = null;
-
-  private static doubleTapTimeout: number = 300;
-
-  private static twoFingerTouchDetected: boolean = false;
-
   public static isRightClick(ev: MouseEvent): boolean {
     return ev.button === KritzelMouseButton.Right;
   }
@@ -21,40 +13,65 @@ export class KritzelEventHelper {
     return Math.abs(event.deltaY) > 0 && Math.abs(event.deltaX) === 0 && Number.isInteger(event.deltaY);
   }
 
+  public static isPointerEventOnContextMenu(event: PointerEvent): boolean {
+    const path = event.composedPath() as HTMLElement[];
+    const contextMenu = path.find(element => element.classList && element.classList.contains('context-menu'));
+    return !!contextMenu;
+  }
 
-  public static detectDoubleTap(): boolean {
-    const currentTime = Date.now();
-    const tapLength = currentTime - KritzelEventHelper.lastTapTimestamp;
+  public static onLongTouchPress(
+    event: PointerEvent,
+    onSuccess: (event: PointerEvent) => void,
+    onCancel?: () => void
+  ): () => void {
+    if (event.pointerType !== 'touch') {
+      onCancel?.();
+      return () => {};
+    }
 
-    if (KritzelEventHelper.twoFingerTouchDetected) {
-      KritzelEventHelper.lastTapTimestamp = 0;
-      KritzelEventHelper.twoFingerTouchDetected = false;
-      if (KritzelEventHelper.tapTimeoutId) {
-        clearTimeout(KritzelEventHelper.tapTimeoutId);
-        KritzelEventHelper.tapTimeoutId = null;
+    const longPressTimeout = 400;
+    const moveThreshold = 10;
+
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const target = event.target as HTMLElement;
+
+    const timer = setTimeout(() => {
+      removeListeners();
+      onSuccess(event);
+    }, longPressTimeout);
+
+    const cancel = () => {
+      clearTimeout(timer);
+      removeListeners();
+      onCancel?.();
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (Math.abs(e.clientX - startX) > moveThreshold || Math.abs(e.clientY - startY) > moveThreshold) {
+        cancel();
       }
-      return false;
-    }
+    };
 
-    if (KritzelEventHelper.tapTimeoutId) {
-      clearTimeout(KritzelEventHelper.tapTimeoutId);
-      KritzelEventHelper.tapTimeoutId = null;
-    }
+    const onPointerUp = () => {
+      cancel();
+    };
 
-    if (tapLength < KritzelEventHelper.doubleTapTimeout && tapLength > 0) {
-      KritzelEventHelper.lastTapTimestamp = 0;
-      return true;
-    } else {
-      KritzelEventHelper.lastTapTimestamp = currentTime;
-      KritzelEventHelper.tapTimeoutId = setTimeout(() => {
-        KritzelEventHelper.tapTimeoutId = null;
-        KritzelEventHelper.twoFingerTouchDetected = false;
-      }, KritzelEventHelper.doubleTapTimeout);
-      return false;
-    }
+    const onPointerCancel = () => {
+      cancel();
+    };
+
+    const removeListeners = () => {
+      target.removeEventListener('pointermove', onPointerMove);
+      target.removeEventListener('pointerup', onPointerUp);
+      target.removeEventListener('pointercancel', onPointerCancel);
+    };
+
+    target.addEventListener('pointermove', onPointerMove, { passive: true });
+    target.addEventListener('pointerup', onPointerUp, { once: true });
+    target.addEventListener('pointercancel', onPointerCancel, { once: true });
+
+    return cancel;
   }
 
-  public static notifyTwoFingerTouch(): void {
-    KritzelEventHelper.twoFingerTouchDetected = true;
-  }
 }
