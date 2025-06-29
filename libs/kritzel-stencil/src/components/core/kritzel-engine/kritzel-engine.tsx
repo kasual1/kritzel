@@ -20,6 +20,7 @@ import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { UpdateObjectCommand } from '../../../classes/commands/update-object.command';
 import { RemoveObjectCommand } from '../../../classes/commands/remove-object.command';
 import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
+import { KritzelEventHelper } from '../../../helpers/event.helper';
 
 @Component({
   tag: 'kritzel-engine',
@@ -132,13 +133,25 @@ export class KritzelEngine {
 
   @Listen('pointerdown', { passive: false })
   handlePointerDown(ev: PointerEvent) {
+    if (KritzelEventHelper.isPointerEventOnContextMenu(ev) === false && this.store.state.isContextMenuVisible) {
+      this.hideContextMenu();
+      return;
+    }
+
     if (this.store.state.isEnabled === false) {
       return;
     }
 
-     if (ev.cancelable) {
+    if (ev.cancelable) {
       ev.preventDefault();
     }
+
+    KritzelEventHelper.onLongTouchPress(ev, (event: PointerEvent) => {
+      if (!(this.store.state.activeTool instanceof KritzelSelectionTool)) {
+        return;
+      }
+      this.contextMenuHandler.handleContextMenu(event);
+    });
 
     this.host.setPointerCapture(ev.pointerId);
     this.store.state.pointers.set(ev.pointerId, ev);
@@ -153,12 +166,11 @@ export class KritzelEngine {
       return;
     }
 
-     if (ev.cancelable) {
+    if (ev.cancelable) {
       ev.preventDefault();
     }
 
     this.store.state.pointers.set(ev.pointerId, ev);
-
     this.viewport.handlePointerMove(ev);
     this.store.state?.activeTool?.handlePointerMove(ev);
   }
@@ -169,13 +181,12 @@ export class KritzelEngine {
       return;
     }
 
-     if (ev.cancelable) {
+    if (ev.cancelable) {
       ev.preventDefault();
     }
 
-    this.host.releasePointerCapture(ev.pointerId);
     this.store.state.pointers.delete(ev.pointerId);
-
+    this.host.releasePointerCapture(ev.pointerId);
     this.viewport.handlePointerUp(ev);
     this.store.state?.activeTool?.handlePointerUp(ev);
   }
@@ -186,7 +197,7 @@ export class KritzelEngine {
       return;
     }
 
-     if (ev.cancelable) {
+    if (ev.cancelable) {
       ev.preventDefault();
     }
 
@@ -198,32 +209,18 @@ export class KritzelEngine {
   }
 
   @Listen('contextmenu', { capture: false })
-  handleContextMenu(ev: MouseEvent) {
+  handleContextMenu(ev: PointerEvent) {
+    ev.preventDefault();
+
     if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    if (ev.pointerType === 'touch') {
       return;
     }
 
     this.contextMenuHandler.handleContextMenu(ev);
-  }
-
-  @Listen('dblclick')
-  handleDoubleClick(ev: MouseEvent) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.store.state?.activeTool?.handleDoubleClick(ev);
-  }
-
-  @Listen('doubletap')
-  handleDoubleTap(ev: CustomEvent<TouchEvent> | TouchEvent) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    const touchEvent = ev instanceof CustomEvent && ev.detail ? ev.detail : (ev as TouchEvent);
-
-    this.store.state?.activeTool?.handleDoubleTap(touchEvent);
   }
 
   @Listen('resize', { target: 'window' })
@@ -339,6 +336,7 @@ export class KritzelEngine {
 
   @Method()
   async hideContextMenu() {
+    this.store.state.pointers.clear();
     this.store.state.isContextMenuVisible = false;
     this.store.state.selectionBox = null;
     this.store.state.isSelecting = false;
@@ -768,6 +766,7 @@ export class KritzelEngine {
 
         {this.store.state.isContextMenuVisible && (
           <kritzel-context-menu
+            class="context-menu"
             ref={el => (this.contextMenuElement = el)}
             items={this.store.state.contextMenuItems}
             style={{

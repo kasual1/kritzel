@@ -63,20 +63,14 @@ export const KritzelColorPalette: StencilReactComponent<KritzelColorPaletteEleme
     defineCustomElement: defineKritzelColorPalette
 });
 
-export type KritzelContextMenuEvents = {
-    onActionSelected: EventName<KritzelContextMenuCustomEvent<ContextMenuItem>>,
-    onClose: EventName<CustomEvent<void>>
-};
+export type KritzelContextMenuEvents = { onActionSelected: EventName<KritzelContextMenuCustomEvent<ContextMenuItem>> };
 
 export const KritzelContextMenu: StencilReactComponent<KritzelContextMenuElement, KritzelContextMenuEvents> = /*@__PURE__*/ createComponent<KritzelContextMenuElement, KritzelContextMenuEvents>({
     tagName: 'kritzel-context-menu',
     elementClass: KritzelContextMenuElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: {
-        onActionSelected: 'actionSelected',
-        onClose: 'close'
-    } as KritzelContextMenuEvents,
+    events: { onActionSelected: 'actionSelected' } as KritzelContextMenuEvents,
     defineCustomElement: defineKritzelContextMenu
 });
 

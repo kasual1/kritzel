@@ -53,11 +53,9 @@ export const KritzelColorPalette: StencilVueComponent<JSX.KritzelColorPalette> =
 
 export const KritzelContextMenu: StencilVueComponent<JSX.KritzelContextMenu> = /*@__PURE__*/ defineContainer<JSX.KritzelContextMenu>('kritzel-context-menu', defineKritzelContextMenu, [
   'items',
-  'actionSelected',
-  'close'
+  'actionSelected'
 ], [
-  'actionSelected',
-  'close'
+  'actionSelected'
 ]);
 
 
