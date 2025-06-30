@@ -527,6 +527,7 @@ export class KritzelEngine {
                           display: 'block',
                           padding: '1px',
                           whiteSpace: 'nowrap',
+                          pointerEvents: object.isReadonly ? 'none' : 'auto',
                           cursor: object.isReadonly ? 'default' : 'text',
                           caretColor: object.isReadonly ? 'transparent' : 'auto',
                         }}
