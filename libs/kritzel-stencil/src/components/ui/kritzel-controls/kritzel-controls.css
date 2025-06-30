@@ -40,15 +40,23 @@
   background-color: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
+:host(.mobile) .kritzel-control:hover {
+  background-color: unset;
+}
+
 .kritzel-control:active {
   background-color: var(--kritzel-controls-control-active-background-color, hsl(0, 0%, 0%, 8.6%));
+}
+
+:host(.mobile) .kritzel-control:active {
+  background-color: unset;
 }
 
 .kritzel-control.selected,
 .kritzel-control.selected:hover,
 .kritzel-control.selected:active {
-  background-color: var(--kritzel-controls-control-selected-background-color, #0E1111);
-  color: var(--kritzel-controls-control-selected-color, #ffffff);
+  background-color: var(--kritzel-controls-control-selected-background-color, #0E1111) !important;
+  color: var(--kritzel-controls-control-selected-color, #ffffff) !important;
 }
 
 .kritzel-divider {
