@@ -121,134 +121,6 @@ export class KritzelEngine {
     this.engineReady.emit();
   }
 
-  @Listen('contextmenu', { capture: false })
-  handleContextMenu(ev: MouseEvent) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.contextMenuHandler.handleContextMenu(ev);
-  }
-
-  @Listen('mousedown', { passive: true })
-  handleMouseDown(ev: MouseEvent) {
-    if (this.store.state.isContextMenuVisible) {
-      this.hideContextMenu();
-      return;
-    }
-
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.viewport.handleMouseDown(ev);
-    this.store.state?.activeTool?.handleMouseDown(ev);
-  }
-
-  @Listen('mousemove', { passive: true })
-  handleMouseMove(ev) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.viewport.handleMouseMove(ev);
-    this.store.state?.activeTool?.handleMouseMove(ev);
-  }
-
-  @Listen('mouseup', { passive: true })
-  handleMouseUp(ev) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.viewport.handleMouseUp(ev);
-    this.store.state?.activeTool?.handleMouseUp(ev);
-  }
-
-  @Listen('dblclick')
-  handleDoubleClick(ev: MouseEvent) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    this.store.state?.activeTool?.handleDoubleClick(ev);
-  }
-
-  @Listen('doubletap')
-  handleDoubleTap(ev: CustomEvent<TouchEvent> | TouchEvent) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    const touchEvent = ev instanceof CustomEvent && ev.detail ? ev.detail : (ev as TouchEvent);
-
-    this.store.state?.activeTool?.handleDoubleTap(touchEvent);
-  }
-
-  @Listen('touchstart', { passive: false })
-  handleTouchStart(ev: TouchEvent) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    if (ev.touches.length === 2) {
-      KritzelEventHelper.notifyTwoFingerTouch();
-    }
-
-    if (KritzelEventHelper.detectDoubleTap()) {
-      const doubleTapEvent = new CustomEvent('doubletap', { detail: event, bubbles: true, composed: true });
-      this.host.dispatchEvent(doubleTapEvent);
-    }
-
-    if (ev.touches.length > 1) {
-      clearTimeout(this.store.state.longTouchTimeout);
-    }
-
-    if (ev.cancelable) {
-      ev.preventDefault();
-    }
-
-    this.store.state.longTouchTimeout = setTimeout(() => this.contextMenuHandler.handleContextMenuTouch(ev), this.store.state.longTouchDelay);
-
-    this.viewport.handleTouchStart(ev);
-    this.store.state?.activeTool?.handleTouchStart(ev);
-  }
-
-  @Listen('touchmove', { passive: false })
-  handleTouchMove(ev) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    if (ev.cancelable) {
-      ev.preventDefault();
-    }
-
-    this.viewport.handleTouchMove(ev);
-    this.store.state?.activeTool?.handleTouchMove(ev);
-  }
-
-  @Listen('touchend', { passive: false })
-  handleTouchEnd(ev) {
-    if (this.store.state.isEnabled === false) {
-      return;
-    }
-
-    if (ev.cancelable) {
-      ev.preventDefault();
-    }
-
-    clearTimeout(this.store.state.longTouchTimeout);
-
-    this.viewport.handleTouchEnd(ev);
-    this.store.state?.activeTool?.handleTouchEnd(ev);
-  }
-
-  @Listen('touchcancel', { passive: false })
-  handleTouchCancel(_ev) {
-    clearTimeout(this.store.state.longTouchTimeout);
-  }
-
   @Listen('wheel', { passive: false })
   handleWheel(ev) {
     if (this.store.state.isContextMenuVisible) {
@@ -257,6 +129,98 @@ export class KritzelEngine {
 
     this.viewport.handleWheel(ev);
     this.store.state?.activeTool?.handleWheel(ev);
+  }
+
+  @Listen('pointerdown', { passive: false })
+  handlePointerDown(ev: PointerEvent) {
+    if (KritzelEventHelper.isPointerEventOnContextMenu(ev) === false && this.store.state.isContextMenuVisible) {
+      this.hideContextMenu();
+      return;
+    }
+
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
+    KritzelEventHelper.onLongTouchPress(ev, (event: PointerEvent) => {
+      if (!(this.store.state.activeTool instanceof KritzelSelectionTool)) {
+        return;
+      }
+      this.contextMenuHandler.handleContextMenu(event);
+    });
+
+    this.host.setPointerCapture(ev.pointerId);
+    this.store.state.pointers.set(ev.pointerId, ev);
+
+    this.viewport.handlePointerDown(ev);
+    this.store.state?.activeTool?.handlePointerDown(ev);
+  }
+
+  @Listen('pointermove', { passive: false })
+  handlePointerMove(ev: PointerEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
+    this.store.state.pointers.set(ev.pointerId, ev);
+    this.viewport.handlePointerMove(ev);
+    this.store.state?.activeTool?.handlePointerMove(ev);
+  }
+
+  @Listen('pointerup', { passive: false })
+  handlePointerUp(ev: PointerEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
+    this.store.state.pointers.delete(ev.pointerId);
+    this.host.releasePointerCapture(ev.pointerId);
+    this.viewport.handlePointerUp(ev);
+    this.store.state?.activeTool?.handlePointerUp(ev);
+  }
+
+  @Listen('pointercancel', { passive: false })
+  handlePointerCancel(ev: PointerEvent) {
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
+    this.host.releasePointerCapture(ev.pointerId);
+    this.store.state.pointers.delete(ev.pointerId);
+
+    this.viewport.handlePointerUp(ev);
+    this.store.state?.activeTool?.handlePointerUp(ev);
+  }
+
+  @Listen('contextmenu', { capture: false })
+  handleContextMenu(ev: PointerEvent) {
+    ev.preventDefault();
+
+    if (this.store.state.isEnabled === false) {
+      return;
+    }
+
+    if (ev.pointerType === 'touch') {
+      return;
+    }
+
+    this.contextMenuHandler.handleContextMenu(ev);
   }
 
   @Listen('resize', { target: 'window' })
@@ -372,6 +336,7 @@ export class KritzelEngine {
 
   @Method()
   async hideContextMenu() {
+    this.store.state.pointers.clear();
     this.store.state.isContextMenuVisible = false;
     this.store.state.selectionBox = null;
     this.store.state.isSelecting = false;
@@ -562,6 +527,7 @@ export class KritzelEngine {
                           display: 'block',
                           padding: '1px',
                           whiteSpace: 'nowrap',
+                          pointerEvents: object.isReadonly ? 'none' : 'auto',
                           cursor: object.isReadonly ? 'default' : 'text',
                           caretColor: object.isReadonly ? 'transparent' : 'auto',
                         }}
@@ -801,6 +767,7 @@ export class KritzelEngine {
 
         {this.store.state.isContextMenuVisible && (
           <kritzel-context-menu
+            class="context-menu"
             ref={el => (this.contextMenuElement = el)}
             items={this.store.state.contextMenuItems}
             style={{

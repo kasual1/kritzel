@@ -22,35 +22,15 @@ export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
     // default implementation
   }
 
-  handleMouseDown(_event: MouseEvent): void {
+  handlePointerDown(_event: PointerEvent): void {
     // default implementation
   }
 
-  handleMouseMove(_event: MouseEvent): void {
+  handlePointerMove(_event: PointerEvent): void {
     // default implementation
   }
 
-  handleMouseUp(_event: MouseEvent): void {
-    // default implementation
-  }
-
-  handleDoubleClick(_event: MouseEvent): void {
-    // default implementation
-  }
-
-  handleDoubleTap(_event: TouchEvent): void {
-    // default implementation
-  }
-
-  handleTouchStart(_event: TouchEvent): void {
-    // default implementation
-  }
-
-  handleTouchMove(_event: TouchEvent): void {
-    // default implementation
-  }
-
-  handleTouchEnd(_event: TouchEvent): void {
+  handlePointerUp(_event: PointerEvent): void {
     // default implementation
   }
 

@@ -1,3 +1,4 @@
+import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from '../store.class';
 import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
@@ -45,7 +46,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       this.fontSize = config.fontSize || 8;
       this.fontFamily = config.fontFamily || 'Arial';
       this.fontColor = config.fontColor || '#000000';
-      this.height = config.height || (this.fontSize * 1.2);
+      this.height = config.height || this.fontSize * 1.2;
       this.width = config.width || 0;
       this.scale = config.scale || 1;
     }
@@ -69,7 +70,6 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
     return object;
   }
-
 
   override mount(element: HTMLTextAreaElement): void {
     if ((this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
@@ -168,5 +168,16 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
         console.error('Failed to read clipboard contents:', err);
       }
     }
+  }
+
+  onSelectedClick(): void {
+    this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
+    this._store.state.selectionGroup = null;
+    this._store.state.selectionBox = null;
+    this._store.state.activeText = this;
+    
+    setTimeout(() => {
+      this.focus();
+    }, 300);
   }
 }

@@ -27,75 +27,83 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     super(store);
   }
 
-  handleMouseDown(event) {
-    if (KritzelEventHelper.isLeftClick(event) && !this._store.state.selectionGroup) {
-      this.startMouseSelection(event);
+  handlePointerDown(event: PointerEvent) {
+    if (event.pointerType === 'mouse') {
+      if (KritzelEventHelper.isLeftClick(event) && !this._store.state.selectionGroup) {
+        this.startMouseSelection(event);
+      }
+    }
+
+    if (event.pointerType === 'touch') {
+      this.touchStartTimeout = setTimeout(() => {
+        if (this._store.state.pointers.size === 1 && !this._store.state.isScaling && !this._store.state.selectionGroup) {
+          this.startTouchSelection();
+          this.updateTouchSelection();
+        }
+      }, 80);
     }
   }
 
-  handleMouseMove(event) {
-    if (this._store.state.isSelecting) {
-      this.updateMouseSelection(event);
-    }
-  }
-
-  handleMouseUp(event) {
-    if (KritzelEventHelper.isLeftClick(event) && this._store.state.isSelecting) {
-      if (this.isSelectionClick) {
+  handlePointerMove(event: PointerEvent) {
+    if (event.pointerType === 'mouse') {
+      if (this._store.state.isSelecting) {
         this.updateMouseSelection(event);
-        this.addSelectedObjectAtIndexToSelectionGroup(0);
-        this.removeSelectionBox();
       }
+    }
 
-      if (this.isSelectionDrag) {
-        this.updateMouseSelection(event);
-        this.addSelectedObjectsToSelectionGroup();
-        this.removeSelectionBox();
+    if (event.pointerType === 'touch') {
+      const activePointers = Array.from(this._store.state.pointers.values());
+
+      const x = Math.round(activePointers[0].clientX - this._store.offsetX);
+      const y = Math.round(activePointers[0].clientY - this._store.offsetY);
+
+      const moveDeltaX = Math.abs(x - this.touchStartX);
+      const moveDeltaY = Math.abs(y - this.touchStartY);
+      const moveThreshold = 5;
+
+      if ((moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) && this._store.state.isSelecting) {
+        this.updateTouchSelection();
+
+        clearTimeout(this._store.state.longTouchTimeout);
       }
     }
   }
 
-  handleTouchStart(event: TouchEvent) {
-    this.touchStartTimeout = setTimeout(() => {
-      if (this._store.state.touchCount === 1 && !this._store.state.isScaling  && !this._store.state.selectionGroup) {
-        this.startTouchSelection(event);
-        this.updateTouchSelection(event);
+  handlePointerUp(event: PointerEvent) {
+    if (event.pointerType === 'mouse') {
+      if (KritzelEventHelper.isLeftClick(event) && this._store.state.isSelecting) {
+        if (this.isSelectionClick) {
+          this.updateMouseSelection(event);
+          this.addSelectedObjectAtIndexToSelectionGroup(0);
+          this.removeSelectionBox();
+        }
+
+        if (this.isSelectionDrag) {
+          this.updateMouseSelection(event);
+          this.addSelectedObjectsToSelectionGroup();
+          this.removeSelectionBox();
+        }
       }
-    }, 80);
-  }
-
-  handleTouchMove(event: TouchEvent) {
-    const x = Math.round(event.touches[0].clientX - this._store.offsetX);
-    const y = Math.round(event.touches[0].clientY - this._store.offsetY);
-
-    const moveDeltaX = Math.abs(x - this.touchStartX);
-    const moveDeltaY = Math.abs(y - this.touchStartY);
-    const moveThreshold = 5;
-
-    if ((moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) && this._store.state.isSelecting) {
-      this.updateTouchSelection(event);
-
-      clearTimeout(this._store.state.longTouchTimeout);
     }
-  }
 
-  handleTouchEnd(event: TouchEvent) {
-    clearTimeout(this.touchStartTimeout);
+    if (event.pointerType === 'touch') {
+      clearTimeout(this.touchStartTimeout);
 
-    if (this._store.state.isSelecting) {
-      if (this.isSelectionClick) {
-        this.updateTouchSelection(event);
-        this.addSelectedObjectAtIndexToSelectionGroup(0);
-        this.removeSelectionBox();
+      if (this._store.state.isSelecting) {
+        if (this.isSelectionClick) {
+          this.updateTouchSelection();
+          this.addSelectedObjectAtIndexToSelectionGroup(0);
+          this.removeSelectionBox();
+        }
+
+        if (this.isSelectionDrag) {
+          this.updateTouchSelection();
+          this.addSelectedObjectsToSelectionGroup();
+          this.removeSelectionBox();
+        }
+
+        this._store.state.skipContextMenu = false;
       }
-
-      if (this.isSelectionDrag) {
-        this.updateTouchSelection(event);
-        this.addSelectedObjectsToSelectionGroup();
-        this.removeSelectionBox();
-      }
-
-      this._store.state.skipContextMenu = false;
     }
   }
 
@@ -128,8 +136,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._store.state.objectsOctree.insert(selectionBox);
   }
 
-  private startTouchSelection(event: TouchEvent): void {
-    const firstTouch = event.touches[0];
+  private startTouchSelection(): void {
+    const activePointers = Array.from(this._store.state.pointers.values());
+    const firstTouch = activePointers[0];
 
     if (!firstTouch) {
       return;
@@ -181,8 +190,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     }
   }
 
-  private updateTouchSelection(event: TouchEvent): void {
-    const firstTouch = event.touches[0];
+  private updateTouchSelection(): void {
+    const activePointers = Array.from(this._store.state.pointers.values());
+    const firstTouch = activePointers[0];
 
     if (!firstTouch) {
       return;
