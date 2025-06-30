@@ -41,4 +41,5 @@ export interface KritzelObject<T = Element> {
   resize(x: number, y: number, width: number, height: number): void;
   rotate(value: number): void;
   copy(): KritzelBaseObject<Element>;
+  onSelectedClick(): void;
 }
