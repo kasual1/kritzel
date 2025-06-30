@@ -34,6 +34,10 @@ export class KritzelTextTool extends KritzelBaseTool {
   }
 
   handlePointerDown(event: PointerEvent): void {
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+
     if (event.pointerType === 'mouse') {
       const path = event.composedPath().slice(1) as HTMLElement[];
       const objectElement = path.find(element => element.classList && element.classList.contains('object'));
@@ -120,6 +124,10 @@ export class KritzelTextTool extends KritzelBaseTool {
   }
 
   handlePointerUp(event: PointerEvent): void {
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+
     if (event.pointerType === 'mouse') {
       this._store.state.activeText?.adjustTextareaSize();
       this._store.state.activeText?.focus();
@@ -128,7 +136,7 @@ export class KritzelTextTool extends KritzelBaseTool {
     if (event.pointerType === 'touch') {
       this._store.state.activeText?.adjustTextareaSize();
       this._store.state.activeText?.focus();
-      
+
       KritzelKeyboardHelper.enableInteractiveWidget();
     }
   }
