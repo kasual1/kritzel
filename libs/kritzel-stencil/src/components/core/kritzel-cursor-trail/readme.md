@@ -5,6 +5,13 @@
 <!-- Auto Generated Below -->
 
 
+## Properties
+
+| Property | Attribute | Description | Type           | Default     |
+| -------- | --------- | ----------- | -------------- | ----------- |
+| `store`  | `store`   |             | `KritzelStore` | `undefined` |
+
+
 ## Dependencies
 
 ### Used by
