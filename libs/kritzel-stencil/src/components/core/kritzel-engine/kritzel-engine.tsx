@@ -764,7 +764,7 @@ export class KritzelEngine {
           ></kritzel-context-menu>
         )}
 
-        {this.store.state?.activeTool instanceof KritzelEraserTool && !this.store.state.isScaling && <kritzel-cursor-trail></kritzel-cursor-trail>}
+        {this.store.state?.activeTool instanceof KritzelEraserTool && !this.store.state.isScaling && <kritzel-cursor-trail store={this.store}></kritzel-cursor-trail>}
       </Host>
     );
   }

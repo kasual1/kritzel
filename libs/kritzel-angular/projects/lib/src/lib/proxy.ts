@@ -192,13 +192,14 @@ export declare interface KritzelControls extends Components.KritzelControls {
 
 
 @ProxyCmp({
+  inputs: ['store']
 })
 @Component({
   selector: 'kritzel-cursor-trail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [],
+  inputs: ['store'],
 })
 export class KritzelCursorTrail {
   protected el: HTMLKritzelCursorTrailElement;

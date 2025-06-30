@@ -1,4 +1,6 @@
-import { Component, Host, Listen, State, h } from '@stencil/core';
+import { Component, Host, Listen, Prop, State, h } from '@stencil/core';
+import { KritzelMouseButton } from '../../../enums/event-button.enum';
+import { KritzelStore } from '../../../classes/store.class';
 
 @Component({
   tag: 'kritzel-cursor-trail',
@@ -6,6 +8,9 @@ import { Component, Host, Listen, State, h } from '@stencil/core';
   shadow: true,
 })
 export class KritzelCursorTrail {
+  @Prop()
+  store: KritzelStore;
+
   @State()
   cursorTrailPoints: Array<{ x: number; y: number; timestamp: number }> = [];
 
@@ -34,18 +39,26 @@ export class KritzelCursorTrail {
     }
   }
 
-  @Listen('mousedown', { target: 'window' })
-  handleMouseDown(ev: MouseEvent) {
-    if (ev.button === 0) {
-      this.isLeftButtonDown = true;
-      this.cursorTrailPoints = [];
+  @Listen('pointerdown', { target: 'window', passive: true })
+  handleMouseDown(ev: PointerEvent) {
+    if (ev.pointerType === 'mouse') {
+      if (ev.button === KritzelMouseButton.Left) {
+        this.isLeftButtonDown = true;
+        this.cursorTrailPoints = [];
+      }
+    }
+
+    if (ev.pointerType === 'touch') {
+      if (this.store.state.pointers.size === 1) {
+        this.isLeftButtonDown = true;
+        this.cursorTrailPoints = [];
+      }
     }
   }
 
-  @Listen('mousemove', { target: 'window', passive: true })
-  handleMouseMove(ev: MouseEvent) {
-
-    if (!this.isLeftButtonDown) {
+  @Listen('pointermove', { target: 'window', passive: true })
+  handlePointerMove(ev: PointerEvent) {
+     if (!this.isLeftButtonDown) {
       return;
     }
     const newPoint = { x: ev.clientX, y: ev.clientY, timestamp: Date.now() };
@@ -57,47 +70,22 @@ export class KritzelCursorTrail {
     }
   }
 
-  @Listen('mouseup', { target: 'window' })
-  handleMouseUp(ev: MouseEvent) {
-    if (ev.button === 0) {
-      this.isLeftButtonDown = false;
-      this.cursorTrailPoints = [];
-    }
-  }
-
-  @Listen('touchstart', { target: 'window' })
-  handleTouchStart(ev: TouchEvent) {
-    if (ev.touches.length === 1) {
-      this.isLeftButtonDown = true;
-      this.cursorTrailPoints = [];
-    }
-  }
-
-  @Listen('touchmove', { target: 'window', passive: true })
-  handleTouchMove(ev: TouchEvent) {
-    if (!this.isLeftButtonDown) {
-      return;
+  @Listen('pointerup', { target: 'window', passive: true })
+  handlePointerUp(ev: PointerEvent) {
+    if (ev.pointerType === 'mouse') {
+      if(ev.button === KritzelMouseButton.Left){
+        this.isLeftButtonDown = false;
+        this.cursorTrailPoints = [];
+      }
     }
 
-    const touch = ev.touches[0];
-    const newPoint = { x: touch.clientX, y: touch.clientY, timestamp: Date.now() };
-    const updatedTrail = [newPoint, ...this.cursorTrailPoints];
-    if (updatedTrail.length > this.MAX_TRAIL_POINTS) {
-      this.cursorTrailPoints = updatedTrail.slice(0, this.MAX_TRAIL_POINTS);
-    }
-    else {
-      this.cursorTrailPoints = updatedTrail;
+    if (ev.pointerType === 'touch') {
+      if(this.store.state.pointers.size === 0){
+        this.isLeftButtonDown = false;
+        this.cursorTrailPoints = [];
+      }
     }
   }
-
-  @Listen('touchend', { target: 'window' })
-  handleTouchEnd(ev: TouchEvent) {
-    if (ev.touches.length === 0) {
-      this.isLeftButtonDown = false;
-      this.cursorTrailPoints = [];
-    }
-  }
-  
 
   render() {
     return (

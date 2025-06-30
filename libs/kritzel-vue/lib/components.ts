@@ -86,7 +86,9 @@ export const KritzelControls: StencilVueComponent<JSX.KritzelControls> = /*@__PU
 ]);
 
 
-export const KritzelCursorTrail: StencilVueComponent<JSX.KritzelCursorTrail> = /*@__PURE__*/ defineContainer<JSX.KritzelCursorTrail>('kritzel-cursor-trail', defineKritzelCursorTrail);
+export const KritzelCursorTrail: StencilVueComponent<JSX.KritzelCursorTrail> = /*@__PURE__*/ defineContainer<JSX.KritzelCursorTrail>('kritzel-cursor-trail', defineKritzelCursorTrail, [
+  'store'
+]);
 
 
 export const KritzelDropdown: StencilVueComponent<JSX.KritzelDropdown> = /*@__PURE__*/ defineContainer<JSX.KritzelDropdown>('kritzel-dropdown', defineKritzelDropdown, [
