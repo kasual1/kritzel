@@ -241,6 +241,10 @@ export class KritzelBaseObject<T extends Element = HTMLElement> implements Kritz
     return copiedObject;
   }
 
+  onSelectedClick(): void {
+    // This method can be overridden by subclasses to handle click events when the object is selected.
+  }
+
   revive(object: any): KritzelBaseObject<T> {
     Object.assign(this, object);
     return this;
