@@ -10,6 +10,7 @@ import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBrushTool } from "./classes/tools/brush-tool.class";
 import { KritzelTextTool } from "./classes/tools/text-tool.class";
 import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+import { KritzelStore } from "./classes/store.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
@@ -20,6 +21,7 @@ export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBrushTool } from "./classes/tools/brush-tool.class";
 export { KritzelTextTool } from "./classes/tools/text-tool.class";
 export { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+export { KritzelStore } from "./classes/store.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
@@ -89,6 +91,7 @@ export namespace Components {
         "controls": KritzelToolbarControl[];
     }
     interface KritzelCursorTrail {
+        "store": KritzelStore;
     }
     interface KritzelDropdown {
         /**
@@ -601,6 +604,7 @@ declare namespace LocalJSX {
         "onControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
     }
     interface KritzelCursorTrail {
+        "store"?: KritzelStore;
     }
     interface KritzelDropdown {
         "onValueChanged"?: (event: KritzelDropdownCustomEvent<string>) => void;
