@@ -142,10 +142,6 @@ export class KritzelEngine {
       return;
     }
 
-    if (ev.cancelable) {
-      ev.preventDefault();
-    }
-
     KritzelEventHelper.onLongTouchPress(ev, (event: PointerEvent) => {
       if (!(this.store.state.activeTool instanceof KritzelSelectionTool)) {
         return;
@@ -166,10 +162,6 @@ export class KritzelEngine {
       return;
     }
 
-    if (ev.cancelable) {
-      ev.preventDefault();
-    }
-
     this.store.state.pointers.set(ev.pointerId, ev);
     this.viewport.handlePointerMove(ev);
     this.store.state?.activeTool?.handlePointerMove(ev);
@@ -179,10 +171,6 @@ export class KritzelEngine {
   handlePointerUp(ev: PointerEvent) {
     if (this.store.state.isEnabled === false) {
       return;
-    }
-
-    if (ev.cancelable) {
-      ev.preventDefault();
     }
 
     this.store.state.pointers.delete(ev.pointerId);
@@ -195,10 +183,6 @@ export class KritzelEngine {
   handlePointerCancel(ev: PointerEvent) {
     if (this.store.state.isEnabled === false) {
       return;
-    }
-
-    if (ev.cancelable) {
-      ev.preventDefault();
     }
 
     this.host.releasePointerCapture(ev.pointerId);

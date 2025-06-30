@@ -23,6 +23,10 @@ export class KritzelBrushTool extends KritzelBaseTool {
   }
 
   handlePointerDown(event: PointerEvent): void {
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         this._store.state.isDrawing = true;
@@ -64,6 +68,10 @@ export class KritzelBrushTool extends KritzelBaseTool {
   }
 
   handlePointerMove(event: PointerEvent): void {
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+
     if (event.pointerType === 'mouse') {
       if (this._store.state.isDrawing) {
         const x = event.clientX - this._store.offsetX;
@@ -104,6 +112,10 @@ export class KritzelBrushTool extends KritzelBaseTool {
   }
 
   handlePointerUp(event: PointerEvent): void {
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+
     if (event.pointerType === 'mouse') {
       if (this._store.state.isDrawing) {
         this._store.state.isDrawing = false;

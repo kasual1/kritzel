@@ -8,8 +8,6 @@ import { KritzelRotationHandler } from '../handlers/rotation.handler';
 import { KritzelSelectionHandler } from '../handlers/selection.handler';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseTool } from './base-tool.class';
-import { KritzelText } from '../objects/text.class';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
   selectionHandler: KritzelSelectionHandler;
@@ -26,6 +24,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handlePointerDown(event: PointerEvent): void {
+     if (event.cancelable) {
+      event.preventDefault();
+    }
+
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         this._store.state.isResizeHandleSelected = this.isHandleSelected(event);
@@ -104,6 +106,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handlePointerMove(event: PointerEvent): void {
+     if (event.cancelable) {
+      event.preventDefault();
+    }
+
     if (event.pointerType === 'mouse') {
       this.moveHandler.handlePointerMove(event);
       this.selectionHandler.handlePointerMove(event);
@@ -128,6 +134,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handlePointerUp(event: PointerEvent): void {
+     if (event.cancelable) {
+      event.preventDefault();
+    }
+
     if (event.pointerType === 'mouse') {
       this.moveHandler.handlePointerUp(event);
       this.selectionHandler.handlePointerUp(event);
@@ -146,43 +156,6 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this.resizeHandler.handlePointerUp(event);
       this.moveHandler.handlePointerUp(event);
       this.selectionHandler.handlePointerUp(event);
-    }
-  }
-
-  handleDoubleClick(event: MouseEvent): void {
-    if (KritzelEventHelper.isLeftClick(event)) {
-      if (this._store.state.selectionGroup && this._store.state.selectionGroup?.objects.length === 1) {
-        const selectedObject = this._store.state.selectionGroup.objects[0];
-
-        if (selectedObject instanceof KritzelText) {
-          this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
-          this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
-          this._store.state.activeText = selectedObject;
-
-          setTimeout(() => {
-            selectedObject.focus();
-          }, 300);
-        }
-      }
-    }
-  }
-
-  handleDoubleTap(event: PointerEvent): void {
-    const selectionGroup = this.getSelectedObject(event);
-
-    if (!selectionGroup || selectionGroup.objects.length !== 1) {
-      return;
-    }
-
-    const selectedObject = selectionGroup.objects[0];
-
-    if (selectedObject instanceof KritzelText) {
-      this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
-      this._store.state.activeText = selectedObject;
-
-      setTimeout(() => {
-        selectedObject.focus();
-      }, 300);
     }
   }
 
