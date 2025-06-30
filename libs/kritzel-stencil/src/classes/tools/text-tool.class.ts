@@ -3,8 +3,8 @@ import { KritzelStore } from '../store.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { KritzelToolRegistry } from '../registries/tool.registry';
+import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 
 export class KritzelTextTool extends KritzelBaseTool {
   fontFamily: string = 'Arial';
@@ -33,100 +33,103 @@ export class KritzelTextTool extends KritzelBaseTool {
     super(store);
   }
 
-  handleMouseDown(event: MouseEvent): void {
-    const path = event.composedPath().slice(1) as HTMLElement[];
-    const objectElement = path.find(element => element.classList && element.classList.contains('object'));
-    const object = this._store.findObjectById(objectElement?.id);
+  handlePointerDown(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') {
+      const path = event.composedPath().slice(1) as HTMLElement[];
+      const objectElement = path.find(element => element.classList && element.classList.contains('object'));
+      const object = this._store.findObjectById(objectElement?.id);
 
-    if (this._store.state.activeText === null && object && object instanceof KritzelText) {
-      this._store.state.activeText = object;
-      object.focus();
-      return;
+      if (this._store.state.activeText === null && object && object instanceof KritzelText) {
+        this._store.state.activeText = object;
+        object.focus();
+        return;
+      }
+
+      if (this._store.state.activeText !== null && object instanceof KritzelText) {
+        object.focus();
+        return;
+      }
+
+      if (this._store.state.activeText !== null) {
+        this._store.resetActiveText();
+        this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+        return;
+      }
+
+      if (KritzelEventHelper.isLeftClick(event) === false) {
+        return;
+      }
+
+      const clientX = event.clientX - this._store.offsetX;
+      const clientY = event.clientY - this._store.offsetY;
+      const text = KritzelText.create(this._store, this.fontSize, this.fontFamily);
+
+      text.fontColor = this.fontColor;
+      text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;
+      text.translateY = (clientY - this._store.state.translateY) / this._store.state.scale;
+      text.zIndex = this._store.currentZIndex;
+
+      this._store.state.activeText = text;
+
+      this._store.history.executeCommand(new AddObjectCommand(this._store, this, text));
     }
 
-    if (this._store.state.activeText !== null && object instanceof KritzelText) {
-      object.focus();
-      return;
+    if (event.pointerType === 'touch') {
+      const activePointers = Array.from(this._store.state.pointers.values());
+
+      const path = event.composedPath().slice(1) as HTMLElement[];
+      const objectElement = path.find(element => element.classList && element.classList.contains('object'));
+      const object = this._store.findObjectById(objectElement?.id);
+
+      if (this._store.state.activeText === null && object && object instanceof KritzelText) {
+        this._store.state.activeText = object;
+        object.focus();
+        return;
+      }
+
+      if (this._store.state.activeText !== null && object instanceof KritzelText) {
+        object.focus();
+        return;
+      }
+
+      if (this._store.state.activeText !== null) {
+        this._store.resetActiveText();
+        this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+        return;
+      }
+
+      if (activePointers.length > 1) {
+        return;
+      }
+
+      KritzelKeyboardHelper.disableInteractiveWidget();
+
+      const clientX = Math.round(activePointers[0].clientX - this._store.offsetX);
+      const clientY = Math.round(activePointers[0].clientY - this._store.offsetY);
+      const text = KritzelText.create(this._store, this.fontSize, this.fontFamily);
+
+      text.fontColor = this.fontColor;
+      text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;
+      text.translateY = (clientY - this._store.state.translateY) / this._store.state.scale;
+      text.zIndex = this._store.currentZIndex;
+
+      this._store.state.activeText = text;
+
+      this._store.history.executeCommand(new AddObjectCommand(this._store, this, text));
     }
-
-    if (this._store.state.activeText !== null) {
-      this._store.resetActiveText();
-      this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
-      return;
-    }
-
-    if (KritzelEventHelper.isLeftClick(event) === false) {
-      return;
-    }
-
-    const clientX = event.clientX - this._store.offsetX;
-    const clientY = event.clientY - this._store.offsetY;
-    const text = KritzelText.create(this._store, this.fontSize, this.fontFamily);
-
-    text.fontColor = this.fontColor;
-    text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;
-    text.translateY = (clientY - this._store.state.translateY) / this._store.state.scale;
-    text.zIndex = this._store.currentZIndex;
-
-    text.adjustTextareaSize();
-
-    this._store.state.activeText = text;
-
-    this._store.history.executeCommand(new AddObjectCommand(this._store, this, text));
   }
 
-  handleMouseUp(_event: MouseEvent): void {
-    this._store.state.activeText?.focus();
-    this._store.state.activeText?.adjustTextareaSize();
-  }
-
-  handleTouchStart(event: TouchEvent): void {
-    const path = event.composedPath().slice(1) as HTMLElement[];
-    const objectElement = path.find(element => element.classList && element.classList.contains('object'));
-    const object = this._store.findObjectById(objectElement?.id);
-
-    if (this._store.state.activeText === null && object && object instanceof KritzelText) {
-      this._store.state.activeText = object;
-      object.focus();
-      return;
+  handlePointerUp(event: PointerEvent): void {
+    if (event.pointerType === 'mouse') {
+      this._store.state.activeText?.adjustTextareaSize();
+      this._store.state.activeText?.focus();
     }
 
-    if (this._store.state.activeText !== null && object instanceof KritzelText) {
-      object.focus();
-      return;
+    if (event.pointerType === 'touch') {
+      this._store.state.activeText?.adjustTextareaSize();
+      this._store.state.activeText?.focus();
+      
+      KritzelKeyboardHelper.enableInteractiveWidget();
     }
-
-    if (this._store.state.activeText !== null) {
-      this._store.resetActiveText();
-      this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
-      return;
-    }
-
-    if (this._store.state.touchCount > 1) {
-      return;
-    }
-
-    KritzelKeyboardHelper.disableInteractiveWidget()
-
-    const clientX = Math.round(event.touches[0].clientX - this._store.offsetX);
-    const clientY = Math.round(event.touches[0].clientY - this._store.offsetY);
-    const text = KritzelText.create(this._store, this.fontSize, this.fontFamily);
-
-    text.fontColor = this.fontColor;
-    text.translateX = (clientX - this._store.state.translateX) / this._store.state.scale;
-    text.translateY = (clientY - this._store.state.translateY) / this._store.state.scale;
-    text.zIndex = this._store.currentZIndex;
-
-    this._store.state.activeText = text;
-
-    this._store.history.executeCommand(new AddObjectCommand(this._store, this, text));
-  }
-
-
-  handleTouchEnd(_event: TouchEvent): void {
-    this._store.state.activeText?.focus();
-    this._store.state.activeText?.adjustTextareaSize();
-
-    KritzelKeyboardHelper.enableInteractiveWidget();
   }
 }

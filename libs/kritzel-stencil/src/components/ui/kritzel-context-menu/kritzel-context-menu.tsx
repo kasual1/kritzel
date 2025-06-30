@@ -13,9 +13,6 @@ export class KritzelContextMenu {
   @Event()
   actionSelected: EventEmitter<ContextMenuItem>;
 
-  @Event()
-  close: EventEmitter<void>;
-
   @Element()
   hostElement: HTMLElement;
 
