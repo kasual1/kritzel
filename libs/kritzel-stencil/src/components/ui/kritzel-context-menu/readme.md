@@ -17,7 +17,6 @@
 | Event            | Description | Type                           |
 | ---------------- | ----------- | ------------------------------ |
 | `actionSelected` |             | `CustomEvent<ContextMenuItem>` |
-| `close`          |             | `CustomEvent<void>`            |
 
 
 ## Dependencies
