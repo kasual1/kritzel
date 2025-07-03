@@ -33,10 +33,9 @@ export class KritzelEditor {
   }
 
   @Listen('keydown', { target: 'window' })
-  handleKeyDown(ev) {
-    ev.preventDefault();
-
-    if(ev.key === 'Escape') {
+  handleKeyDown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
       this.controlsRef?.closeTooltip();
     }
   }

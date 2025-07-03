@@ -9,12 +9,15 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
 
   handleKeyDown(event: KeyboardEvent): void {
     if(this._store.state.isFocused === false) {
+      event.preventDefault();
       return;
     }
 
-    event.preventDefault();
-
     this._store.state.isCtrlKeyPressed = event.ctrlKey;
+
+    if(this._store.state.isCtrlKeyPressed) {
+      event.preventDefault();
+    }
 
     if (event.key === 'Escape' && this._store.state.selectionGroup) {
       this._store.clearSelection();
