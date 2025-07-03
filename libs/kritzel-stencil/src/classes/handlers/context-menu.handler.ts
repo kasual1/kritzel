@@ -15,6 +15,11 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
   }
 
   handleContextMenu(event: PointerEvent): void {
+    if(this._store.state.skipContextMenu) {
+      this._store.state.skipContextMenu = false;
+      return;
+    }
+
     const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
 
     if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup)) {
