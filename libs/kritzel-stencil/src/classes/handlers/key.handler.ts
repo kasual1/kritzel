@@ -12,11 +12,9 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       return;
     }
 
-    this._store.state.isCtrlKeyPressed = event.ctrlKey;
+    event.preventDefault();
 
-    if(this._store.state.isCtrlKeyPressed) {
-      event.preventDefault();
-    }
+    this._store.state.isCtrlKeyPressed = event.ctrlKey;
 
     if (event.key === 'Escape' && this._store.state.selectionGroup) {
       this._store.clearSelection();

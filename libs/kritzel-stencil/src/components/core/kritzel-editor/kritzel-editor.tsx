@@ -32,6 +32,15 @@ export class KritzelEditor {
     }
   }
 
+  @Listen('keydown', { target: 'window' })
+  handleKeyDown(ev) {
+    ev.preventDefault();
+
+    if(ev.key === 'Escape') {
+      this.controlsRef?.closeTooltip();
+    }
+  }
+
   componentWillLoad() {
     this.registerCustomSvgIcons();
   }

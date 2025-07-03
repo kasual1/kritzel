@@ -166,7 +166,8 @@ export declare interface KritzelControlTextConfig extends Components.KritzelCont
 
 
 @ProxyCmp({
-  inputs: ['activeControl', 'controls']
+  inputs: ['activeControl', 'controls'],
+  methods: ['closeTooltip']
 })
 @Component({
   selector: 'kritzel-controls',
