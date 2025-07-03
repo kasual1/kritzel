@@ -32,6 +32,11 @@ export class KritzelEditor {
     }
   }
 
+  @Listen('keydown', { target: 'window' })
+  handleKeyDown(ev) {
+    ev.preventDefault();
+  }
+
   componentWillLoad() {
     this.registerCustomSvgIcons();
   }
