@@ -85,6 +85,7 @@ export namespace Components {
           * @default null
          */
         "activeControl": KritzelToolbarControl | null;
+        "closeTooltip": () => Promise<void>;
         /**
           * @default []
          */
