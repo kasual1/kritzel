@@ -57,7 +57,6 @@ export class KritzelControls {
   async closeTooltip() {
     this.tooltipVisible = false;
     this.kritzelEngine?.enable();
-    this.kritzelEngine?.setFocus();
   }
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
