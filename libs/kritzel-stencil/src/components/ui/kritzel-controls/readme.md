@@ -20,6 +20,19 @@
 | `controlsReady` |             | `CustomEvent<void>` |
 
 
+## Methods
+
+### `closeTooltip() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
 ## Dependencies
 
 ### Used by

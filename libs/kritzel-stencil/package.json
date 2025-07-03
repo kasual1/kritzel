@@ -1,6 +1,6 @@
 {
   "name": "kritzel-stencil",
-  "version": "0.0.111",
+  "version": "0.0.112",
   "description": "Stencil Component Starter",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
