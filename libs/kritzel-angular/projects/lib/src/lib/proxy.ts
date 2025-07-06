@@ -241,7 +241,8 @@ export declare interface KritzelDropdown extends Components.KritzelDropdown {
 
 
 @ProxyCmp({
-  inputs: ['controls', 'customSvgIcons', 'hideControls']
+  inputs: ['controls', 'customSvgIcons', 'hideControls'],
+  methods: ['getObjectById', 'addObject', 'updateObject', 'removeObject', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection']
 })
 @Component({
   selector: 'kritzel-editor',
@@ -264,7 +265,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {}
 
 @ProxyCmp({
   inputs: ['activeTool', 'globalContextMenuItems', 'objectContextMenuItems'],
-  methods: ['registerTool', 'changeActiveTool', 'setFocus', 'disable', 'enable', 'delete', 'copy', 'paste', 'moveToTop', 'moveToBottom', 'undo', 'redo', 'hideContextMenu', 'getObjectById', 'addObject', 'updateObject', 'removeObject', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection']
+  methods: ['registerTool', 'changeActiveTool', 'setFocus', 'disable', 'enable', 'delete', 'copy', 'paste', 'bringForward', 'sendBackward', 'moveToTop', 'moveToBottom', 'undo', 'redo', 'hideContextMenu', 'getObjectById', 'addObject', 'updateObject', 'removeObject', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection']
 })
 @Component({
   selector: 'kritzel-engine',

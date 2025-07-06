@@ -175,44 +175,46 @@ export class KritzelStore {
     this.setState('activeTool', KritzelToolRegistry.getTool('selection'));
   }
 
-  moveUp() {
+  bringForward(object?: KritzelBaseObject<any>) {
     const max = this.allObjects.length + 1;
-    const increaseZIndexCommands = this.state.selectionGroup.objects.map(obj => {
+    const objects = object ? [object] : this.state.selectionGroup.objects;
+    const increaseZIndexCommands = objects.map(obj => {
       if (obj.zIndex === max) {
         return;
       }
-
       return new UpdateObjectCommand(this, this, obj, { zIndex: obj.zIndex + 1 });
     });
 
     this.history.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
   }
 
-  moveDown() {
+  sendBackward(object?: KritzelBaseObject<any>) {
     const min = 0;
-    const decreaseZIndexCommands = this.state.selectionGroup.objects.map(obj => {
+    const objects = object ? [object] : this.state.selectionGroup.objects;
+    const decreaseZIndexCommands = objects.map(obj => {
       if (obj.zIndex === min) {
         return;
       }
-
       return new UpdateObjectCommand(this, this, obj, { zIndex: obj.zIndex - 1 });
     });
 
     this.history.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
   }
 
-  moveToTop() {
+  bringToFront(object?: KritzelBaseObject<any>) {
     const max = this.allObjects.length + 1;
-    const increaseZIndexCommands = this.state.selectionGroup.objects.map(obj => {
+    const objects = object ? [object] : this.state.selectionGroup.objects;
+    const increaseZIndexCommands = objects.map(obj => {
       return new UpdateObjectCommand(this, this, obj, { zIndex: max });
     });
 
     this.history.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
   }
 
-  moveToBottom() {
+  sendToBack(object?: KritzelBaseObject<any>) {
     const min = -1;
-    const decreaseZIndexCommands = this.state.selectionGroup.objects.map(obj => {
+    const objects = object ? [object] : this.state.selectionGroup.objects;
+    const decreaseZIndexCommands = objects.map(obj => {
       return new UpdateObjectCommand(this, this, obj, { zIndex: min });
     });
 

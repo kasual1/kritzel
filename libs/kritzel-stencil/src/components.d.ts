@@ -12,9 +12,9 @@ import { KritzelTextTool } from "./classes/tools/text-tool.class";
 import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelStore } from "./classes/store.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
-import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
@@ -23,9 +23,9 @@ export { KritzelTextTool } from "./classes/tools/text-tool.class";
 export { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelStore } from "./classes/store.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
-export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export namespace Components {
     interface KritzelBrushStyle {
@@ -107,6 +107,8 @@ export namespace Components {
         "width"?: string;
     }
     interface KritzelEditor {
+        "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "clearSelection": () => Promise<void>;
         /**
           * @default DEFAULT_KRITZEL_CONTROLS
          */
@@ -115,14 +117,20 @@ export namespace Components {
           * @default {}
          */
         "customSvgIcons": Record<string, string>;
+        "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         /**
           * @default false
          */
         "hideControls": boolean;
+        "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "selectAllObjectsInViewport": () => Promise<void>;
+        "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
+        "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
     }
     interface KritzelEngine {
         "activeTool": KritzelTool;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;
@@ -135,8 +143,8 @@ export namespace Components {
          */
         "globalContextMenuItems": ContextMenuItem[];
         "hideContextMenu": () => Promise<void>;
-        "moveToBottom": () => Promise<void>;
-        "moveToTop": () => Promise<void>;
+        "moveToBottom": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "moveToTop": (object?: KritzelBaseObject<any>) => Promise<void>;
         /**
           * @default [     { label: 'Copy', icon: 'copy', action: () => this.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Delete', icon: 'delete', action: () => this.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },   ]
          */
@@ -147,6 +155,7 @@ export namespace Components {
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "selectAllObjectsInViewport": () => Promise<void>;
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
+        "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "setFocus": () => Promise<void>;
         "undo": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
