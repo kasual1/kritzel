@@ -9,3 +9,6 @@
  */
 
 export type * from './components';
+
+export * from './classes/objects/text.class';
+

@@ -299,13 +299,23 @@ export class KritzelEngine {
   }
 
   @Method()
-  async moveToTop() {
-    this.store.moveToTop();
+  async bringForward(object?: KritzelBaseObject<any>) {
+    this.store.bringForward(object);
   }
 
   @Method()
-  async moveToBottom() {
-    this.store.moveToBottom();
+  async sendBackward(object?: KritzelBaseObject<any>) {
+    this.store.sendBackward(object);
+  }
+
+  @Method()
+  async moveToTop(object?: KritzelBaseObject<any>) {
+    this.store.bringToFront(object);
+  }
+
+  @Method()
+  async moveToBottom(object?: KritzelBaseObject<any>) {
+    this.store.sendToBack(object);
   }
 
   @Method()

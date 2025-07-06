@@ -40,6 +40,22 @@ Type: `Promise<T>`
 
 
 
+### `bringForward(object?: KritzelBaseObject<any>) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name     | Type                     | Description |
+| -------- | ------------------------ | ----------- |
+| `object` | `KritzelBaseObject<any>` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `changeActiveTool(tool: KritzelBaseTool) => Promise<void>`
 
 
@@ -132,9 +148,15 @@ Type: `Promise<void>`
 
 
 
-### `moveToBottom() => Promise<void>`
+### `moveToBottom(object?: KritzelBaseObject<any>) => Promise<void>`
 
 
+
+#### Parameters
+
+| Name     | Type                     | Description |
+| -------- | ------------------------ | ----------- |
+| `object` | `KritzelBaseObject<any>` |             |
 
 #### Returns
 
@@ -142,9 +164,15 @@ Type: `Promise<void>`
 
 
 
-### `moveToTop() => Promise<void>`
+### `moveToTop(object?: KritzelBaseObject<any>) => Promise<void>`
 
 
+
+#### Parameters
+
+| Name     | Type                     | Description |
+| -------- | ------------------------ | ----------- |
+| `object` | `KritzelBaseObject<any>` |             |
 
 #### Returns
 
@@ -232,6 +260,22 @@ Type: `Promise<void>`
 | Name      | Type                               | Description |
 | --------- | ---------------------------------- | ----------- |
 | `objects` | `KritzelBaseObject<HTMLElement>[]` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `sendBackward(object?: KritzelBaseObject<any>) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name     | Type                     | Description |
+| -------- | ------------------------ | ----------- |
+| `object` | `KritzelBaseObject<any>` |             |
 
 #### Returns
 

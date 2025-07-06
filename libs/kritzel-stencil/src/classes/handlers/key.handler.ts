@@ -47,19 +47,16 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
 
     if (event.key === 'e' && event.ctrlKey) {
       this._store.setState('activeTool', KritzelToolRegistry.getTool('eraser'));
-
       this._store.deselectAllObjects();
     }
 
     if (event.key === 'i' && event.ctrlKey) {
       this._store.setState('activeTool', KritzelToolRegistry.getTool('image'));
-
       this._store.deselectAllObjects();
     }
 
     if (event.key === 'x' && event.ctrlKey) {
       this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
-
       this._store.deselectAllObjects();
     }
 
@@ -73,19 +70,19 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     }
 
     if (event.key === '+' && event.ctrlKey && this._store.state.selectionGroup) {
-      this._store.moveUp();
+      this._store.bringForward();
     }
 
     if (event.key === '-' && event.ctrlKey && this._store.state.selectionGroup) {
-      this._store.moveDown();
+      this._store.sendBackward();
     }
 
     if (event.key === '*' && event.shiftKey && this._store.state.selectionGroup) {
-      this._store.moveToTop();
+      this._store.bringToFront();
     }
 
     if (event.key === '_' && event.shiftKey && this._store.state.selectionGroup) {
-      this._store.moveToBottom();
+      this._store.sendToBack();
     }
 
     if(event.key === 'a' && event.ctrlKey && this._store.state.activeText) {
@@ -104,6 +101,5 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     
     this._store.state.isCtrlKeyPressed = event.ctrlKey;
   }
-
  
 }
