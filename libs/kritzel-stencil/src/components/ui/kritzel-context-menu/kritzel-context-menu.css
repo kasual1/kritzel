@@ -8,7 +8,7 @@
   background-color: var(--kritzel-context-menu-background-color, #ffffff);
   border-radius: var(--kritzel-context-menu-border-radius, 12px);
   box-shadow: var(--kritzel-context-menu-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
-  border: var(--kritzel-context-menu-border, 1px solid hsl(0, 0%, 0%, 4.3%));
+  border: var(--kritzel-context-menu-border, 1px solid #f0f0f0);
   padding: var(--kritzel-context-menu-padding,4px);
 }
 

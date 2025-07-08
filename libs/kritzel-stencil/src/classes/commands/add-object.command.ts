@@ -12,7 +12,6 @@ export class AddObjectCommand extends KritzelBaseCommand {
 
   execute(): void {
     this._store.state.objectsOctree.insert(this.object);
-    console.log('Object added:', this.object);
   }
 
   undo(): void {

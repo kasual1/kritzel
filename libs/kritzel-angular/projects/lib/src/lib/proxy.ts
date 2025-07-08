@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* auto-generated angular directive proxies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, NgZone } from '@angular/core';
 
-import { ProxyCmp } from './angular-component-lib/utils';
+import { ProxyCmp, proxyOutputs } from './angular-component-lib/utils';
 
 import { Components } from 'kritzel-stencil';
 
@@ -23,10 +23,14 @@ export class KritzelEditor {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['isReady']);
   }
 }
 
 
-export declare interface KritzelEditor extends Components.KritzelEditor {}
+export declare interface KritzelEditor extends Components.KritzelEditor {
+
+  isReady: EventEmitter<CustomEvent<boolean>>;
+}
 
 

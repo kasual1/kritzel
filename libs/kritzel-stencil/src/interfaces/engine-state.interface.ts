@@ -19,6 +19,7 @@ export interface KritzelEngineState {
   selectionGroup?: KritzelSelectionGroup;
   resizeHandleType: KritzelHandleType;
   hasViewportChanged: boolean;
+  isReady: boolean;
   isEnabled: boolean;
   isScaling: boolean;
   isPanning: boolean;

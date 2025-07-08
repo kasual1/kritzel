@@ -19,7 +19,7 @@
 | Event              | Description | Type                           |
 | ------------------ | ----------- | ------------------------------ |
 | `activeToolChange` |             | `CustomEvent<KritzelBaseTool>` |
-| `engineReady`      |             | `CustomEvent<void>`            |
+| `isEngineReady`    |             | `CustomEvent<void>`            |
 
 
 ## Methods

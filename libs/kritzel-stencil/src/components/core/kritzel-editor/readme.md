@@ -14,6 +14,13 @@
 | `hideControls`   | `hide-controls`    |             | `boolean`                  | `false`                    |
 
 
+## Events
+
+| Event     | Description | Type                   |
+| --------- | ----------- | ---------------------- |
+| `isReady` |             | `CustomEvent<boolean>` |
+
+
 ## Methods
 
 ### `addObject<T extends KritzelBaseObject>(object: T) => Promise<T | null>`
