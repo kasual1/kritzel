@@ -13,10 +13,9 @@
   height: 100%;
   padding: var(--kritzel-controls-padding, 8px);
   background-color: var(--kritzel-controls-background-color, #ffffff);
-  border-radius: var(--kritzel-controls-border-radius, 8px);
+  border-radius: var(--kritzel-controls-border-radius, 16px);
   box-shadow: var(--kritzel-controls-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
-  border: var(--kritzel-controls-border, 1px solid hsl(0, 0%, 0%, 4.3%));
-  border-radius: var(--kritzel-controls-border-radius, 8px);
+  border: var(--kritzel-controls-border, 1px solid #f0f0f0);
   z-index: 10000;
   position: relative;
 }
@@ -26,7 +25,7 @@
   justify-content: center;
   align-items: center;
   color: var(--kritzel-controls-control-color, #000000);
-  border-radius: var(--kritzel-controls-control-border-radius, 8px);
+  border-radius: var(--kritzel-controls-control-border-radius, 12px);
   padding: var(--kritzel-controls-control-padding, 8px);
   border: none;
   outline: none;

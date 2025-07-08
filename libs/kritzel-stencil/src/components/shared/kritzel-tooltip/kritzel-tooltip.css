@@ -10,7 +10,7 @@
   background-color: var(--kritzel-controls-tooltip-background-color, #ffffff);
   color: var(--kritzel-controls-tooltip-color, #000000);
   padding: var(--kritzel-controls-tooltip-padding, 8px);
-  border-radius: var(--kritzel-controls-tooltip-border-radius, 8px);
+  border-radius: var(--kritzel-controls-tooltip-border-radius, 16px);
   white-space: nowrap;
   box-shadow: var(--kritzel-controls-tooltip-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
 }

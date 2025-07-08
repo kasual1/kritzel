@@ -4,8 +4,8 @@
   align-items: center;
   padding: 4px;
   gap: 8px;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
   background-color: rgb(226, 226, 226);
   width: fit-content;
   user-select: none;
