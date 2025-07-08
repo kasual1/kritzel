@@ -7,18 +7,18 @@
 
 /* eslint-disable */
 
-import type { StencilReactComponent } from '@stencil/react-output-target/runtime';
+import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 
-export type KritzelEditorEvents = NonNullable<unknown>;
+export type KritzelEditorEvents = { onIsReady: EventName<CustomEvent<boolean>> };
 
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents>({
     tagName: 'kritzel-editor',
     elementClass: KritzelEditorElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: {} as KritzelEditorEvents,
+    events: { onIsReady: 'isReady' } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
 });

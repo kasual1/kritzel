@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { KritzelEditor, KritzelText } from 'kritzel-vue'
-import { useTemplateRef, onMounted } from 'vue';
+import { useTemplateRef } from 'vue';
 
 const editor = useTemplateRef('editor');
 
-onMounted(async () => {
-  debugger;
-  await customElements.whenDefined('kritzel-editor');
+async function getSelectedObjects() {
+   editor.value?.$el.selectAllObjectsInViewport();
+}
 
+function onIsReady() {
   const text = new KritzelText({
     value: 'Hello Kritzel!',
     translateX: 0,
@@ -19,17 +20,10 @@ onMounted(async () => {
     width: 200,
   });
 
-  setTimeout(async () => {
-    await editor.value?.$el.addObject(text);
-    editor.value?.$el.selectObjects([text]);
-  }, 1000);
+  editor.value?.$el.addObject(text).then((t: KritzelText) => {
+    editor.value?.$el.selectObjects([t]);
 
-
-});
-
-async function getSelectedObjects() {
-  const selectedObjects = await editor.value?.$el.getSelectedObjects();
-  console.log('Selected objects:', selectedObjects);
+  });
 }
 
 </script>
@@ -40,7 +34,7 @@ async function getSelectedObjects() {
       <button @click="getSelectedObjects">Get selected objects</button>
     </div>
 
-    <KritzelEditor ref="editor" />
+    <KritzelEditor ref="editor" v-on:is-ready="onIsReady" />
   </main>
 </template>
 

@@ -19,13 +19,13 @@ body {
   --kritzel-selection-handle-color: #000000;
 
   --kritzel-context-menu-background-color: #ffffff;
-  --kritzel-context-menu-border-radius: 8px;
+  --kritzel-context-menu-border-radius: 12px;
   --kritzel-context-menu-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
-  --kritzel-context-menu-border: 1px solid hsl(0, 0%, 0%, 4.3%);
+  --kritzel-context-menu-border: 1px solid #f0f0f0;
   --kritzel-context-menu-padding: 4px;
   --kritzel-context-menu-item-gap: 8px;
   --kritzel-context-menu-item-padding: 8px;
-  --kritzel-context-menu-item-border-radius: 8px;
+  --kritzel-context-menu-item-border-radius: 12px;
   --kritzel-context-menu-item-color: #333333;
   --kritzel-context-menu-item-font-size: 14px;
   --kritzel-context-menu-item-hover-background-color: hsl(0, 0%, 0%, 4.3%);
@@ -33,13 +33,13 @@ body {
   --kritzel-context-menu-item-disabled-color: #aaaaaa;
 
   --kritzel-controls-box-shadow: 0 0 3px rgba(0, 0, 0, 0.08);
-  --kritzel-controls-border: 1px solid hsl(0, 0%, 0%, 4.3%);
-  --kritzel-controls-border-radius: 8px;
+  --kritzel-controls-border: 1px solid #f0f0f0;
+  --kritzel-controls-border-radius: 16px;
   --kritzel-controls-background-color: #ffffff;
   --kritzel-controls-padding: 8px;
   --kritzel-controls-gap: 8px;
   --kritzel-controls-control-color: #000;
-  --kritzel-controls-control-border-radius: 8px;
+  --kritzel-controls-control-border-radius: 12px;
   --kritzel-controls-control-padding: 8px;
   --kritzel-controls-control-hover-background-color: hsl(0, 0%, 0%, 4.3%);
   --kritzel-controls-control-active-background-color: hsl(0, 0%, 0%, 8.6%);
@@ -50,7 +50,7 @@ body {
   --kritzel-controls-divider-background-color: hsl(0, 0%, 0%, 4.3%);
   --kritzel-controls-tooltip-background-color: #fff;
   --kritzel-controls-tooltip-color: #000;
-  --kritzel-controls-tooltip-border-radius: 8px;
+  --kritzel-controls-tooltip-border-radius: 16px;
   --kritzel-controls-tooltip-padding: 8px;
   --kritzel-controls-tooltip-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 

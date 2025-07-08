@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { KritzelEditor, KritzelText } from 'kritzel-angular';
 
 @Component({
@@ -8,12 +8,17 @@ import { KritzelEditor, KritzelText } from 'kritzel-angular';
   styleUrl: './app.component.scss',
   standalone: true,
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent {
   @ViewChild(KritzelEditor)
   kritzelEditor!: KritzelEditor;
 
-  async ngAfterViewInit(): Promise<void> {
-    const text = new KritzelText({
+  async onGetSelectedObjectsClick(): Promise<void> {
+    const selectedObjects = await this.kritzelEditor.getSelectedObjects();
+    console.log('Selected objects:', selectedObjects);
+  }
+
+  async onIsReady(): Promise<void> {
+     const text = new KritzelText({
       value: 'Hello Kritzel!',
       translateX: 0,
       translateY: 0,
@@ -27,10 +32,5 @@ export class AppComponent implements AfterViewInit {
     
     await this.kritzelEditor.addObject(text);
     this.kritzelEditor.selectObjects([text]);
-  }
-
-  async onGetSelectedObjectsClick(): Promise<void> {
-    const selectedObjects = await this.kritzelEditor.getSelectedObjects();
-    console.log('Selected objects:', selectedObjects);
   }
 }

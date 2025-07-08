@@ -1,9 +1,8 @@
-import { Component, Host, Listen, Prop, Element, h, Method } from '@stencil/core';
+import { Component, Host, Listen, Prop, Element, h, Method, Event, EventEmitter } from '@stencil/core';
 import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { DEFAULT_KRITZEL_CONTROLS } from '../../../configs/default-toolbar-controls';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
-
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -18,6 +17,9 @@ export class KritzelEditor {
 
   @Prop()
   hideControls: boolean = false;
+
+  @Event()
+  isReady: EventEmitter<boolean>;
 
   @Element()
   host!: HTMLElement;
@@ -81,8 +83,15 @@ export class KritzelEditor {
 
   controlsRef!: HTMLKritzelControlsElement;
 
-  componentWillLoad() {
+  async onEngineReady() {
+    await customElements.whenDefined('kritzel-editor');
+    await customElements.whenDefined('kritzel-controls');
+    await customElements.whenDefined('kritzel-engine');
+
     this.registerCustomSvgIcons();
+
+    console.log('Editor in stencil is read');
+    this.isReady.emit();
   }
 
   private registerCustomSvgIcons() {
@@ -94,7 +103,7 @@ export class KritzelEditor {
   render() {
     return (
       <Host>
-        <kritzel-engine ref={el => (this.engineRef = el)}></kritzel-engine>
+        <kritzel-engine ref={el => (this.engineRef = el)} onIsEngineReady={() => this.onEngineReady()}></kritzel-engine>
         <kritzel-controls ref={el => (this.controlsRef = el)} controls={this.controls} style={this.hideControls ? { display: 'none' } : { display: 'flex' }}></kritzel-controls>
       </Host>
     );

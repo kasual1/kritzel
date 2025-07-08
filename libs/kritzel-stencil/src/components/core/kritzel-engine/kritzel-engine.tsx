@@ -72,7 +72,7 @@ export class KritzelEngine {
   forceUpdate: number = 0;
 
   @Event()
-  engineReady: EventEmitter<void>;
+  isEngineReady: EventEmitter<void>;
 
   @Event()
   activeToolChange: EventEmitter<KritzelBaseTool>;
@@ -119,7 +119,11 @@ export class KritzelEngine {
 
   componentDidLoad() {
     this.viewport = new KritzelViewport(this.store, this.host);
-    this.engineReady.emit();
+
+    if (this.store.state.isReady === false) {
+      this.store.state.isReady = true;
+      this.isEngineReady.emit();
+    }
   }
 
   @Listen('wheel', { passive: false })
@@ -345,19 +349,12 @@ export class KritzelEngine {
 
   @Method()
   async addObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
-    console.log('Adding object:', object);
-    debugger;
-
     this.store.deselectAllObjects();
 
     object.id = object.generateId();
     object._store = this.store;
     object.scale = object.scale ? object.scale : this.store.state.scale;
     object.zIndex = this.store.currentZIndex;
-
-    if (object instanceof KritzelText) {
-      console.log('is instance of KritzelText');
-    }
 
     const command = new AddObjectCommand(this.store, this, object);
     this.store.history.executeCommand(command);
@@ -396,6 +393,7 @@ export class KritzelEngine {
     this.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     this.store.deselectAllObjects();
     this.store.selectObjects(objects);
+    console.log('Selected objects:', objects);
   }
 
   @Method()
@@ -484,7 +482,7 @@ export class KritzelEngine {
                       overflow: 'visible',
                     }}
                   >
-                    { KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
+                    {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
                       <svg
                         ref={el => object.mount(el)}
                         xmlns="http://www.w3.org/2000/svg"
@@ -500,7 +498,7 @@ export class KritzelEngine {
                       </svg>
                     )}
 
-                    { KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
+                    {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <img
                         ref={el => object.mount(el)}
                         src={object.src}
@@ -515,7 +513,7 @@ export class KritzelEngine {
                       />
                     )}
 
-                    { KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
+                    {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
                       <textarea
                         ref={el => object.mount(el)}
                         value={object.value}
@@ -542,7 +540,7 @@ export class KritzelEngine {
                       ></textarea>
                     )}
 
-                    { KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && (
+                    {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && (
                       <div
                         ref={el => object.mount(el)}
                         style={{
@@ -552,7 +550,7 @@ export class KritzelEngine {
                       ></div>
                     )}
 
-                    { KritzelClassHelper.isInstanceOf<KrtizelSelectionBox>(object, 'KrtizelSelectionBox') && (
+                    {KritzelClassHelper.isInstanceOf<KrtizelSelectionBox>(object, 'KrtizelSelectionBox') && (
                       <div
                         ref={el => object.mount(el)}
                         style={{

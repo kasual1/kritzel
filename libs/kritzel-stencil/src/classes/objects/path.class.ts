@@ -90,8 +90,8 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     const maxX = Math.max(...rotatedPoints.map(p => p[0] + this.strokeWidth / 2));
     const maxY = Math.max(...rotatedPoints.map(p => p[1] + this.strokeWidth / 2));
 
-    this.width = maxX - minX + this.lineSlack; // Add 0.5 to avoid rounding issues
-    this.height = maxY - minY + this.lineSlack; // Add 0.5 to avoid rounding issues
+    this.width = maxX - minX + this.lineSlack;
+    this.height = maxY - minY + this.lineSlack;
 
     this.x = minX;
     this.y = minY;
