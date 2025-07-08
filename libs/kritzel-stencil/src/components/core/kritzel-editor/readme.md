@@ -58,6 +58,16 @@ Type: `Promise<T>`
 
 
 
+### `getSelectedObjects() => Promise<KritzelBaseObject[]>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelBaseObject<HTMLElement>[]>`
+
+
+
 ### `removeObject<T extends KritzelBaseObject>(object: T) => Promise<T | null>`
 
 

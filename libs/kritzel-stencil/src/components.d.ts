@@ -118,6 +118,7 @@ export namespace Components {
          */
         "customSvgIcons": Record<string, string>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
+        "getSelectedObjects": () => Promise<KritzelBaseObject[]>;
         /**
           * @default false
          */
@@ -138,6 +139,7 @@ export namespace Components {
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
+        "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
         /**
           * @default [     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]
          */

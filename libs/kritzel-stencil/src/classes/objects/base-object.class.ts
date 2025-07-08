@@ -250,4 +250,8 @@ export class KritzelBaseObject<T extends Element = HTMLElement> implements Kritz
     return this;
   }
 
+  isClass<T extends KritzelBaseObject>(this: T, className: string): this is T {
+    return this.__class__ === className;
+  }
+
 }

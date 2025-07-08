@@ -11,4 +11,6 @@
 export type * from './components';
 
 export * from './classes/objects/text.class';
+export * from './classes/objects/path.class';
+export * from './classes/objects/image.class';
 

@@ -138,6 +138,16 @@ Type: `Promise<T>`
 
 
 
+### `getSelectedObjects() => Promise<KritzelBaseObject<any>[]>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelBaseObject<any>[]>`
+
+
+
 ### `hideContextMenu() => Promise<void>`
 
 

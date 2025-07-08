@@ -2,5 +2,7 @@
 export * from './components/stencil-generated/components';
 
 export {
-    KritzelText
+    KritzelText,
+    KritzelPath,
+    KritzelImage
 } from 'kritzel-stencil';
