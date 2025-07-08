@@ -42,4 +42,5 @@ export interface KritzelObject<T = Element> {
   rotate(value: number): void;
   copy(): KritzelBaseObject<Element>;
   onSelectedClick(): void;
+  isClass<T extends KritzelBaseObject>(this: T, type: string): this is T;
 }

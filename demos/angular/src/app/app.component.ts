@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { KritzelEditor, KritzelText } from 'kritzel-angular';
+
 @Component({
   selector: 'app-root',
   imports: [KritzelEditor],
@@ -26,5 +27,10 @@ export class AppComponent implements AfterViewInit {
     
     await this.kritzelEditor.addObject(text);
     this.kritzelEditor.selectObjects([text]);
+  }
+
+  async onGetSelectedObjectsClick(): Promise<void> {
+    const selectedObjects = await this.kritzelEditor.getSelectedObjects();
+    console.log('Selected objects:', selectedObjects);
   }
 }

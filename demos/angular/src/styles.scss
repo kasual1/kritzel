@@ -8,10 +8,10 @@ body {
 }
 
 :root {
-  --kritzel-primary-color: blue;
+  --kritzel-primary-color: #dd0031;
 
-  --kritzel-selection-box-background-color: rgba(0, 0, 255, 0.2);
-  --kritzel-selection-box-border-color: rgba(0, 0, 255, 0.5);
+  --kritzel-selection-box-background-color: rgba(221, 0, 48, 0.2);
+  --kritzel-selection-box-border-color: rgba(221, 0, 48, 0.5);
   --kritzel-selection-border-color: var(--kritzel-primary-color);
   --kritzel-selection-border-width: 2px;
   --kritzel-selection-border-style: solid;
