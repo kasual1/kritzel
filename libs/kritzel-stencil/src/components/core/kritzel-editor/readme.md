@@ -16,9 +16,9 @@
 
 ## Events
 
-| Event     | Description | Type                   |
-| --------- | ----------- | ---------------------- |
-| `isReady` |             | `CustomEvent<boolean>` |
+| Event     | Description | Type                       |
+| --------- | ----------- | -------------------------- |
+| `isReady` |             | `CustomEvent<HTMLElement>` |
 
 
 ## Methods

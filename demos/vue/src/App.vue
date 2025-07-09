@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { KritzelEditor, KritzelText } from 'kritzel-vue'
-import { useTemplateRef } from 'vue';
 
-const editor = useTemplateRef('editor');
+let editor: HTMLKritzelEditorElement;
 
 async function getSelectedObjects() {
-   editor.value?.$el.selectAllObjectsInViewport();
+   editor.selectAllObjectsInViewport();
 }
 
-function onIsReady() {
+async function onIsReady(event: CustomEvent<HTMLKritzelEditorElement>) {
+  editor = event.detail;
+
   const text = new KritzelText({
     value: 'Hello Kritzel!',
     translateX: 0,
@@ -20,10 +21,8 @@ function onIsReady() {
     width: 200,
   });
 
-  editor.value?.$el.addObject(text).then((t: KritzelText) => {
-    editor.value?.$el.selectObjects([t]);
-
-  });
+  await editor.addObject(text);
+  editor.selectObjects([text]);
 }
 
 </script>

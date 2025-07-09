@@ -15,9 +15,9 @@
 
 ## Events
 
-| Event           | Description | Type                |
-| --------------- | ----------- | ------------------- |
-| `controlsReady` |             | `CustomEvent<void>` |
+| Event             | Description | Type                |
+| ----------------- | ----------- | ------------------- |
+| `isControlsReady` |             | `CustomEvent<void>` |
 
 
 ## Methods

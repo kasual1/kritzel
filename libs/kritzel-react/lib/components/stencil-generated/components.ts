@@ -10,9 +10,10 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
+import { type KritzelEditorCustomEvent } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 
-export type KritzelEditorEvents = { onIsReady: EventName<CustomEvent<boolean>> };
+export type KritzelEditorEvents = { onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>> };
 
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents>({
     tagName: 'kritzel-editor',

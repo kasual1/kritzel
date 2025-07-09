@@ -4,5 +4,5 @@ export * from './plugin';
 export {
     KritzelText,
     KritzelPath,
-    KritzelImage
+    KritzelImage,
 } from 'kritzel-stencil';
