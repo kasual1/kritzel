@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { KritzelEditor, KritzelText } from 'kritzel-angular';
 
 @Component({
@@ -9,16 +9,13 @@ import { KritzelEditor, KritzelText } from 'kritzel-angular';
   standalone: true,
 })
 export class AppComponent {
-  @ViewChild(KritzelEditor)
-  kritzelEditor!: KritzelEditor;
 
-  async onGetSelectedObjectsClick(): Promise<void> {
-    const selectedObjects = await this.kritzelEditor.getSelectedObjects();
-    console.log('Selected objects:', selectedObjects);
-  }
+  kritzelEditor!: HTMLKritzelEditorElement;
 
-  async onIsReady(): Promise<void> {
-     const text = new KritzelText({
+  async onIsReady(event: any): Promise<void> {
+    this.kritzelEditor = event.detail;
+
+    const text = new KritzelText({
       value: 'Hello Kritzel!',
       translateX: 0,
       translateY: 0,
@@ -29,8 +26,8 @@ export class AppComponent {
       width: 200,
     });
 
-    
     await this.kritzelEditor.addObject(text);
-    this.kritzelEditor.selectObjects([text]);
+    await this.kritzelEditor.centerObjectInViewport(text);
+    await this.kritzelEditor.selectObjects([text]);
   }
 }

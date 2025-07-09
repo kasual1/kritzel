@@ -3,10 +3,6 @@ import { KritzelEditor, KritzelText } from 'kritzel-vue'
 
 let editor: HTMLKritzelEditorElement;
 
-async function getSelectedObjects() {
-   editor.selectAllObjectsInViewport();
-}
-
 async function onIsReady(event: CustomEvent<HTMLKritzelEditorElement>) {
   editor = event.detail;
 
@@ -22,17 +18,14 @@ async function onIsReady(event: CustomEvent<HTMLKritzelEditorElement>) {
   });
 
   await editor.addObject(text);
-  editor.selectObjects([text]);
+  await editor.centerObjectInViewport(text);
+  await editor.selectObjects([text]);
 }
 
 </script>
 
 <template>
   <main>
-    <div style="display: flex; gap: 10px; position: absolute; top: 0; left: 0; z-index: 100;">
-      <button @click="getSelectedObjects">Get selected objects</button>
-    </div>
-
     <KritzelEditor ref="editor" v-on:is-ready="onIsReady" />
   </main>
 </template>

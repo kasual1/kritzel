@@ -84,6 +84,11 @@ export class KritzelEditor {
     this.engineRef.clearSelection();
   }
 
+  @Method()
+  async centerObjectInViewport(object: KritzelBaseObject) {
+    return this.engineRef.centerObjectInViewport(object);
+  }
+
   @Listen('dblclick', { passive: false })
   handleTouchStart(event: TouchEvent) {
     if (event.cancelable) {

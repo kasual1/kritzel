@@ -108,6 +108,7 @@ export namespace Components {
     }
     interface KritzelEditor {
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement>>;
         "clearSelection": () => Promise<void>;
         /**
           * @default DEFAULT_KRITZEL_CONTROLS
@@ -132,6 +133,7 @@ export namespace Components {
         "activeTool": KritzelTool;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement>>;
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;
