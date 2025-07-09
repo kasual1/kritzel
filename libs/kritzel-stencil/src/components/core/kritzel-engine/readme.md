@@ -56,6 +56,22 @@ Type: `Promise<void>`
 
 
 
+### `centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement>>`
+
+
+
+#### Parameters
+
+| Name     | Type                             | Description |
+| -------- | -------------------------------- | ----------- |
+| `object` | `KritzelBaseObject<HTMLElement>` |             |
+
+#### Returns
+
+Type: `Promise<KritzelBaseObject<HTMLElement>>`
+
+
+
 ### `changeActiveTool(tool: KritzelBaseTool) => Promise<void>`
 
 

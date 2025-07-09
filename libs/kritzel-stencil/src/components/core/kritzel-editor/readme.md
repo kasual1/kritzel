@@ -39,6 +39,22 @@ Type: `Promise<T>`
 
 
 
+### `centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement>>`
+
+
+
+#### Parameters
+
+| Name     | Type                             | Description |
+| -------- | -------------------------------- | ----------- |
+| `object` | `KritzelBaseObject<HTMLElement>` |             |
+
+#### Returns
+
+Type: `Promise<KritzelBaseObject<HTMLElement>>`
+
+
+
 ### `clearSelection() => Promise<void>`
 
 

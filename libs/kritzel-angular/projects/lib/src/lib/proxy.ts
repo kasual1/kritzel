@@ -9,7 +9,7 @@ import { Components } from 'kritzel-stencil';
 
 @ProxyCmp({
   inputs: ['controls', 'customSvgIcons', 'hideControls'],
-  methods: ['getObjectById', 'addObject', 'updateObject', 'removeObject', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection']
+  methods: ['getObjectById', 'addObject', 'updateObject', 'removeObject', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport']
 })
 @Component({
   selector: 'kritzel-editor',

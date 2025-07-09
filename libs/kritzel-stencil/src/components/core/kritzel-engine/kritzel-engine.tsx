@@ -409,6 +409,16 @@ export class KritzelEngine {
     this.store.clearSelection();
   }
 
+  @Method()
+  async centerObjectInViewport(object: KritzelBaseObject) {
+    object.centerInViewport();
+
+    const command = new UpdateObjectCommand(this.store, this, object, object);
+    this.store.history.executeCommand(command);
+
+    return object;
+  }
+
   render() {
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';

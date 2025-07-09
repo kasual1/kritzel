@@ -4,11 +4,6 @@ import { KritzelEditor, KritzelText } from "kritzel-react";
 function App() {
   let editor: HTMLKritzelEditorElement | null = null;
 
-  const handleGetSelectedObjects = () => {
-    const selectedObjects = editor?.getSelectedObjects();
-    console.log("Selected objects:", selectedObjects);
-  };
-
   async function onIsReady(
     event: CustomEvent<HTMLKritzelEditorElement>
   ): Promise<void> {
@@ -26,23 +21,12 @@ function App() {
     });
 
     await editor.addObject(text);
-    editor.selectObjects([text]);
+    await editor.centerObjectInViewport(text);
+    await editor.selectObjects([text]);
   }
 
   return (
     <div className="app">
-      <div
-        style={{
-          display: "flex",
-          gap: "4px",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          zIndex: 100,
-        }}
-      >
-        <button onClick={handleGetSelectedObjects}>Get selected objects</button>
-      </div>
       <KritzelEditor onIsReady={onIsReady}></KritzelEditor>;
     </div>
   );
