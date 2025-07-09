@@ -378,7 +378,7 @@ declare global {
         new (): HTMLKritzelControlTextConfigElement;
     };
     interface HTMLKritzelControlsElementEventMap {
-        "controlsReady": void;
+        "isControlsReady": void;
     }
     interface HTMLKritzelControlsElement extends Components.KritzelControls, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelControlsElementEventMap>(type: K, listener: (this: HTMLKritzelControlsElement, ev: KritzelControlsCustomEvent<HTMLKritzelControlsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -418,7 +418,7 @@ declare global {
         new (): HTMLKritzelDropdownElement;
     };
     interface HTMLKritzelEditorElementEventMap {
-        "isReady": boolean;
+        "isReady": HTMLElement;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -628,7 +628,7 @@ declare namespace LocalJSX {
           * @default []
          */
         "controls"?: KritzelToolbarControl[];
-        "onControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
+        "onIsControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
     }
     interface KritzelCursorTrail {
         "store"?: KritzelStore;
@@ -659,7 +659,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "hideControls"?: boolean;
-        "onIsReady"?: (event: KritzelEditorCustomEvent<boolean>) => void;
+        "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;

@@ -21,7 +21,7 @@ export class KritzelControls {
   activeControl: KritzelToolbarControl | null = null;
 
   @Event()
-  controlsReady: EventEmitter<void>;
+  isControlsReady: EventEmitter<void>;
 
   @State()
   firstConfig: ToolConfig | null = null;
@@ -72,10 +72,7 @@ export class KritzelControls {
   async componentWillLoad() {
     await this.initializeEngine();
     await this.initializeTools();
-  }
-
-  componentDidLoad() {
-    this.controlsReady.emit();
+    this.isControlsReady.emit();
   }
 
   private async initializeEngine() {

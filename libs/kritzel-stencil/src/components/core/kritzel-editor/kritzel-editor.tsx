@@ -1,4 +1,4 @@
-import { Component, Host, Listen, Prop, Element, h, Method, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
 import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { DEFAULT_KRITZEL_CONTROLS } from '../../../configs/default-toolbar-controls';
@@ -19,10 +19,30 @@ export class KritzelEditor {
   hideControls: boolean = false;
 
   @Event()
-  isReady: EventEmitter<boolean>;
+  isReady: EventEmitter<HTMLElement>;
 
   @Element()
   host!: HTMLElement;
+
+  @State()
+  isEngineReady: boolean = false;
+
+  @State()
+  isControlsReady: boolean = false;
+
+  @Watch('isEngineReady')
+  onIsEngineReady(newValue: boolean) {
+    if (newValue && this.isControlsReady) {
+      this.checkIsReady();
+    }
+  }
+
+  @Watch('isControlsReady')
+  onIsControlsReady(newValue: boolean) {
+    if (newValue && this.isEngineReady) {
+      this.checkIsReady();
+    }
+  }
 
   @Method()
   async getObjectById<T extends KritzelBaseObject>(id: string): Promise<T | null> {
@@ -83,15 +103,20 @@ export class KritzelEditor {
 
   controlsRef!: HTMLKritzelControlsElement;
 
-  async onEngineReady() {
+  componentDidLoad() {
+    this.registerCustomSvgIcons();
+  }
+
+  async checkIsReady() {
     await customElements.whenDefined('kritzel-editor');
     await customElements.whenDefined('kritzel-controls');
     await customElements.whenDefined('kritzel-engine');
 
-    this.registerCustomSvgIcons();
+    if (!this.isEngineReady || !this.isControlsReady) {
+      return;
+    }
 
-    console.log('Editor in stencil is read');
-    this.isReady.emit();
+    this.isReady.emit(this.host);
   }
 
   private registerCustomSvgIcons() {
@@ -103,8 +128,13 @@ export class KritzelEditor {
   render() {
     return (
       <Host>
-        <kritzel-engine ref={el => (this.engineRef = el)} onIsEngineReady={() => this.onEngineReady()}></kritzel-engine>
-        <kritzel-controls ref={el => (this.controlsRef = el)} controls={this.controls} style={this.hideControls ? { display: 'none' } : { display: 'flex' }}></kritzel-controls>
+        <kritzel-engine ref={el => (this.engineRef = el)} onIsEngineReady={() => (this.isEngineReady = true)}></kritzel-engine>
+        <kritzel-controls
+          ref={el => (this.controlsRef = el)}
+          controls={this.controls}
+          style={this.hideControls ? { display: 'none' } : { display: 'flex' }}
+          onIsControlsReady={() => (this.isControlsReady = true)}
+        ></kritzel-controls>
       </Host>
     );
   }

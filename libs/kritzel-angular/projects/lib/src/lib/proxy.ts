@@ -30,7 +30,7 @@ export class KritzelEditor {
 
 export declare interface KritzelEditor extends Components.KritzelEditor {
 
-  isReady: EventEmitter<CustomEvent<boolean>>;
+  isReady: EventEmitter<CustomEvent<HTMLElement>>;
 }
 
 
