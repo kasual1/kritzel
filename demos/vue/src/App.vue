@@ -17,9 +17,9 @@ async function onIsReady(event: CustomEvent<HTMLKritzelEditorElement>) {
     width: 200,
   });
 
-  await editor.addObject(text);
-  await editor.centerObjectInViewport(text);
-  await editor.selectObjects([text]);
+  editor.addObject(text);
+  editor.centerObjectInViewport(text);
+  editor.selectObjects([text]);
 }
 
 </script>

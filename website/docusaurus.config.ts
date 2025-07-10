@@ -23,12 +23,8 @@ const config: Config = {
     [
       "classic",
       {
-        docs: {
-          sidebarPath: "./sidebars.ts",
-          editUrl:
-            "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-          breadcrumbs: false,
-        },
+        docs: false,
+        blog: false,
         theme: {
           customCss: [
             require.resolve("./src/css/theming.css"),
@@ -44,6 +40,36 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "angular",
+        path: "docs/angular",
+        routeBasePath: "docs/angular",
+        sidebarPath: "./sidebars.ts",
+      },
+    ],
+    [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "react",
+        path: "docs/react",
+        routeBasePath: "docs/react",
+        sidebarPath: "./sidebars.ts",
+      },
+    ],
+    [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "vue",
+        path: "docs/vue",
+        routeBasePath: "docs/vue",
+        sidebarPath: "./sidebars.ts",
+      },
+    ],
+  ],
+
   themeConfig: {
     image: "img/docusaurus-social-card.jpg",
     navbar: {
@@ -55,10 +81,32 @@ const config: Config = {
       },
       items: [
         {
-          href: 'https://github.com/kasual1/kritzel',
+          type: 'dropdown',
           position: 'right',
-          className: 'header-github-link',
-          'aria-label': 'GitHub repository',
+          label: 'Angular',
+          items: [
+            {
+              label: 'Angular',
+              to: '/docs/angular/intro',
+              activeBasePath: 'docs/angular'
+            },
+            {
+              label: 'React',
+              to: '/docs/react/intro',
+              activeBasePath: 'docs/react'
+            },
+            {
+              label: 'Vue',
+              to: '/docs/vue/intro',
+              activeBasePath: 'docs/vue'
+            },
+          ],
+        },
+        {
+          href: "https://github.com/kasual1/kritzel",
+          position: "right",
+          className: "header-github-link",
+          "aria-label": "GitHub repository",
         },
       ],
     },
@@ -76,7 +124,6 @@ const config: Config = {
       },
     },
   ],
-  
 };
 
 export default config;

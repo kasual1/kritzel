@@ -1,0 +1,90 @@
+# Getting Started
+
+## Installation
+
+First, install the Kritzel Angular package:
+
+```bash
+npm install kritzel-angular
+```
+
+
+## Setup
+
+Follow these steps to set up KritzelEditor in your Angular project.
+
+### Configure Kritzel Service Provider
+
+Make Kritzel available in your application by adding `provideKritzel` to the `providers` array in your `app.config.ts` file.
+
+```typescript
+// app.config.ts
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideKritzel } from 'kritzel-angular';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideKritzel(), // Add this line to provide Kritzel services
+  ]
+};
+```
+
+### Import KritzelEditor into Your Component
+
+In the component where you want to use the Kritzel editor (e.g., `app.component.ts`), import the KritzelEditor standalone component and include it in your component's `imports` array.
+
+```typescript
+// app.component.ts
+import { Component } from '@angular/core';
+import { KritzelEditor } from 'kritzel-angular'; // Import KritzelEditor
+
+@Component({
+  selector: 'app-root',
+  imports: [KritzelEditor], // Add KritzelEditor here
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
+  standalone: true,
+})
+export class AppComponent {
+  // Your component logic
+}
+```
+
+### Embed kritzel-editor in Your Template
+
+Insert the following tag into your component's template file (e.g., `app.component.html`) where you want the canvas to appear:
+
+```html
+<kritzel-editor></kritzel-editor>
+```
+
+---
+
+## Optional Enhancements
+
+### Apply Full Viewport Styling
+
+To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `styles.scss` or `styles.css`):
+
+```css
+/* styles.scss */
+html,
+body {
+  width: 100dvw;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+```
+
+### Include Mobile Viewport Meta Tag
+
+For optimal rendering and responsiveness on mobile devices, add this meta tag within the `<head>` section of your `index.html`:
+
+```html
+<head>
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0, interactive-widget=resizes-content" />
+</head>
+```
