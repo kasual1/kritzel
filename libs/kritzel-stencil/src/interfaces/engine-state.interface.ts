@@ -54,7 +54,7 @@ export interface KritzelEngineState {
   viewportWidth: number;
   viewportHeight: number;
   historyBufferSize: number;
-  longTouchTimeout: NodeJS.Timeout;
+  longTouchTimeout: number;
   longTouchDelay: number;
   pointers: Map<number, PointerEvent>;
 }

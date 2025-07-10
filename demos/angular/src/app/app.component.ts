@@ -26,8 +26,8 @@ export class AppComponent {
       width: 200,
     });
 
-    await this.kritzelEditor.addObject(text);
-    await this.kritzelEditor.centerObjectInViewport(text);
-    await this.kritzelEditor.selectObjects([text]);
+    this.kritzelEditor.addObject(text);
+    this.kritzelEditor.centerObjectInViewport(text);
+    this.kritzelEditor.selectObjects([text]);
   }
 }
