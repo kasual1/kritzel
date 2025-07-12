@@ -47,7 +47,7 @@ function HomepageHeader() {
         </p>
         <div className={styles.buttons}>
           <Link
-            to="/docs/angular/intro"
+            to="/docs/angular/getting-started"
             className="button button--primary button--lg"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
           >

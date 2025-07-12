@@ -31,3 +31,7 @@ p {
 nav.menu {
   font-size: 0.8rem;
 }
+
+code, .token-line{
+  font-size: 0.9rem;
+}
