@@ -87,17 +87,17 @@ const config: Config = {
           items: [
             {
               label: 'Angular',
-              to: '/docs/angular/intro',
+              to: '/docs/angular/getting-started',
               activeBasePath: 'docs/angular'
             },
             {
               label: 'React',
-              to: '/docs/react/intro',
+              to: '/docs/react/getting-started',
               activeBasePath: 'docs/react'
             },
             {
               label: 'Vue',
-              to: '/docs/vue/intro',
+              to: '/docs/vue/getting-started',
               activeBasePath: 'docs/vue'
             },
           ],
