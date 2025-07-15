@@ -1,1 +1,105 @@
 # Interacting with the Canvas
+
+You can programmatically interact with the KritzelEditor to add, manipulate or delete objects on the canvas. 
+
+## Accessing the KritzelEditor
+
+To interact with the KritzelEditor, listen for its `isReady` event. The event's `detail` property provides a reference to the editor instance, which you can use to call its methods.
+
+```typescript
+@Component({
+  selector: 'app-root',
+  imports: [KritzelEditor],
+  template: `
+    <kritzel-editor (isReady)="onIsReady($event)"></kritzel-editor>
+  `,
+})
+export class App {
+  kritzelEditor!: HTMLKritzelEditorElement;
+
+  async onIsReady(event: any): Promise<void> {
+    this.kritzelEditor = event.detail;
+    // You can now use this.kritzelEditor to interact with the canvas
+  }
+}
+
+bootstrapApplication(App, appConfig);
+```
+
+## Adding objects
+
+To add an object to the canvas, create an instance of a supported object type and use the editor's `addObject` method to insert it.
+> The following objects are currently supported: `KritzelPath`, `KritzelText`, `KritzelImage`.
+
+```typescript
+// ...other code
+
+const text = new KritzelText({
+  value: 'Hello Kritzel!',
+  translateX: 0,
+  translateY: 0,
+  fontSize: 24,
+  fontFamily: 'Arial',
+  fontColor: '#000000',
+  height: 200,
+  width: 200,
+});
+
+this.kritzelEditor.addObject(text);
+```
+In the example above a `KritzelText` object is created and added to the canvas.
+
+
+## Updating objects
+
+To update an object on the canvas, call the editor's `updateObject` method, passing the object you want to update and a partial object containing the properties to change.
+
+ ```typescript
+ this.kritzelEditor.updateObject(object, {
+  translateX: 200,
+  translateY: 200,
+});
+  ```
+
+
+## Removing objects
+
+To remove an object from the canvas, use the editor's `removeObject` method and pass the object you want to remove.
+
+ ```typescript
+  this.kritzelEditor.removeObject(object);
+  ```
+
+  ## Centering objects
+
+To center an object in the viewport, use the editor's `centerObjectInViewport` method and pass the object you want to center.
+
+```typescript
+  this.kritzelEditor.centerObjectInViewport(object);
+  ```
+
+
+
+## Selecting objects
+
+You can select objects on the canvas in two ways:
+
+1. **Select specific objects:**  
+  Pass an array of objects you want to select to the editor's `selectObjects` method.
+
+  ```typescript
+  this.kritzelEditor.selectObjects([object1, object2]);
+  ```
+
+2. **Select all objects in the viewport:**  
+  Call the `selectAllObjectsInViewport` method to select all objects currently visible in the editor's viewport.
+
+  ```typescript
+  this.kritzelEditor.selectAllObjectsInViewport();
+  ```
+
+To retrieve the currently selected objects, use the editor's `getSelectedObjects` method. This method returns a promise that resolves to an array of all objects currently selected on the canvas.
+
+ ```typescript
+  this.kritzelEditor.getSelectedObjects().then((objects) => console.log(objects));
+  ```
