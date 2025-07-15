@@ -48,6 +48,7 @@ const config: Config = {
         path: "docs/angular",
         routeBasePath: "docs/angular",
         sidebarPath: "./sidebars.ts",
+        breadcrumbs: false,
       },
     ],
     [
@@ -57,6 +58,7 @@ const config: Config = {
         path: "docs/react",
         routeBasePath: "docs/react",
         sidebarPath: "./sidebars.ts",
+        breadcrumbs: false,
       },
     ],
     [
@@ -66,6 +68,7 @@ const config: Config = {
         path: "docs/vue",
         routeBasePath: "docs/vue",
         sidebarPath: "./sidebars.ts",
+        breadcrumbs: false,
       },
     ],
   ],
