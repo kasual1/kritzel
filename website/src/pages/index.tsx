@@ -35,6 +35,20 @@ function HomepageHeader() {
          <p className={clsx('hero__subtitle', styles.heroSubtitle)}>
           Coming soon!
         </p> */}
+
+        <div
+          style={{
+            fontSize: "1rem",
+            marginBottom: "3.5rem",
+            display: "inline-block",
+            border: '2px solid #000000',
+            borderRadius: '8px',
+            padding: '0.5rem 1rem',
+            fontWeight: 500,
+          }}
+        >
+          Kritzel is currently under active development. It is not recommended to use it in production.
+        </div>
         <Heading as="h1" className={clsx("hero__title", styles.heroTitle)}>
           Infinite Canvas,
           <br />
