@@ -47,7 +47,7 @@ function HomepageHeader() {
             fontWeight: 500,
           }}
         >
-          Kritzel is currently under active development. It is not recommended to use it in production.
+          Kritzel is under active development and not recommended for production use.
         </div>
         <Heading as="h1" className={clsx("hero__title", styles.heroTitle)}>
           Infinite Canvas,

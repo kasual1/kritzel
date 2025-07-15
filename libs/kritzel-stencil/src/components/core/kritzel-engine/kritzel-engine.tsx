@@ -41,11 +41,7 @@ export class KritzelEngine {
       label: 'Paste',
       icon: 'paste',
       disabled: () => this.store.state.copiedObjects === null,
-      action: () => {
-        const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;
-        const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;
-        this.paste(x, y);
-      },
+      action: menu => this.paste(menu.x, menu.y),
     },
     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },
   ];
@@ -57,11 +53,7 @@ export class KritzelEngine {
       label: 'Paste',
       icon: 'paste',
       disabled: () => this.store.state.copiedObjects === null,
-      action: () => {
-        const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;
-        const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;
-        this.paste(x, y);
-      },
+      action: menu => this.paste(menu.x, menu.y),
     },
     { label: 'Delete', icon: 'delete', action: () => this.delete() },
     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },
@@ -168,6 +160,7 @@ export class KritzelEngine {
     }
 
     this.store.state.pointers.set(ev.pointerId, ev);
+    
     this.viewport.handlePointerMove(ev);
     this.store.state?.activeTool?.handlePointerMove(ev);
   }
@@ -180,6 +173,7 @@ export class KritzelEngine {
 
     this.store.state.pointers.delete(ev.pointerId);
     this.host.releasePointerCapture(ev.pointerId);
+
     this.viewport.handlePointerUp(ev);
     this.store.state?.activeTool?.handlePointerUp(ev);
   }
@@ -192,7 +186,7 @@ export class KritzelEngine {
 
     this.host.releasePointerCapture(ev.pointerId);
     this.store.state.pointers.delete(ev.pointerId);
-
+   
     this.viewport.handlePointerUp(ev);
     this.store.state?.activeTool?.handlePointerUp(ev);
   }
@@ -240,7 +234,10 @@ export class KritzelEngine {
   }
 
   handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
-    event.detail.action();
+    event.detail.action({
+      x: (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale,
+      y: (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale,
+    });
     this.hideContextMenu();
   }
 
