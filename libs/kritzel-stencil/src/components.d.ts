@@ -12,6 +12,7 @@ import { KritzelTextTool } from "./classes/tools/text-tool.class";
 import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelStore } from "./classes/store.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+import { ContextMenuItem as ContextMenuItem1 } from "./components";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
@@ -23,6 +24,7 @@ export { KritzelTextTool } from "./classes/tools/text-tool.class";
 export { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelStore } from "./classes/store.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+export { ContextMenuItem as ContextMenuItem1 } from "./components";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
@@ -121,9 +123,17 @@ export namespace Components {
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getSelectedObjects": () => Promise<KritzelBaseObject[]>;
         /**
+          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]
+         */
+        "globalContextMenuItems": ContextMenuItem1[];
+        /**
           * @default false
          */
         "hideControls": boolean;
+        /**
+          * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },   ]
+         */
+        "objectContextMenuItems": ContextMenuItem1[];
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "selectAllObjectsInViewport": () => Promise<void>;
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
@@ -140,18 +150,13 @@ export namespace Components {
         "delete": () => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
+        "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
-        /**
-          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: menu => this.paste(menu.x, menu.y),     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]
-         */
         "globalContextMenuItems": ContextMenuItem[];
         "hideContextMenu": () => Promise<void>;
         "moveToBottom": (object?: KritzelBaseObject<any>) => Promise<void>;
         "moveToTop": (object?: KritzelBaseObject<any>) => Promise<void>;
-        /**
-          * @default [     { label: 'Copy', icon: 'copy', action: () => this.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: menu => this.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },   ]
-         */
         "objectContextMenuItems": ContextMenuItem[];
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
@@ -658,20 +663,22 @@ declare namespace LocalJSX {
          */
         "customSvgIcons"?: Record<string, string>;
         /**
+          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]
+         */
+        "globalContextMenuItems"?: ContextMenuItem1[];
+        /**
           * @default false
          */
         "hideControls"?: boolean;
+        /**
+          * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },   ]
+         */
+        "objectContextMenuItems"?: ContextMenuItem1[];
         "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
-        /**
-          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: menu => this.paste(menu.x, menu.y),     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]
-         */
         "globalContextMenuItems"?: ContextMenuItem[];
-        /**
-          * @default [     { label: 'Copy', icon: 'copy', action: () => this.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: menu => this.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },   ]
-         */
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<void>) => void;

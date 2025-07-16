@@ -3,6 +3,7 @@ import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.c
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { DEFAULT_KRITZEL_CONTROLS } from '../../../configs/default-toolbar-controls';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
+import { ContextMenuItem } from '../../../components';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -17,6 +18,31 @@ export class KritzelEditor {
 
   @Prop()
   hideControls: boolean = false;
+
+  @Prop()
+  globalContextMenuItems: ContextMenuItem[] = [
+    {
+      label: 'Paste',
+      icon: 'paste',
+      disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
+      action: menu => this.engineRef.paste(menu.x, menu.y),
+    },
+    { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },
+  ];
+
+  @Prop()
+  objectContextMenuItems: ContextMenuItem[] = [
+    { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },
+    {
+      label: 'Paste',
+      icon: 'paste',
+      disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
+      action: menu => this.engineRef.paste(menu.x, menu.y),
+    },
+    { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },
+    { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },
+    { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },
+  ];
 
   @Event()
   isReady: EventEmitter<HTMLElement>;
@@ -133,7 +159,13 @@ export class KritzelEditor {
   render() {
     return (
       <Host>
-        <kritzel-engine ref={el => (this.engineRef = el)} onIsEngineReady={() => (this.isEngineReady = true)}></kritzel-engine>
+        <kritzel-engine
+          ref={el => (this.engineRef = el)}
+          onIsEngineReady={() => (this.isEngineReady = true)}
+          globalContextMenuItems={this.globalContextMenuItems}
+          objectContextMenuItems={this.objectContextMenuItems}
+        ></kritzel-engine>
+
         <kritzel-controls
           ref={el => (this.controlsRef = el)}
           controls={this.controls}
