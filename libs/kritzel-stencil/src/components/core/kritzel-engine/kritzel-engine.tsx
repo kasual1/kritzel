@@ -1,4 +1,4 @@
-import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventEmitter, Watch } from '@stencil/core';
 import { KritzelTool } from '../../../interfaces/tool.interface';
 import { KritzelViewport } from '../../../classes/viewport.class';
 import { KritzelPath } from '../../../classes/objects/path.class';
@@ -22,6 +22,7 @@ import { RemoveObjectCommand } from '../../../classes/commands/remove-object.com
 import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
 import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
+import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 
 @Component({
   tag: 'kritzel-engine',
@@ -38,11 +39,11 @@ export class KritzelEngine {
   @Prop()
   objectContextMenuItems: ContextMenuItem[];
 
-  @Prop()
-  maxZoom: number = 10;
+  @Prop({ mutable: true })
+  scaleMax: number = ABSOLUTE_SCALE_MAX;
 
-  @Prop()
-  minZoom: number = 0.1;
+  @Prop({ mutable: true })
+  scaleMin: number = ABSOLUTE_SCALE_MIN;
 
   @Event()
   isEngineReady: EventEmitter<void>;
@@ -55,6 +56,28 @@ export class KritzelEngine {
 
   @State()
   forceUpdate: number = 0;
+
+  @Watch('scaleMax')
+  validateScaleMax(newValue: number) {
+    if (newValue > ABSOLUTE_SCALE_MAX) {
+      console.warn(`scaleMax cannot be greater than ${ABSOLUTE_SCALE_MAX}.`);
+      this.scaleMax = ABSOLUTE_SCALE_MAX;
+      this.store.state.scaleMax = this.scaleMax;
+    } else {
+      this.store.state.scaleMax = newValue;
+    }
+  }
+
+  @Watch('scaleMin')
+  validateScaleMin(newValue: number) {
+    if (newValue < ABSOLUTE_SCALE_MIN) {
+      console.warn(`scaleMin cannot be less than ${ABSOLUTE_SCALE_MIN}.`);
+      this.scaleMin = ABSOLUTE_SCALE_MIN;
+      this.store.state.scaleMin = this.scaleMin;
+    } else {
+      this.store.state.scaleMin = newValue;
+    }
+  }
 
   store: KritzelStore;
 
@@ -76,6 +99,11 @@ export class KritzelEngine {
 
   constructor() {
     this.store = new KritzelStore(this);
+  }
+
+  componentWillLoad() {
+    this.validateScaleMax(this.scaleMax);
+    this.validateScaleMin(this.scaleMin);
   }
 
   componentDidLoad() {
@@ -384,14 +412,6 @@ export class KritzelEngine {
   @Method()
   async getCopiedObjects(): Promise<KritzelBaseObject[]> {
     return this.store.state.copiedObjects?.objects || [];
-  }
-
-  handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
-    event.detail.action({
-      x: (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale,
-      y: (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale,
-    });
-    this.hideContextMenu();
   }
 
   private _registerStateChangeListeners() {
@@ -788,7 +808,13 @@ export class KritzelEngine {
               top: `${this.store.state.contextMenuY}px`,
               zIndex: '10000',
             }}
-            onActionSelected={event => this.handleContextMenuAction(event)}
+            onActionSelected={event => {
+              event.detail.action({
+                x: (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale,
+                y: (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale,
+              });
+              this.hideContextMenu();
+            }}
           ></kritzel-context-menu>
         )}
 

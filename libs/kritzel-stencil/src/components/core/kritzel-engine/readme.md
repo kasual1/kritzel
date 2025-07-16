@@ -7,11 +7,13 @@
 
 ## Properties
 
-| Property                 | Attribute                   | Description | Type                | Default     |
-| ------------------------ | --------------------------- | ----------- | ------------------- | ----------- |
-| `activeTool`             | `active-tool`               |             | `KritzelTool`       | `undefined` |
-| `globalContextMenuItems` | `global-context-menu-items` |             | `ContextMenuItem[]` | `undefined` |
-| `objectContextMenuItems` | `object-context-menu-items` |             | `ContextMenuItem[]` | `undefined` |
+| Property                 | Attribute                   | Description | Type                | Default              |
+| ------------------------ | --------------------------- | ----------- | ------------------- | -------------------- |
+| `activeTool`             | `active-tool`               |             | `KritzelTool`       | `undefined`          |
+| `globalContextMenuItems` | `global-context-menu-items` |             | `ContextMenuItem[]` | `undefined`          |
+| `objectContextMenuItems` | `object-context-menu-items` |             | `ContextMenuItem[]` | `undefined`          |
+| `scaleMax`               | `scale-max`                 |             | `number`            | `ABSOLUTE_SCALE_MAX` |
+| `scaleMin`               | `scale-min`                 |             | `number`            | `ABSOLUTE_SCALE_MIN` |
 
 
 ## Events

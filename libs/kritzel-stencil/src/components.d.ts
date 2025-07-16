@@ -141,6 +141,14 @@ export namespace Components {
          */
         "objectContextMenuItems": ContextMenuItem[];
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        /**
+          * @default ABSOLUTE_SCALE_MAX
+         */
+        "scaleMax": number;
+        /**
+          * @default ABSOLUTE_SCALE_MIN
+         */
+        "scaleMin": number;
         "selectAllObjectsInViewport": () => Promise<void>;
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
@@ -161,14 +169,6 @@ export namespace Components {
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
         "globalContextMenuItems": ContextMenuItem[];
         "hideContextMenu": () => Promise<void>;
-        /**
-          * @default 10
-         */
-        "maxZoom": number;
-        /**
-          * @default 0.1
-         */
-        "minZoom": number;
         "moveToBottom": (object?: KritzelBaseObject<any>) => Promise<void>;
         "moveToTop": (object?: KritzelBaseObject<any>) => Promise<void>;
         "objectContextMenuItems": ContextMenuItem[];
@@ -176,6 +176,14 @@ export namespace Components {
         "redo": () => Promise<void>;
         "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig) => Promise<KritzelBaseTool>;
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        /**
+          * @default ABSOLUTE_SCALE_MAX
+         */
+        "scaleMax": number;
+        /**
+          * @default ABSOLUTE_SCALE_MIN
+         */
+        "scaleMin": number;
         "selectAllObjectsInViewport": () => Promise<void>;
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
@@ -697,21 +705,29 @@ declare namespace LocalJSX {
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
+        /**
+          * @default ABSOLUTE_SCALE_MAX
+         */
+        "scaleMax"?: number;
+        /**
+          * @default ABSOLUTE_SCALE_MIN
+         */
+        "scaleMin"?: number;
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
         "globalContextMenuItems"?: ContextMenuItem[];
-        /**
-          * @default 10
-         */
-        "maxZoom"?: number;
-        /**
-          * @default 0.1
-         */
-        "minZoom"?: number;
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<void>) => void;
+        /**
+          * @default ABSOLUTE_SCALE_MAX
+         */
+        "scaleMax"?: number;
+        /**
+          * @default ABSOLUTE_SCALE_MIN
+         */
+        "scaleMin"?: number;
     }
     interface KritzelFont {
         /**

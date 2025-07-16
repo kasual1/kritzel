@@ -10,6 +10,7 @@ import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { DEFAULT_BRUSH_CONFIG } from '../../../configs/default-brush-tool.config';
 import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
+import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 
 @Component({
   tag: 'kritzel-editor',
@@ -17,6 +18,12 @@ import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
   shadow: false,
 })
 export class KritzelEditor {
+  @Prop()
+  scaleMax: number = ABSOLUTE_SCALE_MAX;
+
+  @Prop()
+  scaleMin: number = ABSOLUTE_SCALE_MIN;
+
   @Prop()
   controls: KritzelToolbarControl[] = [
     {
@@ -214,6 +221,8 @@ export class KritzelEditor {
         <kritzel-engine
           ref={el => (this.engineRef = el)}
           onIsEngineReady={() => (this.isEngineReady = true)}
+          scaleMax={this.scaleMax}
+          scaleMin={this.scaleMin}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
         ></kritzel-engine>
