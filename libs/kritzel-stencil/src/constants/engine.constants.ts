@@ -1,0 +1,2 @@
+export const ABSOLUTE_SCALE_MAX = 1000;
+export const ABSOLUTE_SCALE_MIN = 0.0001;
