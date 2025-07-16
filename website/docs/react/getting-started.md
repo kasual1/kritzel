@@ -58,8 +58,6 @@ function App() {
 export default App;
 ```
 
----
-
 ## Optional Enhancements
 
 ### Apply Full Viewport Styling

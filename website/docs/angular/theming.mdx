@@ -1,1 +1,128 @@
 # Theming
+
+The appearance of the KritzelEditor can be customized via CSS variables. You can override these variables in your application's stylesheet to match your design system.
+
+## How to use
+
+Typically, you would define the overrides in your global stylesheet within the `:root` selector.
+
+```css
+:root {
+  --kritzel-primary-color: #007bff; /* Your brand's primary color */
+  --kritzel-engine-background-color: #f8f9fa; /* A light grey background */
+  /* ... and so on */
+}
+```
+
+## Available CSS Variables
+
+Below is a list of all available CSS variables that you can use to style the KritzelEditor.
+
+### General
+
+| Variable                  | Default   | Description                                    |
+| ------------------------- | --------- | ---------------------------------------------- |
+| `--kritzel-primary-color` | `#dd0031` | The primary color used throughout the editor. |
+
+### Engine
+
+This variable controls the background of the drawing canvas.
+
+| Variable                          | Default   | Description                               |
+| --------------------------------- | --------- | ----------------------------------------- |
+| `--kritzel-engine-background-color` | `#ffffff` | Background color of the editor canvas.    |
+
+### Selection
+
+These variables control the appearance of the selection box and the handles for selected annotations.
+
+| Variable                                   | Default                        | Description                                        |
+| ------------------------------------------ | ------------------------------ | -------------------------------------------------- |
+| `--kritzel-selection-box-background-color` | `rgba(221, 0, 48, 0.2)`        | Background color of the selection box.             |
+| `--kritzel-selection-box-border-color`     | `rgba(221, 0, 48, 0.5)`        | Border color of the selection box.                 |
+| `--kritzel-selection-border-color`         | `var(--kritzel-primary-color)` | Border color of a selected annotation.             |
+| `--kritzel-selection-border-width`         | `2px`                          | Border width of a selected annotation.             |
+| `--kritzel-selection-border-style`         | `solid`                        | Border style of a selected annotation.             |
+| `--kritzel-selection-handle-size`          | `6px`                          | Size of the selection handles.                     |
+| `--kritzel-selection-handle-color`         | `#000000`                      | Color of the selection handles.                    |
+
+### Context Menu
+
+These variables are used to style the context menu that appears when right-clicking on an annotation.
+
+| Variable                                           | Default                             | Description                                              |
+| -------------------------------------------------- | ----------------------------------- | -------------------------------------------------------- |
+| `--kritzel-context-menu-background-color`          | `#ffffff`                           | Background color of the context menu.                    |
+| `--kritzel-context-menu-border-radius`             | `12px`                              | Border radius of the context menu.                       |
+| `--kritzel-context-menu-box-shadow`                | `0 1px 6px rgba(0, 0, 0, 0.12)`     | Box shadow of the context menu.                          |
+| `--kritzel-context-menu-border`                    | `1px solid #f0f0f0`                 | Border of the context menu.                              |
+| `--kritzel-context-menu-padding`                   | `4px`                               | Padding of the context menu.                             |
+| `--kritzel-context-menu-item-gap`                  | `8px`                               | Gap between context menu items.                          |
+| `--kritzel-context-menu-item-padding`              | `8px`                               | Padding of a context menu item.                          |
+| `--kritzel-context-menu-item-border-radius`        | `12px`                              | Border radius of a context menu item.                    |
+| `--kritzel-context-menu-item-color`                | `#333333`                           | Text color of a context menu item.                       |
+| `--kritzel-context-menu-item-font-size`            | `14px`                              | Font size of a context menu item.                        |
+| `--kritzel-context-menu-item-hover-background-color` | `hsl(0, 0%, 0%, 4.3%)`              | Background color of a context menu item on hover.        |
+| `--kritzel-context-menu-item-active-background-color`| `hsl(0, 0%, 0%, 8.6%)`              | Background color of an active context menu item.         |
+| `--kritzel-context-menu-item-disabled-color`       | `#aaaaaa`                           | Text color of a disabled context menu item.              |
+
+### Controls
+
+These variables control the appearance of the toolbar controls.
+
+| Variable                                             | Default                             | Description                                        |
+| ---------------------------------------------------- | ----------------------------------- | -------------------------------------------------- |
+| `--kritzel-controls-box-shadow`                      | `0 0 3px rgba(0, 0, 0, 0.08)`       | Box shadow of the controls container.              |
+| `--kritzel-controls-border`                          | `1px solid #f0f0f0`                 | Border of the controls container.                  |
+| `--kritzel-controls-border-radius`                   | `16px`                              | Border radius of the controls container.           |
+| `--kritzel-controls-background-color`                | `#ffffff`                           | Background color of the controls container.        |
+| `--kritzel-controls-padding`                         | `8px`                               | Padding of the controls container.                 |
+| `--kritzel-controls-gap`                             | `8px`                               | Gap between controls.                              |
+| `--kritzel-controls-control-color`                   | `#000`                              | Color of the control icons/text.                   |
+| `--kritzel-controls-control-border-radius`           | `12px`                              | Border radius of a control.                        |
+| `--kritzel-controls-control-padding`                 | `8px`                               | Padding of a control.                              |
+| `--kritzel-controls-control-hover-background-color`  | `hsl(0, 0%, 0%, 4.3%)`              | Background color of a control on hover.            |
+| `--kritzel-controls-control-active-background-color` | `hsl(0, 0%, 0%, 8.6%)`              | Background color of an active control.             |
+| `--kritzel-controls-control-selected-background-color` | `var(--kritzel-primary-color)`      | Background color of a selected control.            |
+| `--kritzel-controls-control-selected-color`          | `#ffffff`                           | Color of a selected control's icon/text.           |
+| `--kritzel-controls-divider-width`                   | `1px`                               | Width of the divider between control groups.       |
+| `--kritzel-controls-divider-height`                  | `24px`                              | Height of the divider between control groups.      |
+| `--kritzel-controls-divider-background-color`        | `hsl(0, 0%, 0%, 4.3%)`              | Background color of the divider.                   |
+| `--kritzel-controls-tooltip-background-color`        | `#fff`                              | Background color of the tooltip.                   |
+| `--kritzel-controls-tooltip-color`                   | `#000`                              | Text color of the tooltip.                         |
+| `--kritzel-controls-tooltip-border-radius`           | `16px`                              | Border radius of the tooltip.                      |
+| `--kritzel-controls-tooltip-padding`                 | `8px`                               | Padding of the tooltip.                            |
+| `--kritzel-controls-tooltip-box-shadow`              | `0 1px 6px rgba(0, 0, 0, 0.12)`     | Box shadow of the tooltip.                         |
+
+### Color Palette
+
+These variables are for styling the color palette control.
+
+| Variable                                           | Default                        | Description                                              |
+| -------------------------------------------------- | ------------------------------ | -------------------------------------------------------- |
+| `--kritzel-color-palette-hover-background-color`   | `#f0f0f0`                      | Background color for a color swatch on hover.            |
+| `--kritzel-color-palette-circle-border-color`      | `#dddcdc`                      | Border color of a color swatch.                          |
+| `--kritzel-color-palette-selected-border-color`    | `var(--kritzel-primary-color)` | Border color of the selected color swatch.               |
+| `--kritzel-color-palette-selected-background-color`| `#f0f0f0`                      | Background color of the selected color swatch.           |
+| `--kritzel-color-palette-expand-toggle-color`      | `#666`                         | Color of the expand/collapse toggle icon.                |
+| `--kritzel-color-palette-expand-toggle-hover-color`| `#333`                         | Color of the expand/collapse toggle icon on hover.       |
+
+### Stroke Size
+
+These variables are for styling the stroke size selector.
+
+| Variable                                         | Default                        | Description                                              |
+| ------------------------------------------------ | ------------------------------ | -------------------------------------------------------- |
+| `--kritzel-stroke-size-hover-background-color`   | `#f0f0f0`                      | Background color for a stroke size option on hover.      |
+| `--kritzel-stroke-size-selected-border-color`    | `var(--kritzel-primary-color)` | Border color of the selected stroke size option.         |
+| `--kritzel-stroke-size-selected-background-color`| `#f0f0f0`                      | Background color of the selected stroke size option.     |
+| `--kritzel-stroke-size-circle-color`             | `#000`                         | Color of the circle representing the stroke size.        |
+
+### Cursor Trail
+
+These variables control the appearance of the cursor trail effect.
+
+| Variable                         | Default               | Description                               |
+| -------------------------------- | --------------------- | ----------------------------------------- |
+| `--kritzel-cursor-trail-color`   | `rgb(228, 228, 228)`  | Color of the cursor trail.                |
+| `--kritzel-cursor-trail-opacity` | `0.6`                 | Opacity of the cursor trail.              |
