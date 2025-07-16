@@ -10,10 +10,11 @@ import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stenci
 
 export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__*/ defineContainer<JSX.KritzelEditor>('kritzel-editor', defineKritzelEditor, [
   'controls',
-  'customSvgIcons',
-  'hideControls',
   'globalContextMenuItems',
   'objectContextMenuItems',
+  'customSvgIcons',
+  'isControlsVisible',
+  'isUtilityPanelVisible',
   'isReady'
 ], [
   'isReady'

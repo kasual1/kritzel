@@ -1,5 +1,11 @@
 import { Component } from '@angular/core';
-import { KritzelEditor, KritzelText } from 'kritzel-angular';
+import {
+  DEFAULT_BRUSH_CONFIG,
+  KritzelBrushTool,
+  KritzelEditor,
+  KritzelSelectionTool,
+  KritzelText,
+} from 'kritzel-angular';
 
 @Component({
   selector: 'app-root',
@@ -9,8 +15,32 @@ import { KritzelEditor, KritzelText } from 'kritzel-angular';
   standalone: true,
 })
 export class AppComponent {
-
   kritzelEditor!: HTMLKritzelEditorElement;
+
+  controls = [
+    {
+      name: 'selection',
+      type: 'tool',
+      tool: KritzelSelectionTool,
+      icon: 'cursor',
+    },
+    {
+      name: 'brush',
+      type: 'tool',
+      tool: KritzelBrushTool,
+      isDefault: true,
+      icon: 'pen',
+      config: DEFAULT_BRUSH_CONFIG,
+    },
+    {
+      name: 'divider',
+      type: 'divider',
+    },
+    {
+      name: 'config',
+      type: 'config',
+    },
+  ];
 
   async onIsReady(event: any): Promise<void> {
     this.kritzelEditor = event.detail;

@@ -90,6 +90,10 @@ export namespace Components {
           * @default []
          */
         "controls": KritzelToolbarControl[];
+        /**
+          * @default true
+         */
+        "isUtilityPanelVisible": boolean;
     }
     interface KritzelCursorTrail {
         "store": KritzelStore;
@@ -125,9 +129,13 @@ export namespace Components {
          */
         "globalContextMenuItems": ContextMenuItem[];
         /**
-          * @default false
+          * @default true
          */
-        "hideControls": boolean;
+        "isControlsVisible": boolean;
+        /**
+          * @default true
+         */
+        "isUtilityPanelVisible": boolean;
         /**
           * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },   ]
          */
@@ -633,6 +641,10 @@ declare namespace LocalJSX {
           * @default []
          */
         "controls"?: KritzelToolbarControl[];
+        /**
+          * @default true
+         */
+        "isUtilityPanelVisible"?: boolean;
         "onIsControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
     }
     interface KritzelCursorTrail {
@@ -665,9 +677,13 @@ declare namespace LocalJSX {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * @default false
+          * @default true
          */
-        "hideControls"?: boolean;
+        "isControlsVisible"?: boolean;
+        /**
+          * @default true
+         */
+        "isUtilityPanelVisible"?: boolean;
         /**
           * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },   ]
          */
