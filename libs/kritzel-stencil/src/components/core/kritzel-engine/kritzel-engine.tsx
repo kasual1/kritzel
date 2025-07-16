@@ -76,14 +76,14 @@ export class KritzelEngine {
 
   constructor() {
     this.store = new KritzelStore(this);
-    this.contextMenuHandler = new KritzelContextMenuHandler(this.store, this.globalContextMenuItems, this.objectContextMenuItems);
-    this.keyHandler = new KritzelKeyHandler(this.store);
-
-    this._registerStateChangeListeners();
   }
 
   componentDidLoad() {
+    this.contextMenuHandler = new KritzelContextMenuHandler(this.store, this.globalContextMenuItems, this.objectContextMenuItems);
+    this.keyHandler = new KritzelKeyHandler(this.store);
     this.viewport = new KritzelViewport(this.store, this.host);
+
+    this._registerStateChangeListeners();
 
     if (this.store.state.isReady === false) {
       this.store.state.isReady = true;
@@ -204,14 +204,6 @@ export class KritzelEngine {
     const isInKritzelEngine = path.includes(kritzelEngineElement || this.host);
 
     this.store.setState('isFocused', isInside && isInKritzelEngine);
-  }
-
-  handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
-    event.detail.action({
-      x: (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale,
-      y: (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale,
-    });
-    this.hideContextMenu();
   }
 
   @Method()
@@ -392,6 +384,14 @@ export class KritzelEngine {
   @Method()
   async getCopiedObjects(): Promise<KritzelBaseObject[]> {
     return this.store.state.copiedObjects?.objects || [];
+  }
+
+  handleContextMenuAction(event: CustomEvent<ContextMenuItem>) {
+    event.detail.action({
+      x: (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale,
+      y: (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale,
+    });
+    this.hideContextMenu();
   }
 
   private _registerStateChangeListeners() {
