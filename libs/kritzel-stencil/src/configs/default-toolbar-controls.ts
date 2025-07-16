@@ -1,9 +1,4 @@
-import { KritzelBrushTool } from '../classes/tools/brush-tool.class';
-import { KritzelEraserTool } from '../classes/tools/eraser-tool.class';
-import { KritzelImageTool } from '../classes/tools/image-tool.class';
-import { KritzelSelectionTool } from '../classes/tools/selection-tool.class';
-import { KritzelTextTool } from '../classes/tools/text-tool.class';
-import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from '../interfaces/toolbar-control.interface';
+import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../interfaces/toolbar-control.interface';
 
 export const DEFAULT_BRUSH_CONFIG: KritzelBrushToolConfig = {
   type: 'pen',
@@ -97,46 +92,3 @@ export const DEFAULT_TEXT_CONFIG: KritzelTextToolConfig = {
   ],
 };
 
-export const DEFAULT_KRITZEL_CONTROLS: KritzelToolbarControl[] = [
-  {
-    name: 'selection',
-    type: 'tool',
-    tool: KritzelSelectionTool,
-    icon: 'cursor',
-  },
-  {
-    name: 'brush',
-    type: 'tool',
-    tool: KritzelBrushTool,
-    isDefault: true,
-    icon: 'pen',
-    config: DEFAULT_BRUSH_CONFIG,
-  },
-  {
-    name: 'eraser',
-    type: 'tool',
-    tool: KritzelEraserTool,
-    icon: 'eraser',
-  },
-  {
-    name: 'text',
-    type: 'tool',
-    tool: KritzelTextTool,
-    icon: 'type',
-    config: DEFAULT_TEXT_CONFIG,
-  },
-  {
-    name: 'image',
-    type: 'tool',
-    tool: KritzelImageTool,
-    icon: 'image',
-  },
-  {
-    name: 'divider',
-    type: 'divider',
-  },
-  {
-    name: 'config',
-    type: 'config',
-  },
-];

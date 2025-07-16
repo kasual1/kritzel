@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property                 | Attribute                   | Description | Type                | Default                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ------------------------ | --------------------------- | ----------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `activeTool`             | `active-tool`               |             | `KritzelTool`       | `undefined`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `globalContextMenuItems` | `global-context-menu-items` |             | `ContextMenuItem[]` | `[     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]`                                                                                                                                                                                                                      |
-| `objectContextMenuItems` | `object-context-menu-items` |             | `ContextMenuItem[]` | `[     { label: 'Copy', icon: 'copy', action: () => this.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: () => this.store.state.copiedObjects === null,       action: () => {         const x = (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale;         const y = (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale;         this.paste(x, y);       },     },     { label: 'Delete', icon: 'delete', action: () => this.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },   ]` |
+| Property                 | Attribute                   | Description | Type                | Default     |
+| ------------------------ | --------------------------- | ----------- | ------------------- | ----------- |
+| `activeTool`             | `active-tool`               |             | `KritzelTool`       | `undefined` |
+| `globalContextMenuItems` | `global-context-menu-items` |             | `ContextMenuItem[]` | `undefined` |
+| `objectContextMenuItems` | `object-context-menu-items` |             | `ContextMenuItem[]` | `undefined` |
 
 
 ## Events
@@ -56,19 +56,19 @@ Type: `Promise<void>`
 
 
 
-### `centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>`
+### `centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement>>`
 
 
 
 #### Parameters
 
-| Name     | Type                                           | Description |
-| -------- | ---------------------------------------------- | ----------- |
-| `object` | `KritzelBaseObject<HTMLElement \| SVGElement>` |             |
+| Name     | Type                             | Description |
+| -------- | -------------------------------- | ----------- |
+| `object` | `KritzelBaseObject<HTMLElement>` |             |
 
 #### Returns
 
-Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>>`
+Type: `Promise<KritzelBaseObject<HTMLElement>>`
 
 
 
@@ -135,6 +135,16 @@ Type: `Promise<void>`
 #### Returns
 
 Type: `Promise<void>`
+
+
+
+### `getCopiedObjects() => Promise<KritzelBaseObject[]>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelBaseObject<HTMLElement>[]>`
 
 
 
@@ -283,9 +293,9 @@ Type: `Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                             | Description |
-| --------- | ------------------------------------------------ | ----------- |
-| `objects` | `KritzelBaseObject<HTMLElement \| SVGElement>[]` |             |
+| Name      | Type                               | Description |
+| --------- | ---------------------------------- | ----------- |
+| `objects` | `KritzelBaseObject<HTMLElement>[]` |             |
 
 #### Returns
 

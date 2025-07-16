@@ -1,9 +1,15 @@
 import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
 import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
-import { DEFAULT_KRITZEL_CONTROLS } from '../../../configs/default-toolbar-controls';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
-import { ContextMenuItem } from '../../../components';
+import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
+import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
+import { KritzelImageTool } from '../../../classes/tools/image-tool.class';
+import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
+import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
+import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
+import { DEFAULT_BRUSH_CONFIG, DEFAULT_TEXT_CONFIG } from '../../../configs/default-toolbar-controls';
+
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -11,7 +17,49 @@ import { ContextMenuItem } from '../../../components';
 })
 export class KritzelEditor {
   @Prop()
-  controls: KritzelToolbarControl[] = DEFAULT_KRITZEL_CONTROLS;
+  controls: KritzelToolbarControl[] = [
+    {
+      name: 'selection',
+      type: 'tool',
+      tool: KritzelSelectionTool,
+      icon: 'cursor',
+    },
+    {
+      name: 'brush',
+      type: 'tool',
+      tool: KritzelBrushTool,
+      isDefault: true,
+      icon: 'pen',
+      config: DEFAULT_BRUSH_CONFIG,
+    },
+    {
+      name: 'eraser',
+      type: 'tool',
+      tool: KritzelEraserTool,
+      icon: 'eraser',
+    },
+    {
+      name: 'text',
+      type: 'tool',
+      tool: KritzelTextTool,
+      icon: 'type',
+      config: DEFAULT_TEXT_CONFIG,
+    },
+    {
+      name: 'image',
+      type: 'tool',
+      tool: KritzelImageTool,
+      icon: 'image',
+    },
+    {
+      name: 'divider',
+      type: 'divider',
+    },
+    {
+      name: 'config',
+      type: 'config',
+    },
+  ];
 
   @Prop()
   customSvgIcons: Record<string, string> = {};
