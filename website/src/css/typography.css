@@ -42,6 +42,9 @@ nav.menu {
   font-size: 0.8rem;
 }
 
-code, .token-line{
-  font-size: 0.9rem;
+code, .token-line * {
+  font-size: 0.8rem;
+  font-family:  monospace !important;
+  line-height: 1.1!important;
+
 }

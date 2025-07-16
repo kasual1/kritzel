@@ -41,7 +41,7 @@ function HomepageHeader() {
             fontSize: "1rem",
             marginBottom: "3.5rem",
             display: "inline-block",
-            border: '2px solid #000000',
+            border: '2px solid var(--ifm-color-primary)',
             borderRadius: '8px',
             padding: '0.5rem 1rem',
             fontWeight: 500,
