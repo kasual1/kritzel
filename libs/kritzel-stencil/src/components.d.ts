@@ -12,7 +12,6 @@ import { KritzelTextTool } from "./classes/tools/text-tool.class";
 import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelStore } from "./classes/store.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
-import { ContextMenuItem as ContextMenuItem1 } from "./components";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
@@ -24,7 +23,6 @@ export { KritzelTextTool } from "./classes/tools/text-tool.class";
 export { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelStore } from "./classes/store.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
-export { ContextMenuItem as ContextMenuItem1 } from "./components";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
@@ -113,7 +111,7 @@ export namespace Components {
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement>>;
         "clearSelection": () => Promise<void>;
         /**
-          * @default DEFAULT_KRITZEL_CONTROLS
+          * @default [     {       name: 'selection',       type: 'tool',       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       isDefault: true,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'divider',       type: 'divider',     },     {       name: 'config',       type: 'config',     },   ]
          */
         "controls": KritzelToolbarControl[];
         /**
@@ -125,7 +123,7 @@ export namespace Components {
         /**
           * @default [     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]
          */
-        "globalContextMenuItems": ContextMenuItem1[];
+        "globalContextMenuItems": ContextMenuItem[];
         /**
           * @default false
          */
@@ -133,7 +131,7 @@ export namespace Components {
         /**
           * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },   ]
          */
-        "objectContextMenuItems": ContextMenuItem1[];
+        "objectContextMenuItems": ContextMenuItem[];
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "selectAllObjectsInViewport": () => Promise<void>;
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
@@ -655,7 +653,7 @@ declare namespace LocalJSX {
     }
     interface KritzelEditor {
         /**
-          * @default DEFAULT_KRITZEL_CONTROLS
+          * @default [     {       name: 'selection',       type: 'tool',       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       isDefault: true,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'divider',       type: 'divider',     },     {       name: 'config',       type: 'config',     },   ]
          */
         "controls"?: KritzelToolbarControl[];
         /**
@@ -665,7 +663,7 @@ declare namespace LocalJSX {
         /**
           * @default [     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]
          */
-        "globalContextMenuItems"?: ContextMenuItem1[];
+        "globalContextMenuItems"?: ContextMenuItem[];
         /**
           * @default false
          */
@@ -673,7 +671,7 @@ declare namespace LocalJSX {
         /**
           * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },   ]
          */
-        "objectContextMenuItems"?: ContextMenuItem1[];
+        "objectContextMenuItems"?: ContextMenuItem[];
         "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
     }
     interface KritzelEngine {

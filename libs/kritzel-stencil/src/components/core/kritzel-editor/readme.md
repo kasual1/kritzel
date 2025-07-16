@@ -7,11 +7,13 @@
 
 ## Properties
 
-| Property         | Attribute          | Description | Type                       | Default                    |
-| ---------------- | ------------------ | ----------- | -------------------------- | -------------------------- |
-| `controls`       | `controls`         |             | `KritzelToolbarControl[]`  | `DEFAULT_KRITZEL_CONTROLS` |
-| `customSvgIcons` | `custom-svg-icons` |             | `{ [x: string]: string; }` | `{}`                       |
-| `hideControls`   | `hide-controls`    |             | `boolean`                  | `false`                    |
+| Property                 | Attribute                   | Description | Type                       | Default                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------ | --------------------------- | ----------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `controls`               | `controls`                  |             | `KritzelToolbarControl[]`  | `[     {       name: 'selection',       type: 'tool',       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       isDefault: true,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'divider',       type: 'divider',     },     {       name: 'config',       type: 'config',     },   ]` |
+| `customSvgIcons`         | `custom-svg-icons`          |             | `{ [x: string]: string; }` | `{}`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `globalContextMenuItems` | `global-context-menu-items` |             | `ContextMenuItem[]`        | `[     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]`                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `hideControls`           | `hide-controls`             |             | `boolean`                  | `false`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `objectContextMenuItems` | `object-context-menu-items` |             | `ContextMenuItem[]`        | `[     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },   ]`                                                                                                                                                                                                |
 
 
 ## Events
@@ -45,9 +47,9 @@ Type: `Promise<T>`
 
 #### Parameters
 
-| Name     | Type                                           | Description |
-| -------- | ---------------------------------------------- | ----------- |
-| `object` | `KritzelBaseObject<HTMLElement \| SVGElement>` |             |
+| Name     | Type                             | Description |
+| -------- | -------------------------------- | ----------- |
+| `object` | `KritzelBaseObject<HTMLElement>` |             |
 
 #### Returns
 
@@ -87,7 +89,7 @@ Type: `Promise<T>`
 
 #### Returns
 
-Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
+Type: `Promise<KritzelBaseObject<HTMLElement>[]>`
 
 
 
@@ -123,9 +125,9 @@ Type: `Promise<void>`
 
 #### Parameters
 
-| Name      | Type                                             | Description |
-| --------- | ------------------------------------------------ | ----------- |
-| `objects` | `KritzelBaseObject<HTMLElement \| SVGElement>[]` |             |
+| Name      | Type                               | Description |
+| --------- | ---------------------------------- | ----------- |
+| `objects` | `KritzelBaseObject<HTMLElement>[]` |             |
 
 #### Returns
 
