@@ -161,6 +161,14 @@ export namespace Components {
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
         "globalContextMenuItems": ContextMenuItem[];
         "hideContextMenu": () => Promise<void>;
+        /**
+          * @default 10
+         */
+        "maxZoom": number;
+        /**
+          * @default 0.1
+         */
+        "minZoom": number;
         "moveToBottom": (object?: KritzelBaseObject<any>) => Promise<void>;
         "moveToTop": (object?: KritzelBaseObject<any>) => Promise<void>;
         "objectContextMenuItems": ContextMenuItem[];
@@ -693,6 +701,14 @@ declare namespace LocalJSX {
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
         "globalContextMenuItems"?: ContextMenuItem[];
+        /**
+          * @default 10
+         */
+        "maxZoom"?: number;
+        /**
+          * @default 0.1
+         */
+        "minZoom"?: number;
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<void>) => void;

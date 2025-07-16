@@ -29,26 +29,32 @@ import { KritzelClassHelper } from '../../../helpers/class.helper';
   shadow: true,
 })
 export class KritzelEngine {
-  @Element()
-  host: HTMLElement;
-
   @Prop()
   activeTool: KritzelTool;
 
   @Prop()
   globalContextMenuItems: ContextMenuItem[];
-  
+
   @Prop()
   objectContextMenuItems: ContextMenuItem[];
 
-  @State()
-  forceUpdate: number = 0;
+  @Prop()
+  maxZoom: number = 10;
+
+  @Prop()
+  minZoom: number = 0.1;
 
   @Event()
   isEngineReady: EventEmitter<void>;
 
   @Event()
   activeToolChange: EventEmitter<KritzelBaseTool>;
+
+  @Element()
+  host: HTMLElement;
+
+  @State()
+  forceUpdate: number = 0;
 
   store: KritzelStore;
 
@@ -73,21 +79,7 @@ export class KritzelEngine {
     this.contextMenuHandler = new KritzelContextMenuHandler(this.store, this.globalContextMenuItems, this.objectContextMenuItems);
     this.keyHandler = new KritzelKeyHandler(this.store);
 
-    this.store.onStateChange('activeTool', (activeTool: KritzelBaseTool) => {
-      if (!(activeTool instanceof KritzelSelectionTool)) {
-        this.store.clearSelection();
-      }
-
-      this.store.state.skipContextMenu = false;
-      this.activeToolChange.emit(activeTool);
-      KritzelKeyboardHelper.forceHideKeyboard();
-    });
-
-    this.store.onStateChange('isFocused', (isFocused: boolean) => {
-      if (!isFocused) {
-        this.store.resetActiveText();
-      }
-    });
+    this._registerStateChangeListeners();
   }
 
   componentDidLoad() {
@@ -141,7 +133,7 @@ export class KritzelEngine {
     }
 
     this.store.state.pointers.set(ev.pointerId, ev);
-    
+
     this.viewport.handlePointerMove(ev);
     this.store.state?.activeTool?.handlePointerMove(ev);
   }
@@ -167,7 +159,7 @@ export class KritzelEngine {
 
     this.host.releasePointerCapture(ev.pointerId);
     this.store.state.pointers.delete(ev.pointerId);
-   
+
     this.viewport.handlePointerUp(ev);
     this.store.state?.activeTool?.handlePointerUp(ev);
   }
@@ -400,6 +392,27 @@ export class KritzelEngine {
   @Method()
   async getCopiedObjects(): Promise<KritzelBaseObject[]> {
     return this.store.state.copiedObjects?.objects || [];
+  }
+
+  private _registerStateChangeListeners() {
+    this.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
+    this.store.onStateChange('isFocused', this._handleIsFocusedChange.bind(this));
+  }
+
+  private _handleActiveToolChange(activeTool: KritzelBaseTool) {
+    if (!(activeTool instanceof KritzelSelectionTool)) {
+      this.store.clearSelection();
+    }
+
+    this.store.state.skipContextMenu = false;
+    this.activeToolChange.emit(activeTool);
+    KritzelKeyboardHelper.forceHideKeyboard();
+  }
+
+  private _handleIsFocusedChange(isFocused: boolean) {
+    if (!isFocused) {
+      this.store.resetActiveText();
+    }
   }
 
   render() {
