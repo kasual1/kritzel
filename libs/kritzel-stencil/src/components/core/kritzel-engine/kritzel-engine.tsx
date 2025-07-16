@@ -36,29 +36,10 @@ export class KritzelEngine {
   activeTool: KritzelTool;
 
   @Prop()
-  globalContextMenuItems: ContextMenuItem[] = [
-    {
-      label: 'Paste',
-      icon: 'paste',
-      disabled: () => this.store.state.copiedObjects === null,
-      action: menu => this.paste(menu.x, menu.y),
-    },
-    { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },
-  ];
-
+  globalContextMenuItems: ContextMenuItem[];
+  
   @Prop()
-  objectContextMenuItems: ContextMenuItem[] = [
-    { label: 'Copy', icon: 'copy', action: () => this.copy() },
-    {
-      label: 'Paste',
-      icon: 'paste',
-      disabled: () => this.store.state.copiedObjects === null,
-      action: menu => this.paste(menu.x, menu.y),
-    },
-    { label: 'Delete', icon: 'delete', action: () => this.delete() },
-    { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.moveToTop() },
-    { label: 'Send to Back', icon: 'send-to-back', action: () => this.moveToBottom() },
-  ];
+  objectContextMenuItems: ContextMenuItem[];
 
   @State()
   forceUpdate: number = 0;
@@ -414,6 +395,11 @@ export class KritzelEngine {
     this.store.history.executeCommand(command);
 
     return object;
+  }
+
+  @Method()
+  async getCopiedObjects(): Promise<KritzelBaseObject[]> {
+    return this.store.state.copiedObjects?.objects || [];
   }
 
   render() {

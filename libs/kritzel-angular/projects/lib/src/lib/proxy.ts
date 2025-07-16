@@ -8,7 +8,7 @@ import { Components } from 'kritzel-stencil';
 
 
 @ProxyCmp({
-  inputs: ['controls', 'customSvgIcons', 'hideControls'],
+  inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'hideControls', 'objectContextMenuItems'],
   methods: ['getObjectById', 'addObject', 'updateObject', 'removeObject', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport']
 })
 @Component({
@@ -16,7 +16,7 @@ import { Components } from 'kritzel-stencil';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['controls', 'customSvgIcons', 'hideControls'],
+  inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'hideControls', 'objectContextMenuItems'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
