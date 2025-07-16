@@ -14,3 +14,14 @@ export * from './classes/objects/text.class';
 export * from './classes/objects/path.class';
 export * from './classes/objects/image.class';
 
+export * from './classes/tools/brush-tool.class';
+export * from './classes/tools/eraser-tool.class';
+export * from './classes/tools/image-tool.class';
+export * from './classes/tools/text-tool.class';
+export * from './classes/tools/selection-tool.class';
+
+export * from './configs/default-brush-tool.config';
+export * from './configs/default-text-tool.config';
+
+
+

@@ -8,7 +8,8 @@ import { KritzelImageTool } from '../../../classes/tools/image-tool.class';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
-import { DEFAULT_BRUSH_CONFIG, DEFAULT_TEXT_CONFIG } from '../../../configs/default-toolbar-controls';
+import { DEFAULT_BRUSH_CONFIG } from '../../../configs/default-brush-tool.config';
+import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 
 @Component({
   tag: 'kritzel-editor',
@@ -62,12 +63,6 @@ export class KritzelEditor {
   ];
 
   @Prop()
-  customSvgIcons: Record<string, string> = {};
-
-  @Prop()
-  hideControls: boolean = false;
-
-  @Prop()
   globalContextMenuItems: ContextMenuItem[] = [
     {
       label: 'Paste',
@@ -91,6 +86,15 @@ export class KritzelEditor {
     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },
     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },
   ];
+
+  @Prop()
+  customSvgIcons: Record<string, string> = {};
+
+  @Prop()
+  isControlsVisible: boolean = true;
+
+  @Prop()
+  isUtilityPanelVisible: boolean = true;
 
   @Event()
   isReady: EventEmitter<HTMLElement>;
@@ -217,7 +221,8 @@ export class KritzelEditor {
         <kritzel-controls
           ref={el => (this.controlsRef = el)}
           controls={this.controls}
-          style={this.hideControls ? { display: 'none' } : { display: 'flex' }}
+          isUtilityPanelVisible={this.isUtilityPanelVisible}
+          style={this.isControlsVisible ? { display: 'flex' } : { display: 'none' }}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
       </Host>

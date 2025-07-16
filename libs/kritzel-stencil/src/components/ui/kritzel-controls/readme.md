@@ -7,10 +7,11 @@
 
 ## Properties
 
-| Property        | Attribute        | Description | Type                      | Default |
-| --------------- | ---------------- | ----------- | ------------------------- | ------- |
-| `activeControl` | `active-control` |             | `KritzelToolbarControl`   | `null`  |
-| `controls`      | `controls`       |             | `KritzelToolbarControl[]` | `[]`    |
+| Property                | Attribute                  | Description | Type                      | Default |
+| ----------------------- | -------------------------- | ----------- | ------------------------- | ------- |
+| `activeControl`         | `active-control`           |             | `KritzelToolbarControl`   | `null`  |
+| `controls`              | `controls`                 |             | `KritzelToolbarControl[]` | `[]`    |
+| `isUtilityPanelVisible` | `is-utility-panel-visible` |             | `boolean`                 | `true`  |
 
 
 ## Events

@@ -1,4 +1,4 @@
-import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../interfaces/toolbar-control.interface';
+import { KritzelBrushToolConfig } from '../interfaces/toolbar-control.interface';
 
 export const DEFAULT_BRUSH_CONFIG: KritzelBrushToolConfig = {
   type: 'pen',
@@ -60,35 +60,4 @@ export const DEFAULT_BRUSH_CONFIG: KritzelBrushToolConfig = {
   },
 };
 
-export const DEFAULT_TEXT_CONFIG: KritzelTextToolConfig = {
-  color: '#000000',
-  size: 8,
-  fontFamily: 'Arial',
-  palette: [
-    '#000000',
-    '#ff5252',
-    '#ffbc00',
-    '#00c853',
-    '#0000FF',
-    '#d500f9',
-    '#fafafa',
-    '#a52714',
-    '#ee8100',
-    '#558b2f',
-    '#01579b',
-    '#8e24aa',
-    '#90a4ae',
-    '#ff4081',
-    '#ff6e40',
-    '#aeea00',
-    '#304ffe',
-    '#7c4dff',
-    '#cfd8dc',
-    '#f8bbd0',
-    '#ffccbc',
-    '#f0f4c3',
-    '#9fa8da',
-    '#d1c4e9',
-  ],
-};
 

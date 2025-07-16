@@ -20,6 +20,9 @@ export class KritzelControls {
   @Prop({ mutable: true })
   activeControl: KritzelToolbarControl | null = null;
 
+  @Prop()
+  isUtilityPanelVisible: boolean = true;
+
   @Event()
   isControlsReady: EventEmitter<void>;
 
@@ -27,7 +30,7 @@ export class KritzelControls {
   firstConfig: ToolConfig | null = null;
 
   @State()
-  tooltipVisible: boolean = false;
+  isTooltipVisible: boolean = false;
 
   @State()
   isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
@@ -49,13 +52,13 @@ export class KritzelControls {
       return;
     }
 
-    this.tooltipVisible = false;
+    this.isTooltipVisible = false;
     this.kritzelEngine.enable();
   }
 
   @Method()
   async closeTooltip() {
-    this.tooltipVisible = false;
+    this.isTooltipVisible = false;
     this.kritzelEngine?.enable();
   }
 
@@ -115,7 +118,7 @@ export class KritzelControls {
 
   private handleConfigClick(event: MouseEvent) {
     event.stopPropagation();
-    this.tooltipVisible = !this.tooltipVisible;
+    this.isTooltipVisible = !this.isTooltipVisible;
     this.kritzelEngine.disable();
   }
 
@@ -133,16 +136,18 @@ export class KritzelControls {
           mobile: this.isTouchDevice,
         }}
       >
-        <kritzel-utility-panel
-          style={{
-            position: 'absolute',
-            bottom: '56px',
-            left: '12px',
-          }}
-          onUndo={() => this.kritzelEngine?.undo()}
-          onRedo={() => this.kritzelEngine?.redo()}
-          onDelete={() => this.kritzelEngine?.delete()}
-        ></kritzel-utility-panel>
+        {this.isUtilityPanelVisible && (
+          <kritzel-utility-panel
+            style={{
+              position: 'absolute',
+              bottom: '56px',
+              left: '12px',
+            }}
+            onUndo={() => this.kritzelEngine?.undo()}
+            onRedo={() => this.kritzelEngine?.redo()}
+            onDelete={() => this.kritzelEngine?.delete()}
+          ></kritzel-utility-panel>
+        )}
 
         <div class="kritzel-controls">
           {this.controls.map(control => {
@@ -168,7 +173,7 @@ export class KritzelControls {
             if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
                 <div class="kritzel-config-container" key={control.name}>
-                  <kritzel-tooltip isVisible={this.tooltipVisible} anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}>
+                  <kritzel-tooltip isVisible={this.isTooltipVisible} anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}>
                     <div style={{ width: '294px', height: '100%' }}>
                       {this.activeControl.name === 'brush' && (
                         <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
