@@ -1,1 +1,129 @@
 # Configuring the Editor
+
+The `KritzelEditor` component can be customized by setting its properties. This allows you to tailor the editor's appearance and functionality to your specific needs.
+
+## Toolbar Controls
+
+The `controls` property allows you to customize the toolbar. It takes an array of `KritzelToolbarControl` objects. Each object can be of `type`: `'tool'`, `'divider'`, or `'config'`.
+
+-   `'tool'`: Represents a selectable tool in the toolbar (e.g., Brush, Text, Eraser).
+-   `'divider'`: A visual separator between groups of tools.
+-   `'config'`: A button that opens a configuration panel for the currently active tool.
+
+Here is the default configuration for the `controls` property:
+
+```typescript
+import {
+  KritzelSelectionTool,
+  KritzelBrushTool,
+  KritzelEraserTool,
+  KritzelTextTool,
+  KritzelImageTool,
+  DEFAULT_BRUSH_CONFIG,
+  DEFAULT_TEXT_CONFIG
+} from '@kritzel/stencil';
+
+// ...
+controls: KritzelToolbarControl[] = [
+  {
+    name: 'selection',
+    type: 'tool',
+    tool: KritzelSelectionTool,
+    icon: 'cursor',
+  },
+  {
+    name: 'brush',
+    type: 'tool',
+    tool: KritzelBrushTool,
+    isDefault: true,
+    icon: 'pen',
+    config: DEFAULT_BRUSH_CONFIG,
+  },
+  {
+    name: 'eraser',
+    type: 'tool',
+    tool: KritzelEraserTool,
+    icon: 'eraser',
+  },
+  {
+    name: 'text',
+    type: 'tool',
+    tool: KritzelTextTool,
+    icon: 'type',
+    config: DEFAULT_TEXT_CONFIG,
+  },
+  {
+    name: 'image',
+    type: 'tool',
+    tool: KritzelImageTool,
+    icon: 'image',
+  },
+  {
+    name: 'divider',
+    type: 'divider',
+  },
+  {
+    name: 'config',
+    type: 'config',
+  },
+];
+```
+
+## Context Menus
+
+You can customize the items that appear in the context menus.
+
+### Global Context Menu
+
+This property configures the context menu that appears when right-clicking on an empty area of the canvas.
+
+```typescript
+// ...
+globalContextMenuItems: ContextMenuItem[] = [
+  {
+    label: 'Paste',
+    icon: 'paste',
+    disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
+    action: menu => this.engineRef.paste(menu.x, menu.y),
+  },
+  { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },
+];
+```
+
+### Object Context Menu
+
+This property configures the context menu that appears when right-clicking on a selected object.
+
+```typescript
+// ...
+objectContextMenuItems: ContextMenuItem[] = [
+  { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },
+  {
+    label: 'Paste',
+    icon: 'paste',
+    disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
+    action: menu => this.engineRef.paste(menu.x, menu.y),
+  },
+  { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },
+  { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },
+  { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },
+];
+```
+
+## Custom Icons
+
+The `customSvgIcons` property allows you to add new SVG icons or override existing ones. It accepts a `Record<string, string>` where the key is the icon name and the value is the SVG string.
+
+```typescript
+// ...
+customSvgIcons: { [name: string]: string } = {
+  'custom-icon': '<svg>...</svg>'
+};
+```
+
+## Other Properties
+
+| Property                | Type      | Description                                             |
+|-------------------------|-----------|---------------------------------------------------------|
+| `isControlsVisible`     | boolean   | Determines whether the toolbar controls are visible.    |
+| `isUtilityPanelVisible` | boolean   | Determines whether the utility panel is visible.        |

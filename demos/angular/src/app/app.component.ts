@@ -5,6 +5,7 @@ import {
   KritzelEditor,
   KritzelSelectionTool,
   KritzelText,
+  KritzelToolbarControl,
 } from 'kritzel-angular';
 
 @Component({
@@ -17,7 +18,7 @@ import {
 export class AppComponent {
   kritzelEditor!: HTMLKritzelEditorElement;
 
-  controls = [
+  controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
       type: 'tool',
@@ -39,7 +40,7 @@ export class AppComponent {
     {
       name: 'config',
       type: 'config',
-    },
+    }
   ];
 
   async onIsReady(event: any): Promise<void> {

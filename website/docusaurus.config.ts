@@ -33,7 +33,7 @@ const config: Config = {
             require.resolve("./src/css/navbar.css"),
             require.resolve("./src/css/hero.css"),
             require.resolve("./src/css/buttons.css"),
-            require.resolve("./src/css/general.css"),
+            require.resolve("./src/css/general.css")
           ],
         },
       } satisfies Preset.Options,
