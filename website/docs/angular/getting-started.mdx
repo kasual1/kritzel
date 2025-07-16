@@ -17,7 +17,7 @@ npm install kritzel-angular
 
 Follow these steps to set up KritzelEditor in your Angular project.
 
-### Configure Kritzel Service Provider
+### Configure the Service Provider
 
 Make Kritzel available in your application by adding `provideKritzel` to the `providers` array in your `app.config.ts` file.
 
@@ -34,9 +34,10 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-### Import KritzelEditor into Your Component
+### Add the Editor to Your Component
 
-In the component where you want to use the Kritzel editor (e.g., `app.component.ts`), import the KritzelEditor standalone component and include it in your component's `imports` array.
+In the component where you want to use the editor (e.g., `app.component.ts`), import the KritzelEditor standalone component and include it in your component's `imports` array.
+Then you can use `<kritzel-editor></kritzel-editor>` directly in your component's template.
 
 ```typescript
 // app.component.ts
@@ -46,21 +47,13 @@ import { KritzelEditor } from 'kritzel-angular'; // Import KritzelEditor
 @Component({
   selector: 'app-root',
   imports: [KritzelEditor], // Add KritzelEditor here
-  templateUrl: './app.component.html',
+  template: `<kritzel-editor></kritzel-editor>`, // Use the editor in your template
   styleUrl: './app.component.scss',
   standalone: true,
 })
 export class AppComponent {
   // Your component logic
 }
-```
-
-### Embed kritzel-editor in your Template
-
-Insert the following tag into your component's template file (e.g., `app.component.html`) where you want the canvas to appear:
-
-```html
-<kritzel-editor></kritzel-editor>
 ```
 
 
