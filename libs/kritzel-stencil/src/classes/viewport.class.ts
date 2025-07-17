@@ -34,8 +34,8 @@ export class KritzelViewport {
 
       if (event.button === KritzelMouseButton.Right) {
         this._store.state.isPanning = true;
-        this._store.state.startX = adjustedClientX;
-        this._store.state.startY = adjustedClientY;
+        this._store.state.startX = Math.max(this._store.state.translateXMin, Math.min(this._store.state.translateXMax, adjustedClientX));
+        this._store.state.startY = Math.max(this._store.state.translateYMin, Math.min(this._store.state.translateYMax, adjustedClientY));
       }
     }
 
@@ -70,8 +70,12 @@ export class KritzelViewport {
       this._store.state.cursorY = adjustedClientY;
 
       if (this._store.state.isPanning) {
-        this._store.state.translateX -= this._store.state.startX - adjustedClientX;
-        this._store.state.translateY -= this._store.state.startY - adjustedClientY;
+        const newTranslateX = this._store.state.translateX - (this._store.state.startX - adjustedClientX);
+        const newTranslateY = this._store.state.translateY - (this._store.state.startY - adjustedClientY);
+
+        this._store.state.translateX = Math.max(this._store.state.translateXMin, Math.min(this._store.state.translateXMax, newTranslateX));
+        this._store.state.translateY = Math.max(this._store.state.translateYMin, Math.min(this._store.state.translateYMax, newTranslateY));
+        
         this._store.state.startX = adjustedClientX;
         this._store.state.startY = adjustedClientY;
         this._store.state.hasViewportChanged = true;
