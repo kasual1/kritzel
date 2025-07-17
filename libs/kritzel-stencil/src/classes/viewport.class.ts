@@ -172,8 +172,11 @@ export class KritzelViewport {
   private handlePan(event: WheelEvent): void {
     const panSpeed = 0.8;
 
-    this._store.state.translateX -= event.deltaX * panSpeed;
-    this._store.state.translateY -= event.deltaY * panSpeed;
+    const newTranslateX = this._store.state.translateX - event.deltaX * panSpeed;
+    const newTranslateY = this._store.state.translateY - event.deltaY * panSpeed;
+
+    this._store.state.translateX = Math.max(this._store.state.translateXMin, Math.min(this._store.state.translateXMax, newTranslateX));
+    this._store.state.translateY = Math.max(this._store.state.translateYMin, Math.min(this._store.state.translateYMax, newTranslateY));
 
     this._store.state.hasViewportChanged = true;
     this._store.rerender();
