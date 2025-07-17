@@ -50,7 +50,11 @@ export interface KritzelEngineState {
   startX: number;
   startY: number;
   translateX: number;
+  translateXMax: number;
+  translateXMin: number;
   translateY: number;
+  translateYMax: number;
+  translateYMin: number;
   viewportWidth: number;
   viewportHeight: number;
   historyBufferSize: number;
