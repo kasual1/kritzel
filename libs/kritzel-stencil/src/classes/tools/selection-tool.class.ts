@@ -159,7 +159,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
-  private getSelectedObject(event: MouseEvent | TouchEvent): KritzelSelectionGroup | null {
+  private getSelectedObject(event: PointerEvent): KritzelSelectionGroup | null {
     const path = event.composedPath().slice(1) as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = this._store.findObjectById(objectElement?.id);
@@ -179,29 +179,27 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
-  private getHandleType(event: MouseEvent | TouchEvent): KritzelHandleType {
+  private getHandleType(event: PointerEvent): KritzelHandleType | undefined {
     const shadowRoot = this._store.state.host?.shadowRoot;
     if (!shadowRoot) return;
 
-    const point = event instanceof TouchEvent ? event.touches[0] : event;
-    const elementAtPoint = shadowRoot.elementFromPoint(point.clientX, point.clientY);
+    const elementAtPoint = shadowRoot.elementFromPoint(event.clientX, event.clientY);
 
-    const handle = elementAtPoint.closest('.resize-handle-overlay') as HTMLElement | null;
+    const handle = elementAtPoint?.closest('.resize-handle-overlay') as HTMLElement | null;
 
     return handle?.classList[1] as KritzelHandleType;
   }
 
-  private isHandleSelected(event: MouseEvent | TouchEvent): boolean {
+  private isHandleSelected(event: PointerEvent): boolean {
     const shadowRoot = this._store.state.host?.shadowRoot;
     if (!shadowRoot) return false;
 
-    const point = event instanceof TouchEvent ? event.touches[0] : event;
-    const elementAtPoint = shadowRoot.elementFromPoint(point.clientX, point.clientY);
+    const elementAtPoint = shadowRoot.elementFromPoint(event.clientX, event.clientY);
 
-    return elementAtPoint?.classList.contains('resize-handle-overlay');
+    return !!elementAtPoint?.classList.contains('resize-handle-overlay');
   }
 
-  private isRotationHandleSelected(event: MouseEvent | TouchEvent): boolean {
+  private isRotationHandleSelected(event: PointerEvent): boolean {
     const path = event.composedPath() as HTMLElement[];
 
     return !!path.find(element => element.classList && element.classList.contains('rotation-handle-overlay'));

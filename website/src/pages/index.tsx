@@ -28,15 +28,15 @@ function HomepageHeader() {
   return (
     <header className={clsx("hero hero--primary", styles.heroBanner)}>
       <div className="container">
-        {/* <Heading as="h1" className={clsx('hero__title', styles.heroTitle)}>
+        <Heading as="h1" className={clsx('hero__title', styles.heroTitle)}>
           Kritzel Documentation
           <br />
         </Heading>
          <p className={clsx('hero__subtitle', styles.heroSubtitle)}>
           Coming soon!
-        </p> */}
+        </p>
 
-        <div
+        {/* <div
           style={{
             fontSize: "1rem",
             marginBottom: "3.5rem",
@@ -70,7 +70,7 @@ function HomepageHeader() {
               <ArrowRight style={{ width: "24px", height: "24px" }} />
             </span>
           </Link>
-        </div>
+        </div> */}
       </div>
     </header>
   );

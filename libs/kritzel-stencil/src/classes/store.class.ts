@@ -296,22 +296,12 @@ export class KritzelStore {
     this.state.activeText = null;
   }
 
-  getObjectFromPointerEvent(event: TouchEvent | MouseEvent, selector = '.object'): KritzelBaseObject<any> | null {
+  getObjectFromPointerEvent(event: PointerEvent, selector = '.object'): KritzelBaseObject<any> | null {
     const shadowRoot = this.state.host?.shadowRoot;
     if (!shadowRoot) return null;
 
-    let clientX: number;
-    let clientY: number;
-
-    if ('touches' in event) {
-      const touch = event.touches[0];
-      if (!touch) return null;
-      clientX = touch.clientX;
-      clientY = touch.clientY;
-    } else {
-      clientX = event.clientX;
-      clientY = event.clientY;
-    }
+    const clientX = event.clientX;
+    const clientY = event.clientY;
 
     const elementAtPoint = shadowRoot.elementFromPoint(clientX, clientY);
     if (!elementAtPoint) return null;
