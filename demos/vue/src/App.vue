@@ -1,19 +1,32 @@
 <script setup lang="ts">
-import { KritzelEditor, KritzelPath } from 'kritzel-vue'
+import { KritzelEditor, KritzelImage } from 'kritzel-vue'
 
 let editor: HTMLKritzelEditorElement;
 
 async function onIsReady(event: CustomEvent<HTMLKritzelEditorElement>) {
   editor = event.detail;
 
-  const path = new KritzelPath({
-    points: [[0, 0], [100, 100]],
-    translateX: 0,
-    translateY: 0
+  const img = new Image();
+  img.src = "https://placehold.co/600x400";
+
+  await new Promise<void>((resolve) => {
+    img.onload = () => resolve();
   });
 
-  editor.addObject(path);
-  editor.centerObjectInViewport(path);
+  const image = new KritzelImage({
+    src: img.src,
+    x: 0,
+    y: 0,
+    translateX: 0,
+    translateY: 0,
+  });
+
+  const { scaledWidth, scaledHeight } = image.calculateScaledDimensions(img);
+  image.width = scaledWidth;
+  image.height = scaledHeight;
+
+  editor.addObject(image);
+  editor.centerObjectInViewport(image);
   editor.selectAllObjectsInViewport();
 }
 
