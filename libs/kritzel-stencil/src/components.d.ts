@@ -112,7 +112,7 @@ export namespace Components {
     }
     interface KritzelEditor {
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
-        "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement>>;
+        "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "clearSelection": () => Promise<void>;
         /**
           * @default [     {       name: 'selection',       type: 'tool',       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       isDefault: true,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'divider',       type: 'divider',     },     {       name: 'config',       type: 'config',     },   ]
@@ -157,7 +157,7 @@ export namespace Components {
         "activeTool": KritzelTool;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
-        "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement>>;
+        "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;

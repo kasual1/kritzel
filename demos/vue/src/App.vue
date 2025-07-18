@@ -1,25 +1,20 @@
 <script setup lang="ts">
-import { KritzelEditor, KritzelText } from 'kritzel-vue'
+import { KritzelEditor, KritzelPath } from 'kritzel-vue'
 
 let editor: HTMLKritzelEditorElement;
 
 async function onIsReady(event: CustomEvent<HTMLKritzelEditorElement>) {
   editor = event.detail;
 
-  const text = new KritzelText({
-    value: 'Hello Kritzel!',
+  const path = new KritzelPath({
+    points: [[0, 0], [100, 100]],
     translateX: 0,
-    translateY: 0,
-    fontSize: 24,
-    fontFamily: 'Arial',
-    fontColor: '#000000',
-    height: 200,
-    width: 200,
+    translateY: 0
   });
 
-  editor.addObject(text);
-  editor.centerObjectInViewport(text);
-  editor.selectObjects([text]);
+  editor.addObject(path);
+  editor.centerObjectInViewport(path);
+  editor.selectAllObjectsInViewport();
 }
 
 </script>

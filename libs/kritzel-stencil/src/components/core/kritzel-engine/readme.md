@@ -58,19 +58,19 @@ Type: `Promise<void>`
 
 
 
-### `centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement>>`
+### `centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>`
 
 
 
 #### Parameters
 
-| Name     | Type                             | Description |
-| -------- | -------------------------------- | ----------- |
-| `object` | `KritzelBaseObject<HTMLElement>` |             |
+| Name     | Type                                           | Description |
+| -------- | ---------------------------------------------- | ----------- |
+| `object` | `KritzelBaseObject<HTMLElement \| SVGElement>` |             |
 
 #### Returns
 
-Type: `Promise<KritzelBaseObject<HTMLElement>>`
+Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>>`
 
 
 
@@ -146,7 +146,7 @@ Type: `Promise<void>`
 
 #### Returns
 
-Type: `Promise<KritzelBaseObject<HTMLElement>[]>`
+Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
 
 
 
@@ -295,9 +295,9 @@ Type: `Promise<void>`
 
 #### Parameters
 
-| Name      | Type                               | Description |
-| --------- | ---------------------------------- | ----------- |
-| `objects` | `KritzelBaseObject<HTMLElement>[]` |             |
+| Name      | Type                                             | Description |
+| --------- | ------------------------------------------------ | ----------- |
+| `objects` | `KritzelBaseObject<HTMLElement \| SVGElement>[]` |             |
 
 #### Returns
 

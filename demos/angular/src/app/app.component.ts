@@ -3,8 +3,8 @@ import {
   DEFAULT_BRUSH_CONFIG,
   KritzelBrushTool,
   KritzelEditor,
+  KritzelPath,
   KritzelSelectionTool,
-  KritzelText,
   KritzelToolbarControl,
 } from 'kritzel-angular';
 
@@ -40,25 +40,20 @@ export class AppComponent {
     {
       name: 'config',
       type: 'config',
-    }
+    },
   ];
 
   async onIsReady(event: any): Promise<void> {
     this.kritzelEditor = event.detail;
 
-    const text = new KritzelText({
-      value: 'Hello Kritzel!',
+    const path = new KritzelPath({
+      points: [[0, 0], [100, 100]],
       translateX: 0,
-      translateY: 0,
-      fontSize: 24,
-      fontFamily: 'Arial',
-      fontColor: '#000000',
-      height: 200,
-      width: 200,
+      translateY: 0
     });
 
-    this.kritzelEditor.addObject(text);
-    this.kritzelEditor.centerObjectInViewport(text);
-    this.kritzelEditor.selectObjects([text]);
+    this.kritzelEditor.addObject(path);
+    this.kritzelEditor.centerObjectInViewport(path);
+    this.kritzelEditor.selectAllObjectsInViewport();
   }
 }

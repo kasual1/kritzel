@@ -1,5 +1,5 @@
 import "./App.css";
-import { KritzelEditor, KritzelText } from "kritzel-react";
+import { KritzelEditor, KritzelPath } from "kritzel-react";
 
 function App() {
   let editor: HTMLKritzelEditorElement | null = null;
@@ -9,20 +9,15 @@ function App() {
   ): Promise<void> {
     editor = event.detail;
 
-    const text = new KritzelText({
-      value: "Hello Kritzel!",
+     const path = new KritzelPath({
+      points: [[0, 0], [100, 100]],
       translateX: 0,
-      translateY: 0,
-      fontSize: 24,
-      fontFamily: "Arial",
-      fontColor: "#000000",
-      height: 200,
-      width: 200,
+      translateY: 0
     });
 
-    editor.addObject(text);
-    editor.centerObjectInViewport(text);
-    editor.selectObjects([text]);
+    editor.addObject(path);
+    editor.centerObjectInViewport(path);
+    editor.selectAllObjectsInViewport();
   }
 
   return (

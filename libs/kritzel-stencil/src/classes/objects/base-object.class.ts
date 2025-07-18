@@ -5,7 +5,7 @@ import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelStore } from '../store.class';
 import { ObjectHelper } from '../../helpers/object.helper';
 
-export class KritzelBaseObject<T extends Element = HTMLElement> implements KritzelObject<T>, KritzelSerializable {
+export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable {
   __class__: string = 'KritzelBaseObject';
   id: string;
   visible: boolean = true;
