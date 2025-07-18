@@ -34,8 +34,8 @@ export class KritzelViewport {
 
       if (event.button === KritzelMouseButton.Right) {
         this._store.state.isPanning = true;
-        this._store.state.startX = this.clampTranslateX(adjustedClientX);
-        this._store.state.startY = this.clampTranslateY(adjustedClientY);
+        this._store.state.startX = adjustedClientX;
+        this._store.state.startY = adjustedClientY;
       }
     }
 
@@ -70,12 +70,8 @@ export class KritzelViewport {
       this._store.state.cursorY = adjustedClientY;
 
       if (this._store.state.isPanning) {
-        const newTranslateX = this._store.state.translateX - (this._store.state.startX - adjustedClientX);
-        const newTranslateY = this._store.state.translateY - (this._store.state.startY - adjustedClientY);
-
-        this._store.state.translateX = this.clampTranslateX(newTranslateX);
-        this._store.state.translateY = this.clampTranslateY(newTranslateY);
-        
+        this._store.state.translateX -= this._store.state.startX - adjustedClientX;
+        this._store.state.translateY -= this._store.state.startY - adjustedClientY;
         this._store.state.startX = adjustedClientX;
         this._store.state.startY = adjustedClientY;
         this._store.state.hasViewportChanged = true;
@@ -176,23 +172,10 @@ export class KritzelViewport {
   private handlePan(event: WheelEvent): void {
     const panSpeed = 0.8;
 
-    const newTranslateX = this._store.state.translateX - event.deltaX * panSpeed;
-    const newTranslateY = this._store.state.translateY - event.deltaY * panSpeed;
-
-    this._store.state.translateX = this.clampTranslateX(newTranslateX);
-    this._store.state.translateY = this.clampTranslateY(newTranslateY);
+    this._store.state.translateX -= event.deltaX * panSpeed;
+    this._store.state.translateY -= event.deltaY * panSpeed;
 
     this._store.state.hasViewportChanged = true;
     this._store.rerender();
   }
-
-  private clampTranslateX(value: number): number {
-    return Math.max(this._store.state.translateXMin, Math.min(this._store.state.translateXMax, value));
-  }
-
-  private clampTranslateY(value: number): number {
-    return Math.max(this._store.state.translateYMin, Math.min(this._store.state.translateYMax, value));
-  }
 }
-
-
