@@ -29,6 +29,27 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
+  constructor(config?: {
+    points: number[][];
+    translateX?: number;
+    translateY?: number;
+    scale?: number;
+    strokeWidth?: number;
+    fill?: string;
+    lineSlack?: number;
+  }) {
+    super();
+    this.options = config;
+    this.points = config?.points ?? [];
+    this.translateX = config?.translateX ?? 0;
+    this.translateY = config?.translateY ?? 0;
+    this.scale = config?.scale ?? 1;
+    this.strokeWidth = config?.strokeWidth ?? 8;
+    this.fill = config?.fill ?? '#000000';
+    this.d = this.generateSvgPath();
+    this.updateDimensions();
+  }
+
   static override create(store: KritzelStore, options?: KritzelPathOptions): KritzelPath {
     const object = new KritzelPath();
 
@@ -78,6 +99,8 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   }
 
   private updateDimensions(): void {
+    debugger;
+
     const rotatedPoints = this.points.map(([x, y]) => {
       const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
       const rotatedY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation);
