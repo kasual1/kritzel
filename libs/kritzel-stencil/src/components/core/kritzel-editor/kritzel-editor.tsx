@@ -175,7 +175,7 @@ export class KritzelEditor {
   }
 
   @Listen('dblclick', { passive: false })
-  handleTouchStart(event: TouchEvent) {
+  handleTouchStart(event: MouseEvent) {
     if (event.cancelable) {
       event.preventDefault();
     }
