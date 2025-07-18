@@ -27,6 +27,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   markedForRemoval: boolean = false;
   isMounted: boolean = false;
   zIndex: number = 0;
+  isEditable: boolean = false;
 
   debugInfoVisible: boolean = false;
 
@@ -254,4 +255,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     return this.__class__ === className;
   }
 
+  edit(): void {
+    // This method can be overridden by subclasses to handle edit actions.
+  }
 }

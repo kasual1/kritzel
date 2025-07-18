@@ -20,6 +20,8 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   override debugInfoVisible: boolean = true;
 
+  override isEditable: boolean = true;
+
   readonly rows: number = 1;
 
   get isReadonly(): boolean {
@@ -170,12 +172,12 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     }
   }
 
-  onSelectedClick(): void {
+  edit(): void {
     this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
     this._store.state.selectionGroup = null;
     this._store.state.selectionBox = null;
     this._store.state.activeText = this;
-    
+
     setTimeout(() => {
       this.focus();
     }, 300);

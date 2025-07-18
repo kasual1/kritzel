@@ -802,6 +802,7 @@ export class KritzelEngine {
             class="context-menu"
             ref={el => (this.contextMenuElement = el)}
             items={this.store.state.contextMenuItems}
+            objects={this.store.state.selectionGroup?.objects || []}
             style={{
               position: 'fixed',
               left: `${this.store.state.contextMenuX}px`,
@@ -809,10 +810,13 @@ export class KritzelEngine {
               zIndex: '10000',
             }}
             onActionSelected={event => {
-              event.detail.action({
-                x: (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale,
-                y: (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale,
-              });
+              event.detail.action(
+                {
+                  x: (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale,
+                  y: (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale,
+                },
+                this.store.state.selectionGroup.objects,
+              );
               this.hideContextMenu();
             }}
           ></kritzel-context-menu>

@@ -14,7 +14,6 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   override debugInfoVisible: boolean = true;
 
   constructor(config?: Partial<KritzelImage>) {
-    debugger;
     super();
     this.src = config?.src || '';
     this.x = config?.x || 0;

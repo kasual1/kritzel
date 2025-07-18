@@ -99,8 +99,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   }
 
   private updateDimensions(): void {
-    debugger;
-
     const rotatedPoints = this.points.map(([x, y]) => {
       const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
       const rotatedY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation);

@@ -82,6 +82,19 @@ export class KritzelEditor {
 
   @Prop()
   objectContextMenuItems: ContextMenuItem[] = [
+    {
+      label: 'Edit',
+      icon: 'pen',
+      visible: (_, objects) => objects.length === 1 && objects[0].isEditable,
+      action: (_, objects) => {
+        if (objects.length === 1) {
+          const object = objects[0];
+          if (object.isEditable) {
+            object.edit();
+          }
+        }
+      }
+    },
     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },
     {
       label: 'Paste',
