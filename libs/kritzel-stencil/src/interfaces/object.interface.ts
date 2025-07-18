@@ -21,6 +21,7 @@ export interface KritzelObject<T = Element> {
   markedForRemoval: boolean;
   isMounted: boolean;
   zIndex: number;
+  isEditable: boolean;
 
   _elementRef: T;
 
@@ -43,4 +44,5 @@ export interface KritzelObject<T = Element> {
   copy(): KritzelBaseObject<Element>;
   onSelectedClick(): void;
   isClass<T extends KritzelBaseObject>(this: T, type: string): this is T;
+  edit(): void;
 }
