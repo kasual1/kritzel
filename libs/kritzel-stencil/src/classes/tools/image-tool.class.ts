@@ -11,9 +11,6 @@ import { KritzelToolRegistry } from '../registries/tool.registry';
 export class KritzelImageTool extends KritzelBaseTool {
   fileInput: HTMLInputElement | null = null;
 
-  maxWidth: number = 300;
-  maxHeight: number = 300;
-
   maxCompressionSize: number = 300;
 
   constructor(store: KritzelStore) {
@@ -69,40 +66,21 @@ export class KritzelImageTool extends KritzelBaseTool {
     reader.onload = e => {
       const img = new Image();
       img.src = e.target?.result as string;
-      img.onload = () => this.processImage(img);
+      img.onload = () => this.createKritzelImage(img);
     };
     reader.readAsDataURL(file);
   }
 
-  private processImage(img: HTMLImageElement): void {
-    const { scaledWidth, scaledHeight } = this.calculateScaledDimensions(img);
-    const image = this.createKritzelImage(img, scaledWidth, scaledHeight);
-    this.addImageToStore(image);
-  }
 
-  private calculateScaledDimensions(img: HTMLImageElement): { scaledWidth: number; scaledHeight: number } {
-    let scaledWidth = img.width;
-    let scaledHeight = img.height;
-
-    if (img.width > this.maxWidth || img.height > this.maxHeight) {
-      const widthRatio = this.maxWidth / img.width;
-      const heightRatio = this.maxHeight / img.height;
-      const scaleRatio = Math.min(widthRatio, heightRatio);
-
-      scaledWidth = img.width * scaleRatio;
-      scaledHeight = img.height * scaleRatio;
-    }
-
-    return { scaledWidth, scaledHeight };
-  }
-
-  private createKritzelImage(img: HTMLImageElement, width: number, height: number): KritzelImage {
+  private createKritzelImage(img: HTMLImageElement): KritzelImage {
     const image = KritzelImage.create(this._store);
+    const { scaledWidth, scaledHeight } = image.calculateScaledDimensions(img);
     image.src = img.src;
-    image.width = width;
-    image.height = height;
+    image.width = scaledWidth;
+    image.height = scaledHeight;
     image.zIndex = this._store.currentZIndex;
     image.centerInViewport();
+    this.addImageToStore(image);
     return image;
   }
 

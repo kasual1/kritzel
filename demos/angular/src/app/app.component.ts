@@ -3,7 +3,7 @@ import {
   DEFAULT_BRUSH_CONFIG,
   KritzelBrushTool,
   KritzelEditor,
-  KritzelPath,
+  KritzelImage,
   KritzelSelectionTool,
   KritzelToolbarControl,
 } from 'kritzel-angular';
@@ -46,14 +46,27 @@ export class AppComponent {
   async onIsReady(event: any): Promise<void> {
     this.kritzelEditor = event.detail;
 
-    const path = new KritzelPath({
-      points: [[0, 0], [100, 100]],
-      translateX: 0,
-      translateY: 0
+    const img = new Image();
+    img.src = "https://placehold.co/600x400";
+
+    await new Promise<void>((resolve) => {
+      img.onload = () => resolve();
     });
 
-    this.kritzelEditor.addObject(path);
-    this.kritzelEditor.centerObjectInViewport(path);
+    const image = new KritzelImage({
+      src: img.src,
+      x: 0,
+      y: 0,
+      translateX: 0,
+      translateY: 0,
+    });
+
+    const { scaledWidth, scaledHeight } = image.calculateScaledDimensions(img);
+    image.width = scaledWidth;
+    image.height = scaledHeight;
+
+    this.kritzelEditor.addObject(image);
+    this.kritzelEditor.centerObjectInViewport(image);
     this.kritzelEditor.selectAllObjectsInViewport();
   }
 }

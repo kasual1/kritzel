@@ -1,5 +1,5 @@
 import "./App.css";
-import { KritzelEditor, KritzelPath } from "kritzel-react";
+import { KritzelEditor, KritzelImage } from "kritzel-react";
 
 function App() {
   let editor: HTMLKritzelEditorElement | null = null;
@@ -9,14 +9,27 @@ function App() {
   ): Promise<void> {
     editor = event.detail;
 
-     const path = new KritzelPath({
-      points: [[0, 0], [100, 100]],
-      translateX: 0,
-      translateY: 0
+    const img = new Image();
+    img.src = "https://placehold.co/600x400";
+
+    await new Promise<void>((resolve) => {
+      img.onload = () => resolve();
     });
 
-    editor.addObject(path);
-    editor.centerObjectInViewport(path);
+    const image = new KritzelImage({
+      src: img.src,
+      x: 0,
+      y: 0,
+      translateX: 0,
+      translateY: 0,
+    });
+
+    const { scaledWidth, scaledHeight } = image.calculateScaledDimensions(img);
+    image.width = scaledWidth;
+    image.height = scaledHeight;
+
+    editor.addObject(image);
+    editor.centerObjectInViewport(image);
     editor.selectAllObjectsInViewport();
   }
 
