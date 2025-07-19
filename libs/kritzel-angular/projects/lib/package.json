@@ -1,10 +1,10 @@
 {
   "name": "kritzel-angular",
-  "version": "0.0.120",
+  "version": "0.0.121",
   "peerDependencies": {
     "@angular/common": "^19.0.0 || ^20.0.0",
     "@angular/core": "^19.0.0 || ^20.0.0",
-    "kritzel-stencil": "^0.0.120"
+    "kritzel-stencil": "^0.0.121"
   },
   "dependencies": {
     "tslib": "^2.3.0"
