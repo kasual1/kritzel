@@ -100,7 +100,7 @@ export class KritzelEditor {
       label: 'Paste',
       icon: 'paste',
       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
-      action: menu => this.engineRef.paste(menu.x, menu.y),
+      action: (menu, _) => this.engineRef.paste(menu.x, menu.y)
     },
     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },
     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },
