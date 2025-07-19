@@ -815,7 +815,7 @@ export class KritzelEngine {
                   x: (-this.store.state.translateX + this.store.state.contextMenuX) / this.store.state.scale,
                   y: (-this.store.state.translateY + this.store.state.contextMenuY) / this.store.state.scale,
                 },
-                this.store.state.selectionGroup.objects,
+                this.store.state.selectionGroup?.objects,
               );
               this.hideContextMenu();
             }}
