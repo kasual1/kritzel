@@ -3,7 +3,7 @@ import { KritzelBoundingBox } from './bounding-box.interface';
 
 export interface KritzelObject<T = Element> {
   id: string;
-  visible: boolean;
+  isVisible: boolean;
   x: number;
   y: number;
   translateX: number;
