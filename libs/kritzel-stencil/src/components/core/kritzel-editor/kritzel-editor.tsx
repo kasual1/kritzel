@@ -11,6 +11,7 @@ import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface
 import { DEFAULT_BRUSH_CONFIG } from '../../../configs/default-brush-tool.config';
 import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
+import { KritzelCustomElement } from '../../../classes/objects/custom-element.class';
 
 @Component({
   tag: 'kritzel-editor',
@@ -29,6 +30,7 @@ export class KritzelEditor {
     {
       name: 'selection',
       type: 'tool',
+      isDefault: true,
       tool: KritzelSelectionTool,
       icon: 'cursor',
     },
@@ -36,7 +38,6 @@ export class KritzelEditor {
       name: 'brush',
       type: 'tool',
       tool: KritzelBrushTool,
-      isDefault: true,
       icon: 'pen',
       config: DEFAULT_BRUSH_CONFIG,
     },
@@ -93,14 +94,14 @@ export class KritzelEditor {
             object.edit();
           }
         }
-      }
+      },
     },
     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },
     {
       label: 'Paste',
       icon: 'paste',
       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
-      action: (menu, _) => this.engineRef.paste(menu.x, menu.y)
+      action: (menu, _) => this.engineRef.paste(menu.x, menu.y),
     },
     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },
     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },
@@ -220,6 +221,21 @@ export class KritzelEditor {
     }
 
     this.isReady.emit(this.host);
+
+    const button = document.createElement('button');
+    button.textContent = 'Click Me';
+    button.type = 'button';
+    button.style.cursor = 'pointer';
+    button.onclick = () => alert('hello world');
+
+    const customElement = new KritzelCustomElement({
+      element: button,
+      translateX: 200,
+      translateY: 200,
+    });
+
+
+    this.engineRef.addObject(customElement);
   }
 
   private registerCustomSvgIcons() {

@@ -23,6 +23,7 @@ import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
 import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
+import { KritzelCustomElement } from '../../../classes/objects/custom-element.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -564,6 +565,16 @@ export class KritzelEngine {
                           caretColor: object.isReadonly ? 'transparent' : 'auto',
                         }}
                       ></textarea>
+                    )}
+
+                    {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
+                      <object
+                        ref={el => object.mount(el)}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                        }}
+                      ></object>
                     )}
 
                     {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && (

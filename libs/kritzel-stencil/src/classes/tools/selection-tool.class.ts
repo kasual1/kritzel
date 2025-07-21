@@ -46,12 +46,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           this._store.history.executeCommand(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
         }
 
-        if (selectedObject && selectedObject.isSelected && selectedObject.objects.length === 1) {
-          setTimeout(() => {
-            if (this._store.state.isDragging === false && this._store.state.isResizing === false && this._store.state.isRotating === false) {
-              selectedObject.objects[0].onSelectedClick();
-            }
-          }, 100);
+        if(selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1 && selectedObject.objects[0].isInteractive) {
+          return;
         }
       }
 
