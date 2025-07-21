@@ -759,7 +759,7 @@ export class KritzelEngine {
                       y="0"
                       width="400px"
                       height="160px"
-                      style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none' }}
+                      style={{ minHeight: '0', minWidth: '0', display: object.isDebugInfoVisible ? 'block' : 'none' }}
                     >
                       <div style={{ width: '100%', height: '100%' }}>
                         <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>

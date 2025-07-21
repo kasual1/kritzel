@@ -7,6 +7,10 @@ import { ObjectHelper } from '../../helpers/object.helper';
 
 export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable {
   __class__: string = 'KritzelBaseObject';
+
+  _store: KritzelStore;
+  _elementRef: T;
+
   id: string;
   x: number;
   y: number;
@@ -24,16 +28,13 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   rotation: number = 0;
   markedForRemoval: boolean = false;
   zIndex: number = 0;
-  
+
   isVisible: boolean = true;
   isSelected: boolean = false;
   isMounted: boolean = false;
   isEditable: boolean = false;
-
-  debugInfoVisible: boolean = false;
-
-  _store: KritzelStore;
-  _elementRef: T;
+  isInteractive: boolean = true;
+  isDebugInfoVisible: boolean = false;
 
   get totalWidth(): number {
     return this.width + this.padding * 2;
@@ -74,8 +75,8 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   get rotatedPolygon(): KritzelPolygon {
-    const cx = (this.translateX + this.totalWidth / 2 / this.scale);
-    const cy = (this.translateY + this.totalHeight / 2 / this.scale);
+    const cx = this.translateX + this.totalWidth / 2 / this.scale;
+    const cy = this.translateY + this.totalHeight / 2 / this.scale;
     const angle = this.rotation;
 
     const adjustedWidth = this.totalWidth / this.scale;
@@ -98,48 +99,27 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
     return rotatedCorners as KritzelPolygon;
   }
-  
 
   get minXRotated(): number {
-    const corners = [
-      this.rotatedPolygon.topLeft.x,
-      this.rotatedPolygon.topRight.x,
-      this.rotatedPolygon.bottomRight.x,
-      this.rotatedPolygon.bottomLeft.x,
-    ];
+    const corners = [this.rotatedPolygon.topLeft.x, this.rotatedPolygon.topRight.x, this.rotatedPolygon.bottomRight.x, this.rotatedPolygon.bottomLeft.x];
 
     return Math.min(...corners);
   }
 
   get minYRotated(): number {
-    const corners = [
-      this.rotatedPolygon.topLeft.y,
-      this.rotatedPolygon.topRight.y,
-      this.rotatedPolygon.bottomRight.y,
-      this.rotatedPolygon.bottomLeft.y,
-    ];
+    const corners = [this.rotatedPolygon.topLeft.y, this.rotatedPolygon.topRight.y, this.rotatedPolygon.bottomRight.y, this.rotatedPolygon.bottomLeft.y];
 
     return Math.min(...corners);
   }
 
   get maxXRotated(): number {
-    const corners = [
-      this.rotatedPolygon.topLeft.x,
-      this.rotatedPolygon.topRight.x,
-      this.rotatedPolygon.bottomRight.x,
-      this.rotatedPolygon.bottomLeft.x,
-    ];
+    const corners = [this.rotatedPolygon.topLeft.x, this.rotatedPolygon.topRight.x, this.rotatedPolygon.bottomRight.x, this.rotatedPolygon.bottomLeft.x];
 
     return Math.max(...corners);
   }
 
   get maxYRotated(): number {
-    const corners = [
-      this.rotatedPolygon.topLeft.y,
-      this.rotatedPolygon.topRight.y,
-      this.rotatedPolygon.bottomRight.y,
-      this.rotatedPolygon.bottomLeft.y,
-    ];
+    const corners = [this.rotatedPolygon.topLeft.y, this.rotatedPolygon.topRight.y, this.rotatedPolygon.bottomRight.y, this.rotatedPolygon.bottomLeft.y];
 
     return Math.max(...corners);
   }
@@ -170,10 +150,10 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
   static create(store: KritzelStore): KritzelBaseObject<Element> {
     const object = new KritzelBaseObject();
-    
+
     object._store = store;
     object.zIndex = store.currentZIndex;
-    
+
     return object;
   }
 
@@ -200,10 +180,12 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
       depth: 100,
     };
 
-    return this.boundingBox.x < viewportBounds.x + viewportBounds.width &&
-           this.boundingBox.x + this.boundingBox.width > viewportBounds.x &&
-           this.boundingBox.y < viewportBounds.y + viewportBounds.height &&
-           this.boundingBox.y + this.boundingBox.height > viewportBounds.y;
+    return (
+      this.boundingBox.x < viewportBounds.x + viewportBounds.width &&
+      this.boundingBox.x + this.boundingBox.width > viewportBounds.x &&
+      this.boundingBox.y < viewportBounds.y + viewportBounds.height &&
+      this.boundingBox.y + this.boundingBox.height > viewportBounds.y
+    );
   }
 
   centerInViewport(): void {

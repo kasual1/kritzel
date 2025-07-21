@@ -18,7 +18,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   isNew: boolean = true;
 
-  override debugInfoVisible: boolean = true;
+  override isDebugInfoVisible: boolean = true;
 
   override isEditable: boolean = true;
 
