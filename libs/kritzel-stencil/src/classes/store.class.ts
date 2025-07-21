@@ -45,7 +45,7 @@ export class KritzelStore {
   }
 
   get selectedObjects() {
-    return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.selected);
+    return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.isSelected);
   }
 
   get offsetX() {
@@ -151,7 +151,7 @@ export class KritzelStore {
   }
 
   paste(x?: number, y?: number) {
-    this.state.copiedObjects.selected = true;
+    this.state.copiedObjects.isSelected = true;
 
     const adjustedX = x !== undefined ? x : this.state.copiedObjects.translateX + 25;
     const adjustedY = y !== undefined ? y : this.state.copiedObjects.translateY + 25;
@@ -228,11 +228,11 @@ export class KritzelStore {
 
     const selectionGroup = KritzelSelectionGroup.create(this);
     objects.forEach(obj => {
-      obj.selected = false;
+      obj.isSelected = false;
       selectionGroup.addOrRemove(obj);
     });
 
-    selectionGroup.selected = true;
+    selectionGroup.isSelected = true;
 
     this.state.selectionGroup = selectionGroup;
 
@@ -259,11 +259,11 @@ export class KritzelStore {
       const selectionGroup = KritzelSelectionGroup.create(this);
 
       objectsInViewport.forEach(obj => {
-        obj.selected = false;
+        obj.isSelected = false;
         selectionGroup.addOrRemove(obj);
       });
 
-      selectionGroup.selected = true;
+      selectionGroup.isSelected = true;
 
       this.state.isSelecting = false;
 

@@ -21,12 +21,13 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   opacity: number = 1;
   padding: number = 0;
   scale: number;
-  selected: boolean = false;
   resizing: boolean = false;
   rotation: number = 0;
   markedForRemoval: boolean = false;
-  isMounted: boolean = false;
   zIndex: number = 0;
+  
+  isSelected: boolean = false;
+  isMounted: boolean = false;
   isEditable: boolean = false;
 
   debugInfoVisible: boolean = false;

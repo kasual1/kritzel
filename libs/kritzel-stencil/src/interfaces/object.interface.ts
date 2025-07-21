@@ -15,7 +15,7 @@ export interface KritzelObject<T = Element> {
   borderWidth: number;
   opacity: number;
   scale: number;
-  selected: boolean;
+  isSelected: boolean;
   resizing: boolean;
   rotation: number;
   markedForRemoval: boolean;

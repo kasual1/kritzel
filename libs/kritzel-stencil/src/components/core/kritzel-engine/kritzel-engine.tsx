@@ -597,7 +597,7 @@ export class KritzelEngine {
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.isSelected ? 'visible' : 'hidden'}
                   />
                   <line
                     x1="0"
@@ -609,7 +609,7 @@ export class KritzelEngine {
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.isSelected ? 'visible' : 'hidden'}
                   />
                   <line
                     x1="0"
@@ -621,7 +621,7 @@ export class KritzelEngine {
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.isSelected ? 'visible' : 'hidden'}
                   />
                   <line
                     x1={object.totalWidth}
@@ -633,7 +633,7 @@ export class KritzelEngine {
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.isSelected ? 'visible' : 'hidden'}
                   />
 
                   <circle
@@ -644,7 +644,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="resize-handle-overlay top-left"
@@ -654,7 +654,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'transparent',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <circle
@@ -665,7 +665,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="resize-handle-overlay top-right"
@@ -675,7 +675,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'transparent',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <circle
@@ -686,7 +686,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="resize-handle-overlay bottom-left"
@@ -696,7 +696,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'transparent',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <circle
@@ -707,7 +707,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="resize-handle-overlay bottom-right"
@@ -717,7 +717,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'transparent',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <line
@@ -729,7 +729,7 @@ export class KritzelEngine {
                       stroke: 'var(--kritzel-selection-border-color, #0e1111)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="rotation-handle"
@@ -739,7 +739,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="rotation-handle-overlay"
@@ -750,7 +750,7 @@ export class KritzelEngine {
                       fill: 'transparent',
                       cursor: 'grab',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <g style={{ display: this.store.state.debugInfo.showObjectInfo ? 'block' : 'none', pointerEvents: 'none' }}>
