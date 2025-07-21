@@ -7,20 +7,14 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   override __class__: string = 'KritzelText';
 
   value: string = '';
-
   fontFamily: string = 'Arial';
-
   fontSize: number = 8;
-
   fontColor: string = '#000000';
-
   initialWidth: number = 3;
 
   isNew: boolean = true;
-
-  override isDebugInfoVisible: boolean = true;
-
-  override isEditable: boolean = true;
+  isDebugInfoVisible: boolean = true;
+  isEditable: boolean = true;
 
   readonly rows: number = 1;
 
