@@ -127,7 +127,7 @@ describe('KritzelOctree', () => {
     obj2.visible = false;
     octree.insert(obj1);
     octree.insert(obj2);
-    const results = octree.filter(o => o.visible);
+    const results = octree.filter(o => o.isVisible);
     expect(results.length).toBe(1);
     expect(results[0].id).toBe(obj1.id);
   });

@@ -8,7 +8,6 @@ import { ObjectHelper } from '../../helpers/object.helper';
 export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable {
   __class__: string = 'KritzelBaseObject';
   id: string;
-  visible: boolean = true;
   x: number;
   y: number;
   translateX: number;
@@ -26,6 +25,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   markedForRemoval: boolean = false;
   zIndex: number = 0;
   
+  isVisible: boolean = true;
   isSelected: boolean = false;
   isMounted: boolean = false;
   isEditable: boolean = false;
