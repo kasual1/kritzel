@@ -50,7 +50,7 @@ describe('KritzelBaseObject', () => {
     expect(object.borderWidth).toBe(0);
     expect(object.opacity).toBe(1);
     expect(object.padding).toBe(0);
-    expect(object.selected).toBe(false);
+    expect(object.isSelected).toBe(false);
     expect(object.resizing).toBe(false);
     expect(object.rotation).toBe(0);
     expect(object.markedForRemoval).toBe(false);

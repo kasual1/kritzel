@@ -20,7 +20,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   handlePointerDown(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
-        if (this._store.state.selectionGroup?.selected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
+        if (this._store.state.selectionGroup?.isSelected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
           const clientX = event.clientX - this._store.offsetX;
           const clientY = event.clientY - this._store.offsetY;
 
@@ -37,7 +37,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       const activePointers = Array.from(this._store.state.pointers.values());
 
       if (this._store.state.pointers.size === 1) {
-        if (this._store.state.selectionGroup?.selected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
+        if (this._store.state.selectionGroup?.isSelected && !this._store.state.isResizeHandleSelected && !this._store.state.isRotationHandleSelected) {
           const x = Math.round(activePointers[0].clientX - this._store.offsetX);
           const y = Math.round(activePointers[0].clientY - this._store.offsetY);
 

@@ -225,7 +225,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
         const objectPolygon = object.rotatedPolygon;
         const selectionBoxPolygon = this._store.state.selectionBox.rotatedPolygon;
 
-        object.selected = KritzelGeometryHelper.doPolygonsIntersect(objectPolygon, selectionBoxPolygon);
+        object.isSelected = KritzelGeometryHelper.doPolygonsIntersect(objectPolygon, selectionBoxPolygon);
       });
   }
 
@@ -237,11 +237,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       return;
     }
 
-    selectedObjects.forEach(o => (o.selected = false));
+    selectedObjects.forEach(o => (o.isSelected = false));
 
     this._store.state.selectionGroup = KritzelSelectionGroup.create(this._store);
     this._store.state.selectionGroup.addOrRemove(selectedObject);
-    this._store.state.selectionGroup.selected = true;
+    this._store.state.selectionGroup.isSelected = true;
     this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
 
     this._store.history.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
@@ -256,10 +256,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._store.state.selectionGroup = KritzelSelectionGroup.create(this._store);
     selectedObjects.forEach(o => {
-      o.selected = false;
+      o.isSelected = false;
       this._store.state.selectionGroup.addOrRemove(o);
     });
-    this._store.state.selectionGroup.selected = true;
+    this._store.state.selectionGroup.isSelected = true;
 
     if (this._store.state.selectionGroup.length === 1) {
       this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
