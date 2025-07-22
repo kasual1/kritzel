@@ -230,12 +230,11 @@ export class KritzelEditor {
     video.style.cursor = 'pointer';
     video.style.width = '320px';
     video.style.height = '240px';
-    video.style.objectFit = 'fill'; 
+    video.style.objectFit = 'fill';
 
-    video.addEventListener('play', (event) => {
+    video.addEventListener('play', event => {
       console.log('Video started!', event);
     });
-
 
     const customElement = new KritzelCustomElement({
       element: video,
@@ -245,8 +244,47 @@ export class KritzelEditor {
       width: 320,
     });
 
-
     this.engineRef.addObject(customElement);
+
+    const button = document.createElement('button');
+    button.textContent = 'Custom Button';
+    button.style.position = 'absolute';
+    button.style.width = '150px';
+    button.style.height = '50px';
+    button.style.zIndex = '1000';
+    button.onclick = () => {
+      alert('Custom button clicked!');
+    };
+
+    const customButtonElement = new KritzelCustomElement({
+      element: button,
+      translateX: 10,
+      translateY: 10,
+      height: 50,
+      width: 150,
+    });
+
+    this.engineRef.addObject(customButtonElement);
+
+    const button2 = document.createElement('button');
+    button2.textContent = 'Custom Button';
+    button2.style.position = 'absolute';
+    button2.style.width = '150px';
+    button2.style.height = '50px';
+    button2.style.zIndex = '1000';
+    button2.onclick = () => {
+      alert('Custom button clicked!');
+    };
+
+    const customButtonElement2 = new KritzelCustomElement({
+      element: button2,
+      translateX: 410,
+      translateY: 10,
+      height: 50,
+      width: 150,
+    });
+
+    this.engineRef.addObject(customButtonElement2);
   }
 
   private registerCustomSvgIcons() {
