@@ -33,7 +33,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   isSelected: boolean = false;
   isMounted: boolean = false;
   isEditable: boolean = false;
-  isInteractive: boolean = true;
+  isInteractive: boolean = false;
   isDebugInfoVisible: boolean = false;
 
   get totalWidth(): number {
