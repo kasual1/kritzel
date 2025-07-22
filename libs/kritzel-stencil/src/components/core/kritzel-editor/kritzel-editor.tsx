@@ -222,16 +222,27 @@ export class KritzelEditor {
 
     this.isReady.emit(this.host);
 
-    const button = document.createElement('button');
-    button.textContent = 'Click Me';
-    button.type = 'button';
-    button.style.cursor = 'pointer';
-    button.onclick = () => alert('hello world');
+    const video = document.createElement('video');
+    video.src = 'https://www.w3schools.com/html/mov_bbb.mp4';
+    video.controls = true;
+    video.width = 320;
+    video.height = 240;
+    video.style.cursor = 'pointer';
+    video.style.width = '320px';
+    video.style.height = '240px';
+    video.style.objectFit = 'fill'; 
+
+    video.addEventListener('play', (event) => {
+      console.log('Video started!', event);
+    });
+
 
     const customElement = new KritzelCustomElement({
-      element: button,
+      element: video,
       translateX: 200,
       translateY: 200,
+      height: 240,
+      width: 320,
     });
 
 
