@@ -25,8 +25,6 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       return;
     }
 
-    console.log('mount');
-
     this.elementRef = element;
     this.isMounted = true;
     this.elementRef.appendChild(this.element);
@@ -46,6 +44,15 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       this.element.style.width = `${width}px`;
       this.element.style.height = `${height}px`;
     }
+  }
+
+  override copy(): KritzelCustomElement {
+    const copiedObject: KritzelCustomElement = Object.create(Object.getPrototypeOf(this));
+    Object.assign(copiedObject, this);
+    copiedObject.id = this.generateId();
+    copiedObject.isMounted = false;
+    copiedObject.element = this.element.cloneNode(true) as HTMLElement;
+    return copiedObject;
   }
 
 }
