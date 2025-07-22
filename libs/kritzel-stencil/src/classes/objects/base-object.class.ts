@@ -162,8 +162,21 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
       return;
     }
 
+    console.log('mount');
+
     this.elementRef = element;
     this.isMounted = true;
+  }
+
+  unmount(): void {
+    if (!this.isMounted) {
+      return;
+    }
+
+    console.log('unmount');
+
+    this.elementRef = null;
+    this.isMounted = false;
   }
 
   generateId(): string {

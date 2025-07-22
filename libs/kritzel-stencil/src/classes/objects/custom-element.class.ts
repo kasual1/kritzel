@@ -7,7 +7,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
 
   isInteractive: boolean = true;
 
-  constructor(config?: { element: HTMLElement; translateX?: number; translateY?: number; scale?: number }) {
+  constructor(config?: { element: HTMLElement; translateX?: number; translateY?: number; scale?: number, height?: number; width?: number }) {
     super();
 
     if (config) {
@@ -15,25 +15,37 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       this.translateY = config.translateY || 0;
       this.scale = config.scale || 1;
       this.element = config.element;
-
-      this.updateDimensions();
+      this.height = config.height || 0;
+      this.width = config.width || 0;
     }
   }
 
-  mount(element: HTMLElement): void {
-    super.mount(element);
+  override mount(element: HTMLElement): void {
+    if (this.isMounted) {
+      return;
+    }
+
+    console.log('mount');
+
+    this.elementRef = element;
+    this.isMounted = true;
     this.elementRef.appendChild(this.element);
-
-    this.updateDimensions();
   }
 
-  private updateDimensions(): void {
+  override resize(x: number, y: number, width: number, height: number): void {
+    if (width <= 1 || height <= 1) {
+      return;
+    }
+
+    this.width = width;
+    this.height = height;
+    this.translateX = x;
+    this.translateY = y;
+
     if (this.element) {
-      const rect = this.element.getBoundingClientRect();
-      const computedStyle = window.getComputedStyle(this.element);
-      
-      this.width = rect.width || parseFloat(computedStyle.width) || this.element.offsetWidth;
-      this.height = rect.height || parseFloat(computedStyle.height) || this.element.offsetHeight;
+      this.element.style.width = `${width}px`;
+      this.element.style.height = `${height}px`;
     }
   }
+
 }
