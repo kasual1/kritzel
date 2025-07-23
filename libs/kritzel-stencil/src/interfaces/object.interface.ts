@@ -2,8 +2,9 @@ import { KritzelBaseObject } from '../classes/objects/base-object.class';
 import { KritzelBoundingBox } from './bounding-box.interface';
 
 export interface KritzelObject<T = Element> {
+  _elementRef: T;
+
   id: string;
-  visible: boolean;
   x: number;
   y: number;
   translateX: number;
@@ -15,15 +16,17 @@ export interface KritzelObject<T = Element> {
   borderWidth: number;
   opacity: number;
   scale: number;
-  selected: boolean;
   resizing: boolean;
   rotation: number;
   markedForRemoval: boolean;
-  isMounted: boolean;
   zIndex: number;
-  isEditable: boolean;
 
-  _elementRef: T;
+  isVisible: boolean;
+  isSelected: boolean;
+  isMounted: boolean;
+  isEditable: boolean;
+  isInteractive: boolean;
+  isDebugInfoVisible: boolean;
 
   set elementRef(element: T);
   get elementRef(): T;
@@ -35,6 +38,8 @@ export interface KritzelObject<T = Element> {
   get centerY(): number;
 
   mount(element: T): void;
+  unmount(): void;
+  remount(): void;
   generateId(): string;
   isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
   centerInViewport(): void;

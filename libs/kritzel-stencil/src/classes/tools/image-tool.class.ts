@@ -87,7 +87,7 @@ export class KritzelImageTool extends KritzelBaseTool {
   private addImageToStore(image: KritzelImage): void {
     const selectionGroup = KritzelSelectionGroup.create(this._store);
     selectionGroup.addOrRemove(image);
-    selectionGroup.selected = true;
+    selectionGroup.isSelected = true;
 
     const addImageCommand = new AddObjectCommand(this._store, this, image);
     const addSelectionGroupCommand = new AddSelectionGroupCommand(this._store, this, selectionGroup);

@@ -11,7 +11,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 
   maxCompressionSize: number = 300;
 
-  override debugInfoVisible: boolean = true;
+  override isDebugInfoVisible: boolean = true;
 
   constructor(config?: Partial<KritzelImage>) {
     super();

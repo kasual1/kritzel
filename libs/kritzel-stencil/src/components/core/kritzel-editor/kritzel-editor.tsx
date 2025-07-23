@@ -29,6 +29,7 @@ export class KritzelEditor {
     {
       name: 'selection',
       type: 'tool',
+      isDefault: true,
       tool: KritzelSelectionTool,
       icon: 'cursor',
     },
@@ -36,7 +37,6 @@ export class KritzelEditor {
       name: 'brush',
       type: 'tool',
       tool: KritzelBrushTool,
-      isDefault: true,
       icon: 'pen',
       config: DEFAULT_BRUSH_CONFIG,
     },
@@ -93,14 +93,14 @@ export class KritzelEditor {
             object.edit();
           }
         }
-      }
+      },
     },
     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },
     {
       label: 'Paste',
       icon: 'paste',
       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
-      action: (menu, _) => this.engineRef.paste(menu.x, menu.y)
+      action: (menu, _) => this.engineRef.paste(menu.x, menu.y),
     },
     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },
     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },

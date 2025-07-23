@@ -23,6 +23,7 @@ import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
 import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
+import { KritzelCustomElement } from '../../../classes/objects/custom-element.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -510,7 +511,7 @@ export class KritzelEngine {
                   >
                     {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
                       <svg
-                        ref={el => object.mount(el)}
+                        ref={el => el ? object.mount(el) : object.unmount()}
                         xmlns="http://www.w3.org/2000/svg"
                         style={{
                           height: object?.height.toString(),
@@ -526,7 +527,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <img
-                        ref={el => object.mount(el)}
+                        ref={el => el ? object.mount(el) : object.unmount()}
                         src={object.src}
                         style={{
                           width: '100%',
@@ -541,7 +542,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
                       <textarea
-                        ref={el => object.mount(el)}
+                        ref={el => el ? object.mount(el) : object.unmount()}
                         value={object.value}
                         onKeyDown={event => object.handleKeyDown(event)}
                         onInput={event => object.handleInput(event)}
@@ -566,9 +567,22 @@ export class KritzelEngine {
                       ></textarea>
                     )}
 
+                    {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
+                      <div
+                        ref={el => el ? object.mount(el) : object.unmount()}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          pointerEvents: 'auto',
+                          overflow: 'hidden',
+                          display: 'block',
+                        }}
+                      ></div>
+                    )}
+
                     {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && (
                       <div
-                        ref={el => object.mount(el)}
+                        ref={el => el ? object.mount(el) : object.unmount()}
                         style={{
                           width: '100%',
                           height: '100%',
@@ -578,7 +592,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KrtizelSelectionBox>(object, 'KrtizelSelectionBox') && (
                       <div
-                        ref={el => object.mount(el)}
+                        ref={el => el ? object.mount(el) : object.unmount()}
                         style={{
                           width: '100%',
                           height: '100%',
@@ -597,7 +611,7 @@ export class KritzelEngine {
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.isSelected ? 'visible' : 'hidden'}
                   />
                   <line
                     x1="0"
@@ -609,7 +623,7 @@ export class KritzelEngine {
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.isSelected ? 'visible' : 'hidden'}
                   />
                   <line
                     x1="0"
@@ -621,7 +635,7 @@ export class KritzelEngine {
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.isSelected ? 'visible' : 'hidden'}
                   />
                   <line
                     x1={object.totalWidth}
@@ -633,7 +647,7 @@ export class KritzelEngine {
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
-                    visibility={object.selected ? 'visible' : 'hidden'}
+                    visibility={object.isSelected ? 'visible' : 'hidden'}
                   />
 
                   <circle
@@ -644,7 +658,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="resize-handle-overlay top-left"
@@ -654,7 +668,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'transparent',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <circle
@@ -665,7 +679,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="resize-handle-overlay top-right"
@@ -675,7 +689,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'transparent',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <circle
@@ -686,7 +700,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="resize-handle-overlay bottom-left"
@@ -696,7 +710,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'transparent',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <circle
@@ -707,7 +721,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="resize-handle-overlay bottom-right"
@@ -717,7 +731,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'transparent',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <line
@@ -729,7 +743,7 @@ export class KritzelEngine {
                       stroke: 'var(--kritzel-selection-border-color, #0e1111)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="rotation-handle"
@@ -739,7 +753,7 @@ export class KritzelEngine {
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="rotation-handle-overlay"
@@ -750,7 +764,7 @@ export class KritzelEngine {
                       fill: 'transparent',
                       cursor: 'grab',
                     }}
-                    visibility={object.selected && !this.isSelecting ? 'visible' : 'hidden'}
+                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
                   <g style={{ display: this.store.state.debugInfo.showObjectInfo ? 'block' : 'none', pointerEvents: 'none' }}>
@@ -759,7 +773,7 @@ export class KritzelEngine {
                       y="0"
                       width="400px"
                       height="160px"
-                      style={{ minHeight: '0', minWidth: '0', display: object.debugInfoVisible ? 'block' : 'none' }}
+                      style={{ minHeight: '0', minWidth: '0', display: object.isDebugInfoVisible ? 'block' : 'none' }}
                     >
                       <div style={{ width: '100%', height: '100%' }}>
                         <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
