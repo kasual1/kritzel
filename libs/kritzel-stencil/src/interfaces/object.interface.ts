@@ -50,4 +50,5 @@ export interface KritzelObject<T = Element> {
   onSelectedClick(): void;
   isClass<T extends KritzelBaseObject>(this: T, type: string): this is T;
   edit(): void;
+  hitTest(x: number, y: number): boolean;
 }

@@ -36,7 +36,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
         const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
         if (!selectedObject) return;
 
-        selectedObject.markedForRemoval = true;
+        selectedObject.markedForRemoval = selectedObject.hitTest(event.offsetX, event.offsetY);
 
         this._store.rerender();
       }
@@ -50,7 +50,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
         const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
         if (!selectedObject) return;
 
-        selectedObject.markedForRemoval = true;
+        selectedObject.markedForRemoval = selectedObject.hitTest(event.offsetX, event.offsetY);
 
         this._store.rerender();
       }
