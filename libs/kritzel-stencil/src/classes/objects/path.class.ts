@@ -21,7 +21,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   width: number = 0;
   scale: number = 1;
   options: KritzelPathOptions | undefined;
-  
+
   isVisible: boolean = true;
   isDebugInfoVisible: boolean = true;
 
@@ -29,15 +29,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
-  constructor(config?: {
-    points: number[][];
-    translateX?: number;
-    translateY?: number;
-    scale?: number;
-    strokeWidth?: number;
-    fill?: string;
-    lineSlack?: number;
-  }) {
+  constructor(config?: { points: number[][]; translateX?: number; translateY?: number; scale?: number; strokeWidth?: number; fill?: string; lineSlack?: number }) {
     super();
     this.options = config;
     this.points = config?.points ?? [];
@@ -96,6 +88,22 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   override rotate(value: number): void {
     super.rotate(value);
     this.updateDimensions();
+  }
+
+  override hitTest(x: number, y: number): boolean {
+    if (!this.elementRef) return false;
+
+    const path = this.elementRef.querySelector('path') as SVGPathElement;
+
+    if (!path) {
+      return false;
+    }
+
+    if (path.isPointInStroke?.({ x, y }) || path.isPointInFill?.({ x, y })) {
+      return true;
+    }
+
+    return false;
   }
 
   private updateDimensions(): void {
