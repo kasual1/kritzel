@@ -20,10 +20,10 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   height: number = 0;
   width: number = 0;
   scale: number = 1;
-  visible: boolean = true;
   options: KritzelPathOptions | undefined;
-
-  debugInfoVisible: boolean = true;
+  
+  isVisible: boolean = true;
+  isDebugInfoVisible: boolean = true;
 
   get viewBox(): string {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;

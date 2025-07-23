@@ -46,11 +46,11 @@ describe('KritzelBaseObject', () => {
   it('should be created with default values', () => {
     expect(object).toBeInstanceOf(KritzelBaseObject);
     expect(object.id).toBeDefined();
-    expect(object.visible).toBe(true);
+    expect(object.isVisible).toBe(true);
     expect(object.borderWidth).toBe(0);
     expect(object.opacity).toBe(1);
     expect(object.padding).toBe(0);
-    expect(object.selected).toBe(false);
+    expect(object.isSelected).toBe(false);
     expect(object.resizing).toBe(false);
     expect(object.rotation).toBe(0);
     expect(object.markedForRemoval).toBe(false);
@@ -218,6 +218,6 @@ describe('KritzelBaseObject', () => {
     object.revive(plainObject);
     expect(object.id).toBe('new-id');
     expect(object.width).toBe(500);
-    expect(object.visible).toBe(false);
+    expect(object.isVisible).toBe(false);
   });
 });

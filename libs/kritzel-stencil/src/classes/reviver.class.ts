@@ -8,6 +8,7 @@ import { KritzelEraserTool } from "./tools/eraser-tool.class";
 import { KritzelImageTool } from "./tools/image-tool.class";
 import { KritzelSelectionTool } from "./tools/selection-tool.class";
 import { KritzelTextTool } from "./tools/text-tool.class";
+import { KritzelCustomElement } from "./objects/custom-element.class";
 
 export class KritzelReviver {
 
@@ -31,6 +32,9 @@ export class KritzelReviver {
             break;
           case 'KritzelImage':
             revivedObj = KritzelImage.create(this._store).revive(obj);
+            break;
+          case 'KritzelCustomElement':
+            revivedObj = KritzelCustomElement.create(this._store).revive(obj);
             break;
           case 'KritzelSelectionGroup':
             revivedObj = KritzelSelectionGroup.create(this._store).revive(obj);

@@ -43,7 +43,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   deselectAllChildren() {
-    this.objects.forEach(obj => (obj.selected = false));
+    this.objects.forEach(obj => (obj.isSelected = false));
   }
 
   updatePosition(x: number, y: number) {

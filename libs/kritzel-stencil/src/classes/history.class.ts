@@ -30,24 +30,11 @@ export class KritzelHistory {
 
   executeCommand(command: KritzelBaseCommand) {
     if (this._store.state.hasViewportChanged) {
-      const command = new UpdateViewportCommand(this._store, this, this.previousViewport);
-      command.execute();
-      this.undoStack.add(command);
-
-      if (this.redoStack.isEmpty() === false) {
-        this.redoStack.clear();
-      }
-
-      this._store.state.hasViewportChanged = false;
-      this.previousViewport = {
-        scale: this._store.state.scale,
-        scaleStep: this._store.state.scaleStep,
-        translateX: this._store.state.translateX,
-        translateY: this._store.state.translateY,
-      };
+      this.addUpdateViewportCommand();
     }
 
     command.execute();
+    
     if (this._store.state.debugInfo.logCommands) console.info('add', command);
     this.undoStack.add(command);
 
@@ -86,5 +73,23 @@ export class KritzelHistory {
     }
 
     this._store.rerender();
+  }
+
+  private addUpdateViewportCommand() {
+    const command = new UpdateViewportCommand(this._store, this, this.previousViewport);
+    command.execute();
+    this.undoStack.add(command);
+
+    if (this.redoStack.isEmpty() === false) {
+      this.redoStack.clear();
+    }
+
+    this._store.state.hasViewportChanged = false;
+    this.previousViewport = {
+      scale: this._store.state.scale,
+      scaleStep: this._store.state.scaleStep,
+      translateX: this._store.state.translateX,
+      translateY: this._store.state.translateY,
+    };
   }
 }
