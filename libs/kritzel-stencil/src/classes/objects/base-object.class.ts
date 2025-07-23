@@ -171,7 +171,14 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
       return;
     }
 
-    this.elementRef = null;
+    this.isMounted = false;
+  }
+
+  remount(): void {
+    if (!this.isMounted) {
+      return;
+    }
+
     this.isMounted = false;
   }
 

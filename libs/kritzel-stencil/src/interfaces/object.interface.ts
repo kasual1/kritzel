@@ -39,6 +39,7 @@ export interface KritzelObject<T = Element> {
 
   mount(element: T): void;
   unmount(): void;
+  remount(): void;
   generateId(): string;
   isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
   centerInViewport(): void;

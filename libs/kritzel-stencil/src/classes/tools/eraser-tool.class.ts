@@ -60,7 +60,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._store.state.isErasing) {
-        debugger;
+        
         const removeCommands = this._store.allObjects
           .filter(object => object.markedForRemoval)
           .map(object => new RemoveObjectCommand(this._store, this, object));
