@@ -1,3 +1,4 @@
+import { KritzelStore } from '../store.class';
 import { KritzelBaseObject } from './base-object.class';
 
 export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
@@ -18,6 +19,22 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       this.height = config.height || 0;
       this.width = config.width || 0;
     }
+  }
+
+  static override create(store: KritzelStore, config?: {
+    element: HTMLElement;
+    translateX?: number;
+    translateY?: number;
+    scale?: number;
+    height?: number;
+    width?: number;
+  }): KritzelBaseObject<Element> {
+    const object = new KritzelCustomElement(config);
+
+    object._store = store;
+    object.id = object.generateId();
+
+    return object;
   }
 
   override mount(element: HTMLElement): void {
