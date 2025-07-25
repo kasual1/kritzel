@@ -63,17 +63,18 @@ export class KritzelViewport {
 
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      const adjustedClientX = event.clientX - this._store.offsetX;
-      const adjustedClientY = event.clientY - this._store.offsetY;
+      const hostRect = this._store.state.host.getBoundingClientRect();
+      const xRelativeToHost = event.clientX - hostRect.left;
+      const yRelativeToHost = event.clientY - hostRect.top;
 
-      this._store.state.cursorX = adjustedClientX;
-      this._store.state.cursorY = adjustedClientY;
+      this._store.state.cursorX = (xRelativeToHost - this._store.state.translateX) / this._store.state.scale;
+      this._store.state.cursorY = (yRelativeToHost - this._store.state.translateY) / this._store.state.scale;
 
       if (this._store.state.isPanning) {
-        this._store.state.translateX -= this._store.state.startX - adjustedClientX;
-        this._store.state.translateY -= this._store.state.startY - adjustedClientY;
-        this._store.state.startX = adjustedClientX;
-        this._store.state.startY = adjustedClientY;
+        this._store.state.translateX -= this._store.state.startX - xRelativeToHost;
+        this._store.state.translateY -= this._store.state.startY - yRelativeToHost;
+        this._store.state.startX = xRelativeToHost;
+        this._store.state.startY = yRelativeToHost;
         this._store.state.hasViewportChanged = true;
         this._store.state.skipContextMenu = true;
         this._store.rerender();
@@ -150,15 +151,18 @@ export class KritzelViewport {
 
   private handleZoom(event: WheelEvent): void {
     const rect = this._store.state.host.getBoundingClientRect();
-    this._store.state.cursorX = event.clientX - rect.left;
-    this._store.state.cursorY = event.clientY - rect.top;
+    const xRelativeToHost = event.clientX - rect.left;
+    const yRelativeToHost = event.clientY - rect.top;
+
+    this._store.state.cursorX = (xRelativeToHost - this._store.state.translateX) / this._store.state.scale;
+    this._store.state.cursorY = (yRelativeToHost - this._store.state.translateY) / this._store.state.scale;
 
     const delta = event.deltaY > 0 ? -this._store.state.scaleStep * this._store.state.scale : this._store.state.scaleStep * this._store.state.scale;
     const newScale = Math.min(this._store.state.scaleMax, Math.max(this._store.state.scaleMin, this._store.state.scale + delta));
 
     const scaleRatio = newScale / this._store.state.scale;
-    const translateXAdjustment = (this._store.state.cursorX - this._store.state.translateX) * (scaleRatio - 1);
-    const translateYAdjustment = (this._store.state.cursorY - this._store.state.translateY) * (scaleRatio - 1);
+    const translateXAdjustment = (xRelativeToHost - this._store.state.translateX) * (scaleRatio - 1);
+    const translateYAdjustment = (yRelativeToHost - this._store.state.translateY) * (scaleRatio - 1);
 
     this._store.state.scale = newScale;
 

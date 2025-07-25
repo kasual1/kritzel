@@ -91,19 +91,27 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   }
 
   override hitTest(x: number, y: number): boolean {
-    if (!this.elementRef) return false;
+    const transformedPoints = this.points.map(([x, y]) => [(x + this.options.translateX) / this.options.scale, (y + this.options.translateY) / this.options.scale]);
 
-    const path = this.elementRef.querySelector('path') as SVGPathElement;
-
-    if (!path) {
+    const strokePoints = this.getStrokeFromPoints(transformedPoints, this.strokeWidth);
+    if (strokePoints.length === 0) {
       return false;
     }
 
-    if (path.isPointInStroke?.({ x, y }) || path.isPointInFill?.({ x, y })) {
-      return true;
+    let inside = false;
+    for (let i = 0, j = strokePoints.length - 1; i < strokePoints.length; j = i++) {
+      const xi = strokePoints[i][0],
+        yi = strokePoints[i][1];
+      const xj = strokePoints[j][0],
+        yj = strokePoints[j][1];
+
+      const intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+      if (intersect) {
+        inside = !inside;
+      }
     }
 
-    return false;
+    return inside;
   }
 
   private updateDimensions(): void {

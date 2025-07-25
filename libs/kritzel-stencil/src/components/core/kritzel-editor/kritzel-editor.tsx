@@ -29,7 +29,6 @@ export class KritzelEditor {
     {
       name: 'selection',
       type: 'tool',
-      isDefault: true,
       tool: KritzelSelectionTool,
       icon: 'cursor',
     },
@@ -38,6 +37,7 @@ export class KritzelEditor {
       type: 'tool',
       tool: KritzelBrushTool,
       icon: 'pen',
+      isDefault: true,
       config: DEFAULT_BRUSH_CONFIG,
     },
     {
