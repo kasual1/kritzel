@@ -314,4 +314,27 @@ export class KritzelStore {
 
     return null;
   }
+
+  public getCanvasPoint(event: PointerEvent): { x: number; y: number } {
+   if (!this.state.host) {
+      return { x: 0, y: 0 };
+    }
+
+    // Get the position of the kritzel-engine host element relative to the viewport
+    const hostRect = this.state.host.getBoundingClientRect();
+
+    // 1. Make the pointer coordinates relative to the host element
+    const xRelativeToHost = event.clientX - hostRect.left;
+    const yRelativeToHost = event.clientY - hostRect.top;
+
+    // 2. Reverse the translation applied to the #origin div
+    const xWithoutTranslate = xRelativeToHost - this.state.translateX;
+    const yWithoutTranslate = yRelativeToHost - this.state.translateY;
+
+    // 3. Reverse the scaling to get the final world coordinates
+    const worldX = xWithoutTranslate / this.state.scale;
+    const worldY = yWithoutTranslate / this.state.scale;
+
+    return { x: worldX, y: worldY };
+}
 }

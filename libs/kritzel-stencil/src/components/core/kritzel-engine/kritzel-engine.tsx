@@ -468,6 +468,7 @@ export class KritzelEngine {
         </div>
 
         <div
+          id="origin"
           class="origin"
           style={{
             transform: `matrix(${this.store.state?.scale}, 0, 0, ${this.store.state?.scale}, ${this.store.state?.translateX}, ${this.store.state?.translateY})`,

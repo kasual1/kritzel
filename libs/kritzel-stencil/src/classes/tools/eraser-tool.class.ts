@@ -30,13 +30,15 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._store.state.isErasing) {
-        const shadowRoot = this._store.state.host?.shadowRoot;
-        if (!shadowRoot) return;
+
+        const x = this._store.state.cursorX;
+        const y = this._store.state.cursorY;
 
         const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
+
         if (!selectedObject) return;
 
-        selectedObject.markedForRemoval = selectedObject.hitTest(event.offsetX, event.offsetY);
+        selectedObject.markedForRemoval = selectedObject.hitTest(x, y);
 
         this._store.rerender();
       }
@@ -50,8 +52,6 @@ export class KritzelEraserTool extends KritzelBaseTool {
         const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
         if (!selectedObject) return;
 
-        selectedObject.markedForRemoval = selectedObject.hitTest(event.offsetX, event.offsetY);
-
         this._store.rerender();
       }
     }
@@ -60,10 +60,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._store.state.isErasing) {
-        
-        const removeCommands = this._store.allObjects
-          .filter(object => object.markedForRemoval)
-          .map(object => new RemoveObjectCommand(this._store, this, object));
+        const removeCommands = this._store.allObjects.filter(object => object.markedForRemoval).map(object => new RemoveObjectCommand(this._store, this, object));
 
         if (removeCommands.length > 0) {
           this._store.history.executeCommand(new BatchCommand(this._store, this, removeCommands));
@@ -73,7 +70,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
       }
     }
 
-    if( event.pointerType === 'touch') {
+    if (event.pointerType === 'touch') {
       clearTimeout(this.touchStartTimeout);
 
       if (this._store.state.isErasing) {

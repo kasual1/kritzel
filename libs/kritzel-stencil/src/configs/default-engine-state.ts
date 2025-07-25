@@ -32,7 +32,7 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   skipContextMenu: false,
   debugInfo: {
     showObjectInfo: false,
-    showViewportInfo: false,
+    showViewportInfo: true,
     logCommands: false,
   },
   host: null,
