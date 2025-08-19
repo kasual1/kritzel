@@ -82,6 +82,13 @@ export class KritzelViewport {
     }
 
     if (event.pointerType === 'touch') {
+      const hostRect = this._store.state.host.getBoundingClientRect();
+      const xRelativeToHost = event.clientX - hostRect.left;
+      const yRelativeToHost = event.clientY - hostRect.top;
+
+      this._store.state.cursorX = (xRelativeToHost - this._store.state.translateX) / this._store.state.scale;
+      this._store.state.cursorY = (yRelativeToHost - this._store.state.translateY) / this._store.state.scale;
+
       const activePointers = Array.from(this._store.state.pointers.values());
 
       if (activePointers.length === 2) {
