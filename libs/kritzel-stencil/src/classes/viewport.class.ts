@@ -67,8 +67,8 @@ export class KritzelViewport {
       const xRelativeToHost = event.clientX - hostRect.left;
       const yRelativeToHost = event.clientY - hostRect.top;
 
-      this._store.state.cursorX = (xRelativeToHost - this._store.state.translateX) / this._store.state.scale;
-      this._store.state.cursorY = (yRelativeToHost - this._store.state.translateY) / this._store.state.scale;
+      this._store.state.pointerX = (xRelativeToHost - this._store.state.translateX) / this._store.state.scale;
+      this._store.state.pointerY = (yRelativeToHost - this._store.state.translateY) / this._store.state.scale;
 
       if (this._store.state.isPanning) {
         this._store.state.translateX -= this._store.state.startX - xRelativeToHost;
@@ -86,8 +86,8 @@ export class KritzelViewport {
       const xRelativeToHost = event.clientX - hostRect.left;
       const yRelativeToHost = event.clientY - hostRect.top;
 
-      this._store.state.cursorX = (xRelativeToHost - this._store.state.translateX) / this._store.state.scale;
-      this._store.state.cursorY = (yRelativeToHost - this._store.state.translateY) / this._store.state.scale;
+      this._store.state.pointerX = (xRelativeToHost - this._store.state.translateX) / this._store.state.scale;
+      this._store.state.pointerY = (yRelativeToHost - this._store.state.translateY) / this._store.state.scale;
 
       const activePointers = Array.from(this._store.state.pointers.values());
 
@@ -161,8 +161,8 @@ export class KritzelViewport {
     const xRelativeToHost = event.clientX - rect.left;
     const yRelativeToHost = event.clientY - rect.top;
 
-    this._store.state.cursorX = (xRelativeToHost - this._store.state.translateX) / this._store.state.scale;
-    this._store.state.cursorY = (yRelativeToHost - this._store.state.translateY) / this._store.state.scale;
+    this._store.state.pointerX = (xRelativeToHost - this._store.state.translateX) / this._store.state.scale;
+    this._store.state.pointerY = (yRelativeToHost - this._store.state.translateY) / this._store.state.scale;
 
     const delta = event.deltaY > 0 ? -this._store.state.scaleStep * this._store.state.scale : this._store.state.scaleStep * this._store.state.scale;
     const newScale = Math.min(this._store.state.scaleMax, Math.max(this._store.state.scaleMin, this._store.state.scale + delta));
