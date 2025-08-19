@@ -35,8 +35,8 @@ export class KritzelEraserTool extends KritzelBaseTool {
         
         if (!selectedObject) return;
 
-        const x = this._store.state.cursorX;
-        const y = this._store.state.cursorY;
+        const x = this._store.state.pointerX;
+        const y = this._store.state.pointerY;
         
         selectedObject.markedForRemoval = selectedObject.hitTest(x, y);
 
@@ -53,8 +53,8 @@ export class KritzelEraserTool extends KritzelBaseTool {
         
         if (!selectedObject) return;
 
-        const x = this._store.state.cursorX;
-        const y = this._store.state.cursorY;
+        const x = this._store.state.pointerX;
+        const y = this._store.state.pointerY;
 
         selectedObject.markedForRemoval = selectedObject.hitTest(x, y);
 
