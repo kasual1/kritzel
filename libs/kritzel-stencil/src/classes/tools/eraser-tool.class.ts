@@ -30,14 +30,14 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._store.state.isErasing) {
+        
+        const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
+        
+        if (!selectedObject) return;
 
         const x = this._store.state.cursorX;
         const y = this._store.state.cursorY;
-
-        const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
-
-        if (!selectedObject) return;
-
+        
         selectedObject.markedForRemoval = selectedObject.hitTest(x, y);
 
         this._store.rerender();
@@ -48,9 +48,15 @@ export class KritzelEraserTool extends KritzelBaseTool {
       if (this._store.state.pointers.size === 1 && this._store.state.isErasing) {
         const shadowRoot = this._store.state.host?.shadowRoot;
         if (!shadowRoot) return;
-
+        
         const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
+        
         if (!selectedObject) return;
+
+        const x = this._store.state.cursorX;
+        const y = this._store.state.cursorY;
+
+        selectedObject.markedForRemoval = selectedObject.hitTest(x, y);
 
         this._store.rerender();
       }
