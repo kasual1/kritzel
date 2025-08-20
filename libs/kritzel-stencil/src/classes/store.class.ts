@@ -315,8 +315,34 @@ export class KritzelStore {
     return null;
   }
 
+  getObjectsFromPointerEvent(event: PointerEvent, selector = '.object'): KritzelBaseObject<any>[] {
+    const shadowRoot = this.state.host?.shadowRoot;
+    if (!shadowRoot) return [];
+
+    const clientX = event.clientX;
+    const clientY = event.clientY;
+
+    const elementsAtPoint = shadowRoot.elementsFromPoint(clientX, clientY);
+    if (!elementsAtPoint || elementsAtPoint.length === 0) return [];
+
+    const objectIds = new Set<string>();
+
+    elementsAtPoint.forEach(element => {
+      const selectedObject = element.closest(selector) as HTMLElement | null;
+      if (selectedObject && selectedObject.id) {
+        objectIds.add(selectedObject.id);
+      }
+    });
+
+    if (objectIds.size > 0) {
+      return this.allObjects.filter(object => objectIds.has(object.id)).sort((a, b) => b.zIndex - a.zIndex);
+    }
+
+    return [];
+  }
+
   public getCanvasPoint(event: PointerEvent): { x: number; y: number } {
-   if (!this.state.host) {
+    if (!this.state.host) {
       return { x: 0, y: 0 };
     }
 
@@ -336,5 +362,5 @@ export class KritzelStore {
     const worldY = yWithoutTranslate / this.state.scale;
 
     return { x: worldX, y: worldY };
-}
+  }
 }
