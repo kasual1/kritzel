@@ -463,11 +463,12 @@ export class KritzelEngine {
           <div>IsRotationHandleSelected: {this.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
           <div>IsDrawing: {this.store.state.isDrawing ? 'true' : 'false'}</div>
           <div>IsWriting: {this.store.state.isWriting ? 'true' : 'false'}</div>
-          <div>CursorX: {this.store.state?.cursorX}</div>
-          <div>CursorY: {this.store.state?.cursorY}</div>
+          <div>PointerX: {this.store.state?.pointerX}</div>
+          <div>PointerY: {this.store.state?.pointerY}</div>
         </div>
 
         <div
+          id="origin"
           class="origin"
           style={{
             transform: `matrix(${this.store.state?.scale}, 0, 0, ${this.store.state?.scale}, ${this.store.state?.translateX}, ${this.store.state?.translateY})`,

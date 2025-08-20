@@ -8,6 +8,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelPath';
 
   points: number[][];
+  adjustedPoints: number[][];
   d: string;
   stroke: string = 'none';
   strokeWidth: number;
@@ -21,7 +22,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   width: number = 0;
   scale: number = 1;
   options: KritzelPathOptions | undefined;
-  
+
   isVisible: boolean = true;
   isDebugInfoVisible: boolean = true;
 
@@ -29,18 +30,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
-  constructor(config?: {
-    points: number[][];
-    translateX?: number;
-    translateY?: number;
-    scale?: number;
-    strokeWidth?: number;
-    fill?: string;
-    lineSlack?: number;
-  }) {
+  constructor(config?: { points: number[][]; translateX?: number; translateY?: number; scale?: number; strokeWidth?: number; fill?: string; lineSlack?: number }) {
     super();
     this.options = config;
     this.points = config?.points ?? [];
+    this.adjustedPoints = this.points.map(([px, py]) => [
+      (px + this.options.translateX) / this.scale,
+      (py + this.options.translateY) / this.scale,
+    ]);
     this.translateX = config?.translateX ?? 0;
     this.translateY = config?.translateY ?? 0;
     this.scale = config?.scale ?? 1;
@@ -57,6 +54,10 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     object.id = object.generateId();
     object.options = options;
     object.points = options?.points ?? [];
+    object.adjustedPoints = object.points.map(([px, py]) => [
+      (px + options?.translateX) / (options?.scale ?? 1),
+      (py + options?.translateY) / (options?.scale ?? 1),
+    ]);
     object.translateX = options?.translateX ?? 0;
     object.translateY = options?.translateY ?? 0;
     object.scale = options?.scale ?? 1;
@@ -81,6 +82,10 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.height = height;
 
     this.points = this.points.map(([x, y]) => [x * scaleX, y * scaleY]);
+    this.adjustedPoints = this.points.map(([px, py]) => [
+      (px + this.options.translateX) / this.scale,
+      (py + this.options.translateY) / this.scale,
+    ]);
     this.d = this.generateSvgPath();
 
     this.width = Math.max(...this.points.map(p => p[0])) - Math.min(...this.points.map(p => p[0])) + this.strokeWidth;
@@ -96,6 +101,60 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   override rotate(value: number): void {
     super.rotate(value);
     this.updateDimensions();
+  }
+
+  override hitTest(x: number, y: number): boolean {
+    const halfStroke = this.strokeWidth / this.scale / 2;
+
+     if (this.adjustedPoints.length === 1) {
+      const p1 = this.adjustedPoints[0];
+      const distance = this.pointToLineSegmentDistance(x, y, p1[0], p1[1], p1[0], p1[1]);
+      return distance <= halfStroke;
+    }
+
+    for (let i = 0; i < this.adjustedPoints.length - 1; i++) {
+      const p1 = this.adjustedPoints[i];
+      const p2 = this.adjustedPoints[i + 1];
+
+      const distance = this.pointToLineSegmentDistance(x, y, p1[0], p1[1], p2[0], p2[1]);
+
+      if (distance <= halfStroke) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+   private pointToLineSegmentDistance(x: number, y: number, x1: number, y1: number, x2: number, y2: number): number {
+    const A = x - x1;
+    const B = y - y1;
+    const C = x2 - x1;
+    const D = y2 - y1;
+
+    const dot = A * C + B * D;
+    const len_sq = C * C + D * D;
+    let param = -1;
+    if (len_sq !== 0) { // in case of 0 length line
+      param = dot / len_sq;
+    }
+
+    let xx, yy;
+
+    if (param < 0) {
+      xx = x1;
+      yy = y1;
+    } else if (param > 1) {
+      xx = x2;
+      yy = y2;
+    } else {
+      xx = x1 + param * C;
+      yy = y1 + param * D;
+    }
+
+    const dx = x - xx;
+    const dy = y - yy;
+    return Math.sqrt(dx * dx + dy * dy);
   }
 
   private updateDimensions(): void {

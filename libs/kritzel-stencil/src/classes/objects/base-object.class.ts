@@ -257,4 +257,8 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   edit(): void {
     // This method can be overridden by subclasses to handle edit actions.
   }
+
+  hitTest(_x: number, _y: number): boolean {
+    return true; // Default implementation, can be overridden by subclasses
+  }
 }

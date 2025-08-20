@@ -41,8 +41,8 @@ export interface KritzelEngineState {
   skipContextMenu: boolean;
   debugInfo: KritzelDebugInfo;
   host: HTMLElement;
-  cursorX: number;
-  cursorY: number;
+  pointerX: number;
+  pointerY: number;
   scale: number;
   scaleMax: number;
   scaleMin: number;
