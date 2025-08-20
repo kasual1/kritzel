@@ -106,6 +106,12 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   override hitTest(x: number, y: number): boolean {
     const halfStroke = this.strokeWidth / this.scale / 2;
 
+     if (this.adjustedPoints.length === 1) {
+      const p1 = this.adjustedPoints[0];
+      const distance = this.pointToLineSegmentDistance(x, y, p1[0], p1[1], p1[0], p1[1]);
+      return distance <= halfStroke;
+    }
+
     for (let i = 0; i < this.adjustedPoints.length - 1; i++) {
       const p1 = this.adjustedPoints[i];
       const p2 = this.adjustedPoints[i + 1];
