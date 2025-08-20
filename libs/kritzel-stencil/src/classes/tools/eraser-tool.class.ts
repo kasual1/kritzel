@@ -30,15 +30,19 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._store.state.isErasing) {
+        
+        const selectedObjects = this._store.getObjectsFromPointerEvent(event, '.object');
 
-        const x = this._store.state.cursorX;
-        const y = this._store.state.cursorY;
+        if (selectedObjects.length === 0) return;
 
-        const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
+        console.log('selectedObjects', selectedObjects);
 
-        if (!selectedObject) return;
+        const x = this._store.state.pointerX;
+        const y = this._store.state.pointerY;
 
-        selectedObject.markedForRemoval = selectedObject.hitTest(x, y);
+        selectedObjects.forEach(selectedObject => {
+          selectedObject.markedForRemoval = selectedObject.hitTest(x, y);
+        });
 
         this._store.rerender();
       }
@@ -48,9 +52,17 @@ export class KritzelEraserTool extends KritzelBaseTool {
       if (this._store.state.pointers.size === 1 && this._store.state.isErasing) {
         const shadowRoot = this._store.state.host?.shadowRoot;
         if (!shadowRoot) return;
+        
+        const selectedObjects = this._store.getObjectsFromPointerEvent(event, '.object');
 
-        const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
-        if (!selectedObject) return;
+        if (selectedObjects.length === 0) return;
+
+        const x = this._store.state.pointerX;
+        const y = this._store.state.pointerY;
+
+        selectedObjects.forEach(selectedObject => {
+          selectedObject.markedForRemoval = selectedObject.hitTest(x, y);
+        });
 
         this._store.rerender();
       }
@@ -60,7 +72,10 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._store.state.isErasing) {
-        const removeCommands = this._store.allObjects.filter(object => object.markedForRemoval).map(object => new RemoveObjectCommand(this._store, this, object));
+        const removeCommands = this._store.allObjects.filter(object => object.markedForRemoval).map(object => {
+          object.markedForRemoval = false;
+          return new RemoveObjectCommand(this._store, this, object);
+        });
 
         if (removeCommands.length > 0) {
           this._store.history.executeCommand(new BatchCommand(this._store, this, removeCommands));
