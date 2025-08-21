@@ -31,6 +31,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
   isVisible: boolean = true;
   isSelected: boolean = false;
+  isHovered: boolean = false;
   isMounted: boolean = false;
   isEditable: boolean = false;
   isInteractive: boolean = false;
