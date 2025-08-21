@@ -23,6 +23,7 @@ export interface KritzelObject<T = Element> {
 
   isVisible: boolean;
   isSelected: boolean;
+  isHovered: boolean;
   isMounted: boolean;
   isEditable: boolean;
   isInteractive: boolean;
