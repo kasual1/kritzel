@@ -5,6 +5,7 @@ import { AddSelectionGroupCommand } from '../commands/add-selection-group.comman
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
+import { KritzelBaseObject } from '../objects/base-object.class';
 
 export class KritzelSelectionHandler extends KritzelBaseHandler {
   startX: number;
@@ -73,8 +74,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event) && this._store.state.isSelecting) {
         if (this.isSelectionClick) {
-          this.updateMouseSelection(event);
-          this.addSelectedObjectAtIndexToSelectionGroup(0);
+          const x = this._store.state.pointerX;
+          const y = this._store.state.pointerY;
+          const selectedObject = this._store.getObjectsFromPointerEvent(event, '.object').find(obj => obj.hitTest(x, y));
+
+          this.addObjectToSelectionGroup(selectedObject);
           this.removeSelectionBox();
         }
 
@@ -91,8 +95,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
       if (this._store.state.isSelecting) {
         if (this.isSelectionClick) {
-          this.updateTouchSelection();
-          this.addSelectedObjectAtIndexToSelectionGroup(0);
+         const x = this._store.state.pointerX;
+          const y = this._store.state.pointerY;
+          const selectedObject = this._store.getObjectsFromPointerEvent(event, '.object').find(obj => obj.hitTest(x, y));
+
+          this.addObjectToSelectionGroup(selectedObject);
           this.removeSelectionBox();
         }
 
@@ -243,6 +250,19 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._store.state.selectionGroup.addOrRemove(selectedObject);
     this._store.state.selectionGroup.isSelected = true;
     this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
+
+    this._store.history.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
+  }
+
+  private addObjectToSelectionGroup(object: KritzelBaseObject): void {
+    if (!object) {
+      return;
+    }
+
+    this._store.state.selectionGroup = KritzelSelectionGroup.create(this._store);
+    this._store.state.selectionGroup.addOrRemove(object);
+    this._store.state.selectionGroup.isSelected = true;
+    this._store.state.selectionGroup.rotation = object.rotation;
 
     this._store.history.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
   }
