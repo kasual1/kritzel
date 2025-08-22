@@ -54,7 +54,7 @@
 .kritzel-control.selected,
 .kritzel-control.selected:hover,
 .kritzel-control.selected:active {
-  background-color: var(--kritzel-controls-control-selected-background-color, #0E1111) !important;
+  background-color: var(--kritzel-controls-control-selected-background-color, #007AFF) !important;
   color: var(--kritzel-controls-control-selected-color, #ffffff) !important;
 }
 
