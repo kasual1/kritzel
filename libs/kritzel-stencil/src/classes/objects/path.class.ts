@@ -3,6 +3,9 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelPathOptions } from '../../interfaces/path-options.interface';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelStore } from '../store.class';
+import { KritzelPolygon } from '../../interfaces/polygon.interface';
+import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
+import { KritzelPoint } from '../../interfaces/point.interface';
 
 export class KritzelPath extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelPath';
@@ -120,6 +123,70 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
       if (distance <= halfStroke) {
         return true;
+      }
+    }
+
+    return false;
+  }
+
+  override hitTestPolygon(polygon: KritzelPolygon): boolean {
+    const halfStroke = this.strokeWidth / this.scale / 2;
+
+    // Normalize polygon points in order
+    const polyPoints: KritzelPoint[] = [
+      { x: polygon.bottomLeft.x, y: polygon.bottomLeft.y },
+      { x: polygon.bottomRight.x, y: polygon.bottomRight.y },
+      { x: polygon.topRight.x, y: polygon.topRight.y },
+      { x: polygon.topLeft.x, y: polygon.topLeft.y },
+    ];
+
+    // 1) If any path point lies inside the polygon, they intersect
+    for (const [px, py] of this.adjustedPoints) {
+      if (KritzelGeometryHelper.isPointInPolygon({ x: px, y: py }, polyPoints)) {
+        return true;
+      }
+    }
+
+    // 2) If any polygon corner is within the path's stroke, they intersect
+    for (const pt of polyPoints) {
+      if (this.hitTest(pt.x, pt.y)) {
+        return true;
+      }
+    }
+
+    // 3) If any path segment intersects any polygon edge, they intersect
+    for (let i = 0; i < this.adjustedPoints.length - 1; i++) {
+      const p1 = { x: this.adjustedPoints[i][0], y: this.adjustedPoints[i][1] };
+      const p2 = { x: this.adjustedPoints[i + 1][0], y: this.adjustedPoints[i + 1][1] };
+
+      for (let j = 0; j < polyPoints.length; j++) {
+        const q1 = polyPoints[j];
+        const q2 = polyPoints[(j + 1) % polyPoints.length];
+
+        if (KritzelGeometryHelper.intersectLines(p1, p2, q1, q2)) {
+          return true;
+        }
+      }
+    }
+
+    // 4) Account for stroke thickness by checking closest distances between segments
+    for (let i = 0; i < this.adjustedPoints.length - 1; i++) {
+      const p1 = this.adjustedPoints[i];
+      const p2 = this.adjustedPoints[i + 1];
+
+      for (let j = 0; j < polyPoints.length; j++) {
+        const q1 = polyPoints[j];
+        const q2 = polyPoints[(j + 1) % polyPoints.length];
+
+        const d1 = this.pointToLineSegmentDistance(q1.x, q1.y, p1[0], p1[1], p2[0], p2[1]);
+        const d2 = this.pointToLineSegmentDistance(q2.x, q2.y, p1[0], p1[1], p2[0], p2[1]);
+        const d3 = this.pointToLineSegmentDistance(p1[0], p1[1], q1.x, q1.y, q2.x, q2.y);
+        const d4 = this.pointToLineSegmentDistance(p2[0], p2[1], q1.x, q1.y, q2.x, q2.y);
+
+        const minD = Math.min(d1, d2, d3, d4);
+        if (minD <= halfStroke) {
+          return true;
+        }
       }
     }
 
