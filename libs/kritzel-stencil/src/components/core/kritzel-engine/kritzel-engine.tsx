@@ -784,6 +784,8 @@ export class KritzelEngine {
                         <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>y: {object.y}</div>
                       </div>
                     </foreignObject>
                   </g>
