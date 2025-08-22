@@ -1,5 +1,6 @@
 import { KritzelBaseObject } from '../classes/objects/base-object.class';
 import { KritzelBoundingBox } from './bounding-box.interface';
+import { KritzelPolygon } from './polygon.interface';
 
 export interface KritzelObject<T = Element> {
   _elementRef: T;
@@ -52,4 +53,5 @@ export interface KritzelObject<T = Element> {
   isClass<T extends KritzelBaseObject>(this: T, type: string): this is T;
   edit(): void;
   hitTest(x: number, y: number): boolean;
+  hitTestPolygon(polygon: KritzelPolygon): boolean;
 }
