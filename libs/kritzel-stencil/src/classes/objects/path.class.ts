@@ -11,7 +11,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelPath';
 
   points: number[][];
-  adjustedPoints: number[][];
   d: string;
   stroke: string = 'none';
   strokeWidth: number;
@@ -37,10 +36,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     super();
     this.options = config;
     this.points = config?.points ?? [];
-    this.adjustedPoints = this.points.map(([px, py]) => [
-      (px + this.options.translateX) / this.scale,
-      (py + this.options.translateY) / this.scale,
-    ]);
     this.translateX = config?.translateX ?? 0;
     this.translateY = config?.translateY ?? 0;
     this.scale = config?.scale ?? 1;
@@ -57,10 +52,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     object.id = object.generateId();
     object.options = options;
     object.points = options?.points ?? [];
-    object.adjustedPoints = object.points.map(([px, py]) => [
-      (px + options?.translateX) / (options?.scale ?? 1),
-      (py + options?.translateY) / (options?.scale ?? 1),
-    ]);
     object.translateX = options?.translateX ?? 0;
     object.translateY = options?.translateY ?? 0;
     object.scale = options?.scale ?? 1;
@@ -85,10 +76,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.height = height;
 
     this.points = this.points.map(([x, y]) => [x * scaleX, y * scaleY]);
-    this.adjustedPoints = this.points.map(([px, py]) => [
-      (px + this.options.translateX) / this.scale,
-      (py + this.options.translateY) / this.scale,
-    ]);
     this.d = this.generateSvgPath();
 
     this.width = Math.max(...this.points.map(p => p[0])) - Math.min(...this.points.map(p => p[0])) + this.strokeWidth;
@@ -108,16 +95,27 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   override hitTest(x: number, y: number): boolean {
     const halfStroke = this.strokeWidth / this.scale / 2;
+    
+    const deltaX = this.x - this.translateX;
+    const deltaY = this.y - this.translateY;
 
-     if (this.adjustedPoints.length === 1) {
-      const p1 = this.adjustedPoints[0];
+    const adjustedPoints = this.points.map(([px, py]) => [
+      (px + this.options.translateX - deltaX) / this.scale,
+      (py + this.options.translateY - deltaY) / this.scale,
+    ]);
+
+    console.log(adjustedPoints[0])
+
+
+    if (adjustedPoints.length === 1) {
+      const p1 = adjustedPoints[0];
       const distance = this.pointToLineSegmentDistance(x, y, p1[0], p1[1], p1[0], p1[1]);
       return distance <= halfStroke;
     }
 
-    for (let i = 0; i < this.adjustedPoints.length - 1; i++) {
-      const p1 = this.adjustedPoints[i];
-      const p2 = this.adjustedPoints[i + 1];
+    for (let i = 0; i < adjustedPoints.length - 1; i++) {
+      const p1 = adjustedPoints[i];
+      const p2 = adjustedPoints[i + 1];
 
       const distance = this.pointToLineSegmentDistance(x, y, p1[0], p1[1], p2[0], p2[1]);
 
@@ -131,6 +129,10 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   override hitTestPolygon(polygon: KritzelPolygon): boolean {
     const halfStroke = this.strokeWidth / this.scale / 2;
+    const adjustedPoints = this.points.map(([px, py]) => [
+      (px + this.options.translateX) / this.scale,
+      (py + this.options.translateY) / this.scale,
+    ]);
 
     // Normalize polygon points in order
     const polyPoints: KritzelPoint[] = [
@@ -141,7 +143,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     ];
 
     // 1) If any path point lies inside the polygon, they intersect
-    for (const [px, py] of this.adjustedPoints) {
+    for (const [px, py] of adjustedPoints) {
       if (KritzelGeometryHelper.isPointInPolygon({ x: px, y: py }, polyPoints)) {
         return true;
       }
@@ -155,9 +157,9 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     }
 
     // 3) If any path segment intersects any polygon edge, they intersect
-    for (let i = 0; i < this.adjustedPoints.length - 1; i++) {
-      const p1 = { x: this.adjustedPoints[i][0], y: this.adjustedPoints[i][1] };
-      const p2 = { x: this.adjustedPoints[i + 1][0], y: this.adjustedPoints[i + 1][1] };
+    for (let i = 0; i < adjustedPoints.length - 1; i++) {
+      const p1 = { x: adjustedPoints[i][0], y: adjustedPoints[i][1] };
+      const p2 = { x: adjustedPoints[i + 1][0], y: adjustedPoints[i + 1][1] };
 
       for (let j = 0; j < polyPoints.length; j++) {
         const q1 = polyPoints[j];
@@ -170,9 +172,9 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     }
 
     // 4) Account for stroke thickness by checking closest distances between segments
-    for (let i = 0; i < this.adjustedPoints.length - 1; i++) {
-      const p1 = this.adjustedPoints[i];
-      const p2 = this.adjustedPoints[i + 1];
+    for (let i = 0; i < adjustedPoints.length - 1; i++) {
+      const p1 = adjustedPoints[i];
+      const p2 = adjustedPoints[i + 1];
 
       for (let j = 0; j < polyPoints.length; j++) {
         const q1 = polyPoints[j];
