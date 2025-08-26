@@ -32,5 +32,8 @@
     "docs:start": "cd website && npm run start",
     "docs:build": "cd website && npm run build",
     "docs:serve": "cd website && npm run serve"
+  },
+  "overrides": {
+    "axios": "^0.30.0"
   }
 }
