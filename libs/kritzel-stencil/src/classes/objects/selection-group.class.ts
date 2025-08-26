@@ -79,6 +79,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.objects.forEach(obj => {
       obj.translateX += deltaX;
       obj.translateY += deltaY;
+      obj.move(startX, startY, endX, endY);
       this._store.state.objectsOctree.update(obj);
     });
 
@@ -133,8 +134,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       child.translateX = centerX + rotatedX - child.totalWidth / 2 / child.scale;
       child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
 
-      child.rotation = this.objects.length === 1 ? value : value + unchangedChild.rotation;
-
+      child.rotate(this.objects.length === 1 ? value : value + unchangedChild.rotation);
       this._store.state.objectsOctree.update(child);
     });
   }

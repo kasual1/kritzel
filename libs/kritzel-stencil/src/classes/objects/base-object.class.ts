@@ -4,6 +4,7 @@ import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelStore } from '../store.class';
 import { ObjectHelper } from '../../helpers/object.helper';
+import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 
 export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable {
   __class__: string = 'KritzelBaseObject';
@@ -31,6 +32,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
   isVisible: boolean = true;
   isSelected: boolean = false;
+  isHovered: boolean = false;
   isMounted: boolean = false;
   isEditable: boolean = false;
   isInteractive: boolean = false;
@@ -261,4 +263,10 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   hitTest(_x: number, _y: number): boolean {
     return true; // Default implementation, can be overridden by subclasses
   }
+
+  hitTestPolygon(polygon: KritzelPolygon): boolean {
+    const objectPolygon = this.rotatedPolygon;
+    return KritzelGeometryHelper.doPolygonsIntersect(objectPolygon, polygon);
+  }
+  
 }
