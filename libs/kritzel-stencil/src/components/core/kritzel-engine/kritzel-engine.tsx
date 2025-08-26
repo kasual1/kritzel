@@ -608,7 +608,7 @@ export class KritzelEngine {
                     x2={object.totalWidth}
                     y2="0"
                     style={{
-                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      stroke: 'var(--kritzel-selection-border-color, #007AFF)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
@@ -620,7 +620,7 @@ export class KritzelEngine {
                     x2="0"
                     y2={object.totalHeight}
                     style={{
-                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      stroke: 'var(--kritzel-selection-border-color, #007AFF)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
@@ -632,7 +632,7 @@ export class KritzelEngine {
                     x2={object.totalWidth}
                     y2={object.totalHeight}
                     style={{
-                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      stroke: 'var(--kritzel-selection-border-color, #007AFF)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
@@ -644,7 +644,7 @@ export class KritzelEngine {
                     x2={object.totalWidth}
                     y2={object.totalHeight}
                     style={{
-                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      stroke: 'var(--kritzel-selection-border-color, #007AFF)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
@@ -741,7 +741,7 @@ export class KritzelEngine {
                     x2={object.totalWidth / 2}
                     y2={-((15 * object.scale) / this.store.state?.scale)}
                     style={{
-                      stroke: 'var(--kritzel-selection-border-color, #0e1111)',
+                      stroke: 'var(--kritzel-selection-border-color, #007AFF)',
                       strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.store.state?.scale})`,
                     }}
                     visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
@@ -784,6 +784,8 @@ export class KritzelEngine {
                         <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>y: {object.y}</div>
                       </div>
                     </foreignObject>
                   </g>

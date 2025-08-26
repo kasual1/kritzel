@@ -8,10 +8,12 @@ import { KritzelRotationHandler } from '../handlers/rotation.handler';
 import { KritzelSelectionHandler } from '../handlers/selection.handler';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseTool } from './base-tool.class';
+import { KritzelHoverHandler } from '../handlers/hover.handler';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
   selectionHandler: KritzelSelectionHandler;
   moveHandler: KritzelMoveHandler;
+  hoverHandler: KritzelHoverHandler;
   resizeHandler: KritzelResizeHandler;
   rotationHandler: KritzelRotationHandler;
 
@@ -19,6 +21,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     super(store);
     this.selectionHandler = new KritzelSelectionHandler(this._store);
     this.moveHandler = new KritzelMoveHandler(this._store);
+    this.hoverHandler = new KritzelHoverHandler(this._store);
     this.resizeHandler = new KritzelResizeHandler(this._store);
     this.rotationHandler = new KritzelRotationHandler(this._store);
   }
@@ -101,6 +104,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     if (event.pointerType === 'mouse') {
       this.moveHandler.handlePointerMove(event);
+      this.hoverHandler.handlePointerMove(event);
       this.selectionHandler.handlePointerMove(event);
       this.resizeHandler.handlePointerMove(event);
       this.rotationHandler.handlePointerMove(event);

@@ -1,10 +1,10 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelStore } from '../store.class';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
+import { KritzelBaseObject } from '../objects/base-object.class';
 
 export class KritzelSelectionHandler extends KritzelBaseHandler {
   startX: number;
@@ -73,8 +73,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event) && this._store.state.isSelecting) {
         if (this.isSelectionClick) {
-          this.updateMouseSelection(event);
-          this.addSelectedObjectAtIndexToSelectionGroup(0);
+          const x = this._store.state.pointerX;
+          const y = this._store.state.pointerY;
+          const selectedObject = this._store.getObjectsFromPointerEvent(event, '.object').find(obj => obj.hitTest(x, y));
+
+          this.addObjectToSelectionGroup(selectedObject);
           this.removeSelectionBox();
         }
 
@@ -91,8 +94,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
       if (this._store.state.isSelecting) {
         if (this.isSelectionClick) {
-          this.updateTouchSelection();
-          this.addSelectedObjectAtIndexToSelectionGroup(0);
+          const x = this._store.state.pointerX;
+          const y = this._store.state.pointerY;
+          const selectedObject = this._store.getObjectsFromPointerEvent(event, '.object').find(obj => obj.hitTest(x, y));
+
+          this.addObjectToSelectionGroup(selectedObject);
           this.removeSelectionBox();
         }
 
@@ -221,28 +227,18 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   private updateSelectedObjects(): void {
     this._store.allObjects
       .filter(o => !(o instanceof KrtizelSelectionBox))
-      .forEach(object => {
-        const objectPolygon = object.rotatedPolygon;
-        const selectionBoxPolygon = this._store.state.selectionBox.rotatedPolygon;
-
-        object.isSelected = KritzelGeometryHelper.doPolygonsIntersect(objectPolygon, selectionBoxPolygon);
-      });
+      .forEach(object => (object.isSelected = object.hitTestPolygon(this._store.state.selectionBox.rotatedPolygon)));
   }
 
-  private addSelectedObjectAtIndexToSelectionGroup(index: number): void {
-    const selectedObjects = this._store.selectedObjects.sort((a, b) => b.zIndex - a.zIndex);
-    const selectedObject = selectedObjects[index];
-
-    if (!selectedObject) {
+  private addObjectToSelectionGroup(object: KritzelBaseObject): void {
+    if (!object) {
       return;
     }
 
-    selectedObjects.forEach(o => (o.isSelected = false));
-
     this._store.state.selectionGroup = KritzelSelectionGroup.create(this._store);
-    this._store.state.selectionGroup.addOrRemove(selectedObject);
+    this._store.state.selectionGroup.addOrRemove(object);
     this._store.state.selectionGroup.isSelected = true;
-    this._store.state.selectionGroup.rotation = this._store.state.selectionGroup.objects[0].rotation;
+    this._store.state.selectionGroup.rotation = object.rotation;
 
     this._store.history.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
   }

@@ -35,8 +35,6 @@ export class KritzelEraserTool extends KritzelBaseTool {
 
         if (selectedObjects.length === 0) return;
 
-        console.log('selectedObjects', selectedObjects);
-
         const x = this._store.state.pointerX;
         const y = this._store.state.pointerY;
 
