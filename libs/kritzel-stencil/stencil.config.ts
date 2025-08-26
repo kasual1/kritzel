@@ -34,8 +34,9 @@ export const config: Config = {
       componentCorePackage: 'kritzel-stencil',
       directivesProxyFile: '../kritzel-angular/projects/lib/src/lib/proxy.ts',
       directivesArrayFile: '../kritzel-angular/projects/lib/src/lib/index.ts',
-      outputType: 'component',
-      excludeComponents: INTERNAL_COMPONENTS,
+      outputType: 'standalone',
+      customElementsDir: 'dist/components',
+      excludeComponents: INTERNAL_COMPONENTS
     }),
     reactOutputTarget({
       outDir: '../kritzel-react/lib/components/stencil-generated/',
