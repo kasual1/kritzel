@@ -18,31 +18,6 @@ import {
 export class AppComponent {
   kritzelEditor!: HTMLKritzelEditorElement;
 
-  controls: KritzelToolbarControl[] = [
-    {
-      name: 'selection',
-      type: 'tool',
-      tool: KritzelSelectionTool,
-      icon: 'cursor',
-    },
-    {
-      name: 'brush',
-      type: 'tool',
-      tool: KritzelBrushTool,
-      isDefault: true,
-      icon: 'pen',
-      config: DEFAULT_BRUSH_CONFIG,
-    },
-    {
-      name: 'divider',
-      type: 'divider',
-    },
-    {
-      name: 'config',
-      type: 'config',
-    },
-  ];
-
   async onIsReady(event: any): Promise<void> {
     this.kritzelEditor = event.detail;
 
