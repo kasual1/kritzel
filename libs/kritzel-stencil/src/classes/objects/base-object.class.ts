@@ -213,11 +213,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   move(startX: number, startY: number, endX: number, endY: number): void {
-    const deltaX = (startX - endX) / this._store.state.scale;
-    const deltaY = (startY - endY) / this._store.state.scale;
-
-    this.translateX += deltaX;
-    this.translateY += deltaY;
+    // This method can be overridden by subclasses to implement custom movement logic.
   }
 
   resize(x: number, y: number, width: number, height: number): void {
