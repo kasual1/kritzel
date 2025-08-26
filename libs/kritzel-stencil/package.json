@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@stencil/angular-output-target": "^0.10.2",
-    "@stencil/core": "^4.31.0",
+    "@stencil/core": "^4.36.3",
     "@stencil/react-output-target": "^1.0.2",
     "@stencil/vue-output-target": "0.10.7",
     "@types/jest": "^29.5.14",
