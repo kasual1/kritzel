@@ -384,7 +384,6 @@ export class KritzelEngine {
     this.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     this.store.deselectAllObjects();
     this.store.selectObjects(objects);
-    console.log('Selected objects:', objects);
   }
 
   @Method()

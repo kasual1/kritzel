@@ -212,8 +212,12 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.translateY = (this._store.state.viewportHeight / 2 - this.totalHeight / 2 - this._store.state.translateY) / scale;
   }
 
-  move(_startX: number, _startY: number, _endX: number, _endY: number): void {
-    // This method can be overridden by subclasses to implement custom movement logic.
+  move(startX: number, startY: number, endX: number, endY: number): void {
+    const deltaX = (startX - endX) / this._store.state.scale;
+    const deltaY = (startY - endY) / this._store.state.scale;
+
+    this.translateX += deltaX;
+    this.translateY += deltaY;
   }
 
   resize(x: number, y: number, width: number, height: number): void {
@@ -264,5 +268,5 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     const objectPolygon = this.rotatedPolygon;
     return KritzelGeometryHelper.doPolygonsIntersect(objectPolygon, polygon);
   }
-  
+
 }
