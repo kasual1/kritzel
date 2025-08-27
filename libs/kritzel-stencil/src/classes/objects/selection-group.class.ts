@@ -30,7 +30,6 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   addOrRemove(object: KritzelBaseObject<any>) {
-    
     const index = this.objects.findIndex(obj => obj.id === object.id);
     if (index === -1) {
       this.objects.push(object);
@@ -77,8 +76,6 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this._store.state.objectsOctree.update(this);
 
     this.objects.forEach(obj => {
-      obj.translateX += deltaX;
-      obj.translateY += deltaY;
       obj.move(startX, startY, endX, endY);
       this._store.state.objectsOctree.update(obj);
     });

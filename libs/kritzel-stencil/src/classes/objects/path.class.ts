@@ -97,7 +97,15 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this._adjustedPoints = null;
   }
 
-  override move(_startX: number, _startY: number, _endX: number, _endY: number): void {
+  override move(startX: number, startY: number, endX: number, endY: number): void {
+    const deltaX = (startX - endX) / this._store.state.scale;
+    const deltaY = (startY - endY) / this._store.state.scale;
+
+    this.translateX += deltaX;
+    this.translateY += deltaY;
+
+    this.points = this.points.map(([x, y]) => [x + deltaX, y + deltaY]);
+
     this._adjustedPoints = null;
   }
 
@@ -215,10 +223,8 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
       return [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos];
     });
 
-    const deltaX = this.x - this.translateX;
-    const deltaY = this.y - this.translateY;
 
-    return rotatedPoints.map(([px, py]) => [(px + this.options.translateX - deltaX) / this.scale, (py + this.options.translateY - deltaY) / this.scale]);
+    return rotatedPoints.map(([px, py]) => [(px + this.options.translateX) / this.scale, (py + this.options.translateY) / this.scale]);
   }
 
   private pointToLineSegmentDistance(x: number, y: number, x1: number, y1: number, x2: number, y2: number): number {
