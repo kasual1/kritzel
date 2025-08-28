@@ -49,9 +49,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.objects.forEach(obj => {
       const deltaX = obj.translateX - this.translateX;
       const deltaY = obj.translateY - this.translateY;
-      obj.translateX = x + deltaX;
-      obj.translateY = y + deltaY;
-      this._store.state.objectsOctree.update(obj);
+      obj.updatePosition(x + deltaX, y + deltaY);
     });
 
     this.unchangedObjects.forEach(obj => {

@@ -54,4 +54,5 @@ export interface KritzelObject<T = Element> {
   edit(): void;
   hitTest(x: number, y: number): boolean;
   hitTestPolygon(polygon: KritzelPolygon): boolean;
+  updatePosition(x: number, y: number): void;
 }
