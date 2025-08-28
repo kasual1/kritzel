@@ -269,4 +269,10 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     return KritzelGeometryHelper.doPolygonsIntersect(objectPolygon, polygon);
   }
 
+  updatePosition(x: number, y: number): void {
+    this.translateX = x;
+    this.translateY = y;
+    this._store.state.objectsOctree.update(this);
+  }
+
 }
