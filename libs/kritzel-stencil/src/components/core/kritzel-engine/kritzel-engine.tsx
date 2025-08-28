@@ -305,12 +305,12 @@ export class KritzelEngine {
   }
 
   @Method()
-  async moveToTop(object?: KritzelBaseObject<any>) {
+  async bringToFront(object?: KritzelBaseObject<any>) {
     this.store.bringToFront(object);
   }
 
   @Method()
-  async moveToBottom(object?: KritzelBaseObject<any>) {
+  async sendToBack(object?: KritzelBaseObject<any>) {
     this.store.sendToBack(object);
   }
 
@@ -464,6 +464,8 @@ export class KritzelEngine {
           <div>IsWriting: {this.store.state.isWriting ? 'true' : 'false'}</div>
           <div>PointerX: {this.store.state?.pointerX}</div>
           <div>PointerY: {this.store.state?.pointerY}</div>
+          <div>SelectedObjects: {this.store.state.selectionGroup?.objects.length || 0}</div>
+
         </div>
 
         <div

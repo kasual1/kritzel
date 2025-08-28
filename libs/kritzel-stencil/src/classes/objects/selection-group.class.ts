@@ -141,7 +141,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     let currentZIndex = this._store.currentZIndex;
 
-    this.objects.forEach(obj => {
+    this.objects.sort((a, b) => a.zIndex - b.zIndex).forEach(obj => {
       const copiedObject = obj.copy() as KritzelBaseObject<any>;
       copiedObject.zIndex = currentZIndex;
       selectionGroup.addOrRemove(copiedObject);
