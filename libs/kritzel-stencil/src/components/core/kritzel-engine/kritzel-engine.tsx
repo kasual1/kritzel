@@ -464,6 +464,8 @@ export class KritzelEngine {
           <div>IsWriting: {this.store.state.isWriting ? 'true' : 'false'}</div>
           <div>PointerX: {this.store.state?.pointerX}</div>
           <div>PointerY: {this.store.state?.pointerY}</div>
+          <div>SelectedObjects: {this.store.state.selectionGroup?.objects.length || 0}</div>
+
         </div>
 
         <div
