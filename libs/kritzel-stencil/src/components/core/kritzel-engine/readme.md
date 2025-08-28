@@ -58,6 +58,22 @@ Type: `Promise<void>`
 
 
 
+### `bringToFront(object?: KritzelBaseObject<any>) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name     | Type                     | Description |
+| -------- | ------------------------ | ----------- |
+| `object` | `KritzelBaseObject<any>` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>`
 
 
@@ -186,38 +202,6 @@ Type: `Promise<void>`
 
 
 
-### `moveToBottom(object?: KritzelBaseObject<any>) => Promise<void>`
-
-
-
-#### Parameters
-
-| Name     | Type                     | Description |
-| -------- | ------------------------ | ----------- |
-| `object` | `KritzelBaseObject<any>` |             |
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `moveToTop(object?: KritzelBaseObject<any>) => Promise<void>`
-
-
-
-#### Parameters
-
-| Name     | Type                     | Description |
-| -------- | ------------------------ | ----------- |
-| `object` | `KritzelBaseObject<any>` |             |
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
 ### `paste(x: number, y: number) => Promise<void>`
 
 
@@ -306,6 +290,22 @@ Type: `Promise<void>`
 
 
 ### `sendBackward(object?: KritzelBaseObject<any>) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name     | Type                     | Description |
+| -------- | ------------------------ | ----------- |
+| `object` | `KritzelBaseObject<any>` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `sendToBack(object?: KritzelBaseObject<any>) => Promise<void>`
 
 
 
