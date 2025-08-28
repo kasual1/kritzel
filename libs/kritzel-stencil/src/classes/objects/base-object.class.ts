@@ -268,5 +268,5 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     const objectPolygon = this.rotatedPolygon;
     return KritzelGeometryHelper.doPolygonsIntersect(objectPolygon, polygon);
   }
-  
+
 }

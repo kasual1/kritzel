@@ -17,10 +17,6 @@ export class KritzelHoverHandler extends KritzelBaseHandler {
       const y = this._store.state.pointerY;
 
       hoveredObject.isHovered = hoveredObject.hitTest(x, y);
-
-      if(hoveredObject.isHovered){
-        console.log(hoveredObject.id);
-      }
     }
 
     if (event.pointerType === 'touch') {
