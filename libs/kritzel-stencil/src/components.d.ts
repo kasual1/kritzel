@@ -138,7 +138,7 @@ export namespace Components {
          */
         "isUtilityPanelVisible": boolean;
         /**
-          * @default [     {       label: 'Edit',       icon: 'pen',       visible: (_, objects) => objects.length === 1 && objects[0].isEditable,       action: (_, objects) => {         if (objects.length === 1) {           const object = objects[0];           if (object.isEditable) {             object.edit();           }         }       },     },     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },   ]
+          * @default [     {       label: 'Edit',       icon: 'pen',       visible: (_, objects) => objects.length === 1 && objects[0].isEditable,       action: (_, objects) => {         if (objects.length === 1) {           const object = objects[0];           if (object.isEditable) {             object.edit();           }         }       },     },     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
@@ -158,6 +158,7 @@ export namespace Components {
         "activeTool": KritzelTool;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "clearSelection": () => Promise<void>;
@@ -170,8 +171,6 @@ export namespace Components {
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
         "globalContextMenuItems": ContextMenuItem[];
         "hideContextMenu": () => Promise<void>;
-        "moveToBottom": (object?: KritzelBaseObject<any>) => Promise<void>;
-        "moveToTop": (object?: KritzelBaseObject<any>) => Promise<void>;
         "objectContextMenuItems": ContextMenuItem[];
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
@@ -188,6 +187,7 @@ export namespace Components {
         "selectAllObjectsInViewport": () => Promise<void>;
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
         "setFocus": () => Promise<void>;
         "undo": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
@@ -703,7 +703,7 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         /**
-          * @default [     {       label: 'Edit',       icon: 'pen',       visible: (_, objects) => objects.length === 1 && objects[0].isEditable,       action: (_, objects) => {         if (objects.length === 1) {           const object = objects[0];           if (object.isEditable) {             object.edit();           }         }       },     },     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.moveToTop() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.moveToBottom() },   ]
+          * @default [     {       label: 'Edit',       icon: 'pen',       visible: (_, objects) => objects.length === 1 && objects[0].isEditable,       action: (_, objects) => {         if (objects.length === 1) {           const object = objects[0];           if (object.isEditable) {             object.edit();           }         }       },     },     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
