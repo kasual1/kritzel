@@ -197,6 +197,13 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return false;
   }
 
+  override updatePosition(x: number, y: number): void {
+    this.translateX = x;
+    this.translateY = y;
+    this._adjustedPoints = null;
+    this._store.state.objectsOctree.update(this);
+  }
+
   private computeAdjustedPoints(): number[][] {
     if (!this.points?.length) {
       return [];
