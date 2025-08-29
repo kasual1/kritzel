@@ -2,6 +2,8 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelStore } from '../store.class';
 import { RotateSelectionGroupCommand } from '../commands/rotate-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
+import { UpdateObjectCommand } from '../commands/update-object.command';
+import { BatchCommand } from '../commands/batch.command';
 
 export class KritzelRotationHandler extends KritzelBaseHandler {
   initialRotation: number = 0;
@@ -117,7 +119,16 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._store.state.isRotating) {
-        this._store.history.executeCommand(new RotateSelectionGroupCommand(this._store, this, this.rotation));
+        const rotateSelectionGroupCommand = new RotateSelectionGroupCommand(this._store, this, this.rotation);
+        const updateObjectsCommand = this._store.state.selectionGroup.objects.map(object => {
+          return new UpdateObjectCommand(this._store, this, object, {
+            rotation: object.rotation,
+            translateX: object.translateX,
+            translateY: object.translateY,
+          });
+        });
+
+        this._store.history.executeCommand(new BatchCommand(this._store, this, [rotateSelectionGroupCommand, ...updateObjectsCommand]));
 
         this._store.state.isRotating = false;
 
@@ -128,7 +139,14 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._store.state.isRotating) {
-        this._store.history.executeCommand(new RotateSelectionGroupCommand(this._store, this, this.rotation));
+        const rotateSelectionGroupCommand = new RotateSelectionGroupCommand(this._store, this, this.rotation);
+        const updateObjectsCommand = this._store.state.selectionGroup.objects.map(object => {
+          return new UpdateObjectCommand(this._store, this, object, {
+            rotation: object.rotation,
+          });
+        });
+
+        this._store.history.executeCommand(new BatchCommand(this._store, this, [rotateSelectionGroupCommand, ...updateObjectsCommand]));
 
         this._store.state.isRotating = false;
 
