@@ -1,18 +1,14 @@
 import { KritzelStore } from '../store.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelBaseCommand } from './base.command';
+import { ObjectHelper } from '../../helpers/object.helper';
 
 export class UpdateObjectCommand extends KritzelBaseCommand {
   private object: KritzelBaseObject<any>;
   private updatedProperties: Partial<KritzelBaseObject<any>>;
   private previousProperties: Partial<KritzelBaseObject<any>>;
 
-  constructor(
-    store: KritzelStore,
-    initiator: any,
-    object: KritzelBaseObject<any>,
-    updatedProperties: Partial<KritzelBaseObject<any>>
-  ) {
+  constructor(store: KritzelStore, initiator: any, object: KritzelBaseObject<any>, updatedProperties: Partial<KritzelBaseObject<any>>) {
     super(store, initiator);
     this.object = object;
     this.updatedProperties = updatedProperties;
@@ -31,6 +27,10 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
         this.object[key] = this.updatedProperties[key];
       }
     }
+
+    this._store.database.update('objects', ObjectHelper.clone(this.object)).catch(err => {
+      console.error('Error adding object to database:', err);
+    });
   }
 
   undo(): void {
@@ -39,5 +39,9 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
         this.object[key] = this.previousProperties[key];
       }
     }
+
+    this._store.database.update('objects', ObjectHelper.clone(this.object)).catch(err => {
+      console.error('Error updating object in database:', err);
+    });
   }
 }

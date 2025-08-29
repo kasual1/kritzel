@@ -17,6 +17,7 @@ import { KritzelContextMenu } from '../components/ui/kritzel-context-menu/kritze
 import { KritzelToolRegistry } from './registries/tool.registry';
 import { DEFAULT_ENGINE_STATE } from '../configs/default-engine-state';
 import { KritzelDatabase } from './database.class';
+import { KritzelReviver } from './reviver.class';
 
 export class KritzelStore {
   private readonly _kritzelEngine: KritzelEngine;
@@ -78,10 +79,19 @@ export class KritzelStore {
     });
   }
 
-  initializeDatabase(): Promise<void> {
-    return this._database.open([
-      { name: 'objects', options: { keyPath: 'id' } },
-    ]);
+  async initializeDatabase(): Promise<void> {
+    await this._database.open([{ name: 'objects', options: { keyPath: 'id' } }]);
+
+    const objectsFromDb = await this._database.getAll<any>('objects');
+    
+    const reviver = new KritzelReviver(this);
+
+    objectsFromDb.forEach(element => {
+      const revivedObject = reviver.revive<KritzelBaseObject<any>>(element);
+      this._state.objectsOctree.insert(revivedObject);
+    });
+
+    this.rerender();
   }
 
   rerender() {
