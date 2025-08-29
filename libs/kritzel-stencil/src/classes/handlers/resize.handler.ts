@@ -1,6 +1,8 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
+import { BatchCommand } from '../commands/batch.command';
 import { ResizeSelectionGroupCommand } from '../commands/resize-selection-group.command';
+import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelStore } from '../store.class';
 import { KritzelBaseHandler } from './base.handler';
 
@@ -155,16 +157,25 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
     if (event.pointerType === 'mouse') {
       if (this._store.state.isResizing) {
         const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._store, this, structuredClone(this.initialSize), structuredClone(this.newSize));
-        this._store.history.executeCommand(resizeSelectionGroupCommand);
+        const updateObjectsCommand = this._store.state.selectionGroup.objects.map(object => {
+          return new UpdateObjectCommand(this._store, this, object, { ...object });
+        });
+
+        this._store.history.executeCommand(new BatchCommand(this._store, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
+
         this._store.state.isResizing = false;
         this._store.rerender();
       }
     }
 
-    if( event.pointerType === 'touch') {
+    if (event.pointerType === 'touch') {
       if (this._store.state.isResizing) {
         const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._store, this, structuredClone(this.initialSize), structuredClone(this.newSize));
-        this._store.history.executeCommand(resizeSelectionGroupCommand);
+        const updateObjectsCommand = this._store.state.selectionGroup.objects.map(object => {
+          return new UpdateObjectCommand(this._store, this, object, { ...object });
+        });
+
+        this._store.history.executeCommand(new BatchCommand(this._store, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
         this._store.state.isResizing = false;
         this._store.rerender();
 
