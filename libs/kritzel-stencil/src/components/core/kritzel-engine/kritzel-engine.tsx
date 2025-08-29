@@ -107,12 +107,14 @@ export class KritzelEngine {
     this.validateScaleMin(this.scaleMin);
   }
 
-  componentDidLoad() {
+  async componentDidLoad() {
     this.contextMenuHandler = new KritzelContextMenuHandler(this.store, this.globalContextMenuItems, this.objectContextMenuItems);
     this.keyHandler = new KritzelKeyHandler(this.store);
     this.viewport = new KritzelViewport(this.store, this.host);
 
     this._registerStateChangeListeners();
+
+    await this.store.initializeDatabase()
 
     if (this.store.state.isReady === false) {
       this.store.state.isReady = true;

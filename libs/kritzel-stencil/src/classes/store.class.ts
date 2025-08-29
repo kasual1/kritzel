@@ -16,6 +16,7 @@ import { KritzelEngine } from '../components/core/kritzel-engine/kritzel-engine'
 import { KritzelContextMenu } from '../components/ui/kritzel-context-menu/kritzel-context-menu';
 import { KritzelToolRegistry } from './registries/tool.registry';
 import { DEFAULT_ENGINE_STATE } from '../configs/default-engine-state';
+import { KritzelDatabase } from './database.class';
 
 export class KritzelStore {
   private readonly _kritzelEngine: KritzelEngine;
@@ -24,12 +25,18 @@ export class KritzelStore {
 
   private readonly _history: KritzelHistory;
 
+  private readonly _database: KritzelDatabase;
+
   private readonly _listeners: Map<StatePropertyKey, Set<StateChangeListener<any>>> = new Map();
 
   objects: KritzelBaseObject<any>[] = [];
 
   get history(): KritzelHistory {
     return this._history;
+  }
+
+  get database(): KritzelDatabase {
+    return this._database;
   }
 
   get state(): KritzelEngineState {
@@ -60,6 +67,7 @@ export class KritzelStore {
     this._state = DEFAULT_ENGINE_STATE;
     this._kritzelEngine = kritzelEngine;
     this._history = new KritzelHistory(this);
+    this._database = new KritzelDatabase('kritzelDB', 1);
     this._state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
       x: -Infinity,
       y: -Infinity,
@@ -68,6 +76,12 @@ export class KritzelStore {
       height: Infinity,
       depth: Infinity,
     });
+  }
+
+  initializeDatabase(): Promise<void> {
+    return this._database.open([
+      { name: 'objects', options: { keyPath: 'id' } },
+    ]);
   }
 
   rerender() {
