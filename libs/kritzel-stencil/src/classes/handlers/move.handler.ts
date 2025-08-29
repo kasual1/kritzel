@@ -2,6 +2,8 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelStore } from '../store.class';
 import { MoveSelectionGroupCommand } from '../commands/move-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
+import { UpdateObjectCommand } from '../commands/update-object.command';
+import { BatchCommand } from '../commands/batch.command';
 
 export class KritzelMoveHandler extends KritzelBaseHandler {
   dragStartX: number;
@@ -94,14 +96,30 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     if (event.pointerType === 'mouse') {
       if (this._store.state.isDragging) {
         this._store.state.isDragging = false;
-        this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
+        const moveSelectionGroupCommand = new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true);
+        const updateObjectsCommand = this._store.state.selectionGroup.objects.map(object => {
+          return new UpdateObjectCommand(this._store, this, object, {
+            translateX: object.translateX,
+            translateY: object.translateY
+          });
+        });
+
+        this._store.history.executeCommand(new BatchCommand(this._store, this, [moveSelectionGroupCommand, ...updateObjectsCommand]));
       }
     }
 
     if (event.pointerType === 'touch') {
       if (this._store.state.isDragging) {
         this._store.state.isDragging = false;
-        this._store.history.executeCommand(new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true));
+        const moveSelectionGroupCommand = new MoveSelectionGroupCommand(this._store, this, this.endX, this.endY, this.startX, this.startY, true);
+        const updateObjectsCommand = this._store.state.selectionGroup.objects.map(object => {
+          return new UpdateObjectCommand(this._store, this, object, {
+            translateX: object.translateX,
+            translateY: object.translateY
+          });
+        });
+
+        this._store.history.executeCommand(new BatchCommand(this._store, this, [moveSelectionGroupCommand, ...updateObjectsCommand]));
       }
     }
   }
