@@ -83,7 +83,7 @@ export class KritzelStore {
     await this._database.open([{ name: 'objects', options: { keyPath: 'id' } }]);
 
     const objectsFromDb = await this._database.getAll<any>('objects');
-    
+
     const reviver = new KritzelReviver(this);
 
     objectsFromDb.forEach(element => {
@@ -157,16 +157,11 @@ export class KritzelStore {
     this.history.executeCommand(new BatchCommand(this, this.state.selectionGroup, commands));
   }
 
-  deleteObject(id: string, isHistoryUpdated: boolean = true) {
+  deleteObject(id: string, skipHistory: boolean = false) {
     const object = this.findObjectById(id);
     if (object) {
-      if (isHistoryUpdated) {
-        const removeObjectCommand = new RemoveObjectCommand(this, this, object);
-        this.history.executeCommand(removeObjectCommand);
-      } else {
-        this._state.objectsOctree.remove(obj => obj.id === id);
-        this.rerender();
-      }
+      const removeObjectCommand = new RemoveObjectCommand(this, this, object, skipHistory);
+      this.history.executeCommand(removeObjectCommand);
     }
   }
 
@@ -313,8 +308,7 @@ export class KritzelStore {
 
   resetActiveText() {
     if (this.state.activeText && this.state.activeText.value === ' ') {
-      this.deleteObject(this.state.activeText.id, false);
-      this.history.undoStack.pop();
+      this.deleteObject(this.state.activeText.id, true);
     }
 
     this.state.activeText = null;

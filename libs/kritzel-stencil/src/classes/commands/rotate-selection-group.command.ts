@@ -9,8 +9,8 @@ export class RotateSelectionGroupCommand extends KritzelBaseCommand {
 
   private selectionGroup: KritzelSelectionGroup;
 
-  constructor(store, initiator: any, rotation: number) {
-    super(store, initiator);
+  constructor(store, initiator: any, rotation: number, skipHistory = false) {
+    super(store, initiator, skipHistory);
     this.rotation = rotation;
     this.initialRotation = this._store.state.selectionGroup.rotation;
     this.selectionGroup = this._store.state.selectionGroup;

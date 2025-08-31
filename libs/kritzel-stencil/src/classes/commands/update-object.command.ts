@@ -8,8 +8,8 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
   private updatedProperties: Partial<KritzelBaseObject<any>>;
   private previousProperties: Partial<KritzelBaseObject<any>>;
 
-  constructor(store: KritzelStore, initiator: any, object: KritzelBaseObject<any>, updatedProperties: Partial<KritzelBaseObject<any>>) {
-    super(store, initiator);
+  constructor(store: KritzelStore, initiator: any, object: KritzelBaseObject<any>, updatedProperties: Partial<KritzelBaseObject<any>>, skipHistory = false) {
+    super(store, initiator, skipHistory);
     this.object = object;
     this.updatedProperties = updatedProperties;
 

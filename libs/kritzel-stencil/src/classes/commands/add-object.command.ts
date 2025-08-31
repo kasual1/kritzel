@@ -6,8 +6,8 @@ import { ObjectHelper } from '../../helpers/object.helper';
 export class AddObjectCommand extends KritzelBaseCommand {
   private object: KritzelBaseObject<any>;
 
-  constructor(store: KritzelStore, initiator: any,  object: KritzelBaseObject<any>) {
-    super(store, initiator);
+  constructor(store: KritzelStore, initiator: any,  object: KritzelBaseObject<any>, skipHistory = false) {
+    super(store, initiator, skipHistory);
     this.object = object;
   }
 
