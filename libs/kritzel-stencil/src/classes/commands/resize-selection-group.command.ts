@@ -9,8 +9,8 @@ export class ResizeSelectionGroupCommand extends KritzelBaseCommand {
 
   private selectionGroup: KritzelSelectionGroup;
 
-  constructor(store, initiator: any, previousSize: {x: number, y: number, width: number, height: number}, newSize: {x: number, y: number, width: number, height: number}) {
-    super(store, initiator);
+  constructor(store, initiator: any, previousSize: {x: number, y: number, width: number, height: number}, newSize: {x: number, y: number, width: number, height: number}, skipHistory = false) {
+    super(store, initiator, skipHistory);
     this.previousSize = previousSize;
     this.newSize = newSize;
     this.selectionGroup = this._store.state.selectionGroup;

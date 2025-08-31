@@ -5,12 +5,12 @@ export class KritzelBaseCommand implements KritzelCommand {
   protected _store: KritzelStore;
 
   initiator: string;
-  isUndoable;
+  skipHistory;
 
-  constructor(store: KritzelStore, initiator: any) {
+  constructor(store: KritzelStore, initiator: any, skipHistory = false) {
     this._store = store;
     this.initiator = initiator?.constructor?.name ?? 'Unknown';
-    this.isUndoable = true;
+    this.skipHistory = skipHistory;
   }
 
   execute(): void {

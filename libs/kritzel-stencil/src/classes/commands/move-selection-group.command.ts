@@ -14,8 +14,8 @@ export class MoveSelectionGroupCommand extends KritzelBaseCommand {
 
   private skipExecution: boolean;
 
-  constructor(store, initiator: any, startX: number, startY: number, endX: number, endY: number, skipFirstExecution = false) {
-    super(store, initiator);
+  constructor(store, initiator: any, startX: number, startY: number, endX: number, endY: number, skipFirstExecution = false, skipHistory = false) {
+    super(store, initiator, skipHistory);
     this.startX = startX;
     this.startY = startY;
     this.endX = endX;

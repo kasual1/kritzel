@@ -6,8 +6,8 @@ export class RemoveSelectionGroupCommand extends KritzelBaseCommand {
 
   private previousSelectionGroup: KritzelSelectionGroup;
 
-  constructor(store: KritzelStore, initiator: any) {
-    super(store, initiator);
+  constructor(store: KritzelStore, initiator: any, skipHistory = false) {
+    super(store, initiator, skipHistory);
     this.previousSelectionGroup = this._store.state.selectionGroup;
   }
 

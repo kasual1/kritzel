@@ -5,8 +5,8 @@ import { KritzelBaseCommand } from './base.command';
 export class AddSelectionGroupCommand extends KritzelBaseCommand {
   private selectionGroup: KritzelSelectionGroup;
 
-  constructor(store, initiator: any, selectionGroup: KritzelSelectionGroup) {
-    super(store, initiator);
+  constructor(store, initiator: any, selectionGroup: KritzelSelectionGroup, skipHistory = false) {
+    super(store, initiator, skipHistory);
     this.selectionGroup = selectionGroup;
   }
 

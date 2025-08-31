@@ -34,12 +34,17 @@ export class KritzelHistory {
     }
 
     command.execute();
-    
-    if (this._store.state.debugInfo.logCommands) console.info('add', command);
-    this.undoStack.add(command);
 
-    if (this.redoStack.isEmpty() === false) {
-      this.redoStack.clear();
+    if (command.skipHistory === false) {
+      if (this._store.state.debugInfo.logCommands) {
+        console.info('add', command);
+      }
+
+      this.undoStack.add(command);
+
+      if (this.redoStack.isEmpty() === false) {
+        this.redoStack.clear();
+      }
     }
 
     this._store.rerender();

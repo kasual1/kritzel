@@ -1,7 +1,6 @@
 import { KritzelBaseCommand } from './base.command';
 
 export class UpdateViewportCommand extends KritzelBaseCommand {
-
   currentViewport: {
     scale: number;
     translateX: number;
@@ -14,13 +13,18 @@ export class UpdateViewportCommand extends KritzelBaseCommand {
     translateY: number;
   };
 
-  constructor(store, initiator: any,  previousViewport: {
-    scale: number;
-    translateX: number;
-    translateY: number;
-  }) {
-    super(store, initiator);
-    this.previousViewport = previousViewport
+  constructor(
+    store,
+    initiator: any,
+    previousViewport: {
+      scale: number;
+      translateX: number;
+      translateY: number;
+    },
+    skipHistory = false,
+  ) {
+    super(store, initiator, skipHistory);
+    this.previousViewport = previousViewport;
     this.currentViewport = {
       scale: this._store.state.scale,
       translateX: this._store.state.translateX,
@@ -31,7 +35,7 @@ export class UpdateViewportCommand extends KritzelBaseCommand {
   execute(): void {
     this._store.state.scale = this.currentViewport.scale;
     this._store.state.translateX = this.currentViewport.translateX;
-    this._store.state.translateY = this.currentViewport.translateY;  
+    this._store.state.translateY = this.currentViewport.translateY;
   }
 
   undo(): void {

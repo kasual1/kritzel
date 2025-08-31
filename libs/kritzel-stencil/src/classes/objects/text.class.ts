@@ -1,3 +1,4 @@
+import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from '../store.class';
 import { KritzelTextTool } from '../tools/text-tool.class';
@@ -107,10 +108,10 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       this.value = target.value.trim();
     }
 
-    this.adjustTextareaSize();
+    this.updateTextareaDimensions();
   }
 
-  adjustTextareaSize() {
+  updateTextareaDimensions() {
     if (this.elementRef) {
       const span = document.createElement('span');
       span.style.position = 'absolute';
@@ -129,7 +130,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       this.width = textWidth;
       this.height = textHeight;
 
-      this._store.rerender();
+      this._store.history.executeCommand(new UpdateObjectCommand(this._store, this, this, { ...this }));
     }
   }
 
@@ -158,7 +159,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
           this.elementRef.selectionStart = this.elementRef.selectionEnd = start + text.length;
           this.value = this.elementRef.value;
-          this.adjustTextareaSize();
+          this.updateTextareaDimensions();
         });
       } catch (err) {
         console.error('Failed to read clipboard contents:', err);
