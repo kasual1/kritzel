@@ -416,6 +416,11 @@ export class KritzelEngine {
     return this.store.state.copiedObjects?.objects || [];
   }
 
+  @Method()
+  async createNewWorkspace() {
+    this.store.createNewWorkspace();  
+  }
+
   private _registerStateChangeListeners() {
     this.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
     this.store.onStateChange('isFocused', this._handleIsFocusedChange.bind(this));
