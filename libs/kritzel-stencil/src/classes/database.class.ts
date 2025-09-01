@@ -73,6 +73,32 @@ export class KritzelDatabase {
     });
   }
 
+  public async transaction(
+    storeNames: string[],
+    mode: IDBTransactionMode,
+    action: (...stores: IDBObjectStore[]) => void,
+  ): Promise<void> {
+    if (!this.db) {
+      throw new Error('Database is not open.');
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      const transaction = this.db!.transaction(storeNames, mode);
+      const stores = storeNames.map(name => transaction.objectStore(name));
+
+      transaction.oncomplete = () => {
+        resolve();
+      };
+
+      transaction.onerror = () => {
+        console.error('Transaction error:', transaction.error);
+        reject(transaction.error);
+      };
+
+      action(...stores);
+    });
+  }
+
   private async executeTransaction<T>(
     storeName: string,
     mode: IDBTransactionMode,

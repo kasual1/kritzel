@@ -28,9 +28,7 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
       }
     }
 
-    this._store.database.update('objects', ObjectHelper.clone(this.object)).catch(err => {
-      console.error('Error adding object to database:', err);
-    });
+    this._store.updateObjectInDatabase(ObjectHelper.clone(this.object));
   }
 
   undo(): void {
@@ -40,8 +38,6 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
       }
     }
 
-    this._store.database.update('objects', ObjectHelper.clone(this.object)).catch(err => {
-      console.error('Error updating object in database:', err);
-    });
+    this._store.updateObjectInDatabase(ObjectHelper.clone(this.object));
   }
 }

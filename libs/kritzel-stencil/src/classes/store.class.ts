@@ -142,6 +142,69 @@ export class KritzelStore {
     await this._database.update('workspaces', this._workspace);
   }
 
+  async addObjectToDatabase(object: KritzelBaseObject<any>): Promise<void> {
+    if (!this._database) {
+      throw new Error('Database not initialized');
+    }
+
+    if (!this._workspace) {
+      throw new Error('Workspace not initialized');
+    }
+
+    this._workspace.updatedAt = new Date();
+
+    await this._database
+      .transaction(['objects', 'workspaces'], 'readwrite', async (objectsStore, workspacesStore) => {
+        objectsStore.add(object);
+        workspacesStore.put(this._workspace);
+      })
+      .catch(err => {
+        console.error('Error adding object to database:', err);
+      });
+  }
+
+  async updateObjectInDatabase(object: KritzelBaseObject<any>): Promise<void> {
+    if (!this._database) {
+      throw new Error('Database not initialized');
+    }
+
+    if (!this._workspace) {
+      throw new Error('Workspace not initialized');
+    }
+
+    this._workspace.updatedAt = new Date();
+
+    await this._database
+      .transaction(['objects', 'workspaces'], 'readwrite', async (objectsStore, workspacesStore) => {
+        objectsStore.put(object);
+        workspacesStore.put(this._workspace);
+      })
+      .catch(err => {
+        console.error('Error updating object in database:', err);
+      });
+  }
+
+  async deleteObjectFromDatabase(objectId: string): Promise<void> {
+    if (!this._database) {
+      throw new Error('Database not initialized');
+    }
+
+    if (!this._workspace) {
+      throw new Error('Workspace not initialized');
+    }
+
+    this._workspace.updatedAt = new Date();
+
+    await this._database
+      .transaction(['objects', 'workspaces'], 'readwrite', async (objectsStore, workspacesStore) => {
+        objectsStore.delete(objectId);
+        workspacesStore.put(this._workspace);
+      })
+      .catch(err => {
+        console.error('Error deleting object from database:', err);
+      });
+  }
+
   rerender() {
     const viewportBounds: KritzelBoundingBox = {
       x: -this._state.translateX / this._state.scale,

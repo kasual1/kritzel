@@ -13,15 +13,11 @@ export class AddObjectCommand extends KritzelBaseCommand {
 
   execute(): void {
     this._store.state.objectsOctree.insert(this.object);
-    this._store.database.add('objects',  ObjectHelper.clone(this.object)).catch(err => {
-      console.error('Error adding object to database:', err);
-    });
+    this._store.addObjectToDatabase(ObjectHelper.clone(this.object));
   }
 
   undo(): void {
     this._store.state.objectsOctree.remove(object => object.id === this.object.id);
-    this._store.database.delete('objects', this.object.id).catch(err => {
-      console.error('Error removing object from database:', err);
-    });
+    this._store.deleteObjectFromDatabase(this.object.id);
   }
 }
