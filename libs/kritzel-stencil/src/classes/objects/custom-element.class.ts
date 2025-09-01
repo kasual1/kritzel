@@ -33,6 +33,8 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
 
     object._store = store;
     object.id = object.generateId();
+    object.workspaceId = store.workspace.id;
+
 
     return object;
   }

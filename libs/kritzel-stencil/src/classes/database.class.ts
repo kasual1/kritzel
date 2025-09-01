@@ -11,7 +11,7 @@ export class KritzelDatabase {
     this.dbVersion = dbVersion;
   }
 
-  public async open(stores: { name: string; options?: IDBObjectStoreParameters }[]): Promise<void> {
+  public async open(stores: { name: string; options?: IDBObjectStoreParameters; indices?: { name: string; keyPath: string; options?: IDBIndexParameters }[] }[]): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.db) {
         resolve();
@@ -32,9 +32,14 @@ export class KritzelDatabase {
 
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
-        stores.forEach(store => {
-            if (!db.objectStoreNames.contains(store.name)) {
-                db.createObjectStore(store.name, store.options);
+        stores.forEach(storeConfig => {
+            if (!db.objectStoreNames.contains(storeConfig.name)) {
+                const store = db.createObjectStore(storeConfig.name, storeConfig.options);
+                if (storeConfig.indices) {
+                    storeConfig.indices.forEach(index => {
+                        store.createIndex(index.name, index.keyPath, index.options);
+                    });
+                }
             }
         });
       };
@@ -59,6 +64,13 @@ export class KritzelDatabase {
 
   public async delete(storeName: string, key: IDBValidKey): Promise<void> {
     return this.executeTransaction(storeName, 'readwrite', store => store.delete(key));
+  }
+
+  public async getAllByIndex<T>(storeName: string, indexName: string, query: IDBValidKey | IDBKeyRange): Promise<T[]> {
+    return this.executeTransaction(storeName, 'readonly', store => {
+      const index = store.index(indexName);
+      return index.getAll(query);
+    });
   }
 
   private async executeTransaction<T>(

@@ -6,6 +6,7 @@ export interface KritzelObject<T = Element> {
   _elementRef: T;
 
   id: string;
+  workspaceId: string;
   x: number;
   y: number;
   translateX: number;
