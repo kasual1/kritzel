@@ -17,6 +17,11 @@ kritzel-editor{
   user-select: none;           
 }
 
+kritzel-workspace-manager {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+}
 
 kritzel-controls {
   position: absolute;

@@ -205,6 +205,15 @@ export class KritzelStore {
       });
   }
 
+  async createNewWorkspace() {
+    if (!this._database) {
+      throw new Error('Database not initialized');
+    }
+
+    this._workspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+    await this._database.add('workspaces', this._workspace);
+  }
+
   rerender() {
     const viewportBounds: KritzelBoundingBox = {
       x: -this._state.translateX / this._state.scale,

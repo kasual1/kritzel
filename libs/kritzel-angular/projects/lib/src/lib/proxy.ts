@@ -7,6 +7,8 @@ import { ProxyCmp } from './angular-component-lib/utils';
 import type { Components } from 'kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
+import { defineCustomElement as defineKritzelSplitButton } from 'kritzel-stencil/dist/components/kritzel-split-button.js';
+import { defineCustomElement as defineKritzelWorkspaceManager } from 'kritzel-stencil/dist/components/kritzel-workspace-manager.js';
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
   inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'objectContextMenuItems', 'scaleMax', 'scaleMin'],
@@ -33,6 +35,71 @@ export class KritzelEditor {
 export declare interface KritzelEditor extends Components.KritzelEditor {
 
   isReady: EventEmitter<CustomEvent<HTMLElement>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelSplitButton,
+  inputs: ['buttonIcon', 'buttonText', 'disabled', 'dropdownIcon', 'options']
+})
+@Component({
+  selector: 'kritzel-split-button',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['buttonIcon', 'buttonText', 'disabled', 'dropdownIcon', 'options'],
+  outputs: ['buttonClick', 'optionSelect'],
+})
+export class KritzelSplitButton {
+  protected el: HTMLKritzelSplitButtonElement;
+  @Output() buttonClick = new EventEmitter<CustomEvent<void>>();
+  @Output() optionSelect = new EventEmitter<CustomEvent<IKritzelSplitButtonSplitButtonOption>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { SplitButtonOption as IKritzelSplitButtonSplitButtonOption } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelSplitButton extends Components.KritzelSplitButton {
+
+  buttonClick: EventEmitter<CustomEvent<void>>;
+
+  optionSelect: EventEmitter<CustomEvent<IKritzelSplitButtonSplitButtonOption>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelWorkspaceManager
+})
+@Component({
+  selector: 'kritzel-workspace-manager',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: [],
+  outputs: ['create', 'select'],
+})
+export class KritzelWorkspaceManager {
+  protected el: HTMLKritzelWorkspaceManagerElement;
+  @Output() create = new EventEmitter<CustomEvent<void>>();
+  @Output() select = new EventEmitter<CustomEvent<IKritzelWorkspaceManagerSplitButtonOption>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { SplitButtonOption as IKritzelWorkspaceManagerSplitButtonOption } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelWorkspaceManager extends Components.KritzelWorkspaceManager {
+
+  create: EventEmitter<CustomEvent<void>>;
+
+  select: EventEmitter<CustomEvent<IKritzelWorkspaceManagerSplitButtonOption>>;
 }
 
 

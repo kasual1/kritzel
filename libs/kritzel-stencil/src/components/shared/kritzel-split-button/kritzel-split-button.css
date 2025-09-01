@@ -1,0 +1,66 @@
+:host {
+  display: inline-block;
+  font-family: sans-serif;
+}
+
+.split-button-container {
+  position: relative;
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.main-button,
+.dropdown-button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.main-button:hover,
+.dropdown-button:hover {
+  background-color: #e0e0e0;
+}
+
+.main-button:disabled,
+.dropdown-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.main-button {
+  border-right: 1px solid #ccc;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 160px;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+kritzel-icon {
+  font-size: 18px;
+}

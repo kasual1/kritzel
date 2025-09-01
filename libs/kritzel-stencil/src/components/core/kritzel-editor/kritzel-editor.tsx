@@ -228,9 +228,16 @@ export class KritzelEditor {
     }
   }
 
+  createWorkspace() {
+    debugger;
+    this.engineRef.createNewWorkspace();
+  }
+
   render() {
     return (
       <Host>
+        <kritzel-workspace-manager onCreate={() => this.createWorkspace()}></kritzel-workspace-manager>
+
         <kritzel-engine
           ref={el => (this.engineRef = el)}
           onIsEngineReady={() => (this.isEngineReady = true)}
