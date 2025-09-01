@@ -13,6 +13,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   _elementRef: T;
 
   id: string;
+  workspaceId: string;
   x: number;
   y: number;
   translateX: number;
@@ -155,6 +156,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
     object._store = store;
     object.zIndex = store.currentZIndex;
+    object.workspaceId = store.workspace.id;
 
     return object;
   }

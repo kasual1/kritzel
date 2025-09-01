@@ -77,7 +77,9 @@ export class KritzelViewport {
         this._store.state.startY = yRelativeToHost;
         this._store.state.hasViewportChanged = true;
         this._store.state.skipContextMenu = true;
+
         this._store.rerender();
+        this._store.updateWorkspaceViewport(this._store.state.translateX, this._store.state.translateY, this._store.state.scale);
       }
     }
 
@@ -126,6 +128,7 @@ export class KritzelViewport {
         this._store.state.hasViewportChanged = true;
 
         this._store.rerender();
+        this._store.updateWorkspaceViewport(this._store.state.translateX, this._store.state.translateY, this._store.state.scale);
       }
     }
   }
@@ -177,7 +180,9 @@ export class KritzelViewport {
     this._store.state.translateY -= translateYAdjustment;
 
     this._store.state.hasViewportChanged = true;
+
     this._store.rerender();
+    this._store.updateWorkspaceViewport(this._store.state.translateX, this._store.state.translateY, this._store.state.scale);
   }
 
   private handlePan(event: WheelEvent): void {
@@ -187,6 +192,8 @@ export class KritzelViewport {
     this._store.state.translateY -= event.deltaY * panSpeed;
 
     this._store.state.hasViewportChanged = true;
+
     this._store.rerender();
+    this._store.updateWorkspaceViewport(this._store.state.translateX, this._store.state.translateY, this._store.state.scale);
   }
 }

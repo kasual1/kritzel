@@ -18,11 +18,15 @@ import { KritzelToolRegistry } from './registries/tool.registry';
 import { DEFAULT_ENGINE_STATE } from '../configs/default-engine-state';
 import { KritzelDatabase } from './database.class';
 import { KritzelReviver } from './reviver.class';
+import { KritzelWorkspace } from './workspace.class';
+import { ObjectHelper } from '../helpers/object.helper';
 
 export class KritzelStore {
   private readonly _kritzelEngine: KritzelEngine;
 
   private readonly _state: KritzelEngineState;
+
+  private _workspace: KritzelWorkspace;
 
   private readonly _history: KritzelHistory;
 
@@ -34,6 +38,10 @@ export class KritzelStore {
 
   get history(): KritzelHistory {
     return this._history;
+  }
+
+  get workspace(): KritzelWorkspace {
+    return this._workspace;
   }
 
   get database(): KritzelDatabase {
@@ -80,7 +88,31 @@ export class KritzelStore {
   }
 
   async initializeDatabase(): Promise<void> {
-    await this._database.open([{ name: 'objects', options: { keyPath: 'id' } }]);
+    await this._database.open([
+      {
+        name: 'objects',
+        options: { keyPath: 'id' },
+      },
+      { name: 'workspaces', options: { keyPath: 'id' } },
+    ]);
+
+    const workspacesFromDb = await this._database.getAll<any>('workspaces');
+
+    if (workspacesFromDb.length > 0) {
+      const mostRecentWorkspace = workspacesFromDb.reduce((latest, current) => {
+        return new Date(latest.updatedAt) > new Date(current.updatedAt) ? latest : current;
+      });
+      this._workspace = new KritzelWorkspace(mostRecentWorkspace.id, mostRecentWorkspace.name);
+      this._workspace.updatedAt = mostRecentWorkspace.updatedAt;
+      this._workspace.createdAt = mostRecentWorkspace.createdAt;
+      this._workspace.viewport = mostRecentWorkspace.viewport;
+      this.state.translateX = this._workspace.viewport.translateX;
+      this.state.translateY = this._workspace.viewport.translateY;
+      this.state.scale = this._workspace.viewport.scale;
+    } else {
+      this._workspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+      await this._database.add('workspaces', this._workspace);
+    }
 
     const objectsFromDb = await this._database.getAll<any>('objects');
 
@@ -92,6 +124,22 @@ export class KritzelStore {
     });
 
     this.rerender();
+  }
+
+  async updateWorkspaceViewport(translateX: number, translateY: number, scale: number) {
+    if (!this._workspace) {
+      throw new Error('Workspace not initialized');
+    }
+
+    this._workspace.viewport = {
+      translateX,
+      translateY,
+      scale,
+    };
+
+    this._workspace.updatedAt = new Date();
+
+    await this._database.update('workspaces', this._workspace);
   }
 
   rerender() {
