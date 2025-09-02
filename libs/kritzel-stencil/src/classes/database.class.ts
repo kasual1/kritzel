@@ -66,6 +66,12 @@ export class KritzelDatabase {
     return this.executeTransaction(storeName, 'readwrite', store => store.delete(key));
   }
 
+  public async getAllByRange<T>(storeName: string, range: IDBKeyRange): Promise<T[]> {
+    return this.executeTransaction(storeName, 'readonly', store => {
+      return store.getAll(range);
+    });
+  }
+
   public async getAllByIndex<T>(storeName: string, indexName: string, query: IDBValidKey | IDBKeyRange): Promise<T[]> {
     return this.executeTransaction(storeName, 'readonly', store => {
       const index = store.index(indexName);

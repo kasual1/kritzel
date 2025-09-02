@@ -32,6 +32,9 @@ import { KritzelCustomElement } from '../../../classes/objects/custom-element.cl
 })
 export class KritzelEngine {
   @Prop()
+  workspaceId: string;
+
+  @Prop()
   activeTool: KritzelTool;
 
   @Prop()
@@ -57,6 +60,10 @@ export class KritzelEngine {
 
   @State()
   forceUpdate: number = 0;
+
+  @Watch('workspaceId')
+  validateWorkspaceId(newValue: string) {
+  }
 
   @Watch('scaleMax')
   validateScaleMax(newValue: number) {

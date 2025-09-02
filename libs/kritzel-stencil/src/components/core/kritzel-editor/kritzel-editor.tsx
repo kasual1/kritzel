@@ -229,7 +229,6 @@ export class KritzelEditor {
   }
 
   createWorkspace() {
-    debugger;
     this.engineRef.createNewWorkspace();
   }
 
