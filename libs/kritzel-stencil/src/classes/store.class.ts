@@ -91,7 +91,7 @@ export class KritzelStore {
     await this._database.open([
       {
         name: 'objects',
-        options: { keyPath: 'id' },
+        options: { keyPath: ['workspaceId', 'id'] },
       },
       { name: 'workspaces', options: { keyPath: 'id' } },
     ]);
@@ -114,7 +114,11 @@ export class KritzelStore {
       await this._database.add('workspaces', this._workspace);
     }
 
-    const objectsFromDb = await this._database.getAll<any>('objects');
+    debugger;
+    const objectsFromDb = await this._database.getAllByRange<any>(
+      'objects',
+      IDBKeyRange.bound([this._workspace.id], [this._workspace.id, '\uffff']),
+    );
 
     const reviver = new KritzelReviver(this);
 
@@ -124,6 +128,14 @@ export class KritzelStore {
     });
 
     this.rerender();
+  }
+
+  async getAllWorkspaces(): Promise<KritzelWorkspace[]> {
+    if (!this._database) {
+      throw new Error('Database not initialized');
+    }
+
+    return this._database.getAll<KritzelWorkspace>('workspaces');
   }
 
   async updateWorkspaceViewport(translateX: number, translateY: number, scale: number) {
