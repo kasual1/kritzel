@@ -156,7 +156,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
     object._store = store;
     object.zIndex = store.currentZIndex;
-    object.workspaceId = store.workspace.id;
+    object.workspaceId = store.state.activeWorkspace.id;
 
     return object;
   }

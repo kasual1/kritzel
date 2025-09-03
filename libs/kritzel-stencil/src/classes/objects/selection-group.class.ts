@@ -23,7 +23,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     object._store = store;
     object.id = object.generateId();
-    object.workspaceId = store.workspace.id;
+    object.workspaceId = store.state.activeWorkspace.id
     object.scale = store.state.scale;
     object.zIndex = 99999;
 

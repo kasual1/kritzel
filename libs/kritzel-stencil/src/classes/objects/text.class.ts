@@ -54,7 +54,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
     object._store = store;
     object.id = object.generateId();
-    object.workspaceId = store.workspace.id;
+    object.workspaceId = store.state.activeWorkspace.id
     object.fontSize = fontSize;
     object.fontFamily = fontFamily;
     object.translateX = 0;

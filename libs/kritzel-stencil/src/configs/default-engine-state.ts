@@ -1,6 +1,7 @@
 import { KritzelEngineState } from "../interfaces/engine-state.interface";
 
 export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
+  activeWorkspace: null,
   activeTool: null,
   activeText: null,
   currentPath: null,
