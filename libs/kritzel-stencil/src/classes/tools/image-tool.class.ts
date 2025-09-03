@@ -23,6 +23,10 @@ export class KritzelImageTool extends KritzelBaseTool {
   }
 
   private openFilePicker(): void {
+     if(this._store.isDisabled){
+      return;
+    }
+    
     this.fileInput.click();
   }
 

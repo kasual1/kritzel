@@ -239,6 +239,7 @@ export class KritzelEditor {
 
         <kritzel-engine
           ref={el => (this.engineRef = el)}
+          workspaceId='xyz'
           onIsEngineReady={() => (this.isEngineReady = true)}
           scaleMax={this.scaleMax}
           scaleMin={this.scaleMin}

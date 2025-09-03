@@ -59,7 +59,7 @@ export class KritzelControls {
   @Method()
   async closeTooltip() {
     this.isTooltipVisible = false;
-    this.kritzelEngine?.enable();
+    this.kritzelEngine.enable();
   }
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;

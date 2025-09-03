@@ -62,7 +62,8 @@ export class KritzelEngine {
   forceUpdate: number = 0;
 
   @Watch('workspaceId')
-  validateWorkspaceId(newValue: string) {
+  workspaceIdChanged(newValue: string) {
+    this.store.loadWorkspace(newValue);
   }
 
   @Watch('scaleMax')
@@ -121,16 +122,26 @@ export class KritzelEngine {
 
     this._registerStateChangeListeners();
 
-    await this.store.initializeDatabase()
-
-    if (this.store.state.isReady === false) {
-      this.store.state.isReady = true;
-      this.isEngineReady.emit();
-    }
+    await this.store.initializeDatabase(this.workspaceId).then(
+      () => {
+        if (this.store.state.isReady === false) {
+          this.store.state.isReady = true;
+          this.isEngineReady.emit();
+        }
+      },
+      (error) => {
+        this.store.state.isReady = false;
+        console.error('Error during initialization:', error.message);
+      }
+    );
   }
 
   @Listen('wheel', { passive: false })
   handleWheel(ev) {
+    if (this.store.isDisabled) {
+      return;
+    }
+
     if (this.store.state.isContextMenuVisible) {
       this.hideContextMenu();
     }
@@ -141,12 +152,12 @@ export class KritzelEngine {
 
   @Listen('pointerdown', { passive: false })
   handlePointerDown(ev: PointerEvent) {
-    if (KritzelEventHelper.isPointerEventOnContextMenu(ev) === false && this.store.state.isContextMenuVisible) {
-      this.hideContextMenu();
+    if (this.store.isDisabled) {
       return;
     }
 
-    if (this.store.state.isEnabled === false) {
+    if (KritzelEventHelper.isPointerEventOnContextMenu(ev) === false && this.store.state.isContextMenuVisible) {
+      this.hideContextMenu();
       return;
     }
 
@@ -166,7 +177,7 @@ export class KritzelEngine {
 
   @Listen('pointermove', { passive: false })
   handlePointerMove(ev: PointerEvent) {
-    if (this.store.state.isEnabled === false) {
+    if (this.store.isDisabled) {
       return;
     }
 
@@ -178,7 +189,7 @@ export class KritzelEngine {
 
   @Listen('pointerup', { passive: false })
   handlePointerUp(ev: PointerEvent) {
-    if (this.store.state.isEnabled === false) {
+    if (this.store.isDisabled) {
       return;
     }
 
@@ -191,7 +202,7 @@ export class KritzelEngine {
 
   @Listen('pointercancel', { passive: false })
   handlePointerCancel(ev: PointerEvent) {
-    if (this.store.state.isEnabled === false) {
+    if (this.store.isDisabled) {
       return;
     }
 
@@ -206,7 +217,7 @@ export class KritzelEngine {
   handleContextMenu(ev: PointerEvent) {
     ev.preventDefault();
 
-    if (this.store.state.isEnabled === false) {
+    if (this.store.isDisabled) {
       return;
     }
 
@@ -234,6 +245,10 @@ export class KritzelEngine {
 
   @Listen('mousedown', { target: 'window', passive: true })
   updateFocus(ev) {
+    if (this.store.isDisabled) {
+      return;
+    }
+
     const rect = this.store.state.host.getBoundingClientRect();
     const isInside = ev.clientX >= rect.left && ev.clientX <= rect.right && ev.clientY >= rect.top && ev.clientY <= rect.bottom;
 
@@ -425,7 +440,7 @@ export class KritzelEngine {
 
   @Method()
   async createNewWorkspace() {
-    this.store.createNewWorkspace();  
+    this.store.createNewWorkspace();
   }
 
   private _registerStateChangeListeners() {
@@ -479,7 +494,6 @@ export class KritzelEngine {
           <div>PointerX: {this.store.state?.pointerX}</div>
           <div>PointerY: {this.store.state?.pointerY}</div>
           <div>SelectedObjects: {this.store.state.selectionGroup?.objects.length || 0}</div>
-
         </div>
 
         <div
@@ -527,7 +541,7 @@ export class KritzelEngine {
                   >
                     {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
                       <svg
-                        ref={el => el ? object.mount(el) : object.unmount()}
+                        ref={el => (el ? object.mount(el) : object.unmount())}
                         xmlns="http://www.w3.org/2000/svg"
                         style={{
                           height: object?.height.toString(),
@@ -543,7 +557,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <img
-                        ref={el => el ? object.mount(el) : object.unmount()}
+                        ref={el => (el ? object.mount(el) : object.unmount())}
                         src={object.src}
                         style={{
                           width: '100%',
@@ -558,7 +572,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
                       <textarea
-                        ref={el => el ? object.mount(el) : object.unmount()}
+                        ref={el => (el ? object.mount(el) : object.unmount())}
                         value={object.value}
                         onKeyDown={event => object.handleKeyDown(event)}
                         onInput={event => object.handleInput(event)}
@@ -585,7 +599,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
                       <div
-                        ref={el => el ? object.mount(el) : object.unmount()}
+                        ref={el => (el ? object.mount(el) : object.unmount())}
                         style={{
                           width: '100%',
                           height: '100%',
@@ -598,7 +612,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && (
                       <div
-                        ref={el => el ? object.mount(el) : object.unmount()}
+                        ref={el => (el ? object.mount(el) : object.unmount())}
                         style={{
                           width: '100%',
                           height: '100%',
@@ -608,7 +622,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KrtizelSelectionBox>(object, 'KrtizelSelectionBox') && (
                       <div
-                        ref={el => el ? object.mount(el) : object.unmount()}
+                        ref={el => (el ? object.mount(el) : object.unmount())}
                         style={{
                           width: '100%',
                           height: '100%',

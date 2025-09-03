@@ -5,11 +5,13 @@ import { KritzelSelectionGroup } from "../classes/objects/selection-group.class"
 import { KritzelText } from "../classes/objects/text.class";
 import { KritzelOctree } from "../classes/structures/octree.structure";
 import { KritzelBaseTool } from "../classes/tools/base-tool.class";
+import { KritzelWorkspace } from "../classes/workspace.class";
 import { KritzelHandleType } from "../enums/handle-type.enum";
 import { ContextMenuItem } from "./context-menu-item.interface";
 import { KritzelDebugInfo } from "./debug-info.interface";
 
 export interface KritzelEngineState {
+  activeWorkspace: KritzelWorkspace;
   activeTool: KritzelBaseTool;
   activeText: KritzelText;
   currentPath?: KritzelPath;

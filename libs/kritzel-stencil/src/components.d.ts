@@ -196,6 +196,7 @@ export namespace Components {
         "setFocus": () => Promise<void>;
         "undo": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
+        "workspaceId": string;
     }
     interface KritzelFont {
         /**
@@ -799,6 +800,7 @@ declare namespace LocalJSX {
           * @default ABSOLUTE_SCALE_MIN
          */
         "scaleMin"?: number;
+        "workspaceId"?: string;
     }
     interface KritzelFont {
         /**
