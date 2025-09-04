@@ -11,7 +11,7 @@ export class KritzelWorkspaceManager {
   create: EventEmitter<void>;
 
   @Event()
-  select: EventEmitter<SplitButtonOption>;
+  itemSelected: EventEmitter<SplitButtonOption>;
 
   render() {
     return (
@@ -19,7 +19,7 @@ export class KritzelWorkspaceManager {
         buttonText="Workspace"
         buttonIcon="plus"
         onButtonClick={() => this.create.emit()}
-        onOptionSelect={event => this.select.emit(event.detail)}
+        onOptionSelect={event => this.itemSelected.emit(event.detail)}
       ></kritzel-split-button>
     );
   }

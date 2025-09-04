@@ -11,6 +11,8 @@ import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface
 import { DEFAULT_BRUSH_CONFIG } from '../../../configs/default-brush-tool.config';
 import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
+import { ObjectHelper } from '../../../helpers/object.helper';
+import { KritzelWorkspace } from '../../../classes/workspace.class';
 
 @Component({
   tag: 'kritzel-editor',
@@ -128,6 +130,9 @@ export class KritzelEditor {
   @State()
   isControlsReady: boolean = false;
 
+  @State()
+  activeWorkspace: KritzelWorkspace | null = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
     if (newValue && this.isControlsReady) {
@@ -228,8 +233,18 @@ export class KritzelEditor {
     }
   }
 
+  async onEngineReady() {
+    this.isEngineReady = true;
+    const workspaces = await this.engineRef.getAllWorkspaces();
+
+    if (workspaces.length > 0) {
+      this.activeWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
+    }
+  }
+
   createWorkspace() {
-    this.engineRef.createNewWorkspace();
+    this.activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+    this.engineRef.createNewWorkspace(this.activeWorkspace);
   }
 
   render() {
@@ -239,8 +254,8 @@ export class KritzelEditor {
 
         <kritzel-engine
           ref={el => (this.engineRef = el)}
-          workspaceId='xyz'
-          onIsEngineReady={() => (this.isEngineReady = true)}
+          workspaceId={this.activeWorkspace?.id}
+          onIsEngineReady={() => this.onEngineReady()}
           scaleMax={this.scaleMax}
           scaleMin={this.scaleMin}
           globalContextMenuItems={this.globalContextMenuItems}

@@ -19,7 +19,6 @@ import { DEFAULT_ENGINE_STATE } from '../configs/default-engine-state';
 import { KritzelDatabase } from './database.class';
 import { KritzelReviver } from './reviver.class';
 import { KritzelWorkspace } from './workspace.class';
-import { ObjectHelper } from '../helpers/object.helper';
 
 export class KritzelStore {
   private readonly _kritzelEngine: KritzelEngine;
@@ -67,7 +66,7 @@ export class KritzelStore {
   }
 
   get isDisabled() {
-    return this._state.isEnabled === false || this._state.isReady === false;
+    return this._state.isEnabled === false || this._state.isReady === false || this._state.activeWorkspace === null;
   }
 
   constructor(kritzelEngine: KritzelEngine) {
@@ -85,7 +84,7 @@ export class KritzelStore {
     });
   }
 
-  async initializeDatabase(workspaceId: string): Promise<void> {
+  async initializeDatabase(): Promise<void> {
     await this._database.open([
       {
         name: 'objects',
@@ -93,8 +92,6 @@ export class KritzelStore {
       },
       { name: 'workspaces', options: { keyPath: 'id' } },
     ]);
-
-    await this.loadWorkspace(workspaceId);
 
     this.rerender();
   }
@@ -228,12 +225,12 @@ export class KritzelStore {
       });
   }
 
-  async createNewWorkspace() {
+  async createNewWorkspace(workspace: KritzelWorkspace) {
     if (!this._database) {
       throw new Error('Database not initialized');
     }
 
-    this.state.activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+    this.state.activeWorkspace = workspace;
     await this._database.add('workspaces', this.state.activeWorkspace);
   }
 
