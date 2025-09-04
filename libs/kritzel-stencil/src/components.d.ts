@@ -13,9 +13,9 @@ import { KritzelTextTool } from "./classes/tools/text-tool.class";
 import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelStore } from "./classes/store.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+import { KritzelWorkspace } from "./classes/workspace.class";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
-import { KritzelWorkspace } from "./classes/workspace.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { SplitButtonOption } from "./components/shared/kritzel-split-button/kritzel-split-button";
 import { SplitButtonOption as SplitButtonOption1 } from "./components";
@@ -27,9 +27,9 @@ export { KritzelTextTool } from "./classes/tools/text-tool.class";
 export { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelStore } from "./classes/store.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+export { KritzelWorkspace } from "./classes/workspace.class";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
-export { KritzelWorkspace } from "./classes/workspace.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { SplitButtonOption } from "./components/shared/kritzel-split-button/kritzel-split-button";
 export { SplitButtonOption as SplitButtonOption1 } from "./components";
@@ -169,14 +169,15 @@ export namespace Components {
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;
-        "createNewWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        "createWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "delete": () => Promise<void>;
+        "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
-        "getAllWorkspaces": () => Promise<KritzelWorkspace[]>;
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
+        "getWorkspaces": () => Promise<KritzelWorkspace[]>;
         "globalContextMenuItems": ContextMenuItem[];
         "hideContextMenu": () => Promise<void>;
         "objectContextMenuItems": ContextMenuItem[];
@@ -199,7 +200,8 @@ export namespace Components {
         "setFocus": () => Promise<void>;
         "undo": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
-        "workspaceId": string;
+        "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        "workspace"?: KritzelWorkspace;
     }
     interface KritzelFont {
         /**
@@ -803,7 +805,7 @@ declare namespace LocalJSX {
           * @default ABSOLUTE_SCALE_MIN
          */
         "scaleMin"?: number;
-        "workspaceId"?: string;
+        "workspace"?: KritzelWorkspace;
     }
     interface KritzelFont {
         /**

@@ -131,7 +131,7 @@ export class KritzelEditor {
   isControlsReady: boolean = false;
 
   @State()
-  activeWorkspace: KritzelWorkspace | null = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+  activeWorkspace?: KritzelWorkspace;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -233,18 +233,11 @@ export class KritzelEditor {
     }
   }
 
-  async onEngineReady() {
-    this.isEngineReady = true;
-    const workspaces = await this.engineRef.getAllWorkspaces();
-
-    if (workspaces.length > 0) {
-      this.activeWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
-    }
-  }
+  private counter = 0;
 
   createWorkspace() {
-    this.activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
-    this.engineRef.createNewWorkspace(this.activeWorkspace);
+    this.counter++;
+    this.activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), `New Workspace ${this.counter}`);
   }
 
   render() {
@@ -254,12 +247,12 @@ export class KritzelEditor {
 
         <kritzel-engine
           ref={el => (this.engineRef = el)}
-          workspaceId={this.activeWorkspace?.id}
-          onIsEngineReady={() => this.onEngineReady()}
+          workspace={this.activeWorkspace}
           scaleMax={this.scaleMax}
           scaleMin={this.scaleMin}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
+          onIsEngineReady={() => (this.isEngineReady = true)}
         ></kritzel-engine>
 
         <kritzel-controls

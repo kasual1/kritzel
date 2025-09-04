@@ -33,7 +33,7 @@ import { KritzelWorkspace } from '../../../classes/workspace.class';
 })
 export class KritzelEngine {
   @Prop()
-  workspaceId: string;
+  workspace?: KritzelWorkspace;
 
   @Prop()
   activeTool: KritzelTool;
@@ -62,17 +62,11 @@ export class KritzelEngine {
   @State()
   forceUpdate: number = 0;
 
-  @Watch('workspaceId')
-  workspaceIdChanged(newValue: string) {
-    this.store.loadWorkspace(newValue).then(
-      () => {
-        this.store.state.isReady = true;
-      },
-      error => {
-        this.store.state.isReady = false;
-        console.error('Error loading workspace:', error);
-      },
-    );
+  @Watch('workspace')
+  onWorkspaceChange(newWorkspace: KritzelWorkspace | null) {
+    if (newWorkspace) {
+      this.store.initializeWorkspace(newWorkspace);
+    }
   }
 
   @Watch('scaleMax')
@@ -132,6 +126,7 @@ export class KritzelEngine {
     this._registerStateChangeListeners();
 
     await this.store.initializeDatabase();
+    await this.store.initializeWorkspace(this.workspace);
 
     if (this.store.state.isReady === false) {
       this.store.state.isReady = true;
@@ -442,13 +437,23 @@ export class KritzelEngine {
   }
 
   @Method()
-  async getAllWorkspaces(): Promise<KritzelWorkspace[]> {
-    return this.store.getAllWorkspaces();
+  async createWorkspace(workspace: KritzelWorkspace) {
+    return this.store.createWorkspace(workspace);
   }
 
   @Method()
-  async createNewWorkspace(workspace: KritzelWorkspace) {
-    this.store.createNewWorkspace(workspace);
+  async updateWorkspace(workspace: KritzelWorkspace) {
+    return this.store.updateWorkspace(workspace);
+  }
+
+  @Method()
+  async deleteWorkspace(workspace: KritzelWorkspace) {
+    return this.store.deleteWorkspace(workspace);
+  }
+
+  @Method()
+  async getWorkspaces(): Promise<KritzelWorkspace[]> {
+    return this.store.getWorkspaces();
   }
 
   private _registerStateChangeListeners() {
@@ -481,6 +486,8 @@ export class KritzelEngine {
     return (
       <Host>
         <div class="debug-panel" style={{ display: this.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
+          <div>ActiveWorkspaceId: {this.store.state?.activeWorkspace?.id}</div>
+          <div>ActiveWorkspaceName: {this.store.state?.activeWorkspace?.name}</div>
           <div>TranslateX: {this.store.state?.translateX}</div>
           <div>TranslateY: {this.store.state?.translateY}</div>
           <div>ViewportWidth: {this.store.state?.viewportWidth}</div>

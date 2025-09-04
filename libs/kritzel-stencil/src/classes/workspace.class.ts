@@ -9,17 +9,11 @@ export class KritzelWorkspace {
     scale: number;
   };
 
-  constructor(id: string, name: string) {
+  constructor(id: string, name: string, viewport: { translateX: number; translateY: number; scale: number } = { translateX: 0, translateY: 0, scale: 1 }) {
     this.id = id;
     this.name = name;
     this.createdAt = new Date();
     this.updatedAt = new Date();
-    this.viewport = {
-      translateX: 0,
-      translateY: 0,
-      scale: 1,
-    };
+    this.viewport = viewport;
   }
-
-  
 }

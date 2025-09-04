@@ -12,6 +12,11 @@ export class KritzelOctree<T extends KritzelBaseObject<any>> {
     this.capacity = capacity;
   }
 
+  reset(): void {
+    this.objects = [];
+    this.children = null;
+  }
+
   insert(object: T): boolean {
     if (!this.intersects(object.rotatedBoundingBox, this.bounds)) {
       return false;

@@ -19,6 +19,7 @@ import { DEFAULT_ENGINE_STATE } from '../configs/default-engine-state';
 import { KritzelDatabase } from './database.class';
 import { KritzelReviver } from './reviver.class';
 import { KritzelWorkspace } from './workspace.class';
+import { ObjectHelper } from '../helpers/object.helper';
 
 export class KritzelStore {
   private readonly _kritzelEngine: KritzelEngine;
@@ -96,54 +97,35 @@ export class KritzelStore {
     this.rerender();
   }
 
-  async loadWorkspace(workspaceId: string): Promise<void> {
-    if (!workspaceId) {
-      throw new Error('No workspace ID provided');
-    }
+  async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
+    const workspaces = await this.getWorkspaces();
+    const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
 
-    const workspace = await this.getWorkspaceById(workspaceId);
+    const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
 
-    if (!workspace) {
-      throw new Error(`Workspace with id ${workspaceId} not found.`);
-    }
+    this._state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
 
-    this.state.activeWorkspace = workspace;
+    this.state.translateX = this._state.activeWorkspace.viewport.translateX;
+    this.state.translateY = this._state.activeWorkspace.viewport.translateY;
+    this.state.scale = this._state.activeWorkspace.viewport.scale;
 
-    this._state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
-      x: -Infinity,
-      y: -Infinity,
-      z: -Infinity,
-      width: Infinity,
-      height: Infinity,
-      depth: Infinity,
-    });
-    this._history = new KritzelHistory(this);
+    await this.initializeWorkspaceObjects(this._state.activeWorkspace.id);
+  }
+
+  private async initializeWorkspaceObjects(workspaceId: string): Promise<void> {
+    this._state.objectsOctree.reset();
+    this._history.reset();
 
     const objectsFromDb = await this._database.getAllByRange<any>('objects', IDBKeyRange.bound([workspaceId], [workspaceId, '\uffff']));
 
     const reviver = new KritzelReviver(this);
+
     objectsFromDb.forEach(element => {
       const revivedObject = reviver.revive<KritzelBaseObject<any>>(element);
       this._state.objectsOctree.insert(revivedObject);
     });
 
     this.rerender();
-  }
-
-  async getWorkspaceById(id: string): Promise<KritzelWorkspace | null> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    return this._database.get<KritzelWorkspace>('workspaces', id);
-  }
-
-  async getAllWorkspaces(): Promise<KritzelWorkspace[]> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    return this._database.getAll<KritzelWorkspace>('workspaces');
   }
 
   async updateWorkspaceViewport(translateX: number, translateY: number, scale: number) {
@@ -225,13 +207,45 @@ export class KritzelStore {
       });
   }
 
-  async createNewWorkspace(workspace: KritzelWorkspace) {
+  async getWorkspace(id: string): Promise<KritzelWorkspace | null> {
+    if (!this._database) {
+      throw new Error('Database not initialized');
+    }
+
+    return this._database.get<KritzelWorkspace>('workspaces', id);
+  }
+
+  async getWorkspaces(): Promise<KritzelWorkspace[]> {
+    if (!this._database) {
+      throw new Error('Database not initialized');
+    }
+
+    return this._database.getAll<KritzelWorkspace>('workspaces');
+  }
+
+  async createWorkspace(workspace: KritzelWorkspace) {
     if (!this._database) {
       throw new Error('Database not initialized');
     }
 
     this.state.activeWorkspace = workspace;
     await this._database.add('workspaces', this.state.activeWorkspace);
+  }
+
+  async updateWorkspace(workspace: KritzelWorkspace) {
+    if (!this._database) {
+      throw new Error('Database not initialized');
+    }
+
+    await this._database.update('workspaces', workspace);
+  }
+
+  async deleteWorkspace(workspace: KritzelWorkspace) {
+    if (!this._database) {
+      throw new Error('Database not initialized');
+    }
+
+    await this._database.delete('workspaces', workspace.id);
   }
 
   rerender() {
