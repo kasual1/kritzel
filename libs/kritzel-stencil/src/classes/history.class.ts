@@ -28,6 +28,17 @@ export class KritzelHistory {
     };
   }
 
+  reset() {
+    this.undoStack.clear();
+    this.redoStack.clear();
+    this.previousViewport = {
+      scale: this._store.state.scale,
+      scaleStep: this._store.state.scaleStep,
+      translateX: this._store.state.translateX,
+      translateY: this._store.state.translateY
+    };
+  }
+
   executeCommand(command: KritzelBaseCommand) {
     if (this._store.state.hasViewportChanged) {
       this.addUpdateViewportCommand();
