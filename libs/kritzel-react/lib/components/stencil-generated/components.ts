@@ -45,7 +45,7 @@ export const KritzelSplitButton: StencilReactComponent<KritzelSplitButtonElement
 
 export type KritzelWorkspaceManagerEvents = {
     onCreate: EventName<CustomEvent<void>>,
-    onSelect: EventName<KritzelWorkspaceManagerCustomEvent<SplitButtonOption>>
+    onItemSelected: EventName<KritzelWorkspaceManagerCustomEvent<SplitButtonOption>>
 };
 
 export const KritzelWorkspaceManager: StencilReactComponent<KritzelWorkspaceManagerElement, KritzelWorkspaceManagerEvents> = /*@__PURE__*/ createComponent<KritzelWorkspaceManagerElement, KritzelWorkspaceManagerEvents>({
@@ -55,7 +55,7 @@ export const KritzelWorkspaceManager: StencilReactComponent<KritzelWorkspaceMana
     react: React,
     events: {
         onCreate: 'create',
-        onSelect: 'select'
+        onItemSelected: 'itemSelected'
     } as KritzelWorkspaceManagerEvents,
     defineCustomElement: defineKritzelWorkspaceManager
 });

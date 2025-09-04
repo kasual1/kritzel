@@ -24,6 +24,7 @@ import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelCustomElement } from '../../../classes/objects/custom-element.class';
+import { KritzelWorkspace } from '../../../classes/workspace.class';
 
 @Component({
   tag: 'kritzel-engine',
@@ -63,7 +64,15 @@ export class KritzelEngine {
 
   @Watch('workspaceId')
   workspaceIdChanged(newValue: string) {
-    this.store.loadWorkspace(newValue);
+    this.store.loadWorkspace(newValue).then(
+      () => {
+        this.store.state.isReady = true;
+      },
+      error => {
+        this.store.state.isReady = false;
+        console.error('Error loading workspace:', error);
+      },
+    );
   }
 
   @Watch('scaleMax')
@@ -122,18 +131,12 @@ export class KritzelEngine {
 
     this._registerStateChangeListeners();
 
-    await this.store.initializeDatabase(this.workspaceId).then(
-      () => {
-        if (this.store.state.isReady === false) {
-          this.store.state.isReady = true;
-          this.isEngineReady.emit();
-        }
-      },
-      (error) => {
-        this.store.state.isReady = false;
-        console.error('Error during initialization:', error.message);
-      }
-    );
+    await this.store.initializeDatabase();
+
+    if (this.store.state.isReady === false) {
+      this.store.state.isReady = true;
+      this.isEngineReady.emit();
+    }
   }
 
   @Listen('wheel', { passive: false })
@@ -439,8 +442,13 @@ export class KritzelEngine {
   }
 
   @Method()
-  async createNewWorkspace() {
-    this.store.createNewWorkspace();
+  async getAllWorkspaces(): Promise<KritzelWorkspace[]> {
+    return this.store.getAllWorkspaces();
+  }
+
+  @Method()
+  async createNewWorkspace(workspace: KritzelWorkspace) {
+    this.store.createNewWorkspace(workspace);
   }
 
   private _registerStateChangeListeners() {

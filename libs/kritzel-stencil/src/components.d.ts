@@ -15,6 +15,7 @@ import { KritzelStore } from "./classes/store.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
+import { KritzelWorkspace } from "./classes/workspace.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { SplitButtonOption } from "./components/shared/kritzel-split-button/kritzel-split-button";
 import { SplitButtonOption as SplitButtonOption1 } from "./components";
@@ -28,6 +29,7 @@ export { KritzelStore } from "./classes/store.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
+export { KritzelWorkspace } from "./classes/workspace.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { SplitButtonOption } from "./components/shared/kritzel-split-button/kritzel-split-button";
 export { SplitButtonOption as SplitButtonOption1 } from "./components";
@@ -167,10 +169,11 @@ export namespace Components {
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;
-        "createNewWorkspace": () => Promise<void>;
+        "createNewWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "delete": () => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
+        "getAllWorkspaces": () => Promise<KritzelWorkspace[]>;
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
@@ -622,7 +625,7 @@ declare global {
     };
     interface HTMLKritzelWorkspaceManagerElementEventMap {
         "create": void;
-        "select": SplitButtonOption1;
+        "itemSelected": SplitButtonOption1;
     }
     interface HTMLKritzelWorkspaceManagerElement extends Components.KritzelWorkspaceManager, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLKritzelWorkspaceManagerElement, ev: KritzelWorkspaceManagerCustomEvent<HTMLKritzelWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -898,7 +901,7 @@ declare namespace LocalJSX {
     }
     interface KritzelWorkspaceManager {
         "onCreate"?: (event: KritzelWorkspaceManagerCustomEvent<void>) => void;
-        "onSelect"?: (event: KritzelWorkspaceManagerCustomEvent<SplitButtonOption1>) => void;
+        "onItemSelected"?: (event: KritzelWorkspaceManagerCustomEvent<SplitButtonOption1>) => void;
     }
     interface IntrinsicElements {
         "kritzel-brush-style": KritzelBrushStyle;

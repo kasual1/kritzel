@@ -80,12 +80,12 @@ export declare interface KritzelSplitButton extends Components.KritzelSplitButto
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: [],
-  outputs: ['create', 'select'],
+  outputs: ['create', 'itemSelected'],
 })
 export class KritzelWorkspaceManager {
   protected el: HTMLKritzelWorkspaceManagerElement;
   @Output() create = new EventEmitter<CustomEvent<void>>();
-  @Output() select = new EventEmitter<CustomEvent<IKritzelWorkspaceManagerSplitButtonOption>>();
+  @Output() itemSelected = new EventEmitter<CustomEvent<IKritzelWorkspaceManagerSplitButtonOption>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -99,7 +99,7 @@ export declare interface KritzelWorkspaceManager extends Components.KritzelWorks
 
   create: EventEmitter<CustomEvent<void>>;
 
-  select: EventEmitter<CustomEvent<IKritzelWorkspaceManagerSplitButtonOption>>;
+  itemSelected: EventEmitter<CustomEvent<IKritzelWorkspaceManagerSplitButtonOption>>;
 }
 
 
