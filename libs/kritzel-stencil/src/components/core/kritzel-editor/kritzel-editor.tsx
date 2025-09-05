@@ -260,9 +260,7 @@ export class KritzelEditor {
     return (
       <Host>
         <kritzel-split-button
-          buttonText="Workspace"
           buttonIcon="plus"
-          options={workspaceSelectionOptions}
           onButtonClick={() => this.onCreateWorkspace()}
           onOptionSelect={event => this.onWorkspaceChange(event.detail.value)}
         ></kritzel-split-button>
