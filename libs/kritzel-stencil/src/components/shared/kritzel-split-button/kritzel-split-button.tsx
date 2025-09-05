@@ -79,7 +79,7 @@ export class KritzelSplitButton {
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        {this.isMenuOpen && <kritzel-menu items={this.options} isOpen={this.isMenuOpen} onItemSelect={e => this.handleOptionClick(e.detail)}></kritzel-menu>}
+        {this.isMenuOpen && <kritzel-menu items={this.options} onItemSelect={e => this.handleOptionClick(e.detail)}></kritzel-menu>}
       </Host>
     );
   }

@@ -8,6 +8,7 @@ import type { JSX } from '../../kritzel-stencil/dist/components';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelMenu } from '../../kritzel-stencil/dist/components/kritzel-menu.js';
 import { defineCustomElement as defineKritzelSplitButton } from '../../kritzel-stencil/dist/components/kritzel-split-button.js';
+import { defineCustomElement as defineKritzelWorkspaceMenu } from '../../kritzel-stencil/dist/components/kritzel-workspace-menu.js';
 
 
 export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__*/ defineContainer<JSX.KritzelEditor>('kritzel-editor', defineKritzelEditor, [
@@ -27,7 +28,6 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
 
 export const KritzelMenu: StencilVueComponent<JSX.KritzelMenu> = /*@__PURE__*/ defineContainer<JSX.KritzelMenu>('kritzel-menu', defineKritzelMenu, [
   'items',
-  'isOpen',
   'itemSelect'
 ], [
   'itemSelect'
@@ -45,5 +45,15 @@ export const KritzelSplitButton: StencilVueComponent<JSX.KritzelSplitButton> = /
 ], [
   'buttonClick',
   'optionSelect'
+]);
+
+
+export const KritzelWorkspaceMenu: StencilVueComponent<JSX.KritzelWorkspaceMenu> = /*@__PURE__*/ defineContainer<JSX.KritzelWorkspaceMenu>('kritzel-workspace-menu', defineKritzelWorkspaceMenu, [
+  'workspace',
+  'deleteWorkspace',
+  'renameWorkspace'
+], [
+  'deleteWorkspace',
+  'renameWorkspace'
 ]);
 
