@@ -10,10 +10,11 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type KritzelEditorCustomEvent, type KritzelMenuCustomEvent, type KritzelSplitButtonCustomEvent, type MenuItem, type SplitButtonOption } from "../../../../kritzel-stencil";
+import { type KritzelEditorCustomEvent, type KritzelMenuCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelWorkspace, type KritzelWorkspaceMenuCustomEvent, type MenuItem, type SplitButtonOption } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelMenu as KritzelMenuElement, defineCustomElement as defineKritzelMenu } from "../../../../kritzel-stencil/dist/components/kritzel-menu.js";
 import { KritzelSplitButton as KritzelSplitButtonElement, defineCustomElement as defineKritzelSplitButton } from "../../../../kritzel-stencil/dist/components/kritzel-split-button.js";
+import { KritzelWorkspaceMenu as KritzelWorkspaceMenuElement, defineCustomElement as defineKritzelWorkspaceMenu } from "../../../../kritzel-stencil/dist/components/kritzel-workspace-menu.js";
 
 export type KritzelEditorEvents = { onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>> };
 
@@ -52,4 +53,21 @@ export const KritzelSplitButton: StencilReactComponent<KritzelSplitButtonElement
         onOptionSelect: 'optionSelect'
     } as KritzelSplitButtonEvents,
     defineCustomElement: defineKritzelSplitButton
+});
+
+export type KritzelWorkspaceMenuEvents = {
+    onDeleteWorkspace: EventName<KritzelWorkspaceMenuCustomEvent<KritzelWorkspace>>,
+    onRenameWorkspace: EventName<KritzelWorkspaceMenuCustomEvent<KritzelWorkspace>>
+};
+
+export const KritzelWorkspaceMenu: StencilReactComponent<KritzelWorkspaceMenuElement, KritzelWorkspaceMenuEvents> = /*@__PURE__*/ createComponent<KritzelWorkspaceMenuElement, KritzelWorkspaceMenuEvents>({
+    tagName: 'kritzel-workspace-menu',
+    elementClass: KritzelWorkspaceMenuElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onDeleteWorkspace: 'deleteWorkspace',
+        onRenameWorkspace: 'renameWorkspace'
+    } as KritzelWorkspaceMenuEvents,
+    defineCustomElement: defineKritzelWorkspaceMenu
 });

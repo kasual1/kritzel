@@ -250,10 +250,6 @@ export namespace Components {
     }
     interface KritzelMenu {
         /**
-          * @default false
-         */
-        "isOpen": boolean;
-        /**
           * @default []
          */
         "items": MenuItem[];
@@ -300,6 +296,9 @@ export namespace Components {
         "offsetY": number;
     }
     interface KritzelUtilityPanel {
+    }
+    interface KritzelWorkspaceMenu {
+        "workspace": KritzelWorkspace;
     }
 }
 export interface KritzelBrushStyleCustomEvent<T> extends CustomEvent<T> {
@@ -361,6 +360,10 @@ export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelUtilityPanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelUtilityPanelElement;
+}
+export interface KritzelWorkspaceMenuCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelWorkspaceMenuElement;
 }
 declare global {
     interface HTMLKritzelBrushStyleElementEventMap {
@@ -652,6 +655,24 @@ declare global {
         prototype: HTMLKritzelUtilityPanelElement;
         new (): HTMLKritzelUtilityPanelElement;
     };
+    interface HTMLKritzelWorkspaceMenuElementEventMap {
+        "deleteWorkspace": KritzelWorkspace;
+        "renameWorkspace": KritzelWorkspace;
+    }
+    interface HTMLKritzelWorkspaceMenuElement extends Components.KritzelWorkspaceMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelWorkspaceMenuElementEventMap>(type: K, listener: (this: HTMLKritzelWorkspaceMenuElement, ev: KritzelWorkspaceMenuCustomEvent<HTMLKritzelWorkspaceMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelWorkspaceMenuElementEventMap>(type: K, listener: (this: HTMLKritzelWorkspaceMenuElement, ev: KritzelWorkspaceMenuCustomEvent<HTMLKritzelWorkspaceMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelWorkspaceMenuElement: {
+        prototype: HTMLKritzelWorkspaceMenuElement;
+        new (): HTMLKritzelWorkspaceMenuElement;
+    };
     interface HTMLElementTagNameMap {
         "kritzel-brush-style": HTMLKritzelBrushStyleElement;
         "kritzel-color": HTMLKritzelColorElement;
@@ -673,6 +694,7 @@ declare global {
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
         "kritzel-tooltip": HTMLKritzelTooltipElement;
         "kritzel-utility-panel": HTMLKritzelUtilityPanelElement;
+        "kritzel-workspace-menu": HTMLKritzelWorkspaceMenuElement;
     }
 }
 declare namespace LocalJSX {
@@ -863,10 +885,6 @@ declare namespace LocalJSX {
     }
     interface KritzelMenu {
         /**
-          * @default false
-         */
-        "isOpen"?: boolean;
-        /**
           * @default []
          */
         "items"?: MenuItem[];
@@ -921,6 +939,11 @@ declare namespace LocalJSX {
         "onRedo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
         "onUndo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
     }
+    interface KritzelWorkspaceMenu {
+        "onDeleteWorkspace"?: (event: KritzelWorkspaceMenuCustomEvent<KritzelWorkspace>) => void;
+        "onRenameWorkspace"?: (event: KritzelWorkspaceMenuCustomEvent<KritzelWorkspace>) => void;
+        "workspace"?: KritzelWorkspace;
+    }
     interface IntrinsicElements {
         "kritzel-brush-style": KritzelBrushStyle;
         "kritzel-color": KritzelColor;
@@ -942,6 +965,7 @@ declare namespace LocalJSX {
         "kritzel-stroke-size": KritzelStrokeSize;
         "kritzel-tooltip": KritzelTooltip;
         "kritzel-utility-panel": KritzelUtilityPanel;
+        "kritzel-workspace-menu": KritzelWorkspaceMenu;
     }
 }
 export { LocalJSX as JSX };
@@ -968,6 +992,7 @@ declare module "@stencil/core" {
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
             "kritzel-tooltip": LocalJSX.KritzelTooltip & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
             "kritzel-utility-panel": LocalJSX.KritzelUtilityPanel & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;
+            "kritzel-workspace-menu": LocalJSX.KritzelWorkspaceMenu & JSXBase.HTMLAttributes<HTMLKritzelWorkspaceMenuElement>;
         }
     }
 }
