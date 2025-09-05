@@ -104,6 +104,7 @@ export class KritzelStore {
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
 
     this._state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
+    this._state.workspaces = workspaces;
 
     this.state.translateX = this._state.activeWorkspace.viewport.translateX;
     this.state.translateY = this._state.activeWorkspace.viewport.translateY;

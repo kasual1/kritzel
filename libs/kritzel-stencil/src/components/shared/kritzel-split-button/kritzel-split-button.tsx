@@ -1,7 +1,7 @@
 import { Component, h, Prop, State, Event, EventEmitter, Listen } from '@stencil/core';
 
-export interface SplitButtonOption {
-  id: string;
+export interface SplitButtonOption<T = any> {
+  value: T;
   label: string;
   icon?: string;
 }
@@ -28,7 +28,7 @@ export class KritzelSplitButton {
   disabled = false;
 
   @State()
-  isMenuOpen = false;
+  isMenuOpen = true;
 
   @Event()
   buttonClick: EventEmitter<void>;
@@ -52,6 +52,7 @@ export class KritzelSplitButton {
   };
 
   private toggleMenu = () => {
+    debugger;
     if (!this.disabled) {
       this.isMenuOpen = !this.isMenuOpen;
     }
@@ -67,7 +68,7 @@ export class KritzelSplitButton {
       <div class="split-button-container" ref={el => (this.buttonRef = el)}>
         <button class="main-button" onClick={this.handleButtonClick} disabled={this.disabled}>
           {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
-          {this.buttonText && <span>{this.buttonText}</span>}
+          {this.buttonText && <span>{this.buttonText} ({this.options.length})</span>}
         </button>
         <button class="dropdown-button" onClick={this.toggleMenu} disabled={this.disabled}>
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>

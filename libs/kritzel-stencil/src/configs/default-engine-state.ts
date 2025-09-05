@@ -56,5 +56,6 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   historyBufferSize: 1000,
   longTouchTimeout: null,
   longTouchDelay: 300,
-  pointers: new Map<number, PointerEvent>()
+  pointers: new Map<number, PointerEvent>(),
+  workspaces: [],
 };

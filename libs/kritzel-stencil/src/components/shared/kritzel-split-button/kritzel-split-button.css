@@ -1,6 +1,7 @@
 :host {
   display: inline-block;
   font-family: sans-serif;
+  z-index: 1;
 }
 
 .split-button-container {

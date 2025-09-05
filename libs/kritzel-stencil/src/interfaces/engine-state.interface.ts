@@ -63,4 +63,5 @@ export interface KritzelEngineState {
   longTouchTimeout: number;
   longTouchDelay: number;
   pointers: Map<number, PointerEvent>;
+  workspaces: KritzelWorkspace[];
 }

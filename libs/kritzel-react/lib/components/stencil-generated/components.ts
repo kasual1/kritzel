@@ -10,10 +10,9 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type KritzelEditorCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelWorkspaceManagerCustomEvent, type SplitButtonOption } from "../../../../kritzel-stencil";
+import { type KritzelEditorCustomEvent, type KritzelSplitButtonCustomEvent, type SplitButtonOption } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelSplitButton as KritzelSplitButtonElement, defineCustomElement as defineKritzelSplitButton } from "../../../../kritzel-stencil/dist/components/kritzel-split-button.js";
-import { KritzelWorkspaceManager as KritzelWorkspaceManagerElement, defineCustomElement as defineKritzelWorkspaceManager } from "../../../../kritzel-stencil/dist/components/kritzel-workspace-manager.js";
 
 export type KritzelEditorEvents = { onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>> };
 
@@ -41,21 +40,4 @@ export const KritzelSplitButton: StencilReactComponent<KritzelSplitButtonElement
         onOptionSelect: 'optionSelect'
     } as KritzelSplitButtonEvents,
     defineCustomElement: defineKritzelSplitButton
-});
-
-export type KritzelWorkspaceManagerEvents = {
-    onCreate: EventName<CustomEvent<void>>,
-    onItemSelected: EventName<KritzelWorkspaceManagerCustomEvent<SplitButtonOption>>
-};
-
-export const KritzelWorkspaceManager: StencilReactComponent<KritzelWorkspaceManagerElement, KritzelWorkspaceManagerEvents> = /*@__PURE__*/ createComponent<KritzelWorkspaceManagerElement, KritzelWorkspaceManagerEvents>({
-    tagName: 'kritzel-workspace-manager',
-    elementClass: KritzelWorkspaceManagerElement,
-    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
-    react: React,
-    events: {
-        onCreate: 'create',
-        onItemSelected: 'itemSelected'
-    } as KritzelWorkspaceManagerEvents,
-    defineCustomElement: defineKritzelWorkspaceManager
 });
