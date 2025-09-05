@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Event, EventEmitter, Listen } from '@stencil/core';
+import { Component, h, Prop, State, Event, EventEmitter, Listen, Host } from '@stencil/core';
 
 export interface SplitButtonOption<T = any> {
   value: T;
@@ -12,23 +12,36 @@ export interface SplitButtonOption<T = any> {
   shadow: true,
 })
 export class KritzelSplitButton {
-  @Prop() 
+  @Prop()
   buttonText: string;
 
-  @Prop() 
+  @Prop()
   buttonIcon: string;
 
-  @Prop() 
+  @Prop()
   dropdownIcon = 'chevron-down';
 
-  @Prop() 
-  options: SplitButtonOption[] = [];
+  @Prop()
+  options: SplitButtonOption[] = [
+    {
+      value: 'option1',
+      label: 'Option 1',
+    },
+    {
+      value: 'option2',
+      label: 'Option 2',
+    },
+    {
+      value: 'option2',
+      label: 'Very Long Options Potentially breaking Layout',
+    },
+  ];
 
-  @Prop() 
+  @Prop()
   disabled = false;
 
   @State()
-  isMenuOpen = true;
+  isMenuOpen = false;
 
   @Event()
   buttonClick: EventEmitter<void>;
@@ -52,7 +65,6 @@ export class KritzelSplitButton {
   };
 
   private toggleMenu = () => {
-    debugger;
     if (!this.disabled) {
       this.isMenuOpen = !this.isMenuOpen;
     }
@@ -65,25 +77,31 @@ export class KritzelSplitButton {
 
   render() {
     return (
-      <div class="split-button-container" ref={el => (this.buttonRef = el)}>
-        <button class="main-button" onClick={this.handleButtonClick} disabled={this.disabled}>
+      <Host>
+        <button class="split-main-button" onClick={this.handleButtonClick} disabled={this.disabled}>
           {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
-          {this.buttonText && <span>{this.buttonText} ({this.options.length})</span>}
+          {this.buttonText && (
+            <span>
+              {this.buttonText} ({this.options.length})
+            </span>
+          )}
         </button>
-        <button class="dropdown-button" onClick={this.toggleMenu} disabled={this.disabled}>
+
+        <button class="split-menu-button" onClick={this.toggleMenu} disabled={this.disabled}>
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
+
         {this.isMenuOpen && (
-          <div class="dropdown-menu">
+          <div class="split-menu">
             {this.options.map(option => (
-              <div class="dropdown-item" onClick={() => this.handleOptionClick(option)}>
+              <div class="split-menu-item" onClick={() => this.handleOptionClick(option)}>
                 {option.icon && <kritzel-icon name={option.icon}></kritzel-icon>}
                 <span>{option.label}</span>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </Host>
     );
   }
 }

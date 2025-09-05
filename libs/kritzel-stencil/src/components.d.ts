@@ -258,7 +258,7 @@ export namespace Components {
          */
         "dropdownIcon": string;
         /**
-          * @default []
+          * @default [     {       value: 'option1',       label: 'Option 1',     },     {       value: 'option2',       label: 'Option 2',     },     {       value: 'option2',       label: 'Very Long Options Potentially breaking Layout',     },   ]
          */
         "options": SplitButtonOption[];
     }
@@ -841,7 +841,7 @@ declare namespace LocalJSX {
         "onButtonClick"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
         "onOptionSelect"?: (event: KritzelSplitButtonCustomEvent<SplitButtonOption>) => void;
         /**
-          * @default []
+          * @default [     {       value: 'option1',       label: 'Option 1',     },     {       value: 'option2',       label: 'Option 2',     },     {       value: 'option2',       label: 'Very Long Options Potentially breaking Layout',     },   ]
          */
         "options"?: SplitButtonOption[];
     }
