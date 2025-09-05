@@ -3,7 +3,7 @@ import { Component, h, Prop, State, Event, EventEmitter, Listen, Host } from '@s
 export interface SplitButtonOption<T = any> {
   value: T;
   label: string;
-  icon?: string;
+  suffix?: () => JSX.Element;
 }
 
 @Component({
@@ -22,26 +22,13 @@ export class KritzelSplitButton {
   dropdownIcon = 'chevron-down';
 
   @Prop()
-  options: SplitButtonOption[] = [
-    {
-      value: 'option1',
-      label: 'Option 1',
-    },
-    {
-      value: 'option2',
-      label: 'Option 2',
-    },
-    {
-      value: 'option2',
-      label: 'Very Long Options Potentially breaking Layout',
-    },
-  ];
+  options: SplitButtonOption[] = [];
 
   @Prop()
   disabled = false;
 
   @State()
-  isMenuOpen = false;
+  isMenuOpen = true;
 
   @Event()
   buttonClick: EventEmitter<void>;
@@ -95,8 +82,8 @@ export class KritzelSplitButton {
           <div class="split-menu">
             {this.options.map(option => (
               <div class="split-menu-item" onClick={() => this.handleOptionClick(option)}>
-                {option.icon && <kritzel-icon name={option.icon}></kritzel-icon>}
                 <span>{option.label}</span>
+                {option.suffix && option?.suffix()}
               </div>
             ))}
           </div>

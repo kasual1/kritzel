@@ -66,6 +66,7 @@ button {
 .split-menu-item{
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: var(--kritzel-context-menu-item-padding, 8px);
   border-radius: var(--kritzel-context-menu-item-border-radius, 12px);
   cursor: pointer;
@@ -93,7 +94,6 @@ button {
 }
 
 .split-menu-item kritzel-icon {
-  margin-right: var(--kritzel-controls-padding, 8px);
   opacity: 0.8;
   flex-shrink: 0;
 }
