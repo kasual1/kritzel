@@ -7,6 +7,7 @@ import { ProxyCmp } from './angular-component-lib/utils';
 import type { Components } from 'kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
+import { defineCustomElement as defineKritzelMenu } from 'kritzel-stencil/dist/components/kritzel-menu.js';
 import { defineCustomElement as defineKritzelSplitButton } from 'kritzel-stencil/dist/components/kritzel-split-button.js';
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
@@ -34,6 +35,36 @@ export class KritzelEditor {
 export declare interface KritzelEditor extends Components.KritzelEditor {
 
   isReady: EventEmitter<CustomEvent<HTMLElement>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelMenu,
+  inputs: ['isOpen', 'items']
+})
+@Component({
+  selector: 'kritzel-menu',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['isOpen', 'items'],
+  outputs: ['itemSelect'],
+})
+export class KritzelMenu {
+  protected el: HTMLKritzelMenuElement;
+  @Output() itemSelect = new EventEmitter<CustomEvent<IKritzelMenuMenuItem>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { MenuItem as IKritzelMenuMenuItem } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelMenu extends Components.KritzelMenu {
+
+  itemSelect: EventEmitter<CustomEvent<IKritzelMenuMenuItem>>;
 }
 
 

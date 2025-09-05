@@ -6,6 +6,7 @@ import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-t
 import type { JSX } from '../../kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
+import { defineCustomElement as defineKritzelMenu } from '../../kritzel-stencil/dist/components/kritzel-menu.js';
 import { defineCustomElement as defineKritzelSplitButton } from '../../kritzel-stencil/dist/components/kritzel-split-button.js';
 
 
@@ -21,6 +22,15 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'isReady'
 ], [
   'isReady'
+]);
+
+
+export const KritzelMenu: StencilVueComponent<JSX.KritzelMenu> = /*@__PURE__*/ defineContainer<JSX.KritzelMenu>('kritzel-menu', defineKritzelMenu, [
+  'items',
+  'isOpen',
+  'itemSelect'
+], [
+  'itemSelect'
 ]);
 
 

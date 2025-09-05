@@ -10,8 +10,9 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type KritzelEditorCustomEvent, type KritzelSplitButtonCustomEvent, type SplitButtonOption } from "../../../../kritzel-stencil";
+import { type KritzelEditorCustomEvent, type KritzelMenuCustomEvent, type KritzelSplitButtonCustomEvent, type MenuItem, type SplitButtonOption } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
+import { KritzelMenu as KritzelMenuElement, defineCustomElement as defineKritzelMenu } from "../../../../kritzel-stencil/dist/components/kritzel-menu.js";
 import { KritzelSplitButton as KritzelSplitButtonElement, defineCustomElement as defineKritzelSplitButton } from "../../../../kritzel-stencil/dist/components/kritzel-split-button.js";
 
 export type KritzelEditorEvents = { onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>> };
@@ -23,6 +24,17 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     react: React,
     events: { onIsReady: 'isReady' } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
+});
+
+export type KritzelMenuEvents = { onItemSelect: EventName<KritzelMenuCustomEvent<MenuItem>> };
+
+export const KritzelMenu: StencilReactComponent<KritzelMenuElement, KritzelMenuEvents> = /*@__PURE__*/ createComponent<KritzelMenuElement, KritzelMenuEvents>({
+    tagName: 'kritzel-menu',
+    elementClass: KritzelMenuElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: { onItemSelect: 'itemSelect' } as KritzelMenuEvents,
+    defineCustomElement: defineKritzelMenu
 });
 
 export type KritzelSplitButtonEvents = {

@@ -18,6 +18,7 @@ import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
+import { MenuItem } from "./components/shared/kritzel-menu/kritzel-menu";
 import { SplitButtonOption } from "./components/shared/kritzel-split-button/kritzel-split-button";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
@@ -32,6 +33,7 @@ export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
+export { MenuItem } from "./components/shared/kritzel-menu/kritzel-menu";
 export { SplitButtonOption } from "./components/shared/kritzel-split-button/kritzel-split-button";
 export namespace Components {
     interface KritzelBrushStyle {
@@ -246,6 +248,16 @@ export namespace Components {
          */
         "size": number;
     }
+    interface KritzelMenu {
+        /**
+          * @default false
+         */
+        "isOpen": boolean;
+        /**
+          * @default []
+         */
+        "items": MenuItem[];
+    }
     interface KritzelSplitButton {
         "buttonIcon": string;
         "buttonText": string;
@@ -333,6 +345,10 @@ export interface KritzelFontFamilyCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelFontSizeElement;
+}
+export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelMenuElement;
 }
 export interface KritzelSplitButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -559,6 +575,23 @@ declare global {
         prototype: HTMLKritzelIconElement;
         new (): HTMLKritzelIconElement;
     };
+    interface HTMLKritzelMenuElementEventMap {
+        "itemSelect": MenuItem;
+    }
+    interface HTMLKritzelMenuElement extends Components.KritzelMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMenuElement, ev: KritzelMenuCustomEvent<HTMLKritzelMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMenuElement, ev: KritzelMenuCustomEvent<HTMLKritzelMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelMenuElement: {
+        prototype: HTMLKritzelMenuElement;
+        new (): HTMLKritzelMenuElement;
+    };
     interface HTMLKritzelSplitButtonElementEventMap {
         "buttonClick": void;
         "optionSelect": SplitButtonOption;
@@ -635,6 +668,7 @@ declare global {
         "kritzel-font-family": HTMLKritzelFontFamilyElement;
         "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
+        "kritzel-menu": HTMLKritzelMenuElement;
         "kritzel-split-button": HTMLKritzelSplitButtonElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
         "kritzel-tooltip": HTMLKritzelTooltipElement;
@@ -827,6 +861,17 @@ declare namespace LocalJSX {
          */
         "size"?: number;
     }
+    interface KritzelMenu {
+        /**
+          * @default false
+         */
+        "isOpen"?: boolean;
+        /**
+          * @default []
+         */
+        "items"?: MenuItem[];
+        "onItemSelect"?: (event: KritzelMenuCustomEvent<MenuItem>) => void;
+    }
     interface KritzelSplitButton {
         "buttonIcon"?: string;
         "buttonText"?: string;
@@ -892,6 +937,7 @@ declare namespace LocalJSX {
         "kritzel-font-family": KritzelFontFamily;
         "kritzel-font-size": KritzelFontSize;
         "kritzel-icon": KritzelIcon;
+        "kritzel-menu": KritzelMenu;
         "kritzel-split-button": KritzelSplitButton;
         "kritzel-stroke-size": KritzelStrokeSize;
         "kritzel-tooltip": KritzelTooltip;
@@ -917,6 +963,7 @@ declare module "@stencil/core" {
             "kritzel-font-family": LocalJSX.KritzelFontFamily & JSXBase.HTMLAttributes<HTMLKritzelFontFamilyElement>;
             "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
+            "kritzel-menu": LocalJSX.KritzelMenu & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
             "kritzel-split-button": LocalJSX.KritzelSplitButton & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
             "kritzel-tooltip": LocalJSX.KritzelTooltip & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
