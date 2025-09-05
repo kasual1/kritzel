@@ -15,7 +15,6 @@ import { ObjectHelper } from '../../../helpers/object.helper';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { SplitButtonOption } from '../../..';
-
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -245,29 +244,31 @@ export class KritzelEditor {
 
   private counter = 0;
 
-  onCreateWorkspace() {
+  createWorkspace() {
     this.counter++;
     this.activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), `New Workspace ${this.counter}`);
   }
 
-  onWorkspaceChange(id: string) {
-    this.activeWorkspace = this.workspaces.find(ws => ws.id === id);
+  changeWorkspace(workspace: KritzelWorkspace) {
+    this.activeWorkspace = workspace;
   }
 
   render() {
-    const workspaceSelectionOptions: SplitButtonOption<KritzelWorkspace>[] = this.workspaces.map(ws => ({
+    const workspaceSelectionOptions: SplitButtonOption<KritzelWorkspace>[] = [...this.workspaces]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .map(ws => ({
       label: ws.name,
       value: ws,
       suffix: () => <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>,
-    }));
+      }));
 
     return (
       <Host>
         <kritzel-split-button
           buttonIcon="plus"
           options={workspaceSelectionOptions}
-          onButtonClick={() => this.onCreateWorkspace()}
-          onOptionSelect={event => this.onWorkspaceChange(event.detail.value)}
+          onButtonClick={() => this.createWorkspace()}
+          onOptionSelect={event => this.changeWorkspace(event.detail.value)}
         ></kritzel-split-button>
 
         <kritzel-engine
