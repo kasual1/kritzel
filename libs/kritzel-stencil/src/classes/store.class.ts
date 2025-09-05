@@ -200,7 +200,7 @@ export class KritzelStore {
 
     await this._database
       .transaction(['objects', 'workspaces'], 'readwrite', async (objectsStore, workspacesStore) => {
-        objectsStore.delete(objectId);
+        objectsStore.delete([this.state.activeWorkspace.id, objectId]);
         workspacesStore.put(this.state.activeWorkspace);
       })
       .catch(err => {
