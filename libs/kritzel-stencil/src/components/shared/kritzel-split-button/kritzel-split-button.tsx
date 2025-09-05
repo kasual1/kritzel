@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Event, EventEmitter, Listen, Host } from '@stencil/core';
+import { Component, h, Prop, State, Event, EventEmitter, Listen, Host, Element } from '@stencil/core';
 
 export interface SplitButtonOption<T = any> {
   value: T;
@@ -28,7 +28,7 @@ export class KritzelSplitButton {
   disabled = false;
 
   @State()
-  isMenuOpen = true;
+  isMenuOpen = false;
 
   @Event()
   buttonClick: EventEmitter<void>;
@@ -36,11 +36,12 @@ export class KritzelSplitButton {
   @Event()
   optionSelect: EventEmitter<SplitButtonOption>;
 
-  private buttonRef: HTMLElement;
+  @Element() 
+  private element: HTMLElement;
 
   @Listen('click', { target: 'document' })
   handleDocumentClick(event: MouseEvent) {
-    if (this.isMenuOpen && !this.buttonRef.contains(event.target as Node)) {
+    if (this.isMenuOpen && !this.element.contains(event.target as Node)) {
       this.isMenuOpen = false;
     }
   }
@@ -83,7 +84,7 @@ export class KritzelSplitButton {
             {this.options.map(option => (
               <div class="split-menu-item" onClick={() => this.handleOptionClick(option)}>
                 <span>{option.label}</span>
-                {option.suffix && option?.suffix()}
+                {option.suffix && option.suffix()}
               </div>
             ))}
           </div>

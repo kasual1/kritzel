@@ -255,11 +255,11 @@ export class KritzelEditor {
 
   render() {
     const workspaceSelectionOptions: SplitButtonOption<KritzelWorkspace>[] = [...this.workspaces]
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
       .map(ws => ({
-      label: ws.name,
-      value: ws,
-      suffix: () => <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>,
+        label: ws.name,
+        value: ws,
+        suffix: () => <kritzel-icon name="ellipsis-vertical" size={16} onClick={e => e.stopPropagation()}></kritzel-icon>,
       }));
 
     return (
