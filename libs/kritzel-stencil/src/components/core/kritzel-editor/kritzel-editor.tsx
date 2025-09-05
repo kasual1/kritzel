@@ -255,12 +255,17 @@ export class KritzelEditor {
   }
 
   render() {
-    const workspaceSelectionOptions: SplitButtonOption<KritzelWorkspace>[] = this.workspaces.map(ws => ({ label: ws.name, value: ws }));
+    const workspaceSelectionOptions: SplitButtonOption<KritzelWorkspace>[] = this.workspaces.map(ws => ({
+      label: ws.name,
+      value: ws,
+      suffix: () => <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>,
+    }));
 
     return (
       <Host>
         <kritzel-split-button
           buttonIcon="plus"
+          options={workspaceSelectionOptions}
           onButtonClick={() => this.onCreateWorkspace()}
           onOptionSelect={event => this.onWorkspaceChange(event.detail.value)}
         ></kritzel-split-button>
