@@ -28,7 +28,7 @@ export class KritzelSplitButton {
   disabled = false;
 
   @State()
-  isMenuOpen = false;
+  isMenuOpen = true;
 
   @Event()
   buttonClick: EventEmitter<void>;
@@ -36,7 +36,7 @@ export class KritzelSplitButton {
   @Event()
   optionSelect: EventEmitter<SplitButtonOption>;
 
-  @Element() 
+  @Element()
   private element: HTMLElement;
 
   @Listen('click', { target: 'document' })
@@ -79,16 +79,7 @@ export class KritzelSplitButton {
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        {this.isMenuOpen && (
-          <div class="split-menu">
-            {this.options.map(option => (
-              <div class="split-menu-item" onClick={() => this.handleOptionClick(option)}>
-                <span>{option.label}</span>
-                {option.suffix && option.suffix()}
-              </div>
-            ))}
-          </div>
-        )}
+        {this.isMenuOpen && <kritzel-menu items={this.options} isOpen={this.isMenuOpen} onItemSelect={e => this.handleOptionClick(e.detail)}></kritzel-menu>}
       </Host>
     );
   }

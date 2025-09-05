@@ -1,0 +1,51 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  padding: var(--kritzel-controls-padding, 8px);
+  background-color: var(--kritzel-controls-background-color, #ffffff);
+  border-radius: var(--kritzel-controls-border-radius, 12px);
+  box-shadow: var(--kritzel-controls-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  border: var(--kritzel-controls-border, 1px solid #f0f0f0);
+  z-index: 2;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--kritzel-context-menu-item-padding, 8px);
+  border-radius: var(--kritzel-context-menu-item-border-radius, 12px);
+  cursor: pointer;
+  font-size: var(--kritzel-context-menu-item-font-size, 14px);
+  color: var(--kritzel-context-menu-item-color, #333333);
+}
+
+.menu-item span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menu-item:not(.disabled):hover {
+  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.menu-item:not(.disabled):active {
+  background-color: var(--kritzel-context-menu-item-active-background-color, hsl(0, 0%, 0%, 8.6%));
+}
+
+.menu-item.disabled {
+  color: var(--kritzel-context-menu-item-disabled-color, #aaaaaa);
+  cursor: default;
+}
+
+.menu-item kritzel-icon {
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.menu-item.disabled kritzel-icon {
+  opacity: 0.4;
+}
+

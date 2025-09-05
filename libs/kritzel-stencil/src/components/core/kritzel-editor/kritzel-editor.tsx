@@ -132,7 +132,7 @@ export class KritzelEditor {
   isControlsReady: boolean = false;
 
   @State()
-  activeWorkspace?: KritzelWorkspace = new KritzelWorkspace('14mU53R', 'Default Workspace');
+  activeWorkspace?: KritzelWorkspace;
 
   @State()
   workspaces: KritzelWorkspace[] = [];
