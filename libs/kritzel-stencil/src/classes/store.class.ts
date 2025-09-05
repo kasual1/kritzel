@@ -230,6 +230,8 @@ export class KritzelStore {
     }
 
     this.state.activeWorkspace = workspace;
+    this.state.workspaces.push(workspace);
+
     await this._database.add('workspaces', this.state.activeWorkspace);
   }
 
@@ -238,12 +240,23 @@ export class KritzelStore {
       throw new Error('Database not initialized');
     }
 
+    const index = this.state.workspaces.findIndex(w => w.id === workspace.id);
+    if (index !== -1) {
+      this.state.workspaces[index] = workspace;
+    }
+
     await this._database.update('workspaces', workspace);
   }
 
   async deleteWorkspace(workspace: KritzelWorkspace) {
     if (!this._database) {
       throw new Error('Database not initialized');
+    }
+
+    this.state.workspaces = this.state.workspaces.filter(w => w.id !== workspace.id);
+
+    if (this.state.activeWorkspace?.id === workspace.id) {
+      this.state.activeWorkspace = null;
     }
 
     await this._database.delete('workspaces', workspace.id);
