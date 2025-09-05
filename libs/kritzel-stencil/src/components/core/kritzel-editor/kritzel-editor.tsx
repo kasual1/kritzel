@@ -13,6 +13,8 @@ import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
+import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
+import { SplitButtonOption } from '../../..';
 
 @Component({
   tag: 'kritzel-editor',
@@ -131,7 +133,10 @@ export class KritzelEditor {
   isControlsReady: boolean = false;
 
   @State()
-  activeWorkspace?: KritzelWorkspace;
+  activeWorkspace?: KritzelWorkspace = new KritzelWorkspace('14mU53R', 'Default Workspace');
+
+  @State()
+  workspaces: KritzelWorkspace[] = [];
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -227,6 +232,11 @@ export class KritzelEditor {
     this.isReady.emit(this.host);
   }
 
+  onEngineReady(event: CustomEvent<KritzelEngineState>) {
+    this.isEngineReady = true;
+    this.workspaces = event.detail.workspaces;
+  }
+
   private registerCustomSvgIcons() {
     for (const [name, svg] of Object.entries(this.customSvgIcons)) {
       KritzelIconRegistry.register(name, svg);
@@ -235,15 +245,27 @@ export class KritzelEditor {
 
   private counter = 0;
 
-  createWorkspace() {
+  onCreateWorkspace() {
     this.counter++;
     this.activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), `New Workspace ${this.counter}`);
   }
 
+  onWorkspaceChange(id: string) {
+    this.activeWorkspace = this.workspaces.find(ws => ws.id === id);
+  }
+
   render() {
+    const workspaceSelectionOptions: SplitButtonOption<KritzelWorkspace>[] = this.workspaces.map(ws => ({ label: ws.name, value: ws }));
+
     return (
       <Host>
-        <kritzel-workspace-manager onCreate={() => this.createWorkspace()}></kritzel-workspace-manager>
+        <kritzel-split-button
+          buttonText="Workspace"
+          buttonIcon="plus"
+          options={workspaceSelectionOptions}
+          onButtonClick={() => this.onCreateWorkspace()}
+          onOptionSelect={event => this.onWorkspaceChange(event.detail.value)}
+        ></kritzel-split-button>
 
         <kritzel-engine
           ref={el => (this.engineRef = el)}
@@ -252,7 +274,7 @@ export class KritzelEditor {
           scaleMin={this.scaleMin}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
-          onIsEngineReady={() => (this.isEngineReady = true)}
+          onIsEngineReady={event => this.onEngineReady(event)}
         ></kritzel-engine>
 
         <kritzel-controls

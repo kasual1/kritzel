@@ -25,6 +25,7 @@ import { KritzelClassHelper } from '../../../helpers/class.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelCustomElement } from '../../../classes/objects/custom-element.class';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
+import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -51,7 +52,7 @@ export class KritzelEngine {
   scaleMin: number = ABSOLUTE_SCALE_MIN;
 
   @Event()
-  isEngineReady: EventEmitter<void>;
+  isEngineReady: EventEmitter<KritzelEngineState>;
 
   @Event()
   activeToolChange: EventEmitter<KritzelBaseTool>;
@@ -130,7 +131,7 @@ export class KritzelEngine {
 
     if (this.store.state.isReady === false) {
       this.store.state.isReady = true;
-      this.isEngineReady.emit();
+      this.isEngineReady.emit(this.store.state);
     }
   }
 
