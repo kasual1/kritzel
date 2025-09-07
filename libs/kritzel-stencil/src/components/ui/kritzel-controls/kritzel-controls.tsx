@@ -38,14 +38,8 @@ export class KritzelControls {
   @Element()
   host!: HTMLElement;
 
-  @Listen('activeToolChange', { target: 'document' })
-  async handleActiveToolChange(event: CustomEvent) {
-    this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
-    await this.kritzelEngine?.setFocus();
-  }
-
   @Listen('click', { target: 'document' })
-  handleClick(event: MouseEvent) {
+  handleDocumentClick(event: MouseEvent) {
     const element = event.target as HTMLElement;
 
     if (!this.kritzelEngine || element.closest('.kritzel-tooltip')) {
@@ -53,13 +47,26 @@ export class KritzelControls {
     }
 
     this.isTooltipVisible = false;
-    this.kritzelEngine.enable();
+  }
+
+  @Listen('keydown', { target: 'window' })
+  handleKeyDown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.closeTooltip();
+      this.kritzelEngine?.enable();
+    }
+  }
+
+  @Listen('activeToolChange', { target: 'document' })
+  async handleActiveToolChange(event: CustomEvent) {
+    this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
+    await this.kritzelEngine?.setFocus();
   }
 
   @Method()
   async closeTooltip() {
     this.isTooltipVisible = false;
-    this.kritzelEngine.enable();
   }
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
@@ -119,7 +126,7 @@ export class KritzelControls {
   private handleConfigClick(event: MouseEvent) {
     event.stopPropagation();
     this.isTooltipVisible = !this.isTooltipVisible;
-    this.kritzelEngine.disable();
+    this.kritzelEngine?.disable();
   }
 
   private async handleToolChange(event: CustomEvent) {

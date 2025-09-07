@@ -261,6 +261,11 @@ export class KritzelEngine {
     this.store.setState('isFocused', isInside && isInKritzelEngine);
   }
 
+  @Listen('click')
+  handleClick() {
+    this.enable();
+  }
+
   @Method()
   async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig): Promise<KritzelBaseTool> {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
@@ -442,29 +447,23 @@ export class KritzelEngine {
 
   @Method()
   async createWorkspace(workspace: KritzelWorkspace) {
-    return this.store.createWorkspace(workspace).then(
-      () => {
-        this.workspacesChange.emit(this.store.state.workspaces);
-      }
-    );
+    return this.store.createWorkspace(workspace).then(() => {
+      this.workspacesChange.emit(this.store.state.workspaces);
+    });
   }
 
   @Method()
   async updateWorkspace(workspace: KritzelWorkspace) {
-    return this.store.updateWorkspace(workspace).then(
-      () => {
-        this.workspacesChange.emit(this.store.state.workspaces);
-      }
-    );
+    return this.store.updateWorkspace(workspace).then(() => {
+      this.workspacesChange.emit(this.store.state.workspaces);
+    });
   }
 
   @Method()
   async deleteWorkspace(workspace: KritzelWorkspace) {
-    return this.store.deleteWorkspace(workspace).then(
-      () => {
-        this.workspacesChange.emit(this.store.state.workspaces);
-      }
-    );
+    return this.store.deleteWorkspace(workspace).then(() => {
+      this.workspacesChange.emit(this.store.state.workspaces);
+    });
   }
 
   @Method()
