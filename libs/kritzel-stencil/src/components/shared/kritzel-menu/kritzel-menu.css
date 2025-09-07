@@ -8,6 +8,7 @@
   box-shadow: var(--kritzel-controls-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
   border: var(--kritzel-controls-border, 1px solid #f0f0f0);
   z-index: 2;
+  gap: var(--kritzel-menu-item-gap, 4px);
 }
 
 .menu-item {
@@ -28,12 +29,25 @@
   text-overflow: ellipsis;
 }
 
-.menu-item:not(.disabled):not(.inactive):hover {
+.menu-item:not(.disabled):not(.inactive):not(.active):hover {
   background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
-.menu-item:not(.disabled):not(.inactive):active {
+.menu-item:not(.disabled):not(.inactive):not(.active):active {
   background-color: var(--kritzel-context-menu-item-active-background-color, hsl(0, 0%, 0%, 8.6%));
+}
+
+.menu-item.active {
+  color: white;
+  background-color: var(--kritzel-controls-control-selected-background-color, #007AFF);
+}
+
+.menu-item.active kritzel-icon {
+  filter: brightness(0) invert(1);
+}
+
+.menu-item.active:hover {
+  background-color: var(--kritzel-controls-control-selected-hover-background-color, #0075f1);
 }
 
 .menu-item.disabled {
@@ -41,13 +55,17 @@
   cursor: default;
 }
 
-.menu-item.inactive {
+.menu-item.inactive:not(.active) {
   cursor: default;
   background-color: transparent !important;
 }
 
 .menu-item.child-open {
   background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%)) !important;
+}
+
+.menu-item.active.menu-item.child-open {
+  background-color: var(--kritzel-controls-control-selected-active-background-color, #0075f1) !important;
 }
 
 .menu-item kritzel-icon {
@@ -74,4 +92,16 @@
   width: 100%;
   padding: 2px 0px;
   border-bottom: 1px solid var(--kritzel-context-menu-item-color, #333333);
+}
+
+.menu-item-button {
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -29,11 +29,14 @@ export class KritzelMenu {
   parent: MenuItem = null;
 
   @Prop()
+  activeItemIndex: number | null = null;
+
+  @Prop()
   editingIndex: number | null = null;
-  
+
   @State()
   openChildMenuIndex: number | null = null;
-  
+
   private editInput?: HTMLInputElement;
 
   @Watch('editingIndex')
@@ -74,6 +77,7 @@ export class KritzelMenu {
               'inactive': this.openChildMenuIndex !== null && this.openChildMenuIndex !== index,
               'child-open': this.openChildMenuIndex === index,
               'edit-mode': this.editingIndex === index,
+              'active': this.activeItemIndex === index && this.editingIndex === null,
             }}
             onClick={() => {
               if (item.disabled || this.editingIndex !== null) return;
@@ -85,7 +89,9 @@ export class KritzelMenu {
             {this.editingIndex === index ? (
               <div class="edit-container">
                 <input
-                  ref={el => { if (this.editingIndex === index) this.editInput = el as HTMLInputElement; }}
+                  ref={el => {
+                    if (this.editingIndex === index) this.editInput = el as HTMLInputElement;
+                  }}
                   type="text"
                   name={'menu-item-' + index}
                   value={item.label}
@@ -98,22 +104,28 @@ export class KritzelMenu {
 
             {this.editingIndex === index && (
               <div style={{ display: 'flex', gap: '8px' }}>
-                <kritzel-icon name="x" size={16} onClick={() => item.cancel?.(item)}></kritzel-icon>
-                <kritzel-icon name="check" size={16} onClick={() => item.save?.(item)}></kritzel-icon>
+                <button class="menu-item-button" onClick={() => item.cancel?.(item)}>
+                  <kritzel-icon name="x" size={16}></kritzel-icon>
+                </button>
+
+                <button class="menu-item-button" onClick={() => item.save?.(item)}>
+                  <kritzel-icon name="check" size={16}></kritzel-icon>
+                </button>
               </div>
             )}
 
             {this.editingIndex !== index && item.children && item.children.length > 0 && (
               <div style={{ position: 'relative' }}>
-                <kritzel-icon
-                  name="ellipsis-vertical"
-                  size={16}
+                <button
+                  class="menu-item-button"
                   onClick={event => {
                     if (this.editingIndex !== null) return;
                     event.stopPropagation();
                     this.openChildMenuIndex = this.openChildMenuIndex === index ? null : index;
                   }}
-                ></kritzel-icon>
+                >
+                  <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
+                </button>
 
                 {this.openChildMenuIndex === index && (
                   <kritzel-menu

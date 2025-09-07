@@ -252,6 +252,10 @@ export namespace Components {
         /**
           * @default null
          */
+        "activeItemIndex": number | null;
+        /**
+          * @default null
+         */
         "editingIndex": number | null;
         /**
           * @default []
@@ -267,6 +271,10 @@ export namespace Components {
         "parentIndex": number | null;
     }
     interface KritzelSplitButton {
+        /**
+          * @default null
+         */
+        "activeItemIndex": number | null;
         "buttonIcon": string;
         "buttonText": string;
         "closeMenu": () => Promise<void>;
@@ -868,6 +876,10 @@ declare namespace LocalJSX {
         /**
           * @default null
          */
+        "activeItemIndex"?: number | null;
+        /**
+          * @default null
+         */
         "editingIndex"?: number | null;
         /**
           * @default []
@@ -883,6 +895,10 @@ declare namespace LocalJSX {
         "parentIndex"?: number | null;
     }
     interface KritzelSplitButton {
+        /**
+          * @default null
+         */
+        "activeItemIndex"?: number | null;
         "buttonIcon"?: string;
         "buttonText"?: string;
         /**
