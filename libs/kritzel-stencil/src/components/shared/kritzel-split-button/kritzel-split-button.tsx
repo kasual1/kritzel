@@ -22,6 +22,9 @@ export class KritzelSplitButton {
   @Prop()
   disabled = false;
 
+  @Prop()
+  editingIndex: number | null = null;
+
   @State()
   isMenuOpen = true;
 
@@ -69,7 +72,7 @@ export class KritzelSplitButton {
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        {this.isMenuOpen && <kritzel-menu items={this.options}></kritzel-menu>}
+        {this.isMenuOpen && <kritzel-menu items={this.options} editingIndex={this.editingIndex}></kritzel-menu>}
       </Host>
     );
   }

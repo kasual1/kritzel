@@ -1,12 +1,13 @@
-import { Component, h, Prop, Host, State, Listen, Element } from '@stencil/core';
+import { Component, h, Prop, Host, State, Listen, Element, Watch } from '@stencil/core';
 
 export interface MenuItem<T = any> {
   value: T;
   label: string;
-  action?: () => void;
+  select?: (item: MenuItem) => void;
+  save?: (item: MenuItem) => void;
+  cancel?: (item: MenuItem) => void;
   disabled?: boolean;
   children?: MenuItem[];
-  inEditMode?: boolean;
 }
 
 @Component({
@@ -15,14 +16,40 @@ export interface MenuItem<T = any> {
   shadow: true,
 })
 export class KritzelMenu {
-  @Element() 
+  @Element()
   host: HTMLElement;
 
   @Prop()
   items: MenuItem[] = [];
 
+  @Prop()
+  parentIndex: number | null = null;
+
+  @Prop()
+  parent: MenuItem = null;
+
+  @Prop()
+  editingIndex: number | null = null;
+  
   @State()
   openChildMenuIndex: number | null = null;
+  
+  private editInput?: HTMLInputElement;
+
+  @Watch('editingIndex')
+  onEditingIndexChange(newValue: number | null) {
+    if (newValue === null) {
+      this.openChildMenuIndex = null;
+      this.editInput = undefined;
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      if (this.editInput) {
+        this.editInput.focus();
+      }
+    });
+  }
 
   @Listen('click', { target: 'window' })
   handleWindowClick(event: MouseEvent) {
@@ -36,54 +63,65 @@ export class KritzelMenu {
     }
   }
 
-  private toggleChildMenu(index: number, event: MouseEvent) {
-    event.stopPropagation();
-    this.openChildMenuIndex = this.openChildMenuIndex === index ? null : index;
-
-  }
-
   render() {
     return (
       <Host>
-        {this.items.map((item, index )=> (
+        {this.items.map((item, index) => (
           <div
             class={{
               'menu-item': true,
               'disabled': item.disabled,
               'inactive': this.openChildMenuIndex !== null && this.openChildMenuIndex !== index,
               'child-open': this.openChildMenuIndex === index,
-              'edit-mode': item.inEditMode,
+              'edit-mode': this.editingIndex === index,
             }}
-            onClick={() => item.action?.()}
+            onClick={() => {
+              if (item.disabled || this.editingIndex !== null) return;
+              item['_parentIndex'] = this.parentIndex;
+              item['_parent'] = this.parent;
+              item.select?.(item);
+            }}
           >
-            {item.inEditMode ? (
-              <div style={{ flexGrow: '1' }}>
+            {this.editingIndex === index ? (
+              <div class="edit-container">
                 <input
+                  ref={el => { if (this.editingIndex === index) this.editInput = el as HTMLInputElement; }}
                   type="text"
                   name={'menu-item-' + index}
                   value={item.label}
-                  style={{ width: '100%' }}
+                  onInput={e => (item.label = (e.target as HTMLInputElement).value)}
                 />
               </div>
             ) : (
               <span>{item.label}</span>
             )}
 
-
-            {item.inEditMode && (
+            {this.editingIndex === index && (
               <div style={{ display: 'flex', gap: '8px' }}>
-                <kritzel-icon name="x" size={16} onClick={(e) => this.toggleChildMenu(index, e)}></kritzel-icon>
-                <kritzel-icon name="check" size={16}></kritzel-icon>
+                <kritzel-icon name="x" size={16} onClick={() => item.cancel?.(item)}></kritzel-icon>
+                <kritzel-icon name="check" size={16} onClick={() => item.save?.(item)}></kritzel-icon>
               </div>
             )}
 
-
-            {!item.inEditMode && item.children && item.children.length > 0 && (
+            {this.editingIndex !== index && item.children && item.children.length > 0 && (
               <div style={{ position: 'relative' }}>
-                <kritzel-icon name="ellipsis-vertical" size={16} onClick={(e) => this.toggleChildMenu(index, e)}></kritzel-icon>
+                <kritzel-icon
+                  name="ellipsis-vertical"
+                  size={16}
+                  onClick={event => {
+                    if (this.editingIndex !== null) return;
+                    event.stopPropagation();
+                    this.openChildMenuIndex = this.openChildMenuIndex === index ? null : index;
+                  }}
+                ></kritzel-icon>
 
                 {this.openChildMenuIndex === index && (
-                  <kritzel-menu style={{ position: 'absolute', left: '0', top: '100%', zIndex: '3', minWidth: '100px' }} items={item.children}></kritzel-menu>
+                  <kritzel-menu
+                    style={{ position: 'absolute', left: '0', top: '100%', zIndex: '3', minWidth: '100px' }}
+                    items={item.children}
+                    parentIndex={index}
+                    parent={item}
+                  ></kritzel-menu>
                 )}
               </div>
             )}

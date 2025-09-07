@@ -137,6 +137,9 @@ export class KritzelEditor {
   @State()
   workspaces: KritzelWorkspace[] = [];
 
+  @State()
+  editingIndex: number | null = null;
+
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
     if (newValue && this.isControlsReady) {
@@ -259,14 +262,22 @@ export class KritzelEditor {
       .map(ws => ({
         label: ws.name,
         value: ws,
-        inEditMode: true,
-        action: () => this.changeWorkspace(ws),
+        select: () => this.changeWorkspace(ws),
+        cancel: () => {
+          this.editingIndex = null;
+        },
+        save: (item: MenuItem) => {
+          this.editingIndex = null;
+          this.engineRef.updateWorkspace({...ws, name: item.label})
+        },
         children: [
-          { label: 'Rename', value: 'rename', action: () => console.log('rename') },
+          { label: 'Rename', value: 'rename', select: (item: MenuItem) => {
+            this.editingIndex = item['_parentIndex'];
+          }},
           {
             label: 'Delete',
             value: 'delete',
-            action: async () => {
+            select: async () => {
               await this.engineRef.deleteWorkspace(ws);
               this.workspaces = this.workspaces.filter(w => w.id !== ws.id);
             },
@@ -279,6 +290,7 @@ export class KritzelEditor {
         <kritzel-split-button
           buttonIcon="plus"
           options={workspaceSelectionOptions}
+          editingIndex={this.editingIndex}
           onButtonClick={() => this.createWorkspace()}
           onOptionSelect={event => this.changeWorkspace(event.detail.value)}
         ></kritzel-split-button>
@@ -291,6 +303,7 @@ export class KritzelEditor {
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
           onIsEngineReady={event => this.onEngineReady(event)}
+          onWorkspacesChange={event => this.workspaces = event.detail}
         ></kritzel-engine>
 
         <kritzel-controls

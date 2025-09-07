@@ -58,3 +58,20 @@
 .menu-item.disabled kritzel-icon {
   opacity: 0.4;
 }
+
+.edit-container {
+  flex-grow: 1;
+}
+
+.menu-item.edit-mode input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  padding: 0;
+  width: 100%;
+  padding: 2px 0px;
+  border-bottom: 1px solid var(--kritzel-context-menu-item-color, #333333);
+}
