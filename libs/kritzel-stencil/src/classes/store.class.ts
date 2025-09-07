@@ -229,9 +229,8 @@ export class KritzelStore {
       throw new Error('Database not initialized');
     }
 
-    await this._database.add('workspaces', this.state.activeWorkspace).then;
+    await this._database.add('workspaces', workspace);
 
-    this.state.activeWorkspace = workspace;
     this.state.workspaces.push(workspace);
   }
 

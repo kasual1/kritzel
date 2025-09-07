@@ -1,7 +1,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  min-width: 160px;
+  min-width: 180px;
   padding: var(--kritzel-controls-padding, 8px);
   background-color: var(--kritzel-controls-background-color, #ffffff);
   border-radius: var(--kritzel-controls-border-radius, 12px);
