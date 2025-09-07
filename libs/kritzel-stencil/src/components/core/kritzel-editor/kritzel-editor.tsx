@@ -269,22 +269,24 @@ export class KritzelEditor {
 
   render() {
     const workspaceSelectionOptions: MenuItem<KritzelWorkspace>[] = [...this.workspaces]
-      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .map(ws => ({
         label: ws.name,
         value: ws,
         select: () => this.changeWorkspace(ws),
         cancel: () => {
-          this.editingIndex = null;
-
           if (this.isNewWorkspace) {
             this.isNewWorkspace = false;
             this.engineRef.deleteWorkspace(ws);
           }
+
+          this.editingIndex = null;
         },
         save: (item: MenuItem) => {
-          this.editingIndex = null;
           this.engineRef.updateWorkspace({ ...ws, name: item.label });
+          this.workspaces = this.workspaces.map(w => (w.id === ws.id ? { ...w, name: item.label } : w));
+          this.isNewWorkspace = false;
+          this.editingIndex = null;
         },
         children: [
           {
