@@ -27,17 +27,26 @@
   text-overflow: ellipsis;
 }
 
-.menu-item:not(.disabled):hover {
+.menu-item:not(.disabled):not(.inactive):hover {
   background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
-.menu-item:not(.disabled):active {
+.menu-item:not(.disabled):not(.inactive):active {
   background-color: var(--kritzel-context-menu-item-active-background-color, hsl(0, 0%, 0%, 8.6%));
 }
 
 .menu-item.disabled {
   color: var(--kritzel-context-menu-item-disabled-color, #aaaaaa);
   cursor: default;
+}
+
+.menu-item.inactive {
+  cursor: default;
+  background-color: transparent !important;
+}
+
+.menu-item.child-open {
+  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%)) !important;
 }
 
 .menu-item kritzel-icon {
@@ -48,4 +57,3 @@
 .menu-item.disabled kritzel-icon {
   opacity: 0.4;
 }
-
