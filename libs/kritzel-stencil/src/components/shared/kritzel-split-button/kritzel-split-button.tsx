@@ -23,10 +23,13 @@ export class KritzelSplitButton {
   disabled = false;
 
   @Prop()
+  activeItemIndex: number | null = null;
+
+  @Prop()
   editingIndex: number | null = null;
 
   @State()
-  isMenuOpen = false;
+  isMenuOpen = true;
 
   @Event()
   buttonClick: EventEmitter<void>;
@@ -45,7 +48,7 @@ export class KritzelSplitButton {
   }
 
   @Method()
-  async openMenu() {  
+  async openMenu() {
     if (!this.disabled) {
       this.isMenuOpen = true;
     }
@@ -53,14 +56,14 @@ export class KritzelSplitButton {
 
   @Method()
   async closeMenu() {
-     if (!this.disabled) {
+    if (!this.disabled) {
       this.isMenuOpen = false;
     }
   }
 
   @Method()
   async toggleMenu() {
-     if (!this.disabled) {
+    if (!this.disabled) {
       this.isMenuOpen = !this.isMenuOpen;
     }
   }
@@ -92,7 +95,7 @@ export class KritzelSplitButton {
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        {this.isMenuOpen && <kritzel-menu items={this.options} editingIndex={this.editingIndex}></kritzel-menu>}
+        {this.isMenuOpen && <kritzel-menu items={this.options} activeItemIndex={this.activeItemIndex} editingIndex={this.editingIndex}></kritzel-menu>}
       </Host>
     );
   }

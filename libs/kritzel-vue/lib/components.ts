@@ -29,6 +29,7 @@ export const KritzelMenu: StencilVueComponent<JSX.KritzelMenu> = /*@__PURE__*/ d
   'items',
   'parentIndex',
   'parent',
+  'activeItemIndex',
   'editingIndex'
 ]);
 
@@ -39,6 +40,7 @@ export const KritzelSplitButton: StencilVueComponent<JSX.KritzelSplitButton> = /
   'dropdownIcon',
   'options',
   'disabled',
+  'activeItemIndex',
   'editingIndex',
   'buttonClick',
   'optionSelect'

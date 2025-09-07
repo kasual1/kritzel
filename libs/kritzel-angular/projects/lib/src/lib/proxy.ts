@@ -40,14 +40,14 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelMenu,
-  inputs: ['editingIndex', 'items', 'parent', 'parentIndex']
+  inputs: ['activeItemIndex', 'editingIndex', 'items', 'parent', 'parentIndex']
 })
 @Component({
   selector: 'kritzel-menu',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['editingIndex', 'items', 'parent', 'parentIndex'],
+  inputs: ['activeItemIndex', 'editingIndex', 'items', 'parent', 'parentIndex'],
 })
 export class KritzelMenu {
   protected el: HTMLKritzelMenuElement;
@@ -63,7 +63,7 @@ export declare interface KritzelMenu extends Components.KritzelMenu {}
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelSplitButton,
-  inputs: ['buttonIcon', 'buttonText', 'disabled', 'dropdownIcon', 'editingIndex', 'options'],
+  inputs: ['activeItemIndex', 'buttonIcon', 'buttonText', 'disabled', 'dropdownIcon', 'editingIndex', 'options'],
   methods: ['openMenu', 'closeMenu', 'toggleMenu', 'setEditingIndex']
 })
 @Component({
@@ -71,7 +71,7 @@ export declare interface KritzelMenu extends Components.KritzelMenu {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['buttonIcon', 'buttonText', 'disabled', 'dropdownIcon', 'editingIndex', 'options'],
+  inputs: ['activeItemIndex', 'buttonIcon', 'buttonText', 'disabled', 'dropdownIcon', 'editingIndex', 'options'],
   outputs: ['buttonClick', 'optionSelect'],
 })
 export class KritzelSplitButton {
