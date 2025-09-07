@@ -19,7 +19,7 @@ import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { MenuItem } from "./components/shared/kritzel-menu/kritzel-menu";
-import { SplitButtonOption } from "./components/shared/kritzel-split-button/kritzel-split-button";
+import { MenuItem as MenuItem1 } from "./components/shared/kritzel-menu/kritzel-menu";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
@@ -34,7 +34,7 @@ export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { MenuItem } from "./components/shared/kritzel-menu/kritzel-menu";
-export { SplitButtonOption } from "./components/shared/kritzel-split-button/kritzel-split-button";
+export { MenuItem as MenuItem1 } from "./components/shared/kritzel-menu/kritzel-menu";
 export namespace Components {
     interface KritzelBrushStyle {
         /**
@@ -268,7 +268,7 @@ export namespace Components {
         /**
           * @default []
          */
-        "options": SplitButtonOption[];
+        "options": MenuItem1[];
     }
     interface KritzelStrokeSize {
         /**
@@ -296,9 +296,6 @@ export namespace Components {
         "offsetY": number;
     }
     interface KritzelUtilityPanel {
-    }
-    interface KritzelWorkspaceMenu {
-        "workspace": KritzelWorkspace;
     }
 }
 export interface KritzelBrushStyleCustomEvent<T> extends CustomEvent<T> {
@@ -345,10 +342,6 @@ export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelFontSizeElement;
 }
-export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLKritzelMenuElement;
-}
 export interface KritzelSplitButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelSplitButtonElement;
@@ -360,10 +353,6 @@ export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelUtilityPanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelUtilityPanelElement;
-}
-export interface KritzelWorkspaceMenuCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLKritzelWorkspaceMenuElement;
 }
 declare global {
     interface HTMLKritzelBrushStyleElementEventMap {
@@ -578,18 +567,7 @@ declare global {
         prototype: HTMLKritzelIconElement;
         new (): HTMLKritzelIconElement;
     };
-    interface HTMLKritzelMenuElementEventMap {
-        "itemSelect": MenuItem;
-    }
     interface HTMLKritzelMenuElement extends Components.KritzelMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMenuElement, ev: KritzelMenuCustomEvent<HTMLKritzelMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMenuElement, ev: KritzelMenuCustomEvent<HTMLKritzelMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelMenuElement: {
         prototype: HTMLKritzelMenuElement;
@@ -597,7 +575,7 @@ declare global {
     };
     interface HTMLKritzelSplitButtonElementEventMap {
         "buttonClick": void;
-        "optionSelect": SplitButtonOption;
+        "optionSelect": MenuItem1;
     }
     interface HTMLKritzelSplitButtonElement extends Components.KritzelSplitButton, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelSplitButtonElementEventMap>(type: K, listener: (this: HTMLKritzelSplitButtonElement, ev: KritzelSplitButtonCustomEvent<HTMLKritzelSplitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -655,24 +633,6 @@ declare global {
         prototype: HTMLKritzelUtilityPanelElement;
         new (): HTMLKritzelUtilityPanelElement;
     };
-    interface HTMLKritzelWorkspaceMenuElementEventMap {
-        "deleteWorkspace": KritzelWorkspace;
-        "renameWorkspace": KritzelWorkspace;
-    }
-    interface HTMLKritzelWorkspaceMenuElement extends Components.KritzelWorkspaceMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelWorkspaceMenuElementEventMap>(type: K, listener: (this: HTMLKritzelWorkspaceMenuElement, ev: KritzelWorkspaceMenuCustomEvent<HTMLKritzelWorkspaceMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelWorkspaceMenuElementEventMap>(type: K, listener: (this: HTMLKritzelWorkspaceMenuElement, ev: KritzelWorkspaceMenuCustomEvent<HTMLKritzelWorkspaceMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLKritzelWorkspaceMenuElement: {
-        prototype: HTMLKritzelWorkspaceMenuElement;
-        new (): HTMLKritzelWorkspaceMenuElement;
-    };
     interface HTMLElementTagNameMap {
         "kritzel-brush-style": HTMLKritzelBrushStyleElement;
         "kritzel-color": HTMLKritzelColorElement;
@@ -694,7 +654,6 @@ declare global {
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
         "kritzel-tooltip": HTMLKritzelTooltipElement;
         "kritzel-utility-panel": HTMLKritzelUtilityPanelElement;
-        "kritzel-workspace-menu": HTMLKritzelWorkspaceMenuElement;
     }
 }
 declare namespace LocalJSX {
@@ -888,7 +847,6 @@ declare namespace LocalJSX {
           * @default []
          */
         "items"?: MenuItem[];
-        "onItemSelect"?: (event: KritzelMenuCustomEvent<MenuItem>) => void;
     }
     interface KritzelSplitButton {
         "buttonIcon"?: string;
@@ -902,11 +860,11 @@ declare namespace LocalJSX {
          */
         "dropdownIcon"?: string;
         "onButtonClick"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
-        "onOptionSelect"?: (event: KritzelSplitButtonCustomEvent<SplitButtonOption>) => void;
+        "onOptionSelect"?: (event: KritzelSplitButtonCustomEvent<MenuItem1>) => void;
         /**
           * @default []
          */
-        "options"?: SplitButtonOption[];
+        "options"?: MenuItem1[];
     }
     interface KritzelStrokeSize {
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
@@ -939,11 +897,6 @@ declare namespace LocalJSX {
         "onRedo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
         "onUndo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
     }
-    interface KritzelWorkspaceMenu {
-        "onDeleteWorkspace"?: (event: KritzelWorkspaceMenuCustomEvent<KritzelWorkspace>) => void;
-        "onRenameWorkspace"?: (event: KritzelWorkspaceMenuCustomEvent<KritzelWorkspace>) => void;
-        "workspace"?: KritzelWorkspace;
-    }
     interface IntrinsicElements {
         "kritzel-brush-style": KritzelBrushStyle;
         "kritzel-color": KritzelColor;
@@ -965,7 +918,6 @@ declare namespace LocalJSX {
         "kritzel-stroke-size": KritzelStrokeSize;
         "kritzel-tooltip": KritzelTooltip;
         "kritzel-utility-panel": KritzelUtilityPanel;
-        "kritzel-workspace-menu": KritzelWorkspaceMenu;
     }
 }
 export { LocalJSX as JSX };
@@ -992,7 +944,6 @@ declare module "@stencil/core" {
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
             "kritzel-tooltip": LocalJSX.KritzelTooltip & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
             "kritzel-utility-panel": LocalJSX.KritzelUtilityPanel & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;
-            "kritzel-workspace-menu": LocalJSX.KritzelWorkspaceMenu & JSXBase.HTMLAttributes<HTMLKritzelWorkspaceMenuElement>;
         }
     }
 }

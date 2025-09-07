@@ -14,7 +14,7 @@ import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engin
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
-import { SplitButtonOption } from '../../..';
+import { MenuItem } from '../../..';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -254,12 +254,23 @@ export class KritzelEditor {
   }
 
   render() {
-    const workspaceSelectionOptions: SplitButtonOption<KritzelWorkspace>[] = [...this.workspaces]
+    const workspaceSelectionOptions: MenuItem<KritzelWorkspace>[] = [...this.workspaces]
       .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
       .map(ws => ({
         label: ws.name,
         value: ws,
-        suffix: () => <kritzel-workspace-menu workspace={ws}></kritzel-workspace-menu>,
+        action: () => this.changeWorkspace(ws),
+        children: [
+          { label: 'Rename', value: 'rename', action: () => alert(`Rename workspace: ${ws.name}`) },
+          {
+            label: 'Delete',
+            value: 'delete',
+            action: async () => {
+              await this.engineRef.deleteWorkspace(ws);
+              this.workspaces = this.workspaces.filter(w => w.id !== ws.id);
+            },
+          },
+        ],
       }));
 
     return (

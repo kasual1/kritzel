@@ -1,10 +1,5 @@
 import { Component, h, Prop, State, Event, EventEmitter, Listen, Host, Element } from '@stencil/core';
-
-export interface SplitButtonOption<T = any> {
-  value: T;
-  label: string;
-  suffix?: () => JSX.Element;
-}
+import { MenuItem } from '../kritzel-menu/kritzel-menu';
 
 @Component({
   tag: 'kritzel-split-button',
@@ -22,7 +17,7 @@ export class KritzelSplitButton {
   dropdownIcon = 'chevron-down';
 
   @Prop()
-  options: SplitButtonOption[] = [];
+  options: MenuItem[] = [];
 
   @Prop()
   disabled = false;
@@ -34,7 +29,7 @@ export class KritzelSplitButton {
   buttonClick: EventEmitter<void>;
 
   @Event()
-  optionSelect: EventEmitter<SplitButtonOption>;
+  optionSelect: EventEmitter<MenuItem>;
 
   @Element()
   private element: HTMLElement;
@@ -58,11 +53,6 @@ export class KritzelSplitButton {
     }
   };
 
-  private handleOptionClick = (option: SplitButtonOption) => {
-    this.optionSelect.emit(option);
-    this.isMenuOpen = false;
-  };
-
   render() {
     return (
       <Host>
@@ -79,7 +69,7 @@ export class KritzelSplitButton {
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        {this.isMenuOpen && <kritzel-menu items={this.options} onItemSelect={e => this.handleOptionClick(e.detail)}></kritzel-menu>}
+        {this.isMenuOpen && <kritzel-menu items={this.options}></kritzel-menu>}
       </Host>
     );
   }
