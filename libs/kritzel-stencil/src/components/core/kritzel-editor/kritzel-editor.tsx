@@ -204,14 +204,6 @@ export class KritzelEditor {
     }
   }
 
-  @Listen('keydown', { target: 'window' })
-  handleKeyDown(event) {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      this.controlsRef?.closeTooltip();
-    }
-  }
-
   engineRef!: HTMLKritzelEngineElement;
 
   controlsRef!: HTMLKritzelControlsElement;
