@@ -85,6 +85,15 @@ export class KritzelMenu {
               item['_parent'] = this.parent;
               item.select?.(item);
             }}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                if (item.disabled || this.editingIndex !== null) return;
+                item['_parentIndex'] = this.parentIndex;
+                item['_parent'] = this.parent;
+                item.select?.(item);
+              }
+            }}
+            tabIndex={0}
           >
             {this.editingIndex === index ? (
               <div class="edit-container">
@@ -104,11 +113,11 @@ export class KritzelMenu {
 
             {this.editingIndex === index && (
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button class="menu-item-button" onClick={() => item.cancel?.(item)}>
+                <button class="menu-item-button" tabIndex={0} onClick={() => item.cancel?.(item)}>
                   <kritzel-icon name="x" size={16}></kritzel-icon>
                 </button>
 
-                <button class="menu-item-button" onClick={() => item.save?.(item)}>
+                <button class="menu-item-button" tabIndex={0} onClick={() => item.save?.(item)}>
                   <kritzel-icon name="check" size={16}></kritzel-icon>
                 </button>
               </div>
@@ -118,6 +127,7 @@ export class KritzelMenu {
               <div style={{ position: 'relative' }}>
                 <button
                   class="menu-item-button"
+                  tabIndex={0}
                   onClick={event => {
                     if (this.editingIndex !== null) return;
                     event.stopPropagation();

@@ -55,8 +55,14 @@ export class KritzelSplitButton {
     const containsKritzelMenu = path.some(node => (node as HTMLElement)?.tagName === 'KRITZEL-MENU');
 
     if (!containsKritzelMenu && !containsKritzelSplitButton) {
-      this.isMenuOpen = false;
-      this.menuClosed.emit();
+      this.closeMenu();
+    }
+  }
+
+  @Listen('keydown', { target: 'window' })
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      this.closeMenu();
     }
   }
 
@@ -73,12 +79,20 @@ export class KritzelSplitButton {
     if (!this.disabled) {
       this.isMenuOpen = false;
       this.menuClosed.emit();
+      this.blur();
     }
   }
 
   @Method()
   async setEditingIndex(index: number | null) {
     this.editingIndex = index;
+  }
+
+  private blur() {
+    const activeEl = this.host.shadowRoot.activeElement as HTMLElement;
+    if (activeEl && typeof activeEl.blur === 'function') {
+      activeEl.blur();
+    }
   }
 
   private toggleMenu = () => {
@@ -101,7 +115,7 @@ export class KritzelSplitButton {
   render() {
     return (
       <Host>
-        <button class="split-main-button" onClick={this.handleButtonClick} disabled={this.disabled}>
+        <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.disabled}>
           {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
           {this.buttonText && (
             <span>
@@ -110,7 +124,9 @@ export class KritzelSplitButton {
           )}
         </button>
 
-        <button class="split-menu-button" onClick={this.toggleMenu} disabled={this.disabled}>
+        <div class="split-divider"></div>
+
+        <button class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.disabled}>
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
