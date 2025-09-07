@@ -250,9 +250,21 @@ export namespace Components {
     }
     interface KritzelMenu {
         /**
+          * @default null
+         */
+        "editingIndex": number | null;
+        /**
           * @default []
          */
         "items": MenuItem[];
+        /**
+          * @default null
+         */
+        "parent": MenuItem;
+        /**
+          * @default null
+         */
+        "parentIndex": number | null;
     }
     interface KritzelSplitButton {
         "buttonIcon": string;
@@ -265,6 +277,10 @@ export namespace Components {
           * @default 'chevron-down'
          */
         "dropdownIcon": string;
+        /**
+          * @default null
+         */
+        "editingIndex": number | null;
         /**
           * @default []
          */
@@ -506,6 +522,7 @@ declare global {
     interface HTMLKritzelEngineElementEventMap {
         "isEngineReady": KritzelEngineState;
         "activeToolChange": KritzelBaseTool;
+        "workspacesChange": KritzelWorkspace[];
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -787,6 +804,7 @@ declare namespace LocalJSX {
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
+        "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
         /**
           * @default ABSOLUTE_SCALE_MAX
          */
@@ -844,9 +862,21 @@ declare namespace LocalJSX {
     }
     interface KritzelMenu {
         /**
+          * @default null
+         */
+        "editingIndex"?: number | null;
+        /**
           * @default []
          */
         "items"?: MenuItem[];
+        /**
+          * @default null
+         */
+        "parent"?: MenuItem;
+        /**
+          * @default null
+         */
+        "parentIndex"?: number | null;
     }
     interface KritzelSplitButton {
         "buttonIcon"?: string;
@@ -859,6 +889,10 @@ declare namespace LocalJSX {
           * @default 'chevron-down'
          */
         "dropdownIcon"?: string;
+        /**
+          * @default null
+         */
+        "editingIndex"?: number | null;
         "onButtonClick"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
         "onOptionSelect"?: (event: KritzelSplitButtonCustomEvent<MenuItem1>) => void;
         /**

@@ -9,7 +9,6 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
 
   handleKeyDown(event: KeyboardEvent): void {
     if(this._store.state.isFocused === false) {
-      event.preventDefault();
       return;
     }
 

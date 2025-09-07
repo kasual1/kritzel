@@ -57,6 +57,9 @@ export class KritzelEngine {
   @Event()
   activeToolChange: EventEmitter<KritzelBaseTool>;
 
+  @Event()
+  workspacesChange: EventEmitter<KritzelWorkspace[]>;
+
   @Element()
   host: HTMLElement;
 
@@ -439,17 +442,29 @@ export class KritzelEngine {
 
   @Method()
   async createWorkspace(workspace: KritzelWorkspace) {
-    return this.store.createWorkspace(workspace);
+    return this.store.createWorkspace(workspace).then(
+      () => {
+        this.workspacesChange.emit(this.store.state.workspaces);
+      }
+    );
   }
 
   @Method()
   async updateWorkspace(workspace: KritzelWorkspace) {
-    return this.store.updateWorkspace(workspace);
+    return this.store.updateWorkspace(workspace).then(
+      () => {
+        this.workspacesChange.emit(this.store.state.workspaces);
+      }
+    );
   }
 
   @Method()
   async deleteWorkspace(workspace: KritzelWorkspace) {
-    return this.store.deleteWorkspace(workspace);
+    return this.store.deleteWorkspace(workspace).then(
+      () => {
+        this.workspacesChange.emit(this.store.state.workspaces);
+      }
+    );
   }
 
   @Method()
