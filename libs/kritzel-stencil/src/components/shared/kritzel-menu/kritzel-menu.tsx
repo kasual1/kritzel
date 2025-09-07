@@ -6,6 +6,7 @@ export interface MenuItem<T = any> {
   action?: () => void;
   disabled?: boolean;
   children?: MenuItem[];
+  inEditMode?: boolean;
 }
 
 @Component({
@@ -15,7 +16,7 @@ export interface MenuItem<T = any> {
 })
 export class KritzelMenu {
   @Element() 
-  el: HTMLElement;
+  host: HTMLElement;
 
   @Prop()
   items: MenuItem[] = [];
@@ -30,7 +31,7 @@ export class KritzelMenu {
     }
 
     const target = event.target as HTMLElement;
-    if (!this.el.contains(target)) {
+    if (!this.host.contains(target)) {
       this.openChildMenuIndex = null;
     }
   }
@@ -51,12 +52,33 @@ export class KritzelMenu {
               'disabled': item.disabled,
               'inactive': this.openChildMenuIndex !== null && this.openChildMenuIndex !== index,
               'child-open': this.openChildMenuIndex === index,
+              'edit-mode': item.inEditMode,
             }}
             onClick={() => item.action?.()}
           >
-            <span>{item.label}</span>
+            {item.inEditMode ? (
+              <div style={{ flexGrow: '1' }}>
+                <input
+                  type="text"
+                  name={'menu-item-' + index}
+                  value={item.label}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            ) : (
+              <span>{item.label}</span>
+            )}
 
-            {item.children && item.children.length > 0 && (
+
+            {item.inEditMode && (
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <kritzel-icon name="x" size={16} onClick={(e) => this.toggleChildMenu(index, e)}></kritzel-icon>
+                <kritzel-icon name="check" size={16}></kritzel-icon>
+              </div>
+            )}
+
+
+            {!item.inEditMode && item.children && item.children.length > 0 && (
               <div style={{ position: 'relative' }}>
                 <kritzel-icon name="ellipsis-vertical" size={16} onClick={(e) => this.toggleChildMenu(index, e)}></kritzel-icon>
 

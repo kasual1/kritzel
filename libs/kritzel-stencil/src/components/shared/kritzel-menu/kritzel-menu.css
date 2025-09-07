@@ -19,6 +19,7 @@
   cursor: pointer;
   font-size: var(--kritzel-context-menu-item-font-size, 14px);
   color: var(--kritzel-context-menu-item-color, #333333);
+  gap: var(--kritzel-context-menu-item-gap, 12px);
 }
 
 .menu-item span {

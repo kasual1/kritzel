@@ -259,9 +259,10 @@ export class KritzelEditor {
       .map(ws => ({
         label: ws.name,
         value: ws,
+        inEditMode: true,
         action: () => this.changeWorkspace(ws),
         children: [
-          { label: 'Rename', value: 'rename', action: () => alert(`Rename workspace: ${ws.name}`) },
+          { label: 'Rename', value: 'rename', action: () => console.log('rename') },
           {
             label: 'Delete',
             value: 'delete',
