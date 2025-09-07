@@ -4,6 +4,12 @@
   align-items: center;
   font-family: sans-serif;
   z-index: 1;
+  padding: var(--kritzel-controls-padding, 4px);
+  background-color: var(--kritzel-controls-background-color, #ffffff);
+  border-radius: var(--kritzel-controls-border-radius, 12px);
+  box-shadow: var(--kritzel-controls-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  border: var(--kritzel-controls-border, 1px solid #ebebeb);
+  gap: var(--kritzel-context-menu-item-gap, 4px);
 }
 
 button {
@@ -33,22 +39,33 @@ button {
   padding: var(--kritzel-controls-padding, 8px);
   background-color: var(--kritzel-controls-background-color, #ffffff);
   border-radius: var(--kritzel-controls-border-radius, 12px);
-  box-shadow: var(--kritzel-controls-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
-  border: var(--kritzel-controls-border, 1px solid #f0f0f0);
   font-size: var(--kritzel-context-menu-item-font-size, 14px);
 }
 
+.split-main-button:hover,
+.split-menu-button:hover {
+  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.split-main-button:focus,
+.split-menu-button:focus {
+  outline: none;
+  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
 .split-main-button {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
   gap: var(--kritzel-context-menu-item-gap, 4px);
 }
 
 .split-menu-button {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
   border-left: none;
   justify-content: center;
+}
+
+.split-divider {
+  width: var(--kritzel-controls-divider-width, 1px);
+  height: 24px;
+  background-color: var(--kritzel-controls-divider-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 kritzel-menu {

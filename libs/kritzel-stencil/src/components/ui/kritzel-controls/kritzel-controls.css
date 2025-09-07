@@ -15,7 +15,7 @@
   background-color: var(--kritzel-controls-background-color, #ffffff);
   border-radius: var(--kritzel-controls-border-radius, 16px);
   box-shadow: var(--kritzel-controls-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
-  border: var(--kritzel-controls-border, 1px solid #f0f0f0);
+  border: var(--kritzel-controls-border, 1px solid #ebebeb);
   z-index: 10000;
   position: relative;
 }
@@ -92,7 +92,7 @@
   cursor: pointer;
   border: 2px solid transparent;
   box-sizing: border-box;
-  background-color: var(--kritzel-color-palette-hover-background-color, #f0f0f0);
+  background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
 }
 
 .font-container {
@@ -105,7 +105,7 @@
   cursor: pointer;
   border: 2px solid transparent;
   box-sizing: border-box;
-  background-color: var(--kritzel-color-palette-hover-background-color, #f0f0f0);
+  background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
 }
 
 .no-config {

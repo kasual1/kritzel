@@ -6,7 +6,7 @@
   background-color: var(--kritzel-controls-background-color, #ffffff);
   border-radius: var(--kritzel-controls-border-radius, 12px);
   box-shadow: var(--kritzel-controls-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
-  border: var(--kritzel-controls-border, 1px solid #f0f0f0);
+  border: var(--kritzel-controls-border, 1px solid #ebebeb);
   z-index: 2;
   gap: var(--kritzel-menu-item-gap, 4px);
 }
@@ -21,6 +21,12 @@
   font-size: var(--kritzel-context-menu-item-font-size, 14px);
   color: var(--kritzel-context-menu-item-color, #333333);
   gap: var(--kritzel-context-menu-item-gap, 12px);
+}
+
+.menu-item:focus,
+.menu-item:focus-within {
+  outline: none;
+  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 .menu-item span {
@@ -38,8 +44,8 @@
 }
 
 .menu-item.active {
-  color: white;
-  background-color: var(--kritzel-controls-control-selected-background-color, #007AFF);
+  color: var(--kritzel-controls-background-color, #ffffff);
+  background-color: var(--kritzel-controls-control-selected-background-color, #007aff);
 }
 
 .menu-item.active kritzel-icon {
@@ -94,14 +100,28 @@
   border-bottom: 1px solid var(--kritzel-context-menu-item-color, #333333);
 }
 
+.menu-item.edit-mode input::selection {
+  background-color: var(--kritzel-controls-control-selected-background-color, #007aff);
+  border-radius: 4px;
+  color: var(--kritzel-controls-background-color, #ffffff);
+}
+
 .menu-item-button {
   background: transparent;
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 2px;
+  padding: 4px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.menu-item-button:hover {
+  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.menu-item-button:focus {
+  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }

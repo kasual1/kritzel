@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { MenuItem } from '../../shared/kritzel-menu/kritzel-menu';
@@ -75,7 +75,6 @@ export class KritzelWorkspaceManager {
       label: ws.name,
       value: ws,
       select: () => {
-        debugger;
         if (this.editingIndex !== null) return;
         this.changeWorkspace(ws);
       },
