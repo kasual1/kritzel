@@ -25,11 +25,11 @@ export class KritzelSplitButton {
   @Prop()
   activeItemIndex: number | null = null;
 
-  @Prop()
+  @Prop({ mutable: true })
   editingIndex: number | null = null;
 
   @State()
-  isMenuOpen = true;
+  isMenuOpen = false;
 
   @Event()
   buttonClick: EventEmitter<void>;
@@ -37,20 +37,34 @@ export class KritzelSplitButton {
   @Event()
   optionSelect: EventEmitter<MenuItem>;
 
+  @Event()
+  menuOpened: EventEmitter<void>;
+  
+  @Event()
+  menuClosed: EventEmitter<void>;
+
   @Element()
-  private element: HTMLElement;
+  host!: HTMLElement;
+
+  menuRef!: HTMLKritzelMenuElement;
 
   @Listen('click', { target: 'document' })
   handleDocumentClick(event: MouseEvent) {
-    if (this.isMenuOpen && !this.element.contains(event.target as Node)) {
+    const path = (event.composedPath && event.composedPath()) || [];
+    const containsKritzelSplitButton = path.some(node => (node as HTMLElement)?.tagName === 'KRITZEL-SPLIT-BUTTON');
+    const containsKritzelMenu = path.some(node => (node as HTMLElement)?.tagName === 'KRITZEL-MENU');
+
+    if (!containsKritzelMenu && !containsKritzelSplitButton) {
       this.isMenuOpen = false;
+      this.menuClosed.emit();
     }
   }
-
+  
   @Method()
   async openMenu() {
     if (!this.disabled) {
       this.isMenuOpen = true;
+      this.menuOpened.emit();
     }
   }
 
@@ -58,19 +72,24 @@ export class KritzelSplitButton {
   async closeMenu() {
     if (!this.disabled) {
       this.isMenuOpen = false;
-    }
-  }
-
-  @Method()
-  async toggleMenu() {
-    if (!this.disabled) {
-      this.isMenuOpen = !this.isMenuOpen;
+      this.menuClosed.emit();
     }
   }
 
   @Method()
   async setEditingIndex(index: number | null) {
     this.editingIndex = index;
+  }
+
+  private toggleMenu = () => {
+    if (!this.disabled) {
+      this.isMenuOpen = !this.isMenuOpen;
+      if (this.isMenuOpen) {
+        this.menuOpened.emit();
+      } else {
+        this.menuClosed.emit();
+      }
+    }
   }
 
   private handleButtonClick = () => {
@@ -91,11 +110,11 @@ export class KritzelSplitButton {
           )}
         </button>
 
-        <button class="split-menu-button" onClick={() => this.toggleMenu()} disabled={this.disabled}>
+        <button class="split-menu-button" onClick={this.toggleMenu} disabled={this.disabled}>
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        {this.isMenuOpen && <kritzel-menu items={this.options} activeItemIndex={this.activeItemIndex} editingIndex={this.editingIndex}></kritzel-menu>}
+        {this.isMenuOpen && <kritzel-menu ref={el => this.menuRef = el} items={this.options} activeItemIndex={this.activeItemIndex} editingIndex={this.editingIndex}></kritzel-menu>}
       </Host>
     );
   }

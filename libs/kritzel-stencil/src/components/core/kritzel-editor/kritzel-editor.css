@@ -17,7 +17,7 @@ kritzel-editor{
   user-select: none;           
 }
 
-kritzel-split-button {
+kritzel-workspace-manager {
   position: absolute;
   top: 14px;
   left: 14px;
