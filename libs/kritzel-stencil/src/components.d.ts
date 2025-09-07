@@ -269,6 +269,7 @@ export namespace Components {
     interface KritzelSplitButton {
         "buttonIcon": string;
         "buttonText": string;
+        "closeMenu": () => Promise<void>;
         /**
           * @default false
          */
@@ -281,10 +282,13 @@ export namespace Components {
           * @default null
          */
         "editingIndex": number | null;
+        "openMenu": () => Promise<void>;
         /**
           * @default []
          */
         "options": MenuItem1[];
+        "setEditingIndex": (index: number | null) => Promise<void>;
+        "toggleMenu": () => Promise<void>;
     }
     interface KritzelStrokeSize {
         /**

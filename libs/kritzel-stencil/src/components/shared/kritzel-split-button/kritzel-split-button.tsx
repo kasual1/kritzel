@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Event, EventEmitter, Listen, Host, Element } from '@stencil/core';
+import { Component, h, Prop, State, Event, EventEmitter, Listen, Host, Element, Method } from '@stencil/core';
 import { MenuItem } from '../kritzel-menu/kritzel-menu';
 
 @Component({
@@ -26,7 +26,7 @@ export class KritzelSplitButton {
   editingIndex: number | null = null;
 
   @State()
-  isMenuOpen = true;
+  isMenuOpen = false;
 
   @Event()
   buttonClick: EventEmitter<void>;
@@ -44,15 +44,35 @@ export class KritzelSplitButton {
     }
   }
 
+  @Method()
+  async openMenu() {  
+    if (!this.disabled) {
+      this.isMenuOpen = true;
+    }
+  }
+
+  @Method()
+  async closeMenu() {
+     if (!this.disabled) {
+      this.isMenuOpen = false;
+    }
+  }
+
+  @Method()
+  async toggleMenu() {
+     if (!this.disabled) {
+      this.isMenuOpen = !this.isMenuOpen;
+    }
+  }
+
+  @Method()
+  async setEditingIndex(index: number | null) {
+    this.editingIndex = index;
+  }
+
   private handleButtonClick = () => {
     if (!this.disabled) {
       this.buttonClick.emit();
-    }
-  };
-
-  private toggleMenu = () => {
-    if (!this.disabled) {
-      this.isMenuOpen = !this.isMenuOpen;
     }
   };
 
@@ -68,7 +88,7 @@ export class KritzelSplitButton {
           )}
         </button>
 
-        <button class="split-menu-button" onClick={this.toggleMenu} disabled={this.disabled}>
+        <button class="split-menu-button" onClick={() => this.toggleMenu()} disabled={this.disabled}>
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
