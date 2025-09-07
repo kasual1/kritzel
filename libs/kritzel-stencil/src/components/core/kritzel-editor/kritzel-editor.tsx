@@ -231,7 +231,6 @@ export class KritzelEditor {
     }
 
     this.isReady.emit(this.host);
-
   }
 
   onEngineReady(event: CustomEvent<KritzelEngineState>) {
