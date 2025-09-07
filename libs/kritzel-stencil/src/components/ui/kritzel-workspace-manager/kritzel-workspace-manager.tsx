@@ -62,7 +62,6 @@ export class KritzelWorkspaceManager {
     requestAnimationFrame(() => {
       this.isNewWorkspace = true;
       this.editingIndex = 0;
-      this.activeWorkspaceIndex = 0;
     });
   }
 
@@ -76,6 +75,7 @@ export class KritzelWorkspaceManager {
       label: ws.name,
       value: ws,
       select: () => {
+        debugger;
         if(this.editingIndex !== null) return;
         this.changeWorkspace(ws);
       },
@@ -92,6 +92,7 @@ export class KritzelWorkspaceManager {
         this.workspaces = this.sortedWorkspaces.map(w => (w.id === ws.id ? { ...w, name: item.label } : w));
         this.isNewWorkspace = false;
         this.editingIndex = null;
+        this.activeWorkspaceIndex = 0;
       },
       children: [
         {
