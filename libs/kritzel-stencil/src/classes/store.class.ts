@@ -99,7 +99,7 @@ export class KritzelStore {
 
   async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
     const workspaces = await this.getWorkspaces();
-    const mostRecentWorkspace = [...workspaces].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
+    const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
 
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
 

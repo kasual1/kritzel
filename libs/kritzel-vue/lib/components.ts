@@ -57,6 +57,7 @@ export const KritzelSplitButton: StencilVueComponent<JSX.KritzelSplitButton> = /
 
 export const KritzelWorkspaceManager: StencilVueComponent<JSX.KritzelWorkspaceManager> = /*@__PURE__*/ defineContainer<JSX.KritzelWorkspaceManager>('kritzel-workspace-manager', defineKritzelWorkspaceManager, [
   'workspaces',
+  'activeWorkspace',
   'isWorkspaceManagerReady',
   'workspaceChange'
 ], [

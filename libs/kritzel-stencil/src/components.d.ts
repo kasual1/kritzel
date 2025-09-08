@@ -325,6 +325,7 @@ export namespace Components {
     interface KritzelUtilityPanel {
     }
     interface KritzelWorkspaceManager {
+        "activeWorkspace": KritzelWorkspace;
         /**
           * @default []
          */
@@ -984,6 +985,7 @@ declare namespace LocalJSX {
         "onUndo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
     }
     interface KritzelWorkspaceManager {
+        "activeWorkspace"?: KritzelWorkspace;
         "onIsWorkspaceManagerReady"?: (event: KritzelWorkspaceManagerCustomEvent<void>) => void;
         "onWorkspaceChange"?: (event: KritzelWorkspaceManagerCustomEvent<KritzelWorkspace>) => void;
         /**
