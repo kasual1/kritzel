@@ -12,8 +12,8 @@ export class KritzelWorkspaceManager {
   @Prop()
   workspaces: KritzelWorkspace[] = [];
 
-  @State()
-  activeWorkspaceIndex: number = 0;
+  @Prop()
+  activeWorkspace: KritzelWorkspace;
 
   @State()
   editingIndex: number | null = null;
@@ -66,7 +66,7 @@ export class KritzelWorkspaceManager {
   }
 
   changeWorkspace(workspace: KritzelWorkspace) {
-    this.activeWorkspaceIndex = this.sortedWorkspaces.findIndex(ws => ws.id === workspace.id);
+    this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id === workspace.id);
     this.workspaceChange.emit(workspace);
   }
 
@@ -91,7 +91,7 @@ export class KritzelWorkspaceManager {
         this.workspaces = this.sortedWorkspaces.map(w => (w.id === ws.id ? { ...w, name: item.label } : w));
         this.isNewWorkspace = false;
         this.editingIndex = null;
-        this.activeWorkspaceIndex = 0;
+        this.activeWorkspace = this.sortedWorkspaces[0];
       },
       children: [
         {
@@ -104,7 +104,7 @@ export class KritzelWorkspaceManager {
           value: 'delete',
           select: async () => {
             await this.kritzelEngine.deleteWorkspace(ws);
-            this.activeWorkspaceIndex = Math.min(this.activeWorkspaceIndex, this.sortedWorkspaces.length - 2);
+            this.activeWorkspace = this.sortedWorkspaces[Math.min(this.sortedWorkspaces.findIndex(ws => ws.id === this.activeWorkspace.id), this.sortedWorkspaces.length - 2)];
           },
         },
       ],
@@ -116,7 +116,7 @@ export class KritzelWorkspaceManager {
           ref={el => (this.splitButtonRef = el)}
           buttonIcon="plus"
           options={workspaceSelectionOptions}
-          activeItemIndex={this.activeWorkspaceIndex}
+          activeItemIndex={this.sortedWorkspaces.findIndex(ws => ws.id === this.activeWorkspace.id)}
           editingIndex={this.editingIndex}
           onButtonClick={() => this.createWorkspace()}
           onMenuClosed={() => {

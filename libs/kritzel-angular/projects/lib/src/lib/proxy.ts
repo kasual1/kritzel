@@ -104,14 +104,14 @@ export declare interface KritzelSplitButton extends Components.KritzelSplitButto
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelWorkspaceManager,
-  inputs: ['workspaces']
+  inputs: ['activeWorkspace', 'workspaces']
 })
 @Component({
   selector: 'kritzel-workspace-manager',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['workspaces'],
+  inputs: ['activeWorkspace', 'workspaces'],
   outputs: ['isWorkspaceManagerReady', 'workspaceChange'],
 })
 export class KritzelWorkspaceManager {
