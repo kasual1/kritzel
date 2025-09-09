@@ -1,9 +1,8 @@
 export class KritzelDatabase {
-
   private db: IDBDatabase | null = null;
 
   private readonly dbName: string;
-  
+
   private readonly dbVersion: number;
 
   constructor(dbName: string, dbVersion: number) {
@@ -30,17 +29,17 @@ export class KritzelDatabase {
         resolve();
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
         stores.forEach(storeConfig => {
-            if (!db.objectStoreNames.contains(storeConfig.name)) {
-                const store = db.createObjectStore(storeConfig.name, storeConfig.options);
-                if (storeConfig.indices) {
-                    storeConfig.indices.forEach(index => {
-                        store.createIndex(index.name, index.keyPath, index.options);
-                    });
-                }
+          if (!db.objectStoreNames.contains(storeConfig.name)) {
+            const store = db.createObjectStore(storeConfig.name, storeConfig.options);
+            if (storeConfig.indices) {
+              storeConfig.indices.forEach(index => {
+                store.createIndex(index.name, index.keyPath, index.options);
+              });
             }
+          }
         });
       };
     });
@@ -79,11 +78,7 @@ export class KritzelDatabase {
     });
   }
 
-  public async transaction(
-    storeNames: string[],
-    mode: IDBTransactionMode,
-    action: (...stores: IDBObjectStore[]) => void,
-  ): Promise<void> {
+  public async transaction(storeNames: string[], mode: IDBTransactionMode, action: (...stores: IDBObjectStore[]) => void): Promise<void> {
     if (!this.db) {
       throw new Error('Database is not open.');
     }
@@ -105,11 +100,7 @@ export class KritzelDatabase {
     });
   }
 
-  private async executeTransaction<T>(
-    storeName: string,
-    mode: IDBTransactionMode,
-    action: (store: IDBObjectStore) => IDBRequest
-  ): Promise<T> {
+  private async executeTransaction<T>(storeName: string, mode: IDBTransactionMode, action: (store: IDBObjectStore) => IDBRequest): Promise<T> {
     if (!this.db) {
       throw new Error('Database is not open.');
     }
@@ -118,14 +109,24 @@ export class KritzelDatabase {
       const transaction = this.db!.transaction(storeName, mode);
       const store = transaction.objectStore(storeName);
       const request = action(store);
+      let requestResult: T;
 
-      request.onsuccess = () => {
-        resolve(request.result as T);
+      transaction.oncomplete = () => {
+        resolve(requestResult);
       };
 
-      request.onerror = () => {
-        console.error('Transaction error:', request.error);
-        reject(request.error);
+      transaction.onabort = () => {
+        console.error('[IndexedDB] Transaction aborted:', transaction.error);
+        reject(transaction.error ?? new Error('Transaction aborted'));
+      };
+
+      transaction.onerror = () => {
+        console.error('Transaction error:', transaction.error);
+        reject(transaction.error);
+      };
+
+      request.onsuccess = () => {
+        requestResult = request.result as T;
       };
     });
   }
