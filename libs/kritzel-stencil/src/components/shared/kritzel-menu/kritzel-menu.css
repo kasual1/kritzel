@@ -61,10 +61,6 @@
   cursor: default;
 }
 
-.menu-item.inactive:not(.active) {
-  cursor: default;
-  background-color: transparent !important;
-}
 
 .menu-item.child-open {
   background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%)) !important;
@@ -100,10 +96,18 @@
   border-bottom: 1px solid var(--kritzel-context-menu-item-color, #333333);
 }
 
+.menu-item.active.edit-mode input {
+  border-bottom: 1px solid var(--kritzel-controls-background-color, #ffffff);
+}
+
 .menu-item.edit-mode input::selection {
   background-color: var(--kritzel-controls-control-selected-background-color, #007aff);
   border-radius: 4px;
   color: var(--kritzel-controls-background-color, #ffffff);
+}
+
+.menu-item.active.edit-mode input::selection {
+  background-color: var(--kritzel-controls-background-color, #ffffff34);
 }
 
 .menu-item-button {

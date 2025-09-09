@@ -255,7 +255,10 @@ export class KritzelEditor {
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
           onIsEngineReady={event => this.onEngineReady(event)}
-          onWorkspacesChange={event => (this.workspaces = event.detail)}
+          onWorkspacesChange={event => {
+            this.workspaces = event.detail;
+            console.log('workspaces changed', this.workspaces);
+          }}
         ></kritzel-engine>
 
         <kritzel-controls

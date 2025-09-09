@@ -103,6 +103,16 @@ export class KritzelStore {
 
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
 
+    if (workspace) {
+      const existingWorkspace = await this.getWorkspace(workspace.id);
+
+      if (!existingWorkspace) {
+        await this.createWorkspace(workspace);
+      } else {
+        await this.updateWorkspace(workspace);
+      }
+    }
+
     this._state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
     this._state.workspaces = workspaces;
 
@@ -229,6 +239,9 @@ export class KritzelStore {
       throw new Error('Database not initialized');
     }
 
+    workspace.createdAt = new Date();
+    workspace.updatedAt = new Date();
+
     await this._database.add('workspaces', workspace);
 
     this.state.workspaces.push(workspace);
@@ -238,6 +251,8 @@ export class KritzelStore {
     if (!this._database) {
       throw new Error('Database not initialized');
     }
+
+    workspace.updatedAt = new Date();
 
     await this._database.update('workspaces', workspace);
 
@@ -252,12 +267,12 @@ export class KritzelStore {
       throw new Error('Database not initialized');
     }
 
-    await this._database.delete('workspaces', workspace.id);
+    return await this._database.transaction(['workspaces', 'objects'], 'readwrite', async (workspacesStore, objectsStore) => {
+      const objectRange = IDBKeyRange.bound([workspace.id], [workspace.id, '\uffff']);
+      await objectsStore.delete(objectRange);
+      await workspacesStore.delete([workspace.id]);
+    });
 
-    this.state.workspaces = this.state.workspaces.filter(w => w.id !== workspace.id);
-    if (this.state.activeWorkspace?.id === workspace.id) {
-      this.state.activeWorkspace = null;
-    }
   }
 
   rerender() {

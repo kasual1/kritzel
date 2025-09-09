@@ -13,7 +13,7 @@ export interface MenuItem<T = any> {
 @Component({
   tag: 'kritzel-menu',
   styleUrl: 'kritzel-menu.css',
-  shadow: true,
+  shadow: { delegatesFocus: true },
 })
 export class KritzelMenu {
   @Element()
@@ -66,6 +66,13 @@ export class KritzelMenu {
     }
   }
 
+  private blur() {
+    const activeEl = this.host.shadowRoot.activeElement as HTMLElement;
+    if (activeEl && typeof activeEl.blur === 'function') {
+      activeEl.blur();
+    }
+  }
+
   render() {
     return (
       <Host>
@@ -77,7 +84,7 @@ export class KritzelMenu {
               'inactive': this.openChildMenuIndex !== null && this.openChildMenuIndex !== index,
               'child-open': this.openChildMenuIndex === index,
               'edit-mode': this.editingIndex === index,
-              'active': this.activeItemIndex === index && this.editingIndex === null,
+              'active': this.activeItemIndex === index,
             }}
             onClick={() => {
               if (item.disabled || this.editingIndex !== null) return;
@@ -103,6 +110,7 @@ export class KritzelMenu {
                   }}
                   type="text"
                   name={'menu-item-' + index}
+                  tabIndex={0}
                   value={item.label}
                   onInput={e => (item.label = (e.target as HTMLInputElement).value)}
                 />
@@ -113,11 +121,25 @@ export class KritzelMenu {
 
             {this.editingIndex === index && (
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button class="menu-item-button" tabIndex={0} onClick={() => item.cancel?.(item)}>
+                <button
+                  class="menu-item-button"
+                  tabIndex={0}
+                  onClick={() => {
+                    item.cancel?.(item);
+                    this.blur();
+                  }}
+                >
                   <kritzel-icon name="x" size={16}></kritzel-icon>
                 </button>
 
-                <button class="menu-item-button" tabIndex={0} onClick={() => item.save?.(item)}>
+                <button
+                  class="menu-item-button"
+                  tabIndex={0}
+                  onClick={() => {
+                    item.save?.(item);
+                    this.blur();
+                  }}
+                >
                   <kritzel-icon name="check" size={16}></kritzel-icon>
                 </button>
               </div>
