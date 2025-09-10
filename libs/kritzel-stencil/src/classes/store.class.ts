@@ -100,21 +100,19 @@ export class KritzelStore {
   async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
     const workspaces = await this.getWorkspaces();
     const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
-
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
 
-    if (workspace) {
-      const existingWorkspace = await this.getWorkspace(workspace.id);
+    this._state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
 
-      if (!existingWorkspace) {
-        await this.createWorkspace(workspace);
-      } else {
-        await this.updateWorkspace(workspace);
-      }
+    const isExistingWorkspace = await this.getWorkspace(this._state.activeWorkspace.id);
+
+    if (isExistingWorkspace) {
+      await this.updateWorkspace(this._state.activeWorkspace);
+    } else {
+      await this.createWorkspace(this._state.activeWorkspace);
     }
 
-    this._state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
-    this._state.workspaces = workspaces;
+    this._state.workspaces = await this.getWorkspaces();
 
     this.state.translateX = this._state.activeWorkspace.viewport.translateX;
     this.state.translateY = this._state.activeWorkspace.viewport.translateY;
