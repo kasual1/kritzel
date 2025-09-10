@@ -244,7 +244,10 @@ export class KritzelEditor {
         <kritzel-workspace-manager
           workspaces={this.workspaces}
           activeWorkspace={this.activeWorkspace}
-          onWorkspaceChange={event => this.activeWorkspace = event.detail}
+          onWorkspaceChange={event => {
+            console.log('workspace changed', event.detail);
+            this.activeWorkspace = event.detail;
+          }}
           onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
         ></kritzel-workspace-manager>
 

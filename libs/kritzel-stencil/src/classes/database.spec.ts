@@ -117,17 +117,18 @@ describe('KritzelDatabase', () => {
     expect(ws1Objects).toContainEqual(obj2);
   });
 
-  it('should perform a custom transaction', async () => {
-    const workspace1 = { id: 'ws1', name: 'Workspace 1' };
-    const workspace2 = { id: 'ws2', name: 'Workspace 2' };
+  it('should perform a batch of operations', async () => {
+    const workspace = { id: 'ws1', name: 'Workspace 1' };
+    const object = { workspaceId: 'ws1', id: 'obj1', data: 'some data' };
 
-    await _database.transaction(['workspaces'], 'readwrite', workspacesStore => {
-      workspacesStore.add(workspace1);
-      workspacesStore.add(workspace2);
-    });
-
-    const allWorkspaces = await _database.getAll('workspaces');
-    expect(allWorkspaces).toHaveLength(2);
+    const results = await _database.batch([
+      db => db.add('workspaces', workspace),
+      db => db.add('objects', object),
+      db => db.get('workspaces', 'ws1'),
+      db => db.get('objects', ['ws1', 'obj1']),
+    ]);
+    expect(results[2]).toEqual(workspace);
+    expect(results[3]).toEqual(object);
   });
 
   it('should throw an error when database is not open', async () => {

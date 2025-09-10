@@ -21,7 +21,7 @@ export class KritzelDatabase {
       }
 
       if (this.isLoggingEnabled) {
-        console.trace(`[IndexedDB] Opening database: ${this.dbName}, version: ${this.dbVersion}`);
+        console.log(`[IndexedDB] Opening database: ${this.dbName}, version: ${this.dbVersion}`);
       }
       const request = indexedDB.open(this.dbName, this.dbVersion);
 
@@ -33,26 +33,26 @@ export class KritzelDatabase {
       request.onsuccess = () => {
         this.db = request.result;
         if (this.isLoggingEnabled) {
-          console.trace(`[IndexedDB] Database opened successfully.`);
+          console.log(`[IndexedDB] Database opened successfully.`);
         }
         resolve();
       };
 
       request.onupgradeneeded = event => {
         if (this.isLoggingEnabled) {
-          console.trace(`[IndexedDB] Upgrade needed for database: ${this.dbName}`);
+          console.log(`[IndexedDB] Upgrade needed for database: ${this.dbName}`);
         }
         const db = (event.target as IDBOpenDBRequest).result;
         stores.forEach(storeConfig => {
           if (!db.objectStoreNames.contains(storeConfig.name)) {
             if (this.isLoggingEnabled) {
-              console.trace(`[IndexedDB] Creating store: ${storeConfig.name}`);
+              console.log(`[IndexedDB] Creating store: ${storeConfig.name}`);
             }
             const store = db.createObjectStore(storeConfig.name, storeConfig.options);
             if (storeConfig.indices) {
               storeConfig.indices.forEach(index => {
                 if (this.isLoggingEnabled) {
-                  console.trace(`[IndexedDB] Creating index: ${index.name} on store: ${storeConfig.name}`);
+                  console.log(`[IndexedDB] Creating index: ${index.name} on store: ${storeConfig.name}`);
                 }
                 store.createIndex(index.name, index.keyPath, index.options);
               });
@@ -66,7 +66,7 @@ export class KritzelDatabase {
   public close(): void {
     if (this.db) {
       if (this.isLoggingEnabled) {
-        console.trace(`[IndexedDB] Closing database: ${this.dbName}`);
+        console.log(`[IndexedDB] Closing database: ${this.dbName}`);
       }
       this.db.close();
       this.db = null;
@@ -75,42 +75,49 @@ export class KritzelDatabase {
 
   public async add<T>(storeName: string, item: T): Promise<IDBValidKey> {
     if (this.isLoggingEnabled) {
-      console.trace('[IndexedDB] Add:', { storeName, item });
+      console.log('[IndexedDB] Add:', { storeName, item });
     }
     return this.executeTransaction(storeName, 'readwrite', store => store.add(item));
   }
 
   public async get<T>(storeName: string, key: IDBValidKey): Promise<T | undefined> {
     if (this.isLoggingEnabled) {
-      console.trace('[IndexedDB] Get:', { storeName, key });
+      console.log('[IndexedDB] Get:', { storeName, key });
     }
     return this.executeTransaction(storeName, 'readonly', store => store.get(key));
   }
 
   public async getAll<T>(storeName: string): Promise<T[]> {
     if (this.isLoggingEnabled) {
-      console.trace('[IndexedDB] GetAll:', { storeName });
+      console.log('[IndexedDB] GetAll:', { storeName });
     }
     return this.executeTransaction(storeName, 'readonly', store => store.getAll());
   }
 
   public async update<T>(storeName: string, item: T): Promise<IDBValidKey> {
     if (this.isLoggingEnabled) {
-      console.trace('[IndexedDB] Update:', { storeName, item });
+      console.log('[IndexedDB] Update:', { storeName, item });
     }
     return this.executeTransaction(storeName, 'readwrite', store => store.put(item));
   }
 
   public async delete(storeName: string, key: IDBValidKey): Promise<void> {
     if (this.isLoggingEnabled) {
-      console.trace('[IndexedDB] Delete:', { storeName, key });
+      console.log('[IndexedDB] Delete:', { storeName, key });
     }
     return this.executeTransaction(storeName, 'readwrite', store => store.delete(key));
   }
 
+  public async deleteByRange(storeName: string, range: IDBKeyRange): Promise<void> {  
+    if (this.isLoggingEnabled) {
+      console.log('[IndexedDB] DeleteByRange:', { storeName, range });
+    }
+    return this.executeTransaction(storeName, 'readwrite', store => store.delete(range));
+  }
+
   public async getAllByRange<T>(storeName: string, range: IDBKeyRange): Promise<T[]> {
     if (this.isLoggingEnabled) {
-      console.trace('[IndexedDB] GetAllByRange:', { storeName, range });
+      console.log('[IndexedDB] GetAllByRange:', { storeName, range });
     }
     return this.executeTransaction(storeName, 'readonly', store => {
       return store.getAll(range);
@@ -119,7 +126,7 @@ export class KritzelDatabase {
 
   public async getAllByIndex<T>(storeName: string, indexName: string, query: IDBValidKey | IDBKeyRange): Promise<T[]> {
     if (this.isLoggingEnabled) {
-      console.trace('[IndexedDB] GetAllByIndex:', { storeName, indexName, query });
+      console.log('[IndexedDB] GetAllByIndex:', { storeName, indexName, query });
     }
     return this.executeTransaction(storeName, 'readonly', store => {
       const index = store.index(indexName);
@@ -127,30 +134,102 @@ export class KritzelDatabase {
     });
   }
 
-  public async transaction(storeNames: string[], mode: IDBTransactionMode, action: (...stores: IDBObjectStore[]) => void): Promise<void> {
+  public async batch(
+    actions: ((db: Omit<KritzelDatabase, 'open' | 'close' | 'transaction' | 'batch'>) => Promise<any>)[],
+  ): Promise<any[]> {
     if (!this.db) {
       throw new Error('Database is not open.');
     }
 
+   const storeNames = this.extractStoreNamesFromActions(actions);
+
     if (this.isLoggingEnabled) {
-      console.trace('[IndexedDB] Manual transaction:', { storeNames, mode });
+      console.log('[IndexedDB] Starting batch transaction:', { storeNames });
     }
 
-    return new Promise<void>((resolve, reject) => {
-      const transaction = this.db!.transaction(storeNames, mode);
-      const stores = storeNames.map(name => transaction.objectStore(name));
+    return new Promise<any[]>((resolve, reject) => {
+      const transaction = this.db!.transaction(storeNames, 'readwrite');
+      const results: any[] = [];
+      let completedActions = 0;
+
+      const tempDbInstance = {
+        ...this,
+        executeTransaction: <T>(storeName: string, mode: IDBTransactionMode, action: (store: IDBObjectStore) => IDBRequest): Promise<T> => {
+          return new Promise<T>((resolveRequest, rejectRequest) => {
+            if (this.isLoggingEnabled) {
+              console.log('[IndexedDB] Executing batch action:', { storeName, mode });
+            }
+            const store = transaction.objectStore(storeName);
+            const request = action(store);
+
+            request.onsuccess = () => {
+              if (this.isLoggingEnabled) {
+                console.log('[IndexedDB] Batch action request successful:', { result: request.result });
+              }
+              resolveRequest(request.result as T);
+            };
+            request.onerror = () => {
+              console.error('[IndexedDB] Batch action request error:', request.error);
+              rejectRequest(request.error);
+            };
+          });
+        },
+      };
 
       transaction.oncomplete = () => {
-        resolve();
+        if (this.isLoggingEnabled) {
+          console.log('[IndexedDB] Batch transaction complete.');
+        }
+        resolve(results);
+      };
+
+      transaction.onabort = () => {
+        console.error('[IndexedDB] Batch transaction aborted:', transaction.error);
+        reject(transaction.error ?? new Error('Transaction aborted'));
       };
 
       transaction.onerror = () => {
-        console.error('Transaction error:', transaction.error);
+        console.error('Batch transaction error:', transaction.error);
         reject(transaction.error);
       };
 
-      action(...stores);
+      actions.forEach((action, index) => {
+        action(tempDbInstance)
+          .then(result => {
+            results[index] = result;
+            completedActions++;
+          })
+          .catch(err => {
+            if (!transaction.error) {
+              transaction.abort();
+            }
+            reject(err);
+          });
+      });
     });
+  }
+
+  private extractStoreNamesFromActions(
+    actions: ((db: Omit<KritzelDatabase, 'open' | 'close' | 'transaction' | 'batch'>) => Promise<any>)[]
+  ): string[] {
+    // Collect store names explicitly declared on each action function via an attached `stores` property.
+    // Usage example outside: const action = async db => { ... }; action.stores = ['myStore'];
+    if (!actions.length) {
+      return [];
+    }
+    const storeNamesSet = new Set<string>();
+    for (const rawAction of actions) {
+      const actionWithMeta = rawAction as typeof rawAction & { stores?: string[] };
+      if (!actionWithMeta.stores || actionWithMeta.stores.length === 0) {
+      throw new Error(
+        'Batch action is missing required store metadata. Attach stores: action.stores = ["storeA","storeB"].'
+      );
+      }
+      for (const name of actionWithMeta.stores) {
+      storeNamesSet.add(name);
+      }
+    }
+    return Array.from(storeNamesSet);
   }
 
   private async executeTransaction<T>(storeName: string, mode: IDBTransactionMode, action: (store: IDBObjectStore) => IDBRequest): Promise<T> {
