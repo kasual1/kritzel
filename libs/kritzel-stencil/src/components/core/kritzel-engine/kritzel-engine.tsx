@@ -463,7 +463,6 @@ export class KritzelEngine {
   async deleteWorkspace(workspace: KritzelWorkspace) {
     return this.store.deleteWorkspace(workspace).then(() => {
       this.workspacesChange.emit(this.store.state.workspaces.filter(ws => ws.id !== workspace.id));
-      console.log('deleted workspace', workspace);
     });
   }
 
