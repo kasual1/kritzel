@@ -46,41 +46,29 @@ export class KritzelSplitButton {
   @Element()
   host!: HTMLElement;
 
-  menuRef!: HTMLKritzelMenuElement;
-
-  @Listen('click', { target: 'document' })
-  handleDocumentClick(event: MouseEvent) {
-    const path = (event.composedPath && event.composedPath()) || [];
-    const containsKritzelSplitButton = path.some(node => (node as HTMLElement)?.tagName === 'KRITZEL-SPLIT-BUTTON');
-    const containsKritzelMenu = path.some(node => (node as HTMLElement)?.tagName === 'KRITZEL-MENU');
-
-    if (!containsKritzelMenu && !containsKritzelSplitButton) {
-      this.closeMenu();
-    }
-  }
-
   @Listen('keydown', { target: 'window' })
   handleKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
+    if (this.isMenuOpen && event.key === 'Escape') {
       this.closeMenu();
     }
   }
 
   @Method()
   async openMenu() {
-    if (!this.disabled) {
-      this.isMenuOpen = true;
-      this.menuOpened.emit();
-    }
+    if (this.disabled || this.isMenuOpen) return;
+
+    this.isMenuOpen = true;
+    this.menuOpened.emit();
+    document.addEventListener('click', this.handleDocumentClick, { once: true });
   }
 
   @Method()
   async closeMenu() {
-    if (!this.disabled) {
-      this.isMenuOpen = false;
-      this.menuClosed.emit();
-      this.blur();
-    }
+    if (this.disabled || !this.isMenuOpen) return;
+
+    this.isMenuOpen = false;
+    this.menuClosed.emit();
+    this.blur();
   }
 
   @Method()
@@ -88,21 +76,23 @@ export class KritzelSplitButton {
     this.editingIndex = index;
   }
 
-  private blur() {
-    const activeEl = this.host.shadowRoot.activeElement as HTMLElement;
-    if (activeEl && typeof activeEl.blur === 'function') {
-      activeEl.blur();
+  private handleDocumentClick = (event: MouseEvent) => {
+    const path = (event.composedPath && event.composedPath()) || [];
+    const clickedInside = path.some(node => (node as HTMLElement)?.tagName === 'KRITZEL-SPLIT-BUTTON' || (node as HTMLElement)?.tagName === 'KRITZEL-MENU');
+
+    if (!clickedInside) {
+      this.closeMenu();
+    } else if (this.isMenuOpen) {
+      // Re-add listener if a click inside happened while menu was open
+      document.addEventListener('click', this.handleDocumentClick, { once: true });
     }
-  }
+  };
 
   private toggleMenu = () => {
-    if (!this.disabled) {
-      this.isMenuOpen = !this.isMenuOpen;
-      if (this.isMenuOpen) {
-        this.menuOpened.emit();
-      } else {
-        this.menuClosed.emit();
-      }
+    if (this.isMenuOpen) {
+      this.closeMenu();
+    } else {
+      this.openMenu();
     }
   };
 
@@ -111,6 +101,13 @@ export class KritzelSplitButton {
       this.buttonClick.emit();
     }
   };
+
+  private blur() {
+    const activeEl = this.host.shadowRoot.activeElement as HTMLElement;
+    if (activeEl && typeof activeEl.blur === 'function') {
+      activeEl.blur();
+    }
+  }
 
   render() {
     return (
@@ -130,9 +127,7 @@ export class KritzelSplitButton {
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        {this.isMenuOpen && (
-          <kritzel-menu ref={el => (this.menuRef = el)} items={this.options} activeItemIndex={this.activeItemIndex} editingIndex={this.editingIndex}></kritzel-menu>
-        )}
+        {this.isMenuOpen && <kritzel-menu items={this.options} activeItemIndex={this.activeItemIndex} editingIndex={this.editingIndex}></kritzel-menu>}
       </Host>
     );
   }
