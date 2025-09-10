@@ -226,7 +226,6 @@ export class KritzelEditor {
   }
 
   onEngineReady(event: CustomEvent<KritzelEngineState>) {
-    console.log('Engine is ready');
     this.isEngineReady = true;
     this.activeWorkspace = event.detail.activeWorkspace;
     this.workspaces = event.detail.workspaces;
@@ -244,10 +243,7 @@ export class KritzelEditor {
         <kritzel-workspace-manager
           workspaces={this.workspaces}
           activeWorkspace={this.activeWorkspace}
-          onWorkspaceChange={event => {
-            console.log('workspace changed', event.detail);
-            this.activeWorkspace = event.detail;
-          }}
+          onWorkspaceChange={event => this.activeWorkspace = event.detail}
           onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
         ></kritzel-workspace-manager>
 
