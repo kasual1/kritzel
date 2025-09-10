@@ -45,6 +45,13 @@ export class KritzelDatabase {
     });
   }
 
+  public close(): void {
+    if (this.db) {
+      this.db.close();
+      this.db = null;
+    }
+  }
+
   public async add<T>(storeName: string, item: T): Promise<IDBValidKey> {
     return this.executeTransaction(storeName, 'readwrite', store => store.add(item));
   }

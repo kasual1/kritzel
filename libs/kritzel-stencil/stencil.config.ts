@@ -36,7 +36,7 @@ export const config: Config = {
       directivesArrayFile: '../kritzel-angular/projects/lib/src/lib/index.ts',
       outputType: 'standalone',
       customElementsDir: 'dist/components',
-      excludeComponents: INTERNAL_COMPONENTS
+      excludeComponents: INTERNAL_COMPONENTS,
     }),
     reactOutputTarget({
       outDir: '../kritzel-react/lib/components/stencil-generated/',
@@ -51,7 +51,7 @@ export const config: Config = {
       excludeComponents: INTERNAL_COMPONENTS,
     }),
   ],
-  testing: { browserHeadless: 'shell', transform: { '^.+\\.(ts|tsx)$': 'ts-jest' } },
+  testing: { browserHeadless: 'shell', transform: { '^.+\\.(ts|tsx)$': 'ts-jest' }, setupFiles: ['<rootDir>/jest.setup.ts'] },
   extras: {
     enableImportInjection: true,
   },
