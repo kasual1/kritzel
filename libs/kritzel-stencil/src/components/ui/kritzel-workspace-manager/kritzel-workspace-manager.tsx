@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { MenuItem } from '../../shared/kritzel-menu/kritzel-menu';
@@ -11,6 +11,12 @@ import { MenuItem } from '../../shared/kritzel-menu/kritzel-menu';
 export class KritzelWorkspaceManager {
   @Prop()
   workspaces: KritzelWorkspace[] = [];
+
+  @Watch('workspaces')
+  onWorkspacesChange(newValue: KritzelWorkspace[]) {
+    debugger;
+    console.log('Workspaces updated:', newValue);
+  }
 
   @Prop({ mutable: true })
   activeWorkspace: KritzelWorkspace;
@@ -35,7 +41,8 @@ export class KritzelWorkspaceManager {
   splitButtonRef!: HTMLKritzelSplitButtonElement;
 
   get sortedWorkspaces() {
-    return [this.newWorkspace, ...this.workspaces].filter(ws => ws !== null).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    const uniqueWorkspaces = [...new Map(this.workspaces.map(workspace => [workspace.id, workspace])).values()];
+    return [this.newWorkspace, ...uniqueWorkspaces].filter(ws => ws !== null).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
   get activeItemIndex() {
@@ -69,10 +76,7 @@ export class KritzelWorkspaceManager {
         value: ws,
         select: () => this.changeWorkspace(ws),
         cancel: () => {
-          if (this.newWorkspace) {
-            this.newWorkspace = null;
-          }
-
+          this.newWorkspace = null;
           this.editingIndex = null;
         },
         save: async (item: MenuItem) => {
@@ -91,11 +95,14 @@ export class KritzelWorkspaceManager {
           {
             label: 'Rename',
             value: 'rename',
-            select: (item: MenuItem) => (this.editingIndex = item['_parentIndex']),
+            select: (item: MenuItem) => {
+              this.editingIndex = item['_parentIndex'];
+            },
           },
           {
             label: 'Delete',
             value: 'delete',
+            disabled: this.sortedWorkspaces.length <= 1,
             select: async () => {
               await this.kritzelEngine.deleteWorkspace(ws);
 

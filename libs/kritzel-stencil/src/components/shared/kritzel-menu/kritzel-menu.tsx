@@ -87,6 +87,7 @@ export class KritzelMenu {
               'active': this.activeItemIndex === index,
             }}
             onClick={() => {
+              debugger;
               if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex === index) return;
               item['_parentIndex'] = this.parentIndex;
               item['_parent'] = this.parent;
