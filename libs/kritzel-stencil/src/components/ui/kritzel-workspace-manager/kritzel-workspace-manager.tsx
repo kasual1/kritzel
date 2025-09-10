@@ -35,7 +35,7 @@ export class KritzelWorkspaceManager {
   splitButtonRef!: HTMLKritzelSplitButtonElement;
 
   get sortedWorkspaces() {
-    return [...this.workspaces].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return [this.newWorkspace, ...this.workspaces].filter(ws => ws !== null).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
   get activeItemIndex() {
@@ -57,15 +57,13 @@ export class KritzelWorkspaceManager {
   }
 
   changeWorkspace(workspace: KritzelWorkspace) {
-    console.log('Changing workspace to', workspace);
     if (this.editingIndex !== null) return;
     this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id === workspace.id);
     this.workspaceChange.emit(workspace);
   }
 
   render() {
-    const workspaceSelectionOptions: MenuItem<KritzelWorkspace>[] = [this.newWorkspace, ...this.sortedWorkspaces]
-      .filter(ws => ws !== null)
+    const workspaceSelectionOptions: MenuItem<KritzelWorkspace>[] = this.sortedWorkspaces
       .map(ws => ({
         label: ws.name,
         value: ws,
@@ -80,12 +78,14 @@ export class KritzelWorkspaceManager {
         save: async (item: MenuItem) => {
           if (this.newWorkspace) {
             await this.kritzelEngine.createWorkspace(Object.assign(ws, { name: item.label }));
+            this.editingIndex = null;
             this.newWorkspace = null;
+            this.changeWorkspace(ws);
           } else {
+            this.editingIndex = null;
             await this.kritzelEngine.updateWorkspace(Object.assign(ws, { name: item.label }));
           }
 
-          this.editingIndex = null;
         },
         children: [
           {
@@ -100,8 +100,8 @@ export class KritzelWorkspaceManager {
               await this.kritzelEngine.deleteWorkspace(ws);
 
               if (this.activeWorkspace?.id === ws.id) {
-                this.activeWorkspace = this.sortedWorkspaces.find(w => w.id !== ws.id) || null;
-                this.workspaceChange.emit(this.activeWorkspace);
+                const newActiveWorkspace = this.sortedWorkspaces.find(w => w.id !== ws.id) || null;
+                this.changeWorkspace(newActiveWorkspace);
               }
             },
           },

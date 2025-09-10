@@ -166,14 +166,9 @@ export class KritzelStore {
 
     this.state.activeWorkspace.updatedAt = new Date();
 
-    await this._database
-      .transaction(['objects', 'workspaces'], 'readwrite', async (objectsStore, workspacesStore) => {
-        objectsStore.add(object);
-        workspacesStore.put(this.state.activeWorkspace);
-      })
-      .catch(err => {
-        console.error('Error adding object to database:', err);
-      });
+    await this._database.batch([db => db.add('objects', object), db => db.update('workspaces', this.state.activeWorkspace)]).catch(err => {
+      console.error('Error adding object to database:', err);
+    });
   }
 
   async updateObjectInDatabase(object: KritzelBaseObject<any>): Promise<void> {
@@ -187,14 +182,9 @@ export class KritzelStore {
 
     this.state.activeWorkspace.updatedAt = new Date();
 
-    await this._database
-      .transaction(['objects', 'workspaces'], 'readwrite', async (objectsStore, workspacesStore) => {
-        objectsStore.put(object);
-        workspacesStore.put(this.state.activeWorkspace);
-      })
-      .catch(err => {
-        console.error('Error updating object in database:', err);
-      });
+    await this._database.batch([db => db.update('objects', object), db => db.update('workspaces', this.state.activeWorkspace)]).catch(err => {
+      console.error('Error updating object in database:', err);
+    });
   }
 
   async deleteObjectFromDatabase(objectId: string): Promise<void> {
@@ -208,14 +198,9 @@ export class KritzelStore {
 
     this.state.activeWorkspace.updatedAt = new Date();
 
-    await this._database
-      .transaction(['objects', 'workspaces'], 'readwrite', async (objectsStore, workspacesStore) => {
-        objectsStore.delete([this.state.activeWorkspace.id, objectId]);
-        workspacesStore.put(this.state.activeWorkspace);
-      })
-      .catch(err => {
-        console.error('Error deleting object from database:', err);
-      });
+    await this._database.batch([db => db.delete('objects', [this.state.activeWorkspace.id, objectId]), db => db.update('workspaces', this.state.activeWorkspace)]).catch(err => {
+      console.error('Error deleting object from database:', err);
+    });
   }
 
   getWorkspace(id: string): Promise<KritzelWorkspace | null> {
@@ -267,12 +252,11 @@ export class KritzelStore {
       throw new Error('Database not initialized');
     }
 
-    await this._database.transaction(['workspaces', 'objects'], 'readwrite', async (workspacesStore, objectsStore) => {
-      const objectRange = IDBKeyRange.bound([workspace.id], [workspace.id, '\uffff']);
-      await objectsStore.delete(objectRange);
-      await workspacesStore.delete([workspace.id]);
-    });
+    const objectRange = IDBKeyRange.bound([workspace.id], [workspace.id, '\uffff']);
 
+    await this._database.deleteByRange('objects', objectRange);
+
+    await this._database.delete('workspaces', workspace.id);
   }
 
   rerender() {
