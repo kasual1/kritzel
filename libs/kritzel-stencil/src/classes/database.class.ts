@@ -134,104 +134,6 @@ export class KritzelDatabase {
     });
   }
 
-  public async batch(
-    actions: ((db: Omit<KritzelDatabase, 'open' | 'close' | 'transaction' | 'batch'>) => Promise<any>)[],
-  ): Promise<any[]> {
-    if (!this.db) {
-      throw new Error('Database is not open.');
-    }
-
-   const storeNames = this.extractStoreNamesFromActions(actions);
-
-    if (this.isLoggingEnabled) {
-      console.log('[IndexedDB] Starting batch transaction:', { storeNames });
-    }
-
-    return new Promise<any[]>((resolve, reject) => {
-      const transaction = this.db!.transaction(storeNames, 'readwrite');
-      const results: any[] = [];
-      let completedActions = 0;
-
-      const tempDbInstance = {
-        ...this,
-        executeTransaction: <T>(storeName: string, mode: IDBTransactionMode, action: (store: IDBObjectStore) => IDBRequest): Promise<T> => {
-          return new Promise<T>((resolveRequest, rejectRequest) => {
-            if (this.isLoggingEnabled) {
-              console.log('[IndexedDB] Executing batch action:', { storeName, mode });
-            }
-            const store = transaction.objectStore(storeName);
-            const request = action(store);
-
-            request.onsuccess = () => {
-              if (this.isLoggingEnabled) {
-                console.log('[IndexedDB] Batch action request successful:', { result: request.result });
-              }
-              resolveRequest(request.result as T);
-            };
-            request.onerror = () => {
-              console.error('[IndexedDB] Batch action request error:', request.error);
-              rejectRequest(request.error);
-            };
-          });
-        },
-      };
-
-      transaction.oncomplete = () => {
-        if (this.isLoggingEnabled) {
-          console.log('[IndexedDB] Batch transaction complete.');
-        }
-        resolve(results);
-      };
-
-      transaction.onabort = () => {
-        console.error('[IndexedDB] Batch transaction aborted:', transaction.error);
-        reject(transaction.error ?? new Error('Transaction aborted'));
-      };
-
-      transaction.onerror = () => {
-        console.error('Batch transaction error:', transaction.error);
-        reject(transaction.error);
-      };
-
-      actions.forEach((action, index) => {
-        action(tempDbInstance)
-          .then(result => {
-            results[index] = result;
-            completedActions++;
-          })
-          .catch(err => {
-            if (!transaction.error) {
-              transaction.abort();
-            }
-            reject(err);
-          });
-      });
-    });
-  }
-
-  private extractStoreNamesFromActions(
-    actions: ((db: Omit<KritzelDatabase, 'open' | 'close' | 'transaction' | 'batch'>) => Promise<any>)[]
-  ): string[] {
-    // Collect store names explicitly declared on each action function via an attached `stores` property.
-    // Usage example outside: const action = async db => { ... }; action.stores = ['myStore'];
-    if (!actions.length) {
-      return [];
-    }
-    const storeNamesSet = new Set<string>();
-    for (const rawAction of actions) {
-      const actionWithMeta = rawAction as typeof rawAction & { stores?: string[] };
-      if (!actionWithMeta.stores || actionWithMeta.stores.length === 0) {
-      throw new Error(
-        'Batch action is missing required store metadata. Attach stores: action.stores = ["storeA","storeB"].'
-      );
-      }
-      for (const name of actionWithMeta.stores) {
-      storeNamesSet.add(name);
-      }
-    }
-    return Array.from(storeNamesSet);
-  }
-
   private async executeTransaction<T>(storeName: string, mode: IDBTransactionMode, action: (store: IDBObjectStore) => IDBRequest): Promise<T> {
     if (!this.db) {
       throw new Error('Database is not open.');
@@ -259,5 +161,117 @@ export class KritzelDatabase {
         requestResult = request.result as T;
       };
     });
+  }
+
+  public async batch(
+    actions: ((db: Omit<KritzelDatabase, 'open' | 'close' | 'transaction' | 'batch'>) => Promise<any>)[],
+  ): Promise<any[]> {
+    if (!this.db) {
+      throw new Error('Database is not open.');
+    }
+
+    const storeNames = await this.extractStoreNamesFromActions(actions);
+
+    if (this.isLoggingEnabled) {
+      console.log('[IndexedDB] Starting batch transaction:', { storeNames });
+    }
+
+    return new Promise<any[]>((resolve, reject) => {
+      const transaction = this.db!.transaction(storeNames, 'readwrite');
+      const results: any[] = [];
+      const promises: Promise<any>[] = [];
+
+      const tempDbInstance = {
+        add: (storeName: string, item: any) => this.add(storeName, item),
+        get: (storeName: string, key: IDBValidKey) => this.get(storeName, key),
+        getAll: (storeName: string) => this.getAll(storeName),
+        update: (storeName: string, item: any) => this.update(storeName, item),
+        delete: (storeName: string, key: IDBValidKey) => this.delete(storeName, key),
+        deleteByRange: (storeName: string, range: IDBKeyRange) => this.deleteByRange(storeName, range),
+        getAllByRange: (storeName: string, range: IDBKeyRange) => this.getAllByRange(storeName, range),
+        getAllByIndex: (storeName: string, indexName: string, query: IDBValidKey | IDBKeyRange) =>
+          this.getAllByIndex(storeName, indexName, query),
+        executeTransaction: <T>(
+          storeName: string,
+          mode: IDBTransactionMode,
+          action: (store: IDBObjectStore) => IDBRequest,
+        ): Promise<T> => {
+          return new Promise<T>((resolveRequest, rejectRequest) => {
+            if (this.isLoggingEnabled) {
+              console.log('[IndexedDB] Executing batch action:', { storeName, mode });
+            }
+            const store = transaction.objectStore(storeName);
+            const request = action(store);
+
+            request.onsuccess = () => {
+              if (this.isLoggingEnabled) {
+                console.log('[IndexedDB] Batch action request successful:', { result: request.result });
+              }
+              resolveRequest(request.result as T);
+            };
+            request.onerror = () => {
+              console.error('[IndexedDB] Batch action request error:', request.error);
+              rejectRequest(request.error);
+            };
+          });
+        },
+      };
+
+      transaction.oncomplete = () => {
+        if (this.isLoggingEnabled) {
+          console.log('[IndexedDB] Batch transaction complete.');
+        }
+        Promise.all(promises).then(() => resolve(results));
+      };
+
+      transaction.onabort = () => {
+        console.error('[IndexedDB] Batch transaction aborted:', transaction.error);
+        reject(transaction.error ?? new Error('Transaction aborted'));
+      };
+
+      transaction.onerror = () => {
+        console.error('[IndexedDB] Batch transaction error:', transaction.error);
+        reject(transaction.error);
+      };
+
+      actions.forEach((action, index) => {
+        const promise = action(tempDbInstance as any)
+          .then(result => {
+            results[index] = result;
+          })
+          .catch(err => {
+            if (!transaction.error) {
+              transaction.abort();
+            }
+            reject(err);
+          });
+        promises.push(promise);
+      });
+    });
+  }
+
+  private async extractStoreNamesFromActions(
+    actions: ((db: Omit<KritzelDatabase, 'open' | 'close' | 'transaction' | 'batch'>) => Promise<any>)[],
+  ): Promise<string[]> {
+    const storeNamesSet = new Set<string>();
+
+    const storeNameCollector = new Proxy(this, {
+      get: (target, prop) => {
+        if (
+          ['add', 'get', 'getAll', 'update', 'delete', 'deleteByRange', 'getAllByRange', 'getAllByIndex'].includes(
+            prop as string,
+          )
+        ) {
+          return (storeName: string) => {
+            storeNamesSet.add(storeName);
+            return Promise.resolve();
+          };
+        }
+        return target[prop];
+      },
+    });
+
+    await Promise.all(actions.map(action => action(storeNameCollector as any)));
+    return Array.from(storeNamesSet);
   }
 }
