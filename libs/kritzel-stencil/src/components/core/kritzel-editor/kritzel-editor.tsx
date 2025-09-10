@@ -226,6 +226,7 @@ export class KritzelEditor {
   }
 
   onEngineReady(event: CustomEvent<KritzelEngineState>) {
+    console.log('Engine is ready');
     this.isEngineReady = true;
     this.activeWorkspace = event.detail.activeWorkspace;
     this.workspaces = event.detail.workspaces;
@@ -255,10 +256,7 @@ export class KritzelEditor {
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
           onIsEngineReady={event => this.onEngineReady(event)}
-          onWorkspacesChange={event => {
-            this.workspaces = event.detail;
-            console.log('workspaces changed', this.workspaces);
-          }}
+          onWorkspacesChange={event => this.workspaces = event.detail}
         ></kritzel-engine>
 
         <kritzel-controls

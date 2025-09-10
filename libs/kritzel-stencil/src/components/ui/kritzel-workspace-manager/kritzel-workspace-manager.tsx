@@ -57,6 +57,7 @@ export class KritzelWorkspaceManager {
   }
 
   changeWorkspace(workspace: KritzelWorkspace) {
+    console.log('Changing workspace to', workspace);
     if (this.editingIndex !== null) return;
     this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id === workspace.id);
     this.workspaceChange.emit(workspace);
@@ -95,7 +96,14 @@ export class KritzelWorkspaceManager {
           {
             label: 'Delete',
             value: 'delete',
-            select: async () => await this.kritzelEngine.deleteWorkspace(ws),
+            select: async () => {
+              await this.kritzelEngine.deleteWorkspace(ws);
+
+              if (this.activeWorkspace?.id === ws.id) {
+                this.activeWorkspace = this.sortedWorkspaces.find(w => w.id !== ws.id) || null;
+                this.workspaceChange.emit(this.activeWorkspace);
+              }
+            },
           },
         ],
       }));

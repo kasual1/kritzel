@@ -87,14 +87,14 @@ export class KritzelMenu {
               'active': this.activeItemIndex === index,
             }}
             onClick={() => {
-              if (item.disabled || this.editingIndex !== null) return;
+              if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex === index) return;
               item['_parentIndex'] = this.parentIndex;
               item['_parent'] = this.parent;
               item.select?.(item);
             }}
             onKeyDown={e => {
               if (e.key === 'Enter') {
-                if (item.disabled || this.editingIndex !== null) return;
+                if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex === index) return;
                 item['_parentIndex'] = this.parentIndex;
                 item['_parent'] = this.parent;
                 item.select?.(item);

@@ -74,7 +74,7 @@ export class KritzelStore {
     this._state = DEFAULT_ENGINE_STATE;
     this._kritzelEngine = kritzelEngine;
     this._history = new KritzelHistory(this);
-    this._database = new KritzelDatabase('kritzelDB', 1);
+    this._database = new KritzelDatabase('kritzelDB', 1, this._state.debugInfo.logDatabase);
     this._state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
       x: -Infinity,
       y: -Infinity,
@@ -218,7 +218,7 @@ export class KritzelStore {
       });
   }
 
-  async getWorkspace(id: string): Promise<KritzelWorkspace | null> {
+  getWorkspace(id: string): Promise<KritzelWorkspace | null> {
     if (!this._database) {
       throw new Error('Database not initialized');
     }
@@ -226,7 +226,7 @@ export class KritzelStore {
     return this._database.get<KritzelWorkspace>('workspaces', id);
   }
 
-  async getWorkspaces(): Promise<KritzelWorkspace[]> {
+  getWorkspaces(): Promise<KritzelWorkspace[]> {
     if (!this._database) {
       throw new Error('Database not initialized');
     }
@@ -267,7 +267,7 @@ export class KritzelStore {
       throw new Error('Database not initialized');
     }
 
-    return await this._database.transaction(['workspaces', 'objects'], 'readwrite', async (workspacesStore, objectsStore) => {
+    await this._database.transaction(['workspaces', 'objects'], 'readwrite', async (workspacesStore, objectsStore) => {
       const objectRange = IDBKeyRange.bound([workspace.id], [workspace.id, '\uffff']);
       await objectsStore.delete(objectRange);
       await workspacesStore.delete([workspace.id]);
