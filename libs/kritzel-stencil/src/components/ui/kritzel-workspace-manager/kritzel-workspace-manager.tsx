@@ -87,8 +87,8 @@ export class KritzelWorkspaceManager {
     this.newWorkspace = null;
   };
 
-  private handleRename = (item: MenuItem) => {
-    this.editingIndex = item['_parentIndex'];
+  private handleRename = (index: number) => {
+    this.editingIndex = index;
   };
 
   private handleDelete = async (workspaceToDelete: KritzelWorkspace) => {
@@ -107,7 +107,7 @@ export class KritzelWorkspaceManager {
   }
 
   render() {
-    const workspaceSelectionOptions: MenuItem<KritzelWorkspace>[] = this.sortedWorkspaces.map(ws => ({
+    const workspaceSelectionOptions: MenuItem<KritzelWorkspace>[] = this.sortedWorkspaces.map((ws, index) => ({
       label: ws.name,
       value: ws,
       select: () => this.handleSelect(ws),
@@ -117,7 +117,7 @@ export class KritzelWorkspaceManager {
         {
           label: 'Rename',
           value: 'rename',
-          select: this.handleRename,
+          select: () => this.handleRename(index),
         },
         {
           label: 'Delete',
