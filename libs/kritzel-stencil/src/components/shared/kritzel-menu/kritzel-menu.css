@@ -59,7 +59,7 @@
 .menu-item.disabled {
   color: var(--kritzel-context-menu-item-disabled-color, #aaaaaa);
   background-color: transparent;
-  pointer-events: none;
+  cursor: default;
 }
 
 

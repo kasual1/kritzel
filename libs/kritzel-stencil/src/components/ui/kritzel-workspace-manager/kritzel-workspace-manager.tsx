@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { MenuItem } from '../../shared/kritzel-menu/kritzel-menu';
@@ -11,12 +11,6 @@ import { MenuItem } from '../../shared/kritzel-menu/kritzel-menu';
 export class KritzelWorkspaceManager {
   @Prop()
   workspaces: KritzelWorkspace[] = [];
-
-  @Watch('workspaces')
-  onWorkspacesChange(newValue: KritzelWorkspace[]) {
-    debugger;
-    console.log('Workspaces updated:', newValue);
-  }
 
   @Prop({ mutable: true })
   activeWorkspace: KritzelWorkspace;
