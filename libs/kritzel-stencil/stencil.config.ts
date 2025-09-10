@@ -51,7 +51,7 @@ export const config: Config = {
       excludeComponents: INTERNAL_COMPONENTS,
     }),
   ],
-  testing: { browserHeadless: 'shell' },
+  testing: { browserHeadless: 'shell', transform: { '^.+\\.(ts|tsx)$': 'ts-jest' } },
   extras: {
     enableImportInjection: true,
   },
