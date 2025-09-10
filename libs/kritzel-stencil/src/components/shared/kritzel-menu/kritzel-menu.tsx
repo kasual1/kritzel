@@ -86,9 +86,12 @@ export class KritzelMenu {
               'edit-mode': this.editingIndex === index,
               'active': this.activeItemIndex === index,
             }}
-            onClick={() => {
-              debugger;
-              if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex === index) return;
+            onClick={(event) => {
+              if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex === index) {
+                event.stopPropagation();
+                event.preventDefault();
+                return;
+              };
               item['_parentIndex'] = this.parentIndex;
               item['_parent'] = this.parent;
               item.select?.(item);

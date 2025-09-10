@@ -101,16 +101,16 @@ export class KritzelStore {
     const workspaces = await this.getWorkspaces();
     const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
-
+    
     this._state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
 
-    const isExistingWorkspace = await this.getWorkspace(this._state.activeWorkspace.id);
+      const isExistingWorkspace = await this.getWorkspace(this._state.activeWorkspace.id);
 
-    if (isExistingWorkspace) {
-      await this.updateWorkspace(this._state.activeWorkspace);
-    } else {
-      await this.createWorkspace(this._state.activeWorkspace);
-    }
+      if(isExistingWorkspace){
+        await this.updateWorkspace(this._state.activeWorkspace);
+      } else {
+        await this.createWorkspace(this._state.activeWorkspace);
+      }
 
     this._state.workspaces = await this.getWorkspaces();
 
