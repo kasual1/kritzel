@@ -11,7 +11,7 @@ export class ObjectHelper {
 
       const clonedProps = structuredClone(remainingProps);
 
-      if (element && element instanceof HTMLElement) {
+      if (element && typeof element === 'object' && 'nodeType' in element && element.nodeType === 1) {
         clonedProps.element = element.cloneNode(true) as HTMLElement;
       }
 
