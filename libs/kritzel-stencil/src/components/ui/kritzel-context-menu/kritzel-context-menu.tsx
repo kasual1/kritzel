@@ -2,6 +2,11 @@ import { Component, Host, h, Prop, Event, EventEmitter, Element, State, Watch } 
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 
+interface ProcessedMenuItem {
+  item: ContextMenuItem;
+  isDisabled: boolean;
+}
+
 @Component({
   tag: 'kritzel-context-menu',
   styleUrl: 'kritzel-context-menu.css',
@@ -21,98 +26,66 @@ export class KritzelContextMenu {
   hostElement: HTMLElement;
 
   @State()
-  private disabledStates: Map<number, boolean> = new Map();
-
-  @State()
-  private visibleItems: ContextMenuItem[] = [];
+  private processedItems: ProcessedMenuItem[] = [];
 
   componentWillLoad() {
-    this.resolveVisibleItems();
-    this.resolveDisabledStates();
+    this.updateMenuItems();
   }
-
 
   @Watch('items')
   onItemsChanged() {
-    this.resolveVisibleItems();
-    this.resolveDisabledStates();
+    this.updateMenuItems();
   }
 
-  private handleItemClick(item: ContextMenuItem, index: number) {
-    if (!this.disabledStates.get(index)) {
+  private handleItemClick(item: ContextMenuItem, isDisabled: boolean) {
+    if (!isDisabled) {
       this.actionSelected.emit(item);
     }
   }
 
-  private async resolveVisibleItems() {
-    const visibleItems: ContextMenuItem[] = [];
-    const visibilityPromises = this.items.map(async (item, index) => {
-      let isVisible = true;
-      if (item.visible !== undefined) {
-        if (typeof item.visible === 'boolean') {
-          isVisible = item.visible;
-        } else if (typeof item.visible === 'function') {
-          const result = item.visible(null, this.objects);
-          if (result instanceof Promise) {
-            isVisible = await result;
-          } else {
-            isVisible = result;
-          }
-        }
-      }
-      return { item, index, isVisible };
-    });
-
-    const visibilityResults = await Promise.all(visibilityPromises);
-    visibilityResults.forEach(({ item, isVisible }) => {
-      if (isVisible) {
-        visibleItems.push(item);
-      }
-    });
-
-    this.visibleItems = visibleItems;
+  private async evaluateProperty(
+    value: boolean | ((obj: KritzelBaseObject, objs: KritzelBaseObject[]) => boolean | Promise<boolean>),
+    defaultValue: boolean,
+  ): Promise<boolean> {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+    if (typeof value === 'function') {
+      return await Promise.resolve(value(null, this.objects));
+    }
+    return defaultValue;
   }
 
-  private async resolveDisabledStates() {
-    const newStates = new Map<number, boolean>();
-    const disabledPromises = this.visibleItems.map(async (item, index) => {
-      let isDisabled = false;
-      if (typeof item.disabled === 'boolean') {
-        isDisabled = item.disabled;
-      } else if (typeof item.disabled === 'function') {
-        const result = item.disabled(null, this.objects);
-        if (result instanceof Promise) {
-          isDisabled = await result;
-        } else {
-          isDisabled = result;
-        }
-      }
-      newStates.set(index, isDisabled);
-    });
+  private async updateMenuItems() {
+    const processed: ProcessedMenuItem[] = [];
 
-    await Promise.all(disabledPromises);
-    this.disabledStates = new Map(newStates);
+    for (const item of this.items) {
+      const isVisible = await this.evaluateProperty(item.visible, true);
+      if (isVisible) {
+        const isDisabled = await this.evaluateProperty(item.disabled, false);
+        processed.push({ item, isDisabled });
+      }
+    }
+
+    this.processedItems = processed;
   }
 
   render() {
     return (
       <Host>
         <div class="menu-container">
-          {this.visibleItems.map((item, index) => {
-            const isDisabled = this.disabledStates.get(index) ?? false;
-            return (
-              <button
-                key={`${item.label}-${index}`}
-                class={{ 'menu-item': true, 'disabled': isDisabled }}
-                onClick={() => this.handleItemClick(item, index)}
-                onTouchStart={() => this.handleItemClick(item, index)}
-                disabled={isDisabled}
-              >
-                {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
-                <span class="label">{item.label}</span>
-              </button>
-            );
-          })}
+          {this.processedItems.map(({ item, isDisabled }, index) => (
+            <button
+              key={`${item.label}-${index}`} 
+              class={{ 'menu-item': true, disabled: isDisabled }}
+              onClick={() => this.handleItemClick(item, isDisabled)}
+              onTouchStart={() => this.handleItemClick(item, isDisabled)}
+              disabled={isDisabled}
+            >
+              {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
+              <span class="label">{item.label}</span>
+            </button>
+          ))}
         </div>
       </Host>
     );
