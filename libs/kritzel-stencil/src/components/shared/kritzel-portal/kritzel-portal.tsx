@@ -27,6 +27,9 @@ export class KritzelPortal {
   @Prop()
   offsetY: number;
 
+  @Prop()
+  autoFocus: boolean = true;
+
   @Event()
   close: EventEmitter<void>;
 
@@ -96,6 +99,8 @@ export class KritzelPortal {
 
   private moveElementToPortal() {
     this.portal.appendChild(this.element);
+    this.focusFirstElement();  
+    this.moved = true;
   }
 
   private calculatePosition() {
@@ -104,6 +109,18 @@ export class KritzelPortal {
     const left = this.calculateLeft();
     this.portal.style.top = `${top}px`;
     this.portal.style.left = `${left}px`;
+  }
+
+  private focusFirstElement() {
+    if (!this.autoFocus || !this.portal) return;
+
+    requestAnimationFrame(() => {
+      const firstSlottedElement = this.portal.children[0].children[0] as HTMLElement;
+      console.log('Focusing element:', firstSlottedElement);
+      if (firstSlottedElement) {
+        firstSlottedElement.focus();
+      }
+    });
   }
 
   componentWillLoad() {

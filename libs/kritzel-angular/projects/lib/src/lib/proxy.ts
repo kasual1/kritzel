@@ -65,14 +65,14 @@ export declare interface KritzelMenu extends Components.KritzelMenu {}
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelPortal,
-  inputs: ['anchor', 'offsetX', 'offsetY']
+  inputs: ['anchor', 'autoFocus', 'offsetX', 'offsetY']
 })
 @Component({
   selector: 'kritzel-portal',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['anchor', 'offsetX', 'offsetY'],
+  inputs: ['anchor', 'autoFocus', 'offsetX', 'offsetY'],
   outputs: ['close'],
 })
 export class KritzelPortal {

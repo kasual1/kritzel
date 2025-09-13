@@ -40,6 +40,7 @@ export const KritzelPortal: StencilVueComponent<JSX.KritzelPortal> = /*@__PURE__
   'anchor',
   'offsetX',
   'offsetY',
+  'autoFocus',
   'close'
 ], [
   'close'
