@@ -29,6 +29,7 @@ button {
   -webkit-appearance: none;
   -moz-appearance: none;
   border-radius: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:focus {
