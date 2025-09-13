@@ -12,6 +12,10 @@
   gap: var(--kritzel-context-menu-item-gap, 4px);
 }
 
+:host(:focus) {
+  outline: none;
+}
+
 button {
   border: none;
   background-color: transparent;

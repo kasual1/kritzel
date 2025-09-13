@@ -46,6 +46,8 @@ export class KritzelSplitButton {
   @Element()
   host!: HTMLElement;
 
+  splitMenuButton: HTMLButtonElement;
+
   @Method()
   async openMenu() {
     if (this.disabled || this.isMenuOpen) return;
@@ -61,7 +63,8 @@ export class KritzelSplitButton {
 
     this.isMenuOpen = false;
     this.menuClosed.emit();
-    this.blur();
+
+    this.host.focus();
   }
 
   @Method()
@@ -95,16 +98,9 @@ export class KritzelSplitButton {
     }
   };
 
-  private blur() {
-    const activeEl = this.host.shadowRoot.activeElement as HTMLElement;
-    if (activeEl && typeof activeEl.blur === 'function') {
-      activeEl.blur();
-    }
-  }
-
   render() {
     return (
-      <Host>
+      <Host tabIndex={0}>
         <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.disabled}>
           {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
           {this.buttonText && (
@@ -116,12 +112,11 @@ export class KritzelSplitButton {
 
         <div class="split-divider"></div>
 
-        <button class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.disabled}>
+        <button ref={el => (this.splitMenuButton = el)} class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.disabled}>
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
         <kritzel-portal anchor={this.host} offsetY={4}>
-
           {this.isMenuOpen && (
             <kritzel-menu
               style={{ maxHeight: '300px', width: '180px' }}
