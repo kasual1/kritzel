@@ -99,7 +99,7 @@ export declare interface KritzelPortal extends Components.KritzelPortal {
 @ProxyCmp({
   defineCustomElementFn: defineKritzelSplitButton,
   inputs: ['activeItemIndex', 'buttonIcon', 'buttonText', 'disabled', 'dropdownIcon', 'editingIndex', 'options'],
-  methods: ['openMenu', 'closeMenu', 'setEditingIndex']
+  methods: ['openMenu', 'closeMenu']
 })
 @Component({
   selector: 'kritzel-split-button',
