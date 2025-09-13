@@ -33,6 +33,7 @@ button {
   align-items: center;
   justify-content: center;
   pointer-events: all;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .split-main-button,
