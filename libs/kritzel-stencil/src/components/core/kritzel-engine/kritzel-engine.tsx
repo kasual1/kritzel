@@ -535,10 +535,9 @@ export class KritzelEngine {
         >
           {this.store.state.objectsOctree.allObjects()?.map(object => {
             return (
-              <div style={{ display: object.isInViewport() ? 'block' : 'none', transform: object?.transformationMatrix, transformOrigin: 'top left', zIndex: object.zIndex.toString(), position: 'absolute' }}>
+              <div key={object.id} style={{ display: object.isInViewport() ? 'block' : 'none', transform: object?.transformationMatrix, transformOrigin: 'top left', zIndex: object.zIndex.toString(), position: 'absolute' }}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  key={object.id}
                   id={object.id}
                   class="object"
                   style={{
