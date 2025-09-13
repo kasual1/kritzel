@@ -95,13 +95,18 @@ export class KritzelMenu {
     return this.editingIndex !== index;
   }
 
+  handleSelect(item: MenuItem) {
+    if (item.disabled || this.editingIndex !== null) {
+      return;
+    }
+    item.select?.(item);
+  }
+
   render() {
-    
     return (
       <Host tabIndex={0}>
-        <div> </div>
         {this.items.map((item, index) => (
-          <div
+          <button
             class={{
               'menu-item': true,
               'disabled': item.disabled,
@@ -110,25 +115,9 @@ export class KritzelMenu {
               'edit-mode': this.editingIndex === index,
               'active': this.activeItemIndex === index,
             }}
-            onClick={event => {
-              if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex === index) {
-                event.stopPropagation();
-                event.preventDefault();
-                return;
-              }
-              item.select?.(item);
-            }}
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
-                if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex === index) {
-                  return;
-                }
-                item.select?.(item);
-              }
-            }}
+            onClick={() => this.handleSelect(item)}
             tabIndex={0}
           >
-
             {this.isViewMode(index) === true && (
               <div class="view-container">
                 <span class="menu-item-label">{item.label}</span>
@@ -203,7 +192,7 @@ export class KritzelMenu {
                 </div>
               </div>
             )}
-          </div>
+          </button>
         ))}
       </Host>
     );

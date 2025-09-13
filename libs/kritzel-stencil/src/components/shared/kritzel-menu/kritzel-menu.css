@@ -10,8 +10,29 @@
   z-index: 2;
   gap: var(--kritzel-menu-item-gap, 4px);
   overflow-y: auto;
-  scrollbar-color:#ebebeb transparent;
+  scrollbar-color: #ebebeb transparent;
   scrollbar-width: thin;
+}
+
+button {
+  all: unset;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border-radius: 0;
+}
+
+button:focus {
+  outline: none;
 }
 
 :host(:focus) {
@@ -69,7 +90,6 @@
   background-color: transparent;
   cursor: default;
 }
-
 
 .menu-item.child-open {
   background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%)) !important;
@@ -135,7 +155,8 @@
   background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
-.edit-container, .view-container {
+.edit-container,
+.view-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
