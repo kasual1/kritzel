@@ -50,9 +50,11 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeItemIndex', 'editingIndex', 'items', 'parent', 'parentIndex'],
+  outputs: ['close'],
 })
 export class KritzelMenu {
   protected el: HTMLKritzelMenuElement;
+  @Output() close = new EventEmitter<CustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -60,7 +62,10 @@ export class KritzelMenu {
 }
 
 
-export declare interface KritzelMenu extends Components.KritzelMenu {}
+export declare interface KritzelMenu extends Components.KritzelMenu {
+
+  close: EventEmitter<CustomEvent<void>>;
+}
 
 
 @ProxyCmp({

@@ -385,6 +385,10 @@ export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelFontSizeElement;
 }
+export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelMenuElement;
+}
 export interface KritzelPortalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelPortalElement;
@@ -619,7 +623,18 @@ declare global {
         prototype: HTMLKritzelIconElement;
         new (): HTMLKritzelIconElement;
     };
+    interface HTMLKritzelMenuElementEventMap {
+        "close": void;
+    }
     interface HTMLKritzelMenuElement extends Components.KritzelMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMenuElement, ev: KritzelMenuCustomEvent<HTMLKritzelMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMenuElement, ev: KritzelMenuCustomEvent<HTMLKritzelMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelMenuElement: {
         prototype: HTMLKritzelMenuElement;
@@ -947,6 +962,7 @@ declare namespace LocalJSX {
           * @default []
          */
         "items"?: MenuItem[];
+        "onClose"?: (event: KritzelMenuCustomEvent<void>) => void;
         /**
           * @default null
          */

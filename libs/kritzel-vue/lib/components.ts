@@ -32,7 +32,10 @@ export const KritzelMenu: StencilVueComponent<JSX.KritzelMenu> = /*@__PURE__*/ d
   'parentIndex',
   'parent',
   'activeItemIndex',
-  'editingIndex'
+  'editingIndex',
+  'close'
+], [
+  'close'
 ]);
 
 

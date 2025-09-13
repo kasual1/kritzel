@@ -46,13 +46,6 @@ export class KritzelSplitButton {
   @Element()
   host!: HTMLElement;
 
-  @Listen('keydown', { target: 'window' })
-  handleKeyDown(event: KeyboardEvent) {
-    if (this.isMenuOpen && event.key === 'Escape') {
-      this.closeMenu();
-    }
-  }
-
   @Method()
   async openMenu() {
     if (this.disabled || this.isMenuOpen) return;
@@ -127,7 +120,18 @@ export class KritzelSplitButton {
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        {this.isMenuOpen && <kritzel-menu style={{ maxHeight: '300px' }} items={this.options} activeItemIndex={this.activeItemIndex} editingIndex={this.editingIndex}></kritzel-menu>}
+        <kritzel-portal anchor={this.host} offsetY={4}>
+
+          {this.isMenuOpen && (
+            <kritzel-menu
+              style={{ maxHeight: '300px', width: '180px' }}
+              items={this.options}
+              activeItemIndex={this.activeItemIndex}
+              editingIndex={this.editingIndex}
+              onClose={() => this.closeMenu()}
+            ></kritzel-menu>
+          )}
+        </kritzel-portal>
       </Host>
     );
   }

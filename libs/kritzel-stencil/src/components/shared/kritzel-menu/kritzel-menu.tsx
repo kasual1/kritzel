@@ -1,4 +1,4 @@
-import { Component, h, Prop, Host, State, Listen, Element, Watch } from '@stencil/core';
+import { Component, h, Prop, Host, State, Listen, Element, Watch, Event, EventEmitter } from '@stencil/core';
 
 export interface MenuItem<T = any> {
   value: T;
@@ -33,6 +33,9 @@ export class KritzelMenu {
 
   @Prop()
   editingIndex: number | null = null;
+
+  @Event()
+  close: EventEmitter<void>;
 
   @State()
   openChildMenuIndex: number | null = null;
@@ -69,11 +72,16 @@ export class KritzelMenu {
   }
 
   @Listen('keydown', { target: 'window' })
-    handleKeyDown(event: KeyboardEvent) {
-    if (this.openChildMenuIndex !== null && event.key === 'Escape') {
-      this.openChildMenuIndex = null;
-      document.body.focus();
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && this.openChildMenuIndex === null) {
+      this.close.emit();
     }
+  }
+
+  componentDidLoad() {
+    requestAnimationFrame(() => {
+      this.host.focus();
+    });
   }
 
   private blur() {
@@ -166,7 +174,7 @@ export class KritzelMenu {
                   onClick={event => {
                     if (this.editingIndex !== null) return;
                     event.stopPropagation();
-                    this.childMenuAnchor = this.openChildMenuIndex === index ? null : event.currentTarget as HTMLElement;
+                    this.childMenuAnchor = this.openChildMenuIndex === index ? null : (event.currentTarget as HTMLElement);
                     this.openChildMenuIndex = this.openChildMenuIndex === index ? null : index;
                   }}
                 >
@@ -174,12 +182,16 @@ export class KritzelMenu {
                 </button>
 
                 {this.openChildMenuIndex === index && (
-                  <kritzel-portal anchor={this.childMenuAnchor}>
+                  <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
                     <kritzel-menu
-                      style={{ position: 'absolute', left: '0', top: '100%', zIndex: '3', minWidth: '100px' }}
+                      style={{ minWidth: '100px' }}
                       items={item.children}
                       parentIndex={index}
                       parent={item}
+                      onClose={() => {
+                        this.openChildMenuIndex = null;
+                        this.childMenuAnchor?.focus();
+                      }}
                     ></kritzel-menu>
                   </kritzel-portal>
                 )}

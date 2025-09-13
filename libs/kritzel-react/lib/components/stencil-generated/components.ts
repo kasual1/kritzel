@@ -28,14 +28,14 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     defineCustomElement: defineKritzelEditor
 });
 
-export type KritzelMenuEvents = NonNullable<unknown>;
+export type KritzelMenuEvents = { onClose: EventName<CustomEvent<void>> };
 
 export const KritzelMenu: StencilReactComponent<KritzelMenuElement, KritzelMenuEvents> = /*@__PURE__*/ createComponent<KritzelMenuElement, KritzelMenuEvents>({
     tagName: 'kritzel-menu',
     elementClass: KritzelMenuElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: {} as KritzelMenuEvents,
+    events: { onClose: 'close' } as KritzelMenuEvents,
     defineCustomElement: defineKritzelMenu
 });
 
