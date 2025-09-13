@@ -39,6 +39,8 @@ export class KritzelMenu {
 
   private editInput?: HTMLInputElement;
 
+  private childMenuAnchor?: HTMLElement = null;
+
   @Watch('editingIndex')
   onEditingIndexChange(newValue: number | null) {
     if (newValue === null) {
@@ -86,12 +88,12 @@ export class KritzelMenu {
               'edit-mode': this.editingIndex === index,
               'active': this.activeItemIndex === index,
             }}
-            onClick={(event) => {
+            onClick={event => {
               if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex === index) {
                 event.stopPropagation();
                 event.preventDefault();
                 return;
-              };
+              }
               item.select?.(item);
             }}
             onKeyDown={e => {
@@ -153,6 +155,7 @@ export class KritzelMenu {
                   onClick={event => {
                     if (this.editingIndex !== null) return;
                     event.stopPropagation();
+                    this.childMenuAnchor = this.openChildMenuIndex === index ? null : event.currentTarget as HTMLElement;
                     this.openChildMenuIndex = this.openChildMenuIndex === index ? null : index;
                   }}
                 >
@@ -160,12 +163,14 @@ export class KritzelMenu {
                 </button>
 
                 {this.openChildMenuIndex === index && (
-                  <kritzel-menu
-                    style={{ position: 'absolute', left: '0', top: '100%', zIndex: '3', minWidth: '100px' }}
-                    items={item.children}
-                    parentIndex={index}
-                    parent={item}
-                  ></kritzel-menu>
+                  <kritzel-portal anchor={this.childMenuAnchor}>
+                    <kritzel-menu
+                      style={{ position: 'absolute', left: '0', top: '100%', zIndex: '3', minWidth: '100px' }}
+                      items={item.children}
+                      parentIndex={index}
+                      parent={item}
+                    ></kritzel-menu>
+                  </kritzel-portal>
                 )}
               </div>
             )}

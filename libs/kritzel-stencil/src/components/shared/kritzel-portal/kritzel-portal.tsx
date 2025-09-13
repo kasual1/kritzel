@@ -14,8 +14,8 @@ export class KritzelPortal {
   @Prop()
   anchor: HTMLElement;
 
-  @Watch('reference')
-  referenceChanged(newValue: HTMLElement) {
+  @Watch('anchor')
+  anchorChanged(newValue: HTMLElement) {
     if (newValue) {
       this.calculatePosition();
     }
