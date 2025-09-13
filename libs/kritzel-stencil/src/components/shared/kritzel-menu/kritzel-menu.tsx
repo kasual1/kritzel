@@ -84,13 +84,6 @@ export class KritzelMenu {
     });
   }
 
-  private blur() {
-    const activeEl = this.host.shadowRoot.activeElement as HTMLElement;
-    if (activeEl && typeof activeEl.blur === 'function') {
-      activeEl.blur();
-    }
-  }
-
   isViewMode(index: number): boolean {
     return this.editingIndex !== index;
   }
@@ -171,10 +164,7 @@ export class KritzelMenu {
                   <button
                     class="menu-item-button"
                     tabIndex={0}
-                    onClick={() => {
-                      item.cancel?.(item);
-                      this.blur();
-                    }}
+                    onClick={() => item.cancel?.(item)}
                   >
                     <kritzel-icon name="x" size={16}></kritzel-icon>
                   </button>
@@ -182,10 +172,7 @@ export class KritzelMenu {
                   <button
                     class="menu-item-button"
                     tabIndex={0}
-                    onClick={() => {
-                      item.save?.(item);
-                      this.blur();
-                    }}
+                    onClick={() => item.save?.(item)}
                   >
                     <kritzel-icon name="check" size={16}></kritzel-icon>
                   </button>

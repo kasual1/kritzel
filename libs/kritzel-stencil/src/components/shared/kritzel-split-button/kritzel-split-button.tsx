@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Event, EventEmitter, Listen, Host, Element, Method } from '@stencil/core';
+import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
 import { MenuItem } from '../kritzel-menu/kritzel-menu';
 
 @Component({
@@ -79,7 +79,6 @@ export class KritzelSplitButton {
     if (!clickedInside) {
       this.closeMenu();
     } else if (this.isMenuOpen) {
-      // Re-add listener if a click inside happened while menu was open
       document.addEventListener('click', this.handleDocumentClick, { once: true });
     }
   };
