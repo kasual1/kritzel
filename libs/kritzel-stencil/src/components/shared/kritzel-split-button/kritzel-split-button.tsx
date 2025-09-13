@@ -127,7 +127,7 @@ export class KritzelSplitButton {
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        {this.isMenuOpen && <kritzel-menu items={this.options} activeItemIndex={this.activeItemIndex} editingIndex={this.editingIndex}></kritzel-menu>}
+        {this.isMenuOpen && <kritzel-menu style={{ maxHeight: '300px' }} items={this.options} activeItemIndex={this.activeItemIndex} editingIndex={this.editingIndex}></kritzel-menu>}
       </Host>
     );
   }

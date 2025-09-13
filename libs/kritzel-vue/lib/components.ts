@@ -7,6 +7,7 @@ import type { JSX } from '../../kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelMenu } from '../../kritzel-stencil/dist/components/kritzel-menu.js';
+import { defineCustomElement as defineKritzelPortal } from '../../kritzel-stencil/dist/components/kritzel-portal.js';
 import { defineCustomElement as defineKritzelSplitButton } from '../../kritzel-stencil/dist/components/kritzel-split-button.js';
 import { defineCustomElement as defineKritzelWorkspaceManager } from '../../kritzel-stencil/dist/components/kritzel-workspace-manager.js';
 
@@ -32,6 +33,16 @@ export const KritzelMenu: StencilVueComponent<JSX.KritzelMenu> = /*@__PURE__*/ d
   'parent',
   'activeItemIndex',
   'editingIndex'
+]);
+
+
+export const KritzelPortal: StencilVueComponent<JSX.KritzelPortal> = /*@__PURE__*/ defineContainer<JSX.KritzelPortal>('kritzel-portal', defineKritzelPortal, [
+  'anchor',
+  'offsetX',
+  'offsetY',
+  'close'
+], [
+  'close'
 ]);
 
 

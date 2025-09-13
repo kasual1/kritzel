@@ -1,6 +1,6 @@
-import { KritzelKeyboardHelper } from './html.helper';
+import { KritzelHTMLHelper } from "./html.helper";
 
-describe('KritzelKeyboardHelper', () => {
+describe('KritzelHTMLHelper', () => {
   let element: HTMLElement;
 
   beforeEach(() => {
@@ -19,41 +19,41 @@ describe('KritzelKeyboardHelper', () => {
     jest.spyOn(window, 'getComputedStyle').mockReturnValue({
       getPropertyValue: (prop) => (prop === 'width' ? '100px' : ''),
     } as any);
-    expect(KritzelKeyboardHelper.getNumericValueFromStyle(element, 'width')).toBe(100);
+    expect(KritzelHTMLHelper.getNumericValueFromStyle(element, 'width')).toBe(100);
   });
 
   it('should return the numeric value for a percentage-based style', () => {
     jest.spyOn(window, 'getComputedStyle').mockReturnValue({
       getPropertyValue: (prop) => (prop === 'width' ? '50%' : ''),
     } as any);
-    expect(KritzelKeyboardHelper.getNumericValueFromStyle(element, 'width')).toBe(50);
+    expect(KritzelHTMLHelper.getNumericValueFromStyle(element, 'width')).toBe(50);
   });
 
   it('should return 0 for non-numeric style values like "auto"', () => {
     jest.spyOn(window, 'getComputedStyle').mockReturnValue({
       getPropertyValue: (prop) => (prop === 'display' ? 'flex' : ''),
     } as any);
-    expect(KritzelKeyboardHelper.getNumericValueFromStyle(element, 'display')).toBe(0);
+    expect(KritzelHTMLHelper.getNumericValueFromStyle(element, 'display')).toBe(0);
   });
 
   it('should return 0 for a property that does not exist', () => {
     jest.spyOn(window, 'getComputedStyle').mockReturnValue({
       getPropertyValue: () => '',
     } as any);
-    expect(KritzelKeyboardHelper.getNumericValueFromStyle(element, 'non-existent-property')).toBe(0);
+    expect(KritzelHTMLHelper.getNumericValueFromStyle(element, 'non-existent-property')).toBe(0);
   });
 
   it('should handle floating point values correctly', () => {
     jest.spyOn(window, 'getComputedStyle').mockReturnValue({
       getPropertyValue: (prop) => (prop === 'font-size' ? '12.5px' : ''),
     } as any);
-    expect(KritzelKeyboardHelper.getNumericValueFromStyle(element, 'font-size')).toBe(12.5);
+    expect(KritzelHTMLHelper.getNumericValueFromStyle(element, 'font-size')).toBe(12.5);
   });
 
   it('should handle different units like "em"', () => {
     jest.spyOn(window, 'getComputedStyle').mockReturnValue({
       getPropertyValue: (prop) => (prop === 'margin-top' ? '2em' : ''),
     } as any);
-    expect(KritzelKeyboardHelper.getNumericValueFromStyle(element, 'margin-top')).toBe(2);
+    expect(KritzelHTMLHelper.getNumericValueFromStyle(element, 'margin-top')).toBe(2);
   });
 });

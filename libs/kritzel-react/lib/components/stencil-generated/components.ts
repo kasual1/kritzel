@@ -13,6 +13,7 @@ import React from 'react';
 import { type KritzelEditorCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelWorkspace, type KritzelWorkspaceManagerCustomEvent, type MenuItem } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelMenu as KritzelMenuElement, defineCustomElement as defineKritzelMenu } from "../../../../kritzel-stencil/dist/components/kritzel-menu.js";
+import { KritzelPortal as KritzelPortalElement, defineCustomElement as defineKritzelPortal } from "../../../../kritzel-stencil/dist/components/kritzel-portal.js";
 import { KritzelSplitButton as KritzelSplitButtonElement, defineCustomElement as defineKritzelSplitButton } from "../../../../kritzel-stencil/dist/components/kritzel-split-button.js";
 import { KritzelWorkspaceManager as KritzelWorkspaceManagerElement, defineCustomElement as defineKritzelWorkspaceManager } from "../../../../kritzel-stencil/dist/components/kritzel-workspace-manager.js";
 
@@ -36,6 +37,17 @@ export const KritzelMenu: StencilReactComponent<KritzelMenuElement, KritzelMenuE
     react: React,
     events: {} as KritzelMenuEvents,
     defineCustomElement: defineKritzelMenu
+});
+
+export type KritzelPortalEvents = { onClose: EventName<CustomEvent<void>> };
+
+export const KritzelPortal: StencilReactComponent<KritzelPortalElement, KritzelPortalEvents> = /*@__PURE__*/ createComponent<KritzelPortalElement, KritzelPortalEvents>({
+    tagName: 'kritzel-portal',
+    elementClass: KritzelPortalElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: { onClose: 'close' } as KritzelPortalEvents,
+    defineCustomElement: defineKritzelPortal
 });
 
 export type KritzelSplitButtonEvents = {
