@@ -304,7 +304,6 @@ export namespace Components {
           * @default []
          */
         "options": MenuItem1[];
-        "setEditingIndex": (index: number | null) => Promise<void>;
     }
     interface KritzelStrokeSize {
         /**

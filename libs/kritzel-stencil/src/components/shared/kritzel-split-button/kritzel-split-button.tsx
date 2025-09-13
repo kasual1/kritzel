@@ -25,7 +25,7 @@ export class KritzelSplitButton {
   @Prop()
   activeItemIndex: number | null = null;
 
-  @Prop({ mutable: true })
+  @Prop()
   editingIndex: number | null = null;
 
   @State()
@@ -65,11 +65,6 @@ export class KritzelSplitButton {
     this.menuClosed.emit();
 
     this.host.focus();
-  }
-
-  @Method()
-  async setEditingIndex(index: number | null) {
-    this.editingIndex = index;
   }
 
   private handleDocumentClick = (event: MouseEvent) => {

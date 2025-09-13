@@ -51,12 +51,6 @@ export class KritzelMenu {
       this.editInput = undefined;
       return;
     }
-
-    requestAnimationFrame(() => {
-      if (this.editInput) {
-        this.editInput.focus();
-      }
-    });
   }
 
   @Listen('click', { target: 'window' })
@@ -89,7 +83,7 @@ export class KritzelMenu {
   }
 
   handleSelect(item: MenuItem) {
-    if (item.disabled || this.editingIndex !== null) {
+    if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex !== null) {
       return;
     }
     item.select?.(item);
@@ -100,6 +94,7 @@ export class KritzelMenu {
       <Host tabIndex={0}>
         {this.items.map((item, index) => (
           <button
+            tabIndex={0}
             class={{
               'menu-item': true,
               'disabled': item.disabled,
@@ -109,7 +104,6 @@ export class KritzelMenu {
               'active': this.activeItemIndex === index,
             }}
             onClick={() => this.handleSelect(item)}
-            tabIndex={0}
           >
             {this.isViewMode(index) === true && (
               <div class="view-container">
@@ -152,28 +146,26 @@ export class KritzelMenu {
             {this.isViewMode(index) === false && (
               <div class="edit-container">
                 <input
-                  ref={el => (this.editInput = el as HTMLInputElement)}
+                  tabIndex={0}
+                  ref={el => {
+                    this.editInput = el as HTMLInputElement;
+                    requestAnimationFrame(() => {
+                      this.editInput?.focus();
+                      this.editInput?.select();
+                    });
+                  }}
                   type="text"
                   name={'menu-item-' + index}
-                  tabIndex={0}
                   value={item.label}
                   onInput={e => (item.label = (e.target as HTMLInputElement).value)}
                 />
 
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    class="menu-item-button"
-                    tabIndex={0}
-                    onClick={() => item.cancel?.(item)}
-                  >
+                  <button class="menu-item-button" tabIndex={0} onClick={() => item.cancel?.(item)}>
                     <kritzel-icon name="x" size={16}></kritzel-icon>
                   </button>
 
-                  <button
-                    class="menu-item-button"
-                    tabIndex={0}
-                    onClick={() => item.save?.(item)}
-                  >
+                  <button class="menu-item-button" tabIndex={0} onClick={() => item.save?.(item)}>
                     <kritzel-icon name="check" size={16}></kritzel-icon>
                   </button>
                 </div>

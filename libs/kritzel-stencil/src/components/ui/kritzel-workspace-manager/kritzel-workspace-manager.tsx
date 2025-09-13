@@ -61,8 +61,10 @@ export class KritzelWorkspaceManager {
     this.selectWorkspace(workspace);
   }
 
-  private handleNewWorkspace = () => {
-    this.splitButtonRef?.openMenu().then(() => {
+  private handleNewWorkspace = async () => {
+    await this.splitButtonRef?.openMenu();
+
+    requestAnimationFrame(() => {
       this.newWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
       this.editingIndex = 0;
     });
