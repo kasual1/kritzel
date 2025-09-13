@@ -98,7 +98,9 @@ export class KritzelMenu {
             }}
             onKeyDown={e => {
               if (e.key === 'Enter') {
-                if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex === index) return;
+                if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex === index) {
+                  return;
+                }
                 item.select?.(item);
               }
             }}

@@ -272,6 +272,10 @@ export namespace Components {
     }
     interface KritzelPortal {
         "anchor": HTMLElement;
+        /**
+          * @default true
+         */
+        "autoFocus": boolean;
         "offsetX": number;
         "offsetY": number;
     }
@@ -954,6 +958,10 @@ declare namespace LocalJSX {
     }
     interface KritzelPortal {
         "anchor"?: HTMLElement;
+        /**
+          * @default true
+         */
+        "autoFocus"?: boolean;
         "offsetX"?: number;
         "offsetY"?: number;
         "onClose"?: (event: KritzelPortalCustomEvent<void>) => void;
