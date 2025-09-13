@@ -67,10 +67,3 @@ button {
   height: 24px;
   background-color: var(--kritzel-controls-divider-background-color, hsl(0, 0%, 0%, 4.3%));
 }
-
-kritzel-menu {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-}
