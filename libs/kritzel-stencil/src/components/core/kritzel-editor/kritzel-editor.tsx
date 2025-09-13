@@ -136,7 +136,7 @@ export class KritzelEditor {
   workspaces: KritzelWorkspace[] = [];
 
   @State()
-  activeWorkspace: KritzelWorkspace = new KritzelWorkspace('default', 'Default Workspace');
+  activeWorkspace: KritzelWorkspace;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {

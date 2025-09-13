@@ -10,6 +10,8 @@
   z-index: 2;
   gap: var(--kritzel-menu-item-gap, 4px);
   overflow-y: auto;
+  scrollbar-color:#ebebeb transparent;
+  scrollbar-width: thin;
 }
 
 .menu-item {
