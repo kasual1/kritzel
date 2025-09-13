@@ -4,7 +4,6 @@ import { RemoveSelectionGroupCommand } from './commands/remove-selection-group.c
 import { KritzelHistory } from './history.class';
 import { KritzelEngineState } from '../interfaces/engine-state.interface';
 import { KritzelOctree } from './structures/octree.structure';
-import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 import { KrtizelSelectionBox } from './objects/selection-box.class';
 import { StateChangeListener, StatePropertyKey } from '../types/state.types';
 import { RemoveObjectCommand } from './commands/remove-object.command';
@@ -256,19 +255,9 @@ export class KritzelStore {
 
     await this._database.delete('workspaces', workspace.id);
   }
+  
 
   rerender() {
-    const viewportBounds: KritzelBoundingBox = {
-      x: -this._state.translateX / this._state.scale,
-      y: -this._state.translateY / this._state.scale,
-      z: this._state.scale,
-      width: this._state.viewportWidth / this._state.scale,
-      height: this._state.viewportHeight / this._state.scale,
-      depth: 100,
-    };
-
-    this.objects = this._state.objectsOctree.query(viewportBounds);
-
     if (this._kritzelEngine) {
       this._kritzelEngine.forceUpdate++;
     }

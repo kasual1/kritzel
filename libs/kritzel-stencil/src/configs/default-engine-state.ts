@@ -33,7 +33,7 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   skipContextMenu: false,
   debugInfo: {
     showObjectInfo: false,
-    showViewportInfo: true,
+    showViewportInfo: false,
     logCommands: false,
     logDatabase: false,
   },
@@ -43,7 +43,7 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   scale: 1,
   scaleMax: 1,
   scaleMin: 1,
-  scaleStep: 0.05,
+  scaleStep: 0.075,
   startX: 0,
   startY: 0,
   translateX: 0,
