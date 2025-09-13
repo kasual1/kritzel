@@ -18,8 +18,7 @@ import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
-import { MenuItem } from "./components/shared/kritzel-menu/kritzel-menu";
-import { MenuItem as MenuItem1 } from "./components/shared/kritzel-menu/kritzel-menu";
+import { KritzelMenuItem } from "./interfaces/menu-item.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
@@ -33,8 +32,7 @@ export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
-export { MenuItem } from "./components/shared/kritzel-menu/kritzel-menu";
-export { MenuItem as MenuItem1 } from "./components/shared/kritzel-menu/kritzel-menu";
+export { KritzelMenuItem } from "./interfaces/menu-item.interface";
 export namespace Components {
     interface KritzelBrushStyle {
         /**
@@ -260,11 +258,11 @@ export namespace Components {
         /**
           * @default []
          */
-        "items": MenuItem[];
+        "items": KritzelMenuItem[];
         /**
           * @default null
          */
-        "parent": MenuItem;
+        "parent": KritzelMenuItem;
         /**
           * @default null
          */
@@ -303,7 +301,7 @@ export namespace Components {
         /**
           * @default []
          */
-        "options": MenuItem1[];
+        "options": KritzelMenuItem[];
     }
     interface KritzelStrokeSize {
         /**
@@ -658,7 +656,7 @@ declare global {
     };
     interface HTMLKritzelSplitButtonElementEventMap {
         "buttonClick": void;
-        "optionSelect": MenuItem1;
+        "optionSelect": KritzelMenuItem;
         "menuOpened": void;
         "menuClosed": void;
     }
@@ -960,12 +958,12 @@ declare namespace LocalJSX {
         /**
           * @default []
          */
-        "items"?: MenuItem[];
+        "items"?: KritzelMenuItem[];
         "onClose"?: (event: KritzelMenuCustomEvent<void>) => void;
         /**
           * @default null
          */
-        "parent"?: MenuItem;
+        "parent"?: KritzelMenuItem;
         /**
           * @default null
          */
@@ -1003,11 +1001,11 @@ declare namespace LocalJSX {
         "onButtonClick"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
         "onMenuClosed"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
         "onMenuOpened"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
-        "onOptionSelect"?: (event: KritzelSplitButtonCustomEvent<MenuItem1>) => void;
+        "onOptionSelect"?: (event: KritzelSplitButtonCustomEvent<KritzelMenuItem>) => void;
         /**
           * @default []
          */
-        "options"?: MenuItem1[];
+        "options"?: KritzelMenuItem[];
     }
     interface KritzelStrokeSize {
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;

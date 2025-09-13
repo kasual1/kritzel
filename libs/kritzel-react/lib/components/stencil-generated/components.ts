@@ -10,7 +10,7 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type KritzelEditorCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelWorkspace, type KritzelWorkspaceManagerCustomEvent, type MenuItem } from "../../../../kritzel-stencil";
+import { type KritzelEditorCustomEvent, type KritzelMenuItem, type KritzelSplitButtonCustomEvent, type KritzelWorkspace, type KritzelWorkspaceManagerCustomEvent } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelMenu as KritzelMenuElement, defineCustomElement as defineKritzelMenu } from "../../../../kritzel-stencil/dist/components/kritzel-menu.js";
 import { KritzelPortal as KritzelPortalElement, defineCustomElement as defineKritzelPortal } from "../../../../kritzel-stencil/dist/components/kritzel-portal.js";
@@ -52,7 +52,7 @@ export const KritzelPortal: StencilReactComponent<KritzelPortalElement, KritzelP
 
 export type KritzelSplitButtonEvents = {
     onButtonClick: EventName<CustomEvent<void>>,
-    onOptionSelect: EventName<KritzelSplitButtonCustomEvent<MenuItem>>,
+    onOptionSelect: EventName<KritzelSplitButtonCustomEvent<KritzelMenuItem>>,
     onMenuOpened: EventName<CustomEvent<void>>,
     onMenuClosed: EventName<CustomEvent<void>>
 };
