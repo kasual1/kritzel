@@ -8,6 +8,7 @@ import type { Components } from 'kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelMenu } from 'kritzel-stencil/dist/components/kritzel-menu.js';
+import { defineCustomElement as defineKritzelPortal } from 'kritzel-stencil/dist/components/kritzel-portal.js';
 import { defineCustomElement as defineKritzelSplitButton } from 'kritzel-stencil/dist/components/kritzel-split-button.js';
 import { defineCustomElement as defineKritzelWorkspaceManager } from 'kritzel-stencil/dist/components/kritzel-workspace-manager.js';
 @ProxyCmp({
@@ -60,6 +61,34 @@ export class KritzelMenu {
 
 
 export declare interface KritzelMenu extends Components.KritzelMenu {}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelPortal,
+  inputs: ['anchor', 'offsetX', 'offsetY']
+})
+@Component({
+  selector: 'kritzel-portal',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['anchor', 'offsetX', 'offsetY'],
+  outputs: ['close'],
+})
+export class KritzelPortal {
+  protected el: HTMLKritzelPortalElement;
+  @Output() close = new EventEmitter<CustomEvent<void>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelPortal extends Components.KritzelPortal {
+
+  close: EventEmitter<CustomEvent<void>>;
+}
 
 
 @ProxyCmp({

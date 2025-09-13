@@ -9,6 +9,7 @@
   border: var(--kritzel-controls-border, 1px solid #ebebeb);
   z-index: 2;
   gap: var(--kritzel-menu-item-gap, 4px);
+  overflow-y: auto;
 }
 
 .menu-item {
