@@ -44,6 +44,10 @@ export class KritzelMenu {
 
   private childMenuAnchor?: HTMLElement = null;
 
+  private cancelButton?: HTMLElement = null;
+
+  private saveButton?: HTMLElement = null;
+
   @Watch('editingIndex')
   onEditingIndexChange(newValue: number | null) {
     if (newValue === null) {
@@ -66,9 +70,29 @@ export class KritzelMenu {
   }
 
   @Listen('keydown', { target: 'window' })
-  handleKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Escape' && this.openChildMenuIndex === null) {
+  handleEscape(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      if (this.openChildMenuIndex !== null) {
+        return;
+      }
+
+      if( this.editingIndex !== null ) {
+        this.cancelButton?.click();
+        return;
+      }
+
       this.close.emit();
+    }
+  }
+
+  @Listen('keydown', { target: 'window' })
+  handleEnter(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+
+      if( this.editingIndex !== null ) {
+        this.saveButton?.click();
+        return;
+      }
     }
   }
 
@@ -161,11 +185,11 @@ export class KritzelMenu {
                 />
 
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button class="menu-item-button" tabIndex={0} onClick={() => item.cancel?.(item)}>
+                  <button ref={el => this.cancelButton = el} class="menu-item-button" tabIndex={0} onClick={() => item.cancel?.(item)}>
                     <kritzel-icon name="x" size={16}></kritzel-icon>
                   </button>
 
-                  <button class="menu-item-button" tabIndex={0} onClick={() => item.save?.(item)}>
+                  <button ref={el => this.saveButton = el} class="menu-item-button" tabIndex={0} onClick={() => item.save?.(item)}>
                     <kritzel-icon name="check" size={16}></kritzel-icon>
                   </button>
                 </div>
