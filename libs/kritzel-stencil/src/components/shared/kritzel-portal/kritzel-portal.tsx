@@ -116,7 +116,6 @@ export class KritzelPortal {
 
     requestAnimationFrame(() => {
       const firstSlottedElement = this.portal.children[0].children[0] as HTMLElement;
-      console.log('Focusing element:', firstSlottedElement);
       if (firstSlottedElement) {
         firstSlottedElement.focus();
       }

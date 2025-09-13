@@ -13,7 +13,7 @@ export interface MenuItem<T = any> {
 @Component({
   tag: 'kritzel-menu',
   styleUrl: 'kritzel-menu.css',
-  shadow: { delegatesFocus: true },
+  shadow: true,
 })
 export class KritzelMenu {
   @Element()
@@ -68,6 +68,14 @@ export class KritzelMenu {
     }
   }
 
+  @Listen('keydown', { target: 'window' })
+    handleKeyDown(event: KeyboardEvent) {
+    if (this.openChildMenuIndex !== null && event.key === 'Escape') {
+      this.openChildMenuIndex = null;
+      document.body.focus();
+    }
+  }
+
   private blur() {
     const activeEl = this.host.shadowRoot.activeElement as HTMLElement;
     if (activeEl && typeof activeEl.blur === 'function') {
@@ -77,7 +85,8 @@ export class KritzelMenu {
 
   render() {
     return (
-      <Host>
+      <Host tabIndex={0}>
+        <div> </div>
         {this.items.map((item, index) => (
           <div
             class={{
