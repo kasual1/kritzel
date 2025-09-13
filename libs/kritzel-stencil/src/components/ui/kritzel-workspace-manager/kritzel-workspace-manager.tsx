@@ -1,7 +1,7 @@
 import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
 import { ObjectHelper } from '../../../helpers/object.helper';
-import { MenuItem } from '../../shared/kritzel-menu/kritzel-menu';
+import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
 
 @Component({
   tag: 'kritzel-workspace-manager',
@@ -75,7 +75,7 @@ export class KritzelWorkspaceManager {
     this.newWorkspace = null;
   };
 
-  private handleSave = async (item: MenuItem<KritzelWorkspace>) => {
+  private handleSave = async (item: KritzelMenuItem<KritzelWorkspace>) => {
     const workspace = item.value;
     const updatedWorkspace = { ...workspace, name: item.label };
 
@@ -109,7 +109,7 @@ export class KritzelWorkspaceManager {
   }
 
   render() {
-    const workspaceSelectionOptions: MenuItem<KritzelWorkspace>[] = this.sortedWorkspaces.map((ws, index) => ({
+    const workspaceSelectionOptions: KritzelMenuItem<KritzelWorkspace>[] = this.sortedWorkspaces.map((ws, index) => ({
       label: ws.name,
       value: ws,
       select: () => this.handleSelect(ws),

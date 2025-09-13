@@ -1,5 +1,5 @@
 import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
-import { MenuItem } from '../kritzel-menu/kritzel-menu';
+import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
 
 @Component({
   tag: 'kritzel-split-button',
@@ -17,7 +17,7 @@ export class KritzelSplitButton {
   dropdownIcon = 'chevron-down';
 
   @Prop()
-  options: MenuItem[] = [];
+  options: KritzelMenuItem[] = [];
 
   @Prop()
   disabled = false;
@@ -35,7 +35,7 @@ export class KritzelSplitButton {
   buttonClick: EventEmitter<void>;
 
   @Event()
-  optionSelect: EventEmitter<MenuItem>;
+  optionSelect: EventEmitter<KritzelMenuItem>;
 
   @Event()
   menuOpened: EventEmitter<void>;

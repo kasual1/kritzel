@@ -112,7 +112,7 @@ export declare interface KritzelPortal extends Components.KritzelPortal {
 export class KritzelSplitButton {
   protected el: HTMLKritzelSplitButtonElement;
   @Output() buttonClick = new EventEmitter<CustomEvent<void>>();
-  @Output() optionSelect = new EventEmitter<CustomEvent<IKritzelSplitButtonMenuItem>>();
+  @Output() optionSelect = new EventEmitter<CustomEvent<IKritzelSplitButtonKritzelMenuItem>>();
   @Output() menuOpened = new EventEmitter<CustomEvent<void>>();
   @Output() menuClosed = new EventEmitter<CustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
@@ -122,13 +122,13 @@ export class KritzelSplitButton {
 }
 
 
-import type { MenuItem as IKritzelSplitButtonMenuItem } from 'kritzel-stencil/dist/components';
+import type { KritzelMenuItem as IKritzelSplitButtonKritzelMenuItem } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelSplitButton extends Components.KritzelSplitButton {
 
   buttonClick: EventEmitter<CustomEvent<void>>;
 
-  optionSelect: EventEmitter<CustomEvent<IKritzelSplitButtonMenuItem>>;
+  optionSelect: EventEmitter<CustomEvent<IKritzelSplitButtonKritzelMenuItem>>;
 
   menuOpened: EventEmitter<CustomEvent<void>>;
 

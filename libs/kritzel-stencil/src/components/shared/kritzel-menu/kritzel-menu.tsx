@@ -1,14 +1,6 @@
 import { Component, h, Prop, Host, State, Listen, Element, Watch, Event, EventEmitter } from '@stencil/core';
+import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
 
-export interface MenuItem<T = any> {
-  value: T;
-  label: string;
-  select?: (item: MenuItem) => void;
-  save?: (item: MenuItem) => void;
-  cancel?: (item: MenuItem) => void;
-  disabled?: boolean;
-  children?: MenuItem[];
-}
 
 @Component({
   tag: 'kritzel-menu',
@@ -20,13 +12,13 @@ export class KritzelMenu {
   host: HTMLElement;
 
   @Prop()
-  items: MenuItem[] = [];
+  items: KritzelMenuItem[] = [];
 
   @Prop()
   parentIndex: number | null = null;
 
   @Prop()
-  parent: MenuItem = null;
+  parent: KritzelMenuItem = null;
 
   @Prop()
   activeItemIndex: number | null = null;
@@ -105,7 +97,7 @@ export class KritzelMenu {
     return this.editingIndex !== index;
   }
 
-  handleSelect(item: MenuItem) {
+  handleSelect(item: KritzelMenuItem) {
     if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex !== null) {
       return;
     }
