@@ -39,20 +39,20 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelMenuItem,
-  inputs: ['childMenuItems', 'isDisabled', 'isEditing', 'isSelected', 'label']
+  inputs: ['isDisabled', 'isEditing', 'isSelected', 'item']
 })
 @Component({
   selector: 'kritzel-menu-item',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['childMenuItems', 'isDisabled', 'isEditing', 'isSelected', 'label'],
-  outputs: ['kritzelSave', 'kritzelCancel'],
+  inputs: ['isDisabled', 'isEditing', 'isSelected', 'item'],
+  outputs: ['save', 'cancel'],
 })
 export class KritzelMenuItem {
   protected el: HTMLKritzelMenuItemElement;
-  @Output() kritzelSave = new EventEmitter<CustomEvent<string>>();
-  @Output() kritzelCancel = new EventEmitter<CustomEvent<void>>();
+  @Output() save = new EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>();
+  @Output() cancel = new EventEmitter<CustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -60,11 +60,13 @@ export class KritzelMenuItem {
 }
 
 
+import type { KritzelMenuItemNew as IKritzelMenuItemKritzelMenuItemNew } from 'kritzel-stencil/dist/components';
+
 export declare interface KritzelMenuItem extends Components.KritzelMenuItem {
 
-  kritzelSave: EventEmitter<CustomEvent<string>>;
+  save: EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>;
 
-  kritzelCancel: EventEmitter<CustomEvent<void>>;
+  cancel: EventEmitter<CustomEvent<void>>;
 }
 
 
