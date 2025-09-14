@@ -1,5 +1,6 @@
 import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
 import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
+import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 
 @Component({
   tag: 'kritzel-split-button',
@@ -28,9 +29,6 @@ export class KritzelSplitButton {
   @Prop()
   editingIndex: number | null = null;
 
-  @State()
-  isMenuOpen = false;
-
   @Event()
   buttonClick: EventEmitter<void>;
 
@@ -45,6 +43,12 @@ export class KritzelSplitButton {
 
   @Element()
   host!: HTMLElement;
+
+  @State()
+  isMenuOpen = false;
+
+  @State()
+  isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
 
   splitMenuButton: HTMLButtonElement;
 
@@ -94,7 +98,7 @@ export class KritzelSplitButton {
 
   render() {
     return (
-      <Host tabIndex={0}>
+      <Host tabIndex={0} class={{ mobile: this.isTouchDevice }}>
         <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.disabled}>
           {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
           {this.buttonText && (

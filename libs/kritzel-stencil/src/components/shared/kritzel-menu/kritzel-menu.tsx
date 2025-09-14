@@ -1,5 +1,6 @@
 import { Component, h, Prop, Host, State, Listen, Element, Watch, Event, EventEmitter } from '@stencil/core';
 import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
+import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 
 
 @Component({
@@ -32,6 +33,9 @@ export class KritzelMenu {
   @State()
   openChildMenuIndex: number | null = null;
 
+  @State()
+  isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
+
   private editInput?: HTMLInputElement;
 
   private childMenuAnchor?: HTMLElement = null;
@@ -49,8 +53,8 @@ export class KritzelMenu {
     }
   }
 
-  @Listen('click', { target: 'window' })
-  handleWindowClick(event: MouseEvent) {
+  @Listen('pointerup', { target: 'window' })
+  handleWindowClick(event: PointerEvent) {
     if (this.openChildMenuIndex === null) {
       return;
     }
@@ -106,7 +110,7 @@ export class KritzelMenu {
 
   render() {
     return (
-      <Host tabIndex={0}>
+      <Host tabIndex={0} class={{ mobile: this.isTouchDevice }}>
         {this.items.map((item, index) => (
           <button
             tabIndex={0}
