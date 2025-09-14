@@ -63,7 +63,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.translateX = x;
     this.translateY = y;
 
-    this._store.state.objectsOctree.update(this);
+    this._store.state.objectsMap.update(this);
   }
 
   override move(startX: number, startY: number, endX: number, endY: number): void {
@@ -72,11 +72,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     this.translateX += deltaX;
     this.translateY += deltaY;
-    this._store.state.objectsOctree.update(this);
+    this._store.state.objectsMap.update(this);
 
     this.objects.forEach(obj => {
       obj.move(startX, startY, endX, endY);
-      this._store.state.objectsOctree.update(obj);
+      this._store.state.objectsMap.update(obj);
     });
 
     this.unchangedObjects.forEach(obj => {
@@ -101,7 +101,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
       child.resize(updatedX, updatedY, updatedWidth, updatedHeight);
 
-      this._store.state.objectsOctree.update(child);
+      this._store.state.objectsMap.update(child);
     });
 
     this.refreshObjectDimensions();
@@ -131,7 +131,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
 
       child.rotate(this.objects.length === 1 ? value : value + unchangedChild.rotation);
-      this._store.state.objectsOctree.update(child);
+      this._store.state.objectsMap.update(child);
     });
   }
 
@@ -183,7 +183,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.height = (this.maxY - this.minY - this.padding) * this.scale;
     }
 
-    this._store.state.objectsOctree.update(this);
+    this._store.state.objectsMap.update(this);
   }
 
   private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {

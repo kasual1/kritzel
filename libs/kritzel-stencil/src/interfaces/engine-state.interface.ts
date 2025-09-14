@@ -3,7 +3,7 @@ import { KritzelPath } from "../classes/objects/path.class";
 import { KrtizelSelectionBox } from "../classes/objects/selection-box.class";
 import { KritzelSelectionGroup } from "../classes/objects/selection-group.class";
 import { KritzelText } from "../classes/objects/text.class";
-import { KritzelOctree } from "../classes/structures/octree.structure";
+import { KritzelObjectMap } from "../classes/structures/object-map.structure";
 import { KritzelBaseTool } from "../classes/tools/base-tool.class";
 import { KritzelWorkspace } from "../classes/workspace.class";
 import { KritzelHandleType } from "../enums/handle-type.enum";
@@ -16,7 +16,7 @@ export interface KritzelEngineState {
   activeText: KritzelText;
   currentPath?: KritzelPath;
   copiedObjects?: KritzelSelectionGroup;
-  objectsOctree: KritzelOctree<KritzelBaseObject<Element>>;
+  objectsMap: KritzelObjectMap<KritzelBaseObject<Element>>;
   selectionBox?: KrtizelSelectionBox;
   selectionGroup?: KritzelSelectionGroup;
   resizeHandleType: KritzelHandleType;

@@ -116,7 +116,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   private removeSelectionBox(): void {
     this._store.state.selectionBox = null;
     this._store.state.isSelecting = false;
-    this._store.state.objectsOctree.remove(o => o instanceof KrtizelSelectionBox);
+    this._store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox);
     this._store.rerender();
   }
 
@@ -138,8 +138,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._store.state.selectionBox = selectionBox;
     this._store.state.isSelecting = true;
 
-    this._store.state.objectsOctree.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
-    this._store.state.objectsOctree.insert(selectionBox);
+    this._store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._store.state.objectsMap.insert(selectionBox);
   }
 
   private startTouchSelection(): void {
@@ -169,8 +169,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._store.state.selectionBox = selectionBox;
     this._store.state.isSelecting = true;
 
-    this._store.state.objectsOctree.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
-    this._store.state.objectsOctree.insert(selectionBox);
+    this._store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._store.state.objectsMap.insert(selectionBox);
   }
 
   private updateMouseSelection(event: MouseEvent): void {
