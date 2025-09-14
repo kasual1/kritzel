@@ -160,14 +160,23 @@ Type: `Promise<T>`
 
 ### Depends on
 
+- [kritzel-workspace-manager](../../ui/kritzel-workspace-manager)
 - [kritzel-engine](../kritzel-engine)
 - [kritzel-controls](../../ui/kritzel-controls)
 
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-editor --> kritzel-workspace-manager
   kritzel-editor --> kritzel-engine
   kritzel-editor --> kritzel-controls
+  kritzel-workspace-manager --> kritzel-split-button
+  kritzel-split-button --> kritzel-icon
+  kritzel-split-button --> kritzel-portal
+  kritzel-split-button --> kritzel-menu
+  kritzel-menu --> kritzel-icon
+  kritzel-menu --> kritzel-portal
+  kritzel-menu --> kritzel-menu
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-cursor-trail
   kritzel-context-menu --> kritzel-icon

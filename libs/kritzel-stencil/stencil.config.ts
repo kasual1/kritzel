@@ -21,6 +21,10 @@ const INTERNAL_COMPONENTS = [
   'kritzel-stroke-size',
   'kritzel-tooltip',
   'kritzel-utility-panel',
+  'kritzel-portal',
+  'kritzel-menu',
+  'kritzel-split-button',
+  'kritzel-workspace-manager'
 ];
 
 export const config: Config = {
