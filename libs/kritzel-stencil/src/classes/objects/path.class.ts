@@ -202,7 +202,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateX = x;
     this.translateY = y;
     this._adjustedPoints = null;
-    this._store.state.objectsOctree.update(this);
+    this._store.state.objectsMap.update(this);
   }
 
   private computeAdjustedPoints(): number[][] {

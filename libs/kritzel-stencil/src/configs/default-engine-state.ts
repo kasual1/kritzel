@@ -6,7 +6,7 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   activeText: null,
   currentPath: null,
   copiedObjects: null,
-  objectsOctree: null,
+  objectsMap: null,
   selectionBox: null,
   selectionGroup: null,
   resizeHandleType: null,

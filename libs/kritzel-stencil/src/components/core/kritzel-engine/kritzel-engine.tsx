@@ -533,7 +533,7 @@ export class KritzelEngine {
             transform: `matrix(${this.store.state?.scale}, 0, 0, ${this.store.state?.scale}, ${this.store.state?.translateX}, ${this.store.state?.translateY})`,
           }}
         >
-          {this.store.state.objectsOctree.allObjects()?.map(object => {
+          {this.store.state.objectsMap.allObjects()?.map(object => {
             return (
               <div key={object.id} style={{ display: object.isInViewport() ? 'block' : 'none', transform: object?.transformationMatrix, transformOrigin: 'top left', zIndex: object.zIndex.toString(), position: 'absolute' }}>
                 <svg

@@ -3,7 +3,6 @@ import { KritzelSelectionGroup } from './objects/selection-group.class';
 import { RemoveSelectionGroupCommand } from './commands/remove-selection-group.command';
 import { KritzelHistory } from './history.class';
 import { KritzelEngineState } from '../interfaces/engine-state.interface';
-import { KritzelOctree } from './structures/octree.structure';
 import { KrtizelSelectionBox } from './objects/selection-box.class';
 import { StateChangeListener, StatePropertyKey } from '../types/state.types';
 import { RemoveObjectCommand } from './commands/remove-object.command';
@@ -19,6 +18,7 @@ import { KritzelDatabase } from './database.class';
 import { KritzelReviver } from './reviver.class';
 import { KritzelWorkspace } from './workspace.class';
 import { ObjectHelper } from '../helpers/object.helper';
+import { KritzelObjectMap } from './structures/object-map.structure';
 
 export class KritzelStore {
   private readonly _kritzelEngine: KritzelEngine;
@@ -46,11 +46,11 @@ export class KritzelStore {
   }
 
   get currentZIndex() {
-    return this._state.objectsOctree.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox)).length;
+    return this._state.objectsMap.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox)).length;
   }
 
   get allObjects() {
-    return this._state.objectsOctree.allObjects();
+    return this._state.objectsMap.allObjects();
   }
 
   get selectedObjects() {
@@ -74,14 +74,7 @@ export class KritzelStore {
     this._kritzelEngine = kritzelEngine;
     this._history = new KritzelHistory(this);
     this._database = new KritzelDatabase('kritzelDB', 1, this._state.debugInfo.logDatabase);
-    this._state.objectsOctree = new KritzelOctree<KritzelBaseObject<any>>({
-      x: -Infinity,
-      y: -Infinity,
-      z: -Infinity,
-      width: Infinity,
-      height: Infinity,
-      depth: Infinity,
-    });
+    this._state.objectsMap = new KritzelObjectMap();
   }
 
   async initializeDatabase(): Promise<void> {
@@ -100,16 +93,16 @@ export class KritzelStore {
     const workspaces = await this.getWorkspaces();
     const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
-    
+
     this._state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
 
-      const isExistingWorkspace = await this.getWorkspace(this._state.activeWorkspace.id);
+    const isExistingWorkspace = await this.getWorkspace(this._state.activeWorkspace.id);
 
-      if(isExistingWorkspace){
-        await this.updateWorkspace(this._state.activeWorkspace);
-      } else {
-        await this.createWorkspace(this._state.activeWorkspace);
-      }
+    if (isExistingWorkspace) {
+      await this.updateWorkspace(this._state.activeWorkspace);
+    } else {
+      await this.createWorkspace(this._state.activeWorkspace);
+    }
 
     this._state.workspaces = await this.getWorkspaces();
 
@@ -121,7 +114,7 @@ export class KritzelStore {
   }
 
   private async initializeWorkspaceObjects(workspaceId: string): Promise<void> {
-    this._state.objectsOctree.reset();
+    this._state.objectsMap.reset();
     this._history.reset();
 
     const objectsFromDb = await this._database.getAllByRange<any>('objects', IDBKeyRange.bound([workspaceId], [workspaceId, '\uffff']));
@@ -130,7 +123,7 @@ export class KritzelStore {
 
     objectsFromDb.forEach(element => {
       const revivedObject = reviver.revive<KritzelBaseObject<any>>(element);
-      this._state.objectsOctree.insert(revivedObject);
+      this._state.objectsMap.insert(revivedObject);
     });
 
     this.rerender();
@@ -255,7 +248,6 @@ export class KritzelStore {
 
     await this._database.delete('workspaces', workspace.id);
   }
-  
 
   rerender() {
     if (this._kritzelEngine) {
@@ -415,15 +407,8 @@ export class KritzelStore {
   }
 
   selectAllObjectsInViewport() {
-    const objectsInViewport = this._state.objectsOctree
-      .query({
-        x: -this._state.translateX / this._state.scale,
-        y: -this._state.translateY / this._state.scale,
-        z: this._state.scale,
-        width: this._state.viewportWidth / this._state.scale,
-        height: this._state.viewportHeight / this._state.scale,
-        depth: 100,
-      })
+    const objectsInViewport = this._state.objectsMap
+      .filter(o => o.isInViewport())
       .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox) && !(o instanceof KritzelContextMenu));
 
     if (objectsInViewport.length > 0) {
