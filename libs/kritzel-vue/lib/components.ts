@@ -26,13 +26,14 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
 
 export const KritzelMenuItem: StencilVueComponent<JSX.KritzelMenuItem> = /*@__PURE__*/ defineContainer<JSX.KritzelMenuItem>('kritzel-menu-item', defineKritzelMenuItem, [
   'label',
+  'childMenuItems',
   'isSelected',
   'isEditing',
   'isDisabled',
-  'save',
-  'cancel'
+  'kritzelSave',
+  'kritzelCancel'
 ], [
-  'save',
-  'cancel'
+  'kritzelSave',
+  'kritzelCancel'
 ]);
 

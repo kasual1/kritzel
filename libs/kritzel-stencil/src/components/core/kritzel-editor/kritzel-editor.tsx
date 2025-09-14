@@ -13,6 +13,7 @@ import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
+import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -238,13 +239,7 @@ export class KritzelEditor {
   }
 
   render() {
-    const tempMenuItems: {
-      label: string;
-      isSelected?: boolean;
-      isEditing?: boolean;
-      isDisabled?: boolean;
-      action: () => void;
-    }[] = [
+    const tempMenuItems: KritzelMenuItemNew[] = [
       { label: 'Test 1', isSelected: true, action: () => console.log('Test 1') },
       { label: 'Test 2', isEditing: true, action: () => console.log('Test 2') },
       { label: 'Test 3', action: () => console.log('Test 3') },
@@ -260,7 +255,7 @@ export class KritzelEditor {
           onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
         ></kritzel-workspace-manager>
 
-        <div style={{ position: 'absolute', top: '0', right: '0', zIndex: '9999' }}>
+        <div style={{ position: 'absolute', top: '0', right: '0', zIndex: '9999', width: '200px', padding: '8px', background: 'white' }}>
           {tempMenuItems.map(item => (
             <kritzel-menu-item label={item.label} isSelected={item.isSelected} isEditing={item.isEditing} isDisabled={item.isDisabled}></kritzel-menu-item>
           ))}
