@@ -2,7 +2,6 @@ import { Component, h, Prop, Host, State, Listen, Element, Watch, Event, EventEm
 import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 
-
 @Component({
   tag: 'kritzel-menu',
   styleUrl: 'kritzel-menu.css',
@@ -55,14 +54,16 @@ export class KritzelMenu {
 
   @Listen('pointerup', { target: 'window' })
   handleWindowClick(event: PointerEvent) {
-    if (this.openChildMenuIndex === null) {
-      return;
-    }
+    requestAnimationFrame(() => {
+      if (this.openChildMenuIndex === null) {
+        return;
+      }
 
-    const target = event.target as HTMLElement;
-    if (!this.host.contains(target)) {
-      this.openChildMenuIndex = null;
-    }
+      const target = event.target as HTMLElement;
+      if (!this.host.contains(target)) {
+        this.openChildMenuIndex = null;
+      }
+    });
   }
 
   @Listen('keydown', { target: 'window' })
@@ -122,6 +123,10 @@ export class KritzelMenu {
               'edit-mode': this.editingIndex === index,
               'active': this.activeItemIndex === index,
             }}
+            style={{
+              pointerEvents:
+                (this.editingIndex !== null && this.editingIndex !== index) || (this.openChildMenuIndex !== null && this.openChildMenuIndex !== index) ? 'none' : 'auto',
+            }}
             onClick={() => this.handleSelect(item)}
           >
             {this.isViewMode(index) === true && (
@@ -145,11 +150,7 @@ export class KritzelMenu {
                   )}
 
                   {this.openChildMenuIndex === index && (
-                    <kritzel-portal
-                      anchor={this.childMenuAnchor}
-                      offsetY={4}
-                      onClose={() => this.openChildMenuIndex = null}
-                    >
+                    <kritzel-portal anchor={this.childMenuAnchor} offsetY={4} onClose={() => (this.openChildMenuIndex = null)}>
                       <kritzel-menu
                         style={{ minWidth: '100px' }}
                         items={item.children}
