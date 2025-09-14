@@ -238,14 +238,33 @@ export class KritzelEditor {
   }
 
   render() {
+    const tempMenuItems: {
+      label: string;
+      isSelected?: boolean;
+      isEditing?: boolean;
+      isDisabled?: boolean;
+      action: () => void;
+    }[] = [
+      { label: 'Test 1', isSelected: true, action: () => console.log('Test 1') },
+      { label: 'Test 2', isEditing: true, action: () => console.log('Test 2') },
+      { label: 'Test 3', action: () => console.log('Test 3') },
+      { label: 'Test 3', isDisabled: true, action: () => console.log('Test 3') },
+    ];
+
     return (
       <Host>
         <kritzel-workspace-manager
           workspaces={this.workspaces}
           activeWorkspace={this.activeWorkspace}
-          onWorkspaceChange={event => this.activeWorkspace = event.detail}
+          onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
           onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
         ></kritzel-workspace-manager>
+
+        <div style={{ position: 'absolute', top: '0', right: '0', zIndex: '9999' }}>
+          {tempMenuItems.map(item => (
+            <kritzel-menu-item label={item.label} isSelected={item.isSelected} isEditing={item.isEditing} isDisabled={item.isDisabled}></kritzel-menu-item>
+          ))}
+        </div>
 
         <kritzel-engine
           ref={el => (this.engineRef = el)}
@@ -255,7 +274,7 @@ export class KritzelEditor {
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
           onIsEngineReady={event => this.onEngineReady(event)}
-          onWorkspacesChange={event => this.workspaces = event.detail}
+          onWorkspacesChange={event => (this.workspaces = event.detail)}
         ></kritzel-engine>
 
         <kritzel-controls

@@ -268,6 +268,21 @@ export namespace Components {
          */
         "parentIndex": number | null;
     }
+    interface KritzelMenuItem {
+        /**
+          * @default false
+         */
+        "isDisabled": boolean;
+        /**
+          * @default false
+         */
+        "isEditing": boolean;
+        /**
+          * @default false
+         */
+        "isSelected": boolean;
+        "label": string;
+    }
     interface KritzelPortal {
         "anchor": HTMLElement;
         /**
@@ -385,6 +400,10 @@ export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelMenuElement;
+}
+export interface KritzelMenuItemCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelMenuItemElement;
 }
 export interface KritzelPortalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -637,6 +656,24 @@ declare global {
         prototype: HTMLKritzelMenuElement;
         new (): HTMLKritzelMenuElement;
     };
+    interface HTMLKritzelMenuItemElementEventMap {
+        "save": string;
+        "cancel": void;
+    }
+    interface HTMLKritzelMenuItemElement extends Components.KritzelMenuItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelMenuItemElementEventMap>(type: K, listener: (this: HTMLKritzelMenuItemElement, ev: KritzelMenuItemCustomEvent<HTMLKritzelMenuItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelMenuItemElementEventMap>(type: K, listener: (this: HTMLKritzelMenuItemElement, ev: KritzelMenuItemCustomEvent<HTMLKritzelMenuItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelMenuItemElement: {
+        prototype: HTMLKritzelMenuItemElement;
+        new (): HTMLKritzelMenuItemElement;
+    };
     interface HTMLKritzelPortalElementEventMap {
         "close": void;
     }
@@ -751,6 +788,7 @@ declare global {
         "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
         "kritzel-menu": HTMLKritzelMenuElement;
+        "kritzel-menu-item": HTMLKritzelMenuItemElement;
         "kritzel-portal": HTMLKritzelPortalElement;
         "kritzel-split-button": HTMLKritzelSplitButtonElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
@@ -969,6 +1007,23 @@ declare namespace LocalJSX {
          */
         "parentIndex"?: number | null;
     }
+    interface KritzelMenuItem {
+        /**
+          * @default false
+         */
+        "isDisabled"?: boolean;
+        /**
+          * @default false
+         */
+        "isEditing"?: boolean;
+        /**
+          * @default false
+         */
+        "isSelected"?: boolean;
+        "label"?: string;
+        "onCancel"?: (event: KritzelMenuItemCustomEvent<void>) => void;
+        "onSave"?: (event: KritzelMenuItemCustomEvent<string>) => void;
+    }
     interface KritzelPortal {
         "anchor"?: HTMLElement;
         /**
@@ -1064,6 +1119,7 @@ declare namespace LocalJSX {
         "kritzel-font-size": KritzelFontSize;
         "kritzel-icon": KritzelIcon;
         "kritzel-menu": KritzelMenu;
+        "kritzel-menu-item": KritzelMenuItem;
         "kritzel-portal": KritzelPortal;
         "kritzel-split-button": KritzelSplitButton;
         "kritzel-stroke-size": KritzelStrokeSize;
@@ -1092,6 +1148,7 @@ declare module "@stencil/core" {
             "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
             "kritzel-menu": LocalJSX.KritzelMenu & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
+            "kritzel-menu-item": LocalJSX.KritzelMenuItem & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
             "kritzel-portal": LocalJSX.KritzelPortal & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
             "kritzel-split-button": LocalJSX.KritzelSplitButton & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;

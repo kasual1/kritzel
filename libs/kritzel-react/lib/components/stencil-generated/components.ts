@@ -12,6 +12,7 @@ import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 import { type KritzelEditorCustomEvent } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
+import { KritzelMenuItem as KritzelMenuItemElement, defineCustomElement as defineKritzelMenuItem } from "../../../../kritzel-stencil/dist/components/kritzel-menu-item.js";
 
 export type KritzelEditorEvents = { onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>> };
 
@@ -22,4 +23,21 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     react: React,
     events: { onIsReady: 'isReady' } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
+});
+
+export type KritzelMenuItemEvents = {
+    onSave: EventName<CustomEvent<string>>,
+    onCancel: EventName<CustomEvent<void>>
+};
+
+export const KritzelMenuItem: StencilReactComponent<KritzelMenuItemElement, KritzelMenuItemEvents> = /*@__PURE__*/ createComponent<KritzelMenuItemElement, KritzelMenuItemEvents>({
+    tagName: 'kritzel-menu-item',
+    elementClass: KritzelMenuItemElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onSave: 'save',
+        onCancel: 'cancel'
+    } as KritzelMenuItemEvents,
+    defineCustomElement: defineKritzelMenuItem
 });
