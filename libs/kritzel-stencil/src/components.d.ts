@@ -19,6 +19,7 @@ import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { KritzelMenuItem } from "./interfaces/menu-item.interface";
+import { KritzelMenuItemNew } from "./interfaces/menu-item-new.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
@@ -33,6 +34,7 @@ export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { KritzelMenuItem } from "./interfaces/menu-item.interface";
+export { KritzelMenuItemNew } from "./interfaces/menu-item-new.interface";
 export namespace Components {
     interface KritzelBrushStyle {
         /**
@@ -269,6 +271,7 @@ export namespace Components {
         "parentIndex": number | null;
     }
     interface KritzelMenuItem {
+        "childMenuItems": KritzelMenuItemNew[];
         /**
           * @default false
          */
@@ -657,8 +660,8 @@ declare global {
         new (): HTMLKritzelMenuElement;
     };
     interface HTMLKritzelMenuItemElementEventMap {
-        "save": string;
-        "cancel": void;
+        "kritzelSave": string;
+        "kritzelCancel": void;
     }
     interface HTMLKritzelMenuItemElement extends Components.KritzelMenuItem, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelMenuItemElementEventMap>(type: K, listener: (this: HTMLKritzelMenuItemElement, ev: KritzelMenuItemCustomEvent<HTMLKritzelMenuItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1008,6 +1011,7 @@ declare namespace LocalJSX {
         "parentIndex"?: number | null;
     }
     interface KritzelMenuItem {
+        "childMenuItems"?: KritzelMenuItemNew[];
         /**
           * @default false
          */
@@ -1021,8 +1025,8 @@ declare namespace LocalJSX {
          */
         "isSelected"?: boolean;
         "label"?: string;
-        "onCancel"?: (event: KritzelMenuItemCustomEvent<void>) => void;
-        "onSave"?: (event: KritzelMenuItemCustomEvent<string>) => void;
+        "onKritzelCancel"?: (event: KritzelMenuItemCustomEvent<void>) => void;
+        "onKritzelSave"?: (event: KritzelMenuItemCustomEvent<string>) => void;
     }
     interface KritzelPortal {
         "anchor"?: HTMLElement;

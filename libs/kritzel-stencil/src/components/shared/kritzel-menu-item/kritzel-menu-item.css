@@ -1,27 +1,38 @@
 :host {
-  position: relative; /* Needed for absolute positioning of children */
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  background-color:red;
-  padding: 8px;
+  padding: var(--kritzel-menu-item-padding, 8px);
   box-sizing: border-box;
   gap: 16px;
+  height: var(--kritzel-menu-item-height, 40px);
+  min-height: var(--kritzel-menu-item-min-height, 40px);
+  font-family: sans-serif;
+  font-size: var(--kritzel-menu-item-font-size, 14px);
+  border-radius: var(--kritzel-menu-item-border-radius, 12px);
 }
 
 :host(:hover) .menu-item-overlay {
-  background-color: var(--kritzel-context-menu-item-hover-background-color, hsla(0, 0%, 0%, 0.043));
+  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%))
 }
 
 :host(.selected) {
-  background-color: var(--kritzel-menu-item-selected-background-color, #007aff);
+  background-color: var(--kritzel-menu-item-selected-bg, #007aff);
   color: var(--kritzel-menu-item-selected-color, #ffffff);
 }
 
+:host(.selected) .action-button {
+  color: var(--kritzel-menu-item-selected-color, #ffffff);
+}
+
+:host(.selected.editing) {
+  background-color: var(--kritzel-menu-item-selected-bg, #007aff);
+}
+
 :host(.editing) {
-  background-color: var(--kritzel-menu-item-editing-background-color, #f5f5f5);
-  padding: 4px 8px;
+  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 :host(.disabled) {
@@ -31,13 +42,11 @@
 
 .menu-item-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background-color: transparent;
   z-index: 0;
   pointer-events: none;
+  border-radius: var(--kritzel-menu-item-border-radius, 12px);
 }
 
 .menu-item-content {
@@ -46,6 +55,7 @@
   gap: 8px;
   position: relative;
   z-index: 1;
+  height: 100%;
 }
 
 .left {
@@ -57,31 +67,40 @@
   justify-content: flex-end;
 }
 
+.menu-item-content div {
+  line-height: var(--kritzel-menu-item-line-height, 24px);
+  display: flex;
+  align-items: center;
+}
+
 .edit-input {
   flex: 1;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--kritzel-menu-item-input-border-color, #ccc);
-  font-size: 14px;
+  height: var(--kritzel-menu-item-input-height, 24px);
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--kritzel-menu-item-input-border, #ccc);
+  font-size: var(--kritzel-context-menu-item-font-size, 14px);
   width: 100%;
   min-width: 0;
+  box-sizing: border-box;
+  outline: none;
 }
 
 .action-button {
-  padding: 4px 8px;
-  border-radius: 4px;
+  height: var(--kritzel-menu-item-button-height, 24px);
+  padding: 4px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  font-size: 12px;
-  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  background: transparent;
 }
 
-.action-button.save {
-  background-color: var(--kritzel-menu-item-save-button-bg, #4CAF50);
-  color: var(--kritzel-menu-item-save-button-color, white);
-}
-
-.action-button.cancel {
-  background-color: var(--kritzel-menu-item-cancel-button-bg, #f44336);
-  color: var(--kritzel-menu-item-cancel-button-color, white);
+.action-button:hover {
+  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
