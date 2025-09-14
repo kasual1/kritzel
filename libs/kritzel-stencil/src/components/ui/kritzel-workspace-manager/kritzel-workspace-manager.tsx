@@ -81,12 +81,17 @@ export class KritzelWorkspaceManager {
 
     if (this.newWorkspace) {
       await this.kritzelEngine.createWorkspace(updatedWorkspace);
+
+      this.editingIndex = null;
+      this.newWorkspace = null;
+
       this.selectWorkspace(updatedWorkspace);
     } else {
       await this.kritzelEngine.updateWorkspace(updatedWorkspace);
+
+      this.editingIndex = null;
+      this.newWorkspace = null;
     }
-    this.editingIndex = null;
-    this.newWorkspace = null;
   };
 
   private handleRename = (index: number) => {
@@ -103,6 +108,7 @@ export class KritzelWorkspaceManager {
   };
 
   private selectWorkspace(workspace: KritzelWorkspace) {
+    debugger;
     if (this.editingIndex !== null) return;
     this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id === workspace.id);
     this.workspaceChange.emit(workspace);
