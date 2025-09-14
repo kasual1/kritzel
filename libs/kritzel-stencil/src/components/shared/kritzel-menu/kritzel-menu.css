@@ -14,6 +14,11 @@
   scrollbar-width: thin;
 }
 
+:host(.mobile){
+  --kritzel-menu-item-button-hover-background-color: transparent;
+  --kritzel-menu-item-button-focus-background-color: transparent;
+}
+
 button {
   all: unset;
   background: transparent;
@@ -149,11 +154,11 @@ button:focus {
 }
 
 .menu-item-button:hover {
-  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 .menu-item-button:focus {
-  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--kritzel-menu-item-button-focus-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 .edit-container,

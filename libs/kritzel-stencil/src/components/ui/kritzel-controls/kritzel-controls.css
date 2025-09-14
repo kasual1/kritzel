@@ -4,6 +4,11 @@
   user-select: none;
 }
 
+:host(.mobile) {
+  --kritzel-controls-control-hover-background-color: transparent;
+  --kritzel-controls-control-active-background-color: transparent;
+}
+
 .kritzel-controls {
   display: flex;
   flex-direction: row;
@@ -39,16 +44,8 @@
   background-color: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
-:host(.mobile) .kritzel-control:hover {
-  background-color: unset;
-}
-
 .kritzel-control:active {
   background-color: var(--kritzel-controls-control-active-background-color, hsl(0, 0%, 0%, 8.6%));
-}
-
-:host(.mobile) .kritzel-control:active {
-  background-color: unset;
 }
 
 .kritzel-control.selected,

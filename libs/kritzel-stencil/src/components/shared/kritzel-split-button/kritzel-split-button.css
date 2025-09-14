@@ -16,6 +16,10 @@
   outline: none;
 }
 
+:host(.mobile){
+  --kritzel-context-menu-item-hover-background-color: transparent;
+}
+
 button {
   border: none;
   background-color: transparent;
