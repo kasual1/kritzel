@@ -70,11 +70,11 @@ button:focus {
   text-overflow: ellipsis;
 }
 
-.menu-item:not(.disabled):not(.inactive):not(.active):hover {
+.menu-item:not(.disabled):not(.active):hover {
   background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
-.menu-item:not(.disabled):not(.inactive):not(.active):active {
+.menu-item:not(.disabled):not(.active):active {
   background-color: var(--kritzel-context-menu-item-active-background-color, hsl(0, 0%, 0%, 8.6%));
 }
 

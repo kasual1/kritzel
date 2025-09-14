@@ -39,6 +39,8 @@ export class KritzelMenu {
 
   private childMenuAnchor?: HTMLElement = null;
 
+  private childMenu?: HTMLKritzelMenuElement = null;
+
   private cancelButton?: HTMLElement = null;
 
   private saveButton?: HTMLElement = null;
@@ -55,12 +57,13 @@ export class KritzelMenu {
   @Listen('pointerup', { target: 'window' })
   handleWindowClick(event: PointerEvent) {
     requestAnimationFrame(() => {
-      if (this.openChildMenuIndex === null) {
+      if (this.childMenu === null) {
         return;
       }
 
       const target = event.target as HTMLElement;
-      if (!this.host.contains(target)) {
+
+      if (!target.contains(this.childMenu)) {
         this.openChildMenuIndex = null;
       }
     });
@@ -152,6 +155,9 @@ export class KritzelMenu {
                   {this.openChildMenuIndex === index && (
                     <kritzel-portal anchor={this.childMenuAnchor} offsetY={4} onClose={() => (this.openChildMenuIndex = null)}>
                       <kritzel-menu
+                        ref={el => {
+                          this.childMenu = el;
+                        }}
                         style={{ minWidth: '100px' }}
                         items={item.children}
                         parentIndex={index}
@@ -185,13 +191,27 @@ export class KritzelMenu {
                 />
 
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button ref={el => (this.cancelButton = el)} class="menu-item-button" tabIndex={0} onClick={() => item.cancel?.(item)}>
+                  <div
+                    class="menu-item-button"
+                    ref={el => (this.cancelButton = el)}
+                    tabIndex={0}
+                    onClick={() => {
+                      item.cancel?.(item);
+                    }}
+                  >
                     <kritzel-icon name="x" size={16}></kritzel-icon>
-                  </button>
+                  </div>
 
-                  <button ref={el => (this.saveButton = el)} class="menu-item-button" tabIndex={0} onClick={() => item.save?.(item)}>
+                  <div
+                    class="menu-item-button"
+                    ref={el => (this.saveButton = el)}
+                    tabIndex={0}
+                    onClick={() => {
+                      item.save?.(item);
+                    }}
+                  >
                     <kritzel-icon name="check" size={16}></kritzel-icon>
-                  </button>
+                  </div>
                 </div>
               </div>
             )}
