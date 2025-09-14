@@ -141,7 +141,7 @@ export class KritzelWorkspaceManager {
         <kritzel-split-button
           ref={el => (this.splitButtonRef = el)}
           buttonIcon="plus"
-          options={workspaceSelectionOptions}
+          // options={workspaceSelectionOptions}
           activeItemIndex={this.activeItemIndex}
           editingIndex={this.editingIndex}
           onButtonClick={this.handleNewWorkspace}

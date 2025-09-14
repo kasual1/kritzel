@@ -257,7 +257,7 @@ export class KritzelEditor {
 
         <div style={{ position: 'absolute', top: '0', right: '0', zIndex: '9999', width: '200px', padding: '8px', background: 'white' }}>
           {tempMenuItems.map(item => (
-            <kritzel-menu-item label={item.label} isSelected={item.isSelected} isEditing={item.isEditing} isDisabled={item.isDisabled}></kritzel-menu-item>
+            <kritzel-menu-item item={item} isSelected={item.isSelected} isEditing={item.isEditing} isDisabled={item.isDisabled}></kritzel-menu-item>
           ))}
         </div>
 

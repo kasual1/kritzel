@@ -118,7 +118,7 @@ export class KritzelSplitButton {
           {this.isMenuOpen && (
             <kritzel-menu
               style={{ maxHeight: '300px', width: '180px' }}
-              items={this.options}
+              // items={this.options}
               activeItemIndex={this.activeItemIndex}
               editingIndex={this.editingIndex}
               onClose={() => this.closeMenu()}

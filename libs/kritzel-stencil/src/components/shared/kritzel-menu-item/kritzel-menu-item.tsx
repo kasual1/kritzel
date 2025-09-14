@@ -1,4 +1,4 @@
-import { Component, Host, Prop, Event, EventEmitter, State, h } from '@stencil/core';
+import { Component, Host, Prop, Event, EventEmitter, h } from '@stencil/core';
 import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
 
 @Component({
@@ -7,22 +7,15 @@ import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface'
   shadow: true,
 })
 export class KritzelMenuItem {
-  @Prop() label: string;
-  @Prop() childMenuItems: KritzelMenuItemNew[];
+  @Prop() item: KritzelMenuItemNew;
   @Prop() isSelected: boolean = false;
   @Prop() isEditing: boolean = false;
   @Prop() isDisabled: boolean = false;
 
-  @Event() kritzelSave: EventEmitter<string>;
-  @Event() kritzelCancel: EventEmitter<void>;
-
-  @State() private editValue: string;
+  @Event() save: EventEmitter<KritzelMenuItemNew>;
+  @Event() cancel: EventEmitter<void>;
 
   private inputRef: HTMLInputElement;
-
-  componentWillLoad() {
-    this.editValue = this.label;
-  }
 
   componentDidUpdate() {
     if (this.isEditing && this.inputRef) {
@@ -32,7 +25,7 @@ export class KritzelMenuItem {
   }
 
   private handleInputChange = (event: Event) => {
-    this.editValue = (event.target as HTMLInputElement).value;
+    this.item.label = (event.target as HTMLInputElement).value;
   };
 
   private handleEdit = () => {
@@ -41,19 +34,18 @@ export class KritzelMenuItem {
 
   private handleSave = () => {
     this.isEditing = false;
-    this.kritzelSave.emit(this.editValue);
+    this.save.emit(this.item);
   };
 
   private handleCancel = () => {
     this.isEditing = false;
-    this.editValue = this.label;
-    this.kritzelCancel.emit();
+    this.cancel.emit();
   };
 
   private renderViewMode() {
     return [
       <div class="menu-item-content left">
-        <div>{this.label}</div>
+        <div>{this.item.label}</div>
       </div>,
       <div class="menu-item-content right">
         <button class="action-button" onClick={this.handleEdit} disabled={this.isDisabled}>
@@ -66,7 +58,7 @@ export class KritzelMenuItem {
   private renderEditMode() {
     return [
       <div class="menu-item-content left">
-        <input ref={el => (this.inputRef = el)} type="text" class="edit-input" value={this.editValue} onInput={this.handleInputChange} />
+        <input ref={el => (this.inputRef = el)} type="text" class="edit-input" value={this.item.label} onInput={this.handleInputChange} />
       </div>,
       <div class="menu-item-content right">
         <button class="action-button" onClick={this.handleSave}>
@@ -87,6 +79,7 @@ export class KritzelMenuItem {
           editing: this.isEditing,
           disabled: this.isDisabled,
         }}
+        tabIndex={this.isDisabled ? -1 : 0}
       >
         <div class="menu-item-overlay"></div>
         {this.isEditing ? this.renderEditMode() : this.renderViewMode()}

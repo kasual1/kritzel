@@ -159,9 +159,9 @@ export class KritzelMenu {
                           this.childMenu = el;
                         }}
                         style={{ minWidth: '100px' }}
-                        items={item.children}
+                        // items={item.children}
                         parentIndex={index}
-                        parent={item}
+                        // parent={item}
                         onClose={() => {
                           this.openChildMenuIndex = null;
                           this.childMenuAnchor?.focus();

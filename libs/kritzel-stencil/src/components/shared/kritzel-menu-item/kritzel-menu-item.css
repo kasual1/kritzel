@@ -12,9 +12,10 @@
   font-family: sans-serif;
   font-size: var(--kritzel-menu-item-font-size, 14px);
   border-radius: var(--kritzel-menu-item-border-radius, 12px);
+  outline: none;
 }
 
-:host(:hover) .menu-item-overlay {
+:host(:hover) .menu-item-overlay, :host(:focus-within) .menu-item-overlay {
   background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%))
 }
 
@@ -29,6 +30,14 @@
 
 :host(.selected.editing) {
   background-color: var(--kritzel-menu-item-selected-bg, #007aff);
+}
+
+:host(.selected) .edit-input {
+  color: var(--kritzel-menu-item-selected-color, #ffffff);
+}
+
+:host(.selected) .edit-input::selection {
+  background-color: var(--kritzel-menu-item-input-selection-color, rgba(255, 255, 255, 0.16));
 }
 
 :host(.editing) {
@@ -88,6 +97,11 @@
   outline: none;
 }
 
+.edit-input::selection {
+  background-color: var(--kritzel-menu-item-input-selection-color, #007bff);
+  color: var(--kritzel-menu-item-input-selection-text-color, #ffffff);
+}
+
 .action-button {
   height: var(--kritzel-menu-item-button-height, 24px);
   padding: 4px;
@@ -99,8 +113,9 @@
   justify-content: center;
   background-color: transparent;
   background: transparent;
+  outline: none;
 }
 
-.action-button:hover {
+.action-button:hover, .action-button:focus {
   background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
