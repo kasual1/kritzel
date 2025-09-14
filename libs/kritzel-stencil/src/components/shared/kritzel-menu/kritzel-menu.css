@@ -141,6 +141,14 @@ button:focus {
   background-color: var(--kritzel-menu-item-selected-input-background-color, #ffffff34);
 }
 
+.menu-item.edit-mode {
+  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.menu-item.edit-mode.active {
+  background-color: var(--kritzel-context-menu-item-hover-background-color, #007aff);
+}
+
 .menu-item-button {
   background: transparent;
   border: none;
