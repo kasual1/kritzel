@@ -69,4 +69,7 @@ html, body, #app, main {
   --kritzel-cursor-trail-opacity: 0.6;
 
   --kritzel-engine-background-color: #ffffff;
+  
+  --kritzel-controls-control-selected-hover-background-color: #3aa474;
+  --kritzel-controls-control-selected-active-background-color: #3aa474;
 }

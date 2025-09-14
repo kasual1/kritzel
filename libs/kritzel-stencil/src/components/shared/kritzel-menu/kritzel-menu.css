@@ -133,7 +133,7 @@ button:focus {
 }
 
 .menu-item.active.edit-mode input::selection {
-  background-color: var(--kritzel-controls-background-color, #ffffff34);
+  background-color: var(--kritzel-menu-item-selected-input-background-color, #ffffff34);
 }
 
 .menu-item-button {

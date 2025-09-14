@@ -23,6 +23,8 @@
  - [kritzel-control-brush-config](../../ui/kritzel-control-brush-config)
  - [kritzel-control-text-config](../../ui/kritzel-control-text-config)
  - [kritzel-controls](../../ui/kritzel-controls)
+ - [kritzel-menu](../kritzel-menu)
+ - [kritzel-split-button](../kritzel-split-button)
  - [kritzel-utility-panel](../../ui/kritzel-utility-panel)
 
 ### Graph
@@ -33,6 +35,8 @@ graph TD;
   kritzel-control-brush-config --> kritzel-icon
   kritzel-control-text-config --> kritzel-icon
   kritzel-controls --> kritzel-icon
+  kritzel-menu --> kritzel-icon
+  kritzel-split-button --> kritzel-icon
   kritzel-utility-panel --> kritzel-icon
   style kritzel-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```
