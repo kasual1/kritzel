@@ -53,18 +53,10 @@ export class KritzelMenuItem {
         <button class="action-button" onClick={this.handleChildMenuToggle} disabled={this.isDisabled}>
           <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
         </button>
-      </div>,
-
-      // this.item.children?.length > 0 &&
-      //   this.childMenuAnchor !== null && [
-      //     <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
-      //       <kritzel-menu
-      //         style={{ minWidth: '100px' }}
-      //         items={this.item.children}
-      //         onClick={() => (this.childMenuAnchor = null)}
-      //       ></kritzel-menu>
-      //     </kritzel-portal>,
-      //   ],
+        <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
+          <kritzel-menu style={{ minWidth: '100px' }} items={this.item.children} onClick={() => (this.childMenuAnchor = null)}></kritzel-menu>
+        </kritzel-portal>
+      </div>
     ];
   }
 

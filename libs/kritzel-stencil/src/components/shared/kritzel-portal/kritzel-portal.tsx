@@ -130,7 +130,7 @@ export class KritzelPortal {
 
   render() {
     return (
-      <Host ref={el => (this.element = el)}>
+      <Host style={{ display: this.anchor ? 'block' : 'none' }} ref={el => (this.element = el)}>
         <slot />
       </Host>
     );
