@@ -12,6 +12,8 @@ export class KritzelMenuItem {
   @Prop() isEditing: boolean = false;
   @Prop() isDisabled: boolean = false;
 
+
+  @Event() itemSelect: EventEmitter<KritzelMenuItemNew>;
   @Event() save: EventEmitter<KritzelMenuItemNew>;
   @Event() cancel: EventEmitter<void>;
 
@@ -30,8 +32,10 @@ export class KritzelMenuItem {
     this.item.label = (event.target as HTMLInputElement).value;
   };
 
-  private handleChildMenuToggle = (event: Event) => {
-    this.childMenuAnchor = event.currentTarget as HTMLElement;
+  private handleSelect = () => {
+    if (this.isDisabled) return;
+    this.item.action?.();
+    this.itemSelect.emit(this.item);
   };
 
   private handleSave = () => {
@@ -44,19 +48,32 @@ export class KritzelMenuItem {
     this.cancel.emit();
   };
 
+   private handleChildMenuToggle = (event: Event) => {
+    event.stopPropagation();
+    this.childMenuAnchor = event.currentTarget as HTMLElement;
+  };
+
+  private handleChildMenuItemSelect = (event: CustomEvent<KritzelMenuItemNew>) => {
+    event.stopPropagation();
+    this.childMenuAnchor = null;
+  };
+
   private renderViewMode() {
     return [
       <div class="menu-item-content left">
         <div>{this.item.label}</div>
       </div>,
       <div class="menu-item-content right">
-        <button class="action-button" onClick={this.handleChildMenuToggle} disabled={this.isDisabled}>
-          <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
-        </button>
-        <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
-          <kritzel-menu style={{ minWidth: '100px' }} items={this.item.children} onClick={() => (this.childMenuAnchor = null)}></kritzel-menu>
-        </kritzel-portal>
-      </div>
+        {this.item.children &&
+          this.item.children.length > 0 && [
+            <button class="action-button" onClick={this.handleChildMenuToggle} disabled={this.isDisabled}>
+              <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
+            </button>,
+            <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
+              <kritzel-menu-new items={this.item.children} onItemSelect={this.handleChildMenuItemSelect}></kritzel-menu-new>
+            </kritzel-portal>,
+          ]}
+      </div>,
     ];
   }
 
@@ -86,6 +103,7 @@ export class KritzelMenuItem {
           childOpen: this.childMenuAnchor !== null,
         }}
         tabIndex={this.isDisabled ? -1 : 0}
+        onClick={this.handleSelect}
       >
         <div class="menu-item-overlay"></div>
         {this.isEditing ? this.renderEditMode() : this.renderViewMode()}
