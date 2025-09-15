@@ -49,6 +49,10 @@
   pointer-events: none;
 }
 
+:host(.childOpen) {
+  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
 .menu-item-overlay {
   position: absolute;
   inset: 0;

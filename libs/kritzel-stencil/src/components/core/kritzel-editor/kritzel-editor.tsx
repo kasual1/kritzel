@@ -240,10 +240,10 @@ export class KritzelEditor {
 
   render() {
     const tempMenuItems: KritzelMenuItemNew[] = [
-      { label: 'Test 1', isSelected: true, action: () => console.log('Test 1') },
-      { label: 'Test 2', isEditing: true, action: () => console.log('Test 2') },
-      { label: 'Test 3', action: () => console.log('Test 3') },
-      { label: 'Test 3', isDisabled: true, action: () => console.log('Test 3') },
+      { label: 'Test 1', isSelected: true, isDisabled: true,  },
+      { label: 'Test 2', children: [{ label: 'Subtest 1' }, { label: 'Subtest 2' }] },
+      { label: 'Test 3' },
+      { label: 'Test 3', isDisabled: true },
     ];
 
     return (
@@ -255,7 +255,7 @@ export class KritzelEditor {
           onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
         ></kritzel-workspace-manager>
 
-        <div style={{ position: 'absolute', top: '0', right: '0', zIndex: '9999', width: '200px', padding: '8px', background: 'white' }}>
+        <div style={{ position: 'absolute', top: '100px', left: '0', zIndex: '1', width: '200px', padding: '8px', background: 'white' }}>
           {tempMenuItems.map(item => (
             <kritzel-menu-item item={item} isSelected={item.isSelected} isEditing={item.isEditing} isDisabled={item.isDisabled}></kritzel-menu-item>
           ))}
