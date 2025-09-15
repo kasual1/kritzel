@@ -241,35 +241,81 @@ export class KritzelEditor {
   @State()
   childMenuAnchor: HTMLElement = null;
 
-  render() {
-    const tempMenuItems: KritzelMenuItemNew[] = [
-      { label: 'Test 1', isSelected: true, isDisabled: false },
-      {
-        label: 'Test 2',
-        children: [
-          { label: 'Subtest 1', isSelectable: false },
-          { label: 'Subtest 2', isSelectable: false },
-        ],
+  @State()
+  menuItems: KritzelMenuItemNew[] = [
+    {
+      label: 'Test 2',
+      save: item => this.handleItemUpdate(item, { isEditing: false }),
+      cancel: item => this.handleItemUpdate(item, { isEditing: false }),
+      toggleChildMenu: (item, childMenuAnchor) => {
+        debugger;
+        this.handleItemUpdate(item, { isChildMenuOpen: !item.isChildMenuOpen, childMenuAnchor })
       },
-      { label: 'Test 3' },
-      { label: 'Test 4', isDisabled: true },
-    ];
+      isChildMenuOpen: false,
+      isSelectable: false,
+      children: [
+        {
+          label: 'Edit',
+          isSelectable: false,
+          select: (_item, parent) => {
+            if (parent) {
+              this.handleItemUpdate(parent, { isEditing: true });
+            }
+          },
+        },
+        { label: 'Delete', isSelectable: false },
+      ],
+    }
+    // { label: 'Test 1', isSelected: true },
+    
+    // {
+    //   label: 'Test 3',
+    //   save: item => this.handleItemUpdate(item, { isEditing: false }),
+    //   cancel: item => this.handleItemUpdate(item, { isEditing: false }),
+    //   children: [
+    //     {
+    //       label: 'Edit',
+    //       isSelectable: false,
+    //       select: (_item, parent) => {
+    //         if (parent) {
+    //           this.handleItemUpdate(parent, { isEditing: true });
+    //         }
+    //       },
+    //     },
+    //     { label: 'Delete', isSelectable: false },
+    //   ],
+    // },
+    // { label: 'Test 4', isDisabled: true },
+  ];
 
+  private handleItemUpdate(itemToUpdate: KritzelMenuItemNew, newProps: Partial<KritzelMenuItemNew>) {
+    const update = (items: KritzelMenuItemNew[]): KritzelMenuItemNew[] => {
+      return items.map(item => {
+        if (item === itemToUpdate) {
+          return { ...item, ...newProps };
+        }
+        if (item.children) {
+          return { ...item, children: update(item.children) };
+        }
+        return item;
+      });
+    };
+    this.menuItems = update(this.menuItems);
+  }
+
+  render() {
     return (
       <Host>
-        {/* <kritzel-workspace-manager
-          workspaces={this.workspaces}
-          activeWorkspace={this.activeWorkspace}
-          onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
-          onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
-        ></kritzel-workspace-manager> */}
-
         <div class="test-menu">
-          <button onClick={e => {
-            this.childMenuAnchor = e.currentTarget as HTMLElement;
-          }}>testMenu</button>
+          <button
+            onClick={e => {
+              this.childMenuAnchor = e.currentTarget as HTMLElement;
+            }}
+          >
+            testMenu
+          </button>
           <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
-            <kritzel-menu-new items={tempMenuItems} onClose={() => (this.childMenuAnchor = null)}></kritzel-menu-new>
+            <kritzel-menu-new items={this.menuItems} onClose={() => (this.childMenuAnchor = null)}></kritzel-menu-new>
           </kritzel-portal>
         </div>
 

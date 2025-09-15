@@ -1,4 +1,4 @@
-import { Component, Host, Prop, Event, EventEmitter, h, State } from '@stencil/core';
+import { Component, Host, Prop, h, State, Element } from '@stencil/core';
 import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
 
 @Component({
@@ -7,24 +7,17 @@ import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface'
   shadow: true,
 })
 export class KritzelMenuItem {
+  @Element() host: HTMLElement;
+
   @Prop() item: KritzelMenuItemNew;
-  @Prop() isSelected: boolean = false;
-  @Prop() isEditing: boolean = false;
-  @Prop() isDisabled: boolean = false;
-  @Prop() parent: HTMLElement = null;
+  @Prop() parent: KritzelMenuItemNew = null;
 
-  @Event() itemSelect: EventEmitter<KritzelMenuItemNew>;
-  @Event() save: EventEmitter<KritzelMenuItemNew>;
-  @Event() cancel: EventEmitter<void>;
-  @Event() childOpen: EventEmitter<boolean>;
-
-  @State() childMenuOpen: boolean = false;
   @State() childMenuAnchor: HTMLElement = null;
 
   private inputRef: HTMLInputElement;
 
   componentDidUpdate() {
-    if (this.isEditing && this.inputRef) {
+    if (this.item.isEditing && this.inputRef) {
       this.inputRef.focus();
       this.inputRef.select();
     }
@@ -32,40 +25,6 @@ export class KritzelMenuItem {
 
   private handleInputChange = (event: Event) => {
     this.item.label = (event.target as HTMLInputElement).value;
-  };
-
-  private handleSelect = () => {
-    if (this.isDisabled) return;
-    this.item.action?.();
-    this.itemSelect.emit(this.item);
-  };
-
-  private handleSave = () => {
-    this.isEditing = false;
-    this.save.emit(this.item);
-  };
-
-  private handleCancel = () => {
-    this.isEditing = false;
-    this.cancel.emit();
-  };
-
-  private handleChildMenuToggle = (event: Event) => {
-    event.stopPropagation();
-    this.childMenuOpen = !this.childMenuOpen;
-    this.childMenuAnchor = event.currentTarget as HTMLElement;
-    this.childOpen.emit(true);
-  };
-
-  private handleChildMenuItemSelect = (event: CustomEvent<KritzelMenuItemNew>) => {
-    event.stopPropagation();
-    this.childMenuAnchor = null;
-    this.childOpen.emit(false);
-  };
-
-  private handleChildMenuClose = () => {
-    this.childMenuAnchor = null;
-    this.childOpen.emit(false);
   };
 
   private renderViewMode() {
@@ -76,11 +35,11 @@ export class KritzelMenuItem {
       <div class="menu-item-content right">
         {this.item.children &&
           this.item.children.length > 0 && [
-            <button class="action-button" onClick={this.handleChildMenuToggle} disabled={this.isDisabled}>
+            <button id="child-menu-toggle" class="action-button" onClick={(event) => this.item.toggleChildMenu?.(this.item, event.target as HTMLElement)} disabled={this.item.isDisabled}>
               <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
             </button>,
-            <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
-              <kritzel-menu-new items={this.item.children} onItemSelect={this.handleChildMenuItemSelect} onClose={this.handleChildMenuClose}></kritzel-menu-new>
+            <kritzel-portal anchor={this.item.childMenuAnchor} offsetY={4}>
+              <kritzel-menu-new items={this.item.children} parent={this.item}></kritzel-menu-new>
             </kritzel-portal>,
           ]}
       </div>,
@@ -93,10 +52,10 @@ export class KritzelMenuItem {
         <input ref={el => (this.inputRef = el)} type="text" class="edit-input" value={this.item.label} onInput={this.handleInputChange} />
       </div>,
       <div class="menu-item-content right">
-        <button class="action-button" onClick={this.handleSave}>
+        <button class="action-button" onClick={() => this.item.save(this.item)}>
           <kritzel-icon name="check" size={16}></kritzel-icon>
         </button>
-        <button class="action-button" onClick={this.handleCancel}>
+        <button class="action-button" onClick={() => this.item.cancel(this.item)}>
           <kritzel-icon name="x" size={16}></kritzel-icon>
         </button>
       </div>,
@@ -107,16 +66,16 @@ export class KritzelMenuItem {
     return (
       <Host
         class={{
-          selected: this.isSelected,
-          editing: this.isEditing,
-          disabled: this.isDisabled,
+          selected: this.item.isSelected,
+          editing: this.item.isEditing,
+          disabled: this.item.isDisabled,
           childOpen: this.childMenuAnchor !== null,
         }}
-        tabIndex={this.isDisabled ? -1 : 0}
-        onClick={this.handleSelect}
+        tabIndex={this.item.isDisabled ? -1 : 0}
+        onClick={() => this.item.select?.(this.item, this.parent)}
       >
         <div class="menu-item-overlay"></div>
-        {this.isEditing ? this.renderEditMode() : this.renderViewMode()}
+        {this.item.isEditing ? this.renderEditMode() : this.renderViewMode()}
       </Host>
     );
   }
