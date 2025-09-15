@@ -40,21 +40,22 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelMenuItem,
-  inputs: ['isDisabled', 'isEditing', 'isSelected', 'item']
+  inputs: ['isDisabled', 'isEditing', 'isSelected', 'item', 'parent']
 })
 @Component({
   selector: 'kritzel-menu-item',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['isDisabled', 'isEditing', 'isSelected', 'item'],
-  outputs: ['itemSelect', 'save', 'cancel'],
+  inputs: ['isDisabled', 'isEditing', 'isSelected', 'item', 'parent'],
+  outputs: ['itemSelect', 'save', 'cancel', 'childOpen'],
 })
 export class KritzelMenuItem {
   protected el: HTMLKritzelMenuItemElement;
   @Output() itemSelect = new EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>();
   @Output() save = new EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>();
   @Output() cancel = new EventEmitter<CustomEvent<void>>();
+  @Output() childOpen = new EventEmitter<CustomEvent<boolean>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -71,6 +72,8 @@ export declare interface KritzelMenuItem extends Components.KritzelMenuItem {
   save: EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>;
 
   cancel: EventEmitter<CustomEvent<void>>;
+
+  childOpen: EventEmitter<CustomEvent<boolean>>;
 }
 
 
@@ -84,11 +87,12 @@ export declare interface KritzelMenuItem extends Components.KritzelMenuItem {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['items'],
-  outputs: ['itemSelect'],
+  outputs: ['itemSelect', 'close'],
 })
 export class KritzelMenuNew {
   protected el: HTMLKritzelMenuNewElement;
   @Output() itemSelect = new EventEmitter<CustomEvent<IKritzelMenuNewKritzelMenuItemNew>>();
+  @Output() close = new EventEmitter<CustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -101,6 +105,8 @@ import type { KritzelMenuItemNew as IKritzelMenuNewKritzelMenuItemNew } from 'kr
 export declare interface KritzelMenuNew extends Components.KritzelMenuNew {
 
   itemSelect: EventEmitter<CustomEvent<IKritzelMenuNewKritzelMenuItemNew>>;
+
+  close: EventEmitter<CustomEvent<void>>;
 }
 
 

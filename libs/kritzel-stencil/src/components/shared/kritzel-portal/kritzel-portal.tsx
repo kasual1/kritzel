@@ -1,4 +1,4 @@
-import { Component, Host, Listen, Prop, Watch, h, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, Listen, Prop, Watch, h, Event, EventEmitter, Element } from '@stencil/core';
 import { KritzelHTMLHelper } from '../../../helpers/html.helper';
 
 const DEFAULT_OFFSET = 0;
@@ -11,6 +11,10 @@ const ID_PORTAL = 'portal';
   shadow: true,
 })
 export class KritzelPortal {
+
+  @Element()
+  host: HTMLElement;
+
   @Prop()
   anchor: HTMLElement;
 
@@ -34,8 +38,6 @@ export class KritzelPortal {
   close: EventEmitter<void>;
 
   private portal: HTMLElement;
-
-  private element: HTMLElement;
 
   private moved: boolean = false;
 
@@ -98,7 +100,7 @@ export class KritzelPortal {
   }
 
   private moveElementToPortal() {
-    this.portal.appendChild(this.element);
+    this.portal.appendChild(this.host);
     this.moved = true;
   }
 
@@ -130,7 +132,7 @@ export class KritzelPortal {
 
   render() {
     return (
-      <Host style={{ display: this.anchor ? 'block' : 'none' }} ref={el => (this.element = el)}>
+      <Host style={{ display: this.anchor ? 'block' : 'none' }} >
         <slot />
       </Host>
     );

@@ -284,6 +284,10 @@ export namespace Components {
          */
         "isSelected": boolean;
         "item": KritzelMenuItemNew;
+        /**
+          * @default null
+         */
+        "parent": HTMLElement;
     }
     interface KritzelMenuNew {
         "items": KritzelMenuItemNew[];
@@ -669,6 +673,7 @@ declare global {
         "itemSelect": KritzelMenuItemNew;
         "save": KritzelMenuItemNew;
         "cancel": void;
+        "childOpen": boolean;
     }
     interface HTMLKritzelMenuItemElement extends Components.KritzelMenuItem, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelMenuItemElementEventMap>(type: K, listener: (this: HTMLKritzelMenuItemElement, ev: KritzelMenuItemCustomEvent<HTMLKritzelMenuItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -686,6 +691,7 @@ declare global {
     };
     interface HTMLKritzelMenuNewElementEventMap {
         "itemSelect": KritzelMenuItemNew;
+        "close": void;
     }
     interface HTMLKritzelMenuNewElement extends Components.KritzelMenuNew, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelMenuNewElementEventMap>(type: K, listener: (this: HTMLKritzelMenuNewElement, ev: KritzelMenuNewCustomEvent<HTMLKritzelMenuNewElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1050,11 +1056,17 @@ declare namespace LocalJSX {
         "isSelected"?: boolean;
         "item"?: KritzelMenuItemNew;
         "onCancel"?: (event: KritzelMenuItemCustomEvent<void>) => void;
+        "onChildOpen"?: (event: KritzelMenuItemCustomEvent<boolean>) => void;
         "onItemSelect"?: (event: KritzelMenuItemCustomEvent<KritzelMenuItemNew>) => void;
         "onSave"?: (event: KritzelMenuItemCustomEvent<KritzelMenuItemNew>) => void;
+        /**
+          * @default null
+         */
+        "parent"?: HTMLElement;
     }
     interface KritzelMenuNew {
         "items"?: KritzelMenuItemNew[];
+        "onClose"?: (event: KritzelMenuNewCustomEvent<void>) => void;
         "onItemSelect"?: (event: KritzelMenuNewCustomEvent<KritzelMenuItemNew>) => void;
     }
     interface KritzelPortal {
