@@ -12,7 +12,6 @@ export class KritzelMenuItem {
   @Prop() isEditing: boolean = false;
   @Prop() isDisabled: boolean = false;
 
-
   @Event() itemSelect: EventEmitter<KritzelMenuItemNew>;
   @Event() save: EventEmitter<KritzelMenuItemNew>;
   @Event() cancel: EventEmitter<void>;
@@ -48,7 +47,7 @@ export class KritzelMenuItem {
     this.cancel.emit();
   };
 
-   private handleChildMenuToggle = (event: Event) => {
+  private handleChildMenuToggle = (event: Event) => {
     event.stopPropagation();
     this.childMenuAnchor = event.currentTarget as HTMLElement;
   };

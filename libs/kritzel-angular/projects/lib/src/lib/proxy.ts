@@ -9,8 +9,6 @@ import type { Components } from 'kritzel-stencil/dist/components';
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelMenuItem } from 'kritzel-stencil/dist/components/kritzel-menu-item.js';
 import { defineCustomElement as defineKritzelMenuNew } from 'kritzel-stencil/dist/components/kritzel-menu-new.js';
-import { defineCustomElement as defineKritzelPopup } from 'kritzel-stencil/dist/components/kritzel-popup.js';
-import { defineCustomElement as defineKritzelPortalManager } from 'kritzel-stencil/dist/components/kritzel-portal-manager.js';
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
   inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'objectContextMenuItems', 'scaleMax', 'scaleMin'],
@@ -104,51 +102,5 @@ export declare interface KritzelMenuNew extends Components.KritzelMenuNew {
 
   itemSelect: EventEmitter<CustomEvent<IKritzelMenuNewKritzelMenuItemNew>>;
 }
-
-
-@ProxyCmp({
-  defineCustomElementFn: defineKritzelPopup,
-  inputs: ['anchorId', 'animation', 'closeOnOutsideClick', 'isOpen', 'position'],
-  methods: ['open', 'close']
-})
-@Component({
-  selector: 'kritzel-popup',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['anchorId', 'animation', 'closeOnOutsideClick', 'isOpen', 'position'],
-})
-export class KritzelPopup {
-  protected el: HTMLKritzelPopupElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
-export declare interface KritzelPopup extends Components.KritzelPopup {}
-
-
-@ProxyCmp({
-  defineCustomElementFn: defineKritzelPortalManager
-})
-@Component({
-  selector: 'kritzel-portal-manager',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [],
-})
-export class KritzelPortalManager {
-  protected el: HTMLKritzelPortalManagerElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
-export declare interface KritzelPortalManager extends Components.KritzelPortalManager {}
 
 

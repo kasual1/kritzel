@@ -3,7 +3,7 @@ import { KritzelHTMLHelper } from '../../../helpers/html.helper';
 
 const DEFAULT_OFFSET = 0;
 const MIN_LEFT_POSITION = 0;
-const Z_INDEX = '9005';
+const Z_INDEX = '1';
 const ID_PORTAL = 'portal';
 
 @Component({

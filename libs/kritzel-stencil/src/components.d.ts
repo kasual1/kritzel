@@ -288,38 +288,6 @@ export namespace Components {
     interface KritzelMenuNew {
         "items": KritzelMenuItemNew[];
     }
-    interface KritzelPopup {
-        /**
-          * Optional anchor element ID to position the popup relative to
-         */
-        "anchorId"?: string;
-        /**
-          * Optional animation class to apply
-         */
-        "animation"?: string;
-        /**
-          * Public method to close the popup
-         */
-        "close": () => Promise<void>;
-        /**
-          * Whether to close when clicking outside the popup content
-          * @default true
-         */
-        "closeOnOutsideClick": boolean;
-        /**
-          * Controls whether the popup is visible
-          * @default false
-         */
-        "isOpen": boolean;
-        /**
-          * Public method to open the popup
-         */
-        "open": () => Promise<void>;
-        /**
-          * Positioning of the popup relative to the anchor element
-         */
-        "position"?: 'top' | 'right' | 'bottom' | 'left' | 'center';
-    }
     interface KritzelPortal {
         "anchor": HTMLElement;
         /**
@@ -328,8 +296,6 @@ export namespace Components {
         "autoFocus": boolean;
         "offsetX": number;
         "offsetY": number;
-    }
-    interface KritzelPortalManager {
     }
     interface KritzelSplitButton {
         /**
@@ -735,12 +701,6 @@ declare global {
         prototype: HTMLKritzelMenuNewElement;
         new (): HTMLKritzelMenuNewElement;
     };
-    interface HTMLKritzelPopupElement extends Components.KritzelPopup, HTMLStencilElement {
-    }
-    var HTMLKritzelPopupElement: {
-        prototype: HTMLKritzelPopupElement;
-        new (): HTMLKritzelPopupElement;
-    };
     interface HTMLKritzelPortalElementEventMap {
         "close": void;
     }
@@ -757,12 +717,6 @@ declare global {
     var HTMLKritzelPortalElement: {
         prototype: HTMLKritzelPortalElement;
         new (): HTMLKritzelPortalElement;
-    };
-    interface HTMLKritzelPortalManagerElement extends Components.KritzelPortalManager, HTMLStencilElement {
-    }
-    var HTMLKritzelPortalManagerElement: {
-        prototype: HTMLKritzelPortalManagerElement;
-        new (): HTMLKritzelPortalManagerElement;
     };
     interface HTMLKritzelSplitButtonElementEventMap {
         "buttonClick": void;
@@ -863,9 +817,7 @@ declare global {
         "kritzel-menu": HTMLKritzelMenuElement;
         "kritzel-menu-item": HTMLKritzelMenuItemElement;
         "kritzel-menu-new": HTMLKritzelMenuNewElement;
-        "kritzel-popup": HTMLKritzelPopupElement;
         "kritzel-portal": HTMLKritzelPortalElement;
-        "kritzel-portal-manager": HTMLKritzelPortalManagerElement;
         "kritzel-split-button": HTMLKritzelSplitButtonElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
         "kritzel-tooltip": HTMLKritzelTooltipElement;
@@ -1105,30 +1057,6 @@ declare namespace LocalJSX {
         "items"?: KritzelMenuItemNew[];
         "onItemSelect"?: (event: KritzelMenuNewCustomEvent<KritzelMenuItemNew>) => void;
     }
-    interface KritzelPopup {
-        /**
-          * Optional anchor element ID to position the popup relative to
-         */
-        "anchorId"?: string;
-        /**
-          * Optional animation class to apply
-         */
-        "animation"?: string;
-        /**
-          * Whether to close when clicking outside the popup content
-          * @default true
-         */
-        "closeOnOutsideClick"?: boolean;
-        /**
-          * Controls whether the popup is visible
-          * @default false
-         */
-        "isOpen"?: boolean;
-        /**
-          * Positioning of the popup relative to the anchor element
-         */
-        "position"?: 'top' | 'right' | 'bottom' | 'left' | 'center';
-    }
     interface KritzelPortal {
         "anchor"?: HTMLElement;
         /**
@@ -1138,8 +1066,6 @@ declare namespace LocalJSX {
         "offsetX"?: number;
         "offsetY"?: number;
         "onClose"?: (event: KritzelPortalCustomEvent<void>) => void;
-    }
-    interface KritzelPortalManager {
     }
     interface KritzelSplitButton {
         /**
@@ -1228,9 +1154,7 @@ declare namespace LocalJSX {
         "kritzel-menu": KritzelMenu;
         "kritzel-menu-item": KritzelMenuItem;
         "kritzel-menu-new": KritzelMenuNew;
-        "kritzel-popup": KritzelPopup;
         "kritzel-portal": KritzelPortal;
-        "kritzel-portal-manager": KritzelPortalManager;
         "kritzel-split-button": KritzelSplitButton;
         "kritzel-stroke-size": KritzelStrokeSize;
         "kritzel-tooltip": KritzelTooltip;
@@ -1260,9 +1184,7 @@ declare module "@stencil/core" {
             "kritzel-menu": LocalJSX.KritzelMenu & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
             "kritzel-menu-item": LocalJSX.KritzelMenuItem & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
             "kritzel-menu-new": LocalJSX.KritzelMenuNew & JSXBase.HTMLAttributes<HTMLKritzelMenuNewElement>;
-            "kritzel-popup": LocalJSX.KritzelPopup & JSXBase.HTMLAttributes<HTMLKritzelPopupElement>;
             "kritzel-portal": LocalJSX.KritzelPortal & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
-            "kritzel-portal-manager": LocalJSX.KritzelPortalManager & JSXBase.HTMLAttributes<HTMLKritzelPortalManagerElement>;
             "kritzel-split-button": LocalJSX.KritzelSplitButton & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
             "kritzel-tooltip": LocalJSX.KritzelTooltip & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;

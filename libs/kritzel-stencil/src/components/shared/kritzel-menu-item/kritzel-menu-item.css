@@ -54,6 +54,10 @@
   background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
+:host(.childOpen.selected) {
+  background-color: var(--kritzel-menu-item-selected-bg, #007aff);
+}
+
 .menu-item-overlay {
   position: absolute;
   inset: 0;

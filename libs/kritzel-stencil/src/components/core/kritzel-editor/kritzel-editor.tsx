@@ -241,7 +241,14 @@ export class KritzelEditor {
   render() {
     const tempMenuItems: KritzelMenuItemNew[] = [
       { label: 'Test 1', isSelected: true, isDisabled: false, action: () => console.log('Test 1 clicked') },
-      { label: 'Test 2', action: () => console.log('Test 2 clicked'), children: [{ label: 'Subtest 1' }, { label: 'Subtest 2', action: () => console.log('Subtest 2 clicked') }] },
+      {
+        label: 'Test 2',
+        action: () => console.log('Test 2 clicked'),
+        children: [
+          { label: 'Subtest 1', isSelectable: false },
+          { label: 'Subtest 2', isSelectable: false, action: () => console.log('Subtest 2 clicked') },
+        ],
+      },
       { label: 'Test 3', action: () => console.log('Test 3 clicked') },
       { label: 'Test 4', action: () => console.log('Test 4 clicked'), isDisabled: true },
     ];
@@ -255,7 +262,7 @@ export class KritzelEditor {
           onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
         ></kritzel-workspace-manager>
 
-        <kritzel-menu-new style={{ position: 'absolute', top: '100px', left: '0', zIndex: '1', width: '200px' }} items={tempMenuItems}></kritzel-menu-new>
+        <kritzel-menu-new id="kritzel-menu" items={tempMenuItems}></kritzel-menu-new>
 
         <kritzel-engine
           ref={el => (this.engineRef = el)}
