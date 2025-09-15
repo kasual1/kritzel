@@ -40,22 +40,17 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelMenuItem,
-  inputs: ['isDisabled', 'isEditing', 'isSelected', 'item', 'parent']
+  inputs: ['item', 'parent']
 })
 @Component({
   selector: 'kritzel-menu-item',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['isDisabled', 'isEditing', 'isSelected', 'item', 'parent'],
-  outputs: ['itemSelect', 'save', 'cancel', 'childOpen'],
+  inputs: ['item', 'parent'],
 })
 export class KritzelMenuItem {
   protected el: HTMLKritzelMenuItemElement;
-  @Output() itemSelect = new EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>();
-  @Output() save = new EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>();
-  @Output() cancel = new EventEmitter<CustomEvent<void>>();
-  @Output() childOpen = new EventEmitter<CustomEvent<boolean>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -63,30 +58,19 @@ export class KritzelMenuItem {
 }
 
 
-import type { KritzelMenuItemNew as IKritzelMenuItemKritzelMenuItemNew } from 'kritzel-stencil/dist/components';
-
-export declare interface KritzelMenuItem extends Components.KritzelMenuItem {
-
-  itemSelect: EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>;
-
-  save: EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>;
-
-  cancel: EventEmitter<CustomEvent<void>>;
-
-  childOpen: EventEmitter<CustomEvent<boolean>>;
-}
+export declare interface KritzelMenuItem extends Components.KritzelMenuItem {}
 
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelMenuNew,
-  inputs: ['items']
+  inputs: ['items', 'parent']
 })
 @Component({
   selector: 'kritzel-menu-new',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['items'],
+  inputs: ['items', 'parent'],
   outputs: ['itemSelect', 'close'],
 })
 export class KritzelMenuNew {

@@ -10,7 +10,7 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type KritzelEditorCustomEvent, type KritzelMenuItemCustomEvent, type KritzelMenuItemNew, type KritzelMenuNewCustomEvent } from "../../../../kritzel-stencil";
+import { type KritzelEditorCustomEvent, type KritzelMenuItemNew, type KritzelMenuNewCustomEvent } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelMenuItem as KritzelMenuItemElement, defineCustomElement as defineKritzelMenuItem } from "../../../../kritzel-stencil/dist/components/kritzel-menu-item.js";
 import { KritzelMenuNew as KritzelMenuNewElement, defineCustomElement as defineKritzelMenuNew } from "../../../../kritzel-stencil/dist/components/kritzel-menu-new.js";
@@ -26,24 +26,14 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     defineCustomElement: defineKritzelEditor
 });
 
-export type KritzelMenuItemEvents = {
-    onItemSelect: EventName<KritzelMenuItemCustomEvent<KritzelMenuItemNew>>,
-    onSave: EventName<KritzelMenuItemCustomEvent<KritzelMenuItemNew>>,
-    onCancel: EventName<CustomEvent<void>>,
-    onChildOpen: EventName<CustomEvent<boolean>>
-};
+export type KritzelMenuItemEvents = NonNullable<unknown>;
 
 export const KritzelMenuItem: StencilReactComponent<KritzelMenuItemElement, KritzelMenuItemEvents> = /*@__PURE__*/ createComponent<KritzelMenuItemElement, KritzelMenuItemEvents>({
     tagName: 'kritzel-menu-item',
     elementClass: KritzelMenuItemElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: {
-        onItemSelect: 'itemSelect',
-        onSave: 'save',
-        onCancel: 'cancel',
-        onChildOpen: 'childOpen'
-    } as KritzelMenuItemEvents,
+    events: {} as KritzelMenuItemEvents,
     defineCustomElement: defineKritzelMenuItem
 });
 
