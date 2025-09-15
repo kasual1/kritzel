@@ -23,10 +23,13 @@ kritzel-workspace-manager {
   left: 14px;
 }
 
-kritzel-menu-new#kritzel-menu {
+.test-menu {
   position: absolute;
   top: 140px;
   left: 14px;
+  z-index: 1;
+}
+kritzel-menu-new#kritzel-menu {
   z-index: 1;
   width: 200px;
 }

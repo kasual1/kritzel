@@ -238,31 +238,40 @@ export class KritzelEditor {
     }
   }
 
+  @State()
+  childMenuAnchor: HTMLElement = null;
+
   render() {
     const tempMenuItems: KritzelMenuItemNew[] = [
-      { label: 'Test 1', isSelected: true, isDisabled: false, action: () => console.log('Test 1 clicked') },
+      { label: 'Test 1', isSelected: true, isDisabled: false },
       {
         label: 'Test 2',
-        action: () => console.log('Test 2 clicked'),
         children: [
           { label: 'Subtest 1', isSelectable: false },
-          { label: 'Subtest 2', isSelectable: false, action: () => console.log('Subtest 2 clicked') },
+          { label: 'Subtest 2', isSelectable: false },
         ],
       },
-      { label: 'Test 3', action: () => console.log('Test 3 clicked') },
-      { label: 'Test 4', action: () => console.log('Test 4 clicked'), isDisabled: true },
+      { label: 'Test 3' },
+      { label: 'Test 4', isDisabled: true },
     ];
 
     return (
       <Host>
-        <kritzel-workspace-manager
+        {/* <kritzel-workspace-manager
           workspaces={this.workspaces}
           activeWorkspace={this.activeWorkspace}
           onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
           onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
-        ></kritzel-workspace-manager>
+        ></kritzel-workspace-manager> */}
 
-        <kritzel-menu-new id="kritzel-menu" items={tempMenuItems}></kritzel-menu-new>
+        <div class="test-menu">
+          <button onClick={e => {
+            this.childMenuAnchor = e.currentTarget as HTMLElement;
+          }}>testMenu</button>
+          <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
+            <kritzel-menu-new items={tempMenuItems} onClose={() => (this.childMenuAnchor = null)}></kritzel-menu-new>
+          </kritzel-portal>
+        </div>
 
         <kritzel-engine
           ref={el => (this.engineRef = el)}

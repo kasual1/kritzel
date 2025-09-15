@@ -108,7 +108,6 @@ export class KritzelWorkspaceManager {
   };
 
   private selectWorkspace(workspace: KritzelWorkspace) {
-    debugger;
     if (this.editingIndex !== null) return;
     this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id === workspace.id);
     this.workspaceChange.emit(workspace);

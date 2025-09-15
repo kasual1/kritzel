@@ -11,11 +11,14 @@ export class KritzelMenuItem {
   @Prop() isSelected: boolean = false;
   @Prop() isEditing: boolean = false;
   @Prop() isDisabled: boolean = false;
+  @Prop() parent: HTMLElement = null;
 
   @Event() itemSelect: EventEmitter<KritzelMenuItemNew>;
   @Event() save: EventEmitter<KritzelMenuItemNew>;
   @Event() cancel: EventEmitter<void>;
+  @Event() childOpen: EventEmitter<boolean>;
 
+  @State() childMenuOpen: boolean = false;
   @State() childMenuAnchor: HTMLElement = null;
 
   private inputRef: HTMLInputElement;
@@ -49,12 +52,20 @@ export class KritzelMenuItem {
 
   private handleChildMenuToggle = (event: Event) => {
     event.stopPropagation();
+    this.childMenuOpen = !this.childMenuOpen;
     this.childMenuAnchor = event.currentTarget as HTMLElement;
+    this.childOpen.emit(true);
   };
 
   private handleChildMenuItemSelect = (event: CustomEvent<KritzelMenuItemNew>) => {
     event.stopPropagation();
     this.childMenuAnchor = null;
+    this.childOpen.emit(false);
+  };
+
+  private handleChildMenuClose = () => {
+    this.childMenuAnchor = null;
+    this.childOpen.emit(false);
   };
 
   private renderViewMode() {
@@ -69,7 +80,7 @@ export class KritzelMenuItem {
               <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
             </button>,
             <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
-              <kritzel-menu-new items={this.item.children} onItemSelect={this.handleChildMenuItemSelect}></kritzel-menu-new>
+              <kritzel-menu-new items={this.item.children} onItemSelect={this.handleChildMenuItemSelect} onClose={this.handleChildMenuClose}></kritzel-menu-new>
             </kritzel-portal>,
           ]}
       </div>,
