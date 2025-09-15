@@ -4,5 +4,4 @@ export interface KritzelMenuItemNew {
   isSelected?: boolean;
   isEditing?: boolean;
   isDisabled?: boolean;
-  action: () => void;
 }

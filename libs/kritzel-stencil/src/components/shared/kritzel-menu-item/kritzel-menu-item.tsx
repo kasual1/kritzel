@@ -1,4 +1,4 @@
-import { Component, Host, Prop, Event, EventEmitter, h } from '@stencil/core';
+import { Component, Host, Prop, Event, EventEmitter, h, State } from '@stencil/core';
 import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
 
 @Component({
@@ -15,6 +15,8 @@ export class KritzelMenuItem {
   @Event() save: EventEmitter<KritzelMenuItemNew>;
   @Event() cancel: EventEmitter<void>;
 
+  @State() childMenuAnchor: HTMLElement = null;
+
   private inputRef: HTMLInputElement;
 
   componentDidUpdate() {
@@ -28,8 +30,8 @@ export class KritzelMenuItem {
     this.item.label = (event.target as HTMLInputElement).value;
   };
 
-  private handleEdit = () => {
-    this.isEditing = true;
+  private handleChildMenuToggle = (event: Event) => {
+    this.childMenuAnchor = event.currentTarget as HTMLElement;
   };
 
   private handleSave = () => {
@@ -48,10 +50,21 @@ export class KritzelMenuItem {
         <div>{this.item.label}</div>
       </div>,
       <div class="menu-item-content right">
-        <button class="action-button" onClick={this.handleEdit} disabled={this.isDisabled}>
+        <button class="action-button" onClick={this.handleChildMenuToggle} disabled={this.isDisabled}>
           <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
         </button>
       </div>,
+
+      // this.item.children?.length > 0 &&
+      //   this.childMenuAnchor !== null && [
+      //     <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
+      //       <kritzel-menu
+      //         style={{ minWidth: '100px' }}
+      //         items={this.item.children}
+      //         onClick={() => (this.childMenuAnchor = null)}
+      //       ></kritzel-menu>
+      //     </kritzel-portal>,
+      //   ],
     ];
   }
 
@@ -78,6 +91,7 @@ export class KritzelMenuItem {
           selected: this.isSelected,
           editing: this.isEditing,
           disabled: this.isDisabled,
+          childOpen: this.childMenuAnchor !== null,
         }}
         tabIndex={this.isDisabled ? -1 : 0}
       >
