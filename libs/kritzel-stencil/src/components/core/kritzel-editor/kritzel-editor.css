@@ -23,6 +23,14 @@ kritzel-workspace-manager {
   left: 14px;
 }
 
+kritzel-menu-new#kritzel-menu {
+  position: absolute;
+  top: 140px;
+  left: 14px;
+  z-index: 1;
+  width: 200px;
+}
+
 kritzel-controls {
   position: absolute;
   bottom: 28px;

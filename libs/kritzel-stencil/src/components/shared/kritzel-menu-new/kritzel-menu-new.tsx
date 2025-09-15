@@ -23,7 +23,11 @@ export class KritzelMenuNew {
             isDisabled={item.isDisabled}
             onSave={e => this.items[index] = e.detail}
             onCancel={() => (this.selectedIndex = null)}
-            onItemSelect={e => this.itemSelect.emit(e.detail)}
+            onItemSelect={() => {
+              if(item.isSelectable !== false){
+                this.selectedIndex = index;
+              }
+            }}
           ></kritzel-menu-item>
         ))}
       </Host>
