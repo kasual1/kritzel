@@ -13,6 +13,8 @@ import React from 'react';
 import { type KritzelEditorCustomEvent, type KritzelMenuItemCustomEvent, type KritzelMenuItemNew } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelMenuItem as KritzelMenuItemElement, defineCustomElement as defineKritzelMenuItem } from "../../../../kritzel-stencil/dist/components/kritzel-menu-item.js";
+import { KritzelPopup as KritzelPopupElement, defineCustomElement as defineKritzelPopup } from "../../../../kritzel-stencil/dist/components/kritzel-popup.js";
+import { KritzelPortalManager as KritzelPortalManagerElement, defineCustomElement as defineKritzelPortalManager } from "../../../../kritzel-stencil/dist/components/kritzel-portal-manager.js";
 
 export type KritzelEditorEvents = { onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>> };
 
@@ -40,4 +42,26 @@ export const KritzelMenuItem: StencilReactComponent<KritzelMenuItemElement, Krit
         onCancel: 'cancel'
     } as KritzelMenuItemEvents,
     defineCustomElement: defineKritzelMenuItem
+});
+
+export type KritzelPopupEvents = NonNullable<unknown>;
+
+export const KritzelPopup: StencilReactComponent<KritzelPopupElement, KritzelPopupEvents> = /*@__PURE__*/ createComponent<KritzelPopupElement, KritzelPopupEvents>({
+    tagName: 'kritzel-popup',
+    elementClass: KritzelPopupElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as KritzelPopupEvents,
+    defineCustomElement: defineKritzelPopup
+});
+
+export type KritzelPortalManagerEvents = NonNullable<unknown>;
+
+export const KritzelPortalManager: StencilReactComponent<KritzelPortalManagerElement, KritzelPortalManagerEvents> = /*@__PURE__*/ createComponent<KritzelPortalManagerElement, KritzelPortalManagerEvents>({
+    tagName: 'kritzel-portal-manager',
+    elementClass: KritzelPortalManagerElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as KritzelPortalManagerEvents,
+    defineCustomElement: defineKritzelPortalManager
 });
