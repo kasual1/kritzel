@@ -1,4 +1,5 @@
 :host {
+  position: relative;
   display: flex;
   flex-direction: column;
   background-color: var(--kritzel-menu-background-color, #ffffff);
@@ -12,4 +13,13 @@
   overflow-y: auto;
   scrollbar-color: #ebebeb transparent;
   scrollbar-width: thin;
+}
+
+.has-open-child-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
 }
