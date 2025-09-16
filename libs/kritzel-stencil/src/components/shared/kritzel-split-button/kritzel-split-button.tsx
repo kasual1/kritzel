@@ -56,12 +56,13 @@ export class KritzelSplitButton {
     event.stopPropagation();
     this.isMenuOpen = true;
     this.anchorElement = this.host;
-  }
+  };
 
   private closeMenu = () => {
     this.isMenuOpen = false;
     this.anchorElement = null;
-  }
+    this.closeAllChildMenus(this.items);
+  };
 
   private toggleMenu = (event: MouseEvent) => {
     event.stopPropagation();
@@ -69,6 +70,22 @@ export class KritzelSplitButton {
       this.closeMenu();
     } else {
       this.openMenu(event);
+    }
+  };
+
+  private closeAllChildMenus = (items: KritzelMenuItemNew[]): void => {
+    if (!items || items.length === 0) {
+      return;
+    }
+
+    for (const item of items) {
+      if (item.isChildMenuOpen && typeof item.closeChildMenu === 'function') {
+        item.closeChildMenu(item);
+      }
+
+      if (item.children && item.children.length > 0) {
+        this.closeAllChildMenus(item.children);
+      }
     }
   };
 
