@@ -19,14 +19,12 @@ export class KritzelMenuNew {
 
   @Listen('click', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
+    debugger;
     const target = event.target as HTMLElement;
-    if (!this.host.contains(target) && !this.hasActiveChild) {
+
+    if (!this.host.contains(target)) {
       this.close.emit();
     }
-  }
-
-  get hasActiveChild() {
-    return this.items.some(item => item.isChildMenuOpen);
   }
 
   render() {
