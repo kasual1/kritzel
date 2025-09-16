@@ -244,17 +244,62 @@ export class KritzelEditor {
   @State()
   menuItems: KritzelMenuItemNew[] = [
     {
+      id: 'test-2',
       label: 'Test 2',
+      select: item => this.handleItemSelect(item.id),
       save: item => this.handleItemUpdate(item, { isEditing: false }),
-      cancel: item => this.handleItemUpdate(item, { isEditing: false }),
+      cancel: item => this.handleItemUpdate(item, { ...item.unchangedState, isEditing: false, unchangedState: null }),
       toggleChildMenu: (item, childMenuAnchor) => {
-        debugger;
-        this.handleItemUpdate(item, { isChildMenuOpen: !item.isChildMenuOpen, childMenuAnchor })
+        const isChildMenuOpen = !item.isChildMenuOpen;
+        if (!isChildMenuOpen) {
+          childMenuAnchor = null;
+        }
+        this.handleItemUpdate(item, { isChildMenuOpen: !item.isChildMenuOpen, childMenuAnchor });
+      },
+      closeChildMenu: item => {
+        this.handleItemUpdate(item, { isChildMenuOpen: false, childMenuAnchor: null });
       },
       isChildMenuOpen: false,
       isSelectable: false,
       children: [
         {
+          id: 'edit-test-2',
+          label: 'Edit',
+          isSelectable: false,
+          select: (_item, parent) => {
+            if (parent) {
+              this.handleItemUpdate(parent, { isEditing: true, isChildMenuOpen: false, childMenuAnchor: null, unchangedState: { label: parent.label } });
+            }
+          },
+        },
+        {
+          id: 'delete-test-2',
+          label: 'Delete',
+          isSelectable: false,
+          select: (_item, parent) => {
+            if (parent) {
+              this.handleItemUpdate(parent, { isChildMenuOpen: false, childMenuAnchor: null });
+
+              requestAnimationFrame(() => {
+                this.handleItemDelete(parent);
+              });
+
+              this.childMenuAnchor = null;
+            }
+          },
+        },
+      ],
+    },
+    { id: 'test-1', label: 'Test 1', isSelected: true, select: item => this.handleItemSelect(item.id) },
+    {
+      id: 'test-3',
+      label: 'Test 3',
+      select: item => this.handleItemSelect(item.id),
+      save: item => this.handleItemUpdate(item, { isEditing: false }),
+      cancel: item => this.handleItemUpdate(item, { isEditing: false }),
+      children: [
+        {
+          id: 'edit-test-3',
           label: 'Edit',
           isSelectable: false,
           select: (_item, parent) => {
@@ -263,30 +308,43 @@ export class KritzelEditor {
             }
           },
         },
-        { label: 'Delete', isSelectable: false },
+        { id: 'delete-test-3', label: 'Delete', isSelectable: false },
       ],
-    }
-    // { label: 'Test 1', isSelected: true },
-    
-    // {
-    //   label: 'Test 3',
-    //   save: item => this.handleItemUpdate(item, { isEditing: false }),
-    //   cancel: item => this.handleItemUpdate(item, { isEditing: false }),
-    //   children: [
-    //     {
-    //       label: 'Edit',
-    //       isSelectable: false,
-    //       select: (_item, parent) => {
-    //         if (parent) {
-    //           this.handleItemUpdate(parent, { isEditing: true });
-    //         }
-    //       },
-    //     },
-    //     { label: 'Delete', isSelectable: false },
-    //   ],
-    // },
-    // { label: 'Test 4', isDisabled: true },
+    },
+    { id: 'test-4', label: 'Test 4', isDisabled: true, select: item => this.handleItemSelect(item.id) },
   ];
+
+  private handleItemSelect(selectedItemId: string) {
+    const updateSelection = (items: KritzelMenuItemNew[]): KritzelMenuItemNew[] => {
+      return items.map(item => {
+        const wasSelected = item.isSelected;
+        const isNowSelected = item.id === selectedItemId;
+
+        // Recursively update children first
+        let newChildren: KritzelMenuItemNew[] | undefined;
+        if (item.children) {
+          newChildren = updateSelection(item.children);
+        }
+
+        // Determine if the item or its children have changed
+        const childrenChanged = newChildren && newChildren !== item.children;
+        const selectionChanged = wasSelected !== isNowSelected;
+
+        if (!selectionChanged && !childrenChanged) {
+          return item; // No change, return original item
+        }
+
+        // Create a new item with the updated state
+        const newItem = { ...item, isSelected: isNowSelected };
+        if (newChildren) {
+          newItem.children = newChildren;
+        }
+        return newItem;
+      });
+    };
+
+    this.menuItems = updateSelection(this.menuItems);
+  }
 
   private handleItemUpdate(itemToUpdate: KritzelMenuItemNew, newProps: Partial<KritzelMenuItemNew>) {
     const update = (items: KritzelMenuItemNew[]): KritzelMenuItemNew[] => {
@@ -303,19 +361,35 @@ export class KritzelEditor {
     this.menuItems = update(this.menuItems);
   }
 
+  private handleItemDelete(itemToDelete: KritzelMenuItemNew) {
+    const remove = (items: KritzelMenuItemNew[]): KritzelMenuItemNew[] => {
+      return items
+        .map(item => {
+          if (item.children) {
+            return { ...item, children: remove(item.children) };
+          }
+          return item;
+        })
+        .filter(item => item.id !== itemToDelete.id);
+    };
+    debugger;
+
+    this.menuItems = remove(this.menuItems);
+  }
+
   render() {
     return (
       <Host>
         <div class="test-menu">
           <button
             onClick={e => {
-              this.childMenuAnchor = e.currentTarget as HTMLElement;
+              this.childMenuAnchor = this.childMenuAnchor ? null : (e.currentTarget as HTMLElement);
             }}
           >
             testMenu
           </button>
           <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
-            <kritzel-menu-new items={this.menuItems} onClose={() => (this.childMenuAnchor = null)}></kritzel-menu-new>
+            <kritzel-menu-new style={{ width: '200px' }} items={this.menuItems}></kritzel-menu-new>
           </kritzel-portal>
         </div>
 

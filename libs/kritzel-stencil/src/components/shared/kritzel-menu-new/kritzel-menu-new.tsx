@@ -17,12 +17,16 @@ export class KritzelMenuNew {
 
   @State() selectedIndex: number | null = null;
 
-  @Listen('click', { target: 'window', capture: true })
+  @Listen('click', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (!this.host.contains(target)) {
+    if (!this.host.contains(target) && !this.hasActiveChild) {
       this.close.emit();
     }
+  }
+
+  get hasActiveChild() {
+    return this.items.some(item => item.isChildMenuOpen);
   }
 
   render() {

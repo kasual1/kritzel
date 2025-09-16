@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h, State, Element } from '@stencil/core';
+import { Component, Host, Prop, h, Element } from '@stencil/core';
 import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
 
 @Component({
@@ -12,8 +12,6 @@ export class KritzelMenuItem {
   @Prop() item: KritzelMenuItemNew;
   @Prop() parent: KritzelMenuItemNew = null;
 
-  @State() childMenuAnchor: HTMLElement = null;
-
   private inputRef: HTMLInputElement;
 
   componentDidUpdate() {
@@ -23,10 +21,6 @@ export class KritzelMenuItem {
     }
   }
 
-  private handleInputChange = (event: Event) => {
-    this.item.label = (event.target as HTMLInputElement).value;
-  };
-
   private renderViewMode() {
     return [
       <div class="menu-item-content left">
@@ -35,11 +29,19 @@ export class KritzelMenuItem {
       <div class="menu-item-content right">
         {this.item.children &&
           this.item.children.length > 0 && [
-            <button id="child-menu-toggle" class="action-button" onClick={(event) => this.item.toggleChildMenu?.(this.item, event.target as HTMLElement)} disabled={this.item.isDisabled}>
+            <button
+              id="child-menu-toggle"
+              class="action-button"
+              onClick={event => {
+                event.stopPropagation();
+                this.item.toggleChildMenu?.(this.item, event.target as HTMLElement);
+              }}
+              disabled={this.item.isDisabled}
+            >
               <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
             </button>,
             <kritzel-portal anchor={this.item.childMenuAnchor} offsetY={4}>
-              <kritzel-menu-new items={this.item.children} parent={this.item}></kritzel-menu-new>
+              <kritzel-menu-new items={this.item.children} parent={this.item} onClose={() => this.item.closeChildMenu?.(this.item)}></kritzel-menu-new>
             </kritzel-portal>,
           ]}
       </div>,
@@ -49,15 +51,33 @@ export class KritzelMenuItem {
   private renderEditMode() {
     return [
       <div class="menu-item-content left">
-        <input ref={el => (this.inputRef = el)} type="text" class="edit-input" value={this.item.label} onInput={this.handleInputChange} />
+        <input
+          ref={el => (this.inputRef = el)}
+          type="text"
+          class="edit-input"
+          value={this.item.label}
+          onInput={event => (this.item.label = (event.target as HTMLInputElement).value)}
+        />
       </div>,
       <div class="menu-item-content right">
-        <button class="action-button" onClick={() => this.item.save(this.item)}>
+        <div
+          class="action-button"
+          onClick={event => {
+            event.stopPropagation();
+            this.item.save(this.item);
+          }}
+        >
           <kritzel-icon name="check" size={16}></kritzel-icon>
-        </button>
-        <button class="action-button" onClick={() => this.item.cancel(this.item)}>
+        </div>
+        <div
+          class="action-button"
+          onClick={event => {
+            event.stopPropagation();
+            this.item.cancel(this.item);
+          }}
+        >
           <kritzel-icon name="x" size={16}></kritzel-icon>
-        </button>
+        </div>
       </div>,
     ];
   }
@@ -66,10 +86,10 @@ export class KritzelMenuItem {
     return (
       <Host
         class={{
-          selected: this.item.isSelected,
-          editing: this.item.isEditing,
-          disabled: this.item.isDisabled,
-          childOpen: this.childMenuAnchor !== null,
+          'selected': this.item.isSelected,
+          'editing': this.item.isEditing,
+          'disabled': this.item.isDisabled,
+          'child-open': this.item.isChildMenuOpen,
         }}
         tabIndex={this.item.isDisabled ? -1 : 0}
         onClick={() => this.item.select?.(this.item, this.parent)}
