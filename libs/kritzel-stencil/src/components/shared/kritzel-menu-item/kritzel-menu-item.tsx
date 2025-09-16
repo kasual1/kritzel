@@ -23,6 +23,7 @@ export class KritzelMenuItem {
 
   private handleItemSelect = (event: MouseEvent) => {
     event.stopPropagation();
+    if(this.item.isEditing || this.item.isDisabled) return;
     this.item.select?.(this.item, this.parent);
   }
 

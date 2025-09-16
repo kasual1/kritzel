@@ -22,35 +22,39 @@ export class KritzelMenuNew {
     const target = event.target as HTMLElement;
 
     if (!this.host.contains(target)) {
+
+      if(this.editingMenuItem) {
+        this.editingMenuItem.cancel(this.editingMenuItem);
+      }
+
       this.close.emit();
     }
-  }
-
-  get hasOpenChildMenu() {
-    return this.items.some(item => item.isChildMenuOpen);
   }
 
   get openChildMenuItem() {
     return this.items.find(item => item.isChildMenuOpen);
   }
 
+  get editingMenuItem() {
+    return this.items.find(item => item.isEditing);
+  }
+
   onOverlayClick = (event: MouseEvent) => {
     event.stopPropagation();
     this.openChildMenuItem.closeChildMenu?.(this.openChildMenuItem);
-  }
+  };
 
   render() {
     return (
       <Host>
-        {this.hasOpenChildMenu && (
-          <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>
-        )}
+        {this.openChildMenuItem && <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>}
 
         {this.items.map((item, index) => (
           <kritzel-menu-item
             key={index}
             item={item}
             parent={this.parent}
+            style={{ pointerEvents: this.editingMenuItem && !item.isEditing ? 'none' : 'auto' }}
           ></kritzel-menu-item>
         ))}
       </Host>

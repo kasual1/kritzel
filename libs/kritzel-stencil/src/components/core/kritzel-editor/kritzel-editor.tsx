@@ -358,6 +358,7 @@ export class KritzelEditor {
         return item;
       });
     };
+    
     this.menuItems = update(this.menuItems);
   }
 
@@ -372,7 +373,6 @@ export class KritzelEditor {
         })
         .filter(item => item.id !== itemToDelete.id);
     };
-    debugger;
 
     this.menuItems = remove(this.menuItems);
   }
