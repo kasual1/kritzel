@@ -39,25 +39,10 @@ export class KritzelPortal {
 
   private portal: HTMLElement;
 
-  private moved: boolean = false;
-
-  private scrollableParent: HTMLElement | Window;
-
   @Listen('resize', { target: 'window', capture: true })
   handleResize() {
     this.calculatePosition();
   }
-
-  private handleScroll = () => {
-    const isAnchorInViewport = KritzelHTMLHelper.isElementInViewport(this.anchor);
-
-    if (!isAnchorInViewport) {
-      this.close.emit();
-      return;
-    }
-
-    this.calculatePosition();
-  };
 
   private calculateLeft() {
     if (!this.anchor || !this.portal) return 0;
@@ -101,7 +86,6 @@ export class KritzelPortal {
 
   private moveElementToPortal() {
     this.portal.appendChild(this.host);
-    this.moved = true;
   }
 
   private calculatePosition() {
@@ -120,14 +104,7 @@ export class KritzelPortal {
     this.moveElementToPortal();
     if (this.anchor) {
       this.calculatePosition();
-      this.scrollableParent = KritzelHTMLHelper.getScrollableParent(this.anchor);
-      this.scrollableParent?.addEventListener('scroll', this.handleScroll);
     }
-  }
-
-  disconnectedCallback() {
-    this.moved ? this.portal.remove() : (this.moved = true);
-    this.scrollableParent?.removeEventListener('scroll', this.handleScroll);
   }
 
   render() {
