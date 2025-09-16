@@ -21,6 +21,31 @@ export class KritzelMenuItem {
     }
   }
 
+  private handleItemSelect = (event: MouseEvent) => {
+    if(this.item.isChildMenuOpen) return;
+    event.stopPropagation();
+    this.item.select?.(this.item, this.parent);
+  }
+
+  private handleSave = (event: MouseEvent) => {
+    event.stopPropagation();
+    this.item.save(this.item);
+  }
+
+  private handleCancel = (event: MouseEvent) => {
+    event.stopPropagation();
+    this.item.cancel(this.item);
+  }
+
+   private handleMenuToggle = (event: MouseEvent) => {
+    event.stopPropagation();
+    this.item.toggleChildMenu?.(this.item, event.target as HTMLElement);
+  }
+
+  private handleMenuClose = () => {
+    this.item.closeChildMenu?.(this.item);
+  }
+
   private renderViewMode() {
     return [
       <div class="menu-item-content left">
@@ -32,16 +57,13 @@ export class KritzelMenuItem {
             <button
               id="child-menu-toggle"
               class="action-button"
-              onClick={event => {
-                event.stopPropagation();
-                this.item.toggleChildMenu?.(this.item, event.target as HTMLElement);
-              }}
+              onClick={this.handleMenuToggle}
               disabled={this.item.isDisabled}
             >
               <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
             </button>,
             <kritzel-portal anchor={this.item.childMenuAnchor} offsetY={4}>
-              <kritzel-menu-new items={this.item.children} parent={this.item} onClose={() => this.item.closeChildMenu?.(this.item)}></kritzel-menu-new>
+              <kritzel-menu-new items={this.item.children} parent={this.item} onClose={this.handleMenuClose}></kritzel-menu-new>
             </kritzel-portal>,
           ]}
       </div>,
@@ -62,19 +84,13 @@ export class KritzelMenuItem {
       <div class="menu-item-content right">
         <div
           class="action-button"
-          onClick={event => {
-            event.stopPropagation();
-            this.item.save(this.item);
-          }}
+          onClick={this.handleSave}
         >
           <kritzel-icon name="check" size={16}></kritzel-icon>
         </div>
         <div
           class="action-button"
-          onClick={event => {
-            event.stopPropagation();
-            this.item.cancel(this.item);
-          }}
+          onClick={this.handleCancel}
         >
           <kritzel-icon name="x" size={16}></kritzel-icon>
         </div>
@@ -92,7 +108,7 @@ export class KritzelMenuItem {
           'child-open': this.item.isChildMenuOpen,
         }}
         tabIndex={this.item.isDisabled ? -1 : 0}
-        onClick={() => this.item.select?.(this.item, this.parent)}
+        onClick={this.handleItemSelect}
       >
         <div class="menu-item-overlay"></div>
         {this.item.isEditing ? this.renderEditMode() : this.renderViewMode()}

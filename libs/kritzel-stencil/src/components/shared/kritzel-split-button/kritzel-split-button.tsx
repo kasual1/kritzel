@@ -1,6 +1,7 @@
-import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
+import { Component, h, Prop, State, Event, EventEmitter, Host, Element } from '@stencil/core';
 import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
+import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
 
 @Component({
   tag: 'kritzel-split-button',
@@ -9,25 +10,16 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 })
 export class KritzelSplitButton {
   @Prop()
-  buttonText: string;
+  buttonIcon: string = 'plus';
 
   @Prop()
-  buttonIcon: string;
+  dropdownIcon: string = 'chevron-down';
 
   @Prop()
-  dropdownIcon = 'chevron-down';
-
-  @Prop()
-  options: KritzelMenuItem[] = [];
+  items: KritzelMenuItemNew[] = [];
 
   @Prop()
   disabled = false;
-
-  @Prop()
-  activeItemIndex: number | null = null;
-
-  @Prop()
-  editingIndex: number | null = null;
 
   @Event()
   buttonClick: EventEmitter<void>;
@@ -50,62 +42,41 @@ export class KritzelSplitButton {
   @State()
   isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
 
+  @State()
+  anchorElement: HTMLElement;
+
   splitMenuButton: HTMLButtonElement;
 
-  @Method()
-  async openMenu() {
-    if (this.disabled || this.isMenuOpen) return;
-
+  componentWillLoad() {
     this.isMenuOpen = true;
-    this.menuOpened.emit();
-    document.addEventListener('click', this.handleDocumentClick, { once: true });
+    this.anchorElement = this.host;
   }
 
-  @Method()
-  async closeMenu() {
-    if (this.disabled || !this.isMenuOpen) return;
+  private openMenu = (event: MouseEvent) => {
+    event.stopPropagation();
+    this.isMenuOpen = true;
+    this.anchorElement = this.host;
+  }
 
+  private closeMenu = () => {
     this.isMenuOpen = false;
-    this.menuClosed.emit();
-
-    this.host.focus();
+    this.anchorElement = null;
   }
 
-  private handleDocumentClick = (event: MouseEvent) => {
-    const path = (event.composedPath && event.composedPath()) || [];
-    const clickedInside = path.some(node => (node as HTMLElement)?.tagName === 'KRITZEL-SPLIT-BUTTON' || (node as HTMLElement)?.tagName === 'KRITZEL-MENU');
-
-    if (!clickedInside) {
-      this.closeMenu();
-    } else if (this.isMenuOpen) {
-      document.addEventListener('click', this.handleDocumentClick, { once: true });
-    }
-  };
-
-  private toggleMenu = () => {
+  private toggleMenu = (event: MouseEvent) => {
+    event.stopPropagation();
     if (this.isMenuOpen) {
       this.closeMenu();
     } else {
-      this.openMenu();
-    }
-  };
-
-  private handleButtonClick = () => {
-    if (!this.disabled) {
-      this.buttonClick.emit();
+      this.openMenu(event);
     }
   };
 
   render() {
     return (
       <Host tabIndex={0} class={{ mobile: this.isTouchDevice }}>
-        <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.disabled}>
+        <button class="split-main-button" tabIndex={0} onClick={this.openMenu} disabled={this.disabled}>
           {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
-          {this.buttonText && (
-            <span>
-              {this.buttonText} ({this.options.length})
-            </span>
-          )}
         </button>
 
         <div class="split-divider"></div>
@@ -114,16 +85,8 @@ export class KritzelSplitButton {
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        <kritzel-portal anchor={this.host} offsetY={4}>
-          {this.isMenuOpen && (
-            <kritzel-menu
-              style={{ maxHeight: '300px', width: '180px' }}
-              // items={this.options}
-              activeItemIndex={this.activeItemIndex}
-              editingIndex={this.editingIndex}
-              onClose={() => this.closeMenu()}
-            ></kritzel-menu>
-          )}
+        <kritzel-portal anchor={this.anchorElement} offsetY={4}>
+          <kritzel-menu-new items={this.items} onClose={this.closeMenu}></kritzel-menu-new>
         </kritzel-portal>
       </Host>
     );

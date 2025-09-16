@@ -1,5 +1,4 @@
 import { Component, Host, Listen, Prop, Watch, h, Event, EventEmitter, Element } from '@stencil/core';
-import { KritzelHTMLHelper } from '../../../helpers/html.helper';
 
 const DEFAULT_OFFSET = 0;
 const MIN_LEFT_POSITION = 0;

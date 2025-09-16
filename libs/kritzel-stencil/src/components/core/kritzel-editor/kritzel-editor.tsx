@@ -380,18 +380,7 @@ export class KritzelEditor {
   render() {
     return (
       <Host>
-        <div class="test-menu">
-          <button
-            onClick={e => {
-              this.childMenuAnchor = this.childMenuAnchor ? null : (e.currentTarget as HTMLElement);
-            }}
-          >
-            testMenu
-          </button>
-          <kritzel-portal anchor={this.childMenuAnchor} offsetY={4}>
-            <kritzel-menu-new style={{ width: '200px' }} items={this.menuItems}></kritzel-menu-new>
-          </kritzel-portal>
-        </div>
+        <kritzel-split-button items={this.menuItems}></kritzel-split-button>
 
         <kritzel-engine
           ref={el => (this.engineRef = el)}
