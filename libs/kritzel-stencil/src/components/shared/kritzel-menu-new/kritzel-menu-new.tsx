@@ -19,7 +19,6 @@ export class KritzelMenuNew {
 
   @Listen('click', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
-    debugger;
     const target = event.target as HTMLElement;
 
     if (!this.host.contains(target)) {
@@ -27,9 +26,26 @@ export class KritzelMenuNew {
     }
   }
 
+  get hasOpenChildMenu() {
+    return this.items.some(item => item.isChildMenuOpen);
+  }
+
+  get openChildMenuItem() {
+    return this.items.find(item => item.isChildMenuOpen);
+  }
+
+  onOverlayClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    this.openChildMenuItem.closeChildMenu?.(this.openChildMenuItem);
+  }
+
   render() {
     return (
       <Host>
+        {this.hasOpenChildMenu && (
+          <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>
+        )}
+
         {this.items.map((item, index) => (
           <kritzel-menu-item
             key={index}

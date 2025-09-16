@@ -22,7 +22,6 @@ export class KritzelMenuItem {
   }
 
   private handleItemSelect = (event: MouseEvent) => {
-    if(this.item.isChildMenuOpen) return;
     event.stopPropagation();
     this.item.select?.(this.item, this.parent);
   }
