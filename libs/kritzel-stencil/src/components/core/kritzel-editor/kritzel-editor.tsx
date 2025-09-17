@@ -249,7 +249,7 @@ export class KritzelEditor {
       id: 'test-2',
       label: 'Test 2',
       select: item => this.handleItemSelect(item.id),
-      save: item => this.handleItemUpdate(item, { isEditing: false }),
+      save: item => this.handleItemUpdate(item, { isEditing: false, unchangedState: null }),
       cancel: item => this.handleItemUpdate(item, { ...item.unchangedState, isEditing: false, unchangedState: null }),
       toggleChildMenu: (item, childMenuAnchor) => {
         const isChildMenuOpen = !item.isChildMenuOpen;
@@ -297,7 +297,7 @@ export class KritzelEditor {
       id: 'test-3',
       label: 'Test 3',
       select: item => this.handleItemSelect(item.id),
-      save: item => this.handleItemUpdate(item, { isEditing: false }),
+      save: item => this.handleItemUpdate(item, { isEditing: false, unchangedState: null }),
       cancel: item => this.handleItemUpdate(item, { isEditing: false }),
       children: [
         {
@@ -394,10 +394,16 @@ export class KritzelEditor {
         item.id = `item-${Date.now()}`;
       }
 
-      this.handleItemUpdate(item, { isEditing: false });
+      this.handleItemUpdate(item, { isEditing: false, unchangedState: null });
       this.handleItemSelect(item.id);
     },
-    cancel: item => this.handleItemDelete(item),
+    cancel: item => {
+      if(item.id === 'new') {
+        this.handleItemDelete(item);
+      } else {
+        this.handleItemUpdate(item, { ...item.unchangedState, isEditing: false, unchangedState: null });
+      }
+    },
     toggleChildMenu: (item, childMenuAnchor) => {
       const isChildMenuOpen = !item.isChildMenuOpen;
       if (!isChildMenuOpen) {
@@ -448,12 +454,17 @@ export class KritzelEditor {
     });
   };
 
+  get hasEditingItem(): boolean {
+    return !!this.menuItems.find(item => item.isEditing);
+  }
+
   render() {
     return (
       <Host>
         <kritzel-split-button
           ref={el => (this.splitButtonRef = el)}
           items={this.menuItems}
+          mainButtonDisabled={this.hasEditingItem}
           onButtonClick={this.handleItemAdd}
           onClose={this.handleMenuClose}
         ></kritzel-split-button>

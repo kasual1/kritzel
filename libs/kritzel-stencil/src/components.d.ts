@@ -299,10 +299,6 @@ export namespace Components {
          */
         "buttonIcon": string;
         /**
-          * @default false
-         */
-        "disabled": boolean;
-        /**
           * @default 'chevron-down'
          */
         "dropdownIcon": string;
@@ -310,6 +306,14 @@ export namespace Components {
           * @default []
          */
         "items": KritzelMenuItemNew[];
+        /**
+          * @default false
+         */
+        "mainButtonDisabled": boolean;
+        /**
+          * @default false
+         */
+        "menuButtonDisabled": boolean;
         "open": () => Promise<void>;
     }
     interface KritzelStrokeSize {
@@ -1018,10 +1022,6 @@ declare namespace LocalJSX {
          */
         "buttonIcon"?: string;
         /**
-          * @default false
-         */
-        "disabled"?: boolean;
-        /**
           * @default 'chevron-down'
          */
         "dropdownIcon"?: string;
@@ -1029,6 +1029,14 @@ declare namespace LocalJSX {
           * @default []
          */
         "items"?: KritzelMenuItemNew[];
+        /**
+          * @default false
+         */
+        "mainButtonDisabled"?: boolean;
+        /**
+          * @default false
+         */
+        "menuButtonDisabled"?: boolean;
         "onButtonClick"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
         "onClose"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
         "onOptionSelect"?: (event: KritzelSplitButtonCustomEvent<KritzelMenuItem>) => void;
