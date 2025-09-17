@@ -310,6 +310,7 @@ export namespace Components {
           * @default []
          */
         "items": KritzelMenuItemNew[];
+        "open": () => Promise<void>;
     }
     interface KritzelStrokeSize {
         /**
@@ -684,8 +685,7 @@ declare global {
     interface HTMLKritzelSplitButtonElementEventMap {
         "buttonClick": void;
         "optionSelect": KritzelMenuItem;
-        "menuOpened": void;
-        "menuClosed": void;
+        "close": void;
     }
     interface HTMLKritzelSplitButtonElement extends Components.KritzelSplitButton, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelSplitButtonElementEventMap>(type: K, listener: (this: HTMLKritzelSplitButtonElement, ev: KritzelSplitButtonCustomEvent<HTMLKritzelSplitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1030,8 +1030,7 @@ declare namespace LocalJSX {
          */
         "items"?: KritzelMenuItemNew[];
         "onButtonClick"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
-        "onMenuClosed"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
-        "onMenuOpened"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
+        "onClose"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
         "onOptionSelect"?: (event: KritzelSplitButtonCustomEvent<KritzelMenuItem>) => void;
     }
     interface KritzelStrokeSize {

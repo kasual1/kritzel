@@ -14,6 +14,7 @@ import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engin
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
 import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
+import { ObjectHelper } from '../../../helpers/object.helper';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -209,6 +210,8 @@ export class KritzelEditor {
 
   controlsRef!: HTMLKritzelControlsElement;
 
+  splitButtonRef!: HTMLKritzelSplitButtonElement;
+
   componentDidLoad() {
     this.registerCustomSvgIcons();
   }
@@ -346,7 +349,13 @@ export class KritzelEditor {
     this.menuItems = updateSelection(this.menuItems);
   }
 
-  private handleItemUpdate(itemToUpdate: KritzelMenuItemNew, newProps: Partial<KritzelMenuItemNew>) {
+  private handleItemAdd = () => {
+    this.splitButtonRef.open();
+    const newItem = { ...this.newItem, id: `test-${ObjectHelper.generateUUID()}` };
+    this.menuItems = [newItem, ...this.menuItems];
+  }
+
+  private handleItemUpdate = (itemToUpdate: KritzelMenuItemNew, newProps: Partial<KritzelMenuItemNew>) => {
     const update = (items: KritzelMenuItemNew[]): KritzelMenuItemNew[] => {
       return items.map(item => {
         if (item === itemToUpdate) {
@@ -358,11 +367,11 @@ export class KritzelEditor {
         return item;
       });
     };
-    
+
     this.menuItems = update(this.menuItems);
   }
 
-  private handleItemDelete(itemToDelete: KritzelMenuItemNew) {
+  private handleItemDelete = (itemToDelete: KritzelMenuItemNew) => {
     const remove = (items: KritzelMenuItemNew[]): KritzelMenuItemNew[] => {
       return items
         .map(item => {
@@ -377,10 +386,59 @@ export class KritzelEditor {
     this.menuItems = remove(this.menuItems);
   }
 
+  private newItem: KritzelMenuItemNew = {
+    id: 'test-2',
+    label: 'New Item',
+    isEditing: true,
+    select: item => this.handleItemSelect(item.id),
+    save: item => this.handleItemUpdate(item, { isEditing: false }),
+    cancel: item => this.handleItemDelete(item),
+    toggleChildMenu: (item, childMenuAnchor) => {
+      const isChildMenuOpen = !item.isChildMenuOpen;
+      if (!isChildMenuOpen) {
+        childMenuAnchor = null;
+      }
+      this.handleItemUpdate(item, { isChildMenuOpen: !item.isChildMenuOpen, childMenuAnchor });
+    },
+    closeChildMenu: item => {
+      this.handleItemUpdate(item, { isChildMenuOpen: false, childMenuAnchor: null });
+    },
+    isChildMenuOpen: false,
+    isSelectable: false,
+    children: [
+      {
+        id: 'edit-test-2',
+        label: 'Edit',
+        isSelectable: false,
+        select: (_item, parent) => {
+          if (parent) {
+            this.handleItemUpdate(parent, { isEditing: true, isChildMenuOpen: false, childMenuAnchor: null, unchangedState: { label: parent.label } });
+          }
+        },
+      },
+      {
+        id: 'delete-test-2',
+        label: 'Delete',
+        isSelectable: false,
+        select: (_item, parent) => {
+          if (parent) {
+            this.handleItemUpdate(parent, { isChildMenuOpen: false, childMenuAnchor: null });
+
+            requestAnimationFrame(() => {
+              this.handleItemDelete(parent);
+            });
+
+            this.childMenuAnchor = null;
+          }
+        },
+      },
+    ],
+  };
+
   render() {
     return (
       <Host>
-        <kritzel-split-button items={this.menuItems}></kritzel-split-button>
+        <kritzel-split-button ref={el => (this.splitButtonRef = el)} items={this.menuItems} onButtonClick={this.handleItemAdd} onClose={}></kritzel-split-button>
 
         <kritzel-engine
           ref={el => (this.engineRef = el)}
