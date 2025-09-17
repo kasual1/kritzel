@@ -123,3 +123,8 @@
 .action-button:hover, .action-button:focus {
   background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
+
+.action-button.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}

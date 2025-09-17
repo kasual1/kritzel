@@ -19,7 +19,10 @@ export class KritzelSplitButton {
   items: KritzelMenuItemNew[] = [];
 
   @Prop()
-  disabled = false;
+  mainButtonDisabled = false;
+
+  @Prop()
+  menuButtonDisabled = false;
 
   @Event()
   buttonClick: EventEmitter<void>;
@@ -91,7 +94,6 @@ export class KritzelSplitButton {
 
   private handleButtonClick = (event: MouseEvent) => {
     event.stopPropagation();
-    if (this.disabled) return;
     this.buttonClick.emit();
   }
 
@@ -99,13 +101,13 @@ export class KritzelSplitButton {
   render() {
     return (
       <Host tabIndex={0} class={{ mobile: this.isTouchDevice }}>
-        <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.disabled}>
+        <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.mainButtonDisabled}>
           {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
         </button>
 
         <div class="split-divider"></div>
 
-        <button ref={el => (this.splitMenuButton = el)} class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.disabled}>
+        <button ref={el => (this.splitMenuButton = el)} class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.menuButtonDisabled}>
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
