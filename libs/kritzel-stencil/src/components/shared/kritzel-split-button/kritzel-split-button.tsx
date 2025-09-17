@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Event, EventEmitter, Host, Element } from '@stencil/core';
+import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
 import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
@@ -28,10 +28,7 @@ export class KritzelSplitButton {
   optionSelect: EventEmitter<KritzelMenuItem>;
 
   @Event()
-  menuOpened: EventEmitter<void>;
-
-  @Event()
-  menuClosed: EventEmitter<void>;
+  close: EventEmitter<void>;
 
   @Element()
   host!: HTMLElement;
@@ -47,9 +44,11 @@ export class KritzelSplitButton {
 
   splitMenuButton: HTMLButtonElement;
 
-  componentWillLoad() {
-    this.isMenuOpen = true;
-    this.anchorElement = this.host;
+
+  @Method()
+  async open() {
+    if (this.isMenuOpen) return;
+    this.openMenu(new MouseEvent('click'));
   }
 
   private openMenu = (event: MouseEvent) => {
@@ -62,6 +61,7 @@ export class KritzelSplitButton {
     this.isMenuOpen = false;
     this.anchorElement = null;
     this.closeAllChildMenus(this.items);
+    this.close.emit();
   };
 
   private toggleMenu = (event: MouseEvent) => {
@@ -89,10 +89,17 @@ export class KritzelSplitButton {
     }
   };
 
+  private handleButtonClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    if (this.disabled) return;
+    this.buttonClick.emit();
+  }
+
+
   render() {
     return (
       <Host tabIndex={0} class={{ mobile: this.isTouchDevice }}>
-        <button class="split-main-button" tabIndex={0} onClick={this.openMenu} disabled={this.disabled}>
+        <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.disabled}>
           {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
         </button>
 

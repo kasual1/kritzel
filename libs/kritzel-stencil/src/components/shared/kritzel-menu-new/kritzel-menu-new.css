@@ -13,6 +13,7 @@
   overflow-y: auto;
   scrollbar-color: #ebebeb transparent;
   scrollbar-width: thin;
+  max-height: 300px;
 }
 
 .has-open-child-overlay {
