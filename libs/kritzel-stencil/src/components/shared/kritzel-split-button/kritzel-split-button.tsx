@@ -1,5 +1,4 @@
 import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
-import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
 
@@ -9,50 +8,52 @@ import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface'
   shadow: true,
 })
 export class KritzelSplitButton {
-  @Prop()
-  buttonIcon: string = 'plus';
+  @Prop() buttonIcon: string = 'plus';
+  @Prop() dropdownIcon: string = 'chevron-down';
+  @Prop() items: KritzelMenuItemNew[] = [];
+  @Prop() mainButtonDisabled = false;
+  @Prop() menuButtonDisabled = false;
 
-  @Prop()
-  dropdownIcon: string = 'chevron-down';
+  @Event() buttonClick: EventEmitter<void>;
+  @Event() itemSelect: EventEmitter<{ item: KritzelMenuItemNew; parent: KritzelMenuItemNew }>;
+  @Event() itemSave: EventEmitter<KritzelMenuItemNew>;
+  @Event() itemCancel: EventEmitter<KritzelMenuItemNew>;
+  @Event() itemToggleChildMenu: EventEmitter<{ item: KritzelMenuItemNew; childMenuAnchor: HTMLElement }>;
+  @Event() itemCloseChildMenu: EventEmitter<KritzelMenuItemNew>;
+  @Event() close: EventEmitter<void>;
 
-  @Prop()
-  items: KritzelMenuItemNew[] = [];
+  @Element() host!: HTMLElement;
 
-  @Prop()
-  mainButtonDisabled = false;
-
-  @Prop()
-  menuButtonDisabled = false;
-
-  @Event()
-  buttonClick: EventEmitter<void>;
-
-  @Event()
-  optionSelect: EventEmitter<KritzelMenuItem>;
-
-  @Event()
-  close: EventEmitter<void>;
-
-  @Element()
-  host!: HTMLElement;
-
-  @State()
-  isMenuOpen = false;
-
-  @State()
-  isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
-
-  @State()
-  anchorElement: HTMLElement;
-
-  splitMenuButton: HTMLButtonElement;
-
+  @State() isMenuOpen = false;
+  @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
+  @State() anchorElement: HTMLElement;
+  @State() splitMenuButton: HTMLButtonElement;
 
   @Method()
   async open() {
     if (this.isMenuOpen) return;
     this.openMenu(new MouseEvent('click'));
   }
+
+  private handleItemSelect = event => {
+    this.itemSelect.emit(event.detail);
+  };
+
+  private handleItemSave = event => {
+    this.itemSave.emit(event.detail);
+  };
+
+  private handleItemCancel = event => {
+    this.itemCancel.emit(event.detail);
+  };
+
+  private handleItemToggleChildMenu = event => {
+    this.itemToggleChildMenu.emit(event.detail);
+  };
+
+  private handleItemCloseChildMenu = event => {
+    this.itemCloseChildMenu.emit(event.detail);
+  };
 
   private openMenu = (event: MouseEvent) => {
     event.stopPropagation();
@@ -63,7 +64,6 @@ export class KritzelSplitButton {
   private closeMenu = () => {
     this.isMenuOpen = false;
     this.anchorElement = null;
-    this.closeAllChildMenus(this.items);
     this.close.emit();
   };
 
@@ -76,27 +76,10 @@ export class KritzelSplitButton {
     }
   };
 
-  private closeAllChildMenus = (items: KritzelMenuItemNew[]): void => {
-    if (!items || items.length === 0) {
-      return;
-    }
-
-    for (const item of items) {
-      if (item.isChildMenuOpen && typeof item.closeChildMenu === 'function') {
-        item.closeChildMenu(item);
-      }
-
-      if (item.children && item.children.length > 0) {
-        this.closeAllChildMenus(item.children);
-      }
-    }
-  };
-
   private handleButtonClick = (event: MouseEvent) => {
     event.stopPropagation();
     this.buttonClick.emit();
-  }
-
+  };
 
   render() {
     return (
@@ -112,7 +95,15 @@ export class KritzelSplitButton {
         </button>
 
         <kritzel-portal anchor={this.anchorElement} offsetY={4}>
-          <kritzel-menu-new items={this.items} onClose={this.closeMenu}></kritzel-menu-new>
+          <kritzel-menu-new
+            items={this.items}
+            onItemSelect={this.handleItemSelect}
+            onItemSave={this.handleItemSave}
+            onItemCancel={this.handleItemCancel}
+            onItemToggleChildMenu={this.handleItemToggleChildMenu}
+            onItemCloseChildMenu={this.handleItemCloseChildMenu}
+            onClose={this.closeMenu}
+          ></kritzel-menu-new>
         </kritzel-portal>
       </Host>
     );

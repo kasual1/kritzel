@@ -12,7 +12,13 @@ export class KritzelMenuNew {
   @Prop() items: KritzelMenuItemNew[];
   @Prop() parent: KritzelMenuItemNew = null;
 
-  @Event() itemSelect: EventEmitter<KritzelMenuItemNew>;
+  @Event() itemSelect: EventEmitter<{ item: KritzelMenuItemNew; parent: KritzelMenuItemNew }>;
+  @Event() itemSave: EventEmitter<KritzelMenuItemNew>;
+  @Event() itemCancel: EventEmitter<KritzelMenuItemNew>;
+  @Event() itemToggleChildMenu: EventEmitter<{ item: KritzelMenuItemNew; childMenuAnchor: HTMLElement }>;
+  @Event() itemCloseChildMenu: EventEmitter<KritzelMenuItemNew>;
+
+
   @Event() close: EventEmitter<void>;
 
   @State() selectedIndex: number | null = null;
@@ -24,9 +30,9 @@ export class KritzelMenuNew {
     if (!this.host.contains(target)) {
 
       if(this.editingMenuItem) {
-        this.editingMenuItem.cancel(this.editingMenuItem);
+        this.itemCancel.emit(this.editingMenuItem);
       }
-
+      
       this.close.emit();
     }
   }
@@ -41,7 +47,7 @@ export class KritzelMenuNew {
 
   onOverlayClick = (event: MouseEvent) => {
     event.stopPropagation();
-    this.openChildMenuItem.closeChildMenu?.(this.openChildMenuItem);
+    this.itemCloseChildMenu.emit(this.openChildMenuItem);
   };
 
   render() {
@@ -55,6 +61,10 @@ export class KritzelMenuNew {
             item={item}
             parent={this.parent}
             style={{ pointerEvents: this.editingMenuItem && !item.isEditing ? 'none' : 'auto' }}
+            onItemSelect={(event) => this.itemSelect.emit(event.detail)}
+            onItemSave={(event) => this.itemSave.emit(event.detail)}
+            onItemCancel={(event) => this.itemCancel.emit(event.detail)}
+            onItemToggleChildMenu={(event) => this.itemToggleChildMenu.emit(event.detail)}
           ></kritzel-menu-item>
         ))}
       </Host>

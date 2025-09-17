@@ -9,9 +9,4 @@ export interface KritzelMenuItemNew {
   isChildMenuOpen?: boolean;
   childMenuAnchor?: HTMLElement;
   unchangedState?: Partial<KritzelMenuItemNew>;
-  select?: (item: KritzelMenuItemNew, parent?: KritzelMenuItemNew) => void;
-  save?: (item: KritzelMenuItemNew) => void;
-  cancel?: (item: KritzelMenuItemNew) => void;
-  toggleChildMenu?: (item: KritzelMenuItemNew, childMenuAnchor: HTMLElement) => void;
-  closeChildMenu?: (item: KritzelMenuItemNew) => void;
 }
