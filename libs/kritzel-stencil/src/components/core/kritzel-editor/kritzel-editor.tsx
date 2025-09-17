@@ -246,10 +246,22 @@ export class KritzelEditor {
   @State()
   menuItems: KritzelMenuItemNew[] = [
     {
-      id: 'test-2',
-      label: 'Test 2',
+      id: 'test-1',
+      label: 'Test 1',
       isChildMenuOpen: false,
       isSelectable: false,
+      children: [
+      {
+        id: 'edit-test-1',
+        label: 'Edit',
+        isSelectable: false,
+      },
+      {
+        id: 'delete-test-1',
+        label: 'Delete',
+        isSelectable: false,
+      },
+    ],
     },
   ];
 
@@ -358,8 +370,10 @@ export class KritzelEditor {
   }
 
   private select(detail: { item: KritzelMenuItemNew; parent: KritzelMenuItemNew }) {
-    console.trace('select', detail);
-    
+    if(this.hasEditingItem) {
+      return;
+    }
+
     if (detail.item.label === 'Edit') {
       this.handleItemUpdate(detail.parent, { isEditing: true, isChildMenuOpen: false, childMenuAnchor: null, unchangedState: { label: detail.parent.label } });
       return;
