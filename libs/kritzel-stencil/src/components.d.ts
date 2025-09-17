@@ -394,6 +394,10 @@ export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelMenuElement;
 }
+export interface KritzelMenuItemCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelMenuItemElement;
+}
 export interface KritzelMenuNewCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelMenuNewElement;
@@ -645,14 +649,33 @@ declare global {
         prototype: HTMLKritzelMenuElement;
         new (): HTMLKritzelMenuElement;
     };
+    interface HTMLKritzelMenuItemElementEventMap {
+        "itemSelect": { item: KritzelMenuItemNew; parent: KritzelMenuItemNew };
+        "itemSave": KritzelMenuItemNew;
+        "itemCancel": KritzelMenuItemNew;
+        "itemToggleChildMenu": { item: KritzelMenuItemNew; childMenuAnchor: HTMLElement };
+        "itemCloseChildMenu": KritzelMenuItemNew;
+    }
     interface HTMLKritzelMenuItemElement extends Components.KritzelMenuItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelMenuItemElementEventMap>(type: K, listener: (this: HTMLKritzelMenuItemElement, ev: KritzelMenuItemCustomEvent<HTMLKritzelMenuItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelMenuItemElementEventMap>(type: K, listener: (this: HTMLKritzelMenuItemElement, ev: KritzelMenuItemCustomEvent<HTMLKritzelMenuItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelMenuItemElement: {
         prototype: HTMLKritzelMenuItemElement;
         new (): HTMLKritzelMenuItemElement;
     };
     interface HTMLKritzelMenuNewElementEventMap {
-        "itemSelect": KritzelMenuItemNew;
+        "itemSelect": { item: KritzelMenuItemNew; parent: KritzelMenuItemNew };
+        "itemSave": KritzelMenuItemNew;
+        "itemCancel": KritzelMenuItemNew;
+        "itemToggleChildMenu": { item: KritzelMenuItemNew; childMenuAnchor: HTMLElement };
+        "itemCloseChildMenu": KritzelMenuItemNew;
         "close": void;
     }
     interface HTMLKritzelMenuNewElement extends Components.KritzelMenuNew, HTMLStencilElement {
@@ -688,7 +711,11 @@ declare global {
     };
     interface HTMLKritzelSplitButtonElementEventMap {
         "buttonClick": void;
-        "optionSelect": KritzelMenuItem;
+        "itemSelect": { item: KritzelMenuItemNew; parent: KritzelMenuItemNew };
+        "itemSave": KritzelMenuItemNew;
+        "itemCancel": KritzelMenuItemNew;
+        "itemToggleChildMenu": { item: KritzelMenuItemNew; childMenuAnchor: HTMLElement };
+        "itemCloseChildMenu": KritzelMenuItemNew;
         "close": void;
     }
     interface HTMLKritzelSplitButtonElement extends Components.KritzelSplitButton, HTMLStencilElement {
@@ -992,6 +1019,11 @@ declare namespace LocalJSX {
     }
     interface KritzelMenuItem {
         "item"?: KritzelMenuItemNew;
+        "onItemCancel"?: (event: KritzelMenuItemCustomEvent<KritzelMenuItemNew>) => void;
+        "onItemCloseChildMenu"?: (event: KritzelMenuItemCustomEvent<KritzelMenuItemNew>) => void;
+        "onItemSave"?: (event: KritzelMenuItemCustomEvent<KritzelMenuItemNew>) => void;
+        "onItemSelect"?: (event: KritzelMenuItemCustomEvent<{ item: KritzelMenuItemNew; parent: KritzelMenuItemNew }>) => void;
+        "onItemToggleChildMenu"?: (event: KritzelMenuItemCustomEvent<{ item: KritzelMenuItemNew; childMenuAnchor: HTMLElement }>) => void;
         /**
           * @default null
          */
@@ -1000,7 +1032,11 @@ declare namespace LocalJSX {
     interface KritzelMenuNew {
         "items"?: KritzelMenuItemNew[];
         "onClose"?: (event: KritzelMenuNewCustomEvent<void>) => void;
-        "onItemSelect"?: (event: KritzelMenuNewCustomEvent<KritzelMenuItemNew>) => void;
+        "onItemCancel"?: (event: KritzelMenuNewCustomEvent<KritzelMenuItemNew>) => void;
+        "onItemCloseChildMenu"?: (event: KritzelMenuNewCustomEvent<KritzelMenuItemNew>) => void;
+        "onItemSave"?: (event: KritzelMenuNewCustomEvent<KritzelMenuItemNew>) => void;
+        "onItemSelect"?: (event: KritzelMenuNewCustomEvent<{ item: KritzelMenuItemNew; parent: KritzelMenuItemNew }>) => void;
+        "onItemToggleChildMenu"?: (event: KritzelMenuNewCustomEvent<{ item: KritzelMenuItemNew; childMenuAnchor: HTMLElement }>) => void;
         /**
           * @default null
          */
@@ -1039,7 +1075,11 @@ declare namespace LocalJSX {
         "menuButtonDisabled"?: boolean;
         "onButtonClick"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
         "onClose"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
-        "onOptionSelect"?: (event: KritzelSplitButtonCustomEvent<KritzelMenuItem>) => void;
+        "onItemCancel"?: (event: KritzelSplitButtonCustomEvent<KritzelMenuItemNew>) => void;
+        "onItemCloseChildMenu"?: (event: KritzelSplitButtonCustomEvent<KritzelMenuItemNew>) => void;
+        "onItemSave"?: (event: KritzelSplitButtonCustomEvent<KritzelMenuItemNew>) => void;
+        "onItemSelect"?: (event: KritzelSplitButtonCustomEvent<{ item: KritzelMenuItemNew; parent: KritzelMenuItemNew }>) => void;
+        "onItemToggleChildMenu"?: (event: KritzelSplitButtonCustomEvent<{ item: KritzelMenuItemNew; childMenuAnchor: HTMLElement }>) => void;
     }
     interface KritzelStrokeSize {
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;

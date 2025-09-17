@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h, Element, State, Watch } from '@stencil/core';
+import { Component, Host, Prop, h, Element, State, Watch, Event, EventEmitter } from '@stencil/core';
 import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
 
 @Component({
@@ -10,14 +10,19 @@ export class KritzelMenuItem {
   @Element() host: HTMLElement;
 
   @Prop() item: KritzelMenuItemNew;
-  @Prop() parent: KritzelMenuItemNew = null;
-
   @Watch('item')
   onItemChange(newValue: KritzelMenuItemNew, oldValue: KritzelMenuItemNew) {
     if (newValue !== oldValue) {
       this.isDirty = false;
     }
   }
+  @Prop() parent: KritzelMenuItemNew = null;
+
+  @Event() itemSelect: EventEmitter<{ item: KritzelMenuItemNew; parent: KritzelMenuItemNew }>;
+  @Event() itemSave: EventEmitter<KritzelMenuItemNew>;
+  @Event() itemCancel: EventEmitter<KritzelMenuItemNew>;
+  @Event() itemToggleChildMenu: EventEmitter<{ item: KritzelMenuItemNew; childMenuAnchor: HTMLElement }>;
+  @Event() itemCloseChildMenu: EventEmitter<KritzelMenuItemNew>;
 
   @State()
   isDirty: boolean = false;
@@ -37,8 +42,7 @@ export class KritzelMenuItem {
 
   private handleItemSelect = (event: MouseEvent) => {
     event.stopPropagation();
-    if (this.item.isEditing || this.item.isDisabled) return;
-    this.item.select?.(this.item, this.parent);
+    this.itemSelect.emit({ item: this.item, parent: this.parent });
   };
 
   private handleInputChange = (event: Event) => {
@@ -50,21 +54,21 @@ export class KritzelMenuItem {
 
   private handleSave = (event: MouseEvent) => {
     event.stopPropagation();
-    this.item.save(this.item);
+    this.itemSave.emit(this.item);
   };
 
   private handleCancel = (event: MouseEvent) => {
     event.stopPropagation();
-    this.item.cancel(this.item);
+    this.itemCancel.emit(this.item);
   };
 
   private handleMenuToggle = (event: MouseEvent) => {
     event.stopPropagation();
-    this.item.toggleChildMenu?.(this.item, event.target as HTMLElement);
+    this.itemToggleChildMenu.emit({ item: this.item, childMenuAnchor: event.target as HTMLElement });
   };
 
   private handleMenuClose = () => {
-    this.item.closeChildMenu?.(this.item);
+    this.itemCloseChildMenu.emit(this.item);
   };
 
   private renderViewMode() {
@@ -79,7 +83,14 @@ export class KritzelMenuItem {
               <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
             </button>,
             <kritzel-portal anchor={this.item.childMenuAnchor} offsetY={4}>
-              <kritzel-menu-new items={this.item.children} parent={this.item} onClose={this.handleMenuClose}></kritzel-menu-new>
+              <kritzel-menu-new
+                items={this.item.children}
+                parent={this.item}
+                onItemSelect={event => this.itemSelect.emit(event.detail)}
+                onItemSave={event => this.itemSave.emit(event.detail)}
+                onItemCancel={event => this.itemCancel.emit(event.detail)}
+                onClose={this.handleMenuClose}
+              ></kritzel-menu-new>
             </kritzel-portal>,
           ]}
       </div>,
