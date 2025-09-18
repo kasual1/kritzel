@@ -13,7 +13,7 @@ import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
-import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
+import { IKritzelMenuItem } from '../../../interfaces/menu-item-new.interface';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -244,7 +244,7 @@ export class KritzelEditor {
   childMenuAnchor: HTMLElement = null;
 
   @State()
-  menuItems: KritzelMenuItemNew[] = [
+  menuItems: IKritzelMenuItem[] = [
     {
       id: 'test-1',
       label: 'Test 1',
@@ -265,7 +265,7 @@ export class KritzelEditor {
     },
   ];
 
-  newItem: KritzelMenuItemNew = {
+  newItem: IKritzelMenuItem = {
     id: 'new',
     label: 'New Item',
     isEditing: true,
@@ -286,13 +286,13 @@ export class KritzelEditor {
   };
 
   private handleItemSelect(selectedItemId: string) {
-    const updateSelection = (items: KritzelMenuItemNew[]): KritzelMenuItemNew[] => {
+    const updateSelection = (items: IKritzelMenuItem[]): IKritzelMenuItem[] => {
       return items.map(item => {
         const wasSelected = item.isSelected;
         const isNowSelected = item.id === selectedItemId;
 
         // Recursively update children first
-        let newChildren: KritzelMenuItemNew[] | undefined;
+        let newChildren: IKritzelMenuItem[] | undefined;
         if (item.children) {
           newChildren = updateSelection(item.children);
         }
@@ -322,8 +322,8 @@ export class KritzelEditor {
     this.menuItems = [{ ...this.newItem }, ...this.menuItems];
   };
 
-  private handleItemUpdate = (itemToUpdate: KritzelMenuItemNew, newProps: Partial<KritzelMenuItemNew>) => {
-    const update = (items: KritzelMenuItemNew[]): KritzelMenuItemNew[] => {
+  private handleItemUpdate = (itemToUpdate: IKritzelMenuItem, newProps: Partial<IKritzelMenuItem>) => {
+    const update = (items: IKritzelMenuItem[]): IKritzelMenuItem[] => {
       return items.map(item => {
         if (item === itemToUpdate) {
           return { ...item, ...newProps };
@@ -338,8 +338,8 @@ export class KritzelEditor {
     this.menuItems = update(this.menuItems);
   };
 
-  private handleItemDelete = (itemToDelete: KritzelMenuItemNew) => {
-    const remove = (items: KritzelMenuItemNew[]): KritzelMenuItemNew[] => {
+  private handleItemDelete = (itemToDelete: IKritzelMenuItem) => {
+    const remove = (items: IKritzelMenuItem[]): IKritzelMenuItem[] => {
       return items
         .map(item => {
           if (item.children) {
@@ -369,7 +369,7 @@ export class KritzelEditor {
     return !!this.menuItems.find(item => item.isEditing);
   }
 
-  private select(detail: { item: KritzelMenuItemNew; parent: KritzelMenuItemNew }) {
+  private select(detail: { item: IKritzelMenuItem; parent: IKritzelMenuItem }) {
     if(this.hasEditingItem) {
       return;
     }
@@ -393,7 +393,7 @@ export class KritzelEditor {
     this.handleItemSelect(detail.item.id);
   }
 
-  private save(item: KritzelMenuItemNew) {
+  private save(item: IKritzelMenuItem) {
     if (item.id === 'new') {
       item.id = `item-${Date.now()}`;
       this.handleItemUpdate(item, { isEditing: false, unchangedState: null });
@@ -404,7 +404,7 @@ export class KritzelEditor {
     this.handleItemUpdate(item, { isEditing: false, unchangedState: null });
   }
 
-  private cancel(item: KritzelMenuItemNew) {
+  private cancel(item: IKritzelMenuItem) {
     if (item.id === 'new') {
       this.handleItemDelete(item);
     } else {
@@ -412,7 +412,7 @@ export class KritzelEditor {
     }
   }
 
-  private toggleChildMenu(item: KritzelMenuItemNew, childMenuAnchor: HTMLElement) {
+  private toggleChildMenu(item: IKritzelMenuItem, childMenuAnchor: HTMLElement) {
     const isChildMenuOpen = !item.isChildMenuOpen;
     let updatedChildMenuAnchor = childMenuAnchor;
     if (!isChildMenuOpen) {
@@ -421,7 +421,7 @@ export class KritzelEditor {
     this.handleItemUpdate(item, { isChildMenuOpen, childMenuAnchor: updatedChildMenuAnchor });
   }
 
-  private closeChildMenu(item: KritzelMenuItemNew) {
+  private closeChildMenu(item: IKritzelMenuItem) {
     this.handleItemUpdate(item, { isChildMenuOpen: false, childMenuAnchor: null });
   }
 

@@ -1,5 +1,5 @@
 import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Listen } from '@stencil/core';
-import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
+import { IKritzelMenuItem } from '../../../interfaces/menu-item-new.interface';
 
 @Component({
   tag: 'kritzel-menu',
@@ -9,14 +9,14 @@ import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface'
 export class KritzelMenu {
   @Element() host: HTMLElement;
 
-  @Prop() items: KritzelMenuItemNew[];
-  @Prop() parent: KritzelMenuItemNew = null;
+  @Prop() items: IKritzelMenuItem[];
+  @Prop() parent: IKritzelMenuItem = null;
 
-  @Event() itemSelect: EventEmitter<{ item: KritzelMenuItemNew; parent: KritzelMenuItemNew }>;
-  @Event() itemSave: EventEmitter<KritzelMenuItemNew>;
-  @Event() itemCancel: EventEmitter<KritzelMenuItemNew>;
-  @Event() itemToggleChildMenu: EventEmitter<{ item: KritzelMenuItemNew; childMenuAnchor: HTMLElement }>;
-  @Event() itemCloseChildMenu: EventEmitter<KritzelMenuItemNew>;
+  @Event() itemSelect: EventEmitter<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>;
+  @Event() itemSave: EventEmitter<IKritzelMenuItem>;
+  @Event() itemCancel: EventEmitter<IKritzelMenuItem>;
+  @Event() itemToggleChildMenu: EventEmitter<{ item: IKritzelMenuItem; childMenuAnchor: HTMLElement }>;
+  @Event() itemCloseChildMenu: EventEmitter<IKritzelMenuItem>;
 
 
   @Event() close: EventEmitter<void>;

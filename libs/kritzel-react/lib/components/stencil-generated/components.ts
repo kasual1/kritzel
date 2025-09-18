@@ -10,7 +10,7 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type KritzelEditorCustomEvent, type KritzelMenuItemCustomEvent, type KritzelMenuItemNew } from "../../../../kritzel-stencil";
+import { type IKritzelMenuItem, type KritzelEditorCustomEvent, type KritzelMenuItemCustomEvent } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelMenuItem as KritzelMenuItemElement, defineCustomElement as defineKritzelMenuItem } from "../../../../kritzel-stencil/dist/components/kritzel-menu-item.js";
 
@@ -26,11 +26,11 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
 });
 
 export type KritzelMenuItemEvents = {
-    onItemSelect: EventName<KritzelMenuItemCustomEvent<{ item: KritzelMenuItemNew; parent: KritzelMenuItemNew }>>,
-    onItemSave: EventName<KritzelMenuItemCustomEvent<KritzelMenuItemNew>>,
-    onItemCancel: EventName<KritzelMenuItemCustomEvent<KritzelMenuItemNew>>,
-    onItemToggleChildMenu: EventName<KritzelMenuItemCustomEvent<{ item: KritzelMenuItemNew; childMenuAnchor: HTMLElement }>>,
-    onItemCloseChildMenu: EventName<KritzelMenuItemCustomEvent<KritzelMenuItemNew>>
+    onItemSelect: EventName<KritzelMenuItemCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>>,
+    onItemSave: EventName<KritzelMenuItemCustomEvent<IKritzelMenuItem>>,
+    onItemCancel: EventName<KritzelMenuItemCustomEvent<IKritzelMenuItem>>,
+    onItemToggleChildMenu: EventName<KritzelMenuItemCustomEvent<{ item: IKritzelMenuItem; childMenuAnchor: HTMLElement }>>,
+    onItemCloseChildMenu: EventName<KritzelMenuItemCustomEvent<IKritzelMenuItem>>
 };
 
 export const KritzelMenuItem: StencilReactComponent<KritzelMenuItemElement, KritzelMenuItemEvents> = /*@__PURE__*/ createComponent<KritzelMenuItemElement, KritzelMenuItemEvents>({

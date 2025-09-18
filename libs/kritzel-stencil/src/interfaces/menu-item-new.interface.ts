@@ -1,12 +1,13 @@
-export interface KritzelMenuItemNew {
+export interface IKritzelMenuItem<T = any> {
   id: string;
   label: string;
-  children?: KritzelMenuItemNew[];
+  data?: T;
+  children?: IKritzelMenuItem[];
   isSelectable?: boolean;
   isSelected?: boolean;
   isEditing?: boolean;
   isDisabled?: boolean;
   isChildMenuOpen?: boolean;
   childMenuAnchor?: HTMLElement;
-  unchangedState?: Partial<KritzelMenuItemNew>;
+  unchangedState?: Partial<IKritzelMenuItem>;
 }
