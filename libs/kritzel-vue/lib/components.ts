@@ -7,7 +7,6 @@ import type { JSX } from '../../kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelMenuItem } from '../../kritzel-stencil/dist/components/kritzel-menu-item.js';
-import { defineCustomElement as defineKritzelMenuNew } from '../../kritzel-stencil/dist/components/kritzel-menu-new.js';
 
 
 export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__*/ defineContainer<JSX.KritzelEditor>('kritzel-editor', defineKritzelEditor, [
@@ -39,24 +38,5 @@ export const KritzelMenuItem: StencilVueComponent<JSX.KritzelMenuItem> = /*@__PU
   'itemCancel',
   'itemToggleChildMenu',
   'itemCloseChildMenu'
-]);
-
-
-export const KritzelMenuNew: StencilVueComponent<JSX.KritzelMenuNew> = /*@__PURE__*/ defineContainer<JSX.KritzelMenuNew>('kritzel-menu-new', defineKritzelMenuNew, [
-  'items',
-  'parent',
-  'itemSelect',
-  'itemSave',
-  'itemCancel',
-  'itemToggleChildMenu',
-  'itemCloseChildMenu',
-  'close'
-], [
-  'itemSelect',
-  'itemSave',
-  'itemCancel',
-  'itemToggleChildMenu',
-  'itemCloseChildMenu',
-  'close'
 ]);
 

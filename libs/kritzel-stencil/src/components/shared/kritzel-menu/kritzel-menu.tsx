@@ -1,6 +1,5 @@
-import { Component, h, Prop, Host, State, Listen, Element, Watch, Event, EventEmitter } from '@stencil/core';
-import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
-import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
+import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Listen } from '@stencil/core';
+import { KritzelMenuItemNew } from '../../../interfaces/menu-item-new.interface';
 
 @Component({
   tag: 'kritzel-menu',
@@ -8,214 +7,65 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
   shadow: true,
 })
 export class KritzelMenu {
-  @Element()
-  host: HTMLElement;
+  @Element() host: HTMLElement;
 
-  @Prop()
-  items: KritzelMenuItem[] = [];
+  @Prop() items: KritzelMenuItemNew[];
+  @Prop() parent: KritzelMenuItemNew = null;
 
-  @Prop()
-  parentIndex: number | null = null;
+  @Event() itemSelect: EventEmitter<{ item: KritzelMenuItemNew; parent: KritzelMenuItemNew }>;
+  @Event() itemSave: EventEmitter<KritzelMenuItemNew>;
+  @Event() itemCancel: EventEmitter<KritzelMenuItemNew>;
+  @Event() itemToggleChildMenu: EventEmitter<{ item: KritzelMenuItemNew; childMenuAnchor: HTMLElement }>;
+  @Event() itemCloseChildMenu: EventEmitter<KritzelMenuItemNew>;
 
-  @Prop()
-  parent: KritzelMenuItem = null;
 
-  @Prop()
-  activeItemIndex: number | null = null;
+  @Event() close: EventEmitter<void>;
 
-  @Prop()
-  editingIndex: number | null = null;
+  @State() selectedIndex: number | null = null;
 
-  @Event()
-  close: EventEmitter<void>;
+  @Listen('click', { target: 'window' })
+  handleOutsideClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
 
-  @State()
-  openChildMenuIndex: number | null = null;
+    if (!this.host.contains(target)) {
 
-  @State()
-  isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
-
-  private editInput?: HTMLInputElement;
-
-  private childMenuAnchor?: HTMLElement = null;
-
-  private childMenu?: HTMLKritzelMenuElement = null;
-
-  private cancelButton?: HTMLElement = null;
-
-  private saveButton?: HTMLElement = null;
-
-  @Watch('editingIndex')
-  onEditingIndexChange(newValue: number | null) {
-    if (newValue === null) {
-      this.openChildMenuIndex = null;
-      this.editInput = undefined;
-      return;
-    }
-  }
-
-  @Listen('pointerup', { target: 'window' })
-  handleWindowClick(event: PointerEvent) {
-    requestAnimationFrame(() => {
-      if (this.childMenu === null) {
-        return;
+      if(this.editingMenuItem) {
+        this.itemCancel.emit(this.editingMenuItem);
       }
-
-      const target = event.target as HTMLElement;
-
-      if (!target.contains(this.childMenu)) {
-        this.openChildMenuIndex = null;
-      }
-    });
-  }
-
-  @Listen('keydown', { target: 'window' })
-  handleEscape(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      if (this.openChildMenuIndex !== null) {
-        return;
-      }
-
-      if (this.editingIndex !== null) {
-        this.cancelButton?.click();
-        return;
-      }
-
+      
       this.close.emit();
     }
   }
 
-  @Listen('keydown', { target: 'window' })
-  handleEnter(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      if (this.editingIndex !== null) {
-        this.saveButton?.click();
-        return;
-      }
-    }
+  get openChildMenuItem() {
+    return this.items.find(item => item.isChildMenuOpen);
   }
 
-  componentDidLoad() {
-    requestAnimationFrame(() => {
-      this.host.focus();
-    });
+  get editingMenuItem() {
+    return this.items.find(item => item.isEditing);
   }
 
-  isViewMode(index: number): boolean {
-    return this.editingIndex !== index;
-  }
-
-  handleSelect(item: KritzelMenuItem) {
-    if (item.disabled || this.editingIndex !== null || this.openChildMenuIndex !== null) {
-      return;
-    }
-    item.select?.(item);
-  }
+  onOverlayClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    this.itemCloseChildMenu.emit(this.openChildMenuItem);
+  };
 
   render() {
     return (
-      <Host tabIndex={0} class={{ mobile: this.isTouchDevice }}>
+      <Host>
+        {this.openChildMenuItem && <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>}
+
         {this.items.map((item, index) => (
-          <button
-            tabIndex={0}
-            class={{
-              'menu-item': true,
-              'disabled': item.disabled,
-              'inactive': this.openChildMenuIndex !== null && this.openChildMenuIndex !== index,
-              'child-open': this.openChildMenuIndex === index,
-              'edit-mode': this.editingIndex === index,
-              'active': this.activeItemIndex === index,
-            }}
-            style={{
-              pointerEvents:
-                (this.editingIndex !== null && this.editingIndex !== index) || (this.openChildMenuIndex !== null && this.openChildMenuIndex !== index) ? 'none' : 'auto',
-            }}
-            onClick={() => this.handleSelect(item)}
-          >
-            {this.isViewMode(index) === true && (
-              <div class="view-container">
-                <span class="menu-item-label">{item.label}</span>
-
-                <div>
-                  {item.children && item.children.length > 0 && (
-                    <button
-                      class="menu-item-button"
-                      tabIndex={0}
-                      onClick={event => {
-                        if (this.editingIndex !== null) return;
-                        event.stopPropagation();
-                        this.childMenuAnchor = this.openChildMenuIndex === index ? null : (event.currentTarget as HTMLElement);
-                        this.openChildMenuIndex = this.openChildMenuIndex === index ? null : index;
-                      }}
-                    >
-                      <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
-                    </button>
-                  )}
-
-                  {this.openChildMenuIndex === index && (
-                    <kritzel-portal anchor={this.childMenuAnchor} offsetY={4} onClose={() => (this.openChildMenuIndex = null)}>
-                      <kritzel-menu
-                        ref={el => {
-                          this.childMenu = el;
-                        }}
-                        style={{ minWidth: '100px' }}
-                        // items={item.children}
-                        parentIndex={index}
-                        // parent={item}
-                        onClose={() => {
-                          this.openChildMenuIndex = null;
-                          this.childMenuAnchor?.focus();
-                        }}
-                      ></kritzel-menu>
-                    </kritzel-portal>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {this.isViewMode(index) === false && (
-              <div class="edit-container">
-                <input
-                  tabIndex={0}
-                  ref={el => {
-                    this.editInput = el as HTMLInputElement;
-                    requestAnimationFrame(() => {
-                      this.editInput?.focus();
-                      this.editInput?.select();
-                    });
-                  }}
-                  type="text"
-                  name={'menu-item-' + index}
-                  value={item.label}
-                  onInput={e => (item.label = (e.target as HTMLInputElement).value)}
-                />
-
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <div
-                    class="menu-item-button"
-                    ref={el => (this.cancelButton = el)}
-                    tabIndex={0}
-                    onClick={() => {
-                      item.cancel?.(item);
-                    }}
-                  >
-                    <kritzel-icon name="x" size={16}></kritzel-icon>
-                  </div>
-
-                  <div
-                    class="menu-item-button"
-                    ref={el => (this.saveButton = el)}
-                    tabIndex={0}
-                    onClick={() => {
-                      item.save?.(item);
-                    }}
-                  >
-                    <kritzel-icon name="check" size={16}></kritzel-icon>
-                  </div>
-                </div>
-              </div>
-            )}
-          </button>
+          <kritzel-menu-item
+            key={index}
+            item={item}
+            parent={this.parent}
+            style={{ pointerEvents: this.editingMenuItem && !item.isEditing ? 'none' : 'auto' }}
+            onItemSelect={(event) => this.itemSelect.emit(event.detail)}
+            onItemSave={(event) => this.itemSave.emit(event.detail)}
+            onItemCancel={(event) => this.itemCancel.emit(event.detail)}
+            onItemToggleChildMenu={(event) => this.itemToggleChildMenu.emit(event.detail)}
+          ></kritzel-menu-item>
         ))}
       </Host>
     );

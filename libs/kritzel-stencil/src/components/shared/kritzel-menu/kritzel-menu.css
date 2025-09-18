@@ -1,179 +1,26 @@
 :host {
+  position: relative;
   display: flex;
   flex-direction: column;
-  min-width: 180px;
-  padding: var(--kritzel-controls-padding, 8px);
-  background-color: var(--kritzel-controls-background-color, #ffffff);
-  border-radius: var(--kritzel-controls-border-radius, 12px);
-  box-shadow: var(--kritzel-controls-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
-  border: var(--kritzel-controls-border, 1px solid #ebebeb);
+  background-color: var(--kritzel-menu-background-color, #ffffff);
+  width: var(--kritzel-menu-width, 180px);
+  padding: var(--kritzel-menu-padding, 8px);
+  border-radius: var(--kritzel-menu-border-radius, 12px);
+  box-shadow: var(--kritzel-menu-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  border: var(--kritzel-menu-border, 1px solid #ebebeb);
   z-index: 2;
   gap: var(--kritzel-menu-item-gap, 4px);
   overflow-y: auto;
   scrollbar-color: #ebebeb transparent;
   scrollbar-width: thin;
+  max-height: 300px;
 }
 
-:host(.mobile){
-  --kritzel-menu-item-button-hover-background-color: transparent;
-  --kritzel-menu-item-button-focus-background-color: transparent;
-}
-
-button {
-  all: unset;
-  background: transparent;
-  border: 0;
-  padding: 0;
-  margin: 0;
-  font: inherit;
-  color: inherit;
-  line-height: inherit;
-  text-align: inherit;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  border-radius: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-
-button:focus {
-  outline: none;
-}
-
-:host(:focus) {
-  outline: none;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--kritzel-context-menu-item-padding, 8px);
-  border-radius: var(--kritzel-context-menu-item-border-radius, 12px);
-  cursor: pointer;
-  font-family: sans-serif;
-  font-size: var(--kritzel-context-menu-item-font-size, 14px);
-  color: var(--kritzel-context-menu-item-color, #333333);
-  gap: var(--kritzel-context-menu-item-gap, 12px);
-}
-
-.menu-item:focus,
-.menu-item:focus-within {
-  outline: none;
-  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
-}
-
-.menu-item-label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.menu-item:not(.disabled):not(.active):hover {
-  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
-}
-
-.menu-item:not(.disabled):not(.active):active {
-  background-color: var(--kritzel-context-menu-item-active-background-color, hsl(0, 0%, 0%, 8.6%));
-}
-
-.menu-item.active {
-  color: var(--kritzel-controls-background-color, #ffffff);
-  background-color: var(--kritzel-controls-control-selected-background-color, #007aff);
-}
-
-.menu-item.active kritzel-icon {
-  filter: brightness(0) invert(1);
-}
-
-.menu-item.active:hover {
-  background-color: var(--kritzel-controls-control-selected-hover-background-color, #0075f1);
-}
-
-.menu-item.disabled {
-  color: var(--kritzel-context-menu-item-disabled-color, #aaaaaa);
-  background-color: transparent;
-  cursor: default;
-}
-
-.menu-item.child-open {
-  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%)) !important;
-}
-
-.menu-item.active.menu-item.child-open {
-  background-color: var(--kritzel-controls-control-selected-active-background-color, #0075f1) !important;
-}
-
-.menu-item kritzel-icon {
-  opacity: 0.8;
-  flex-shrink: 0;
-}
-
-.menu-item.disabled kritzel-icon {
-  opacity: 0.4;
-}
-
-.menu-item.edit-mode input {
-  background: transparent;
-  border: none;
-  outline: none;
-  font-size: inherit;
-  font-family: inherit;
-  color: inherit;
-  padding: 0;
-  width: 100%;
-  padding: 2px 0px;
-  border-bottom: 1px solid var(--kritzel-context-menu-item-color, #333333);
-}
-
-.menu-item.active.edit-mode input {
-  border-bottom: 1px solid var(--kritzel-controls-background-color, #ffffff);
-}
-
-.menu-item.edit-mode input::selection {
-  background-color: var(--kritzel-controls-control-selected-background-color, #007aff);
-  border-radius: 4px;
-  color: var(--kritzel-controls-background-color, #ffffff);
-}
-
-.menu-item.active.edit-mode input::selection {
-  background-color: var(--kritzel-menu-item-selected-input-background-color, #ffffff34);
-}
-
-.menu-item.edit-mode {
-  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
-}
-
-.menu-item.edit-mode.active {
-  background-color: var(--kritzel-context-menu-item-hover-background-color, #007aff);
-}
-
-.menu-item-button {
-  background: transparent;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.menu-item-button:hover {
-  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
-}
-
-.menu-item-button:focus {
-  background-color: var(--kritzel-menu-item-button-focus-background-color, hsl(0, 0%, 0%, 4.3%));
-}
-
-.edit-container,
-.view-container {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--kritzel-context-menu-item-gap, 4px);
+.has-open-child-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
 }
