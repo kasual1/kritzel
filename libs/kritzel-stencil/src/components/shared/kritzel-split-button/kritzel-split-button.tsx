@@ -27,7 +27,8 @@ export class KritzelSplitButton {
   @State() isMenuOpen = false;
   @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
   @State() anchorElement: HTMLElement;
-  @State() splitMenuButton: HTMLButtonElement;
+  
+  splitMenuButtonRef: HTMLButtonElement;
 
   @Method()
   async open() {
@@ -90,7 +91,7 @@ export class KritzelSplitButton {
 
         <div class="split-divider"></div>
 
-        <button ref={el => (this.splitMenuButton = el)} class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.menuButtonDisabled}>
+        <button ref={el => (this.splitMenuButtonRef = el)} class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.menuButtonDisabled}>
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 

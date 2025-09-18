@@ -1,7 +1,7 @@
 export interface IKritzelMenuItem<T = any> {
   id: string;
   label: string;
-  data?: T;
+  value?: T;
   children?: IKritzelMenuItem[];
   isSelectable?: boolean;
   isSelected?: boolean;
