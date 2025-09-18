@@ -83,14 +83,14 @@ export class KritzelMenuItem {
               <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
             </button>,
             <kritzel-portal anchor={this.item.childMenuAnchor} offsetY={4}>
-              <kritzel-menu-new
+              <kritzel-menu
                 items={this.item.children}
                 parent={this.item}
                 onItemSelect={event => this.itemSelect.emit(event.detail)}
                 onItemSave={event => this.itemSave.emit(event.detail)}
                 onItemCancel={event => this.itemCancel.emit(event.detail)}
                 onClose={this.handleMenuClose}
-              ></kritzel-menu-new>
+              ></kritzel-menu>
             </kritzel-portal>,
           ]}
       </div>,

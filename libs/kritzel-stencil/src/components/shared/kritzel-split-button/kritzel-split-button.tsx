@@ -95,7 +95,7 @@ export class KritzelSplitButton {
         </button>
 
         <kritzel-portal anchor={this.anchorElement} offsetY={4}>
-          <kritzel-menu-new
+          <kritzel-menu
             items={this.items}
             onItemSelect={this.handleItemSelect}
             onItemSave={this.handleItemSave}
@@ -103,7 +103,7 @@ export class KritzelSplitButton {
             onItemToggleChildMenu={this.handleItemToggleChildMenu}
             onItemCloseChildMenu={this.handleItemCloseChildMenu}
             onClose={this.closeMenu}
-          ></kritzel-menu-new>
+          ></kritzel-menu>
         </kritzel-portal>
       </Host>
     );
