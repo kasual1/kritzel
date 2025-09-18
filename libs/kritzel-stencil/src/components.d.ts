@@ -320,6 +320,11 @@ export namespace Components {
     interface KritzelUtilityPanel {
     }
     interface KritzelWorkspaceManager {
+        "activeWorkspace": KritzelWorkspace;
+        /**
+          * @default []
+         */
+        "workspaces": KritzelWorkspace[];
     }
 }
 export interface KritzelBrushStyleCustomEvent<T> extends CustomEvent<T> {
@@ -389,6 +394,10 @@ export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelUtilityPanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelUtilityPanelElement;
+}
+export interface KritzelWorkspaceManagerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelWorkspaceManagerElement;
 }
 declare global {
     interface HTMLKritzelBrushStyleElementEventMap {
@@ -729,7 +738,19 @@ declare global {
         prototype: HTMLKritzelUtilityPanelElement;
         new (): HTMLKritzelUtilityPanelElement;
     };
+    interface HTMLKritzelWorkspaceManagerElementEventMap {
+        "isWorkspaceManagerReady": void;
+        "workspaceChange": KritzelWorkspace;
+    }
     interface HTMLKritzelWorkspaceManagerElement extends Components.KritzelWorkspaceManager, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLKritzelWorkspaceManagerElement, ev: KritzelWorkspaceManagerCustomEvent<HTMLKritzelWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelWorkspaceManagerElementEventMap>(type: K, listener: (this: HTMLKritzelWorkspaceManagerElement, ev: KritzelWorkspaceManagerCustomEvent<HTMLKritzelWorkspaceManagerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelWorkspaceManagerElement: {
         prototype: HTMLKritzelWorkspaceManagerElement;
@@ -1044,6 +1065,13 @@ declare namespace LocalJSX {
         "onUndo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
     }
     interface KritzelWorkspaceManager {
+        "activeWorkspace"?: KritzelWorkspace;
+        "onIsWorkspaceManagerReady"?: (event: KritzelWorkspaceManagerCustomEvent<void>) => void;
+        "onWorkspaceChange"?: (event: KritzelWorkspaceManagerCustomEvent<KritzelWorkspace>) => void;
+        /**
+          * @default []
+         */
+        "workspaces"?: KritzelWorkspace[];
     }
     interface IntrinsicElements {
         "kritzel-brush-style": KritzelBrushStyle;

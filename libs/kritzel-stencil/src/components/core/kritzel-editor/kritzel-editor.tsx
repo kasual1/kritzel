@@ -13,7 +13,6 @@ import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
-import { IKritzelMenuItem } from '../../../interfaces/menu-item-new.interface';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -240,207 +239,18 @@ export class KritzelEditor {
     }
   }
 
-  @State()
-  childMenuAnchor: HTMLElement = null;
-
-  @State()
-  menuItems: IKritzelMenuItem[] = [
-    {
-      id: 'test-1',
-      label: 'Test 1',
-      isChildMenuOpen: false,
-      isSelectable: false,
-      children: [
-      {
-        id: 'edit-test-1',
-        label: 'Edit',
-        isSelectable: false,
-      },
-      {
-        id: 'delete-test-1',
-        label: 'Delete',
-        isSelectable: false,
-      },
-    ],
-    },
-  ];
-
-  newItem: IKritzelMenuItem = {
-    id: 'new',
-    label: 'New Item',
-    isEditing: true,
-    isChildMenuOpen: false,
-    isSelectable: false,
-    children: [
-      {
-        id: 'edit-test-2',
-        label: 'Edit',
-        isSelectable: false,
-      },
-      {
-        id: 'delete-test-2',
-        label: 'Delete',
-        isSelectable: false,
-      },
-    ],
-  };
-
-  private handleItemSelect(selectedItemId: string) {
-    const updateSelection = (items: IKritzelMenuItem[]): IKritzelMenuItem[] => {
-      return items.map(item => {
-        const wasSelected = item.isSelected;
-        const isNowSelected = item.id === selectedItemId;
-
-        // Recursively update children first
-        let newChildren: IKritzelMenuItem[] | undefined;
-        if (item.children) {
-          newChildren = updateSelection(item.children);
-        }
-
-        // Determine if the item or its children have changed
-        const childrenChanged = newChildren && newChildren !== item.children;
-        const selectionChanged = wasSelected !== isNowSelected;
-
-        if (!selectionChanged && !childrenChanged) {
-          return item; // No change, return original item
-        }
-
-        // Create a new item with the updated state
-        const newItem = { ...item, isSelected: isNowSelected };
-        if (newChildren) {
-          newItem.children = newChildren;
-        }
-        return newItem;
-      });
-    };
-
-    this.menuItems = updateSelection(this.menuItems);
-  }
-
-  private handleItemAdd = () => {
-    this.splitButtonRef.open();
-    this.menuItems = [{ ...this.newItem }, ...this.menuItems];
-  };
-
-  private handleItemUpdate = (itemToUpdate: IKritzelMenuItem, newProps: Partial<IKritzelMenuItem>) => {
-    const update = (items: IKritzelMenuItem[]): IKritzelMenuItem[] => {
-      return items.map(item => {
-        if (item === itemToUpdate) {
-          return { ...item, ...newProps };
-        }
-        if (item.children) {
-          return { ...item, children: update(item.children) };
-        }
-        return item;
-      });
-    };
-
-    this.menuItems = update(this.menuItems);
-  };
-
-  private handleItemDelete = (itemToDelete: IKritzelMenuItem) => {
-    const remove = (items: IKritzelMenuItem[]): IKritzelMenuItem[] => {
-      return items
-        .map(item => {
-          if (item.children) {
-            return { ...item, children: remove(item.children) };
-          }
-          return item;
-        })
-        .filter(item => item.id !== itemToDelete.id);
-    };
-
-    this.menuItems = remove(this.menuItems);
-  };
-
-  private handleMenuClose = () => {
-    this.menuItems.forEach(item => {
-      if (item.isEditing) {
-        this.cancel(item);
-      }
-
-      if (item.isChildMenuOpen) {
-        this.closeChildMenu(item);
-      }
-    });
-  };
-
-  get hasEditingItem(): boolean {
-    return !!this.menuItems.find(item => item.isEditing);
-  }
-
-  private select(detail: { item: IKritzelMenuItem; parent: IKritzelMenuItem }) {
-    if(this.hasEditingItem) {
-      return;
-    }
-
-    if (detail.item.label === 'Edit') {
-      this.handleItemUpdate(detail.parent, { isEditing: true, isChildMenuOpen: false, childMenuAnchor: null, unchangedState: { label: detail.parent.label } });
-      return;
-    }
-
-    if (detail.item.label === 'Delete') {
-      this.handleItemUpdate(detail.parent, { isChildMenuOpen: false, childMenuAnchor: null });
-
-      requestAnimationFrame(() => {
-        this.handleItemDelete(detail.parent);
-      });
-
-      this.childMenuAnchor = null;
-      return;
-    }
-
-    this.handleItemSelect(detail.item.id);
-  }
-
-  private save(item: IKritzelMenuItem) {
-    if (item.id === 'new') {
-      item.id = `item-${Date.now()}`;
-      this.handleItemUpdate(item, { isEditing: false, unchangedState: null });
-      this.handleItemSelect(item.id);
-      return;
-    }
-
-    this.handleItemUpdate(item, { isEditing: false, unchangedState: null });
-  }
-
-  private cancel(item: IKritzelMenuItem) {
-    if (item.id === 'new') {
-      this.handleItemDelete(item);
-    } else {
-      this.handleItemUpdate(item, { ...item.unchangedState, isEditing: false, unchangedState: null });
-    }
-  }
-
-  private toggleChildMenu(item: IKritzelMenuItem, childMenuAnchor: HTMLElement) {
-    const isChildMenuOpen = !item.isChildMenuOpen;
-    let updatedChildMenuAnchor = childMenuAnchor;
-    if (!isChildMenuOpen) {
-      updatedChildMenuAnchor = null;
-    }
-    this.handleItemUpdate(item, { isChildMenuOpen, childMenuAnchor: updatedChildMenuAnchor });
-  }
-
-  private closeChildMenu(item: IKritzelMenuItem) {
-    this.handleItemUpdate(item, { isChildMenuOpen: false, childMenuAnchor: null });
-  }
+  
 
   render() {
     return (
       <Host>
-        <kritzel-split-button
-          ref={el => (this.splitButtonRef = el)}
-          items={this.menuItems}
-          mainButtonDisabled={this.hasEditingItem}
-          onButtonClick={this.handleItemAdd}
-          onClose={this.handleMenuClose}
-          onItemSelect={event => this.select(event.detail)}
-          onItemSave={event => this.save(event.detail)}
-          onItemCancel={event => this.cancel(event.detail)}
-          onItemToggleChildMenu={event => this.toggleChildMenu(event.detail.item, event.detail.childMenuAnchor)}
-          onItemCloseChildMenu={event => this.closeChildMenu(event.detail)}
-        ></kritzel-split-button>
-
+         <kritzel-workspace-manager
+          workspaces={this.workspaces}
+          activeWorkspace={this.activeWorkspace}
+          onWorkspaceChange={event => this.activeWorkspace = event.detail}
+          onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
+        ></kritzel-workspace-manager>
+        
         <kritzel-engine
           ref={el => (this.engineRef = el)}
           workspace={this.activeWorkspace}

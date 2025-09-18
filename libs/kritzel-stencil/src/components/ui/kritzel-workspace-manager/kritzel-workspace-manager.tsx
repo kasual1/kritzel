@@ -1,9 +1,6 @@
-// import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
-// import { KritzelWorkspace } from '../../../classes/workspace.class';
-// import { ObjectHelper } from '../../../helpers/object.helper';
-// import { KritzelMenuItem } from '../../../interfaces/menu-item.interface';
-
-import { Component } from "@stencil/core";
+import { KritzelWorkspace } from '../../../classes/workspace.class';
+import { IKritzelMenuItem } from '../../../interfaces/menu-item-new.interface';
+import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Watch } from '@stencil/core';
 
 @Component({
   tag: 'kritzel-workspace-manager',
@@ -11,144 +8,127 @@ import { Component } from "@stencil/core";
   shadow: true,
 })
 export class KritzelWorkspaceManager {
-  // @Prop()
-  // workspaces: KritzelWorkspace[] = [];
+  @Element() host!: HTMLElement;
 
-  // @Prop({ mutable: true })
-  // activeWorkspace: KritzelWorkspace;
+  @Prop() activeWorkspace: KritzelWorkspace;
+  @Prop() workspaces: KritzelWorkspace[] = [];
+  @Watch('workspaces')
+  workspacesChanged(newValue: KritzelWorkspace[], oldValue: KritzelWorkspace[]) {
+    console.log('Workspaces changed:', { newValue, oldValue });
+  }
 
-  // @State()
-  // editingIndex: number | null = null;
+  @Event() isWorkspaceManagerReady: EventEmitter<void>;
+  @Event() workspaceChange: EventEmitter<KritzelWorkspace>;
 
-  // @State()
-  // newWorkspace: KritzelWorkspace | null = null;
+  @State() childMenuAnchor: HTMLElement = null;
+  @State() openChildMenuItem: IKritzelMenuItem = null;
+  @State() newWorkspace: KritzelWorkspace | null = null;
+  @State() editingItem: IKritzelMenuItem | null = null;
+  
+  kritzelEngineRef: HTMLKritzelEngineElement | null = null;
+  splitButtonRef!: HTMLKritzelSplitButtonElement;
 
-  // @Event()
-  // isWorkspaceManagerReady: EventEmitter<void>;
+  newItem: IKritzelMenuItem = {
+    id: 'new',
+    label: 'New Item',
+    isEditing: true,
+    isChildMenuOpen: false,
+    isSelectable: false,
+    children: [
+      {
+        id: 'edit-test-2',
+        label: 'Edit',
+        isSelectable: false,
+      },
+      {
+        id: 'delete-test-2',
+        label: 'Delete',
+        isSelectable: false,
+      },
+    ],
+  };
 
-  // @Event()
-  // workspaceChange: EventEmitter<KritzelWorkspace>;
+  async componentWillLoad() {
+    await this.initializeEngine();
+    this.isWorkspaceManagerReady.emit();
+  }
 
-  // @Element()
-  // host!: HTMLElement;
+  componentDidRender() {
+    // Get reference to split button after rendering
+    this.splitButtonRef = this.host.shadowRoot.querySelector('kritzel-split-button');
+  }
 
-  // kritzelEngine: HTMLKritzelEngineElement | null = null;
+  private async initializeEngine() {
+    await customElements.whenDefined('kritzel-engine');
+    this.kritzelEngineRef = this.host.parentElement.querySelector('kritzel-engine');
 
-  // splitButtonRef!: HTMLKritzelSplitButtonElement;
+    if (!this.kritzelEngineRef) {
+      throw new Error('kritzel-engine not found in parent element.');
+    }
+  }
 
-  // get sortedWorkspaces() {
-  //   const uniqueWorkspaces = [...new Map(this.workspaces.map(workspace => [workspace.id, workspace])).values()];
-  //   return [this.newWorkspace, ...uniqueWorkspaces].filter(ws => ws !== null).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  // }
+  private select(item: IKritzelMenuItem, parent: IKritzelMenuItem) {
+    if(item.value instanceof KritzelWorkspace) {
+      this.workspaceChange.emit(item.value);
+    }
 
-  // get activeItemIndex() {
-  //   return this.sortedWorkspaces.findIndex(ws => ws.id === this.activeWorkspace?.id);
-  // }
+    if (item.value === 'rename') {
+      this.editingItem = parent;
+      this.openChildMenuItem = null;
+      this.childMenuAnchor = null;
+    }
+  }
 
-  // async componentWillLoad() {
-  //   await this.initializeEngine();
-  //   this.isWorkspaceManagerReady.emit();
-  // }
+  private toggleChildMenu(item: IKritzelMenuItem, anchor: HTMLElement) {
+    this.openChildMenuItem = item;
+    this.childMenuAnchor = anchor;
+  }
 
-  // private async initializeEngine() {
-  //   await customElements.whenDefined('kritzel-engine');
-  //   this.kritzelEngine = this.host.parentElement.querySelector('kritzel-engine');
+  private cancel() {
+    this.editingItem = null;
+  }
 
-  //   if (!this.kritzelEngine) {
-  //     throw new Error('kritzel-engine not found in parent element.');
-  //   }
-  // }
+  render() {
+    const menuItems = [...this.workspaces]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .map(ws => {
+        return {
+          id: ws.id,
+          label: ws.name,
+          value: ws,
+          isEditing: this.editingItem?.id === ws.id,
+          isSelected: this.activeWorkspace?.id === ws.id,
+          isChildMenuOpen: this.openChildMenuItem?.id === ws.id,
+          childMenuAnchor: this.openChildMenuItem?.id === ws.id ? this.childMenuAnchor : null,
+          children: [
+            {
+              id: `${ws.id}-rename`,
+              label: 'Rename',
+              value: 'rename',
+            },
+            {
+              id: `${ws.id}-delete`,
+              label: 'Delete',
+              value: 'delete',
+            },
+          ],
+        };
+      });
 
-  // private handleSelect(workspace: KritzelWorkspace) {
-  //   this.selectWorkspace(workspace);
-  // }
-
-  // private handleNewWorkspace = async () => {
-  //   await this.splitButtonRef?.openMenu();
-
-  //   requestAnimationFrame(() => {
-  //     this.newWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
-  //     this.editingIndex = 0;
-  //   });
-  // };
-
-  // private handleMenuClosed = () => {
-  //   this.editingIndex = null;
-  //   this.newWorkspace = null;
-  // };
-
-  // private handleSave = async (item: KritzelMenuItem<KritzelWorkspace>) => {
-  //   const workspace = item.value;
-  //   const updatedWorkspace = { ...workspace, name: item.label };
-
-  //   if (this.newWorkspace) {
-  //     await this.kritzelEngine.createWorkspace(updatedWorkspace);
-
-  //     this.editingIndex = null;
-  //     this.newWorkspace = null;
-
-  //     this.selectWorkspace(updatedWorkspace);
-  //   } else {
-  //     await this.kritzelEngine.updateWorkspace(updatedWorkspace);
-
-  //     this.editingIndex = null;
-  //     this.newWorkspace = null;
-  //   }
-  // };
-
-  // private handleRename = (index: number) => {
-  //   this.editingIndex = index;
-  // };
-
-  // private handleDelete = async (workspaceToDelete: KritzelWorkspace) => {
-  //   await this.kritzelEngine.deleteWorkspace(workspaceToDelete);
-
-  //   if (this.activeWorkspace?.id === workspaceToDelete.id) {
-  //     const newActiveWorkspace = this.sortedWorkspaces.find(w => w.id !== workspaceToDelete.id) || null;
-  //     this.selectWorkspace(newActiveWorkspace);
-  //   }
-  // };
-
-  // private selectWorkspace(workspace: KritzelWorkspace) {
-  //   if (this.editingIndex !== null) return;
-  //   this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id === workspace.id);
-  //   this.workspaceChange.emit(workspace);
-  // }
-
-  // render() {
-  //   const workspaceSelectionOptions: KritzelMenuItem<KritzelWorkspace>[] = this.sortedWorkspaces.map((ws, index) => ({
-  //     label: ws.name,
-  //     value: ws,
-  //     select: () => this.handleSelect(ws),
-  //     cancel: this.handleMenuClosed,
-  //     save: this.handleSave,
-  //     children: [
-  //       {
-  //         label: 'Rename',
-  //         value: 'rename',
-  //         select: () => this.handleRename(index),
-  //       },
-  //       {
-  //         label: 'Delete',
-  //         value: 'delete',
-  //         disabled: this.sortedWorkspaces.length <= 1,
-  //         select: () => this.handleDelete(ws),
-  //       },
-  //     ],
-  //   }));
-
-  //   return (
-  //     <Host>
-  //       {/* <kritzel-split-button
-  //         ref={el => (this.splitButtonRef = el)}
-  //         buttonIcon="plus"
-  //         // options={workspaceSelectionOptions}
-  //         activeItemIndex={this.activeItemIndex}
-  //         editingIndex={this.editingIndex}
-  //         onButtonClick={this.handleNewWorkspace}
-  //         onMenuClosed={this.handleMenuClosed}
-  //       ></kritzel-split-button> */}
-  //     </Host>
-  //   );
-  // }
+    return (
+      <Host>
+        <kritzel-split-button
+          items={menuItems}
+          // mainButtonDisabled={this.hasEditingItem}
+          // onButtonClick={this.handleItemAdd}
+          // onClose={this.handleMenuClose}
+          onItemSelect={event => this.select(event.detail.item, event.detail.parent)}
+          onItemToggleChildMenu={event => this.toggleChildMenu(event.detail.item, event.detail.childMenuAnchor)}
+          // onItemSave={event => this.save(event.detail)}
+          onItemCancel={() => this.cancel()}
+          // onItemCloseChildMenu={event => this.closeChildMenu(event.detail)}
+        ></kritzel-split-button>
+      </Host>
+    );
+  }
 }
