@@ -51,11 +51,11 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 })
 export class KritzelMenuItem {
   protected el: HTMLKritzelMenuItemElement;
-  @Output() itemSelect = new EventEmitter<CustomEvent<{ item: IKritzelMenuItemKritzelMenuItemNew; parent: IKritzelMenuItemKritzelMenuItemNew }>>();
-  @Output() itemSave = new EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>();
-  @Output() itemCancel = new EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>();
-  @Output() itemToggleChildMenu = new EventEmitter<CustomEvent<{ item: IKritzelMenuItemKritzelMenuItemNew; childMenuAnchor: HTMLElement }>>();
-  @Output() itemCloseChildMenu = new EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>();
+  @Output() itemSelect = new EventEmitter<CustomEvent<{ item: IKritzelMenuItemIKritzelMenuItem; parent: IKritzelMenuItemIKritzelMenuItem }>>();
+  @Output() itemSave = new EventEmitter<CustomEvent<[object Object]>>();
+  @Output() itemCancel = new EventEmitter<CustomEvent<[object Object]>>();
+  @Output() itemToggleChildMenu = new EventEmitter<CustomEvent<{ item: IKritzelMenuItemIKritzelMenuItem; childMenuAnchor: HTMLElement }>>();
+  @Output() itemCloseChildMenu = new EventEmitter<CustomEvent<[object Object]>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -63,19 +63,19 @@ export class KritzelMenuItem {
 }
 
 
-import type { KritzelMenuItemNew as IKritzelMenuItemKritzelMenuItemNew } from 'kritzel-stencil/dist/components';
+import type { IKritzelMenuItem as IKritzelMenuItemIKritzelMenuItem } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelMenuItem extends Components.KritzelMenuItem {
 
-  itemSelect: EventEmitter<CustomEvent<{ item: IKritzelMenuItemKritzelMenuItemNew; parent: IKritzelMenuItemKritzelMenuItemNew }>>;
+  itemSelect: EventEmitter<CustomEvent<{ item: IKritzelMenuItemIKritzelMenuItem; parent: IKritzelMenuItemIKritzelMenuItem }>>;
 
-  itemSave: EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>;
+  itemSave: EventEmitter<CustomEvent<[object Object]>>;
 
-  itemCancel: EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>;
+  itemCancel: EventEmitter<CustomEvent<[object Object]>>;
 
-  itemToggleChildMenu: EventEmitter<CustomEvent<{ item: IKritzelMenuItemKritzelMenuItemNew; childMenuAnchor: HTMLElement }>>;
+  itemToggleChildMenu: EventEmitter<CustomEvent<{ item: IKritzelMenuItemIKritzelMenuItem; childMenuAnchor: HTMLElement }>>;
 
-  itemCloseChildMenu: EventEmitter<CustomEvent<IKritzelMenuItemKritzelMenuItemNew>>;
+  itemCloseChildMenu: EventEmitter<CustomEvent<[object Object]>>;
 }
 
 
