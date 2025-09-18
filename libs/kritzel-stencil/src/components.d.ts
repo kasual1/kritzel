@@ -16,6 +16,7 @@ import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dro
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
+import { NavigationItem } from "./components/ui/kritzel-navigation-drawer/kritzel-navigation-drawer";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
@@ -27,6 +28,7 @@ export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dro
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
+export { NavigationItem } from "./components/ui/kritzel-navigation-drawer/kritzel-navigation-drawer";
 export namespace Components {
     interface KritzelBrushStyle {
         /**
@@ -98,6 +100,8 @@ export namespace Components {
     }
     interface KritzelCursorTrail {
         "store": KritzelStore;
+    }
+    interface KritzelDrawerDemo {
     }
     interface KritzelDropdown {
         /**
@@ -235,6 +239,20 @@ export namespace Components {
          */
         "size": number;
     }
+    interface KritzelNavigationDrawer {
+        /**
+          * @default 'Settings'
+         */
+        "drawerTitle": string;
+        /**
+          * @default false
+         */
+        "isOpen": boolean;
+        /**
+          * @default []
+         */
+        "items": NavigationItem[];
+    }
     interface KritzelStrokeSize {
         /**
           * @default null
@@ -306,6 +324,10 @@ export interface KritzelFontFamilyCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelFontSizeElement;
+}
+export interface KritzelNavigationDrawerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelNavigationDrawerElement;
 }
 export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -430,6 +452,12 @@ declare global {
         prototype: HTMLKritzelCursorTrailElement;
         new (): HTMLKritzelCursorTrailElement;
     };
+    interface HTMLKritzelDrawerDemoElement extends Components.KritzelDrawerDemo, HTMLStencilElement {
+    }
+    var HTMLKritzelDrawerDemoElement: {
+        prototype: HTMLKritzelDrawerDemoElement;
+        new (): HTMLKritzelDrawerDemoElement;
+    };
     interface HTMLKritzelDropdownElementEventMap {
         "valueChanged": string;
     }
@@ -528,6 +556,24 @@ declare global {
         prototype: HTMLKritzelIconElement;
         new (): HTMLKritzelIconElement;
     };
+    interface HTMLKritzelNavigationDrawerElementEventMap {
+        "itemSelected": NavigationItem;
+        "drawerClosed": void;
+    }
+    interface HTMLKritzelNavigationDrawerElement extends Components.KritzelNavigationDrawer, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelNavigationDrawerElementEventMap>(type: K, listener: (this: HTMLKritzelNavigationDrawerElement, ev: KritzelNavigationDrawerCustomEvent<HTMLKritzelNavigationDrawerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelNavigationDrawerElementEventMap>(type: K, listener: (this: HTMLKritzelNavigationDrawerElement, ev: KritzelNavigationDrawerCustomEvent<HTMLKritzelNavigationDrawerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelNavigationDrawerElement: {
+        prototype: HTMLKritzelNavigationDrawerElement;
+        new (): HTMLKritzelNavigationDrawerElement;
+    };
     interface HTMLKritzelStrokeSizeElementEventMap {
         "sizeChange": number;
     }
@@ -579,6 +625,7 @@ declare global {
         "kritzel-control-text-config": HTMLKritzelControlTextConfigElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
+        "kritzel-drawer-demo": HTMLKritzelDrawerDemoElement;
         "kritzel-dropdown": HTMLKritzelDropdownElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
@@ -586,6 +633,7 @@ declare global {
         "kritzel-font-family": HTMLKritzelFontFamilyElement;
         "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
+        "kritzel-navigation-drawer": HTMLKritzelNavigationDrawerElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
         "kritzel-tooltip": HTMLKritzelTooltipElement;
         "kritzel-utility-panel": HTMLKritzelUtilityPanelElement;
@@ -667,6 +715,8 @@ declare namespace LocalJSX {
     }
     interface KritzelCursorTrail {
         "store"?: KritzelStore;
+    }
+    interface KritzelDrawerDemo {
     }
     interface KritzelDropdown {
         "onValueChanged"?: (event: KritzelDropdownCustomEvent<string>) => void;
@@ -776,6 +826,22 @@ declare namespace LocalJSX {
          */
         "size"?: number;
     }
+    interface KritzelNavigationDrawer {
+        /**
+          * @default 'Settings'
+         */
+        "drawerTitle"?: string;
+        /**
+          * @default false
+         */
+        "isOpen"?: boolean;
+        /**
+          * @default []
+         */
+        "items"?: NavigationItem[];
+        "onDrawerClosed"?: (event: KritzelNavigationDrawerCustomEvent<void>) => void;
+        "onItemSelected"?: (event: KritzelNavigationDrawerCustomEvent<NavigationItem>) => void;
+    }
     interface KritzelStrokeSize {
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
         /**
@@ -816,6 +882,7 @@ declare namespace LocalJSX {
         "kritzel-control-text-config": KritzelControlTextConfig;
         "kritzel-controls": KritzelControls;
         "kritzel-cursor-trail": KritzelCursorTrail;
+        "kritzel-drawer-demo": KritzelDrawerDemo;
         "kritzel-dropdown": KritzelDropdown;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
@@ -823,6 +890,7 @@ declare namespace LocalJSX {
         "kritzel-font-family": KritzelFontFamily;
         "kritzel-font-size": KritzelFontSize;
         "kritzel-icon": KritzelIcon;
+        "kritzel-navigation-drawer": KritzelNavigationDrawer;
         "kritzel-stroke-size": KritzelStrokeSize;
         "kritzel-tooltip": KritzelTooltip;
         "kritzel-utility-panel": KritzelUtilityPanel;
@@ -840,6 +908,7 @@ declare module "@stencil/core" {
             "kritzel-control-text-config": LocalJSX.KritzelControlTextConfig & JSXBase.HTMLAttributes<HTMLKritzelControlTextConfigElement>;
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
+            "kritzel-drawer-demo": LocalJSX.KritzelDrawerDemo & JSXBase.HTMLAttributes<HTMLKritzelDrawerDemoElement>;
             "kritzel-dropdown": LocalJSX.KritzelDropdown & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
@@ -847,6 +916,7 @@ declare module "@stencil/core" {
             "kritzel-font-family": LocalJSX.KritzelFontFamily & JSXBase.HTMLAttributes<HTMLKritzelFontFamilyElement>;
             "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
+            "kritzel-navigation-drawer": LocalJSX.KritzelNavigationDrawer & JSXBase.HTMLAttributes<HTMLKritzelNavigationDrawerElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
             "kritzel-tooltip": LocalJSX.KritzelTooltip & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
             "kritzel-utility-panel": LocalJSX.KritzelUtilityPanel & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;

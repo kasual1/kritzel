@@ -1,0 +1,243 @@
+:host {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 0.3s ease;
+  pointer-events: none;
+}
+
+.drawer-overlay.open {
+  background-color: rgba(0, 0, 0, 0.5);
+  pointer-events: all;
+}
+
+.drawer-container {
+  position: fixed;
+  top: 0;
+  left: -320px;
+  width: 320px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  pointer-events: all;
+}
+
+.drawer-container.open {
+  left: 0;
+}
+
+.drawer-header {
+  padding: 20px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.drawer-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.drawer-close-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.drawer-close-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.drawer-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  /* Ensure smooth scrolling */
+  scroll-behavior: smooth;
+  /* Prevent scroll bar from causing layout shifts */
+  scrollbar-gutter: stable;
+}
+
+/* Custom scrollbar for webkit browsers */
+.drawer-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.drawer-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.drawer-scroll-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.drawer-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.drawer-items-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.drawer-item {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.drawer-item:last-child {
+  border-bottom: none;
+}
+
+.drawer-item-button {
+  width: 100%;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #333;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+  /* Prevent button focus from causing scroll jumps */
+  outline: none;
+}
+
+.drawer-item-button:hover {
+  background-color: #f8f8f8;
+}
+
+.drawer-item-button:focus {
+  background-color: #f0f0f0;
+  /* Use a subtle box shadow instead of outline to prevent layout shifts */
+  box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.drawer-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #666;
+}
+
+.drawer-item-label {
+  flex: 1;
+  font-weight: 500;
+}
+
+.drawer-item-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  flex-shrink: 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .drawer-container {
+    background-color: #1a1a1a;
+    color: #fff;
+  }
+
+  .drawer-header {
+    border-bottom-color: #333;
+  }
+
+  .drawer-title {
+    color: #fff;
+  }
+
+  .drawer-close-btn {
+    color: #ccc;
+  }
+
+  .drawer-close-btn:hover {
+    background-color: #333;
+  }
+
+  .drawer-item {
+    border-bottom-color: #333;
+  }
+
+  .drawer-item-button {
+    color: #fff;
+  }
+
+  .drawer-item-button:hover {
+    background-color: #333;
+  }
+
+  .drawer-item-button:focus {
+    background-color: #444;
+  }
+
+  .drawer-item-icon {
+    color: #ccc;
+  }
+
+  .drawer-item-arrow {
+    color: #999;
+  }
+
+  .drawer-scroll-container::-webkit-scrollbar-track {
+    background: #333;
+  }
+
+  .drawer-scroll-container::-webkit-scrollbar-thumb {
+    background: #666;
+  }
+
+  .drawer-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #777;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .drawer-container {
+    width: 280px;
+    left: -280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .drawer-container {
+    width: 90%;
+    left: -90%;
+  }
+}
