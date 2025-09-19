@@ -67,8 +67,6 @@
   border-radius: var(--kritzel-menu-item-border-radius, 12px);
 }
 
-
-
 .menu-item-content {
   display: flex;
   align-items: center;
