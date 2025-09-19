@@ -30,11 +30,6 @@ export class KritzelWorkspaceManager {
     this.isWorkspaceManagerReady.emit();
   }
 
-  componentDidRender() {
-    // Get reference to split button after rendering
-    this.splitButtonRef = this.host.shadowRoot.querySelector('kritzel-split-button');
-  }
-
   private async initializeEngine() {
     await customElements.whenDefined('kritzel-engine');
     this.kritzelEngineRef = this.host.parentElement.querySelector('kritzel-engine');
@@ -64,6 +59,8 @@ export class KritzelWorkspaceManager {
   }
 
   private async add() {
+    await this.splitButtonRef.open();
+
     this.newWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
     this.editingItem = {
       id: this.newWorkspace.id,
@@ -72,7 +69,6 @@ export class KritzelWorkspaceManager {
       isEditing: true,
       isSelected: false,
     };
-    await this.splitButtonRef.open();
   }
 
   private edit(item: IKritzelMenuItem) {
@@ -82,6 +78,8 @@ export class KritzelWorkspaceManager {
   }
 
   private async save(item: IKritzelMenuItem) {
+    console.log('emitting save', item);
+
     try {
       if (this.newWorkspace) {
         await this.kritzelEngineRef.createWorkspace({ ...item.value, name: item.label });
@@ -102,17 +100,13 @@ export class KritzelWorkspaceManager {
   }
 
   private async delete(item: IKritzelMenuItem) {
+    this.closeChildMenu();
     await this.kritzelEngineRef.deleteWorkspace(item.value);
-
-    this.openChildMenuItem = null;
-    this.childMenuAnchor = null;
   }
 
-  private closeChildMenu(item: IKritzelMenuItem) {
-    if (this.openChildMenuItem?.id === item.id) {
-      this.openChildMenuItem = null;
-      this.childMenuAnchor = null;
-    }
+  private closeChildMenu() {
+    this.openChildMenuItem = null;
+    this.childMenuAnchor = null;
   }
 
   get sortedWorkspaces() {
@@ -147,10 +141,10 @@ export class KritzelWorkspaceManager {
         };
       });
 
-
     return (
       <Host>
         <kritzel-split-button
+          ref={el => (this.splitButtonRef = el)}
           items={menuItems}
           // mainButtonDisabled={this.hasEditingItem}
           onButtonClick={() => this.add()}
@@ -158,7 +152,7 @@ export class KritzelWorkspaceManager {
           onItemToggleChildMenu={event => this.toggleChildMenu(event.detail.item, event.detail.childMenuAnchor)}
           onItemSave={event => this.save(event.detail)}
           onItemCancel={() => this.cancel()}
-          onItemCloseChildMenu={event => this.closeChildMenu(event.detail)}
+          onItemCloseChildMenu={() => this.closeChildMenu()}
         ></kritzel-split-button>
       </Host>
     );
