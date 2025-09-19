@@ -71,7 +71,7 @@ export class KritzelMenu {
             item={item}
             parent={this.parent}
             style={{ pointerEvents: this.editingMenuItem && !item.isEditing ? 'none' : 'auto' }}
-            onItemSelect={(event) => this.handleItemSelect(event)}
+            onItemSelect={this.handleItemSelect}
             onItemSave={this.handleSave}
             onItemCancel={(event) => this.itemCancel.emit(event.detail)}
             onItemToggleChildMenu={(event) => this.itemToggleChildMenu.emit(event.detail)}

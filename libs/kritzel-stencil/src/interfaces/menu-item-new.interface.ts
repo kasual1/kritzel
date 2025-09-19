@@ -8,6 +8,8 @@ export interface IKritzelMenuItem<T = any> {
   isEditing?: boolean;
   isDisabled?: boolean;
   isChildMenuOpen?: boolean;
+  isNewItem?: boolean;
   childMenuAnchor?: HTMLElement;
   unchangedState?: Partial<IKritzelMenuItem>;
+  action?: (item: IKritzelMenuItem, parent: IKritzelMenuItem) => void;
 }

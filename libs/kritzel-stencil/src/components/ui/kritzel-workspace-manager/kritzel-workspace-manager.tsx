@@ -1,7 +1,7 @@
 import { KritzelWorkspace } from '../../../classes/workspace.class';
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item-new.interface';
-import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Watch } from '@stencil/core';
+import { Host, h, Component, State, Prop, Event, EventEmitter, Element } from '@stencil/core';
 
 @Component({
   tag: 'kritzel-workspace-manager',
@@ -20,7 +20,7 @@ export class KritzelWorkspaceManager {
   @State() childMenuAnchor: HTMLElement = null;
   @State() openChildMenuItem: IKritzelMenuItem = null;
   @State() newWorkspace: KritzelWorkspace | null = null;
-  @State() editingItem: IKritzelMenuItem | null = null;
+  @State() editingItemId: string | null = null;
 
   kritzelEngineRef: HTMLKritzelEngineElement | null = null;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
@@ -40,13 +40,12 @@ export class KritzelWorkspaceManager {
   }
 
   private async select(item: IKritzelMenuItem, parent: IKritzelMenuItem) {
-    if (item.value === 'rename') {
-      this.edit(parent);
+    if (this.editingItemId) {
       return;
     }
 
-    if (item.value === 'delete') {
-      this.delete(parent);
+    if (item.action) {
+      item.action(item, parent);
       return;
     }
 
@@ -59,48 +58,37 @@ export class KritzelWorkspaceManager {
   }
 
   private async add() {
-    await this.splitButtonRef.open();
-
     this.newWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
-    this.editingItem = {
-      id: this.newWorkspace.id,
-      label: this.newWorkspace.name,
-      value: this.newWorkspace,
-      isEditing: true,
-      isSelected: false,
-    };
+    this.editingItemId = this.newWorkspace.id;
+    await this.splitButtonRef.open();
   }
 
   private edit(item: IKritzelMenuItem) {
-    this.editingItem = item;
+    this.editingItemId = item.id;
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
   }
 
   private async save(item: IKritzelMenuItem) {
-    console.log('emitting save', item);
-
-    try {
-      if (this.newWorkspace) {
-        await this.kritzelEngineRef.createWorkspace({ ...item.value, name: item.label });
-        this.newWorkspace = null;
-        this.editingItem = null;
-      } else {
-        await this.kritzelEngineRef.updateWorkspace({ ...item.value, name: item.label });
-        this.editingItem = null;
-      }
-    } catch (error) {
-      console.error('Error saving workspace:', error);
+    if (this.newWorkspace) {
+      await this.kritzelEngineRef.createWorkspace({ ...item.value, name: item.label });
+      this.workspaceChange.emit(this.newWorkspace);
+    } else {
+      await this.kritzelEngineRef.updateWorkspace({ ...item.value, name: item.label });
     }
+
+    this.editingItemId = null;
+    this.newWorkspace = null;
   }
 
   private cancel() {
     this.newWorkspace = null;
-    this.editingItem = null;
+    this.editingItemId = null;
   }
 
   private async delete(item: IKritzelMenuItem) {
-    this.closeChildMenu();
+    this.openChildMenuItem = null;
+    this.childMenuAnchor = null;
     await this.kritzelEngineRef.deleteWorkspace(item.value);
   }
 
@@ -115,15 +103,16 @@ export class KritzelWorkspaceManager {
 
   render() {
     const menuItems = this.sortedWorkspaces
-      .filter(item => item != null)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .filter(ws => ws !== null)
       .map(ws => {
         return {
           id: ws.id,
           label: ws.name,
           value: ws,
-          isEditing: this.editingItem?.id === ws.id,
+          isEditing: this.editingItemId === ws.id,
           isSelected: this.activeWorkspace?.id === ws.id,
+          isNewItem: this.newWorkspace?.id === ws.id,
           isChildMenuOpen: this.openChildMenuItem?.id === ws.id,
           childMenuAnchor: this.openChildMenuItem?.id === ws.id ? this.childMenuAnchor : null,
           children: [
@@ -131,11 +120,13 @@ export class KritzelWorkspaceManager {
               id: `${ws.id}-rename`,
               label: 'Rename',
               value: 'rename',
+              action: (_item, parent) => this.edit(parent),
             },
             {
               id: `${ws.id}-delete`,
               label: 'Delete',
               value: 'delete',
+              action: (_item, parent) => this.delete(parent),
             },
           ],
         };
@@ -146,7 +137,7 @@ export class KritzelWorkspaceManager {
         <kritzel-split-button
           ref={el => (this.splitButtonRef = el)}
           items={menuItems}
-          // mainButtonDisabled={this.hasEditingItem}
+          mainButtonDisabled={this.editingItemId != null}
           onButtonClick={() => this.add()}
           onItemSelect={event => this.select(event.detail.item, event.detail.parent)}
           onItemToggleChildMenu={event => this.toggleChildMenu(event.detail.item, event.detail.childMenuAnchor)}
