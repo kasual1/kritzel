@@ -55,19 +55,24 @@ export class KritzelMenu {
     this.itemSelect.emit(event.detail);
   }
 
+  private handleSave = (event: CustomEvent<IKritzelMenuItem>) => {
+    event.stopPropagation();
+    this.itemSave.emit(event.detail);
+  }
+
   render() {
     return (
       <Host>
         {this.openChildMenuItem && <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>}
 
-        {this.items.map((item, index) => (
+        {this.items.map((item) => (
           <kritzel-menu-item
-            key={index}
+            key={item.id}
             item={item}
             parent={this.parent}
             style={{ pointerEvents: this.editingMenuItem && !item.isEditing ? 'none' : 'auto' }}
             onItemSelect={(event) => this.handleItemSelect(event)}
-            onItemSave={(event) => this.itemSave.emit(event.detail)}
+            onItemSave={this.handleSave}
             onItemCancel={(event) => this.itemCancel.emit(event.detail)}
             onItemToggleChildMenu={(event) => this.itemToggleChildMenu.emit(event.detail)}
           ></kritzel-menu-item>
