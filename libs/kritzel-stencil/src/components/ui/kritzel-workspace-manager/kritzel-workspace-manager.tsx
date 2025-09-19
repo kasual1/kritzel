@@ -13,10 +13,6 @@ export class KritzelWorkspaceManager {
 
   @Prop() activeWorkspace: KritzelWorkspace;
   @Prop() workspaces: KritzelWorkspace[] = [];
-  @Watch('workspaces')
-  workspacesChanged(newValue: KritzelWorkspace[], oldValue: KritzelWorkspace[]) {
-    console.log('Workspaces changed:', { newValue, oldValue });
-  }
 
   @Event() isWorkspaceManagerReady: EventEmitter<void>;
   @Event() workspaceChange: EventEmitter<KritzelWorkspace>;
@@ -110,11 +106,6 @@ export class KritzelWorkspaceManager {
 
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
-
-    if (this.activeWorkspace?.id === item.value.id) {
-      this.activeWorkspace = this.sortedWorkspaces[0] || null;
-      this.workspaceChange.emit(null);
-    }
   }
 
   private closeChildMenu(item: IKritzelMenuItem) {
@@ -155,6 +146,7 @@ export class KritzelWorkspaceManager {
           ],
         };
       });
+
 
     return (
       <Host>

@@ -461,8 +461,8 @@ export class KritzelEngine {
 
   @Method()
   async deleteWorkspace(workspace: KritzelWorkspace) {
-    return this.store.deleteWorkspace(workspace).then(() => {
-      this.workspacesChange.emit(this.store.state.workspaces.filter(ws => ws.id !== workspace.id));
+    return this.store.deleteWorkspace(workspace).then(async () => {
+      this.workspacesChange.emit(this.store.state.workspaces);
     });
   }
 

@@ -247,6 +247,8 @@ export class KritzelStore {
     await this._database.deleteByRange('objects', objectRange);
 
     await this._database.delete('workspaces', workspace.id);
+
+    this.state.workspaces = this.state.workspaces.filter(ws => ws.id !== workspace.id);
   }
 
   rerender() {

@@ -45,10 +45,15 @@ export class KritzelMenu {
     return this.items.find(item => item.isEditing);
   }
 
-  onOverlayClick = (event: MouseEvent) => {
+  private onOverlayClick = (event: MouseEvent) => {
     event.stopPropagation();
     this.itemCloseChildMenu.emit(this.openChildMenuItem);
   };
+
+  private handleItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => {
+    event.stopPropagation();
+    this.itemSelect.emit(event.detail);
+  }
 
   render() {
     return (
@@ -61,7 +66,7 @@ export class KritzelMenu {
             item={item}
             parent={this.parent}
             style={{ pointerEvents: this.editingMenuItem && !item.isEditing ? 'none' : 'auto' }}
-            onItemSelect={(event) => this.itemSelect.emit(event.detail)}
+            onItemSelect={(event) => this.handleItemSelect(event)}
             onItemSave={(event) => this.itemSave.emit(event.detail)}
             onItemCancel={(event) => this.itemCancel.emit(event.detail)}
             onItemToggleChildMenu={(event) => this.itemToggleChildMenu.emit(event.detail)}
