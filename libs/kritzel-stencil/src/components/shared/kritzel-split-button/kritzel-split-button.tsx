@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
+import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method, Listen } from '@stencil/core';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item-new.interface';
 
@@ -8,6 +8,8 @@ import { IKritzelMenuItem } from '../../../interfaces/menu-item-new.interface';
   shadow: true,
 })
 export class KritzelSplitButton {
+  @Element() host!: HTMLElement;
+
   @Prop() buttonIcon: string = 'plus';
   @Prop() dropdownIcon: string = 'chevron-down';
   @Prop() items: IKritzelMenuItem[] = [];
@@ -22,19 +24,51 @@ export class KritzelSplitButton {
   @Event() itemCloseChildMenu: EventEmitter<IKritzelMenuItem>;
   @Event() close: EventEmitter<void>;
 
-  @Element() host!: HTMLElement;
-
   @State() isMenuOpen = false;
   @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
   @State() anchorElement: HTMLElement;
-  
+
+  @Listen('keydown', { target: 'window' })
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      this.closeMenu();
+    }
+  }
+
   splitMenuButtonRef: HTMLButtonElement;
+  menuRef: HTMLKritzelMenuElement;
 
   @Method()
   async open() {
     if (this.isMenuOpen) return;
     this.openMenu(new MouseEvent('click'));
   }
+
+  private handleButtonClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    this.buttonClick.emit();
+  };
+
+  private toggleMenu = (event: MouseEvent) => {
+    event.stopPropagation();
+    if (this.isMenuOpen) {
+      this.closeMenu();
+    } else {
+      this.openMenu(event);
+    }
+  };
+
+  private openMenu = (event: MouseEvent) => {
+    event.stopPropagation();
+    this.isMenuOpen = true;
+    this.anchorElement = this.host;
+  };
+
+  private closeMenu = () => {
+    this.isMenuOpen = false;
+    this.anchorElement = null;
+    this.close.emit();
+  };
 
   private handleItemSelect = event => {
     this.itemSelect.emit(event.detail);
@@ -56,35 +90,9 @@ export class KritzelSplitButton {
     this.itemCloseChildMenu.emit(event.detail);
   };
 
-  private openMenu = (event: MouseEvent) => {
-    event.stopPropagation();
-    this.isMenuOpen = true;
-    this.anchorElement = this.host;
-  };
-
-  private closeMenu = () => {
-    this.isMenuOpen = false;
-    this.anchorElement = null;
-    this.close.emit();
-  };
-
-  private toggleMenu = (event: MouseEvent) => {
-    event.stopPropagation();
-    if (this.isMenuOpen) {
-      this.closeMenu();
-    } else {
-      this.openMenu(event);
-    }
-  };
-
-  private handleButtonClick = (event: MouseEvent) => {
-    event.stopPropagation();
-    this.buttonClick.emit();
-  };
-
   render() {
     return (
-      <Host tabIndex={0} class={{ mobile: this.isTouchDevice }}>
+      <Host class={{ mobile: this.isTouchDevice }}>
         <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.mainButtonDisabled}>
           {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
         </button>
@@ -95,8 +103,9 @@ export class KritzelSplitButton {
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 
-        <kritzel-portal anchor={this.anchorElement} offsetY={4}>
+        <kritzel-portal anchor={this.anchorElement} offsetY={4} onClose={this.closeMenu}>
           <kritzel-menu
+            ref={el => (this.menuRef = el)}
             items={this.items}
             onItemSelect={this.handleItemSelect}
             onItemSave={this.handleItemSave}

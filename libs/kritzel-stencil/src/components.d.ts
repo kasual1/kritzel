@@ -252,6 +252,7 @@ export namespace Components {
           * @default null
          */
         "parent": IKritzelMenuItem;
+        "setFocus": () => Promise<void>;
     }
     interface KritzelMenuItem {
         "item": IKritzelMenuItem;
