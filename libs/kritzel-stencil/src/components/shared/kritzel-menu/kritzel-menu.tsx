@@ -17,8 +17,6 @@ export class KritzelMenu {
   @Event() itemCancel: EventEmitter<IKritzelMenuItem>;
   @Event() itemToggleChildMenu: EventEmitter<{ item: IKritzelMenuItem; childMenuAnchor: HTMLElement }>;
   @Event() itemCloseChildMenu: EventEmitter<IKritzelMenuItem>;
-
-
   @Event() close: EventEmitter<void>;
 
   @State() selectedIndex: number | null = null;
@@ -60,6 +58,16 @@ export class KritzelMenu {
     this.itemSave.emit(event.detail);
   }
 
+  private handleCancel = (event: CustomEvent<IKritzelMenuItem>) => {
+    event.stopPropagation();
+    this.itemCancel.emit(event.detail);
+  }
+
+  private handleToggleChildMenu = (event: CustomEvent<{ item: IKritzelMenuItem; childMenuAnchor: HTMLElement }>) => {
+    event.stopPropagation();
+    this.itemToggleChildMenu.emit(event.detail);
+  }
+
   render() {
     return (
       <Host>
@@ -73,8 +81,8 @@ export class KritzelMenu {
             style={{ pointerEvents: this.editingMenuItem && !item.isEditing ? 'none' : 'auto' }}
             onItemSelect={this.handleItemSelect}
             onItemSave={this.handleSave}
-            onItemCancel={(event) => this.itemCancel.emit(event.detail)}
-            onItemToggleChildMenu={(event) => this.itemToggleChildMenu.emit(event.detail)}
+            onItemCancel={this.handleCancel}
+            onItemToggleChildMenu={this.handleToggleChildMenu}
           ></kritzel-menu-item>
         ))}
       </Host>
