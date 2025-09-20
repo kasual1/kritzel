@@ -64,7 +64,7 @@ export class KritzelMenu {
 
   render() {
     return (
-      <Host tabIndex={0}>
+      <Host tabIndex={0} onClick={e => e.stopPropagation()}>
         {this.openChildMenuItem && <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>}
         {this.items.map((item) => (
           <kritzel-menu-item

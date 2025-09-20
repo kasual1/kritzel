@@ -63,9 +63,11 @@ export class KritzelWorkspaceManager {
   }
 
   private edit(item: IKritzelMenuItem) {
-    this.editingItemId = item.id;
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
+    requestAnimationFrame(() => {
+      this.editingItemId = item.id;
+    });
   }
 
   private async save(item: IKritzelMenuItem) {
@@ -149,7 +151,9 @@ export class KritzelWorkspaceManager {
           onItemSave={event => this.save(event.detail)}
           onItemCancel={() => this.cancel()}
           onItemCloseChildMenu={() => this.closeChildMenu()}
-          onClose={() => { this.closeMenu(); }}
+          onClose={() => {
+            this.closeMenu();
+          }}
         ></kritzel-split-button>
       </Host>
     );
