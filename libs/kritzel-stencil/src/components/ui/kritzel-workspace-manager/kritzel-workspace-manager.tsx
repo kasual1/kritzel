@@ -25,6 +25,10 @@ export class KritzelWorkspaceManager {
   kritzelEngineRef: HTMLKritzelEngineElement | null = null;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
 
+  get sortedWorkspaces() {
+    return [this.newWorkspace, ...this.workspaces].filter(ws => ws != null).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
   async componentWillLoad() {
     await this.initializeEngine();
     this.isWorkspaceManagerReady.emit();
@@ -50,11 +54,6 @@ export class KritzelWorkspaceManager {
     }
 
     this.workspaceChange.emit(item.value);
-  }
-
-  private toggleChildMenu(item: IKritzelMenuItem, anchor: HTMLElement) {
-    this.openChildMenuItem = item;
-    this.childMenuAnchor = anchor;
   }
 
   private async add() {
@@ -92,13 +91,14 @@ export class KritzelWorkspaceManager {
     await this.kritzelEngineRef.deleteWorkspace(item.value);
   }
 
+  private toggleChildMenu(item: IKritzelMenuItem, anchor: HTMLElement) {
+    this.openChildMenuItem = item;
+    this.childMenuAnchor = anchor;
+  }
+
   private closeChildMenu() {
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
-  }
-
-  get sortedWorkspaces() {
-    return [this.newWorkspace, ...this.workspaces].filter(ws => ws != null).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
   render() {
