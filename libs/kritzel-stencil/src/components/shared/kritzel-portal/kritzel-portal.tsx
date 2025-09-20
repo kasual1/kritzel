@@ -30,8 +30,27 @@ export class KritzelPortal {
 
   @Listen('click', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
+    event.stopPropagation();
+
+    const isLastPortal = this.lastAddedPortal === this.portal;
+    if (!isLastPortal) return;
+
     const target = event.target as HTMLElement;
     if (!this.host.contains(target)) {
+      this.close.emit();
+      this.closePortal();
+    }
+  }
+
+  @Listen('keydown', { target: 'window' })
+  handleKeyDown(event: KeyboardEvent) {
+    event.stopPropagation();
+
+    const isLastPortal = this.lastAddedPortal === this.portal;
+    if (!isLastPortal) return;
+
+    if (event.key === 'Escape') {
+      this.anchor.focus();
       this.close.emit();
       this.closePortal();
     }
@@ -49,10 +68,30 @@ export class KritzelPortal {
 
   private focusFirstElement() {
     requestAnimationFrame(() => {
-      const slotEl = this.host.shadowRoot?.querySelector('slot') as HTMLSlotElement | null;
-      const first = slotEl?.assignedElements({ flatten: true })[0] as HTMLElement | undefined;
-      first?.focus?.();
+      this.firstFocusableElement?.focus?.();
     });
+  }
+
+  private getFocusableElements(root: HTMLElement): HTMLElement[] {
+    if (!root) return [];
+    const focusableElements = root.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), details, [tabindex]:not([tabindex="-1"])',
+    );
+    return Array.from(focusableElements) as HTMLElement[];
+  }
+
+  private get firstFocusableElement(): HTMLElement | null {
+    const slotEl = this.host.shadowRoot?.querySelector('slot') as HTMLSlotElement | null;
+    const firstAssigned = slotEl?.assignedElements({ flatten: true })[0] as HTMLElement | undefined;
+    if (!firstAssigned) return null;
+
+    const focusable = this.getFocusableElements(firstAssigned);
+    return focusable[0] ?? firstAssigned;
+  }
+
+  private get lastAddedPortal(): HTMLElement | null {
+    const portals = Array.from(document.querySelectorAll<HTMLElement>('[id^="portal-"]'));
+    return portals.length ? portals[portals.length - 1] : null;
   }
 
   private calculateLeft() {
