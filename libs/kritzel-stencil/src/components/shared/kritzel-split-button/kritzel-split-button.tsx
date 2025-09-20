@@ -28,13 +28,6 @@ export class KritzelSplitButton {
   @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
   @State() anchorElement: HTMLElement;
 
-  @Listen('keydown', { target: 'window' })
-  handleKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      this.closeMenu();
-    }
-  }
-
   splitMenuButtonRef: HTMLButtonElement;
   menuRef: HTMLKritzelMenuElement;
 
