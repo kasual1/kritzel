@@ -119,13 +119,13 @@ export class KritzelMenuItem {
   render() {
     return (
       <Host
+        tabIndex={0}
         class={{
           'selected': this.item.isSelected,
           'editing': this.item.isEditing,
           'disabled': this.item.isDisabled,
           'child-open': this.item.isChildMenuOpen,
         }}
-        tabIndex={this.item.isDisabled ? -1 : 0}
         onClick={this.handleItemSelect}
       >
         <div class="menu-item-overlay"></div>

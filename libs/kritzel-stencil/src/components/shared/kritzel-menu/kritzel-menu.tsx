@@ -1,10 +1,10 @@
-import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Listen } from '@stencil/core';
+import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Listen, Method } from '@stencil/core';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item-new.interface';
 
 @Component({
   tag: 'kritzel-menu',
   styleUrl: 'kritzel-menu.css',
-  shadow: true,
+  shadow: true
 })
 export class KritzelMenu {
   @Element() host: HTMLElement;
@@ -21,17 +21,11 @@ export class KritzelMenu {
 
   @State() selectedIndex: number | null = null;
 
-  @Listen('click', { target: 'window' })
-  handleOutsideClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-
-    if (!this.host.contains(target)) {
-
-      if(this.editingMenuItem) {
-        this.itemCancel.emit(this.editingMenuItem);
-      }
-      
-      this.close.emit();
+  @Method()
+  async setFocus() {
+    const firstItem = this.host.querySelector('kritzel-menu-item');
+    if (firstItem) {
+      firstItem.focus();
     }
   }
 
@@ -70,9 +64,8 @@ export class KritzelMenu {
 
   render() {
     return (
-      <Host>
+      <Host tabIndex={0}>
         {this.openChildMenuItem && <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>}
-
         {this.items.map((item) => (
           <kritzel-menu-item
             key={item.id}

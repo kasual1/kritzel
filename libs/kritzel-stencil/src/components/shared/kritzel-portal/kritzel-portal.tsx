@@ -1,46 +1,58 @@
 import { Component, Host, Listen, Prop, Watch, h, Event, EventEmitter, Element } from '@stencil/core';
+import { ObjectHelper } from '../../../helpers/object.helper';
 
 const DEFAULT_OFFSET = 0;
 const MIN_LEFT_POSITION = 0;
 const Z_INDEX = '1';
-const ID_PORTAL = 'portal';
 
 @Component({
   tag: 'kritzel-portal',
   shadow: true,
 })
 export class KritzelPortal {
+  @Element() host: HTMLElement;
 
-  @Element()
-  host: HTMLElement;
-
-  @Prop()
-  anchor: HTMLElement;
-
+  @Prop() anchor: HTMLElement;
   @Watch('anchor')
   anchorChanged(newValue: HTMLElement) {
     if (newValue) {
+      this.openPortal();
       this.calculatePosition();
+      if (this.autoFocus) {
+        this.focusFirstElement();
+      }
+    } else {
+      this.closePortal();
     }
   }
 
-  @Prop()
-  offsetX: number;
+  @Prop() offsetX: number;
+  @Prop() offsetY: number;
+  @Prop() autoFocus: boolean = true;
 
-  @Prop()
-  offsetY: number;
+  @Event() close: EventEmitter<void>;
 
-  @Prop()
-  autoFocus: boolean = true;
-
-  @Event()
-  close: EventEmitter<void>;
-
-  private portal: HTMLElement;
+  @Listen('click', { target: 'window' })
+  handleOutsideClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!this.host.contains(target)) {
+      this.closePortal();
+    }
+  }
 
   @Listen('resize', { target: 'window', capture: true })
   handleResize() {
     this.calculatePosition();
+  }
+
+  private portal: HTMLElement;
+
+  private focusFirstElement() {
+    requestAnimationFrame(() => {
+      const slotEl = this.host.shadowRoot?.querySelector('slot') as HTMLSlotElement | null;
+      const first = slotEl?.assignedElements({ flatten: true })[0] as HTMLElement | undefined;
+      first?.focus?.();
+    });
   }
 
   private calculateLeft() {
@@ -73,18 +85,21 @@ export class KritzelPortal {
     return Math.round(top + window.scrollY);
   }
 
-  private createPortal() {
+  private openPortal() {
     this.portal = document.createElement('div');
-    this.portal.setAttribute('id', ID_PORTAL);
+    this.portal.setAttribute('id', `portal-${ObjectHelper.generateUUID()}`);
     this.portal.style.zIndex = Z_INDEX;
     this.portal.style.position = 'absolute';
     this.portal.style.top = '0px';
     this.portal.style.left = '0px';
+    this.portal.appendChild(this.host);
     document.body.append(this.portal);
   }
 
-  private moveElementToPortal() {
-    this.portal.appendChild(this.host);
+  private closePortal() {
+    this.host.remove();
+    document.body.removeChild(this.portal);
+    this.close.emit();
   }
 
   private calculatePosition() {
@@ -95,20 +110,9 @@ export class KritzelPortal {
     this.portal.style.left = `${left}px`;
   }
 
-  componentWillLoad() {
-    this.createPortal();
-  }
-
-  componentDidLoad() {
-    this.moveElementToPortal();
-    if (this.anchor) {
-      this.calculatePosition();
-    }
-  }
-
   render() {
     return (
-      <Host style={{ display: this.anchor ? 'block' : 'none' }} >
+      <Host style={{ display: this.anchor ? 'block' : 'none' }}>
         <slot />
       </Host>
     );
