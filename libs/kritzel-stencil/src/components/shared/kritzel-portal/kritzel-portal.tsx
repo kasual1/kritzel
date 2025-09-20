@@ -1,10 +1,6 @@
 import { Component, Host, Listen, Prop, Watch, h, Event, EventEmitter, Element } from '@stencil/core';
 import { ObjectHelper } from '../../../helpers/object.helper';
 
-const DEFAULT_OFFSET = 0;
-const MIN_LEFT_POSITION = 0;
-const Z_INDEX = '1';
-
 @Component({
   tag: 'kritzel-portal',
   shadow: true,
@@ -36,6 +32,7 @@ export class KritzelPortal {
   handleOutsideClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (!this.host.contains(target)) {
+      this.close.emit();
       this.closePortal();
     }
   }
@@ -46,6 +43,9 @@ export class KritzelPortal {
   }
 
   private portal: HTMLElement;
+  private id: string = `portal-${ObjectHelper.generateUUID()}`;
+  private defaultOffset = 0;
+  private minLeft = 0;
 
   private focusFirstElement() {
     requestAnimationFrame(() => {
@@ -60,11 +60,11 @@ export class KritzelPortal {
     const refRect = this.anchor.getBoundingClientRect();
     const portalRect = this.portal.getBoundingClientRect();
 
-    const offset = this.offsetX ?? DEFAULT_OFFSET;
+    const offset = this.offsetX ?? this.defaultOffset;
     let left = refRect.left + offset;
 
-    const maxLeft = window.innerWidth - portalRect.width - MIN_LEFT_POSITION;
-    if (left < MIN_LEFT_POSITION) left = MIN_LEFT_POSITION;
+    const maxLeft = window.innerWidth - portalRect.width - this.minLeft;
+    if (left < this.minLeft) left = this.minLeft;
     if (left > maxLeft) left = maxLeft;
 
     return Math.round(left + window.scrollX);
@@ -74,7 +74,7 @@ export class KritzelPortal {
     if (!this.anchor || !this.portal) return 0;
     const refRect = this.anchor.getBoundingClientRect();
     const portalRect = this.portal.getBoundingClientRect();
-    const offset = this.offsetY ?? DEFAULT_OFFSET;
+    const offset = this.offsetY ?? this.defaultOffset;
 
     let top = refRect.bottom + offset;
 
@@ -87,8 +87,8 @@ export class KritzelPortal {
 
   private openPortal() {
     this.portal = document.createElement('div');
-    this.portal.setAttribute('id', `portal-${ObjectHelper.generateUUID()}`);
-    this.portal.style.zIndex = Z_INDEX;
+    this.portal.setAttribute('id', this.id);
+    this.portal.style.zIndex = '1';
     this.portal.style.position = 'absolute';
     this.portal.style.top = '0px';
     this.portal.style.left = '0px';
@@ -97,9 +97,10 @@ export class KritzelPortal {
   }
 
   private closePortal() {
+    const portal = document.getElementById(this.id);
+    if (!portal) return;
+    document.body.removeChild(portal);
     this.host.remove();
-    document.body.removeChild(this.portal);
-    this.close.emit();
   }
 
   private calculatePosition() {
