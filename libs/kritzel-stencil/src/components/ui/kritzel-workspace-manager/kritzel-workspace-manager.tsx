@@ -101,6 +101,11 @@ export class KritzelWorkspaceManager {
     this.childMenuAnchor = null;
   }
 
+  private closeMenu() {
+    this.cancel();
+    this.closeChildMenu();
+  }
+
   render() {
     const menuItems = this.sortedWorkspaces
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -144,6 +149,7 @@ export class KritzelWorkspaceManager {
           onItemSave={event => this.save(event.detail)}
           onItemCancel={() => this.cancel()}
           onItemCloseChildMenu={() => this.closeChildMenu()}
+          onClose={() => { this.closeMenu(); }}
         ></kritzel-split-button>
       </Host>
     );
