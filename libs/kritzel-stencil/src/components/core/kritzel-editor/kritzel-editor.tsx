@@ -239,8 +239,6 @@ export class KritzelEditor {
     }
   }
 
-  
-
   render() {
     return (
       <Host>
