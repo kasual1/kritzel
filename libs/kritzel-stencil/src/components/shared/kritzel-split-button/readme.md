@@ -7,40 +7,31 @@
 
 ## Properties
 
-| Property          | Attribute           | Description | Type                     | Default          |
-| ----------------- | ------------------- | ----------- | ------------------------ | ---------------- |
-| `activeItemIndex` | `active-item-index` |             | `number`                 | `null`           |
-| `buttonIcon`      | `button-icon`       |             | `string`                 | `undefined`      |
-| `buttonText`      | `button-text`       |             | `string`                 | `undefined`      |
-| `disabled`        | `disabled`          |             | `boolean`                | `false`          |
-| `dropdownIcon`    | `dropdown-icon`     |             | `string`                 | `'chevron-down'` |
-| `editingIndex`    | `editing-index`     |             | `number`                 | `null`           |
-| `options`         | `options`           |             | `KritzelMenuItem<any>[]` | `[]`             |
+| Property             | Attribute              | Description | Type                      | Default          |
+| -------------------- | ---------------------- | ----------- | ------------------------- | ---------------- |
+| `buttonIcon`         | `button-icon`          |             | `string`                  | `'plus'`         |
+| `dropdownIcon`       | `dropdown-icon`        |             | `string`                  | `'chevron-down'` |
+| `items`              | `items`                |             | `IKritzelMenuItem<any>[]` | `[]`             |
+| `mainButtonDisabled` | `main-button-disabled` |             | `boolean`                 | `false`          |
+| `menuButtonDisabled` | `menu-button-disabled` |             | `boolean`                 | `false`          |
 
 
 ## Events
 
-| Event          | Description | Type                                |
-| -------------- | ----------- | ----------------------------------- |
-| `buttonClick`  |             | `CustomEvent<void>`                 |
-| `menuClosed`   |             | `CustomEvent<void>`                 |
-| `menuOpened`   |             | `CustomEvent<void>`                 |
-| `optionSelect` |             | `CustomEvent<KritzelMenuItem<any>>` |
+| Event                 | Description | Type                                                |
+| --------------------- | ----------- | --------------------------------------------------- |
+| `buttonClick`         |             | `CustomEvent<void>`                                 |
+| `close`               |             | `CustomEvent<void>`                                 |
+| `itemCancel`          |             | `CustomEvent<IKritzelMenuItem<any>>`                |
+| `itemCloseChildMenu`  |             | `CustomEvent<IKritzelMenuItem<any>>`                |
+| `itemSave`            |             | `CustomEvent<IKritzelMenuItem<any>>`                |
+| `itemSelect`          |             | `CustomEvent<IKritzelMenuItemSelectEvent>`          |
+| `itemToggleChildMenu` |             | `CustomEvent<IKritzelMenuItemToggleChildMenuEvent>` |
 
 
 ## Methods
 
-### `closeMenu() => Promise<void>`
-
-
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `openMenu() => Promise<void>`
+### `open() => Promise<void>`
 
 
 
@@ -69,9 +60,10 @@ graph TD;
   kritzel-split-button --> kritzel-icon
   kritzel-split-button --> kritzel-portal
   kritzel-split-button --> kritzel-menu
-  kritzel-menu --> kritzel-icon
-  kritzel-menu --> kritzel-portal
-  kritzel-menu --> kritzel-menu
+  kritzel-menu --> kritzel-menu-item
+  kritzel-menu-item --> kritzel-icon
+  kritzel-menu-item --> kritzel-portal
+  kritzel-menu-item --> kritzel-menu
   kritzel-workspace-manager --> kritzel-split-button
   style kritzel-split-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
