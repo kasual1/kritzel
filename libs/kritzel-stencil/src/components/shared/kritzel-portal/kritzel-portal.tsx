@@ -94,6 +94,7 @@ export class KritzelPortal {
 
   private trapFocus(event: KeyboardEvent) {
     const focusableElements = this.getFocusableElements(this.host);
+    console.log('Focusable elements:', focusableElements);
     if (focusableElements.length === 0) return;
 
     const firstFocusable = focusableElements[0];
@@ -125,42 +126,31 @@ export class KritzelPortal {
       return el.offsetParent !== null;
     };
 
-    // Check if the root element itself is focusable
-    if (root.matches(focusableSelector) && !root.hasAttribute('disabled') && isVisible(root)) {
-      focusableElements.push(root);
-    }
+    const find = (element: Element) => {
+      // Check if the element itself is focusable
+      if (element instanceof HTMLElement && element.matches(focusableSelector) && !element.hasAttribute('disabled') && isVisible(element)) {
+        focusableElements.push(element);
+      }
 
-    // Function to recursively find focusable elements
-    const findFocusable = (element: Element) => {
-      // Search in shadow root
+      // Traverse shadow DOM
       if (element.shadowRoot) {
-        Array.from(element.shadowRoot.querySelectorAll<HTMLElement>(focusableSelector)).forEach(el => {
-          if (isVisible(el)) {
-            focusableElements.push(el);
-          }
-        });
-        Array.from(element.shadowRoot.children).forEach(findFocusable);
+        Array.from(element.shadowRoot.children).forEach(find);
       }
 
-      // Search in light DOM
-      Array.from(element.querySelectorAll<HTMLElement>(focusableSelector)).forEach(el => {
-        if (!focusableElements.includes(el) && isVisible(el)) {
-          focusableElements.push(el);
-        }
-      });
-
-      // Handle slotted content
+      // Traverse slotted content
       if (element.tagName === 'SLOT') {
-        (element as HTMLSlotElement).assignedElements({ flatten: true }).forEach(el => findFocusable(el));
+        (element as HTMLSlotElement).assignedElements({ flatten: true }).forEach(find);
       }
 
-      Array.from(element.children).forEach(findFocusable);
+      // Traverse light DOM children if there is no shadow root
+      if (!element.shadowRoot) {
+        Array.from(element.children).forEach(find);
+      }
     };
 
-    findFocusable(root);
+    find(root);
 
-    // Return unique elements in document order
-    return [...new Set(focusableElements)];
+    return focusableElements;
   }
 
   private get firstFocusableElement(): HTMLElement | null {
