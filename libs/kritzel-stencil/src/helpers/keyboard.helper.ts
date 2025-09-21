@@ -29,4 +29,23 @@ export class KritzelKeyboardHelper {
       meta.setAttribute('content', newContent);
     }
   }
+
+  static onKeyboardVisibleChanged(callback: (isOpen: boolean) => void): () => void {
+    if ('visualViewport' in window) {
+      const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
+      const onResize = (event: Event) => {
+        const target = event.target as VisualViewport;
+        const isOpen = (target.height * target.scale) / window.screen.height < VIEWPORT_VS_CLIENT_HEIGHT_RATIO;
+        callback(isOpen);
+      };
+
+      window.visualViewport.addEventListener('resize', onResize);
+      return () => window.visualViewport.removeEventListener('resize', onResize);
+    } else {
+      // Fallback for older browsers does not provide a reliable event-based mechanism.
+      console.warn('Listening for keyboard visibility changes is not reliably supported in this browser.');
+      // Return a no-op cleanup function.
+      return () => {};
+    }
+  }
 }

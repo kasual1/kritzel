@@ -13,6 +13,7 @@ import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
+import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -138,6 +139,9 @@ export class KritzelEditor {
   @State()
   activeWorkspace: KritzelWorkspace;
 
+  @State()
+  isVirtualKeyboardOpen: boolean = false;
+
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
     if (newValue && this.isControlsReady) {
@@ -212,6 +216,7 @@ export class KritzelEditor {
 
   componentDidLoad() {
     this.registerCustomSvgIcons();
+    this.listenForMobileKeyboard();
   }
 
   async checkIsReady() {
@@ -239,6 +244,14 @@ export class KritzelEditor {
     }
   }
 
+  private listenForMobileKeyboard() {
+    KritzelKeyboardHelper.onKeyboardVisibleChanged(isOpen => {
+      console.log('Mobile keyboard visibility changed:', isOpen);
+      this.isVirtualKeyboardOpen = isOpen;
+    });
+  }
+
+
   render() {
     return (
       <Host>
@@ -261,10 +274,10 @@ export class KritzelEditor {
         ></kritzel-engine>
 
         <kritzel-controls
+          style={{ display: this.isVirtualKeyboardOpen ? 'none' : (this.isControlsVisible ? 'flex' : 'none') }}
           ref={el => (this.controlsRef = el)}
           controls={this.controls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}
-          style={this.isControlsVisible ? { display: 'flex' } : { display: 'none' }}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
       </Host>
