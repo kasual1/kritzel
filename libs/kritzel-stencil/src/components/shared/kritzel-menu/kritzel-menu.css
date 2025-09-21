@@ -9,7 +9,7 @@
   box-shadow: var(--kritzel-menu-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
   border: var(--kritzel-menu-border, 1px solid #ebebeb);
   z-index: 2;
-  gap: var(--kritzel-menu-item-gap, 4px);
+  gap: var(--kritzel-menu-gap, 4px);
   overflow-y: auto;
   scrollbar-color: #ebebeb transparent;
   scrollbar-width: thin;

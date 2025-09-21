@@ -73,6 +73,6 @@ body,
 
   --kritzel-engine-background-color: #ffffff;
 
-  --kritzel-controls-control-selected-hover-background-color: #077397;
-  --kritzel-controls-control-selected-active-background-color: #077397;
+  --kritzel-menu-item-selected-bg: var(--kritzel-primary-color);
+  --kritzel-menu-item-input-selection-color: var(--kritzel-primary-color);
 }

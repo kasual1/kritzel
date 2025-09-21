@@ -4,7 +4,6 @@ import { ObjectHelper } from './object.helper';
 // Mock KritzelBaseObject for testing purposes
 class MockObject extends KritzelBaseObject<any> {
   public __class__ = 'MockObject';
-  public id: string;
   public someProp: string;
   public nested: { a: number };
   public element?: HTMLElement;

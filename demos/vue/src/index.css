@@ -1,10 +1,12 @@
-html, body, #app, main {
+html,
+body,
+#app,
+main {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
 }
-
 
 :root {
   --kritzel-primary-color: #42b883;
@@ -42,7 +44,9 @@ html, body, #app, main {
   --kritzel-controls-control-padding: 8px;
   --kritzel-controls-control-hover-background-color: hsl(0, 0%, 0%, 4.3%);
   --kritzel-controls-control-active-background-color: hsl(0, 0%, 0%, 8.6%);
-  --kritzel-controls-control-selected-background-color: var(--kritzel-primary-color);
+  --kritzel-controls-control-selected-background-color: var(
+    --kritzel-primary-color
+  );
   --kritzel-controls-control-selected-color: #ffffff;
   --kritzel-controls-divider-width: 1px;
   --kritzel-controls-divider-height: 24px;
@@ -69,7 +73,7 @@ html, body, #app, main {
   --kritzel-cursor-trail-opacity: 0.6;
 
   --kritzel-engine-background-color: #ffffff;
-  
-  --kritzel-controls-control-selected-hover-background-color: #3aa474;
-  --kritzel-controls-control-selected-active-background-color: #3aa474;
+
+  --kritzel-menu-item-selected-bg: var(--kritzel-primary-color);
+  --kritzel-menu-item-input-selection-color: var(--kritzel-primary-color);
 }

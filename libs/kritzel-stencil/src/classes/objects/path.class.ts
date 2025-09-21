@@ -18,8 +18,6 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   fill: string;
   x: number = 0;
   y: number = 0;
-  translateX: number;
-  translateY: number;
   height: number = 0;
   width: number = 0;
   scale: number = 1;
