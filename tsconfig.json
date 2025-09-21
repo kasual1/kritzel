@@ -9,10 +9,11 @@
 		"forceConsistentCasingInFileNames": true,
 		"lib": [
 			"dom",
-			"ES2017"
+			"ES2022"
 		],
-		"module": "ES2015",
 		"moduleResolution": "node",
+		"module": "esnext",
+		"target": "ES2022",
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
@@ -20,7 +21,6 @@
 		"pretty": true,
 		"removeComments": false,
 		"strictPropertyInitialization": false,
-		"target": "ES2017",
 		"baseUrl": ".",
 		"paths": {
 			"@kritzel/stencil": [
