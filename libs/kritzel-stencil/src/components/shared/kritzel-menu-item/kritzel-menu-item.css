@@ -11,6 +11,7 @@
   min-height: var(--kritzel-menu-item-min-height, 40px);
   font-family: sans-serif;
   font-size: var(--kritzel-menu-item-font-size, 14px);
+  color: var(--kritzel-menu-item-color, #333333);
   border-radius: var(--kritzel-menu-item-border-radius, 12px);
   outline: none;
   cursor: default;
@@ -34,6 +35,10 @@
 }
 
 :host(.selected) .edit-input {
+  color: var(--kritzel-menu-item-selected-color, #ffffff);
+}
+
+:host(.selected) kritzel-icon {
   color: var(--kritzel-menu-item-selected-color, #ffffff);
 }
 
