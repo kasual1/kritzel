@@ -54,6 +54,18 @@ export class KritzelPortal {
       this.close.emit();
       this.closePortal();
     }
+
+    if (event.key === 'Tab') {
+      this.trapFocus(event);
+    }
+
+    if (event.key === 'Enter') {
+      const activeElement = this.getDeepActiveElement() as HTMLElement;
+      if (activeElement?.click) {
+        event.preventDefault();
+        activeElement.click();
+      }
+    }
   }
 
   @Listen('resize', { target: 'window', capture: true })
@@ -72,12 +84,83 @@ export class KritzelPortal {
     });
   }
 
+  private getDeepActiveElement(): Element {
+    let activeEl = document.activeElement;
+    while (activeEl?.shadowRoot?.activeElement) {
+      activeEl = activeEl.shadowRoot.activeElement;
+    }
+    return activeEl;
+  }
+
+  private trapFocus(event: KeyboardEvent) {
+    const focusableElements = this.getFocusableElements(this.host);
+    if (focusableElements.length === 0) return;
+
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+    const activeElement = this.getDeepActiveElement();
+
+    if (event.shiftKey) {
+      /* shift + tab */
+      if (activeElement === firstFocusable) {
+        lastFocusable.focus();
+        event.preventDefault();
+      }
+    } else {
+      /* tab */
+      if (activeElement === lastFocusable) {
+        firstFocusable.focus();
+        event.preventDefault();
+      }
+    }
+  }
+
   private getFocusableElements(root: HTMLElement): HTMLElement[] {
     if (!root) return [];
-    const focusableElements = root.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), details, [tabindex]:not([tabindex="-1"])',
-    );
-    return Array.from(focusableElements) as HTMLElement[];
+
+    const focusableElements: HTMLElement[] = [];
+    const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), details, [tabindex]:not([tabindex="-1"])';
+
+    const isVisible = (el: HTMLElement) => {
+      return el.offsetParent !== null;
+    };
+
+    // Check if the root element itself is focusable
+    if (root.matches(focusableSelector) && !root.hasAttribute('disabled') && isVisible(root)) {
+      focusableElements.push(root);
+    }
+
+    // Function to recursively find focusable elements
+    const findFocusable = (element: Element) => {
+      // Search in shadow root
+      if (element.shadowRoot) {
+        Array.from(element.shadowRoot.querySelectorAll<HTMLElement>(focusableSelector)).forEach(el => {
+          if (isVisible(el)) {
+            focusableElements.push(el);
+          }
+        });
+        Array.from(element.shadowRoot.children).forEach(findFocusable);
+      }
+
+      // Search in light DOM
+      Array.from(element.querySelectorAll<HTMLElement>(focusableSelector)).forEach(el => {
+        if (!focusableElements.includes(el) && isVisible(el)) {
+          focusableElements.push(el);
+        }
+      });
+
+      // Handle slotted content
+      if (element.tagName === 'SLOT') {
+        (element as HTMLSlotElement).assignedElements({ flatten: true }).forEach(el => findFocusable(el));
+      }
+
+      Array.from(element.children).forEach(findFocusable);
+    };
+
+    findFocusable(root);
+
+    // Return unique elements in document order
+    return [...new Set(focusableElements)];
   }
 
   private get firstFocusableElement(): HTMLElement | null {

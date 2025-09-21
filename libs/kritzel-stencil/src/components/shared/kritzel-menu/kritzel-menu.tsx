@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Listen, Method } from '@stencil/core';
+import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Method } from '@stencil/core';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item-new.interface';
 
 @Component({
@@ -64,7 +64,7 @@ export class KritzelMenu {
 
   render() {
     return (
-      <Host tabIndex={0} onClick={e => e.stopPropagation()}>
+      <Host onClick={e => e.stopPropagation()}>
         {this.openChildMenuItem && <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>}
         {this.items.map((item) => (
           <kritzel-menu-item

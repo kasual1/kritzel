@@ -106,10 +106,10 @@ export class KritzelMenuItem {
         <input ref={el => (this.inputRef = el)} type="text" class="edit-input" value={this.item.label} onInput={this.handleInputChange} />
       </div>,
       <div class="menu-item-content right">
-        <div class={{ 'action-button': true, 'disabled': !this.isDirty && !this.item.isNewItem }} onClick={this.handleSave}>
+        <div tabIndex={0} class={{ 'action-button': true, 'disabled': !this.isDirty && !this.item.isNewItem }} onClick={this.handleSave}>
           <kritzel-icon name="check" size={16}></kritzel-icon>
         </div>
-        <div class="action-button" onClick={this.handleCancel}>
+        <div tabIndex={0} class="action-button" onClick={this.handleCancel}>
           <kritzel-icon name="x" size={16}></kritzel-icon>
         </div>
       </div>,
