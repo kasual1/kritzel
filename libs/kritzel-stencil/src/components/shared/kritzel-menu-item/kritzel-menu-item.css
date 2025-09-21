@@ -79,6 +79,13 @@
 .left {
   justify-content: flex-start;
   flex: 1;
+  min-width: 0;
+}
+
+.left > div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .right {
