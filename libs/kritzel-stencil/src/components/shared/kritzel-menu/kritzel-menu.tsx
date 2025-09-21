@@ -62,6 +62,11 @@ export class KritzelMenu {
     this.itemToggleChildMenu.emit(event.detail);
   }
 
+  private handleCloseChildMenu = (event: CustomEvent<IKritzelMenuItem>) => {
+    event.stopPropagation();
+    this.itemCloseChildMenu.emit(event.detail);
+  }
+
   render() {
     return (
       <Host onClick={e => e.stopPropagation()}>
@@ -76,6 +81,7 @@ export class KritzelMenu {
             onItemSave={this.handleSave}
             onItemCancel={this.handleCancel}
             onItemToggleChildMenu={this.handleToggleChildMenu}
+            onItemCloseChildMenu={this.handleCloseChildMenu}
           ></kritzel-menu-item>
         ))}
       </Host>

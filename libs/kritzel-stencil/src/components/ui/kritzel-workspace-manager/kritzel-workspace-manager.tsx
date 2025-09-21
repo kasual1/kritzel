@@ -109,6 +109,7 @@ export class KritzelWorkspaceManager {
   }
 
   render() {
+    console.log('render workspace manager');
     const menuItems = this.sortedWorkspaces
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .filter(ws => ws !== null)
