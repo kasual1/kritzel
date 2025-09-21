@@ -116,6 +116,7 @@
   background-color: transparent;
   background: transparent;
   outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .action-button:hover, .action-button:focus {
