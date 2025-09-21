@@ -23,6 +23,7 @@ const INTERNAL_COMPONENTS = [
   'kritzel-utility-panel',
   'kritzel-portal',
   'kritzel-menu',
+  'kritzel-menu-item',
   'kritzel-split-button',
   'kritzel-workspace-manager'
 ];

@@ -1,9 +1,25 @@
-export interface KritzelMenuItem<T = any> {
-  value: T;
+export interface IKritzelMenuItem<T = any> {
+  id: string;
   label: string;
-  select?: (item: KritzelMenuItem) => void;
-  save?: (item: KritzelMenuItem) => void;
-  cancel?: (item: KritzelMenuItem) => void;
-  disabled?: boolean;
-  children?: KritzelMenuItem[];
+  value?: T;
+  children?: IKritzelMenuItem[];
+  isSelectable?: boolean;
+  isSelected?: boolean;
+  isEditing?: boolean;
+  isDisabled?: boolean;
+  isChildMenuOpen?: boolean;
+  isNewItem?: boolean;
+  childMenuAnchor?: HTMLElement;
+  unchangedState?: Partial<IKritzelMenuItem>;
+  action?: (item: IKritzelMenuItem, parent: IKritzelMenuItem) => void;
+}
+
+export interface IKritzelMenuItemSelectEvent {
+  item: IKritzelMenuItem;
+  parent: IKritzelMenuItem;
+}
+
+export interface IKritzelMenuItemToggleChildMenuEvent {
+  item: IKritzelMenuItem;
+  childMenuAnchor: HTMLElement;
 }

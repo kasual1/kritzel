@@ -10,9 +10,8 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type IKritzelMenuItem, type KritzelEditorCustomEvent, type KritzelMenuItemCustomEvent } from "../../../../kritzel-stencil";
+import { type KritzelEditorCustomEvent } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
-import { KritzelMenuItem as KritzelMenuItemElement, defineCustomElement as defineKritzelMenuItem } from "../../../../kritzel-stencil/dist/components/kritzel-menu-item.js";
 
 export type KritzelEditorEvents = { onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>> };
 
@@ -23,27 +22,4 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     react: React,
     events: { onIsReady: 'isReady' } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
-});
-
-export type KritzelMenuItemEvents = {
-    onItemSelect: EventName<KritzelMenuItemCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>>,
-    onItemSave: EventName<KritzelMenuItemCustomEvent<IKritzelMenuItem>>,
-    onItemCancel: EventName<KritzelMenuItemCustomEvent<IKritzelMenuItem>>,
-    onItemToggleChildMenu: EventName<KritzelMenuItemCustomEvent<{ item: IKritzelMenuItem; childMenuAnchor: HTMLElement }>>,
-    onItemCloseChildMenu: EventName<KritzelMenuItemCustomEvent<IKritzelMenuItem>>
-};
-
-export const KritzelMenuItem: StencilReactComponent<KritzelMenuItemElement, KritzelMenuItemEvents> = /*@__PURE__*/ createComponent<KritzelMenuItemElement, KritzelMenuItemEvents>({
-    tagName: 'kritzel-menu-item',
-    elementClass: KritzelMenuItemElement,
-    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
-    react: React,
-    events: {
-        onItemSelect: 'itemSelect',
-        onItemSave: 'itemSave',
-        onItemCancel: 'itemCancel',
-        onItemToggleChildMenu: 'itemToggleChildMenu',
-        onItemCloseChildMenu: 'itemCloseChildMenu'
-    } as KritzelMenuItemEvents,
-    defineCustomElement: defineKritzelMenuItem
 });

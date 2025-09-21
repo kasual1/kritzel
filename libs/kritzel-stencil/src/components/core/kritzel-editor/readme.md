@@ -174,9 +174,10 @@ graph TD;
   kritzel-split-button --> kritzel-icon
   kritzel-split-button --> kritzel-portal
   kritzel-split-button --> kritzel-menu
-  kritzel-menu --> kritzel-icon
-  kritzel-menu --> kritzel-portal
-  kritzel-menu --> kritzel-menu
+  kritzel-menu --> kritzel-menu-item
+  kritzel-menu-item --> kritzel-icon
+  kritzel-menu-item --> kritzel-portal
+  kritzel-menu-item --> kritzel-menu
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-cursor-trail
   kritzel-context-menu --> kritzel-icon

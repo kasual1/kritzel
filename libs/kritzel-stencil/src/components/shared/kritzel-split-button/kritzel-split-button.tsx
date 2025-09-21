@@ -1,6 +1,6 @@
 import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
-import { IKritzelMenuItem } from '../../../interfaces/menu-item-new.interface';
+import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '../../../interfaces/menu-item.interface';
 
 @Component({
   tag: 'kritzel-split-button',
@@ -17,10 +17,10 @@ export class KritzelSplitButton {
   @Prop() menuButtonDisabled = false;
 
   @Event() buttonClick: EventEmitter<void>;
-  @Event() itemSelect: EventEmitter<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>;
+  @Event() itemSelect: EventEmitter<IKritzelMenuItemSelectEvent>;
   @Event() itemSave: EventEmitter<IKritzelMenuItem>;
   @Event() itemCancel: EventEmitter<IKritzelMenuItem>;
-  @Event() itemToggleChildMenu: EventEmitter<{ item: IKritzelMenuItem; childMenuAnchor: HTMLElement }>;
+  @Event() itemToggleChildMenu: EventEmitter<IKritzelMenuItemToggleChildMenuEvent>;
   @Event() itemCloseChildMenu: EventEmitter<IKritzelMenuItem>;
   @Event() close: EventEmitter<void>;
 
