@@ -57,11 +57,13 @@ export class KritzelMenuItem {
 
   private handleSave = (event: MouseEvent) => {
     event.stopPropagation();
+    this.host.focus();
     this.itemSave.emit(this.item);
   };
 
   private handleCancel = (event: MouseEvent) => {
     event.stopPropagation();
+    this.host.focus();
     this.itemCancel.emit(this.item);
   };
 
@@ -85,7 +87,7 @@ export class KritzelMenuItem {
             <button id="child-menu-toggle" class="action-button" onClick={this.handleMenuToggle} disabled={this.item.isDisabled}>
               <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
             </button>,
-            <kritzel-portal anchor={this.item.childMenuAnchor} offsetY={4}>
+            <kritzel-portal anchor={this.item.childMenuAnchor} offsetY={4} onClose={this.handleMenuClose}>
               <kritzel-menu
                 items={this.item.children}
                 parent={this.item}
@@ -106,7 +108,7 @@ export class KritzelMenuItem {
         <input ref={el => (this.inputRef = el)} type="text" class="edit-input" value={this.item.label} onInput={this.handleInputChange} />
       </div>,
       <div class="menu-item-content right">
-        <div tabIndex={0} class={{ 'action-button': true, 'disabled': !this.isDirty && !this.item.isNewItem }} onClick={this.handleSave}>
+        <div tabIndex={!this.isDirty && !this.item.isNewItem ? -1 : 0} class={{ 'action-button': true, 'disabled': !this.isDirty && !this.item.isNewItem }} onClick={this.handleSave}>
           <kritzel-icon name="check" size={16}></kritzel-icon>
         </div>
         <div tabIndex={0} class="action-button" onClick={this.handleCancel}>
