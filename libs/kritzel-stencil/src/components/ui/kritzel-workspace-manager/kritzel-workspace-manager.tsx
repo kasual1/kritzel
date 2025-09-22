@@ -91,7 +91,14 @@ export class KritzelWorkspaceManager {
   private async delete(item: IKritzelMenuItem) {
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
+
     await this.kritzelEngineRef.deleteWorkspace(item.value);
+
+    if(item.value.id === this.activeWorkspace?.id){
+      this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id !== item.value.id) || null;
+      this.workspaceChange.emit(this.activeWorkspace);
+    }
+
     await this.splitButtonRef.focusMenu();
   }
 
@@ -135,6 +142,7 @@ export class KritzelWorkspaceManager {
               id: `${ws.id}-delete`,
               label: 'Delete',
               value: 'delete',
+              isDisabled: this.sortedWorkspaces.length <= 1,
               action: (_item, parent) => this.delete(parent),
             },
           ],
