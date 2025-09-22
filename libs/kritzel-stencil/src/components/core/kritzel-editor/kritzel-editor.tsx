@@ -248,7 +248,6 @@ export class KritzelEditor {
 
   private listenForMobileKeyboard() {
     KritzelKeyboardHelper.onKeyboardVisibleChanged(isOpen => {
-      console.log('Mobile keyboard visibility changed:', isOpen);
       this.isVirtualKeyboardOpen = isOpen;
     });
   }
@@ -262,6 +261,8 @@ export class KritzelEditor {
         this.host.style.setProperty('--kritzel-editor-workspace-manager-top', '14px');
         this.host.style.setProperty('--kritzel-editor-workspace-manager-left', '14px');
         this.host.style.setProperty('--kritzel-editor-controls-bottom', '14px');
+        this.host.style.setProperty('--kritzel-editor-controls-transition', 'cubic-bezier(0.25, 0.1, 0.25, 1.0)');
+        this.host.style.setProperty('--kritzel-editor-controls-transform', 'translateY(200%)');
         break;
 
       case 'Android':
@@ -302,7 +303,8 @@ export class KritzelEditor {
         ></kritzel-engine>
 
         <kritzel-controls
-          style={{ display: this.isVirtualKeyboardOpen ? 'none' : this.isControlsVisible ? 'flex' : 'none' }}
+          class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
+          style={{ display: this.isControlsVisible ? 'flex' : 'none' }}
           ref={el => (this.controlsRef = el)}
           controls={this.controls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}

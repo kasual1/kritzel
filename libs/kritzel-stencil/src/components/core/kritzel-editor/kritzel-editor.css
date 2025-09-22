@@ -26,4 +26,9 @@ kritzel-workspace-manager {
 kritzel-controls {
   position: absolute;
   bottom: var(--kritzel-editor-controls-bottom, 14px);
+  transition: transform var(--kritzel-editor-controls-transition-duration, 0.5s) var(--kritzel-editor-controls-transition, ease-in-out);
+}
+
+kritzel-controls.keyboard-open {
+  transform: var(--kritzel-editor-controls-transform, translateY(300%));
 }
