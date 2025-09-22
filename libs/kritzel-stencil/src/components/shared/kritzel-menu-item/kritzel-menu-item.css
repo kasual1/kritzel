@@ -19,7 +19,7 @@
 
 :host(:hover) .menu-item-overlay,
 :host(:focus-within) .menu-item-overlay {
-  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--kritzel-menu-item-overlay-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 :host(.selected) {
@@ -52,7 +52,7 @@ kritzel-icon {
 }
 
 :host(.editing) {
-  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--kritzel-menu-item-editing-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 :host(.disabled) {
@@ -61,7 +61,7 @@ kritzel-icon {
 }
 
 :host(.child-open) {
-  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--kritzel-menu-item-child-open-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 :host(.child-open.selected) {
