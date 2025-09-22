@@ -136,7 +136,7 @@ export class KritzelMenuItem {
   render() {
     return (
       <Host
-        tabIndex={0}
+        tabIndex={this.item.isDisabled ? -1 : 0}
         class={{
           'selected': this.item.isSelected,
           'editing': this.item.isEditing,
