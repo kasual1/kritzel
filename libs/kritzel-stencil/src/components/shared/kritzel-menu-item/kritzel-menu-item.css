@@ -17,8 +17,9 @@
   cursor: default;
 }
 
-:host(:hover) .menu-item-overlay, :host(:focus-within) .menu-item-overlay {
-  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%))
+:host(:hover) .menu-item-overlay,
+:host(:focus-within) .menu-item-overlay {
+  background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 :host(.selected) {
@@ -38,8 +39,12 @@
   color: var(--kritzel-menu-item-selected-color, #ffffff);
 }
 
-:host(.selected) kritzel-icon {
-  color: var(--kritzel-menu-item-selected-color, #ffffff);
+:host(.selected) .action-button kritzel-icon {
+  --kritzel-icon-color: var(--kritzel-menu-item-selected-color, #ffffff);
+}
+
+kritzel-icon {
+  --kritzel-icon-color: var(--kritzel-menu-item-color, #333333);
 }
 
 :host(.selected) .edit-input::selection {
@@ -131,7 +136,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.action-button:hover, .action-button:focus {
+.action-button:hover,
+.action-button:focus {
   background-color: var(--kritzel-menu-item-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 

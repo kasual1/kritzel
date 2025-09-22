@@ -2,6 +2,7 @@
   display: inline-flex; /* Changed from block to inline-flex for better alignment */
   justify-content: center; /* Center content horizontally */
   align-items: center; /* Center content vertically */
+  color: var(--kritzel-icon-color, inherited);
 }
 
 span {
