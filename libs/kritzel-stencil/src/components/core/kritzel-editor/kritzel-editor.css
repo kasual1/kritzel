@@ -19,11 +19,11 @@ kritzel-editor{
 
 kritzel-workspace-manager {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: var(--kritzel-editor-workspace-manager-top, 14px);
+  left: var(--kritzel-editor-workspace-manager-left, 14px);
 }
 
 kritzel-controls {
   position: absolute;
-  bottom: 20px;
+  bottom: var(--kritzel-editor-controls-bottom, 14px);
 }

@@ -14,6 +14,7 @@ import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engin
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelWorkspace } from '../../../classes/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
+import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -217,6 +218,7 @@ export class KritzelEditor {
   componentDidLoad() {
     this.registerCustomSvgIcons();
     this.listenForMobileKeyboard();
+    this.setOsSpecificCssVariables();
   }
 
   async checkIsReady() {
@@ -251,17 +253,43 @@ export class KritzelEditor {
     });
   }
 
+  private setOsSpecificCssVariables() {
+    const os = KritzelDevicesHelper.detectOS();
+
+    switch (os) {
+      case 'iOS':
+        // iOS specific adjustments
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-top', '14px');
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-left', '14px');
+        this.host.style.setProperty('--kritzel-editor-controls-bottom', '14px');
+        break;
+
+      case 'Android':
+        // Android specific adjustments
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-top', '14px');
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-left', '14px');
+        this.host.style.setProperty('--kritzel-editor-controls-bottom', '24px');
+        break;
+
+      default:
+        // Default for Windows/Linux
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-top', '14px');
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-left', '14px');
+        this.host.style.setProperty('--kritzel-editor-controls-bottom', '14px');
+        break;
+    }
+  }
 
   render() {
     return (
       <Host>
-         <kritzel-workspace-manager
+        <kritzel-workspace-manager
           workspaces={this.workspaces}
           activeWorkspace={this.activeWorkspace}
-          onWorkspaceChange={event => this.activeWorkspace = event.detail}
+          onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
           onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
         ></kritzel-workspace-manager>
-        
+
         <kritzel-engine
           ref={el => (this.engineRef = el)}
           workspace={this.activeWorkspace}
@@ -270,11 +298,11 @@ export class KritzelEditor {
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
           onIsEngineReady={event => this.onEngineReady(event)}
-          onWorkspacesChange={event => this.workspaces = event.detail}
+          onWorkspacesChange={event => (this.workspaces = event.detail)}
         ></kritzel-engine>
 
         <kritzel-controls
-          style={{ display: this.isVirtualKeyboardOpen ? 'none' : (this.isControlsVisible ? 'flex' : 'none') }}
+          style={{ display: this.isVirtualKeyboardOpen ? 'none' : this.isControlsVisible ? 'flex' : 'none' }}
           ref={el => (this.controlsRef = el)}
           controls={this.controls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}
