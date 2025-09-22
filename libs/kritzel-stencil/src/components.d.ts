@@ -279,6 +279,7 @@ export namespace Components {
           * @default 'chevron-down'
          */
         "dropdownIcon": string;
+        "focusMenu": () => Promise<void>;
         /**
           * @default []
          */

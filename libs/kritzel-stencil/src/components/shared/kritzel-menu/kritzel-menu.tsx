@@ -23,7 +23,8 @@ export class KritzelMenu {
 
   @Method()
   async setFocus() {
-    const firstItem = this.host.querySelector('kritzel-menu-item');
+    debugger;
+    const firstItem = this.host.shadowRoot.querySelector('kritzel-menu-item');
     if (firstItem) {
       firstItem.focus();
     }

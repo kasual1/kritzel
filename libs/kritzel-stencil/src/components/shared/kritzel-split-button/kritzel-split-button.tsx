@@ -37,6 +37,13 @@ export class KritzelSplitButton {
     this.openMenu(new MouseEvent('click'));
   }
 
+  @Method()
+  async focusMenu() {
+    if (this.menuRef) {
+      await this.menuRef.setFocus();
+    }
+  }
+
   private handleButtonClick = (event: MouseEvent) => {
     event.stopPropagation();
     this.buttonClick.emit();
