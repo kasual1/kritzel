@@ -19,18 +19,11 @@ kritzel-editor{
 
 kritzel-workspace-manager {
   position: absolute;
-  top: 14px;
-  left: 14px;
-}
-
-kritzel-split-button{
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 1;
+  top: 20px;
+  left: 20px;
 }
 
 kritzel-controls {
   position: absolute;
-  bottom: 28px;
+  bottom: 20px;
 }
