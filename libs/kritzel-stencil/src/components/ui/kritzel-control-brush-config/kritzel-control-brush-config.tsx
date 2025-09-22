@@ -56,26 +56,29 @@ export class KritzelControlBrushConfig {
           style={{
             display: 'flex',
             flexDirection: 'row',
-            alignItems: 'center',
+            alignItems: this.isExpanded ? 'flex-start' : 'center',
             justifyContent: 'flex-start',
             width: '100%',
             gap: '8px',
           }}
         >
-          <kritzel-brush-style type={this.tool.type} onTypeChange={event => this.handleTypeChange(event)}></kritzel-brush-style>
+          <kritzel-color-palette
+            colors={this.palette}
+            selectedColor={this.tool.color}
+            isExpanded={this.isExpanded}
+            isOpaque={true}
+            onColorChange={color => this.handleColorChange(color)}
+          ></kritzel-color-palette>
 
-          <button class="expand-toggle" onClick={() => this.handleToggleExpand()} title={this.isExpanded ? 'Collapse' : 'Expand'} style={this.palette.length > 6 ? { visibillity: 'visible' } : { visibility: 'hidden' }}>
+          <button
+            class="expand-toggle"
+            onClick={() => this.handleToggleExpand()}
+            title={this.isExpanded ? 'Collapse' : 'Expand'}
+            style={this.palette.length > 6 ? { visibillity: 'visible' } : { visibility: 'hidden' }}
+          >
             <kritzel-icon name={this.isExpanded ? 'chevron-up' : 'chevron-down'}></kritzel-icon>
           </button>
         </div>
-
-        <kritzel-color-palette
-          colors={this.palette}
-          selectedColor={this.tool.color}
-          isExpanded={this.isExpanded}
-          isOpaque={true}
-          onColorChange={color => this.handleColorChange(color)}
-        ></kritzel-color-palette>
 
         <kritzel-stroke-size selectedSize={this.tool.size} onSizeChange={event => this.handleSizeChange(event)}></kritzel-stroke-size>
       </Host>

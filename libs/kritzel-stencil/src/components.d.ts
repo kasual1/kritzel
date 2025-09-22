@@ -310,6 +310,7 @@ export namespace Components {
           * @default 8
          */
         "arrowSize": number;
+        "focusContent": () => Promise<void>;
         /**
           * @default false
          */

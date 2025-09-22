@@ -42,4 +42,41 @@ export class KritzelHTMLHelper {
 
     return rect.top >= parentRect.top && rect.left >= parentRect.left && rect.bottom <= parentRect.bottom && rect.right <= parentRect.right;
   }
+
+  static getFocusableElements(root: HTMLElement): HTMLElement[] {
+      if (!root) return [];
+  
+      const focusableElements: HTMLElement[] = [];
+      const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), details, [tabindex]:not([tabindex="-1"])';
+  
+      const isVisible = (el: HTMLElement) => {
+        return el.offsetParent !== null;
+      };
+  
+      const find = (element: Element) => {
+        // Check if the element itself is focusable
+        if (element instanceof HTMLElement && element.matches(focusableSelector) && !element.hasAttribute('disabled') && isVisible(element)) {
+          focusableElements.push(element);
+        }
+  
+        // Traverse shadow DOM
+        if (element.shadowRoot) {
+          Array.from(element.shadowRoot.children).forEach(find);
+        }
+  
+        // Traverse slotted content
+        if (element.tagName === 'SLOT') {
+          (element as HTMLSlotElement).assignedElements({ flatten: true }).forEach(find);
+        }
+  
+        // Traverse light DOM children if there is no shadow root
+        if (!element.shadowRoot) {
+          Array.from(element.children).forEach(find);
+        }
+      };
+  
+      find(root);
+  
+      return focusableElements;
+    }
 }

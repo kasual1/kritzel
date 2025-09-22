@@ -24,6 +24,11 @@
   cursor: pointer;
   color: #333333;
   -webkit-tap-highlight-color: transparent;
+  border-radius: var(--kritzel-utility-panel-button-border-radius, 8px);
+}
+
+.utility-button:focus {
+  background-color: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 .utility-separator {

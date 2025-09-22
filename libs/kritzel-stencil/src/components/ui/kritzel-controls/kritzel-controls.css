@@ -40,6 +40,7 @@
   font-weight: bold;
 }
 
+.kritzel-control:focus,
 .kritzel-control:hover {
   background-color: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
@@ -53,6 +54,11 @@
 .kritzel-control.selected:active {
   background-color: var(--kritzel-controls-control-selected-background-color, #007AFF) !important;
   color: var(--kritzel-controls-control-selected-color, #ffffff) !important;
+}
+
+.kritzel-control.selected:focus {
+    background-color: var(--kritzel-controls-control-selected-background-color, #007bffe3) !important;
+
 }
 
 .kritzel-divider {
@@ -77,6 +83,11 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  border-radius: 50%;
+}
+
+.kritzel-config:focus {
+  outline: var(--kritzel-menu-focus-outline, 2px solid red);
 }
 
 .color-container {
@@ -114,7 +125,7 @@
 
 kritzel-tooltip {
   position: fixed;
-  bottom: 66px;
+  bottom: 56px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10001;

@@ -157,6 +157,13 @@ export class KritzelEditor {
     }
   }
 
+  @Listen('keydown', { passive: false })
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Tab') {
+      console.log(document.activeElement)
+    }
+  }
+
   @Method()
   async getObjectById<T extends KritzelBaseObject>(id: string): Promise<T | null> {
     return this.engineRef.getObjectById(id);

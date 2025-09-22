@@ -70,6 +70,7 @@ export class KritzelControls {
   }
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
+  tooltipRef: HTMLKritzelTooltipElement | null = null;
 
   get activeToolAsTextTool() {
     return this.activeControl?.tool as KritzelTextTool;
@@ -127,6 +128,10 @@ export class KritzelControls {
     event.stopPropagation();
     this.isTooltipVisible = !this.isTooltipVisible;
     this.kritzelEngine?.disable();
+
+    setTimeout(() => {
+      this.tooltipRef?.focusContent();
+    }, 100);
   }
 
   private async handleToolChange(event: CustomEvent) {
@@ -180,7 +185,11 @@ export class KritzelControls {
             if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
                 <div class="kritzel-config-container" key={control.name}>
-                  <kritzel-tooltip isVisible={this.isTooltipVisible} anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}>
+                  <kritzel-tooltip
+                    ref={el => (this.tooltipRef = el)}
+                    isVisible={this.isTooltipVisible}
+                    anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}
+                  >
                     <div style={{ width: '294px', height: '100%' }}>
                       {this.activeControl.name === 'brush' && (
                         <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
@@ -193,8 +202,14 @@ export class KritzelControls {
                   </kritzel-tooltip>
 
                   <div
+                    tabIndex={0}
                     class="kritzel-config"
                     onClick={event => this.handleConfigClick?.(event)}
+                    onKeyDown={event => {
+                      if (event.key === 'Enter') {
+                        this.handleConfigClick?.(event as any);
+                      }
+                    }}
                     style={{
                       cursor: this.activeControl.config ? 'pointer' : 'default',
                       pointerEvents: hasNoConfig ? 'none' : 'auto',

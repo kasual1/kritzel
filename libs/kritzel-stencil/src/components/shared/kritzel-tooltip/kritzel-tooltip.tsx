@@ -1,4 +1,5 @@
-import { Component, Host, Prop, h, Element, State, Listen } from '@stencil/core';
+import { Component, Host, Prop, h, Element, State, Listen, Method } from '@stencil/core';
+import { KritzelHTMLHelper } from '../../../helpers/html.helper';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -38,6 +39,21 @@ export class KritzelTooltip {
     this.calculateAdjustedPosition();
   }
 
+  @Method()
+  async focusContent() {
+    debugger;
+    const focusableElements = KritzelHTMLHelper.getFocusableElements(this.el);
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus();
+    }
+
+    console.log('Focusable elements:', focusableElements[0]);
+  }
+
+  componentDidLoad() {
+    this.focusSlottedContent();
+  }
+
   componentWillLoad() {
     this.isMobileView = window.innerWidth < MOBILE_BREAKPOINT;
     this.calculateAdjustedPosition();
@@ -45,6 +61,15 @@ export class KritzelTooltip {
 
   componentWillUpdate() {
     this.calculateAdjustedPosition();
+  }
+
+  private focusSlottedContent() {
+    const slot = this.el.shadowRoot?.querySelector('slot');
+    const assignedElements = slot?.assignedElements() || [];
+    if (assignedElements.length > 0) {
+      const firstElement = assignedElements[0] as HTMLElement;
+      firstElement.focus();
+    }
   }
 
   private calculateAdjustedPosition() {
