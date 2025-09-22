@@ -46,11 +46,12 @@ export class KritzelColorPalette {
             'expanded': this.isExpanded,
           }}
           style={{
-            height: expandedHeight
+            height: expandedHeight,
           }}
         >
           {displayedColors.map(color => (
             <div
+              tabIndex={0}
               class={{
                 'color-container': true,
                 'selected': this.selectedColor === color,

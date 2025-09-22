@@ -25,6 +25,7 @@ export class KritzelStrokeSize {
       <Host>
         {this.sizes.map(size => (
           <div
+            tabIndex={0}
             class={{
               'size-container': true,
               'selected': this.selectedSize === size,

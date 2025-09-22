@@ -1,5 +1,6 @@
 import { Component, Host, Listen, Prop, Watch, h, Event, EventEmitter, Element } from '@stencil/core';
 import { ObjectHelper } from '../../../helpers/object.helper';
+import { KritzelHTMLHelper } from '../../../helpers/html.helper';
 
 @Component({
   tag: 'kritzel-portal',
@@ -93,7 +94,7 @@ export class KritzelPortal {
   }
 
   private trapFocus(event: KeyboardEvent) {
-    const focusableElements = this.getFocusableElements(this.host);
+    const focusableElements = KritzelHTMLHelper.getFocusableElements(this.host);
     if (focusableElements.length === 0) return;
 
     const firstFocusable = focusableElements[0];
@@ -115,49 +116,13 @@ export class KritzelPortal {
     }
   }
 
-  private getFocusableElements(root: HTMLElement): HTMLElement[] {
-    if (!root) return [];
-
-    const focusableElements: HTMLElement[] = [];
-    const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), details, [tabindex]:not([tabindex="-1"])';
-
-    const isVisible = (el: HTMLElement) => {
-      return el.offsetParent !== null;
-    };
-
-    const find = (element: Element) => {
-      // Check if the element itself is focusable
-      if (element instanceof HTMLElement && element.matches(focusableSelector) && !element.hasAttribute('disabled') && isVisible(element)) {
-        focusableElements.push(element);
-      }
-
-      // Traverse shadow DOM
-      if (element.shadowRoot) {
-        Array.from(element.shadowRoot.children).forEach(find);
-      }
-
-      // Traverse slotted content
-      if (element.tagName === 'SLOT') {
-        (element as HTMLSlotElement).assignedElements({ flatten: true }).forEach(find);
-      }
-
-      // Traverse light DOM children if there is no shadow root
-      if (!element.shadowRoot) {
-        Array.from(element.children).forEach(find);
-      }
-    };
-
-    find(root);
-
-    return focusableElements;
-  }
 
   private get firstFocusableElement(): HTMLElement | null {
     const slotEl = this.host.shadowRoot?.querySelector('slot') as HTMLSlotElement | null;
     const firstAssigned = slotEl?.assignedElements({ flatten: true })[0] as HTMLElement | undefined;
     if (!firstAssigned) return null;
 
-    const focusable = this.getFocusableElements(firstAssigned);
+    const focusable = KritzelHTMLHelper.getFocusableElements(firstAssigned);
     return focusable[0] ?? firstAssigned;
   }
 

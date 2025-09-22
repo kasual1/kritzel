@@ -12,10 +12,6 @@
   gap: var(--kritzel-split-button-gap, 4px);
 }
 
-:host(:focus) {
-  outline: none;
-}
-
 :host(.mobile){
   --kritzel-split-button-hover-background-color: transparent;
 }
