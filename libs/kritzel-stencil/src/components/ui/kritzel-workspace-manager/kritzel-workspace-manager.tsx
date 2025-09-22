@@ -72,7 +72,8 @@ export class KritzelWorkspaceManager {
 
   private async save(item: IKritzelMenuItem) {
     if (this.newWorkspace) {
-      await this.kritzelEngineRef.createWorkspace({ ...item.value, name: item.label });
+      this.newWorkspace.name = item.label;
+      await this.kritzelEngineRef.createWorkspace(this.newWorkspace);
       this.workspaceChange.emit(this.newWorkspace);
     } else {
       await this.kritzelEngineRef.updateWorkspace({ ...item.value, name: item.label });
@@ -91,6 +92,7 @@ export class KritzelWorkspaceManager {
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
     await this.kritzelEngineRef.deleteWorkspace(item.value);
+    await this.splitButtonRef.focusMenu();
   }
 
   private toggleChildMenu(item: IKritzelMenuItem, anchor: HTMLElement) {
@@ -109,7 +111,6 @@ export class KritzelWorkspaceManager {
   }
 
   render() {
-    console.log('render workspace manager');
     const menuItems = this.sortedWorkspaces
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .filter(ws => ws !== null)

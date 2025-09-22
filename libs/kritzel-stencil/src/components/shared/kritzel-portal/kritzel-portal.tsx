@@ -94,7 +94,6 @@ export class KritzelPortal {
 
   private trapFocus(event: KeyboardEvent) {
     const focusableElements = this.getFocusableElements(this.host);
-    console.log('Focusable elements:', focusableElements);
     if (focusableElements.length === 0) return;
 
     const firstFocusable = focusableElements[0];
