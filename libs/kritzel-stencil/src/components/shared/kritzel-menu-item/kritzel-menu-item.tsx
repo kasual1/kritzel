@@ -1,5 +1,6 @@
 import { Component, Host, Prop, h, Element, State, Watch, Event, EventEmitter } from '@stencil/core';
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '../../../interfaces/menu-item.interface';
+import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 
 @Component({
   tag: 'kritzel-menu-item',
@@ -30,6 +31,8 @@ export class KritzelMenuItem {
   private inputRef: HTMLInputElement;
 
   componentDidLoad() {
+    this.setDeviceSpecificStyles();
+
     if (this.item.isEditing && this.inputRef && !this.isDirty) {
       this.inputRef.focus();
       this.inputRef.select();
@@ -40,6 +43,14 @@ export class KritzelMenuItem {
     if (this.item.isEditing && this.inputRef && !this.isDirty) {
       this.inputRef.focus();
       this.inputRef.select();
+    }
+  }
+
+  private setDeviceSpecificStyles = () => {
+    const isTouchDevice = KritzelDevicesHelper.isTouchDevice();
+    if (isTouchDevice) {
+      this.host.style.setProperty('--kritzel-menu-item-overlay-background-color', 'transparent');
+      this.host.style.setProperty('--kritzel-menu-item-button-hover-background-color', 'transparent');
     }
   }
 
@@ -111,7 +122,11 @@ export class KritzelMenuItem {
         <div tabIndex={0} class="action-button" onClick={this.handleCancel}>
           <kritzel-icon name="x" size={16}></kritzel-icon>
         </div>
-        <div tabIndex={!this.isDirty && !this.item.isNewItem ? -1 : 0} class={{ 'action-button': true, 'disabled': !this.isDirty && !this.item.isNewItem }} onClick={this.handleSave}>
+        <div
+          tabIndex={!this.isDirty && !this.item.isNewItem ? -1 : 0}
+          class={{ 'action-button': true, 'disabled': !this.isDirty && !this.item.isNewItem }}
+          onClick={this.handleSave}
+        >
           <kritzel-icon name="check" size={16}></kritzel-icon>
         </div>
       </div>,
