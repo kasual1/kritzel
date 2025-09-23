@@ -21,14 +21,11 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
   shadow: false,
 })
 export class KritzelEditor {
-  @Prop()
-  scaleMax: number = ABSOLUTE_SCALE_MAX;
+  @Element() host!: HTMLElement;
 
-  @Prop()
-  scaleMin: number = ABSOLUTE_SCALE_MIN;
-
-  @Prop()
-  controls: KritzelToolbarControl[] = [
+  @Prop() scaleMax: number = ABSOLUTE_SCALE_MAX;
+  @Prop() scaleMin: number = ABSOLUTE_SCALE_MIN;
+  @Prop() controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
       type: 'tool',
@@ -72,8 +69,7 @@ export class KritzelEditor {
     },
   ];
 
-  @Prop()
-  globalContextMenuItems: ContextMenuItem[] = [
+  @Prop() globalContextMenuItems: ContextMenuItem[] = [
     {
       label: 'Paste',
       icon: 'paste',
@@ -83,8 +79,7 @@ export class KritzelEditor {
     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },
   ];
 
-  @Prop()
-  objectContextMenuItems: ContextMenuItem[] = [
+  @Prop() objectContextMenuItems: ContextMenuItem[] = [
     {
       label: 'Edit',
       icon: 'pen',
@@ -110,38 +105,18 @@ export class KritzelEditor {
     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },
   ];
 
-  @Prop()
-  customSvgIcons: Record<string, string> = {};
+  @Prop() customSvgIcons: Record<string, string> = {};
+  @Prop() isControlsVisible: boolean = true;
+  @Prop() isUtilityPanelVisible: boolean = true;
 
-  @Prop()
-  isControlsVisible: boolean = true;
+  @Event() isReady: EventEmitter<HTMLElement>;
 
-  @Prop()
-  isUtilityPanelVisible: boolean = true;
-
-  @Event()
-  isReady: EventEmitter<HTMLElement>;
-
-  @Element()
-  host!: HTMLElement;
-
-  @State()
-  isEngineReady: boolean = false;
-
-  @State()
-  isControlsReady: boolean = false;
-
-  @State()
-  isWorkspaceManagerReady: boolean = false;
-
-  @State()
-  workspaces: KritzelWorkspace[] = [];
-
-  @State()
-  activeWorkspace: KritzelWorkspace;
-
-  @State()
-  isVirtualKeyboardOpen: boolean = false;
+  @State() isEngineReady: boolean = false;
+  @State() isControlsReady: boolean = false;
+  @State() isWorkspaceManagerReady: boolean = false;
+  @State() workspaces: KritzelWorkspace[] = [];
+  @State() activeWorkspace: KritzelWorkspace;
+  @State() isVirtualKeyboardOpen: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -160,7 +135,14 @@ export class KritzelEditor {
   @Listen('keydown', { passive: false })
   handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Tab') {
-      console.log(document.activeElement)
+      console.log(document.activeElement);
+    }
+  }
+
+  @Listen('dblclick', { passive: false })
+  handleTouchStart(event: MouseEvent) {
+    if (event.cancelable) {
+      event.preventDefault();
     }
   }
 
@@ -209,17 +191,8 @@ export class KritzelEditor {
     return this.engineRef.centerObjectInViewport(object);
   }
 
-  @Listen('dblclick', { passive: false })
-  handleTouchStart(event: MouseEvent) {
-    if (event.cancelable) {
-      event.preventDefault();
-    }
-  }
-
   engineRef!: HTMLKritzelEngineElement;
-
   controlsRef!: HTMLKritzelControlsElement;
-
   splitButtonRef!: HTMLKritzelSplitButtonElement;
 
   componentDidLoad() {

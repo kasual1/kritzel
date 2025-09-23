@@ -8,36 +8,10 @@ import { KritzelStore } from '../../../classes/store.class';
   shadow: true,
 })
 export class KritzelCursorTrail {
-  @Prop()
-  store: KritzelStore;
+  @Prop() store: KritzelStore;
 
-  @State()
-  cursorTrailPoints: Array<{ x: number; y: number; timestamp: number }> = [];
-
-  @State()
-  isLeftButtonDown: boolean = false;
-
-  private trailCleanupIntervalId: number;
-
-  private readonly TRAIL_DURATION_MS = 100;
-
-  private readonly MAX_TRAIL_POINTS = 50;
-
-  componentDidLoad() {
-    this.trailCleanupIntervalId = window.setInterval(() => {
-      const now = Date.now();
-      const newTrailPoints = this.cursorTrailPoints.filter(p => now - p.timestamp < this.TRAIL_DURATION_MS);
-      if (newTrailPoints.length !== this.cursorTrailPoints.length) {
-        this.cursorTrailPoints = newTrailPoints;
-      }
-    }, 50);
-  }
-
-  disconnectedCallback() {
-    if (this.trailCleanupIntervalId) {
-      window.clearInterval(this.trailCleanupIntervalId);
-    }
-  }
+  @State() cursorTrailPoints: Array<{ x: number; y: number; timestamp: number }> = [];
+  @State() isLeftButtonDown: boolean = false;
 
   @Listen('pointerdown', { target: 'window', passive: true })
   handleMouseDown(ev: PointerEvent) {
@@ -58,7 +32,7 @@ export class KritzelCursorTrail {
 
   @Listen('pointermove', { target: 'window', passive: true })
   handlePointerMove(ev: PointerEvent) {
-     if (!this.isLeftButtonDown) {
+    if (!this.isLeftButtonDown) {
       return;
     }
     const newPoint = { x: ev.clientX, y: ev.clientY, timestamp: Date.now() };
@@ -73,17 +47,39 @@ export class KritzelCursorTrail {
   @Listen('pointerup', { target: 'window', passive: true })
   handlePointerUp(ev: PointerEvent) {
     if (ev.pointerType === 'mouse') {
-      if(ev.button === KritzelMouseButton.Left){
+      if (ev.button === KritzelMouseButton.Left) {
         this.isLeftButtonDown = false;
         this.cursorTrailPoints = [];
       }
     }
 
     if (ev.pointerType === 'touch') {
-      if(this.store.state.pointers.size === 0){
+      if (this.store.state.pointers.size === 0) {
         this.isLeftButtonDown = false;
         this.cursorTrailPoints = [];
       }
+    }
+  }
+
+  private trailCleanupIntervalId: number;
+
+  private readonly TRAIL_DURATION_MS = 100;
+
+  private readonly MAX_TRAIL_POINTS = 50;
+
+  componentDidLoad() {
+    this.trailCleanupIntervalId = window.setInterval(() => {
+      const now = Date.now();
+      const newTrailPoints = this.cursorTrailPoints.filter(p => now - p.timestamp < this.TRAIL_DURATION_MS);
+      if (newTrailPoints.length !== this.cursorTrailPoints.length) {
+        this.cursorTrailPoints = newTrailPoints;
+      }
+    }, 50);
+  }
+
+  disconnectedCallback() {
+    if (this.trailCleanupIntervalId) {
+      window.clearInterval(this.trailCleanupIntervalId);
     }
   }
 

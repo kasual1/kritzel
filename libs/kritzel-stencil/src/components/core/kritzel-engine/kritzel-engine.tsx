@@ -33,46 +33,19 @@ import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
   shadow: true,
 })
 export class KritzelEngine {
-  @Prop()
-  workspace?: KritzelWorkspace;
+  @Element() host: HTMLElement;
 
-  @Prop()
-  activeTool: KritzelTool;
-
-  @Prop()
-  globalContextMenuItems: ContextMenuItem[];
-
-  @Prop()
-  objectContextMenuItems: ContextMenuItem[];
-
-  @Prop({ mutable: true })
-  scaleMax: number = ABSOLUTE_SCALE_MAX;
-
-  @Prop({ mutable: true })
-  scaleMin: number = ABSOLUTE_SCALE_MIN;
-
-  @Event()
-  isEngineReady: EventEmitter<KritzelEngineState>;
-
-  @Event()
-  activeToolChange: EventEmitter<KritzelBaseTool>;
-
-  @Event()
-  workspacesChange: EventEmitter<KritzelWorkspace[]>;
-
-  @Element()
-  host: HTMLElement;
-
-  @State()
-  forceUpdate: number = 0;
-
+  @Prop() workspace?: KritzelWorkspace;
   @Watch('workspace')
   onWorkspaceChange(newWorkspace: KritzelWorkspace | null) {
     if (newWorkspace) {
       this.store.initializeWorkspace(newWorkspace);
     }
   }
-
+  @Prop() activeTool: KritzelTool;
+  @Prop() globalContextMenuItems: ContextMenuItem[];
+  @Prop() objectContextMenuItems: ContextMenuItem[];
+  @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
   @Watch('scaleMax')
   validateScaleMax(newValue: number) {
     if (newValue > ABSOLUTE_SCALE_MAX) {
@@ -83,7 +56,7 @@ export class KritzelEngine {
       this.store.state.scaleMax = newValue;
     }
   }
-
+  @Prop({ mutable: true }) scaleMin: number = ABSOLUTE_SCALE_MIN;
   @Watch('scaleMin')
   validateScaleMin(newValue: number) {
     if (newValue < ABSOLUTE_SCALE_MIN) {
@@ -95,48 +68,11 @@ export class KritzelEngine {
     }
   }
 
-  store: KritzelStore;
+  @Event() isEngineReady: EventEmitter<KritzelEngineState>;
+  @Event() activeToolChange: EventEmitter<KritzelBaseTool>;
+  @Event() workspacesChange: EventEmitter<KritzelWorkspace[]>;
 
-  viewport: KritzelViewport;
-
-  contextMenuHandler: KritzelContextMenuHandler;
-
-  keyHandler: KritzelKeyHandler;
-
-  contextMenuElement: HTMLKritzelContextMenuElement | null = null;
-
-  get isSelecting() {
-    return this.store.state.activeTool instanceof KritzelSelectionTool && this.store.state.isSelecting;
-  }
-
-  get isSelectionActive() {
-    return this.store.state.activeTool instanceof KritzelSelectionTool && this.store.state.selectionGroup !== null;
-  }
-
-  constructor() {
-    this.store = new KritzelStore(this);
-  }
-
-  componentWillLoad() {
-    this.validateScaleMax(this.scaleMax);
-    this.validateScaleMin(this.scaleMin);
-  }
-
-  async componentDidLoad() {
-    this.contextMenuHandler = new KritzelContextMenuHandler(this.store, this.globalContextMenuItems, this.objectContextMenuItems);
-    this.keyHandler = new KritzelKeyHandler(this.store);
-    this.viewport = new KritzelViewport(this.store, this.host);
-
-    this._registerStateChangeListeners();
-
-    await this.store.initializeDatabase();
-    await this.store.initializeWorkspace(this.workspace);
-
-    if (this.store.state.isReady === false) {
-      this.store.state.isReady = true;
-      this.isEngineReady.emit(this.store.state);
-    }
-  }
+  @State() forceUpdate: number = 0;
 
   @Listen('wheel', { passive: false })
   handleWheel(ev) {
@@ -466,6 +402,45 @@ export class KritzelEngine {
     return this.store.getWorkspaces();
   }
 
+  store: KritzelStore;
+  viewport: KritzelViewport;
+  contextMenuHandler: KritzelContextMenuHandler;
+  keyHandler: KritzelKeyHandler;
+  contextMenuElement: HTMLKritzelContextMenuElement | null = null;
+
+  get isSelecting() {
+    return this.store.state.activeTool instanceof KritzelSelectionTool && this.store.state.isSelecting;
+  }
+
+  get isSelectionActive() {
+    return this.store.state.activeTool instanceof KritzelSelectionTool && this.store.state.selectionGroup !== null;
+  }
+
+  constructor() {
+    this.store = new KritzelStore(this);
+  }
+
+  componentWillLoad() {
+    this.validateScaleMax(this.scaleMax);
+    this.validateScaleMin(this.scaleMin);
+  }
+
+  async componentDidLoad() {
+    this.contextMenuHandler = new KritzelContextMenuHandler(this.store, this.globalContextMenuItems, this.objectContextMenuItems);
+    this.keyHandler = new KritzelKeyHandler(this.store);
+    this.viewport = new KritzelViewport(this.store, this.host);
+
+    this._registerStateChangeListeners();
+
+    await this.store.initializeDatabase();
+    await this.store.initializeWorkspace(this.workspace);
+
+    if (this.store.state.isReady === false) {
+      this.store.state.isReady = true;
+      this.isEngineReady.emit(this.store.state);
+    }
+  }
+
   private _registerStateChangeListeners() {
     this.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
     this.store.onStateChange('isFocused', this._handleIsFocusedChange.bind(this));
@@ -530,7 +505,16 @@ export class KritzelEngine {
         >
           {this.store.state.objectsMap.allObjects()?.map(object => {
             return (
-              <div key={object.id} style={{ display: object.isInViewport() ? 'block' : 'none', transform: object?.transformationMatrix, transformOrigin: 'top left', zIndex: object.zIndex.toString(), position: 'absolute' }}>
+              <div
+                key={object.id}
+                style={{
+                  display: object.isInViewport() ? 'block' : 'none',
+                  transform: object?.transformationMatrix,
+                  transformOrigin: 'top left',
+                  zIndex: object.zIndex.toString(),
+                  position: 'absolute',
+                }}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   id={object.id}
