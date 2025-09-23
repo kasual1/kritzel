@@ -44,7 +44,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       const object = this._core.findObjectById(objectElement?.id);
 
       if (this._core.state.activeText === null && object && object instanceof KritzelText) {
-        this._core.state.activeText = object;
+        this._core.store.setState('activeText', object);
         object.focus();
         return;
       }
@@ -73,7 +73,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       text.translateY = (clientY - this._core.state.translateY) / this._core.state.scale;
       text.zIndex = this._core.store.currentZIndex;
 
-      this._core.state.activeText = text;
+      this._core.store.setState('activeText', text);
 
       this._core.history.executeCommand(new AddObjectCommand(this._core, this, text));
     }
@@ -86,7 +86,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       const object = this._core.findObjectById(objectElement?.id);
 
       if (this._core.state.activeText === null && object && object instanceof KritzelText) {
-        this._core.state.activeText = object;
+        this._core.store.setState('activeText', object);
         object.focus();
         return;
       }
@@ -117,7 +117,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       text.translateY = (clientY - this._core.state.translateY) / this._core.state.scale;
       text.zIndex = this._core.store.currentZIndex;
 
-      this._core.state.activeText = text;
+      this._core.store.setState('activeText', text);
 
       this._core.history.executeCommand(new AddObjectCommand(this._core, this, text));
     }

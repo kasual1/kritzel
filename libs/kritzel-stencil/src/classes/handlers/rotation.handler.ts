@@ -21,7 +21,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           const clientX = event.clientX - this._core.store.offsetX;
           const clientY = event.clientY - this._core.store.offsetY;
 
-          this._core.state.isRotating = true;
+          this._core.store.setState('isRotating', true);
 
           const centerX = this._core.state.selectionGroup.translateX + this._core.state.selectionGroup.width / 2 / this._core.state.scale;
           const centerY = this._core.state.selectionGroup.translateY + this._core.state.selectionGroup.height / 2 / this._core.state.scale;
@@ -47,7 +47,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           const clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);
           const clientY = Math.round(firstTouch.clientY - this._core.store.offsetY);
 
-          this._core.state.isRotating = true;
+          this._core.store.setState('isRotating', true);
 
           const centerX = this._core.state.selectionGroup.translateX + this._core.state.selectionGroup.width / 2 / this._core.state.scale;
           const centerY = this._core.state.selectionGroup.translateY + this._core.state.selectionGroup.height / 2 / this._core.state.scale;
@@ -130,7 +130,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         this._core.history.executeCommand(new BatchCommand(this._core, this, [rotateSelectionGroupCommand, ...updateObjectsCommand]));
 
-        this._core.state.isRotating = false;
+        this._core.store.setState('isRotating', false);
 
         this.initialRotation = 0;
         this.rotation = 0;
@@ -148,7 +148,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         this._core.history.executeCommand(new BatchCommand(this._core, this, [rotateSelectionGroupCommand, ...updateObjectsCommand]));
 
-        this._core.state.isRotating = false;
+        this._core.store.setState('isRotating', false);
 
         this.initialRotation = 0;
         this.rotation = 0;

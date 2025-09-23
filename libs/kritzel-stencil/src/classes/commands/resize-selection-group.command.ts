@@ -18,12 +18,12 @@ export class ResizeSelectionGroupCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
-    this._core.state.selectionGroup = this.selectionGroup;
+    this._core.store.setState('selectionGroup', this.selectionGroup);
     this._core.state.selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
   }
 
   undo(): void {
-    this._core.state.selectionGroup = this.selectionGroup;
+    this._core.store.setState('selectionGroup', this.selectionGroup);
     this._core.state.selectionGroup.resize(this.previousSize.x, this.previousSize.y, this.previousSize.width, this.previousSize.height);
   }
 }

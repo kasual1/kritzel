@@ -171,10 +171,10 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
   edit(): void {
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
-    this._core.state.selectionGroup = null;
-    this._core.state.selectionBox = null;
-    this._core.state.activeText = this;
-
+    this._core.store.setState('selectionGroup', null);
+    this._core.store.setState('selectionBox', null);
+    this._core.store.setState('activeText', this);
+ 
     setTimeout(() => {
       this.focus();
     }, 300);

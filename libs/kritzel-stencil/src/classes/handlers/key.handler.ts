@@ -12,7 +12,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       return;
     }
 
-    this._core.state.isCtrlKeyPressed = event.ctrlKey;
+    this._core.store.setState('isCtrlKeyPressed', event.ctrlKey);
 
     if(this._core.state.isCtrlKeyPressed) {
       event.preventDefault();
@@ -97,8 +97,8 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     if(this._core.state.isFocused === false) {
       return;
     }
-    
-    this._core.state.isCtrlKeyPressed = event.ctrlKey;
+
+    this._core.store.setState('isCtrlKeyPressed', event.ctrlKey);
   }
  
 }
