@@ -25,7 +25,7 @@ export class KritzelStore {
 
   private readonly _state: KritzelEngineState;
 
-  private _history: KritzelHistory;
+  private readonly _history: KritzelHistory;
 
   private readonly _database: KritzelDatabase;
 
