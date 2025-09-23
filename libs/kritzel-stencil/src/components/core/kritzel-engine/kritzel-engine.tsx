@@ -261,11 +261,6 @@ export class KritzelEngine {
     this.store.setState('isFocused', isInside && isInKritzelEngine);
   }
 
-  @Listen('click')
-  handleClick() {
-    this.enable();
-  }
-
   @Method()
   async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig): Promise<KritzelBaseTool> {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {

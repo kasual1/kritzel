@@ -394,6 +394,10 @@ export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelStrokeSizeElement;
 }
+export interface KritzelTooltipCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelTooltipElement;
+}
 export interface KritzelUtilityPanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelUtilityPanelElement;
@@ -677,13 +681,14 @@ declare global {
         new (): HTMLKritzelPortalElement;
     };
     interface HTMLKritzelSplitButtonElementEventMap {
-        "buttonClick": void;
+        "mainButtonClick": void;
         "itemSelect": IKritzelMenuItemSelectEvent;
         "itemSave": IKritzelMenuItem;
         "itemCancel": IKritzelMenuItem;
         "itemToggleChildMenu": IKritzelMenuItemToggleChildMenuEvent;
         "itemCloseChildMenu": IKritzelMenuItem;
-        "close": void;
+        "menuOpen": void;
+        "menuClose": void;
     }
     interface HTMLKritzelSplitButtonElement extends Components.KritzelSplitButton, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelSplitButtonElementEventMap>(type: K, listener: (this: HTMLKritzelSplitButtonElement, ev: KritzelSplitButtonCustomEvent<HTMLKritzelSplitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -716,7 +721,18 @@ declare global {
         prototype: HTMLKritzelStrokeSizeElement;
         new (): HTMLKritzelStrokeSizeElement;
     };
+    interface HTMLKritzelTooltipElementEventMap {
+        "tooltipClosed": void;
+    }
     interface HTMLKritzelTooltipElement extends Components.KritzelTooltip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelTooltipElementEventMap>(type: K, listener: (this: HTMLKritzelTooltipElement, ev: KritzelTooltipCustomEvent<HTMLKritzelTooltipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelTooltipElementEventMap>(type: K, listener: (this: HTMLKritzelTooltipElement, ev: KritzelTooltipCustomEvent<HTMLKritzelTooltipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelTooltipElement: {
         prototype: HTMLKritzelTooltipElement;
@@ -1028,13 +1044,14 @@ declare namespace LocalJSX {
           * @default false
          */
         "menuButtonDisabled"?: boolean;
-        "onButtonClick"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
-        "onClose"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
         "onItemCancel"?: (event: KritzelSplitButtonCustomEvent<IKritzelMenuItem>) => void;
         "onItemCloseChildMenu"?: (event: KritzelSplitButtonCustomEvent<IKritzelMenuItem>) => void;
         "onItemSave"?: (event: KritzelSplitButtonCustomEvent<IKritzelMenuItem>) => void;
         "onItemSelect"?: (event: KritzelSplitButtonCustomEvent<IKritzelMenuItemSelectEvent>) => void;
         "onItemToggleChildMenu"?: (event: KritzelSplitButtonCustomEvent<IKritzelMenuItemToggleChildMenuEvent>) => void;
+        "onMainButtonClick"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
+        "onMenuClose"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
+        "onMenuOpen"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
     }
     interface KritzelStrokeSize {
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
@@ -1061,6 +1078,7 @@ declare namespace LocalJSX {
           * @default 24
          */
         "offsetY"?: number;
+        "onTooltipClosed"?: (event: KritzelTooltipCustomEvent<void>) => void;
     }
     interface KritzelUtilityPanel {
         "onDelete"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
