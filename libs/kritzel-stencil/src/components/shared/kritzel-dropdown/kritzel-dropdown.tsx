@@ -12,29 +12,26 @@ export interface DropdownOption {
   shadow: true,
 })
 export class KritzelDropdown {
-  @Prop() 
-  options: DropdownOption[] = [];
-  
-  @Prop() 
-  value: string;
-  
-  @Prop() 
-  width?: string;
-  
-  @Prop() 
-  selectStyles?: any = {}; 
+  @Prop() options: DropdownOption[] = [];
+  @Watch('options')
+  optionsChanged() {
+    this.updateInternalValue(this.internalValue, true);
+  }
+  @Prop() value: string;
+  @Watch('value')
+  externalValueChanged(newValue: string) {
+    if (newValue !== this.internalValue) {
+      this.updateInternalValue(newValue, false);
+    }
+  }
+  @Prop() width?: string;
+  @Prop() selectStyles?: any = {};
 
-  @State() 
-  internalValue: string;
+  @State() internalValue: string;
+  @State() hasSuffixContent: boolean = false;
+  @State() hasPrefixContent: boolean = false;
 
-  @State() 
-  hasSuffixContent: boolean = false;
-
-  @State()
-  hasPrefixContent: boolean = false;
-
-  @Event() 
-  valueChanged: EventEmitter<string>;
+  @Event() valueChanged: EventEmitter<string>;
 
   private suffixSlotElement?: HTMLSlotElement;
   private prefixSlotElement?: HTMLSlotElement;
@@ -43,18 +40,6 @@ export class KritzelDropdown {
     this.updateInternalValue(this.value, false);
     this.evaluateSuffixContent();
     this.evaluatePrefixContent();
-  }
-
-  @Watch('value')
-  externalValueChanged(newValue: string) {
-    if (newValue !== this.internalValue) {
-      this.updateInternalValue(newValue, false);
-    }
-  }
-  
-  @Watch('options')
-  optionsChanged() {
-    this.updateInternalValue(this.internalValue, true);
   }
 
   private updateInternalValue(proposedValue: string, emitChange: boolean) {
@@ -95,7 +80,7 @@ export class KritzelDropdown {
         this.hasSuffixContent = false;
       }
     }
-  }
+  };
 
   private evaluatePrefixContent = () => {
     if (this.prefixSlotElement) {
@@ -108,7 +93,7 @@ export class KritzelDropdown {
         this.hasPrefixContent = false;
       }
     }
-  }
+  };
 
   render() {
     const selectClasses = {
@@ -120,31 +105,15 @@ export class KritzelDropdown {
     return (
       <Host>
         <div class="dropdown-wrapper">
-          <slot
-            name="prefix"
-            ref={el => this.prefixSlotElement = el as HTMLSlotElement}
-            onSlotchange={this.evaluatePrefixContent}
-          ></slot>
-          <select
-            class={selectClasses}
-            style={{ ...this.selectStyles, width: this.width }}
-            onInput={this.handleSelectChange}
-          >
+          <slot name="prefix" ref={el => (this.prefixSlotElement = el as HTMLSlotElement)} onSlotchange={this.evaluatePrefixContent}></slot>
+          <select class={selectClasses} style={{ ...this.selectStyles, width: this.width }} onInput={this.handleSelectChange}>
             {this.options.map(option => (
-              <option
-                value={option.value}
-                style={option.style}
-                selected={option.value === this.internalValue}
-              >
+              <option value={option.value} style={option.style} selected={option.value === this.internalValue}>
                 {option.label}
               </option>
             ))}
           </select>
-          <slot 
-            name="suffix"
-            ref={el => this.suffixSlotElement = el as HTMLSlotElement}
-            onSlotchange={this.evaluateSuffixContent}
-          ></slot>
+          <slot name="suffix" ref={el => (this.suffixSlotElement = el as HTMLSlotElement)} onSlotchange={this.evaluateSuffixContent}></slot>
         </div>
       </Host>
     );

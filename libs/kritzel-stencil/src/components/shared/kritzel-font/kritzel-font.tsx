@@ -6,14 +6,9 @@ import { Component, Host, Prop, h } from '@stencil/core';
   shadow: true,
 })
 export class KritzelFont {
-  @Prop()
-  fontFamily: string = 'Arial, sans-serif';
-
-  @Prop()
-  size: number = 24;
-
-  @Prop()
-  color: string = '#000000';
+  @Prop() fontFamily: string = 'Arial, sans-serif';
+  @Prop() size: number = 24;
+  @Prop() color: string = '#000000';
 
   render() {
     return (
