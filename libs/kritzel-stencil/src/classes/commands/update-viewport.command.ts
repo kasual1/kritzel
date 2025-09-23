@@ -27,9 +27,9 @@ export class UpdateViewportCommand extends KritzelBaseCommand {
     super(core, initiator, skipHistory);
     this.previousViewport = previousViewport;
     this.currentViewport = {
-      scale: this._core.state.scale,
-      translateX: this._core.state.translateX,
-      translateY: this._core.state.translateY,
+      scale: this._core.store.state.scale,
+      translateX: this._core.store.state.translateX,
+      translateY: this._core.store.state.translateY,
     };
   }
 

@@ -23,7 +23,7 @@ export class KritzelCursorTrail {
     }
 
     if (ev.pointerType === 'touch') {
-      if (this.core.state.pointers.size === 1) {
+      if (this.core.store.state.pointers.size === 1) {
         this.isLeftButtonDown = true;
         this.cursorTrailPoints = [];
       }
@@ -54,7 +54,7 @@ export class KritzelCursorTrail {
     }
 
     if (ev.pointerType === 'touch') {
-      if (this.core.state.pointers.size === 0) {
+      if (this.core.store.state.pointers.size === 0) {
         this.isLeftButtonDown = false;
         this.cursorTrailPoints = [];
       }

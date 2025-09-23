@@ -15,7 +15,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
   }
 
   handleContextMenu(event: PointerEvent): void {
-    if(this._core.state.skipContextMenu) {
+    if(this._core.store.state.skipContextMenu) {
       this._core.store.setState('skipContextMenu', false);
       return;
     }
@@ -32,10 +32,10 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       this._core.store.setState('selectionGroup', selectionGroup);
       this._core.store.setState('isSelecting', false);
 
-      this._core.history.executeCommand(new AddSelectionGroupCommand(this._core, this, this._core.state.selectionGroup));
+      this._core.history.executeCommand(new AddSelectionGroupCommand(this._core, this, this._core.store.state.selectionGroup));
     }
 
-    this._core.store.setState('contextMenuItems', this._core.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems)
+    this._core.store.setState('contextMenuItems', this._core.store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems)
 
     let x: number = event.clientX - this._core.store.offsetX;
     let y: number = event.clientY - this._core.store.offsetY;

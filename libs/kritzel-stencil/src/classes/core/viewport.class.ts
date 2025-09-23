@@ -21,8 +21,8 @@ export class KritzelViewport {
   }
 
   handleResize(): void {
-    this._core.store.setState('viewportWidth', this._core.state.host.clientWidth);
-    this._core.store.setState('viewportHeight', this._core.state.host.clientHeight);
+    this._core.store.setState('viewportWidth', this._core.store.state.host.clientWidth);
+    this._core.store.setState('viewportHeight', this._core.store.state.host.clientHeight);
     this._core.store.setState('hasViewportChanged', true);
     this._core.rerender();
   }
@@ -40,7 +40,7 @@ export class KritzelViewport {
     }
 
     if (event.pointerType === 'touch') {
-      const activePointers = Array.from(this._core.state.pointers.values());
+      const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 2) {
         this._core.store.setState('currentPath', null);
@@ -63,35 +63,35 @@ export class KritzelViewport {
 
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      const hostRect = this._core.state.host.getBoundingClientRect();
+      const hostRect = this._core.store.state.host.getBoundingClientRect();
       const xRelativeToHost = event.clientX - hostRect.left;
       const yRelativeToHost = event.clientY - hostRect.top;
 
-      this._core.store.setState('pointerX', (xRelativeToHost - this._core.state.translateX) / this._core.state.scale);
-      this._core.store.setState('pointerY', (yRelativeToHost - this._core.state.translateY) / this._core.state.scale);
+      this._core.store.setState('pointerX', (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale);
+      this._core.store.setState('pointerY', (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale);
 
-      if (this._core.state.isPanning) {
-        this._core.store.setState('translateX', this._core.state.translateX - this._core.state.startX - xRelativeToHost);
-        this._core.store.setState('translateY', this._core.state.translateY - this._core.state.startY - yRelativeToHost);
+      if (this._core.store.state.isPanning) {
+        this._core.store.setState('translateX', this._core.store.state.translateX - this._core.store.state.startX - xRelativeToHost);
+        this._core.store.setState('translateY', this._core.store.state.translateY - this._core.store.state.startY - yRelativeToHost);
         this._core.store.setState('startX', xRelativeToHost);
         this._core.store.setState('startY', yRelativeToHost);
         this._core.store.setState('hasViewportChanged', true);
         this._core.store.setState('skipContextMenu', true);
 
         this._core.rerender();
-        this._core.updateWorkspaceViewport(this._core.state.translateX, this._core.state.translateY, this._core.state.scale);
+        this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
       }
     }
 
     if (event.pointerType === 'touch') {
-      const hostRect = this._core.state.host.getBoundingClientRect();
+      const hostRect = this._core.store.state.host.getBoundingClientRect();
       const xRelativeToHost = event.clientX - hostRect.left;
       const yRelativeToHost = event.clientY - hostRect.top;
 
-      this._core.store.setState('pointerX', (xRelativeToHost - this._core.state.translateX) / this._core.state.scale);
-      this._core.store.setState('pointerY', (yRelativeToHost - this._core.state.translateY) / this._core.state.scale);
+      this._core.store.setState('pointerX', (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale);
+      this._core.store.setState('pointerY', (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale);
 
-      const activePointers = Array.from(this._core.state.pointers.values());
+      const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 2) {
         const firstTouchX = activePointers[0].clientX - this._core.store.offsetX;
@@ -106,17 +106,17 @@ export class KritzelViewport {
         const midpointY = (firstTouchY + secondTouchY) / 2;
 
         const scaleRatio = currentTouchDistance / this.initialTouchDistance!;
-        const newScale = this._core.state.scale * scaleRatio;
+        const newScale = this._core.store.state.scale * scaleRatio;
 
-        if (newScale > this._core.state.scaleMax || newScale < this._core.state.scaleMin) {
-          this._core.store.setState('translateX', this._core.state.translateX + midpointX - this.startX);
-          this._core.store.setState('translateY', this._core.state.translateY + midpointY - this.startY);
+        if (newScale > this._core.store.state.scaleMax || newScale < this._core.store.state.scaleMin) {
+          this._core.store.setState('translateX', this._core.store.state.translateX + midpointX - this.startX);
+          this._core.store.setState('translateY', this._core.store.state.translateY + midpointY - this.startY);
         } else {
-          const translateXAdjustment = (midpointX - this._core.state.translateX) * (scaleRatio - 1);
-          const translateYAdjustment = (midpointY - this._core.state.translateY) * (scaleRatio - 1);
+          const translateXAdjustment = (midpointX - this._core.store.state.translateX) * (scaleRatio - 1);
+          const translateYAdjustment = (midpointY - this._core.store.state.translateY) * (scaleRatio - 1);
 
-          this._core.store.setState('translateX', this._core.state.translateX + midpointX - this.startX - translateXAdjustment);
-          this._core.store.setState('translateY', this._core.state.translateY + midpointY - this.startY - translateYAdjustment);
+          this._core.store.setState('translateX', this._core.store.state.translateX + midpointX - this.startX - translateXAdjustment);
+          this._core.store.setState('translateY', this._core.store.state.translateY + midpointY - this.startY - translateYAdjustment);
           this._core.store.setState('scale', newScale);
 
           this.initialTouchDistance = currentTouchDistance;
@@ -128,14 +128,14 @@ export class KritzelViewport {
         this._core.store.setState('hasViewportChanged', true);
 
         this._core.rerender();
-        this._core.updateWorkspaceViewport(this._core.state.translateX, this._core.state.translateY, this._core.state.scale);
+        this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
       }
     }
   }
 
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (this._core.state.isPanning) {
+      if (this._core.store.state.isPanning) {
         this._core.store.setState('isPanning', false);
         this._core.rerender();
       }
@@ -160,40 +160,40 @@ export class KritzelViewport {
   }
 
   private handleZoom(event: WheelEvent): void {
-    const rect = this._core.state.host.getBoundingClientRect();
+    const rect = this._core.store.state.host.getBoundingClientRect();
     const xRelativeToHost = event.clientX - rect.left;
     const yRelativeToHost = event.clientY - rect.top;
 
-    this._core.store.setState('pointerX', (xRelativeToHost - this._core.state.translateX) / this._core.state.scale);
-    this._core.store.setState('pointerY', (yRelativeToHost - this._core.state.translateY) / this._core.state.scale);
+    this._core.store.setState('pointerX', (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale);
+    this._core.store.setState('pointerY', (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale);
 
-    const delta = event.deltaY > 0 ? -this._core.state.scaleStep * this._core.state.scale : this._core.state.scaleStep * this._core.state.scale;
-    const newScale = Math.min(this._core.state.scaleMax, Math.max(this._core.state.scaleMin, this._core.state.scale + delta));
+    const delta = event.deltaY > 0 ? -this._core.store.state.scaleStep * this._core.store.state.scale : this._core.store.state.scaleStep * this._core.store.state.scale;
+    const newScale = Math.min(this._core.store.state.scaleMax, Math.max(this._core.store.state.scaleMin, this._core.store.state.scale + delta));
 
-    const scaleRatio = newScale / this._core.state.scale;
-    const translateXAdjustment = (xRelativeToHost - this._core.state.translateX) * (scaleRatio - 1);
-    const translateYAdjustment = (yRelativeToHost - this._core.state.translateY) * (scaleRatio - 1);
+    const scaleRatio = newScale / this._core.store.state.scale;
+    const translateXAdjustment = (xRelativeToHost - this._core.store.state.translateX) * (scaleRatio - 1);
+    const translateYAdjustment = (yRelativeToHost - this._core.store.state.translateY) * (scaleRatio - 1);
 
     this._core.store.setState('scale', newScale);
 
-    this._core.store.setState('translateX', this._core.state.translateX - translateXAdjustment);
-    this._core.store.setState('translateY', this._core.state.translateY - translateYAdjustment);
+    this._core.store.setState('translateX', this._core.store.state.translateX - translateXAdjustment);
+    this._core.store.setState('translateY', this._core.store.state.translateY - translateYAdjustment);
 
     this._core.store.setState('hasViewportChanged', true);
 
     this._core.rerender();
-    this._core.updateWorkspaceViewport(this._core.state.translateX, this._core.state.translateY, this._core.state.scale);
+    this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
   }
 
   private handlePan(event: WheelEvent): void {
     const panSpeed = 0.8;
 
-    this._core.store.setState('translateX', this._core.state.translateX - event.deltaX * panSpeed);
-    this._core.store.setState('translateY', this._core.state.translateY - event.deltaY * panSpeed);
+    this._core.store.setState('translateX', this._core.store.state.translateX - event.deltaX * panSpeed);
+    this._core.store.setState('translateY', this._core.store.state.translateY - event.deltaY * panSpeed);
 
     this._core.store.setState('hasViewportChanged', true);
 
     this._core.rerender();
-    this._core.updateWorkspaceViewport(this._core.state.translateX, this._core.state.translateY, this._core.state.scale);
+    this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
   }
 }

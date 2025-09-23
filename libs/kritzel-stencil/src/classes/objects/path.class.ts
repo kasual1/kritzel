@@ -50,7 +50,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.state.activeWorkspace.id
+    object.workspaceId = core.store.state.activeWorkspace.id
     object.options = options;
     object.points = options?.points ?? [];
     object.translateX = options?.translateX ?? 0;
@@ -97,8 +97,8 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   }
 
   override move(startX: number, startY: number, endX: number, endY: number): void {
-    const deltaX = (startX - endX) / this._core.state.scale;
-    const deltaY = (startY - endY) / this._core.state.scale;
+    const deltaX = (startX - endX) / this._core.store.state.scale;
+    const deltaY = (startY - endY) / this._core.store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
@@ -200,7 +200,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateX = x;
     this.translateY = y;
     this._adjustedPoints = null;
-    this._core.state.objectsMap.update(this);
+    this._core.store.state.objectsMap.update(this);
   }
 
   private computeAdjustedPoints(): number[][] {

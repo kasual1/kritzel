@@ -22,7 +22,7 @@ export class MoveSelectionGroupCommand extends KritzelBaseCommand {
     this.endX = endX;
     this.endY = endY;
     this.skipExecution = skipFirstExecution;
-    this.selectionGroup = this._core.state.selectionGroup;
+    this.selectionGroup = this._core.store.state.selectionGroup;
   }
 
   execute(): void {
@@ -32,11 +32,11 @@ export class MoveSelectionGroupCommand extends KritzelBaseCommand {
     }
 
     this._core.store.setState('selectionGroup', this.selectionGroup);
-    this._core.state.selectionGroup.move(this.startX, this.startY, this.endX, this.endY);
+    this._core.store.state.selectionGroup.move(this.startX, this.startY, this.endX, this.endY);
   }
 
   undo(): void {
     this._core.store.setState('selectionGroup', this.selectionGroup);
-    this._core.state.selectionGroup.move(this.endX, this.endY, this.startX, this.startY);
+    this._core.store.state.selectionGroup.move(this.endX, this.endY, this.startX, this.startY);
   }
 }
