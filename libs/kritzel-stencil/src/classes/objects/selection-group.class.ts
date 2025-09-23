@@ -1,6 +1,6 @@
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelCore } from '../core/core.class';
-import { KritzelReviver } from '../reviver.class';
+import { KritzelReviver } from '../core/reviver.class';
 import { KritzelBaseObject } from './base-object.class';
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override __class__: string = 'KritzelSelectionGroup';

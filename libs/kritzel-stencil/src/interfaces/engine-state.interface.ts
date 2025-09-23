@@ -5,7 +5,7 @@ import { KritzelSelectionGroup } from "../classes/objects/selection-group.class"
 import { KritzelText } from "../classes/objects/text.class";
 import { KritzelObjectMap } from "../classes/structures/object-map.structure";
 import { KritzelBaseTool } from "../classes/tools/base-tool.class";
-import { KritzelWorkspace } from "../classes/workspace.class";
+import { KritzelWorkspace } from "../classes/core/workspace.class";
 import { KritzelHandleType } from "../enums/handle-type.enum";
 import { ContextMenuItem } from "./context-menu-item.interface";
 import { KritzelDebugInfo } from "./debug-info.interface";
