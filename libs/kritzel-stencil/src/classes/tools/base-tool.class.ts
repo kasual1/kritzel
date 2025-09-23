@@ -1,17 +1,17 @@
 import { KritzelTool } from '../../components';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
-import { KritzelStore } from '../store.class';
+import { KritzelCore } from '../core/core.class';
 
 export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
   __class__: string = this.constructor.name;
 
   name: string = 'base-tool';
 
-  protected readonly _store: KritzelStore;
+  protected readonly _core: KritzelCore;
 
-  constructor(store: KritzelStore) {
-    this._store = store;
-    void this._store; // Avoid unused variable warning
+  constructor(core: KritzelCore) {
+    this._core = core;
+    void this._core; // Avoid unused variable warning
   }
 
   onActivate(): void {

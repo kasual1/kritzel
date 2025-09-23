@@ -1,14 +1,14 @@
 import { KritzelCommand } from '../../interfaces/command.interface';
-import { KritzelStore } from '../store.class';
+import { KritzelCore } from '../core/core.class';
 
 export class KritzelBaseCommand implements KritzelCommand {
-  protected _store: KritzelStore;
+  protected _core: KritzelCore;
 
   initiator: string;
   skipHistory;
 
-  constructor(store: KritzelStore, initiator: any, skipHistory = false) {
-    this._store = store;
+  constructor(core: KritzelCore, initiator: any, skipHistory = false) {
+    this._core = core;
     this.initiator = initiator?.constructor?.name ?? 'Unknown';
     this.skipHistory = skipHistory;
   }

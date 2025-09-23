@@ -1,3 +1,4 @@
+import { KritzelCore } from '../core/core.class';
 import { KritzelBaseCommand } from './base.command';
 
 export class UpdateViewportCommand extends KritzelBaseCommand {
@@ -14,7 +15,7 @@ export class UpdateViewportCommand extends KritzelBaseCommand {
   };
 
   constructor(
-    store,
+    core: KritzelCore,
     initiator: any,
     previousViewport: {
       scale: number;
@@ -23,24 +24,24 @@ export class UpdateViewportCommand extends KritzelBaseCommand {
     },
     skipHistory = false,
   ) {
-    super(store, initiator, skipHistory);
+    super(core, initiator, skipHistory);
     this.previousViewport = previousViewport;
     this.currentViewport = {
-      scale: this._store.state.scale,
-      translateX: this._store.state.translateX,
-      translateY: this._store.state.translateY,
+      scale: this._core.state.scale,
+      translateX: this._core.state.translateX,
+      translateY: this._core.state.translateY,
     };
   }
 
   execute(): void {
-    this._store.state.scale = this.currentViewport.scale;
-    this._store.state.translateX = this.currentViewport.translateX;
-    this._store.state.translateY = this.currentViewport.translateY;
+    this._core.state.scale = this.currentViewport.scale;
+    this._core.state.translateX = this.currentViewport.translateX;
+    this._core.state.translateY = this.currentViewport.translateY;
   }
 
   undo(): void {
-    this._store.state.scale = this.previousViewport.scale;
-    this._store.state.translateX = this.previousViewport.translateX;
-    this._store.state.translateY = this.previousViewport.translateY;
+    this._core.state.scale = this.previousViewport.scale;
+    this._core.state.translateX = this.previousViewport.translateX;
+    this._core.state.translateY = this.previousViewport.translateY;
   }
 }

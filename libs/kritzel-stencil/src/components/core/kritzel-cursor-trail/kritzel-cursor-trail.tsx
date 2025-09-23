@@ -1,6 +1,6 @@
 import { Component, Host, Listen, Prop, State, h } from '@stencil/core';
 import { KritzelMouseButton } from '../../../enums/event-button.enum';
-import { KritzelStore } from '../../../classes/store.class';
+import { KritzelCore } from '../../../classes/core/core.class';
 
 @Component({
   tag: 'kritzel-cursor-trail',
@@ -8,7 +8,7 @@ import { KritzelStore } from '../../../classes/store.class';
   shadow: true,
 })
 export class KritzelCursorTrail {
-  @Prop() store: KritzelStore;
+  @Prop() core: KritzelCore;
 
   @State() cursorTrailPoints: Array<{ x: number; y: number; timestamp: number }> = [];
   @State() isLeftButtonDown: boolean = false;
@@ -23,7 +23,7 @@ export class KritzelCursorTrail {
     }
 
     if (ev.pointerType === 'touch') {
-      if (this.store.state.pointers.size === 1) {
+      if (this.core.state.pointers.size === 1) {
         this.isLeftButtonDown = true;
         this.cursorTrailPoints = [];
       }
@@ -54,7 +54,7 @@ export class KritzelCursorTrail {
     }
 
     if (ev.pointerType === 'touch') {
-      if (this.store.state.pointers.size === 0) {
+      if (this.core.state.pointers.size === 0) {
         this.isLeftButtonDown = false;
         this.cursorTrailPoints = [];
       }

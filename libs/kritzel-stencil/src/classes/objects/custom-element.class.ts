@@ -1,4 +1,4 @@
-import { KritzelStore } from '../store.class';
+import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
 
 export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
@@ -21,7 +21,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     }
   }
 
-  static override create(store: KritzelStore, config?: {
+  static override create(core: KritzelCore, config?: {
     element: HTMLElement;
     translateX?: number;
     translateY?: number;
@@ -31,9 +31,9 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }): KritzelBaseObject<Element> {
     const object = new KritzelCustomElement(config);
 
-    object._store = store;
+    object._core = core;
     object.id = object.generateId();
-    object.workspaceId = store.state.activeWorkspace.id
+    object.workspaceId = core.state.activeWorkspace.id
 
 
     return object;

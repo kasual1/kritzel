@@ -1,11 +1,12 @@
-import { KritzelEngineState } from '../../interfaces/engine-state.interface';
-import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
-import { KritzelBaseObject } from '../objects/base-object.class';
-import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelEngineState } from '../../interfaces/engine-state.interface';
+import { KrtizelSelectionBox } from '../objects/selection-box.class';
+import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
+import { KritzelObjectMap } from '../structures/object-map.structure';
 
-export class KritzelStoreNew {
+export class KritzelStore {
   private readonly _state: KritzelEngineState;
+
   private readonly _listeners: Map<StatePropertyKey, Set<StateChangeListener<any>>> = new Map();
 
   get state(): KritzelEngineState {
@@ -36,13 +37,9 @@ export class KritzelStoreNew {
     return this._state.isEnabled === false || this._state.isReady === false || this._state.activeWorkspace === null;
   }
 
-  findObjectById(id: string): KritzelBaseObject<any> | null {
-    for (const object of this.allObjects) {
-      if (object.id === id) {
-        return object;
-      }
-    }
-    return null;
+  constructor(state: KritzelEngineState) {
+    this._state = state;
+    this._state.objectsMap = new KritzelObjectMap();
   }
 
   onStateChange<K extends StatePropertyKey>(property: K, listener: StateChangeListener<KritzelEngineState[K]>): void {

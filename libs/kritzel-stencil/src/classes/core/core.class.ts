@@ -3,7 +3,6 @@ import { KritzelContextMenu } from '../../components/ui/kritzel-context-menu/kri
 import { DEFAULT_ENGINE_STATE } from '../../configs/default-engine-state';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelEngineState } from '../../interfaces/engine-state.interface';
-import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import { BatchCommand } from '../commands/batch.command';
@@ -17,17 +16,14 @@ import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelReviver } from '../reviver.class';
-import { KritzelStore } from '../store.class';
-import { KritzelObjectMap } from '../structures/object-map.structure';
+import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from '../workspace.class';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
   private readonly _store: KritzelStore;
-  private readonly _state: KritzelEngineState;
   private readonly _history: KritzelHistory;
   private readonly _database: KritzelDatabase;
-  private readonly _listeners: Map<StatePropertyKey, Set<StateChangeListener<any>>> = new Map();
 
   get history(): KritzelHistory {
     return this._history;
@@ -37,13 +33,19 @@ export class KritzelCore {
     return this._database;
   }
 
+  get store(): KritzelStore {
+    return this._store;
+  }
+
+  get state(): KritzelEngineState {
+    return this._store.state;
+  }
+
   constructor(kritzelEngine: KritzelEngine) {
-    this._state = DEFAULT_ENGINE_STATE;
     this._kritzelEngine = kritzelEngine;
-    this._store = new KritzelStore(this._kritzelEngine);
-    this._history = new KritzelHistory(this._store);
-    this._database = new KritzelDatabase('kritzelDB', 1, this._state.debugInfo.logDatabase);
-    this._state.objectsMap = new KritzelObjectMap();
+    this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
+    this._history = new KritzelHistory(this);
+    this._database = new KritzelDatabase('kritzelDB', 1, this._store.state.debugInfo.logDatabase);
   }
 
   async initializeDatabase(): Promise<void> {
@@ -63,36 +65,36 @@ export class KritzelCore {
       const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
       const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
   
-      this._state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
+      this._store.state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
   
-      const isExistingWorkspace = await this.getWorkspace(this._state.activeWorkspace.id);
+      const isExistingWorkspace = await this.getWorkspace(this._store.state.activeWorkspace.id);
   
       if (isExistingWorkspace) {
-        await this.updateWorkspace(this._state.activeWorkspace);
+        await this.updateWorkspace(this._store.state.activeWorkspace);
       } else {
-        await this.createWorkspace(this._state.activeWorkspace);
+        await this.createWorkspace(this._store.state.activeWorkspace);
       }
   
-      this._state.workspaces = await this.getWorkspaces();
+      this._store.state.workspaces = await this.getWorkspaces();
   
-      this._store.state.translateX = this._state.activeWorkspace.viewport.translateX;
-      this._store.state.translateY = this._state.activeWorkspace.viewport.translateY;
-      this._store.state.scale = this._state.activeWorkspace.viewport.scale;
+      this._store.state.translateX = this._store.state.activeWorkspace.viewport.translateX;
+      this._store.state.translateY = this._store.state.activeWorkspace.viewport.translateY;
+      this._store.state.scale = this._store.state.activeWorkspace.viewport.scale;
   
-      await this.initializeWorkspaceObjects(this._state.activeWorkspace.id);
+      await this.initializeWorkspaceObjects(this._store.state.activeWorkspace.id);
     }
   
     private async initializeWorkspaceObjects(workspaceId: string): Promise<void> {
-      this._state.objectsMap.reset();
+      this._store.state.objectsMap.reset();
       this._history.reset();
   
       const objectsFromDb = await this._database.getAllByRange<any>('objects', IDBKeyRange.bound([workspaceId], [workspaceId, '\uffff']));
   
-      const reviver = new KritzelReviver(this._store);
+      const reviver = new KritzelReviver(this);
   
       objectsFromDb.forEach(element => {
         const revivedObject = reviver.revive<KritzelBaseObject<any>>(element);
-        this._state.objectsMap.insert(revivedObject);
+        this._store.state.objectsMap.insert(revivedObject);
       });
   
       this.rerender();
@@ -236,27 +238,8 @@ export class KritzelCore {
   }
 
   deselectAllObjects(): void {
-    if (this._state.selectionGroup) {
-      this._history.executeCommand(new RemoveSelectionGroupCommand(this._store, this));
-    }
-  }
-
-  onStateChange<K extends StatePropertyKey>(property: K, listener: StateChangeListener<KritzelEngineState[K]>): void {
-    if (!this._listeners.has(property)) {
-      this._listeners.set(property, new Set());
-    }
-    this._listeners.get(property).add(listener);
-  }
-
-  setState<K extends StatePropertyKey>(property: K, value: KritzelEngineState[K]): void {
-    const oldValue = this._state[property];
-
-    if (oldValue !== value) {
-      this._state[property] = value;
-
-      if (this._listeners.has(property)) {
-        this._listeners.get(property).forEach(listener => listener(value, oldValue, String(property)));
-      }
+    if (this._store.state.selectionGroup) {
+      this._history.executeCommand(new RemoveSelectionGroupCommand(this, this));
     }
   }
 
@@ -265,17 +248,17 @@ export class KritzelCore {
       return;
     }
 
-    const deleteSelectedObjectsCommand = this._store.state.selectionGroup.objects.map(obj => new RemoveObjectCommand(this._store, this._store.state.selectionGroup, obj));
-    const removeSelectionGroupCommand = new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup);
+    const deleteSelectedObjectsCommand = this._store.state.selectionGroup.objects.map(obj => new RemoveObjectCommand(this, this._store.state.selectionGroup, obj));
+    const removeSelectionGroupCommand = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup);
     const commands = [...deleteSelectedObjectsCommand, removeSelectionGroupCommand];
 
-    this.history.executeCommand(new BatchCommand(this._store, this._store.state.selectionGroup, commands));
+    this.history.executeCommand(new BatchCommand(this, this._store.state.selectionGroup, commands));
   }
 
   deleteObject(id: string, skipHistory: boolean = false) {
     const object = this.findObjectById(id);
     if (object) {
-      const removeObjectCommand = new RemoveObjectCommand(this._store, this, object, skipHistory);
+      const removeObjectCommand = new RemoveObjectCommand(this, this, object, skipHistory);
       this.history.executeCommand(removeObjectCommand);
     }
   }
@@ -294,11 +277,11 @@ export class KritzelCore {
 
     const commands = [];
     if (this._store.state.selectionGroup !== null) {
-      commands.push(new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup));
+      commands.push(new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup));
     }
 
-    const addCopiedObjectsCommands = this._store.state.copiedObjects.objects.map(obj => new AddObjectCommand(this._store, this, obj));
-    const addCopiedObjectsAsSelectionGroupCommand = new AddSelectionGroupCommand(this._store, this, this._store.state.copiedObjects);
+    const addCopiedObjectsCommands = this._store.state.copiedObjects.objects.map(obj => new AddObjectCommand(this, this, obj));
+    const addCopiedObjectsAsSelectionGroupCommand = new AddSelectionGroupCommand(this, this, this._store.state.copiedObjects);
 
     commands.push(...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand);
 
@@ -306,7 +289,7 @@ export class KritzelCore {
 
     this._store.state.isSelecting = false;
     this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
-    this.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
   }
 
   bringForward(object?: KritzelBaseObject<any>) {
@@ -316,7 +299,7 @@ export class KritzelCore {
       if (obj.zIndex === max) {
         return;
       }
-      return new UpdateObjectCommand(this._store, this, obj, { zIndex: obj.zIndex + 1 });
+      return new UpdateObjectCommand(this, this, obj, { zIndex: obj.zIndex + 1 });
     });
 
     this.history.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
@@ -329,17 +312,17 @@ export class KritzelCore {
       if (obj.zIndex === min) {
         return;
       }
-      return new UpdateObjectCommand(this._store, this, obj, { zIndex: obj.zIndex - 1 });
+      return new UpdateObjectCommand(this, this, obj, { zIndex: obj.zIndex - 1 });
     });
 
-    this.history.executeCommand(new BatchCommand(this._store, this, decreaseZIndexCommands));
+    this.history.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
   }
 
   bringToFront(object?: KritzelBaseObject<any>) {
     const max = Math.max(...this._store.allObjects.map(obj => obj.zIndex)) + 1;
     const objects = object ? [object] : this._store.state.selectionGroup.objects;
     const increaseZIndexCommands = objects.map(obj => {
-      return new UpdateObjectCommand(this._store, this, obj, { zIndex: max });
+      return new UpdateObjectCommand(this, this, obj, { zIndex: max });
     });
 
     this.history.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
@@ -349,7 +332,7 @@ export class KritzelCore {
     const min = Math.min(...this._store.allObjects.map(obj => obj.zIndex)) - 1;
     const objects = object ? [object] : this._store.state.selectionGroup.objects;
     const decreaseZIndexCommands = objects.map(obj => {
-      return new UpdateObjectCommand(this._store, this, obj, { zIndex: min });
+      return new UpdateObjectCommand(this, this, obj, { zIndex: min });
     });
 
     this.history.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
@@ -360,7 +343,7 @@ export class KritzelCore {
       return;
     }
 
-    const selectionGroup = KritzelSelectionGroup.create(this._store);
+    const selectionGroup = KritzelSelectionGroup.create(this);
     objects.forEach(obj => {
       obj.isSelected = false;
       selectionGroup.addOrRemove(obj);
@@ -378,12 +361,12 @@ export class KritzelCore {
   }
 
   selectAllObjectsInViewport() {
-    const objectsInViewport = this._state.objectsMap
+    const objectsInViewport = this._store.state.objectsMap
       .filter(o => o.isInViewport())
       .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox) && !(o instanceof KritzelContextMenu));
 
     if (objectsInViewport.length > 0) {
-      const selectionGroup = KritzelSelectionGroup.create(this._store);
+      const selectionGroup = KritzelSelectionGroup.create(this);
 
       objectsInViewport.forEach(obj => {
         obj.isSelected = false;
@@ -399,12 +382,12 @@ export class KritzelCore {
       }
 
       this.history.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
-      this.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+      this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     }
   }
 
   clearSelection() {
-    const command = new RemoveSelectionGroupCommand(this._store, this._store.state.selectionGroup);
+    const command = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup);
     this.history.executeCommand(command);
 
     this._store.state.selectionGroup = null;
@@ -472,18 +455,14 @@ export class KritzelCore {
       return { x: 0, y: 0 };
     }
 
-    // Get the position of the kritzel-engine host element relative to the viewport
     const hostRect = this._store.state.host.getBoundingClientRect();
 
-    // 1. Make the pointer coordinates relative to the host element
     const xRelativeToHost = event.clientX - hostRect.left;
     const yRelativeToHost = event.clientY - hostRect.top;
 
-    // 2. Reverse the translation applied to the #origin div
     const xWithoutTranslate = xRelativeToHost - this._store.state.translateX;
     const yWithoutTranslate = yRelativeToHost - this._store.state.translateY;
 
-    // 3. Reverse the scaling to get the final world coordinates
     const worldX = xWithoutTranslate / this._store.state.scale;
     const worldY = yWithoutTranslate / this._store.state.scale;
 

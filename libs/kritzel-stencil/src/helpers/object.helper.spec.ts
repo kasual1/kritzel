@@ -9,7 +9,7 @@ class MockObject extends KritzelBaseObject<any> {
   public element?: HTMLElement;
 
   // Properties that should be excluded from the clone
-  public _store: any = { data: 'store_data' };
+  public _core: any = { data: 'store_data' };
   public _elementRef: any = { ref: 'element_ref' };
 
   constructor(id: string, someProp: string) {

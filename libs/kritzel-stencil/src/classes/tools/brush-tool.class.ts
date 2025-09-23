@@ -1,8 +1,8 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelStore } from '../store.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelBaseTool } from './base-tool.class';
+import { KritzelCore } from '../core/core.class';
 
 export class KritzelBrushTool extends KritzelBaseTool {
   type: 'pen' | 'highlighter' = 'pen';
@@ -18,8 +18,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
     highlighter: ['#ffff00', '#ffb347', '#b4ffb4'],
   };
 
-  constructor(store: KritzelStore) {
-    super(store);
+  constructor(core: KritzelCore) {
+    super(core);
   }
 
   handlePointerDown(event: PointerEvent): void {
@@ -29,15 +29,15 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
-        this._store.state.isDrawing = true;
-        const x = event.clientX - this._store.offsetX;
-        const y = event.clientY - this._store.offsetY;
+        this._core.state.isDrawing = true;
+        const x = event.clientX - this._core.store.offsetX;
+        const y = event.clientY - this._core.store.offsetY;
 
-        this._store.state.currentPath = KritzelPath.create(this._store, {
+        this._core.state.currentPath = KritzelPath.create(this._core, {
           points: [[x, y]],
-          translateX: -this._store.state.translateX,
-          translateY: -this._store.state.translateY,
-          scale: this._store.state.scale,
+          translateX: -this._core.state.translateX,
+          translateY: -this._core.state.translateY,
+          scale: this._core.state.scale,
           fill: this.color,
           strokeWidth: this.size,
         });
@@ -45,24 +45,24 @@ export class KritzelBrushTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'touch') {
-      const activePointers = Array.from(this._store.state.pointers.values());
+      const activePointers = Array.from(this._core.state.pointers.values());
 
       if (activePointers.length === 1) {
-        const x = Math.round(activePointers[0].clientX - this._store.offsetX);
-        const y = Math.round(activePointers[0].clientY - this._store.offsetY);
+        const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
+        const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
 
-        this._store.state.isDrawing = true;
+        this._core.state.isDrawing = true;
 
-        this._store.state.currentPath = KritzelPath.create(this._store, {
+        this._core.state.currentPath = KritzelPath.create(this._core, {
           points: [[x, y]],
-          translateX: -this._store.state.translateX,
-          translateY: -this._store.state.translateY,
-          scale: this._store.state.scale,
+          translateX: -this._core.state.translateX,
+          translateY: -this._core.state.translateY,
+          scale: this._core.state.scale,
           fill: this.color,
           strokeWidth: this.size,
         });
 
-        this._store.rerender();
+        this._core.rerender();
       }
     }
   }
@@ -73,40 +73,40 @@ export class KritzelBrushTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'mouse') {
-      if (this._store.state.isDrawing) {
-        const x = event.clientX - this._store.offsetX;
-        const y = event.clientY - this._store.offsetY;
+      if (this._core.state.isDrawing) {
+        const x = event.clientX - this._core.store.offsetX;
+        const y = event.clientY - this._core.store.offsetY;
 
-        this._store.state.currentPath = KritzelPath.create(this._store, {
-          points: [...this._store.state.currentPath.points, [x, y]],
-          translateX: -this._store.state.translateX,
-          translateY: -this._store.state.translateY,
-          scale: this._store.state.scale,
+        this._core.state.currentPath = KritzelPath.create(this._core, {
+          points: [...this._core.state.currentPath.points, [x, y]],
+          translateX: -this._core.state.translateX,
+          translateY: -this._core.state.translateY,
+          scale: this._core.state.scale,
           fill: this.color,
           strokeWidth: this.size,
         });
 
-        this._store.rerender();
+        this._core.rerender();
       }
     }
 
     if (event.pointerType === 'touch') {
-      const activePointers = Array.from(this._store.state.pointers.values());
+      const activePointers = Array.from(this._core.state.pointers.values());
 
       if (activePointers.length === 1) {
-        const x = Math.round(activePointers[0].clientX - this._store.offsetX);
-        const y = Math.round(activePointers[0].clientY - this._store.offsetY);
+        const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
+        const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
 
-        this._store.state.currentPath = KritzelPath.create(this._store, {
-          points: [...this._store.state.currentPath.points, [x, y]],
-          translateX: -this._store.state.translateX,
-          translateY: -this._store.state.translateY,
-          scale: this._store.state.scale,
+        this._core.state.currentPath = KritzelPath.create(this._core, {
+          points: [...this._core.state.currentPath.points, [x, y]],
+          translateX: -this._core.state.translateX,
+          translateY: -this._core.state.translateY,
+          scale: this._core.state.scale,
           fill: this.color,
           strokeWidth: this.size,
         });
 
-        this._store.rerender();
+        this._core.rerender();
       }
     }
   }
@@ -117,30 +117,30 @@ export class KritzelBrushTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'mouse') {
-      if (this._store.state.isDrawing) {
-        this._store.state.isDrawing = false;
+      if (this._core.state.isDrawing) {
+        this._core.state.isDrawing = false;
 
-        if (this._store.state.currentPath) {
-          this._store.state.currentPath.zIndex = this._store.currentZIndex;
-          this._store.history.executeCommand(new AddObjectCommand(this._store, this, this._store.state.currentPath));
+        if (this._core.state.currentPath) {
+          this._core.state.currentPath.zIndex = this._core.store.currentZIndex;
+          this._core.history.executeCommand(new AddObjectCommand(this._core, this, this._core.state.currentPath));
         }
 
-        this._store.state.currentPath = undefined;
+        this._core.state.currentPath = undefined;
       }
     }
 
     if (event.pointerType === 'touch') {
-      if (this._store.state.isDrawing) {
-        this._store.state.isDrawing = false;
+      if (this._core.state.isDrawing) {
+        this._core.state.isDrawing = false;
 
-        if (this._store.state.currentPath) {
-          this._store.state.currentPath.zIndex = this._store.currentZIndex;
-          this._store.history.executeCommand(new AddObjectCommand(this._store, this, this._store.state.currentPath));
+        if (this._core.state.currentPath) {
+          this._core.state.currentPath.zIndex = this._core.store.currentZIndex;
+          this._core.history.executeCommand(new AddObjectCommand(this._core, this, this._core.state.currentPath));
         }
 
-        this._store.state.currentPath = undefined;
+        this._core.state.currentPath = undefined;
 
-        this._store.rerender();
+        this._core.rerender();
       }
     }
   }

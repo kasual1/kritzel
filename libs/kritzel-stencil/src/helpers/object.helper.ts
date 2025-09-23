@@ -7,7 +7,7 @@ export class ObjectHelper {
 
   static clone(objOrObjs: KritzelBaseObject<any> | KritzelBaseObject<any>[]): any {
     const cloneObject = (obj: KritzelBaseObject<any>) => {
-      const { _store, _elementRef, totalWidth, totalHeight, element, ...remainingProps } = obj as any;
+      const { _core, _elementRef, totalWidth, totalHeight, element, ...remainingProps } = obj as any;
 
       const clonedProps = structuredClone(remainingProps);
 
