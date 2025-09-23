@@ -18,6 +18,10 @@
   box-sizing: border-box;
 }
 
+.size-container:focus-visible {
+  outline: var(--kritzel-stroke-size-focus-outline, 2px auto #e3e3e3);
+}
+
 .size-container:hover {
   background-color: var(--kritzel-stroke-size-hover-background-color, #ebebeb);
 }
