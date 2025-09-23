@@ -9,32 +9,18 @@ const MOBILE_BREAKPOINT = 768;
   shadow: true,
 })
 export class KritzelTooltip {
-  @Prop()
-  isVisible: boolean = false;
+  @Element() host: HTMLElement;
 
-  @Prop()
-  anchorElement: HTMLElement;
+  @Prop() isVisible: boolean = false;
+  @Prop() anchorElement: HTMLElement;
+  @Prop() arrowSize: number = 8;
+  @Prop() offsetY: number = 24;
 
-  @Prop()
-  arrowSize: number = 8;
+  @Event() tooltipClosed: EventEmitter<void>;
 
-  @Prop()
-  offsetY: number = 24;
-
-  @Event()
-  tooltipClosed: EventEmitter<void>;
-
-  @Element()
-  host: HTMLElement;
-
-  @State()
-  positionX: number = 0;
-
-  @State()
-  arrowOffset: string = '0px';
-
-  @State()
-  private isMobileView: boolean = window.innerWidth < MOBILE_BREAKPOINT;
+  @State() positionX: number = 0;
+  @State() arrowOffset: string = '0px';
+  @State() isMobileView: boolean = window.innerWidth < MOBILE_BREAKPOINT;
 
   @Listen('click', { target: 'document' })
   handleOutsideClick(event: MouseEvent) {

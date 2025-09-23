@@ -7,14 +7,9 @@ import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.c
   shadow: true,
 })
 export class KritzelIcon {
-  @Prop()
-  name: string;
-
-  @Prop()
-  label?: string;
-
-  @Prop()
-  size: number = 24;
+  @Prop() name: string;
+  @Prop() label?: string;
+  @Prop() size: number = 24;
 
   render() {
     const svgContent = KritzelIconRegistry.get(this.name);

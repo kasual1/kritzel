@@ -6,11 +6,8 @@ import { Component, Host, Prop, h } from '@stencil/core';
   shadow: true,
 })
 export class KritzelColor {
-  @Prop()
-  value: string;
-
-  @Prop()
-  size: number = 24;
+  @Prop() value: string;
+  @Prop() size: number = 24;
 
   private isLightColor(hexColor: string): boolean {
     if (!hexColor) return false;
