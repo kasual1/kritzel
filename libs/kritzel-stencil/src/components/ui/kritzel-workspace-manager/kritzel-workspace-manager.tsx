@@ -94,7 +94,7 @@ export class KritzelWorkspaceManager {
 
     await this.kritzelEngineRef.deleteWorkspace(item.value);
 
-    if(item.value.id === this.activeWorkspace?.id){
+    if (item.value.id === this.activeWorkspace?.id) {
       this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id !== item.value.id) || null;
       this.workspaceChange.emit(this.activeWorkspace);
     }
@@ -112,9 +112,14 @@ export class KritzelWorkspaceManager {
     this.childMenuAnchor = null;
   }
 
-  private closeMenu() {
+  private handleMenuOpen() {
+    this.kritzelEngineRef.disable();
+  }
+
+  private handleMenuClose() {
     this.cancel();
     this.closeChildMenu();
+    this.kritzelEngineRef.enable();
   }
 
   render() {
@@ -155,14 +160,15 @@ export class KritzelWorkspaceManager {
           ref={el => (this.splitButtonRef = el)}
           items={menuItems}
           mainButtonDisabled={this.editingItemId != null}
-          onButtonClick={() => this.add()}
+          onMainButtonClick={() => this.add()}
           onItemSelect={event => this.select(event.detail.item, event.detail.parent)}
           onItemToggleChildMenu={event => this.toggleChildMenu(event.detail.item, event.detail.childMenuAnchor)}
           onItemSave={event => this.save(event.detail)}
           onItemCancel={() => this.cancel()}
           onItemCloseChildMenu={() => this.closeChildMenu()}
-          onClose={() => {
-            this.closeMenu();
+          onMenuOpen={() => this.handleMenuOpen()}
+          onMenuClose={() => {
+            this.handleMenuClose();
           }}
         ></kritzel-split-button>
       </Host>

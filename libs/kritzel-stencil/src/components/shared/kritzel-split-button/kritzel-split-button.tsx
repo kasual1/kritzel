@@ -16,13 +16,14 @@ export class KritzelSplitButton {
   @Prop() mainButtonDisabled = false;
   @Prop() menuButtonDisabled = false;
 
-  @Event() buttonClick: EventEmitter<void>;
+  @Event() mainButtonClick: EventEmitter<void>;
   @Event() itemSelect: EventEmitter<IKritzelMenuItemSelectEvent>;
   @Event() itemSave: EventEmitter<IKritzelMenuItem>;
   @Event() itemCancel: EventEmitter<IKritzelMenuItem>;
   @Event() itemToggleChildMenu: EventEmitter<IKritzelMenuItemToggleChildMenuEvent>;
   @Event() itemCloseChildMenu: EventEmitter<IKritzelMenuItem>;
-  @Event() close: EventEmitter<void>;
+  @Event() menuOpen: EventEmitter<void>;
+  @Event() menuClose: EventEmitter<void>;
 
   @State() isMenuOpen = false;
   @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
@@ -46,7 +47,7 @@ export class KritzelSplitButton {
 
   private handleButtonClick = (event: MouseEvent) => {
     event.stopPropagation();
-    this.buttonClick.emit();
+    this.mainButtonClick.emit();
   };
 
   private toggleMenu = (event: MouseEvent) => {
@@ -62,12 +63,13 @@ export class KritzelSplitButton {
     event.stopPropagation();
     this.isMenuOpen = true;
     this.anchorElement = this.host;
+    this.menuOpen.emit();
   };
 
   private closeMenu = () => {
     this.isMenuOpen = false;
     this.anchorElement = null;
-    this.close.emit();
+    this.menuClose.emit();
   };
 
   private handleItemSelect = event => {

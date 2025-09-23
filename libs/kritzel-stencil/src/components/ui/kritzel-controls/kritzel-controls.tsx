@@ -139,6 +139,11 @@ export class KritzelControls {
     await this.kritzelEngine.changeActiveTool((this.activeControl as any).tool);
   }
 
+  private handleTooltipClosed() {
+    this.isTooltipVisible = false;
+    this.kritzelEngine?.enable();
+  }
+
   render() {
     const hasNoConfig = this.activeControl?.config === undefined || this.activeControl?.config === null;
 
@@ -189,6 +194,7 @@ export class KritzelControls {
                     ref={el => (this.tooltipRef = el)}
                     isVisible={this.isTooltipVisible}
                     anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}
+                    onTooltipClosed={() => this.handleTooltipClosed()}
                   >
                     <div style={{ width: '294px', height: '100%' }}>
                       {this.activeControl.name === 'brush' && (
