@@ -7,22 +7,16 @@ import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
   shadow: true,
 })
 export class KritzelControlBrushConfig {
-  @Prop({ mutable: true })
-  tool: KritzelBrushTool;
-
-  @Prop({ mutable: true })
-  isExpanded: boolean = false;
-
-  @Event()
-  toolChange: EventEmitter<KritzelBrushTool>;
-
-  @State()
-  palette: string[] = [];
-
+  @Prop({ mutable: true }) tool: KritzelBrushTool;
   @Watch('tool')
   handleToolChange(newTool: KritzelBrushTool) {
     this.palette = newTool.palettes[newTool.type];
   }
+  @Prop({ mutable: true }) isExpanded: boolean = false;
+
+  @Event() toolChange: EventEmitter<KritzelBrushTool>;
+
+  @State() palette: string[] = [];
 
   componentWillLoad() {
     this.palette = this.tool.palettes[this.tool.type];
