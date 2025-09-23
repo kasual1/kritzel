@@ -1,6 +1,6 @@
 import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventEmitter, Watch } from '@stencil/core';
 import { KritzelTool } from '../../../interfaces/tool.interface';
-import { KritzelViewport } from '../../../classes/viewport.class';
+import { KritzelViewport } from '../../../classes/core/viewport.class';
 import { KritzelPath } from '../../../classes/objects/path.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelImage } from '../../../classes/objects/image.class';
@@ -23,7 +23,7 @@ import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelCustomElement } from '../../../classes/objects/custom-element.class';
-import { KritzelWorkspace } from '../../../classes/workspace.class';
+import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelCore } from '../../../classes/core/core.class';
 

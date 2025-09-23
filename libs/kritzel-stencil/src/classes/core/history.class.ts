@@ -1,7 +1,7 @@
-import { KritzelBaseCommand } from './commands/base.command';
-import { UpdateViewportCommand } from './commands/update-viewport.command';
-import { KritzelCore } from './core/core.class';
-import { KritzelCircularBuffer } from './structures/circular-buffer.structure';
+import { KritzelBaseCommand } from '../commands/base.command';
+import { UpdateViewportCommand } from '../commands/update-viewport.command';
+import { KritzelCore } from './core.class';
+import { KritzelCircularBuffer } from '../structures/circular-buffer.structure';
 
 export class KritzelHistory {
   private readonly _core: KritzelCore;

@@ -12,7 +12,7 @@ import { DEFAULT_BRUSH_CONFIG } from '../../../configs/default-brush-tool.config
 import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
-import { KritzelWorkspace } from '../../../classes/workspace.class';
+import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 @Component({

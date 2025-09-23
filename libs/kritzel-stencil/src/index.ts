@@ -26,7 +26,7 @@ export * from './interfaces/menu-item.interface';
 export * from './configs/default-brush-tool.config';
 export * from './configs/default-text-tool.config';
 
-export * from './classes/workspace.class';
+export * from './classes/core/workspace.class';
 
 
 

@@ -1,6 +1,6 @@
-import { KritzelMouseButton } from '../enums/event-button.enum';
-import { KritzelEventHelper } from '../helpers/event.helper';
-import { KritzelCore } from './core/core.class';
+import { KritzelMouseButton } from '../../enums/event-button.enum';
+import { KritzelEventHelper } from '../../helpers/event.helper';
+import { KritzelCore } from './core.class';
 
 export class KritzelViewport {
   private readonly _core: KritzelCore;

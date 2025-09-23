@@ -1,4 +1,4 @@
-import { KritzelWorkspace } from '../../../classes/workspace.class';
+import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { Host, h, Component, State, Prop, Event, EventEmitter, Element } from '@stencil/core';

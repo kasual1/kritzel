@@ -1,14 +1,14 @@
-import { KritzelImage } from "./objects/image.class";
-import { KritzelPath } from "./objects/path.class";
-import { KritzelSelectionGroup } from "./objects/selection-group.class";
-import { KritzelText } from "./objects/text.class";
-import { KritzelBrushTool } from "./tools/brush-tool.class";
-import { KritzelEraserTool } from "./tools/eraser-tool.class";
-import { KritzelImageTool } from "./tools/image-tool.class";
-import { KritzelSelectionTool } from "./tools/selection-tool.class";
-import { KritzelTextTool } from "./tools/text-tool.class";
-import { KritzelCustomElement } from "./objects/custom-element.class";
-import { KritzelCore } from "./core/core.class";
+import { KritzelImage } from "../objects/image.class";
+import { KritzelPath } from "../objects/path.class";
+import { KritzelSelectionGroup } from "../objects/selection-group.class";
+import { KritzelText } from "../objects/text.class";
+import { KritzelBrushTool } from "../tools/brush-tool.class";
+import { KritzelEraserTool } from "../tools/eraser-tool.class";
+import { KritzelImageTool } from "../tools/image-tool.class";
+import { KritzelSelectionTool } from "../tools/selection-tool.class";
+import { KritzelTextTool } from "../tools/text-tool.class";
+import { KritzelCustomElement } from "../objects/custom-element.class";
+import { KritzelCore } from "./core.class";
 
 export class KritzelReviver {
 

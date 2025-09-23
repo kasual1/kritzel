@@ -9,15 +9,15 @@ import { BatchCommand } from '../commands/batch.command';
 import { RemoveObjectCommand } from '../commands/remove-object.command';
 import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
 import { UpdateObjectCommand } from '../commands/update-object.command';
-import { KritzelDatabase } from '../database.class';
-import { KritzelHistory } from '../history.class';
+import { KritzelDatabase } from './database.class';
+import { KritzelHistory } from './history.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
-import { KritzelReviver } from '../reviver.class';
+import { KritzelReviver } from './reviver.class';
 import { KritzelStore } from './store.class';
-import { KritzelWorkspace } from '../workspace.class';
+import { KritzelWorkspace } from './workspace.class';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
