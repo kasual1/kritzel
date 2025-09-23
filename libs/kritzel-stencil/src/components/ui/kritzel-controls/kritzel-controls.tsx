@@ -14,29 +14,17 @@ type ToolConfig = Record<string, any>;
   assetsDirs: ['../assets'],
 })
 export class KritzelControls {
-  @Prop()
-  controls: KritzelToolbarControl[] = [];
+  @Element() host!: HTMLElement;
 
-  @Prop({ mutable: true })
-  activeControl: KritzelToolbarControl | null = null;
+  @Prop() controls: KritzelToolbarControl[] = [];
+  @Prop({ mutable: true }) activeControl: KritzelToolbarControl | null = null;
+  @Prop() isUtilityPanelVisible: boolean = true;
 
-  @Prop()
-  isUtilityPanelVisible: boolean = true;
+  @Event() isControlsReady: EventEmitter<void>;
 
-  @Event()
-  isControlsReady: EventEmitter<void>;
-
-  @State()
-  firstConfig: ToolConfig | null = null;
-
-  @State()
-  isTooltipVisible: boolean = false;
-
-  @State()
-  isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
-
-  @Element()
-  host!: HTMLElement;
+  @State() firstConfig: ToolConfig | null = null;
+  @State() isTooltipVisible: boolean = false;
+  @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
 
   @Listen('click', { target: 'document' })
   handleDocumentClick(event: MouseEvent) {

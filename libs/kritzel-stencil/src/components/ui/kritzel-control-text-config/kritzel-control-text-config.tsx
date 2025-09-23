@@ -7,14 +7,10 @@ import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
   shadow: true,
 })
 export class KritzelControlTextConfig {
-  @Prop({ mutable: true })
-  tool: KritzelTextTool;
+  @Prop({ mutable: true }) tool: KritzelTextTool;
+  @Prop({ mutable: true }) isExpanded: boolean = false;
 
-  @Prop({ mutable: true })
-  isExpanded: boolean = false;
-
-  @Event()
-  toolChange: EventEmitter<KritzelTextTool>;
+  @Event() toolChange: EventEmitter<KritzelTextTool>;
 
   handleToggleExpand() {
     this.isExpanded = !this.isExpanded;

@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, Event, EventEmitter, Element, State, Watch } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter, State, Watch } from '@stencil/core';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 
@@ -13,20 +13,12 @@ interface ProcessedMenuItem {
   shadow: true,
 })
 export class KritzelContextMenu {
-  @Prop()
-  items: ContextMenuItem[];
+  @Prop() items: ContextMenuItem[];
+  @Prop() objects: KritzelBaseObject[];
 
-  @Prop()
-  objects: KritzelBaseObject[];
+  @Event() actionSelected: EventEmitter<ContextMenuItem>;
 
-  @Event()
-  actionSelected: EventEmitter<ContextMenuItem>;
-
-  @Element()
-  hostElement: HTMLElement;
-
-  @State()
-  private processedItems: ProcessedMenuItem[] = [];
+  @State() private processedItems: ProcessedMenuItem[] = [];
 
   componentWillLoad() {
     this.updateMenuItems();
