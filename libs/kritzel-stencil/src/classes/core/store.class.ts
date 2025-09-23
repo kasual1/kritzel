@@ -6,7 +6,6 @@ import { KritzelObjectMap } from '../structures/object-map.structure';
 
 export class KritzelStore {
   private readonly _state: KritzelEngineState;
-
   private readonly _listeners: Map<StatePropertyKey, Set<StateChangeListener<any>>> = new Map();
 
   get state(): KritzelEngineState {

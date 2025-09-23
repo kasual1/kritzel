@@ -16,8 +16,8 @@ export class KritzelHistory {
     translateY: number;
   };
 
-  constructor(store: KritzelCore) {
-    this._core = store;
+  constructor(core: KritzelCore) {
+    this._core = core;
     this.undoStack = new KritzelCircularBuffer<KritzelBaseCommand>(this._core.state.historyBufferSize);
     this.redoStack = new KritzelCircularBuffer<KritzelBaseCommand>(this._core.state.historyBufferSize);
     this.previousViewport = {
