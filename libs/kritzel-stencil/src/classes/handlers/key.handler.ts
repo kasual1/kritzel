@@ -8,21 +8,21 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   }
 
   handleKeyDown(event: KeyboardEvent): void {
-    if(this._core.state.isFocused === false) {
+    if(this._core.store.state.isFocused === false) {
       return;
     }
 
     this._core.store.setState('isCtrlKeyPressed', event.ctrlKey);
 
-    if(this._core.state.isCtrlKeyPressed) {
+    if(this._core.store.state.isCtrlKeyPressed) {
       event.preventDefault();
     }
 
-    if (event.key === 'Escape' && this._core.state.selectionGroup) {
+    if (event.key === 'Escape' && this._core.store.state.selectionGroup) {
       this._core.clearSelection();
     }
 
-    if (event.key === 'Delete' && this._core.state.selectionGroup) {
+    if (event.key === 'Delete' && this._core.store.state.selectionGroup) {
       this._core.delete();
     }
 
@@ -59,42 +59,42 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       this._core.deselectAllObjects();
     }
 
-    if (event.key === 'c' && event.ctrlKey && this._core.state.selectionGroup) {
+    if (event.key === 'c' && event.ctrlKey && this._core.store.state.selectionGroup) {
       this._core.copy();
       this._core.rerender();
     }
 
-    if (event.key === 'v' && event.ctrlKey && this._core.state.copiedObjects) {
+    if (event.key === 'v' && event.ctrlKey && this._core.store.state.copiedObjects) {
       this._core.paste();
     }
 
-    if (event.key === '+' && event.ctrlKey && this._core.state.selectionGroup) {
+    if (event.key === '+' && event.ctrlKey && this._core.store.state.selectionGroup) {
       this._core.bringForward();
     }
 
-    if (event.key === '-' && event.ctrlKey && this._core.state.selectionGroup) {
+    if (event.key === '-' && event.ctrlKey && this._core.store.state.selectionGroup) {
       this._core.sendBackward();
     }
 
-    if (event.key === '*' && event.shiftKey && this._core.state.selectionGroup) {
+    if (event.key === '*' && event.shiftKey && this._core.store.state.selectionGroup) {
       this._core.bringToFront();
     }
 
-    if (event.key === '_' && event.shiftKey && this._core.state.selectionGroup) {
+    if (event.key === '_' && event.shiftKey && this._core.store.state.selectionGroup) {
       this._core.sendToBack();
     }
 
-    if(event.key === 'a' && event.ctrlKey && this._core.state.activeText) {
-      this._core.state.activeText.selectAll();
+    if(event.key === 'a' && event.ctrlKey && this._core.store.state.activeText) {
+      this._core.store.state.activeText.selectAll();
     }
 
-    if(event.key === 'v' && event.ctrlKey && this._core.state.activeText) {
-      this._core.state.activeText.insertFromClipboard();
+    if(event.key === 'v' && event.ctrlKey && this._core.store.state.activeText) {
+      this._core.store.state.activeText.insertFromClipboard();
     }
   }
 
   handleKeyUp(event: KeyboardEvent): void {
-    if(this._core.state.isFocused === false) {
+    if(this._core.store.state.isFocused === false) {
       return;
     }
 

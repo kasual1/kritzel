@@ -43,18 +43,18 @@ export class KritzelTextTool extends KritzelBaseTool {
       const objectElement = path.find(element => element.classList && element.classList.contains('object'));
       const object = this._core.findObjectById(objectElement?.id);
 
-      if (this._core.state.activeText === null && object && object instanceof KritzelText) {
+      if (this._core.store.state.activeText === null && object && object instanceof KritzelText) {
         this._core.store.setState('activeText', object);
         object.focus();
         return;
       }
 
-      if (this._core.state.activeText !== null && object instanceof KritzelText) {
+      if (this._core.store.state.activeText !== null && object instanceof KritzelText) {
         object.focus();
         return;
       }
 
-      if (this._core.state.activeText !== null) {
+      if (this._core.store.state.activeText !== null) {
         this._core.resetActiveText();
         this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
         return;
@@ -69,8 +69,8 @@ export class KritzelTextTool extends KritzelBaseTool {
       const text = KritzelText.create(this._core, this.fontSize, this.fontFamily);
 
       text.fontColor = this.fontColor;
-      text.translateX = (clientX - this._core.state.translateX) / this._core.state.scale;
-      text.translateY = (clientY - this._core.state.translateY) / this._core.state.scale;
+      text.translateX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
+      text.translateY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
       text.zIndex = this._core.store.currentZIndex;
 
       this._core.store.setState('activeText', text);
@@ -79,24 +79,24 @@ export class KritzelTextTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'touch') {
-      const activePointers = Array.from(this._core.state.pointers.values());
+      const activePointers = Array.from(this._core.store.state.pointers.values());
 
       const path = event.composedPath().slice(1) as HTMLElement[];
       const objectElement = path.find(element => element.classList && element.classList.contains('object'));
       const object = this._core.findObjectById(objectElement?.id);
 
-      if (this._core.state.activeText === null && object && object instanceof KritzelText) {
+      if (this._core.store.state.activeText === null && object && object instanceof KritzelText) {
         this._core.store.setState('activeText', object);
         object.focus();
         return;
       }
 
-      if (this._core.state.activeText !== null && object instanceof KritzelText) {
+      if (this._core.store.state.activeText !== null && object instanceof KritzelText) {
         object.focus();
         return;
       }
 
-      if (this._core.state.activeText !== null) {
+      if (this._core.store.state.activeText !== null) {
         this._core.resetActiveText();
         this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
         return;
@@ -113,8 +113,8 @@ export class KritzelTextTool extends KritzelBaseTool {
       const text = KritzelText.create(this._core, this.fontSize, this.fontFamily);
 
       text.fontColor = this.fontColor;
-      text.translateX = (clientX - this._core.state.translateX) / this._core.state.scale;
-      text.translateY = (clientY - this._core.state.translateY) / this._core.state.scale;
+      text.translateX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
+      text.translateY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
       text.zIndex = this._core.store.currentZIndex;
 
       this._core.store.setState('activeText', text);
@@ -129,13 +129,13 @@ export class KritzelTextTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'mouse') {
-      this._core.state.activeText?.updateTextareaDimensions();
-      this._core.state.activeText?.focus();
+      this._core.store.state.activeText?.updateTextareaDimensions();
+      this._core.store.state.activeText?.focus();
     }
 
     if (event.pointerType === 'touch') {
-      this._core.state.activeText?.updateTextareaDimensions();
-      this._core.state.activeText?.focus();
+      this._core.store.state.activeText?.updateTextareaDimensions();
+      this._core.store.state.activeText?.focus();
 
       KritzelKeyboardHelper.enableInteractiveWidget();
     }

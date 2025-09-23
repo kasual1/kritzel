@@ -28,12 +28,12 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.state.activeWorkspace.id
+    object.workspaceId = core.store.state.activeWorkspace.id
     object.x = 0;
     object.y = 0;
     object.translateX = 0;
     object.translateY = 0;
-    object.scale = object._core.state.scale;
+    object.scale = object._core.store.state.scale;
     object.zIndex = core.store.currentZIndex;
 
     return object;

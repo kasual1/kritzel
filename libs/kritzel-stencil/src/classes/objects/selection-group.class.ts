@@ -23,8 +23,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.state.activeWorkspace.id
-    object.scale = core.state.scale;
+    object.workspaceId = core.store.state.activeWorkspace.id
+    object.scale = core.store.state.scale;
     object.zIndex = 99999;
 
     return object;
@@ -63,20 +63,20 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.translateX = x;
     this.translateY = y;
 
-    this._core.state.objectsMap.update(this);
+    this._core.store.state.objectsMap.update(this);
   }
 
   override move(startX: number, startY: number, endX: number, endY: number): void {
-    const deltaX = (startX - endX) / this._core.state.scale;
-    const deltaY = (startY - endY) / this._core.state.scale;
+    const deltaX = (startX - endX) / this._core.store.state.scale;
+    const deltaY = (startY - endY) / this._core.store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
-    this._core.state.objectsMap.update(this);
+    this._core.store.state.objectsMap.update(this);
 
     this.objects.forEach(obj => {
       obj.move(startX, startY, endX, endY);
-      this._core.state.objectsMap.update(obj);
+      this._core.store.state.objectsMap.update(obj);
     });
 
     this.unchangedObjects.forEach(obj => {
@@ -101,7 +101,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
       child.resize(updatedX, updatedY, updatedWidth, updatedHeight);
 
-      this._core.state.objectsMap.update(child);
+      this._core.store.state.objectsMap.update(child);
     });
 
     this.refreshObjectDimensions();
@@ -131,7 +131,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
 
       child.rotate(this.objects.length === 1 ? value : value + unchangedChild.rotation);
-      this._core.state.objectsMap.update(child);
+      this._core.store.state.objectsMap.update(child);
     });
   }
 
@@ -183,7 +183,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.height = (this.maxY - this.minY - this.padding) * this.scale;
     }
 
-    this._core.state.objectsMap.update(this);
+    this._core.store.state.objectsMap.update(this);
   }
 
   private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {

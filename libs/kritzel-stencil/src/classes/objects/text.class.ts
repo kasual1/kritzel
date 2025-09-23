@@ -20,7 +20,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   readonly rows: number = 1;
 
   get isReadonly(): boolean {
-    return !(this._core.state.activeTool instanceof KritzelTextTool);
+    return !(this._core.store.state.activeTool instanceof KritzelTextTool);
   }
 
   constructor(config?: {
@@ -54,16 +54,16 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.state.activeWorkspace.id
+    object.workspaceId = core.store.state.activeWorkspace.id
     object.fontSize = fontSize;
     object.fontFamily = fontFamily;
     object.translateX = 0;
     object.translateY = 0;
-    object.width = object.initialWidth / (object._core.state.scale < 0 ? object._core.state.scale : 1);
-    object.height = (object.fontSize * 1.2) / (object._core.state.scale < 0 ? object._core.state.scale : 1);
+    object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
+    object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.padding = 5;
     object.backgroundColor = 'transparent';
-    object.scale = object._core.state.scale;
+    object.scale = object._core.store.state.scale;
     object.value = ' ';
     object.zIndex = core.store.currentZIndex;
 

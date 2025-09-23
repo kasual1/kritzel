@@ -22,7 +22,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   handlePointerDown(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
-        if (this._core.state.selectionGroup?.isSelected && !this._core.state.isResizeHandleSelected && !this._core.state.isRotationHandleSelected) {
+        if (this._core.store.state.selectionGroup?.isSelected && !this._core.store.state.isResizeHandleSelected && !this._core.store.state.isRotationHandleSelected) {
           const clientX = event.clientX - this._core.store.offsetX;
           const clientY = event.clientY - this._core.store.offsetY;
 
@@ -36,10 +36,10 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     }
 
     if (event.pointerType === 'touch') {
-      const activePointers = Array.from(this._core.state.pointers.values());
+      const activePointers = Array.from(this._core.store.state.pointers.values());
 
-      if (this._core.state.pointers.size === 1) {
-        if (this._core.state.selectionGroup?.isSelected && !this._core.state.isResizeHandleSelected && !this._core.state.isRotationHandleSelected) {
+      if (this._core.store.state.pointers.size === 1) {
+        if (this._core.store.state.selectionGroup?.isSelected && !this._core.store.state.isResizeHandleSelected && !this._core.store.state.isRotationHandleSelected) {
           const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
           const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
 
@@ -54,22 +54,22 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
   handlePointerMove(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
-      if (this._core.state.isDragging && this._core.state.selectionGroup) {
+      if (this._core.store.state.isDragging && this._core.store.state.selectionGroup) {
         const clientX = event.clientX - this._core.store.offsetX;
         const clientY = event.clientY - this._core.store.offsetY;
 
         this.endX = clientX;
         this.endY = clientY;
-        this._core.state.selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
+        this._core.store.state.selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
         this.dragStartX = clientX;
         this.dragStartY = clientY;
       }
     }
 
     if (event.pointerType === 'touch') {
-      const activePointers = Array.from(this._core.state.pointers.values());
+      const activePointers = Array.from(this._core.store.state.pointers.values());
 
-      if (this._core.state.pointers.size === 1 && this._core.state.selectionGroup && !this._core.state.isResizeHandleSelected && !this._core.state.isRotationHandleSelected) {
+      if (this._core.store.state.pointers.size === 1 && this._core.store.state.selectionGroup && !this._core.store.state.isResizeHandleSelected && !this._core.store.state.isRotationHandleSelected) {
         const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
         const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
 
@@ -82,9 +82,9 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         const moveThreshold = 5;
 
         if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
-          clearTimeout(this._core.state.longTouchTimeout);
+          clearTimeout(this._core.store.state.longTouchTimeout);
 
-          this._core.state.selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
+          this._core.store.state.selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
           this.dragStartX = x;
           this.dragStartY = y;
         }
@@ -94,10 +94,10 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
   handlePointerUp(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
-      if (this._core.state.isDragging) {
+      if (this._core.store.state.isDragging) {
         this._core.store.setState('isDragging', false);
         const moveSelectionGroupCommand = new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true);
-        const updateObjectsCommand = this._core.state.selectionGroup.objects.map(object => {
+        const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
           return new UpdateObjectCommand(this._core, this, object, {
             translateX: object.translateX,
             translateY: object.translateY
@@ -109,10 +109,10 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     }
 
     if (event.pointerType === 'touch') {
-      if (this._core.state.isDragging) {
+      if (this._core.store.state.isDragging) {
         this._core.store.setState('isDragging', false);
         const moveSelectionGroupCommand = new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true);
-        const updateObjectsCommand = this._core.state.selectionGroup.objects.map(object => {
+        const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
           return new UpdateObjectCommand(this._core, this, object, {
             translateX: object.translateX,
             translateY: object.translateY

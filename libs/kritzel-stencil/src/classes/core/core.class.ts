@@ -2,7 +2,6 @@ import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engi
 import { KritzelContextMenu } from '../../components/ui/kritzel-context-menu/kritzel-context-menu';
 import { DEFAULT_ENGINE_STATE } from '../../configs/default-engine-state';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelEngineState } from '../../interfaces/engine-state.interface';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import { BatchCommand } from '../commands/batch.command';
@@ -35,10 +34,6 @@ export class KritzelCore {
 
   get store(): KritzelStore {
     return this._store;
-  }
-
-  get state(): Readonly<KritzelEngineState> {
-    return this._store.state;
   }
 
   constructor(kritzelEngine: KritzelEngine) {

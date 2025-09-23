@@ -13,14 +13,14 @@ export class RemoveObjectCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
-    this._core.state.objectsMap.remove(object => object.id === this.object.id);
-    this._core.state.objectsMap.filter(object => object instanceof KritzelCustomElement).forEach(object => object.remount());
+    this._core.store.state.objectsMap.remove(object => object.id === this.object.id);
+    this._core.store.state.objectsMap.filter(object => object instanceof KritzelCustomElement).forEach(object => object.remount());
     this._core.deleteObjectFromDatabase(this.object.id);
   }
 
   undo(): void {
-    this._core.state.objectsMap.insert(this.object);
-    this._core.state.objectsMap.filter(object => object instanceof KritzelCustomElement).forEach(object => object.remount());
+    this._core.store.state.objectsMap.insert(this.object);
+    this._core.store.state.objectsMap.filter(object => object instanceof KritzelCustomElement).forEach(object => object.remount());
     this._core.addObjectToDatabase(ObjectHelper.clone(this.object));
   }
 }

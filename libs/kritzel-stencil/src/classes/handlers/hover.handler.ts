@@ -13,8 +13,8 @@ export class KritzelHoverHandler extends KritzelBaseHandler {
 
       if (!hoveredObject) return;
 
-      const x = this._core.state.pointerX;
-      const y = this._core.state.pointerY;
+      const x = this._core.store.state.pointerX;
+      const y = this._core.store.state.pointerY;
 
       hoveredObject.isHovered = hoveredObject.hitTest(x, y);
     }

@@ -80,12 +80,12 @@ export class KritzelEngine {
       return;
     }
 
-    if (this.core.state.isContextMenuVisible) {
+    if (this.core.store.state.isContextMenuVisible) {
       this.hideContextMenu();
     }
 
     this.viewport.handleWheel(ev);
-    this.core.state?.activeTool?.handleWheel(ev);
+    this.core.store.state?.activeTool?.handleWheel(ev);
   }
 
   @Listen('pointerdown', { passive: false })
@@ -94,23 +94,23 @@ export class KritzelEngine {
       return;
     }
 
-    if (KritzelEventHelper.isPointerEventOnContextMenu(ev) === false && this.core.state.isContextMenuVisible) {
+    if (KritzelEventHelper.isPointerEventOnContextMenu(ev) === false && this.core.store.state.isContextMenuVisible) {
       this.hideContextMenu();
       return;
     }
 
     KritzelEventHelper.onLongTouchPress(ev, (event: PointerEvent) => {
-      if (!(this.core.state.activeTool instanceof KritzelSelectionTool)) {
+      if (!(this.core.store.state.activeTool instanceof KritzelSelectionTool)) {
         return;
       }
       this.contextMenuHandler.handleContextMenu(event);
     });
 
     this.host.setPointerCapture(ev.pointerId);
-    this.core.state.pointers.set(ev.pointerId, ev);
+    this.core.store.state.pointers.set(ev.pointerId, ev);
 
     this.viewport.handlePointerDown(ev);
-    this.core.state?.activeTool?.handlePointerDown(ev);
+    this.core.store.state?.activeTool?.handlePointerDown(ev);
   }
 
   @Listen('pointermove', { passive: false })
@@ -119,10 +119,10 @@ export class KritzelEngine {
       return;
     }
 
-    this.core.state.pointers.set(ev.pointerId, ev);
+    this.core.store.state.pointers.set(ev.pointerId, ev);
 
     this.viewport.handlePointerMove(ev);
-    this.core.state?.activeTool?.handlePointerMove(ev);
+    this.core.store.state?.activeTool?.handlePointerMove(ev);
   }
 
   @Listen('pointerup', { passive: false })
@@ -131,11 +131,11 @@ export class KritzelEngine {
       return;
     }
 
-    this.core.state.pointers.delete(ev.pointerId);
+    this.core.store.state.pointers.delete(ev.pointerId);
     this.host.releasePointerCapture(ev.pointerId);
 
     this.viewport.handlePointerUp(ev);
-    this.core.state?.activeTool?.handlePointerUp(ev);
+    this.core.store.state?.activeTool?.handlePointerUp(ev);
   }
 
   @Listen('pointercancel', { passive: false })
@@ -145,10 +145,10 @@ export class KritzelEngine {
     }
 
     this.host.releasePointerCapture(ev.pointerId);
-    this.core.state.pointers.delete(ev.pointerId);
+    this.core.store.state.pointers.delete(ev.pointerId);
 
     this.viewport.handlePointerUp(ev);
-    this.core.state?.activeTool?.handlePointerUp(ev);
+    this.core.store.state?.activeTool?.handlePointerUp(ev);
   }
 
   @Listen('contextmenu', { capture: false })
@@ -187,7 +187,7 @@ export class KritzelEngine {
       return;
     }
 
-    const rect = this.core.state.host.getBoundingClientRect();
+    const rect = this.core.store.state.host.getBoundingClientRect();
     const isInside = ev.clientX >= rect.left && ev.clientX <= rect.right && ev.clientY >= rect.top && ev.clientY <= rect.bottom;
 
     const path = ev.composedPath();
@@ -217,7 +217,7 @@ export class KritzelEngine {
 
   @Method()
   async changeActiveTool(tool: KritzelBaseTool) {
-    this.core.state.activeTool?.onDeactivate();
+    this.core.store.state.activeTool?.onDeactivate();
     this.core.store.setState('activeTool', tool);
     this.core.deselectAllObjects();
     tool?.onActivate();
@@ -288,7 +288,7 @@ export class KritzelEngine {
 
   @Method()
   async hideContextMenu() {
-    this.core.state.pointers.clear();
+    this.core.store.state.pointers.clear();
     this.core.store.setState('isContextMenuVisible', false);
     this.core.store.setState('selectionBox', null);
     this.core.store.setState('isSelecting', false);
@@ -306,7 +306,7 @@ export class KritzelEngine {
 
     object.id = object.generateId();
     object._core = this.core;
-    object.scale = object.scale ? object.scale : this.core.state.scale;
+    object.scale = object.scale ? object.scale : this.core.store.state.scale;
     object.zIndex = this.core.store.currentZIndex;
 
     const command = new AddObjectCommand(this.core, this, object);
@@ -337,12 +337,12 @@ export class KritzelEngine {
 
   @Method()
   async getSelectedObjects(): Promise<KritzelBaseObject<any>[]> {
-    return this.core.state.selectionGroup ? this.core.state.selectionGroup.objects : [];
+    return this.core.store.state.selectionGroup ? this.core.store.state.selectionGroup.objects : [];
   }
 
   @Method()
   async selectObjects(objects: KritzelBaseObject[]) {
-    this.core.state.activeTool?.onDeactivate();
+    this.core.store.state.activeTool?.onDeactivate();
     this.core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     this.core.deselectAllObjects();
     this.core.selectObjects(objects);
@@ -350,7 +350,7 @@ export class KritzelEngine {
 
   @Method()
   async selectAllObjectsInViewport() {
-    this.core.state.activeTool?.onDeactivate();
+    this.core.store.state.activeTool?.onDeactivate();
     this.core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     this.core.deselectAllObjects();
     this.core.selectAllObjectsInViewport();
@@ -373,27 +373,27 @@ export class KritzelEngine {
 
   @Method()
   async getCopiedObjects(): Promise<KritzelBaseObject[]> {
-    return this.core.state.copiedObjects?.objects || [];
+    return this.core.store.state.copiedObjects?.objects || [];
   }
 
   @Method()
   async createWorkspace(workspace: KritzelWorkspace) {
     return this.core.createWorkspace(workspace).then(() => {
-      this.workspacesChange.emit(this.core.state.workspaces);
+      this.workspacesChange.emit(this.core.store.state.workspaces);
     });
   }
 
   @Method()
   async updateWorkspace(workspace: KritzelWorkspace) {
     return this.core.updateWorkspace(workspace).then(() => {
-      this.workspacesChange.emit(this.core.state.workspaces);
+      this.workspacesChange.emit(this.core.store.state.workspaces);
     });
   }
 
   @Method()
   async deleteWorkspace(workspace: KritzelWorkspace) {
     return this.core.deleteWorkspace(workspace).then(async () => {
-      this.workspacesChange.emit(this.core.state.workspaces);
+      this.workspacesChange.emit(this.core.store.state.workspaces);
     });
   }
 
@@ -409,11 +409,11 @@ export class KritzelEngine {
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
 
   get isSelecting() {
-    return this.core.state.activeTool instanceof KritzelSelectionTool && this.core.state.isSelecting;
+    return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
   }
 
   get isSelectionActive() {
-    return this.core.state.activeTool instanceof KritzelSelectionTool && this.core.state.selectionGroup !== null;
+    return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.selectionGroup !== null;
   }
 
   constructor() {
@@ -435,9 +435,9 @@ export class KritzelEngine {
     await this.core.initializeDatabase();
     await this.core.initializeWorkspace(this.workspace);
 
-    if (this.core.state.isReady === false) {
+    if (this.core.store.state.isReady === false) {
       this.core.store.setState('isReady', true);
-      this.isEngineReady.emit(this.core.state);
+      this.isEngineReady.emit(this.core.store.state);
     }
   }
 
@@ -470,39 +470,39 @@ export class KritzelEngine {
 
     return (
       <Host>
-        <div class="debug-panel" style={{ display: this.core.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
-          <div>ActiveWorkspaceId: {this.core.state?.activeWorkspace?.id}</div>
-          <div>ActiveWorkspaceName: {this.core.state?.activeWorkspace?.name}</div>
-          <div>TranslateX: {this.core.state?.translateX}</div>
-          <div>TranslateY: {this.core.state?.translateY}</div>
-          <div>ViewportWidth: {this.core.state?.viewportWidth}</div>
-          <div>ViewportHeight: {this.core.state?.viewportHeight}</div>
-          <div>Scale: {this.core.state?.scale}</div>
-          <div>ActiveTool: {this.core.state?.activeTool?.name}</div>
-          <div>HasViewportChanged: {this.core.state?.hasViewportChanged ? 'true' : 'false'}</div>
-          <div>IsEnabled: {this.core.state?.isEnabled ? 'true' : 'false'}</div>
-          <div>IsScaling: {this.core.state?.isScaling ? 'true' : 'false'}</div>
-          <div>IsPanning: {this.core.state?.isPanning ? 'true' : 'false'}</div>
-          <div>IsFocused: {this.core.state.isFocused ? 'true' : 'false'}</div>
+        <div class="debug-panel" style={{ display: this.core.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
+          <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
+          <div>ActiveWorkspaceName: {this.core.store.state?.activeWorkspace?.name}</div>
+          <div>TranslateX: {this.core.store.state?.translateX}</div>
+          <div>TranslateY: {this.core.store.state?.translateY}</div>
+          <div>ViewportWidth: {this.core.store.state?.viewportWidth}</div>
+          <div>ViewportHeight: {this.core.store.state?.viewportHeight}</div>
+          <div>Scale: {this.core.store.state?.scale}</div>
+          <div>ActiveTool: {this.core.store.state?.activeTool?.name}</div>
+          <div>HasViewportChanged: {this.core.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
+          <div>IsEnabled: {this.core.store.state?.isEnabled ? 'true' : 'false'}</div>
+          <div>IsScaling: {this.core.store.state?.isScaling ? 'true' : 'false'}</div>
+          <div>IsPanning: {this.core.store.state?.isPanning ? 'true' : 'false'}</div>
+          <div>IsFocused: {this.core.store.state.isFocused ? 'true' : 'false'}</div>
           <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
           <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
-          <div>IsResizeHandleSelected: {this.core.state.isResizeHandleSelected ? 'true' : 'false'}</div>
-          <div>IsRotationHandleSelected: {this.core.state.isRotationHandleSelected ? 'true' : 'false'}</div>
-          <div>IsDrawing: {this.core.state.isDrawing ? 'true' : 'false'}</div>
-          <div>IsWriting: {this.core.state.isWriting ? 'true' : 'false'}</div>
-          <div>PointerX: {this.core.state?.pointerX}</div>
-          <div>PointerY: {this.core.state?.pointerY}</div>
-          <div>SelectedObjects: {this.core.state.selectionGroup?.objects.length || 0}</div>
+          <div>IsResizeHandleSelected: {this.core.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
+          <div>IsRotationHandleSelected: {this.core.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
+          <div>IsDrawing: {this.core.store.state.isDrawing ? 'true' : 'false'}</div>
+          <div>IsWriting: {this.core.store.state.isWriting ? 'true' : 'false'}</div>
+          <div>PointerX: {this.core.store.state?.pointerX}</div>
+          <div>PointerY: {this.core.store.state?.pointerY}</div>
+          <div>SelectedObjects: {this.core.store.state.selectionGroup?.objects.length || 0}</div>
         </div>
 
         <div
           id="origin"
           class="origin"
           style={{
-            transform: `matrix(${this.core.state?.scale}, 0, 0, ${this.core.state?.scale}, ${this.core.state?.translateX}, ${this.core.state?.translateY})`,
+            transform: `matrix(${this.core.store.state?.scale}, 0, 0, ${this.core.store.state?.scale}, ${this.core.store.state?.translateX}, ${this.core.store.state?.translateY})`,
           }}
         >
-          {this.core.state.objectsMap.allObjects()?.map(object => {
+          {this.core.store.state.objectsMap.allObjects()?.map(object => {
             return (
               <div
                 key={object.id}
@@ -645,7 +645,7 @@ export class KritzelEngine {
                     y2="0"
                     style={{
                       stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.state?.scale})`,
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
                     visibility={object.isSelected ? 'visible' : 'hidden'}
@@ -657,7 +657,7 @@ export class KritzelEngine {
                     y2={object.totalHeight}
                     style={{
                       stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.state?.scale})`,
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
                     visibility={object.isSelected ? 'visible' : 'hidden'}
@@ -669,7 +669,7 @@ export class KritzelEngine {
                     y2={object.totalHeight}
                     style={{
                       stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.state?.scale})`,
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
                     visibility={object.isSelected ? 'visible' : 'hidden'}
@@ -681,7 +681,7 @@ export class KritzelEngine {
                     y2={object.totalHeight}
                     style={{
                       stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.state?.scale})`,
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                       strokeLinecap: 'square',
                     }}
                     visibility={object.isSelected ? 'visible' : 'hidden'}
@@ -691,7 +691,7 @@ export class KritzelEngine {
                     class="resize-handle top-left"
                     cx="0"
                     cy="0"
-                    r={`${(baseHandleSize * object.scale) / this.core.state?.scale}`}
+                    r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
@@ -701,7 +701,7 @@ export class KritzelEngine {
                     class="resize-handle-overlay top-left"
                     cx="0"
                     cy="0"
-                    r={`${(baseHandleTouchSize * object.scale) / this.core.state?.scale}`}
+                    r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                     style={{
                       fill: 'transparent',
                     }}
@@ -712,7 +712,7 @@ export class KritzelEngine {
                     class="resize-handle top-right"
                     cx={object.totalWidth}
                     cy="0"
-                    r={`${(baseHandleSize * object.scale) / this.core.state?.scale}`}
+                    r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
@@ -722,7 +722,7 @@ export class KritzelEngine {
                     class="resize-handle-overlay top-right"
                     cx={object.totalWidth}
                     cy="0"
-                    r={`${(baseHandleTouchSize * object.scale) / this.core.state?.scale}`}
+                    r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                     style={{
                       fill: 'transparent',
                     }}
@@ -733,7 +733,7 @@ export class KritzelEngine {
                     class="resize-handle bottom-left"
                     cx="0"
                     cy={object.totalHeight}
-                    r={`${(baseHandleSize * object.scale) / this.core.state?.scale}`}
+                    r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
@@ -743,7 +743,7 @@ export class KritzelEngine {
                     class="resize-handle-overlay bottom-left"
                     cx="0"
                     cy={object.totalHeight}
-                    r={`${(baseHandleTouchSize * object.scale) / this.core.state?.scale}`}
+                    r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                     style={{
                       fill: 'transparent',
                     }}
@@ -754,7 +754,7 @@ export class KritzelEngine {
                     class="resize-handle bottom-right"
                     cx={object.totalWidth}
                     cy={object.totalHeight}
-                    r={`${(baseHandleSize * object.scale) / this.core.state?.scale}`}
+                    r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
@@ -764,7 +764,7 @@ export class KritzelEngine {
                     class="resize-handle-overlay bottom-right"
                     cx={object.totalWidth}
                     cy={object.totalHeight}
-                    r={`${(baseHandleTouchSize * object.scale) / this.core.state?.scale}`}
+                    r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                     style={{
                       fill: 'transparent',
                     }}
@@ -775,18 +775,18 @@ export class KritzelEngine {
                     x1={object.totalWidth / 2}
                     y1="0"
                     x2={object.totalWidth / 2}
-                    y2={-((15 * object.scale) / this.core.state?.scale)}
+                    y2={-((15 * object.scale) / this.core.store.state?.scale)}
                     style={{
                       stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.state?.scale})`,
+                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                     }}
                     visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
                   <circle
                     class="rotation-handle"
                     cx={object.totalWidth / 2}
-                    cy={-((15 * object.scale) / this.core.state?.scale)}
-                    r={`${(baseHandleSize * object.scale) / this.core.state?.scale}`}
+                    cy={-((15 * object.scale) / this.core.store.state?.scale)}
+                    r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                     style={{
                       fill: 'var(--kritzel-selection-handle-color, #000000)',
                     }}
@@ -795,8 +795,8 @@ export class KritzelEngine {
                   <circle
                     class="rotation-handle-overlay"
                     cx={object.totalWidth / 2}
-                    cy={-((15 * object.scale) / this.core.state?.scale)}
-                    r={`${(baseHandleTouchSize * object.scale) / this.core.state?.scale}`}
+                    cy={-((15 * object.scale) / this.core.store.state?.scale)}
+                    r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                     style={{
                       fill: 'transparent',
                       cursor: 'grab',
@@ -804,7 +804,7 @@ export class KritzelEngine {
                     visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
                   />
 
-                  <g style={{ display: this.core.state.debugInfo.showObjectInfo ? 'block' : 'none', pointerEvents: 'none' }}>
+                  <g style={{ display: this.core.store.state.debugInfo.showObjectInfo ? 'block' : 'none', pointerEvents: 'none' }}>
                     <foreignObject
                       x={object.totalWidth.toString()}
                       y="0"
@@ -834,48 +834,48 @@ export class KritzelEngine {
             class="object"
             xmlns="http://www.w3.org/2000/svg"
             style={{
-              height: this.core.state.currentPath?.height.toString(),
-              width: this.core.state.currentPath?.width.toString(),
+              height: this.core.store.state.currentPath?.height.toString(),
+              width: this.core.store.state.currentPath?.width.toString(),
               left: '0',
               top: '0',
-              zIndex: this.core.state.currentPath?.zIndex.toString(),
+              zIndex: this.core.store.state.currentPath?.zIndex.toString(),
               position: 'absolute',
-              transform: this.core.state.currentPath?.transformationMatrix,
+              transform: this.core.store.state.currentPath?.transformationMatrix,
               transformOrigin: 'top left',
               overflow: 'visible',
             }}
-            viewBox={this.core.state.currentPath?.viewBox}
+            viewBox={this.core.store.state.currentPath?.viewBox}
           >
-            <path d={this.core.state.currentPath?.d} fill={this.core.state.currentPath?.fill} stroke={this.core.state.currentPath?.stroke} />
+            <path d={this.core.store.state.currentPath?.d} fill={this.core.store.state.currentPath?.fill} stroke={this.core.store.state.currentPath?.stroke} />
           </svg>
         </div>
 
-        {this.core.state.isContextMenuVisible && (
+        {this.core.store.state.isContextMenuVisible && (
           <kritzel-context-menu
             class="context-menu"
             ref={el => (this.contextMenuElement = el)}
-            items={this.core.state.contextMenuItems}
-            objects={this.core.state.selectionGroup?.objects || []}
+            items={this.core.store.state.contextMenuItems}
+            objects={this.core.store.state.selectionGroup?.objects || []}
             style={{
               position: 'fixed',
-              left: `${this.core.state.contextMenuX}px`,
-              top: `${this.core.state.contextMenuY}px`,
+              left: `${this.core.store.state.contextMenuX}px`,
+              top: `${this.core.store.state.contextMenuY}px`,
               zIndex: '10000',
             }}
             onActionSelected={event => {
               event.detail.action(
                 {
-                  x: (-this.core.state.translateX + this.core.state.contextMenuX) / this.core.state.scale,
-                  y: (-this.core.state.translateY + this.core.state.contextMenuY) / this.core.state.scale,
+                  x: (-this.core.store.state.translateX + this.core.store.state.contextMenuX) / this.core.store.state.scale,
+                  y: (-this.core.store.state.translateY + this.core.store.state.contextMenuY) / this.core.store.state.scale,
                 },
-                this.core.state.selectionGroup?.objects,
+                this.core.store.state.selectionGroup?.objects,
               );
               this.hideContextMenu();
             }}
           ></kritzel-context-menu>
         )}
 
-        {this.core.state?.activeTool instanceof KritzelEraserTool && !this.core.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
+        {this.core.store.state?.activeTool instanceof KritzelEraserTool && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
       </Host>
     );
   }

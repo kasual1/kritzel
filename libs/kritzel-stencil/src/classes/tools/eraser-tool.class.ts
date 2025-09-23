@@ -20,7 +20,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
 
     if (event.pointerType === 'touch') {
       this.touchStartTimeout = setTimeout(() => {
-        if (this._core.state.pointers.size === 1 && !this._core.state.isScaling) {
+        if (this._core.store.state.pointers.size === 1 && !this._core.store.state.isScaling) {
           this._core.store.setState('isErasing', true);
         }
       }, 80);
@@ -29,14 +29,14 @@ export class KritzelEraserTool extends KritzelBaseTool {
 
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (this._core.state.isErasing) {
+      if (this._core.store.state.isErasing) {
         
         const selectedObjects = this._core.getObjectsFromPointerEvent(event, '.object');
 
         if (selectedObjects.length === 0) return;
 
-        const x = this._core.state.pointerX;
-        const y = this._core.state.pointerY;
+        const x = this._core.store.state.pointerX;
+        const y = this._core.store.state.pointerY;
 
         selectedObjects.forEach(selectedObject => {
           selectedObject.markedForRemoval = selectedObject.hitTest(x, y);
@@ -47,16 +47,16 @@ export class KritzelEraserTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'touch') {
-      if (this._core.state.pointers.size === 1 && this._core.state.isErasing) {
-        const shadowRoot = this._core.state.host?.shadowRoot;
+      if (this._core.store.state.pointers.size === 1 && this._core.store.state.isErasing) {
+        const shadowRoot = this._core.store.state.host?.shadowRoot;
         if (!shadowRoot) return;
         
         const selectedObjects = this._core.getObjectsFromPointerEvent(event, '.object');
 
         if (selectedObjects.length === 0) return;
 
-        const x = this._core.state.pointerX;
-        const y = this._core.state.pointerY;
+        const x = this._core.store.state.pointerX;
+        const y = this._core.store.state.pointerY;
 
         selectedObjects.forEach(selectedObject => {
           selectedObject.markedForRemoval = selectedObject.hitTest(x, y);
@@ -69,7 +69,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
 
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (this._core.state.isErasing) {
+      if (this._core.store.state.isErasing) {
         const removeCommands = this._core.store.allObjects.filter(object => object.markedForRemoval).map(object => {
           object.markedForRemoval = false;
           return new RemoveObjectCommand(this._core, this, object);
@@ -86,7 +86,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
     if (event.pointerType === 'touch') {
       clearTimeout(this.touchStartTimeout);
 
-      if (this._core.state.isErasing) {
+      if (this._core.store.state.isErasing) {
         const removeCommands = this._core.store.allObjects
           .filter(object => object.markedForRemoval)
           .map(object => {

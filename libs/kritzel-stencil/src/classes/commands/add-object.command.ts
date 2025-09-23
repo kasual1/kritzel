@@ -12,12 +12,12 @@ export class AddObjectCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
-    this._core.state.objectsMap.insert(this.object);
+    this._core.store.state.objectsMap.insert(this.object);
     this._core.addObjectToDatabase(ObjectHelper.clone(this.object));
   }
 
   undo(): void {
-    this._core.state.objectsMap.remove(object => object.id === this.object.id);
+    this._core.store.state.objectsMap.remove(object => object.id === this.object.id);
     this._core.deleteObjectFromDatabase(this.object.id);
   }
 }

@@ -156,7 +156,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
     object._core = core;
     object.zIndex = core.store.currentZIndex;
-    object.workspaceId = core.state.activeWorkspace.id;
+    object.workspaceId = core.store.state.activeWorkspace.id;
 
     return object;
   }
@@ -192,11 +192,11 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
   isInViewport(): boolean {
     const viewportBounds: KritzelBoundingBox = {
-      x: -this._core.state.translateX / this._core.state.scale,
-      y: -this._core.state.translateY / this._core.state.scale,
-      z: this._core.state.scale,
-      width: this._core.state.viewportWidth / this._core.state.scale,
-      height: this._core.state.viewportHeight / this._core.state.scale,
+      x: -this._core.store.state.translateX / this._core.store.state.scale,
+      y: -this._core.store.state.translateY / this._core.store.state.scale,
+      z: this._core.store.state.scale,
+      width: this._core.store.state.viewportWidth / this._core.store.state.scale,
+      height: this._core.store.state.viewportHeight / this._core.store.state.scale,
       depth: 100,
     };
 
@@ -209,14 +209,14 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   centerInViewport(): void {
-    const scale = this._core.state.scale;
-    this.translateX = (this._core.state.viewportWidth / 2 - this.totalWidth / 2 - this._core.state.translateX) / scale;
-    this.translateY = (this._core.state.viewportHeight / 2 - this.totalHeight / 2 - this._core.state.translateY) / scale;
+    const scale = this._core.store.state.scale;
+    this.translateX = (this._core.store.state.viewportWidth / 2 - this.totalWidth / 2 - this._core.store.state.translateX) / scale;
+    this.translateY = (this._core.store.state.viewportHeight / 2 - this.totalHeight / 2 - this._core.store.state.translateY) / scale;
   }
 
   move(startX: number, startY: number, endX: number, endY: number): void {
-    const deltaX = (startX - endX) / this._core.state.scale;
-    const deltaY = (startY - endY) / this._core.state.scale;
+    const deltaX = (startX - endX) / this._core.store.state.scale;
+    const deltaY = (startY - endY) / this._core.store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
@@ -274,7 +274,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   updatePosition(x: number, y: number): void {
     this.translateX = x;
     this.translateY = y;
-    this._core.state.objectsMap.update(this);
+    this._core.store.state.objectsMap.update(this);
   }
 
 }
