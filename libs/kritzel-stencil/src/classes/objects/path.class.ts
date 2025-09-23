@@ -2,10 +2,10 @@ import { getStroke } from 'perfect-freehand';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelPathOptions } from '../../interfaces/path-options.interface';
 import { KritzelBaseObject } from './base-object.class';
-import { KritzelStore } from '../store.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelPoint } from '../../interfaces/point.interface';
+import { KritzelCore } from '../core/core.class';
 
 export class KritzelPath extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelPath';
@@ -45,12 +45,12 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.updateDimensions();
   }
 
-  static override create(store: KritzelStore, options?: KritzelPathOptions): KritzelPath {
+  static override create(core: KritzelCore, options?: KritzelPathOptions): KritzelPath {
     const object = new KritzelPath();
 
-    object._store = store;
+    object._core = core;
     object.id = object.generateId();
-    object.workspaceId = store.state.activeWorkspace.id
+    object.workspaceId = core.state.activeWorkspace.id
     object.options = options;
     object.points = options?.points ?? [];
     object.translateX = options?.translateX ?? 0;
@@ -58,7 +58,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     object.scale = options?.scale ?? 1;
     object.strokeWidth = options?.strokeWidth ?? 8;
     object.fill = options?.fill ?? '#000000';
-    object.zIndex = store.currentZIndex;
+    object.zIndex = core.store.currentZIndex;
     object.d = object.generateSvgPath();
     object.updateDimensions();
 
@@ -97,8 +97,8 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   }
 
   override move(startX: number, startY: number, endX: number, endY: number): void {
-    const deltaX = (startX - endX) / this._store.state.scale;
-    const deltaY = (startY - endY) / this._store.state.scale;
+    const deltaX = (startX - endX) / this._core.state.scale;
+    const deltaY = (startY - endY) / this._core.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
@@ -200,7 +200,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateX = x;
     this.translateY = y;
     this._adjustedPoints = null;
-    this._store.state.objectsMap.update(this);
+    this._core.state.objectsMap.update(this);
   }
 
   private computeAdjustedPoints(): number[][] {

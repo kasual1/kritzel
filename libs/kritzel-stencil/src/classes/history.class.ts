@@ -1,10 +1,10 @@
 import { KritzelBaseCommand } from './commands/base.command';
 import { UpdateViewportCommand } from './commands/update-viewport.command';
-import { KritzelStore } from './store.class';
+import { KritzelCore } from './core/core.class';
 import { KritzelCircularBuffer } from './structures/circular-buffer.structure';
 
 export class KritzelHistory {
-  private readonly _store: KritzelStore;
+  private readonly _core: KritzelCore;
 
   undoStack: KritzelCircularBuffer<KritzelBaseCommand>;
   redoStack: KritzelCircularBuffer<KritzelBaseCommand>;
@@ -16,15 +16,15 @@ export class KritzelHistory {
     translateY: number;
   };
 
-  constructor(store: KritzelStore) {
-    this._store = store;
-    this.undoStack = new KritzelCircularBuffer<KritzelBaseCommand>(this._store.state.historyBufferSize);
-    this.redoStack = new KritzelCircularBuffer<KritzelBaseCommand>(this._store.state.historyBufferSize);
+  constructor(store: KritzelCore) {
+    this._core = store;
+    this.undoStack = new KritzelCircularBuffer<KritzelBaseCommand>(this._core.state.historyBufferSize);
+    this.redoStack = new KritzelCircularBuffer<KritzelBaseCommand>(this._core.state.historyBufferSize);
     this.previousViewport = {
-      scale: this._store.state.scale,
-      scaleStep: this._store.state.scaleStep,
-      translateX: this._store.state.translateX,
-      translateY: this._store.state.translateY,
+      scale: this._core.state.scale,
+      scaleStep: this._core.state.scaleStep,
+      translateX: this._core.state.translateX,
+      translateY: this._core.state.translateY,
     };
   }
 
@@ -32,22 +32,22 @@ export class KritzelHistory {
     this.undoStack.clear();
     this.redoStack.clear();
     this.previousViewport = {
-      scale: this._store.state.scale,
-      scaleStep: this._store.state.scaleStep,
-      translateX: this._store.state.translateX,
-      translateY: this._store.state.translateY
+      scale: this._core.state.scale,
+      scaleStep: this._core.state.scaleStep,
+      translateX: this._core.state.translateX,
+      translateY: this._core.state.translateY
     };
   }
 
   executeCommand(command: KritzelBaseCommand) {
-    if (this._store.state.hasViewportChanged) {
+    if (this._core.state.hasViewportChanged) {
       this.addUpdateViewportCommand();
     }
 
     command.execute();
 
     if (command.skipHistory === false) {
-      if (this._store.state.debugInfo.logCommands) {
+      if (this._core.state.debugInfo.logCommands) {
         console.info('add', command);
       }
 
@@ -58,41 +58,41 @@ export class KritzelHistory {
       }
     }
 
-    this._store.rerender();
+    this._core.rerender();
   }
 
   undo() {
-    if (this._store.state.hasViewportChanged) {
-      const command = new UpdateViewportCommand(this._store, this, this.previousViewport);
+    if (this._core.state.hasViewportChanged) {
+      const command = new UpdateViewportCommand(this._core, this, this.previousViewport);
       command.undo();
-      this._store.state.hasViewportChanged = false;
-      this._store.rerender();
+      this._core.state.hasViewportChanged = false;
+      this._core.rerender();
       return;
     }
 
     const command = this.undoStack.pop();
     if (command) {
       command.undo();
-      if (this._store.state.debugInfo.logCommands) console.info('undo', command);
+      if (this._core.state.debugInfo.logCommands) console.info('undo', command);
       this.redoStack.add(command);
     }
 
-    this._store.rerender();
+    this._core.rerender();
   }
 
   redo() {
     const command = this.redoStack.pop();
     if (command) {
       command.execute();
-      if (this._store.state.debugInfo.logCommands) console.info('redo', command);
+      if (this._core.state.debugInfo.logCommands) console.info('redo', command);
       this.undoStack.add(command);
     }
 
-    this._store.rerender();
+    this._core.rerender();
   }
 
   private addUpdateViewportCommand() {
-    const command = new UpdateViewportCommand(this._store, this, this.previousViewport);
+    const command = new UpdateViewportCommand(this._core, this, this.previousViewport);
     command.execute();
     this.undoStack.add(command);
 
@@ -100,12 +100,12 @@ export class KritzelHistory {
       this.redoStack.clear();
     }
 
-    this._store.state.hasViewportChanged = false;
+    this._core.state.hasViewportChanged = false;
     this.previousViewport = {
-      scale: this._store.state.scale,
-      scaleStep: this._store.state.scaleStep,
-      translateX: this._store.state.translateX,
-      translateY: this._store.state.translateY,
+      scale: this._core.state.scale,
+      scaleStep: this._core.state.scaleStep,
+      translateX: this._core.state.translateX,
+      translateY: this._core.state.translateY,
     };
   }
 }

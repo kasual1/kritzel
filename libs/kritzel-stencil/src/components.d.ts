@@ -11,7 +11,7 @@ import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushTool } from "./classes/tools/brush-tool.class";
 import { KritzelTextTool } from "./classes/tools/text-tool.class";
 import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
-import { KritzelStore } from "./classes/store.class";
+import { KritzelCore } from "./classes/core/core.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelWorkspace } from "./classes/workspace.class";
 import { KritzelTool } from "./interfaces/tool.interface";
@@ -25,7 +25,7 @@ export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushTool } from "./classes/tools/brush-tool.class";
 export { KritzelTextTool } from "./classes/tools/text-tool.class";
 export { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
-export { KritzelStore } from "./classes/store.class";
+export { KritzelCore } from "./classes/core/core.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelWorkspace } from "./classes/workspace.class";
 export { KritzelTool } from "./interfaces/tool.interface";
@@ -103,7 +103,7 @@ export namespace Components {
         "isUtilityPanelVisible": boolean;
     }
     interface KritzelCursorTrail {
-        "store": KritzelStore;
+        "core": KritzelCore;
     }
     interface KritzelDropdown {
         /**
@@ -876,7 +876,7 @@ declare namespace LocalJSX {
         "onIsControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
     }
     interface KritzelCursorTrail {
-        "store"?: KritzelStore;
+        "core"?: KritzelCore;
     }
     interface KritzelDropdown {
         "onValueChanged"?: (event: KritzelDropdownCustomEvent<string>) => void;

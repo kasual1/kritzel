@@ -1,20 +1,20 @@
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelImage } from '../objects/image.class';
-import { KritzelStore } from '../store.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { AddObjectCommand } from '../commands/add-object.command';
 import { BatchCommand } from '../commands/batch.command';
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import imageCompression from 'browser-image-compression';
 import { KritzelToolRegistry } from '../registries/tool.registry';
+import { KritzelCore } from '../core/core.class';
 
 export class KritzelImageTool extends KritzelBaseTool {
   fileInput: HTMLInputElement | null = null;
 
   maxCompressionSize: number = 300;
 
-  constructor(store: KritzelStore) {
-    super(store);
+  constructor(core: KritzelCore) {
+    super(core);
     this.setupFileInput();
   }
 
@@ -23,7 +23,7 @@ export class KritzelImageTool extends KritzelBaseTool {
   }
 
   private openFilePicker(): void {
-     if(this._store.isDisabled){
+     if(this._core.store.isDisabled){
       return;
     }
     
@@ -77,31 +77,31 @@ export class KritzelImageTool extends KritzelBaseTool {
 
 
   private createKritzelImage(img: HTMLImageElement): KritzelImage {
-    const image = KritzelImage.create(this._store);
+    const image = KritzelImage.create(this._core);
     const { scaledWidth, scaledHeight } = image.calculateScaledDimensions(img);
     image.src = img.src;
     image.width = scaledWidth;
     image.height = scaledHeight;
-    image.zIndex = this._store.currentZIndex;
+    image.zIndex = this._core.store.currentZIndex;
     image.centerInViewport();
     this.addImageToStore(image);
     return image;
   }
 
   private addImageToStore(image: KritzelImage): void {
-    const selectionGroup = KritzelSelectionGroup.create(this._store);
+    const selectionGroup = KritzelSelectionGroup.create(this._core);
     selectionGroup.addOrRemove(image);
     selectionGroup.isSelected = true;
 
-    const addImageCommand = new AddObjectCommand(this._store, this, image);
-    const addSelectionGroupCommand = new AddSelectionGroupCommand(this._store, this, selectionGroup);
+    const addImageCommand = new AddObjectCommand(this._core, this, image);
+    const addSelectionGroupCommand = new AddSelectionGroupCommand(this._core, this, selectionGroup);
 
-    this._store.history.executeCommand(new BatchCommand(this._store, this, [addImageCommand, addSelectionGroupCommand]));
+    this._core.history.executeCommand(new BatchCommand(this._core, this, [addImageCommand, addSelectionGroupCommand]));
 
-    this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
   }
 
   private handleCancel(): void {
-    this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
   }
 }

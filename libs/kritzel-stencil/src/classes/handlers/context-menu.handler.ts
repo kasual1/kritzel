@@ -1,41 +1,41 @@
 import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelStore } from '../store.class';
 import { KritzelBaseHandler } from './base.handler';
+import { KritzelCore } from '../core/core.class';
 
 export class KritzelContextMenuHandler extends KritzelBaseHandler {
   globalContextMenuItems = [];
 
   objectContextMenuItems = [];
 
-  constructor(store: KritzelStore, globalContextMenuItems: any[], objectContextMenuItems: any[]) {
-    super(store);
+  constructor(core: KritzelCore, globalContextMenuItems: any[], objectContextMenuItems: any[]) {
+    super(core);
     this.globalContextMenuItems = globalContextMenuItems;
     this.objectContextMenuItems = objectContextMenuItems;
   }
 
   handleContextMenu(event: PointerEvent): void {
-    if(this._store.state.skipContextMenu) {
-      this._store.state.skipContextMenu = false;
+    if(this._core.state.skipContextMenu) {
+      this._core.state.skipContextMenu = false;
       return;
     }
 
-    const selectedObject = this._store.getObjectFromPointerEvent(event, '.object');
+    const selectedObject = this._core.getObjectFromPointerEvent(event, '.object');
 
     if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup)) {
-      this._store.state.selectionGroup = KritzelSelectionGroup.create(this._store);
-      this._store.state.selectionGroup.addOrRemove(selectedObject);
-      this._store.state.selectionGroup.isSelected = true;
-      this._store.state.selectionGroup.rotation = selectedObject.rotation;
-      this._store.state.isSelecting = false;
+      this._core.state.selectionGroup = KritzelSelectionGroup.create(this._core);
+      this._core.state.selectionGroup.addOrRemove(selectedObject);
+      this._core.state.selectionGroup.isSelected = true;
+      this._core.state.selectionGroup.rotation = selectedObject.rotation;
+      this._core.state.isSelecting = false;
 
-      this._store.history.executeCommand(new AddSelectionGroupCommand(this._store, this, this._store.state.selectionGroup));
+      this._core.history.executeCommand(new AddSelectionGroupCommand(this._core, this, this._core.state.selectionGroup));
     }
 
-    this._store.state.contextMenuItems = this._store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
+    this._core.state.contextMenuItems = this._core.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
 
-    let x: number = event.clientX - this._store.offsetX;
-    let y: number = event.clientY - this._store.offsetY;
+    let x: number = event.clientX - this._core.store.offsetX;
+    let y: number = event.clientY - this._core.store.offsetY;
 
     const menuWidthEstimate = 150;
     const menuHeightEstimate = 200;
@@ -52,12 +52,12 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     x = Math.max(margin, x);
     y = Math.max(margin, y);
 
-    this._store.state.contextMenuX = x;
-    this._store.state.contextMenuY = y;
-    this._store.state.isContextMenuVisible = true;
+    this._core.state.contextMenuX = x;
+    this._core.state.contextMenuY = y;
+    this._core.state.isContextMenuVisible = true;
 
-    this._store.state.isEnabled = false;
+    this._core.state.isEnabled = false;
 
-    this._store.rerender();
+    this._core.rerender();
   }
 }

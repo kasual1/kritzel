@@ -1,4 +1,3 @@
-import { KritzelStore } from "./store.class";
 import { KritzelImage } from "./objects/image.class";
 import { KritzelPath } from "./objects/path.class";
 import { KritzelSelectionGroup } from "./objects/selection-group.class";
@@ -9,13 +8,14 @@ import { KritzelImageTool } from "./tools/image-tool.class";
 import { KritzelSelectionTool } from "./tools/selection-tool.class";
 import { KritzelTextTool } from "./tools/text-tool.class";
 import { KritzelCustomElement } from "./objects/custom-element.class";
+import { KritzelCore } from "./core/core.class";
 
 export class KritzelReviver {
 
-  private readonly _store: KritzelStore;
+  private readonly _core: KritzelCore;
 
-  constructor(store: KritzelStore) {
-    this._store = store;
+  constructor(core: KritzelCore) {
+    this._core = core;
   }
     
   revive<T>(obj: any): T {
@@ -25,34 +25,34 @@ export class KritzelReviver {
         
         switch (obj.__class__) {
           case 'KritzelPath':
-            revivedObj = KritzelPath.create(this._store).revive(obj);
+            revivedObj = KritzelPath.create(this._core).revive(obj);
             break;
           case 'KritzelText':
-            revivedObj = KritzelText.create(this._store, obj.fontSize, obj.fontFamily).revive(obj);
+            revivedObj = KritzelText.create(this._core, obj.fontSize, obj.fontFamily).revive(obj);
             break;
           case 'KritzelImage':
-            revivedObj = KritzelImage.create(this._store).revive(obj);
+            revivedObj = KritzelImage.create(this._core).revive(obj);
             break;
           case 'KritzelCustomElement':
-            revivedObj = KritzelCustomElement.create(this._store).revive(obj);
+            revivedObj = KritzelCustomElement.create(this._core).revive(obj);
             break;
           case 'KritzelSelectionGroup':
-            revivedObj = KritzelSelectionGroup.create(this._store).revive(obj);
+            revivedObj = KritzelSelectionGroup.create(this._core).revive(obj);
             break;
           case 'KritzelBrushTool':
-            revivedObj = new KritzelBrushTool(this._store);
+            revivedObj = new KritzelBrushTool(this._core);
             break;
           case 'KritzelEraserTool':
-            revivedObj = new KritzelEraserTool(this._store);
+            revivedObj = new KritzelEraserTool(this._core);
             break;
           case 'KritzelImageTool':
-            revivedObj = new KritzelImageTool(this._store);
+            revivedObj = new KritzelImageTool(this._core);
             break;
           case 'KritzelSelectionTool':
-            revivedObj = new KritzelSelectionTool(this._store);
+            revivedObj = new KritzelSelectionTool(this._core);
             break;
           case 'KritzelTextTool':
-            revivedObj = new KritzelTextTool(this._store);
+            revivedObj = new KritzelTextTool(this._core);
             break;
 
           default:
