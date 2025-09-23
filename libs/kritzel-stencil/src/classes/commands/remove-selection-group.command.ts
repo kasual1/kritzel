@@ -13,13 +13,13 @@ export class RemoveSelectionGroupCommand extends KritzelBaseCommand {
 
   execute(): void {
     this._core.state.objectsMap.remove(object => object.id === this.previousSelectionGroup?.id);
-    this._core.state.selectionGroup = null;
+    this._core.store.setState('selectionGroup', null);
   }
 
   undo(): void {
     if(this.previousSelectionGroup) {
       this._core.state.objectsMap.insert(this.previousSelectionGroup);
-      this._core.state.selectionGroup = this.previousSelectionGroup;
+      this._core.store.setState('selectionGroup', this.previousSelectionGroup);
     } 
   }
 }

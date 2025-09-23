@@ -25,7 +25,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           const clientX = event.clientX - this._core.store.offsetX;
           const clientY = event.clientY - this._core.store.offsetY;
 
-          this._core.state.isResizing = true;
+          this._core.store.setState('isResizing', true);
           this.initialMouseX = clientX;
           this.initialMouseY = clientY;
           this.initialSize.width = this._core.state.selectionGroup.width;
@@ -49,7 +49,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           const clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);
           const clientY = Math.round(firstTouch.clientY - this._core.store.offsetY);
 
-          this._core.state.isResizing = true;
+          this._core.store.setState('isResizing', true);
           this.initialMouseX = clientX;
           this.initialMouseY = clientY;
           this.initialSize.width = this._core.state.selectionGroup.width;
@@ -163,7 +163,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
         this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
 
-        this._core.state.isResizing = false;
+        this._core.store.setState('isResizing', false);
         this._core.rerender();
       }
     }
@@ -176,7 +176,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         });
 
         this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
-        this._core.state.isResizing = false;
+        this._core.store.setState('isResizing', false);
         this._core.rerender();
 
         clearTimeout(this._core.state.longTouchTimeout);

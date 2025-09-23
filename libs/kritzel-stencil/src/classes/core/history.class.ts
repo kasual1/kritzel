@@ -65,7 +65,7 @@ export class KritzelHistory {
     if (this._core.state.hasViewportChanged) {
       const command = new UpdateViewportCommand(this._core, this, this.previousViewport);
       command.undo();
-      this._core.state.hasViewportChanged = false;
+      this._core.store.setState('hasViewportChanged', false);
       this._core.rerender();
       return;
     }
@@ -100,7 +100,7 @@ export class KritzelHistory {
       this.redoStack.clear();
     }
 
-    this._core.state.hasViewportChanged = false;
+    this._core.store.setState('hasViewportChanged', false);
     this.previousViewport = {
       scale: this._core.state.scale,
       scaleStep: this._core.state.scaleStep,

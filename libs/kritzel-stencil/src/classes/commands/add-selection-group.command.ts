@@ -14,13 +14,14 @@ export class AddSelectionGroupCommand extends KritzelBaseCommand {
   execute(): void {
     this._core.state.objectsMap.remove(object => object instanceof KrtizelSelectionBox);
     this._core.state.objectsMap.insert(this.selectionGroup);
-    this._core.state.selectionGroup = this.selectionGroup;
-    this._core.state.selectionBox = null;
+
+    this._core.store.setState('selectionGroup', this.selectionGroup);
+    this._core.store.setState('selectionBox', null);
   }
 
   undo(): void {
     this._core.state.objectsMap.remove(object => object.id === this.selectionGroup.id);
-    this._core.state.selectionGroup = null;
-    this._core.state.selectionBox = null;
+    this._core.store.setState('selectionGroup', null);
+    this._core.store.setState('selectionBox', null);
   }
 }

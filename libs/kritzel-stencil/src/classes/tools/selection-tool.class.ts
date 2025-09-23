@@ -33,9 +33,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
-        this._core.state.isResizeHandleSelected = this.isHandleSelected(event);
-        this._core.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
-        this._core.state.resizeHandleType = this.getHandleType(event);
+
+        this._core.store.setState('isResizeHandleSelected', this.isHandleSelected(event));
+        this._core.store.setState('isRotationHandleSelected', this.isRotationHandleSelected(event));
+        this._core.store.setState('resizeHandleType', this.getHandleType(event));
 
         const selectedObject = this.getSelectedObject(event);
         const isDifferentObject = selectedObject && this._core.state.selectionGroup && selectedObject.id !== this._core.state.selectionGroup.id;
@@ -68,15 +69,15 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       }
 
       if (this._core.state.pointers.size === 1) {
-        this._core.state.isResizeHandleSelected = this.isHandleSelected(event);
-        this._core.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
-        this._core.state.resizeHandleType = this.getHandleType(event);
+        this._core.store.setState('isResizeHandleSelected', this.isHandleSelected(event));
+        this._core.store.setState('isRotationHandleSelected', this.isRotationHandleSelected(event));
+        this._core.store.setState('resizeHandleType', this.getHandleType(event));
 
         const selectedObject = this.getSelectedObject(event);
         const isDifferentObject = selectedObject && this._core.state.selectionGroup && selectedObject.id !== this._core.state.selectionGroup.id;
 
         if (!this._core.state.selectionGroup && selectedObject) {
-          this._core.state.skipContextMenu = true;
+          this._core.store.setState('skipContextMenu', true);
         }
 
         if (
