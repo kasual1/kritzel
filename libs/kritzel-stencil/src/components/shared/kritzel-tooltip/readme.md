@@ -15,6 +15,26 @@
 | `offsetY`       | `offset-y`       |             | `number`      | `24`        |
 
 
+## Events
+
+| Event           | Description | Type                |
+| --------------- | ----------- | ------------------- |
+| `tooltipClosed` |             | `CustomEvent<void>` |
+
+
+## Methods
+
+### `focusContent() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
 ## Dependencies
 
 ### Used by

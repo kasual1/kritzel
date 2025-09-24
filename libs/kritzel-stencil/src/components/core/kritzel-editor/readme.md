@@ -189,12 +189,9 @@ graph TD;
   kritzel-controls --> kritzel-color
   kritzel-controls --> kritzel-font
   kritzel-utility-panel --> kritzel-icon
-  kritzel-control-brush-config --> kritzel-brush-style
-  kritzel-control-brush-config --> kritzel-icon
   kritzel-control-brush-config --> kritzel-color-palette
+  kritzel-control-brush-config --> kritzel-icon
   kritzel-control-brush-config --> kritzel-stroke-size
-  kritzel-brush-style --> kritzel-dropdown
-  kritzel-brush-style --> kritzel-icon
   kritzel-color-palette --> kritzel-color
   kritzel-stroke-size --> kritzel-color
   kritzel-control-text-config --> kritzel-font-family

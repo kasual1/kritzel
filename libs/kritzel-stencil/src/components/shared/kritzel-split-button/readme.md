@@ -20,16 +20,27 @@
 
 | Event                 | Description | Type                                                |
 | --------------------- | ----------- | --------------------------------------------------- |
-| `buttonClick`         |             | `CustomEvent<void>`                                 |
-| `close`               |             | `CustomEvent<void>`                                 |
 | `itemCancel`          |             | `CustomEvent<IKritzelMenuItem<any>>`                |
 | `itemCloseChildMenu`  |             | `CustomEvent<IKritzelMenuItem<any>>`                |
 | `itemSave`            |             | `CustomEvent<IKritzelMenuItem<any>>`                |
 | `itemSelect`          |             | `CustomEvent<IKritzelMenuItemSelectEvent>`          |
 | `itemToggleChildMenu` |             | `CustomEvent<IKritzelMenuItemToggleChildMenuEvent>` |
+| `mainButtonClick`     |             | `CustomEvent<void>`                                 |
+| `menuClose`           |             | `CustomEvent<void>`                                 |
+| `menuOpen`            |             | `CustomEvent<void>`                                 |
 
 
 ## Methods
+
+### `focusMenu() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 ### `open() => Promise<void>`
 
