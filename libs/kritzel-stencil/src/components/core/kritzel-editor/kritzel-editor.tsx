@@ -191,6 +191,32 @@ export class KritzelEditor {
     return this.engineRef.centerObjectInViewport(object);
   }
 
+  @Method()
+  async createWorkspace(name: string, viewport?: { translateX: number; translateY: number; scale: number }): Promise<KritzelWorkspace | null> {
+    const workspace = new KritzelWorkspace(`workspace-${Date.now()}`, name, viewport);
+    return this.engineRef.createWorkspace(workspace);
+  }
+
+  @Method()
+  async updateWorkspace(workspace: KritzelWorkspace): Promise<void> {
+    return this.engineRef.updateWorkspace(workspace);
+  }
+
+  @Method()
+  async deleteWorkspace(workspace: KritzelWorkspace): Promise<void> {
+    return this.engineRef.deleteWorkspace(workspace);
+  }
+
+  @Method()
+  async getWorkspaces(): Promise<KritzelWorkspace[]> {
+    return this.engineRef.getWorkspaces();
+  }
+
+  @Method()
+  async getActiveWorkspace(): Promise<KritzelWorkspace> {
+    return this.engineRef.getActiveWorkspace();
+  }
+
   engineRef!: HTMLKritzelEngineElement;
   controlsRef!: HTMLKritzelControlsElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;

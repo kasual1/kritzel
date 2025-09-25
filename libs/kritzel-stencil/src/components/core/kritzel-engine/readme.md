@@ -128,7 +128,7 @@ Type: `Promise<void>`
 
 
 
-### `createWorkspace(workspace: KritzelWorkspace) => Promise<void>`
+### `createWorkspace(workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>`
 
 
 
@@ -140,7 +140,7 @@ Type: `Promise<void>`
 
 #### Returns
 
-Type: `Promise<void>`
+Type: `Promise<KritzelWorkspace>`
 
 
 
@@ -187,6 +187,16 @@ Type: `Promise<void>`
 #### Returns
 
 Type: `Promise<void>`
+
+
+
+### `getActiveWorkspace() => Promise<KritzelWorkspace>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelWorkspace>`
 
 
 

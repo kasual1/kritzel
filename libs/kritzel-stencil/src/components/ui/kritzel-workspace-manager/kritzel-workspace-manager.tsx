@@ -57,9 +57,9 @@ export class KritzelWorkspaceManager {
   }
 
   private async add() {
+    await this.splitButtonRef.open();
     this.newWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
     this.editingItemId = this.newWorkspace.id;
-    await this.splitButtonRef.open();
   }
 
   private edit(item: IKritzelMenuItem) {
@@ -167,9 +167,7 @@ export class KritzelWorkspaceManager {
           onItemCancel={() => this.cancel()}
           onItemCloseChildMenu={() => this.closeChildMenu()}
           onMenuOpen={() => this.handleMenuOpen()}
-          onMenuClose={() => {
-            this.handleMenuClose();
-          }}
+          onMenuClose={() => this.handleMenuClose()}
         ></kritzel-split-button>
       </Host>
     );

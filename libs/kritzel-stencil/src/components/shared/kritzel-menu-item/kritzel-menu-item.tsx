@@ -40,6 +40,7 @@ export class KritzelMenuItem {
   }
 
   componentDidUpdate() {
+
     if (this.item.isEditing && this.inputRef && !this.isDirty) {
       this.inputRef.focus();
       this.inputRef.select();

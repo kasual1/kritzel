@@ -70,6 +70,49 @@ Type: `Promise<void>`
 
 
 
+### `createWorkspace(name: string, viewport?: { translateX: number; translateY: number; scale: number; }) => Promise<KritzelWorkspace | null>`
+
+
+
+#### Parameters
+
+| Name       | Type                                                         | Description |
+| ---------- | ------------------------------------------------------------ | ----------- |
+| `name`     | `string`                                                     |             |
+| `viewport` | `{ translateX: number; translateY: number; scale: number; }` |             |
+
+#### Returns
+
+Type: `Promise<KritzelWorkspace>`
+
+
+
+### `deleteWorkspace(workspace: KritzelWorkspace) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name        | Type               | Description |
+| ----------- | ------------------ | ----------- |
+| `workspace` | `KritzelWorkspace` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `getActiveWorkspace() => Promise<KritzelWorkspace>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelWorkspace>`
+
+
+
 ### `getObjectById<T extends KritzelBaseObject>(id: string) => Promise<T | null>`
 
 
@@ -93,6 +136,16 @@ Type: `Promise<T>`
 #### Returns
 
 Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
+
+
+
+### `getWorkspaces() => Promise<KritzelWorkspace[]>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelWorkspace[]>`
 
 
 
@@ -152,6 +205,22 @@ Type: `Promise<void>`
 #### Returns
 
 Type: `Promise<T>`
+
+
+
+### `updateWorkspace(workspace: KritzelWorkspace) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name        | Type               | Description |
+| ----------- | ------------------ | ----------- |
+| `workspace` | `KritzelWorkspace` |             |
+
+#### Returns
+
+Type: `Promise<void>`
 
 
 
