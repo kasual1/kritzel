@@ -24,7 +24,6 @@ export class KritzelReviver {
       if (obj.__class__) {
         let revivedObj;
         
-        debugger;
         switch (obj.__class__) {
           case 'KritzelPath':
             revivedObj = KritzelPath.create(this._core).revive(obj);

@@ -33,7 +33,6 @@ export class AppComponent {
     image.width = scaledWidth;
     image.height = scaledHeight;
 
-    debugger;
     const workspace = await this.kritzelEditor.getActiveWorkspace();
 
     

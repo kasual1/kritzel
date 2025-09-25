@@ -60,8 +60,8 @@ export class KritzelCore {
   }
 
   async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
-    debugger;
     const workspaces = await this.getWorkspaces();
+    debugger;
     const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
 
