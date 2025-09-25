@@ -38,6 +38,13 @@ export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
     // default implementation
   }
 
+  serialize() {
+    return {
+      __class__: this.__class__,
+      name: this.name,
+    };
+  }
+
   deserialize(object: any): KritzelSerializable {
     Object.assign(this, object);
     return this;

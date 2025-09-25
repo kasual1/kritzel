@@ -1,7 +1,6 @@
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelBaseCommand } from './base.command';
 import { KritzelCustomElement } from '../objects/custom-element.class';
-import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelCore } from '../core/core.class';
 
 export class RemoveObjectCommand extends KritzelBaseCommand {
@@ -21,6 +20,6 @@ export class RemoveObjectCommand extends KritzelBaseCommand {
   undo(): void {
     this._core.store.state.objectsMap.insert(this.object);
     this._core.store.state.objectsMap.filter(object => object instanceof KritzelCustomElement).forEach(object => object.remount());
-    this._core.addObjectToDatabase(ObjectHelper.clone(this.object));
+    this._core.addObjectToDatabase(this.object);
   }
 }
