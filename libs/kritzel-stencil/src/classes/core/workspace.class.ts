@@ -1,6 +1,7 @@
 import { KritzelCore } from "../..";
+import { KritzelSerializable } from "../../interfaces/serializable.interface";
 
-export class KritzelWorkspace {
+export class KritzelWorkspace implements KritzelSerializable{
   __class__ = 'KritzelWorkspace';
 
   id: string;
@@ -34,7 +35,7 @@ export class KritzelWorkspace {
     this._core.engine.addObject(obj);
   }
 
-  toJSON() {
+  serialize(): any {
     return {
       __class__: this.__class__,
       id: this.id,
@@ -43,5 +44,12 @@ export class KritzelWorkspace {
       updatedAt: this.updatedAt,
       viewport: this.viewport,
     };
+  }
+
+  deserialize(object: any): KritzelSerializable {
+    Object.assign(this, object);
+    this.createdAt = new Date(object.createdAt);
+    this.updatedAt = new Date(object.updatedAt);
+    return this;
   }
 }

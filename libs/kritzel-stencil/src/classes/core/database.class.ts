@@ -1,3 +1,5 @@
+import { KritzelSerializable } from "../../interfaces/serializable.interface";
+
 export class KritzelDatabase {
   private db: IDBDatabase | null = null;
 
@@ -73,11 +75,11 @@ export class KritzelDatabase {
     }
   }
 
-  public async add<T>(storeName: string, item: T): Promise<IDBValidKey> {
+  public async add<T extends KritzelSerializable>(storeName: string, item: T): Promise<IDBValidKey> {
     if (this.isLoggingEnabled) {
       console.log('[IndexedDB] Add:', { storeName, item });
     }
-    return this.executeTransaction(storeName, 'readwrite', store => store.add(item));
+    return this.executeTransaction(storeName, 'readwrite', store => store.add(item.serialize()));
   }
 
   public async get<T>(storeName: string, key: IDBValidKey): Promise<T | undefined> {
@@ -94,11 +96,11 @@ export class KritzelDatabase {
     return this.executeTransaction(storeName, 'readonly', store => store.getAll());
   }
 
-  public async update<T>(storeName: string, item: T): Promise<IDBValidKey> {
+  public async update<T extends KritzelSerializable>(storeName: string, item: T): Promise<IDBValidKey> {
     if (this.isLoggingEnabled) {
       console.log('[IndexedDB] Update:', { storeName, item });
     }
-    return this.executeTransaction(storeName, 'readwrite', store => store.put(item));
+    return this.executeTransaction(storeName, 'readwrite', store => store.put(item.serialize()));
   }
 
   public async delete(storeName: string, key: IDBValidKey): Promise<void> {

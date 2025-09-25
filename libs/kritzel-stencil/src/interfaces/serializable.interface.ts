@@ -1,4 +1,5 @@
 export interface KritzelSerializable {
   __class__: string;
-  revive(object: any): KritzelSerializable;
+  serialize(): any;
+  deserialize(object: any): KritzelSerializable;
 }

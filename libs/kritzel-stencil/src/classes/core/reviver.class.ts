@@ -26,19 +26,19 @@ export class KritzelReviver {
         
         switch (obj.__class__) {
           case 'KritzelPath':
-            revivedObj = KritzelPath.create(this._core).revive(obj);
+            revivedObj = KritzelPath.create(this._core).deserialize(obj);
             break;
           case 'KritzelText':
-            revivedObj = KritzelText.create(this._core, obj.fontSize, obj.fontFamily).revive(obj);
+            revivedObj = KritzelText.create(this._core, obj.fontSize, obj.fontFamily).deserialize(obj);
             break;
           case 'KritzelImage':
-            revivedObj = KritzelImage.create(this._core).revive(obj);
+            revivedObj = KritzelImage.create(this._core).deserialize(obj);
             break;
           case 'KritzelCustomElement':
-            revivedObj = KritzelCustomElement.create(this._core).revive(obj);
+            revivedObj = KritzelCustomElement.create(this._core).deserialize(obj);
             break;
           case 'KritzelSelectionGroup':
-            revivedObj = KritzelSelectionGroup.create(this._core).revive(obj);
+            revivedObj = KritzelSelectionGroup.create(this._core).deserialize(obj);
             break;
           case 'KritzelWorkspace':
             revivedObj = KritzelWorkspace.create(this._core, obj);

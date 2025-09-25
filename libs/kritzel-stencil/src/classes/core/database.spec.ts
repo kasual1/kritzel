@@ -1,6 +1,36 @@
 import 'fake-indexeddb/auto';
 import { afterEach, beforeEach, describe, expect, it } from '@jest/globals';
 import { KritzelDatabase } from './database.class';
+import { KritzelWorkspace } from './workspace.class';
+import { KritzelSerializable } from '../../interfaces/serializable.interface';
+
+export class MockObject implements KritzelSerializable {
+  __class__: string = 'MockObject';
+
+  constructor(
+    public id: string,
+    public workspaceId: string,
+    public name: string
+  ) {}
+
+  deserialize(object: any): KritzelSerializable {
+    Object.assign(this, object);
+    return this;
+  }
+
+  serialize() {
+    return {
+      __class__: this.__class__,
+      id: this.id,
+      workspaceId: this.workspaceId,
+      name: this.name,
+    };
+  }
+
+  static deserialize(data: any): MockObject {
+    return new MockObject(data.id, data.workspaceId, data.name);
+  }
+}
 
 describe('KritzelDatabase', () => {
   let _database: KritzelDatabase;
@@ -27,11 +57,12 @@ describe('KritzelDatabase', () => {
   it('should open and close the database', async () => {
     expect(_database).toBeDefined();
     _database.close();
-    await expect(_database.add('workspaces', { id: '1', name: 'test' })).rejects.toThrow('Database is not open.');
+    const workspace = new KritzelWorkspace('1', 'test');
+    await expect(_database.add('workspaces', workspace)).rejects.toThrow('Database is not open.');
   });
 
   it('should add and get an item from a store', async () => {
-    const workspace = { id: 'ws1', name: 'My Workspace' };
+    const workspace = new KritzelWorkspace('ws1', 'Workspace 1');
     await _database.add('workspaces', workspace);
 
     const retrieved = await _database.get('workspaces', 'ws1');
@@ -39,7 +70,7 @@ describe('KritzelDatabase', () => {
   });
 
   it('should add and get an item with a compound key', async () => {
-    const object = { workspaceId: 'ws1', id: 'obj1', data: 'some data' };
+    const object = new MockObject('obj1', 'ws1', 'data1');
     await _database.add('objects', object);
 
     const retrieved = await _database.get('objects', ['ws1', 'obj1']);
@@ -47,8 +78,8 @@ describe('KritzelDatabase', () => {
   });
 
   it('should get all items from a store', async () => {
-    const workspace1 = { id: 'ws1', name: 'Workspace 1' };
-    const workspace2 = { id: 'ws2', name: 'Workspace 2' };
+    const workspace1 = new KritzelWorkspace('ws1', 'Workspace 1');
+    const workspace2 = new KritzelWorkspace('ws2', 'Workspace 2');
     await _database.add('workspaces', workspace1);
     await _database.add('workspaces', workspace2);
 
@@ -59,10 +90,10 @@ describe('KritzelDatabase', () => {
   });
 
   it('should update an item in a store', async () => {
-    const workspace = { id: 'ws1', name: 'Initial Name' };
+    const workspace = new KritzelWorkspace('ws1', 'Initial Name');
     await _database.add('workspaces', workspace);
 
-    const updatedWorkspace = { id: 'ws1', name: 'Updated Name' };
+    const updatedWorkspace = new KritzelWorkspace('ws1', 'Updated Name');
     await _database.update('workspaces', updatedWorkspace);
 
     const retrieved = await _database.get('workspaces', 'ws1');
@@ -70,7 +101,7 @@ describe('KritzelDatabase', () => {
   });
 
   it('should delete an item from a store', async () => {
-    const workspace = { id: 'ws1', name: 'To be deleted' };
+    const workspace = new KritzelWorkspace('ws1', 'To be deleted');
     await _database.add('workspaces', workspace);
 
     let retrieved = await _database.get('workspaces', 'ws1');
@@ -83,8 +114,8 @@ describe('KritzelDatabase', () => {
   });
 
   it('should delete an item from a store with multiple items', async () => {
-    const workspace1 = { id: 'ws1', name: 'Workspace 1' };
-    const workspace2 = { id: 'ws2', name: 'Workspace 2' };
+    const workspace1 = new KritzelWorkspace('ws1', 'Workspace 1');
+    const workspace2 = new KritzelWorkspace('ws2', 'Workspace 2');
     await _database.add('workspaces', workspace1);
     await _database.add('workspaces', workspace2);
 
@@ -103,9 +134,9 @@ describe('KritzelDatabase', () => {
   
 
   it('should get all items by index', async () => {
-    const obj1 = { workspaceId: 'ws1', id: 'obj1', data: 'data1' };
-    const obj2 = { workspaceId: 'ws1', id: 'obj2', data: 'data2' };
-    const obj3 = { workspaceId: 'ws2', id: 'obj3', data: 'data3' };
+    const obj1 = new MockObject('obj1', 'ws1', 'data1');
+    const obj2 = new MockObject('obj2', 'ws1', 'data2');
+    const obj3 = new MockObject('obj3', 'ws2', 'data3');
 
     await _database.add('objects', obj1);
     await _database.add('objects', obj2);
@@ -118,8 +149,8 @@ describe('KritzelDatabase', () => {
   });
 
   it('should perform a batch of operations', async () => {
-    const workspace = { id: 'ws1', name: 'Workspace 1' };
-    const object = { workspaceId: 'ws1', id: 'obj1', data: 'some data' };
+    const workspace = new MockObject('ws1', 'workspace', 'Workspace 1');
+    const object = new MockObject('obj1', 'ws1', 'some data');
 
     const results = await _database.batch([
       db => db.add('workspaces', workspace),
