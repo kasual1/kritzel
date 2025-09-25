@@ -30,21 +30,26 @@ export class KritzelMenuItem {
 
   private inputRef: HTMLInputElement;
 
-  componentDidLoad() {
-    this.setDeviceSpecificStyles();
-
+  private focusInput() {
     if (this.item.isEditing && this.inputRef && !this.isDirty) {
       this.inputRef.focus();
-      this.inputRef.select();
+
+      if (KritzelDevicesHelper.isIOS()) {
+        const length = this.inputRef.value.length;
+        this.inputRef.setSelectionRange(length, length);
+      } else {
+        this.inputRef.select();
+      }
     }
   }
 
-  componentDidUpdate() {
+  componentDidLoad() {
+    this.setDeviceSpecificStyles();
+    this.focusInput();
+  }
 
-    if (this.item.isEditing && this.inputRef && !this.isDirty) {
-      this.inputRef.focus();
-      this.inputRef.select();
-    }
+  componentDidUpdate() {
+    this.focusInput();
   }
 
   private setDeviceSpecificStyles = () => {
@@ -53,7 +58,7 @@ export class KritzelMenuItem {
       this.host.style.setProperty('--kritzel-menu-item-overlay-background-color', 'transparent');
       this.host.style.setProperty('--kritzel-menu-item-button-hover-background-color', 'transparent');
     }
-  }
+  };
 
   private handleItemSelect = (event: MouseEvent) => {
     event.stopPropagation();
@@ -117,7 +122,13 @@ export class KritzelMenuItem {
   private renderEditMode() {
     return [
       <div class="menu-item-content left">
-        <input ref={el => (this.inputRef = el)} type="text" class="edit-input" value={this.item.label} onInput={this.handleInputChange} />
+        <input
+          ref={el => (this.inputRef = el)}
+          type="text"
+          class="edit-input"
+          value={this.item.label}
+          onInput={this.handleInputChange}
+        />
       </div>,
       <div class="menu-item-content right">
         <div tabIndex={0} class="action-button" onClick={this.handleCancel}>
