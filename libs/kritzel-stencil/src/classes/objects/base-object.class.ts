@@ -249,7 +249,14 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     // This method can be overridden by subclasses to handle click events when the object is selected.
   }
 
-  revive(object: any): KritzelBaseObject<T> {
+  serialize() {
+    return {
+      __class__: this.__class__,
+      id: this.id,
+    };
+  }
+
+  deserialize(object: any): KritzelBaseObject<T> {
     Object.assign(this, object);
     return this;
   }
