@@ -76,7 +76,9 @@ export class KritzelWorkspaceManager {
       await this.kritzelEngineRef.createWorkspace(this.newWorkspace);
       this.workspaceChange.emit(this.newWorkspace);
     } else {
-      await this.kritzelEngineRef.updateWorkspace({ ...item.value, name: item.label });
+      const workspace = item.value;
+      workspace.name = item.label;
+      await this.kritzelEngineRef.updateWorkspace(workspace);
     }
 
     this.editingItemId = null;
