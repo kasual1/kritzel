@@ -79,7 +79,14 @@ export class KritzelDatabase {
     if (this.isLoggingEnabled) {
       console.log('[IndexedDB] Add:', { storeName, item });
     }
-    return this.executeTransaction(storeName, 'readwrite', store => store.add(item.serialize()));
+
+    if(item.serialize === undefined) {
+      throw new Error('Item does not implement KritzelSerializable interface.');
+    }
+
+    const serializedItem = item.serialize();
+
+    return this.executeTransaction(storeName, 'readwrite', store => store.add(serializedItem));
   }
 
   public async get<T>(storeName: string, key: IDBValidKey): Promise<T | undefined> {
@@ -100,7 +107,15 @@ export class KritzelDatabase {
     if (this.isLoggingEnabled) {
       console.log('[IndexedDB] Update:', { storeName, item });
     }
-    return this.executeTransaction(storeName, 'readwrite', store => store.put(item.serialize()));
+
+    if(item.serialize === undefined) {
+      throw new Error('Item does not implement KritzelSerializable interface.');
+    }
+
+    const serializedItem = item.serialize();
+
+    console.log('Updating item in store:', storeName, serializedItem);
+    return this.executeTransaction(storeName, 'readwrite', store => store.put(serializedItem));
   }
 
   public async delete(storeName: string, key: IDBValidKey): Promise<void> {

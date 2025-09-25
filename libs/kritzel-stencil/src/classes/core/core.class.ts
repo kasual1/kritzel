@@ -61,7 +61,6 @@ export class KritzelCore {
 
   async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
     const workspaces = await this.getWorkspaces();
-    debugger;
     const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
 
@@ -199,7 +198,7 @@ export class KritzelCore {
     workspace.createdAt = new Date();
     workspace.updatedAt = new Date();
 
-    await this._database.add('workspaces', workspace.toJSON());
+    await this._database.add('workspaces', workspace);
 
     this._store.state.workspaces.push(workspace);
   }
@@ -211,7 +210,7 @@ export class KritzelCore {
 
     workspace.updatedAt = new Date();
 
-    await this._database.update('workspaces', workspace.toJSON());
+    await this._database.update('workspaces', workspace);
 
     const workspaces = this._store.state.workspaces;
     const index = workspaces.findIndex(w => w.id === workspace.id);

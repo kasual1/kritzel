@@ -1,6 +1,5 @@
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelBaseCommand } from './base.command';
-import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelCore } from '../core/core.class';
 
 export class UpdateObjectCommand extends KritzelBaseCommand {
@@ -28,7 +27,7 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
       }
     }
 
-    this._core.updateObjectInDatabase(ObjectHelper.clone(this.object));
+    this._core.updateObjectInDatabase(this.object);
   }
 
   undo(): void {
@@ -38,6 +37,6 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
       }
     }
 
-    this._core.updateObjectInDatabase(ObjectHelper.clone(this.object));
+    this._core.updateObjectInDatabase(this.object);
   }
 }

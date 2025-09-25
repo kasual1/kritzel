@@ -71,8 +71,11 @@ export class KritzelViewport {
       this._core.store.setState('pointerY', (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale);
 
       if (this._core.store.state.isPanning) {
-        this._core.store.setState('translateX', this._core.store.state.translateX - this._core.store.state.startX - xRelativeToHost);
-        this._core.store.setState('translateY', this._core.store.state.translateY - this._core.store.state.startY - yRelativeToHost);
+        const dx = xRelativeToHost - this._core.store.state.startX;
+        const dy = yRelativeToHost - this._core.store.state.startY;
+
+        this._core.store.setState('translateX', this._core.store.state.translateX + dx);
+        this._core.store.setState('translateY', this._core.store.state.translateY + dy);
         this._core.store.setState('startX', xRelativeToHost);
         this._core.store.setState('startY', yRelativeToHost);
         this._core.store.setState('hasViewportChanged', true);

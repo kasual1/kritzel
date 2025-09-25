@@ -251,8 +251,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
   serialize() {
     return {
-      __class__: this.__class__,
-      id: this.id,
+      ...ObjectHelper.clone(this)
     };
   }
 

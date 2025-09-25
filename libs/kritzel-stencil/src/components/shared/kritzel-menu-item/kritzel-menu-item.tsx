@@ -73,7 +73,6 @@ export class KritzelMenuItem {
   };
 
   private handleSave = (event: MouseEvent) => {
-    debugger;
     event.stopPropagation();
     this.host.focus();
     this.itemSave.emit(this.item);
