@@ -35,7 +35,9 @@ export class KritzelSplitButton {
   @Method()
   async open() {
     if (this.isMenuOpen) return;
-    this.openMenu(new MouseEvent('click'));
+    this.isMenuOpen = true;
+    this.anchorElement = this.host;
+    this.menuOpen.emit();
   }
 
   @Method()

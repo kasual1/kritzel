@@ -125,12 +125,16 @@ export namespace Components {
           * @default [     {       name: 'selection',       type: 'tool',       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       isDefault: true,       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'divider',       type: 'divider',     },     {       name: 'config',       type: 'config',     },   ]
          */
         "controls": KritzelToolbarControl[];
+        "createWorkspace": (name: string, viewport?: { translateX: number; translateY: number; scale: number; }) => Promise<KritzelWorkspace | null>;
         /**
           * @default {}
          */
         "customSvgIcons": Record<string, string>;
+        "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        "getActiveWorkspace": () => Promise<KritzelWorkspace>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getSelectedObjects": () => Promise<KritzelBaseObject[]>;
+        "getWorkspaces": () => Promise<KritzelWorkspace[]>;
         /**
           * @default [     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]
          */
@@ -159,6 +163,7 @@ export namespace Components {
         "selectAllObjectsInViewport": () => Promise<void>;
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
+        "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
     }
     interface KritzelEngine {
         "activeTool": KritzelTool;
@@ -169,11 +174,12 @@ export namespace Components {
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;
-        "createWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
         "delete": () => Promise<void>;
         "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
+        "getActiveWorkspace": () => Promise<KritzelWorkspace>;
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;

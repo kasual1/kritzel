@@ -9,6 +9,7 @@ import { KritzelSelectionTool } from "../tools/selection-tool.class";
 import { KritzelTextTool } from "../tools/text-tool.class";
 import { KritzelCustomElement } from "../objects/custom-element.class";
 import { KritzelCore } from "./core.class";
+import { KritzelWorkspace } from "../..";
 
 export class KritzelReviver {
 
@@ -23,6 +24,7 @@ export class KritzelReviver {
       if (obj.__class__) {
         let revivedObj;
         
+        debugger;
         switch (obj.__class__) {
           case 'KritzelPath':
             revivedObj = KritzelPath.create(this._core).revive(obj);
@@ -38,6 +40,9 @@ export class KritzelReviver {
             break;
           case 'KritzelSelectionGroup':
             revivedObj = KritzelSelectionGroup.create(this._core).revive(obj);
+            break;
+          case 'KritzelWorkspace':
+            revivedObj = KritzelWorkspace.create(this._core, obj);
             break;
           case 'KritzelBrushTool':
             revivedObj = new KritzelBrushTool(this._core);

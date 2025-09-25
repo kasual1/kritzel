@@ -377,29 +377,33 @@ export class KritzelEngine {
   }
 
   @Method()
-  async createWorkspace(workspace: KritzelWorkspace) {
-    return this.core.createWorkspace(workspace).then(() => {
-      this.workspacesChange.emit(this.core.store.state.workspaces);
-    });
+  async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
+    workspace._core = this.core;
+    await this.core.createWorkspace(workspace);
+    this.workspacesChange.emit(this.core.store.state.workspaces);
+    return workspace;
   }
 
   @Method()
-  async updateWorkspace(workspace: KritzelWorkspace) {
-    return this.core.updateWorkspace(workspace).then(() => {
-      this.workspacesChange.emit(this.core.store.state.workspaces);
-    });
+  async updateWorkspace(workspace: KritzelWorkspace): Promise<void> {
+    await this.core.updateWorkspace(workspace);
+    this.workspacesChange.emit(this.core.store.state.workspaces);
   }
 
   @Method()
-  async deleteWorkspace(workspace: KritzelWorkspace) {
-    return this.core.deleteWorkspace(workspace).then(async () => {
-      this.workspacesChange.emit(this.core.store.state.workspaces);
-    });
+  async deleteWorkspace(workspace: KritzelWorkspace): Promise<void> {
+    await this.core.deleteWorkspace(workspace);
+    this.workspacesChange.emit(this.core.store.state.workspaces);
   }
 
   @Method()
   async getWorkspaces(): Promise<KritzelWorkspace[]> {
     return this.core.getWorkspaces();
+  }
+
+  @Method()
+  async getActiveWorkspace(): Promise<KritzelWorkspace> {
+    return this.core.store.state.activeWorkspace;
   }
 
   core: KritzelCore;
