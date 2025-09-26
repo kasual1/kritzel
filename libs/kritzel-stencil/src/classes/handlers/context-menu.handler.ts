@@ -25,6 +25,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       return;
     }
 
+    debugger;
     const selectedObject = this._core.getObjectFromPointerEvent(event, '.object');
 
     if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup)) {

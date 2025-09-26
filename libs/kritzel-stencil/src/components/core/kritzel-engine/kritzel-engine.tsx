@@ -71,6 +71,7 @@ export class KritzelEngine {
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
   @Event() activeToolChange: EventEmitter<KritzelBaseTool>;
   @Event() workspacesChange: EventEmitter<KritzelWorkspace[]>;
+  @Event() longpress: EventEmitter<PointerEvent>;
 
   @State() forceUpdate: number = 0;
 
@@ -94,9 +95,7 @@ export class KritzelEngine {
       return;
     }
 
-    KritzelEventHelper.onLongTouchPress(ev, (event: PointerEvent) => {
-      this.contextMenuHandler.handleContextMenu(event);
-    });
+    KritzelEventHelper.onLongPress(ev, (event: PointerEvent) => this.longpress.emit(event));
 
     this.host.setPointerCapture(ev.pointerId);
     this.core.store.state.pointers.set(ev.pointerId, ev);
@@ -141,6 +140,11 @@ export class KritzelEngine {
 
     this.viewport.handlePointerUp(ev);
     this.core.store.state?.activeTool?.handlePointerUp(ev);
+  }
+
+  @Listen('longpress', { passive: false })
+  handleLongPress(ev: CustomEvent<PointerEvent>) {
+    this.contextMenuHandler.handleContextMenu(ev.detail);
   }
 
   @Listen('contextmenu', { capture: false })
