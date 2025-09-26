@@ -117,7 +117,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._core.store.setState('selectionBox', null);
     this._core.store.setState('isSelecting', false);
     this._core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox);
-    this._core.rerender();
   }
 
   private startMouseSelection(event: MouseEvent): void {
@@ -191,8 +190,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       selectionBox.translateY = Math.min(currentY, this.startY);
 
       this.updateSelectedObjects();
-
-      this._core.rerender();
     }
   }
 

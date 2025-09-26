@@ -100,7 +100,6 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         }
 
         this._core.store.state.selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
-        this._core.rerender();
       }
     }
 
@@ -164,7 +163,6 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
 
         this._core.store.setState('isResizing', false);
-        this._core.rerender();
       }
     }
 
@@ -177,7 +175,6 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
         this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
         this._core.store.setState('isResizing', false);
-        this._core.rerender();
 
         clearTimeout(this._core.store.state.longTouchTimeout);
       }
