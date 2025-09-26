@@ -49,7 +49,6 @@ export class KritzelControls {
   @Listen('activeToolChange', { target: 'document' })
   async handleActiveToolChange(event: CustomEvent) {
     this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
-    await this.kritzelEngine?.setFocus();
   }
 
   @Method()
