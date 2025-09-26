@@ -71,6 +71,7 @@ export class KritzelSplitButton {
   private closeMenu = () => {
     this.isMenuOpen = false;
     this.anchorElement = null;
+    this.splitMenuButtonRef?.blur();
     this.menuClose.emit();
   };
 
