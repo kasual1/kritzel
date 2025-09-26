@@ -114,7 +114,6 @@ export class KritzelDatabase {
 
     const serializedItem = item.serialize();
 
-    console.log('Updating item in store:', storeName, serializedItem);
     return this.executeTransaction(storeName, 'readwrite', store => store.put(serializedItem));
   }
 

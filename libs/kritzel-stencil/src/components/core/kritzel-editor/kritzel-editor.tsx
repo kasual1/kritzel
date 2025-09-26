@@ -269,6 +269,7 @@ export class KritzelEditor {
         this.host.style.setProperty('--kritzel-editor-controls-bottom', '14px');
         this.host.style.setProperty('--kritzel-editor-controls-transition', 'cubic-bezier(0.25, 0.1, 0.25, 1.0)');
         this.host.style.setProperty('--kritzel-editor-controls-transform', 'translateY(200%)');
+        this.host.style.setProperty('--kritzel-editor-controls-transition-duration', '0.25s');
         break;
 
       case 'Android':
