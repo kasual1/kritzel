@@ -566,6 +566,7 @@ declare global {
         "isEngineReady": KritzelEngineState;
         "activeToolChange": KritzelBaseTool;
         "workspacesChange": KritzelWorkspace[];
+        "longpress": PointerEvent;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -940,6 +941,7 @@ declare namespace LocalJSX {
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
+        "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
         "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
         /**
           * @default ABSOLUTE_SCALE_MAX

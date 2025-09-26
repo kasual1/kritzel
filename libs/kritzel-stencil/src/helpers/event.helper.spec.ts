@@ -88,7 +88,7 @@ describe('KritzelEventHelper', () => {
         target,
       } as unknown as PointerEvent;
 
-      KritzelEventHelper.onLongTouchPress(event, onSuccess, onCancel);
+      KritzelEventHelper.onLongPress(event, onSuccess, onCancel);
 
       expect(onSuccess).not.toHaveBeenCalled();
       jest.advanceTimersByTime(400);
@@ -101,7 +101,7 @@ describe('KritzelEventHelper', () => {
       const onCancel = jest.fn();
       const event = { pointerType: 'mouse' } as PointerEvent;
 
-      KritzelEventHelper.onLongTouchPress(event, onSuccess, onCancel);
+      KritzelEventHelper.onLongPress(event, onSuccess, onCancel);
 
       jest.advanceTimersByTime(400);
       expect(onSuccess).not.toHaveBeenCalled();
@@ -119,7 +119,7 @@ describe('KritzelEventHelper', () => {
         target,
       } as unknown as PointerEvent;
 
-      const cancel = KritzelEventHelper.onLongTouchPress(event, onSuccess, onCancel);
+      const cancel = KritzelEventHelper.onLongPress(event, onSuccess, onCancel);
       cancel();
 
       jest.advanceTimersByTime(400);
