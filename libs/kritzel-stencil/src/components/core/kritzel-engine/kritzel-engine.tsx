@@ -232,13 +232,13 @@ export class KritzelEngine {
   @Method()
   async disable() {
     this.core.store.setState('isEnabled', false);
-    this.forceUpdate++;
+    this.core.rerender();
   }
 
   @Method()
   async enable() {
     this.core.store.setState('isEnabled', true);
-    this.forceUpdate++;
+    this.core.rerender();
   }
 
   @Method()
@@ -292,6 +292,8 @@ export class KritzelEngine {
     this.core.store.setState('isContextMenuVisible', false);
     this.core.store.setState('selectionBox', null);
     this.core.store.setState('isSelecting', false);
+    this.core.store.setState('isEnabled', true);
+    this.core.rerender();
   }
 
   @Method()
@@ -876,6 +878,7 @@ export class KritzelEngine {
               );
               this.hideContextMenu();
             }}
+            onClose={() => this.hideContextMenu()}
           ></kritzel-context-menu>
         )}
 

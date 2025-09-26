@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, Event, EventEmitter, State, Watch } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter, State, Watch, Listen, Element } from '@stencil/core';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 
@@ -13,19 +13,31 @@ interface ProcessedMenuItem {
   shadow: true,
 })
 export class KritzelContextMenu {
+  @Element() host: HTMLElement;
+
   @Prop() items: ContextMenuItem[];
-  @Prop() objects: KritzelBaseObject[];
-
-  @Event() actionSelected: EventEmitter<ContextMenuItem>;
-
-  @State() private processedItems: ProcessedMenuItem[] = [];
-
-  componentWillLoad() {
+  @Watch('items')
+  onItemsChanged() {
     this.updateMenuItems();
   }
 
-  @Watch('items')
-  onItemsChanged() {
+  @Prop() objects: KritzelBaseObject[];
+
+  @Event() actionSelected: EventEmitter<ContextMenuItem>;
+  @Event() close: EventEmitter<void>;
+
+  @State() private processedItems: ProcessedMenuItem[] = [];
+
+  @Listen('click', { target: 'window' })
+  handleOutsideClick(event: MouseEvent) {
+    event.stopPropagation();
+
+    if (!this.host.contains(event.target as HTMLElement)) {
+      this.close.emit();
+    }
+  }
+
+  componentWillLoad() {
     this.updateMenuItems();
   }
 
@@ -33,19 +45,6 @@ export class KritzelContextMenu {
     if (!isDisabled) {
       this.actionSelected.emit(item);
     }
-  }
-
-  private async evaluateProperty(
-    value: boolean | ((obj: KritzelBaseObject, objs: KritzelBaseObject[]) => boolean | Promise<boolean>),
-    defaultValue: boolean,
-  ): Promise<boolean> {
-    if (typeof value === 'boolean') {
-      return value;
-    }
-    if (typeof value === 'function') {
-      return await Promise.resolve(value(null, this.objects));
-    }
-    return defaultValue;
   }
 
   private async updateMenuItems() {
@@ -62,16 +61,25 @@ export class KritzelContextMenu {
     this.processedItems = processed;
   }
 
+  private async evaluateProperty(value: boolean | ((obj: KritzelBaseObject, objs: KritzelBaseObject[]) => boolean | Promise<boolean>), defaultValue: boolean): Promise<boolean> {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+    if (typeof value === 'function') {
+      return await Promise.resolve(value(null, this.objects));
+    }
+    return defaultValue;
+  }
+
   render() {
     return (
       <Host>
         <div class="menu-container">
           {this.processedItems.map(({ item, isDisabled }, index) => (
             <button
-              key={`${item.label}-${index}`} 
-              class={{ 'menu-item': true, disabled: isDisabled }}
+              key={`${item.label}-${index}`}
+              class={{ 'menu-item': true, 'disabled': isDisabled }}
               onClick={() => this.handleItemClick(item, isDisabled)}
-              onTouchStart={() => this.handleItemClick(item, isDisabled)}
               disabled={isDisabled}
             >
               {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
