@@ -95,6 +95,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this.resizeHandler.handlePointerDown(event);
       this.moveHandler.handlePointerDown(event);
       this.selectionHandler.handlePointerDown(event);
+
+      this._core.rerender();
     }
   }
 
@@ -150,6 +152,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this.resizeHandler.handlePointerUp(event);
       this.moveHandler.handlePointerUp(event);
       this.selectionHandler.handlePointerUp(event);
+
+      this._core.rerender();
     }
   }
 
