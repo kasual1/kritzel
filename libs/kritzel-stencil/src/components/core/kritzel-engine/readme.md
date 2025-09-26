@@ -23,6 +23,7 @@
 | ------------------ | ----------- | --------------------------------- |
 | `activeToolChange` |             | `CustomEvent<KritzelBaseTool>`    |
 | `isEngineReady`    |             | `CustomEvent<KritzelEngineState>` |
+| `longpress`        |             | `CustomEvent<PointerEvent>`       |
 | `workspacesChange` |             | `CustomEvent<KritzelWorkspace[]>` |
 
 
@@ -368,16 +369,6 @@ Type: `Promise<void>`
 | Name     | Type                     | Description |
 | -------- | ------------------------ | ----------- |
 | `object` | `KritzelBaseObject<any>` |             |
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `setFocus() => Promise<void>`
-
-
 
 #### Returns
 
