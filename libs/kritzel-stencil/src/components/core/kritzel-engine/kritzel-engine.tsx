@@ -95,9 +95,6 @@ export class KritzelEngine {
     }
 
     KritzelEventHelper.onLongTouchPress(ev, (event: PointerEvent) => {
-      if (!(this.core.store.state.activeTool instanceof KritzelSelectionTool)) {
-        return;
-      }
       this.contextMenuHandler.handleContextMenu(event);
     });
 
