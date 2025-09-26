@@ -437,7 +437,9 @@ export class KritzelCore {
     const selectedObject = elementAtPoint.closest(selector) as HTMLElement | null;
 
     if (selectedObject) {
-      return this._store.allObjects.find(object => selectedObject.id === object.id);
+      const foundObject = this._store.allObjects.find(object => selectedObject.id === object.id);
+      const isHit = foundObject?.hitTest(clientX, clientY);
+      return isHit ? foundObject : null;
     }
 
     return null;
