@@ -163,6 +163,7 @@ export class KritzelViewport {
   }
 
   private handleZoom(event: WheelEvent): void {
+    this._core.store.setState('isScaling', true);
     const rect = this._core.store.state.host.getBoundingClientRect();
     const xRelativeToHost = event.clientX - rect.left;
     const yRelativeToHost = event.clientY - rect.top;
@@ -186,9 +187,16 @@ export class KritzelViewport {
 
     this._core.rerender();
     this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
+
+    setTimeout(() => {
+      this._core.store.setState('isScaling', false);
+      this._core.rerender();
+    }, 300);
   }
 
   private handlePan(event: WheelEvent): void {
+    this._core.store.setState('isPanning', true);
+
     const panSpeed = 0.8;
 
     this._core.store.setState('translateX', this._core.store.state.translateX - event.deltaX * panSpeed);
@@ -198,5 +206,10 @@ export class KritzelViewport {
 
     this._core.rerender();
     this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
+
+    setTimeout(() => {
+      this._core.store.setState('isPanning', false);
+      this._core.rerender();
+    }, 300);
   }
 }
