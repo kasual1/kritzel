@@ -94,11 +94,6 @@ export class KritzelEngine {
       return;
     }
 
-    if (KritzelEventHelper.isPointerEventOnContextMenu(ev) === false && this.core.store.state.isContextMenuVisible) {
-      this.hideContextMenu();
-      return;
-    }
-
     KritzelEventHelper.onLongTouchPress(ev, (event: PointerEvent) => {
       if (!(this.core.store.state.activeTool instanceof KritzelSelectionTool)) {
         return;
