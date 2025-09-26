@@ -833,11 +833,12 @@ export class KritzelEngine {
           })}
 
           <svg
+            key="current-path"
             class="object"
             xmlns="http://www.w3.org/2000/svg"
+            height={this.core.store.state.currentPath?.height.toString()}
+            width={this.core.store.state.currentPath?.width.toString()}
             style={{
-              height: this.core.store.state.currentPath?.height.toString(),
-              width: this.core.store.state.currentPath?.width.toString(),
               left: '0',
               top: '0',
               zIndex: this.core.store.state.currentPath?.zIndex.toString(),
