@@ -20,4 +20,8 @@ export class KritzelDevicesHelper {
       return 'Other';
     }
   }
+
+  static isFirefox(): boolean {
+    return /firefox/i.test(navigator.userAgent);
+  }
 }

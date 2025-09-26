@@ -26,6 +26,7 @@ import { KritzelCustomElement } from '../../../classes/objects/custom-element.cl
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelCore } from '../../../classes/core/core.class';
+import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 
 @Component({
   tag: 'kritzel-engine',
@@ -635,6 +636,10 @@ export class KritzelEngine {
                         style={{
                           width: '100%',
                           height: '100%',
+                          backgroundColor: KritzelDevicesHelper.isFirefox() ? object.backgroundColor : 'transparent',
+                          borderWidth:  KritzelDevicesHelper.isFirefox() ? object.borderWidth + 'px' : '0',
+                          borderStyle:  KritzelDevicesHelper.isFirefox() ? 'solid' : 'none',
+                          borderColor:  KritzelDevicesHelper.isFirefox() ? object.borderColor : 'transparent',
                         }}
                       ></div>
                     )}
@@ -836,8 +841,8 @@ export class KritzelEngine {
             key="current-path"
             class="object"
             xmlns="http://www.w3.org/2000/svg"
-            height={this.core.store.state.currentPath?.height.toString()}
-            width={this.core.store.state.currentPath?.width.toString()}
+            width={this.core.store.state.currentPath?.width}
+            height={this.core.store.state.currentPath?.height}
             style={{
               left: '0',
               top: '0',
