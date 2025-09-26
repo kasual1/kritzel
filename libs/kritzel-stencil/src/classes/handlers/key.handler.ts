@@ -56,7 +56,6 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       this._core.deselectAllObjects();
     }
 
-    console.log('Keyhandler', event.key, event.ctrlKey, this._core.store.state.selectionGroup);
     if (event.key === 'c' && event.ctrlKey && this._core.store.state.selectionGroup) {
       this._core.copy();
       this._core.rerender();

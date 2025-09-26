@@ -132,13 +132,6 @@ export class KritzelEditor {
     }
   }
 
-  @Listen('keydown', { passive: false })
-  handleKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Tab') {
-      console.log(document.activeElement);
-    }
-  }
-
   @Listen('dblclick', { passive: false })
   handleTouchStart(event: MouseEvent) {
     if (event.cancelable) {
