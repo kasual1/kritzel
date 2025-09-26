@@ -41,7 +41,7 @@ export class KritzelReviver {
             revivedObj = KritzelSelectionGroup.create(this._core).deserialize(obj);
             break;
           case 'KritzelWorkspace':
-            revivedObj = KritzelWorkspace.create(this._core, obj);
+            revivedObj = KritzelWorkspace.create(this._core, obj).deserialize(obj);
             break;
           case 'KritzelBrushTool':
             revivedObj = new KritzelBrushTool(this._core);
