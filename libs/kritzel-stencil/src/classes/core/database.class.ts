@@ -23,7 +23,7 @@ export class KritzelDatabase {
       }
 
       if (this.isLoggingEnabled) {
-        console.log(`[IndexedDB] Opening database: ${this.dbName}, version: ${this.dbVersion}`);
+        console.info(`[IndexedDB] Opening database: ${this.dbName}, version: ${this.dbVersion}`);
       }
       const request = indexedDB.open(this.dbName, this.dbVersion);
 
@@ -35,26 +35,26 @@ export class KritzelDatabase {
       request.onsuccess = () => {
         this.db = request.result;
         if (this.isLoggingEnabled) {
-          console.log(`[IndexedDB] Database opened successfully.`);
+          console.info(`[IndexedDB] Database opened successfully.`);
         }
         resolve();
       };
 
       request.onupgradeneeded = event => {
         if (this.isLoggingEnabled) {
-          console.log(`[IndexedDB] Upgrade needed for database: ${this.dbName}`);
+          console.info(`[IndexedDB] Upgrade needed for database: ${this.dbName}`);
         }
         const db = (event.target as IDBOpenDBRequest).result;
         stores.forEach(storeConfig => {
           if (!db.objectStoreNames.contains(storeConfig.name)) {
             if (this.isLoggingEnabled) {
-              console.log(`[IndexedDB] Creating store: ${storeConfig.name}`);
+              console.info(`[IndexedDB] Creating store: ${storeConfig.name}`);
             }
             const store = db.createObjectStore(storeConfig.name, storeConfig.options);
             if (storeConfig.indices) {
               storeConfig.indices.forEach(index => {
                 if (this.isLoggingEnabled) {
-                  console.log(`[IndexedDB] Creating index: ${index.name} on store: ${storeConfig.name}`);
+                  console.info(`[IndexedDB] Creating index: ${index.name} on store: ${storeConfig.name}`);
                 }
                 store.createIndex(index.name, index.keyPath, index.options);
               });
@@ -68,7 +68,7 @@ export class KritzelDatabase {
   public close(): void {
     if (this.db) {
       if (this.isLoggingEnabled) {
-        console.log(`[IndexedDB] Closing database: ${this.dbName}`);
+        console.info(`[IndexedDB] Closing database: ${this.dbName}`);
       }
       this.db.close();
       this.db = null;
@@ -77,7 +77,7 @@ export class KritzelDatabase {
 
   public async add<T extends KritzelSerializable>(storeName: string, item: T): Promise<IDBValidKey> {
     if (this.isLoggingEnabled) {
-      console.log('[IndexedDB] Add:', { storeName, item });
+      console.info('[IndexedDB] Add:', { storeName, item });
     }
 
     if(item.serialize === undefined) {
@@ -91,21 +91,21 @@ export class KritzelDatabase {
 
   public async get<T>(storeName: string, key: IDBValidKey): Promise<T | undefined> {
     if (this.isLoggingEnabled) {
-      console.log('[IndexedDB] Get:', { storeName, key });
+      console.info('[IndexedDB] Get:', { storeName, key });
     }
     return this.executeTransaction(storeName, 'readonly', store => store.get(key));
   }
 
   public async getAll<T>(storeName: string): Promise<T[]> {
     if (this.isLoggingEnabled) {
-      console.log('[IndexedDB] GetAll:', { storeName });
+      console.info('[IndexedDB] GetAll:', { storeName });
     }
     return this.executeTransaction(storeName, 'readonly', store => store.getAll());
   }
 
   public async update<T extends KritzelSerializable>(storeName: string, item: T): Promise<IDBValidKey> {
     if (this.isLoggingEnabled) {
-      console.log('[IndexedDB] Update:', { storeName, item });
+      console.info('[IndexedDB] Update:', { storeName, item });
     }
 
     if(item.serialize === undefined) {
@@ -119,21 +119,21 @@ export class KritzelDatabase {
 
   public async delete(storeName: string, key: IDBValidKey): Promise<void> {
     if (this.isLoggingEnabled) {
-      console.log('[IndexedDB] Delete:', { storeName, key });
+      console.info('[IndexedDB] Delete:', { storeName, key });
     }
     return this.executeTransaction(storeName, 'readwrite', store => store.delete(key));
   }
 
   public async deleteByRange(storeName: string, range: IDBKeyRange): Promise<void> {  
     if (this.isLoggingEnabled) {
-      console.log('[IndexedDB] DeleteByRange:', { storeName, range });
+      console.info('[IndexedDB] DeleteByRange:', { storeName, range });
     }
     return this.executeTransaction(storeName, 'readwrite', store => store.delete(range));
   }
 
   public async getAllByRange<T>(storeName: string, range: IDBKeyRange): Promise<T[]> {
     if (this.isLoggingEnabled) {
-      console.log('[IndexedDB] GetAllByRange:', { storeName, range });
+      console.info('[IndexedDB] GetAllByRange:', { storeName, range });
     }
     return this.executeTransaction(storeName, 'readonly', store => {
       return store.getAll(range);
@@ -142,7 +142,7 @@ export class KritzelDatabase {
 
   public async getAllByIndex<T>(storeName: string, indexName: string, query: IDBValidKey | IDBKeyRange): Promise<T[]> {
     if (this.isLoggingEnabled) {
-      console.log('[IndexedDB] GetAllByIndex:', { storeName, indexName, query });
+      console.info('[IndexedDB] GetAllByIndex:', { storeName, indexName, query });
     }
     return this.executeTransaction(storeName, 'readonly', store => {
       const index = store.index(indexName);
@@ -189,7 +189,7 @@ export class KritzelDatabase {
     const storeNames = await this.extractStoreNamesFromActions(actions);
 
     if (this.isLoggingEnabled) {
-      console.log('[IndexedDB] Starting batch transaction:', { storeNames });
+      console.info('[IndexedDB] Starting batch transaction:', { storeNames });
     }
 
     return new Promise<any[]>((resolve, reject) => {
@@ -214,14 +214,14 @@ export class KritzelDatabase {
         ): Promise<T> => {
           return new Promise<T>((resolveRequest, rejectRequest) => {
             if (this.isLoggingEnabled) {
-              console.log('[IndexedDB] Executing batch action:', { storeName, mode });
+              console.info('[IndexedDB] Executing batch action:', { storeName, mode });
             }
             const store = transaction.objectStore(storeName);
             const request = action(store);
 
             request.onsuccess = () => {
               if (this.isLoggingEnabled) {
-                console.log('[IndexedDB] Batch action request successful:', { result: request.result });
+                console.info('[IndexedDB] Batch action request successful:', { result: request.result });
               }
               resolveRequest(request.result as T);
             };
@@ -235,7 +235,7 @@ export class KritzelDatabase {
 
       transaction.oncomplete = () => {
         if (this.isLoggingEnabled) {
-          console.log('[IndexedDB] Batch transaction complete.');
+          console.info('[IndexedDB] Batch transaction complete.');
         }
         Promise.all(promises).then(() => resolve(results));
       };
