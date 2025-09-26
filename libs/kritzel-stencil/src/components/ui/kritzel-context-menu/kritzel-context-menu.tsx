@@ -28,11 +28,11 @@ export class KritzelContextMenu {
 
   @State() private processedItems: ProcessedMenuItem[] = [];
 
-  @Listen('click', { target: 'window' })
+  @Listen('pointerdown', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
-    event.stopPropagation();
-
-    if (!this.host.contains(event.target as HTMLElement)) {
+    event.preventDefault();
+    const path = event.composedPath();
+    if (!path.includes(this.host)) {
       this.close.emit();
     }
   }
