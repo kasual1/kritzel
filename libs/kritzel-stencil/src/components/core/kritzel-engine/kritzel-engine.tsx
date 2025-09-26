@@ -178,20 +178,6 @@ export class KritzelEngine {
     this.keyHandler.handleKeyUp(ev);
   }
 
-  @Listen('mousedown', { target: 'window', passive: true })
-  updateFocus(ev) {
-    if (this.core.store.isDisabled) {
-      return;
-    }
-
-    const rect = this.core.store.state.host.getBoundingClientRect();
-    const isInside = ev.clientX >= rect.left && ev.clientX <= rect.right && ev.clientY >= rect.top && ev.clientY <= rect.bottom;
-
-    const path = ev.composedPath();
-    const kritzelEngineElement = this.host.closest('kritzel-engine');
-    const isInKritzelEngine = path.includes(kritzelEngineElement || this.host);
-  }
-
   @Method()
   async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig): Promise<KritzelBaseTool> {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
@@ -424,7 +410,7 @@ export class KritzelEngine {
     this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems, this.objectContextMenuItems);
     this.keyHandler = new KritzelKeyHandler(this.core);
     this.viewport = new KritzelViewport(this.core, this.host);
-    
+
     await this.core.initializeDatabase();
     await this.core.initializeWorkspace(this.workspace);
 
@@ -545,7 +531,11 @@ export class KritzelEngine {
                         }}
                         viewBox={object?.viewBox}
                       >
-                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} />
+                        <path
+                          d={object?.d}
+                          fill={object.fill}
+                          stroke={object?.stroke}
+                        />
                       </svg>
                     )}
 
@@ -621,9 +611,9 @@ export class KritzelEngine {
                           width: '100%',
                           height: '100%',
                           backgroundColor: KritzelDevicesHelper.isFirefox() ? object.backgroundColor : 'transparent',
-                          borderWidth:  KritzelDevicesHelper.isFirefox() ? object.borderWidth + 'px' : '0',
-                          borderStyle:  KritzelDevicesHelper.isFirefox() ? 'solid' : 'none',
-                          borderColor:  KritzelDevicesHelper.isFirefox() ? object.borderColor : 'transparent',
+                          borderWidth: KritzelDevicesHelper.isFirefox() ? object.borderWidth + 'px' : '0',
+                          borderStyle: KritzelDevicesHelper.isFirefox() ? 'solid' : 'none',
+                          borderColor: KritzelDevicesHelper.isFirefox() ? object.borderColor : 'transparent',
                         }}
                       ></div>
                     )}
