@@ -15,7 +15,6 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   isEnabled: true,
   isScaling: false,
   isPanning: false,
-  isFocused: false,
   isSelecting: false,
   isResizing: false,
   isResizeHandleSelected: false,

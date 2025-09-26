@@ -25,7 +25,6 @@ export interface KritzelEngineState {
   isEnabled: boolean;
   isScaling: boolean;
   isPanning: boolean;
-  isFocused: boolean;
   isSelecting: boolean;
   isResizing: boolean;
   isResizeHandleSelected: boolean;

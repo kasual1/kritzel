@@ -39,7 +39,7 @@ export class KritzelEngine {
   @Prop() workspace?: KritzelWorkspace;
   @Watch('workspace')
   onWorkspaceChange(newWorkspace: KritzelWorkspace | null) {
-    if (newWorkspace) {
+    if (this.core.store.state.activeWorkspace !== newWorkspace) {
       this.core.initializeWorkspace(newWorkspace);
     }
   }
@@ -190,8 +190,6 @@ export class KritzelEngine {
     const path = ev.composedPath();
     const kritzelEngineElement = this.host.closest('kritzel-engine');
     const isInKritzelEngine = path.includes(kritzelEngineElement || this.host);
-
-    this.core.store.setState('isFocused', isInside && isInKritzelEngine);
   }
 
   @Method()
@@ -218,12 +216,6 @@ export class KritzelEngine {
     this.core.store.setState('activeTool', tool);
     this.core.deselectAllObjects();
     tool?.onActivate();
-  }
-
-  @Method()
-  async setFocus() {
-    this.host.focus();
-    this.core.store.setState('isFocused', true);
   }
 
   @Method()
@@ -432,11 +424,11 @@ export class KritzelEngine {
     this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems, this.objectContextMenuItems);
     this.keyHandler = new KritzelKeyHandler(this.core);
     this.viewport = new KritzelViewport(this.core, this.host);
-
-    this._registerStateChangeListeners();
-
+    
     await this.core.initializeDatabase();
     await this.core.initializeWorkspace(this.workspace);
+
+    this._registerStateChangeListeners();
 
     if (this.core.store.state.isReady === false) {
       this.core.store.setState('isReady', true);
@@ -446,7 +438,6 @@ export class KritzelEngine {
 
   private _registerStateChangeListeners() {
     this.core.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
-    this.core.store.onStateChange('isFocused', this._handleIsFocusedChange.bind(this));
   }
 
   private _handleActiveToolChange(activeTool: KritzelBaseTool) {
@@ -457,12 +448,6 @@ export class KritzelEngine {
     this.core.store.setState('skipContextMenu', false);
     this.activeToolChange.emit(activeTool);
     KritzelKeyboardHelper.forceHideKeyboard();
-  }
-
-  private _handleIsFocusedChange(isFocused: boolean) {
-    if (!isFocused) {
-      this.core.resetActiveText();
-    }
   }
 
   render() {
@@ -486,7 +471,6 @@ export class KritzelEngine {
           <div>IsEnabled: {this.core.store.state?.isEnabled ? 'true' : 'false'}</div>
           <div>IsScaling: {this.core.store.state?.isScaling ? 'true' : 'false'}</div>
           <div>IsPanning: {this.core.store.state?.isPanning ? 'true' : 'false'}</div>
-          <div>IsFocused: {this.core.store.state.isFocused ? 'true' : 'false'}</div>
           <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
           <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
           <div>IsResizeHandleSelected: {this.core.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
