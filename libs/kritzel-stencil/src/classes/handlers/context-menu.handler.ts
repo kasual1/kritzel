@@ -3,6 +3,8 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionTool } from '../tools/selection-tool.class';
+import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
+import { BatchCommand } from '../commands/batch.command';
 
 export class KritzelContextMenuHandler extends KritzelBaseHandler {
   globalContextMenuItems = [];
@@ -33,10 +35,14 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       selectionGroup.isSelected = true;
       selectionGroup.rotation = selectedObject.rotation;
 
-      this._core.store.setState('selectionGroup', selectionGroup);
       this._core.store.setState('isSelecting', false);
 
-      this._core.history.executeCommand(new AddSelectionGroupCommand(this._core, this, this._core.store.state.selectionGroup));
+      const batch = new BatchCommand(this._core, this, [
+        new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup),
+        new AddSelectionGroupCommand(this._core, this, selectionGroup),
+      ]);
+
+      this._core.history.executeCommand(batch);
     }
 
     this._core.store.setState('contextMenuItems', this._core.store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems);
