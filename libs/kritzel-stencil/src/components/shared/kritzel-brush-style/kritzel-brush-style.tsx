@@ -9,16 +9,13 @@ export interface BrushStyleOption extends DropdownOption {}
   shadow: true,
 })
 export class KritzelBrushStyle {
-  @Prop()
-  type: 'pen' | 'highlighter' = 'pen';
-
+  @Prop() type: 'pen' | 'highlighter' = 'pen';
   @Prop() brushOptions: BrushStyleOption[] = [
     { value: 'pen', label: 'Pen' },
     { value: 'highlighter', label: 'Highlighter' },
   ];
 
-  @Event()
-  typeChange: EventEmitter<'pen' | 'highlighter'>;
+  @Event() typeChange: EventEmitter<'pen' | 'highlighter'>;
 
   handleDropdownValueChange(event: CustomEvent<string>) {
     this.typeChange.emit(event.detail as 'pen' | 'highlighter');

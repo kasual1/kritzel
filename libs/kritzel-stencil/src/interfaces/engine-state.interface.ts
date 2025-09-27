@@ -3,18 +3,20 @@ import { KritzelPath } from "../classes/objects/path.class";
 import { KrtizelSelectionBox } from "../classes/objects/selection-box.class";
 import { KritzelSelectionGroup } from "../classes/objects/selection-group.class";
 import { KritzelText } from "../classes/objects/text.class";
-import { KritzelOctree } from "../classes/structures/octree.structure";
+import { KritzelObjectMap } from "../classes/structures/object-map.structure";
 import { KritzelBaseTool } from "../classes/tools/base-tool.class";
+import { KritzelWorkspace } from "../classes/core/workspace.class";
 import { KritzelHandleType } from "../enums/handle-type.enum";
 import { ContextMenuItem } from "./context-menu-item.interface";
 import { KritzelDebugInfo } from "./debug-info.interface";
 
 export interface KritzelEngineState {
+  activeWorkspace: KritzelWorkspace;
   activeTool: KritzelBaseTool;
   activeText: KritzelText;
   currentPath?: KritzelPath;
   copiedObjects?: KritzelSelectionGroup;
-  objectsOctree: KritzelOctree<KritzelBaseObject<Element>>;
+  objectsMap: KritzelObjectMap<KritzelBaseObject<Element>>;
   selectionBox?: KrtizelSelectionBox;
   selectionGroup?: KritzelSelectionGroup;
   resizeHandleType: KritzelHandleType;
@@ -23,7 +25,6 @@ export interface KritzelEngineState {
   isEnabled: boolean;
   isScaling: boolean;
   isPanning: boolean;
-  isFocused: boolean;
   isSelecting: boolean;
   isResizing: boolean;
   isResizeHandleSelected: boolean;
@@ -61,4 +62,5 @@ export interface KritzelEngineState {
   longTouchTimeout: number;
   longTouchDelay: number;
   pointers: Map<number, PointerEvent>;
+  workspaces: KritzelWorkspace[];
 }

@@ -70,6 +70,49 @@ Type: `Promise<void>`
 
 
 
+### `createWorkspace(name: string, viewport?: { translateX: number; translateY: number; scale: number; }) => Promise<KritzelWorkspace | null>`
+
+
+
+#### Parameters
+
+| Name       | Type                                                         | Description |
+| ---------- | ------------------------------------------------------------ | ----------- |
+| `name`     | `string`                                                     |             |
+| `viewport` | `{ translateX: number; translateY: number; scale: number; }` |             |
+
+#### Returns
+
+Type: `Promise<KritzelWorkspace>`
+
+
+
+### `deleteWorkspace(workspace: KritzelWorkspace) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name        | Type               | Description |
+| ----------- | ------------------ | ----------- |
+| `workspace` | `KritzelWorkspace` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `getActiveWorkspace() => Promise<KritzelWorkspace>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelWorkspace>`
+
+
+
 ### `getObjectById<T extends KritzelBaseObject>(id: string) => Promise<T | null>`
 
 
@@ -93,6 +136,16 @@ Type: `Promise<T>`
 #### Returns
 
 Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
+
+
+
+### `getWorkspaces() => Promise<KritzelWorkspace[]>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelWorkspace[]>`
 
 
 
@@ -155,19 +208,45 @@ Type: `Promise<T>`
 
 
 
+### `updateWorkspace(workspace: KritzelWorkspace) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name        | Type               | Description |
+| ----------- | ------------------ | ----------- |
+| `workspace` | `KritzelWorkspace` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 
 ## Dependencies
 
 ### Depends on
 
+- [kritzel-workspace-manager](../../ui/kritzel-workspace-manager)
 - [kritzel-engine](../kritzel-engine)
 - [kritzel-controls](../../ui/kritzel-controls)
 
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-editor --> kritzel-workspace-manager
   kritzel-editor --> kritzel-engine
   kritzel-editor --> kritzel-controls
+  kritzel-workspace-manager --> kritzel-split-button
+  kritzel-split-button --> kritzel-icon
+  kritzel-split-button --> kritzel-portal
+  kritzel-split-button --> kritzel-menu
+  kritzel-menu --> kritzel-menu-item
+  kritzel-menu-item --> kritzel-icon
+  kritzel-menu-item --> kritzel-portal
+  kritzel-menu-item --> kritzel-menu
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-cursor-trail
   kritzel-context-menu --> kritzel-icon
@@ -179,12 +258,9 @@ graph TD;
   kritzel-controls --> kritzel-color
   kritzel-controls --> kritzel-font
   kritzel-utility-panel --> kritzel-icon
-  kritzel-control-brush-config --> kritzel-brush-style
-  kritzel-control-brush-config --> kritzel-icon
   kritzel-control-brush-config --> kritzel-color-palette
+  kritzel-control-brush-config --> kritzel-icon
   kritzel-control-brush-config --> kritzel-stroke-size
-  kritzel-brush-style --> kritzel-dropdown
-  kritzel-brush-style --> kritzel-icon
   kritzel-color-palette --> kritzel-color
   kritzel-stroke-size --> kritzel-color
   kritzel-control-text-config --> kritzel-font-family

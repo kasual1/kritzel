@@ -1,4 +1,5 @@
-import { Component, Host, Prop, h, Element, State, Listen } from '@stencil/core';
+import { Component, Host, Prop, h, Element, State, Listen, Method, Event, EventEmitter } from '@stencil/core';
+import { KritzelHTMLHelper } from '../../../helpers/html.helper';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -8,34 +9,44 @@ const MOBILE_BREAKPOINT = 768;
   shadow: true,
 })
 export class KritzelTooltip {
-  @Prop()
-  isVisible: boolean = false;
+  @Element() host: HTMLElement;
 
-  @Prop()
-  anchorElement: HTMLElement;
+  @Prop() isVisible: boolean = false;
+  @Prop() anchorElement: HTMLElement;
+  @Prop() arrowSize: number = 8;
+  @Prop() offsetY: number = 24;
 
-  @Prop()
-  arrowSize: number = 8;
+  @Event() tooltipClosed: EventEmitter<void>;
 
-  @Prop()
-  offsetY: number = 24;
+  @State() positionX: number = 0;
+  @State() arrowOffset: string = '0px';
+  @State() isMobileView: boolean = window.innerWidth < MOBILE_BREAKPOINT;
 
-  @Element()
-  el: HTMLElement;
-
-  @State()
-  positionX: number = 0;
-
-  @State()
-  arrowOffset: string = '0px';
-
-  @State()
-  private isMobileView: boolean = window.innerWidth < MOBILE_BREAKPOINT;
+  @Listen('click', { target: 'document' })
+  handleOutsideClick(event: MouseEvent) {
+    if( !this.isVisible ) return;
+    const target = event.target as HTMLElement;
+    if (!this.host.contains(target)) {
+      this.tooltipClosed.emit();
+    }
+  }
 
   @Listen('resize', { target: 'window' })
   handleWindowResize() {
     this.isMobileView = window.innerWidth < MOBILE_BREAKPOINT;
     this.calculateAdjustedPosition();
+  }
+
+  @Method()
+  async focusContent() {
+    const focusableElements = KritzelHTMLHelper.getFocusableElements(this.host);
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus();
+    }
+  }
+
+  componentDidLoad() {
+    this.focusSlottedContent();
   }
 
   componentWillLoad() {
@@ -47,10 +58,19 @@ export class KritzelTooltip {
     this.calculateAdjustedPosition();
   }
 
+  private focusSlottedContent() {
+    const slot = this.host.shadowRoot?.querySelector('slot');
+    const assignedElements = slot?.assignedElements() || [];
+    if (assignedElements.length > 0) {
+      const firstElement = assignedElements[0] as HTMLElement;
+      firstElement.focus();
+    }
+  }
+
   private calculateAdjustedPosition() {
     if (this.isVisible && this.anchorElement) {
       const anchorRect = this.anchorElement.getBoundingClientRect();
-      const tooltipContent = this.el.shadowRoot?.querySelector('.tooltip-content') as HTMLElement;
+      const tooltipContent = this.host.shadowRoot?.querySelector('.tooltip-content') as HTMLElement;
 
       if (!this.isMobileView) {
         this.positionX = anchorRect.left + anchorRect.width / 2;

@@ -34,9 +34,14 @@
   box-sizing: border-box;
 }
 
-.color-container:hover {
-  background-color: var(--kritzel-color-palette-hover-background-color, #f0f0f0);
+.color-container:focus-visible {
+  outline: var(--kritzel-color-palette-focus-outline, 2px auto #e3e3e3);
 }
+
+.color-container:hover {
+  background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
+}
+
 
 .color-container.selected {
   border-color: var(--kritzel-selection-border-color, #007AFF);

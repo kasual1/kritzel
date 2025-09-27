@@ -6,20 +6,12 @@ import { Component, Host, h, Prop, EventEmitter, Event } from '@stencil/core';
   shadow: true,
 })
 export class KritzelColorPalette {
-  @Prop()
-  colors: string[] = [];
+  @Prop() colors: string[] = [];
+  @Prop({ mutable: true }) selectedColor: string | null = null;
+  @Prop() isExpanded: boolean = false;
+  @Prop() isOpaque: boolean = false;
 
-  @Prop({ mutable: true })
-  selectedColor: string | null = null;
-
-  @Prop()
-  isExpanded: boolean = false;
-
-  @Prop()
-  isOpaque: boolean = false;
-
-  @Event()
-  colorChange: EventEmitter<string>;
+  @Event() colorChange: EventEmitter<string>;
 
   private handleColorClick(color: string) {
     this.selectedColor = color;
@@ -46,11 +38,12 @@ export class KritzelColorPalette {
             'expanded': this.isExpanded,
           }}
           style={{
-            height: expandedHeight
+            height: expandedHeight,
           }}
         >
           {displayedColors.map(color => (
             <div
+              tabIndex={0}
               class={{
                 'color-container': true,
                 'selected': this.selectedColor === color,

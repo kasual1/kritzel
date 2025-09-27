@@ -22,10 +22,6 @@
 
 ## Dependencies
 
-### Used by
-
- - [kritzel-control-brush-config](../../ui/kritzel-control-brush-config)
-
 ### Depends on
 
 - [kritzel-dropdown](../kritzel-dropdown)
@@ -36,7 +32,6 @@
 graph TD;
   kritzel-brush-style --> kritzel-dropdown
   kritzel-brush-style --> kritzel-icon
-  kritzel-control-brush-config --> kritzel-brush-style
   style kritzel-brush-style fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

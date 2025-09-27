@@ -6,14 +6,10 @@ import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
   shadow: true,
 })
 export class KritzelStrokeSize {
-  @Prop() 
-  sizes: number[] = [4, 6, 8, 12, 16, 24];
+  @Prop() sizes: number[] = [4, 6, 8, 12, 16, 24];
+  @Prop({ mutable: true }) selectedSize: number | null = null;
 
-  @Prop({ mutable: true }) 
-  selectedSize: number | null = null;
-
-  @Event() 
-  sizeChange: EventEmitter<number>;
+  @Event() sizeChange: EventEmitter<number>;
 
   private handleSizeClick(size: number) {
     this.selectedSize = size;
@@ -25,6 +21,7 @@ export class KritzelStrokeSize {
       <Host>
         {this.sizes.map(size => (
           <div
+            tabIndex={0}
             class={{
               'size-container': true,
               'selected': this.selectedSize === size,

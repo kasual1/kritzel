@@ -14,6 +14,10 @@
   color: var(--kritzel-color-palette-expand-toggle-color, #666666);
 }
 
+.expand-toggle:focus-visible {
+  outline: var(--kritzel-color-palette-focus-outline, 2px auto #e3e3e3);
+}
+
 .expand-toggle:hover {
   color: var(--kritzel-color-palette-expand-toggle-hover-color, #333333);
 }

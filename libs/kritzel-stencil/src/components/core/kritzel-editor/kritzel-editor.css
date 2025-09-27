@@ -17,8 +17,18 @@ kritzel-editor{
   user-select: none;           
 }
 
+kritzel-workspace-manager {
+  position: absolute;
+  top: var(--kritzel-editor-workspace-manager-top, 14px);
+  left: var(--kritzel-editor-workspace-manager-left, 14px);
+}
 
 kritzel-controls {
   position: absolute;
-  bottom: 28px;
+  bottom: var(--kritzel-editor-controls-bottom, 14px);
+  transition: transform var(--kritzel-editor-controls-transition-duration, 0.1s) var(--kritzel-editor-controls-transition, ease-in-out);
+}
+
+kritzel-controls.keyboard-open {
+  transform: var(--kritzel-editor-controls-transform, translateY(300%));
 }

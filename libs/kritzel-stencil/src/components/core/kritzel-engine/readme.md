@@ -14,14 +14,17 @@
 | `objectContextMenuItems` | `object-context-menu-items` |             | `ContextMenuItem[]` | `undefined`          |
 | `scaleMax`               | `scale-max`                 |             | `number`            | `ABSOLUTE_SCALE_MAX` |
 | `scaleMin`               | `scale-min`                 |             | `number`            | `ABSOLUTE_SCALE_MIN` |
+| `workspace`              | `workspace`                 |             | `KritzelWorkspace`  | `undefined`          |
 
 
 ## Events
 
-| Event              | Description | Type                           |
-| ------------------ | ----------- | ------------------------------ |
-| `activeToolChange` |             | `CustomEvent<KritzelBaseTool>` |
-| `isEngineReady`    |             | `CustomEvent<void>`            |
+| Event              | Description | Type                              |
+| ------------------ | ----------- | --------------------------------- |
+| `activeToolChange` |             | `CustomEvent<KritzelBaseTool>`    |
+| `isEngineReady`    |             | `CustomEvent<KritzelEngineState>` |
+| `longpress`        |             | `CustomEvent<PointerEvent>`       |
+| `workspacesChange` |             | `CustomEvent<KritzelWorkspace[]>` |
 
 
 ## Methods
@@ -126,9 +129,41 @@ Type: `Promise<void>`
 
 
 
+### `createWorkspace(workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>`
+
+
+
+#### Parameters
+
+| Name        | Type               | Description |
+| ----------- | ------------------ | ----------- |
+| `workspace` | `KritzelWorkspace` |             |
+
+#### Returns
+
+Type: `Promise<KritzelWorkspace>`
+
+
+
 ### `delete() => Promise<void>`
 
 
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `deleteWorkspace(workspace: KritzelWorkspace) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name        | Type               | Description |
+| ----------- | ------------------ | ----------- |
+| `workspace` | `KritzelWorkspace` |             |
 
 #### Returns
 
@@ -153,6 +188,16 @@ Type: `Promise<void>`
 #### Returns
 
 Type: `Promise<void>`
+
+
+
+### `getActiveWorkspace() => Promise<KritzelWorkspace>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelWorkspace>`
 
 
 
@@ -189,6 +234,16 @@ Type: `Promise<T>`
 #### Returns
 
 Type: `Promise<KritzelBaseObject<any>[]>`
+
+
+
+### `getWorkspaces() => Promise<KritzelWorkspace[]>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelWorkspace[]>`
 
 
 
@@ -321,16 +376,6 @@ Type: `Promise<void>`
 
 
 
-### `setFocus() => Promise<void>`
-
-
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
 ### `undo() => Promise<void>`
 
 
@@ -355,6 +400,22 @@ Type: `Promise<void>`
 #### Returns
 
 Type: `Promise<T>`
+
+
+
+### `updateWorkspace(workspace: KritzelWorkspace) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name        | Type               | Description |
+| ----------- | ------------------ | ----------- |
+| `workspace` | `KritzelWorkspace` |             |
+
+#### Returns
+
+Type: `Promise<void>`
 
 
 

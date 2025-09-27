@@ -1,11 +1,12 @@
 import { KritzelEngineState } from "../interfaces/engine-state.interface";
 
 export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
+  activeWorkspace: null,
   activeTool: null,
   activeText: null,
   currentPath: null,
   copiedObjects: null,
-  objectsOctree: null,
+  objectsMap: null,
   selectionBox: null,
   selectionGroup: null,
   resizeHandleType: null,
@@ -14,7 +15,6 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   isEnabled: true,
   isScaling: false,
   isPanning: false,
-  isFocused: false,
   isSelecting: false,
   isResizing: false,
   isResizeHandleSelected: false,
@@ -34,6 +34,7 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
     showObjectInfo: false,
     showViewportInfo: false,
     logCommands: false,
+    logDatabase: false,
   },
   host: null,
   pointerX: 0,
@@ -41,7 +42,7 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   scale: 1,
   scaleMax: 1,
   scaleMin: 1,
-  scaleStep: 0.05,
+  scaleStep: 0.075,
   startX: 0,
   startY: 0,
   translateX: 0,
@@ -55,5 +56,6 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   historyBufferSize: 1000,
   longTouchTimeout: null,
   longTouchDelay: 300,
-  pointers: new Map<number, PointerEvent>()
+  pointers: new Map<number, PointerEvent>(),
+  workspaces: [],
 };

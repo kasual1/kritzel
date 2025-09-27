@@ -1,6 +1,6 @@
 export interface KritzelCommand {
     initiator: string;
-    isUndoable: boolean;
+    skipHistory: boolean;
     execute(): void;
     undo?(): void;
 }

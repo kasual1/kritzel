@@ -18,11 +18,15 @@
   box-sizing: border-box;
 }
 
+.size-container:focus-visible {
+  outline: var(--kritzel-stroke-size-focus-outline, 2px auto #e3e3e3);
+}
+
 .size-container:hover {
-  background-color: var(--kritzel-stroke-size-hover-background-color, #f0f0f0);
+  background-color: var(--kritzel-stroke-size-hover-background-color, #ebebeb);
 }
 
 .size-container.selected {
   border-color: var(--kritzel-selection-border-color, #007AFF);
-  background-color: var(--kritzel-stroke-size-selected-background-color, #f0f0f0);
+  background-color: var(--kritzel-stroke-size-selected-background-color, #ebebeb);
 }

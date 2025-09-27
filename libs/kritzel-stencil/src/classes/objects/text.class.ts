@@ -1,7 +1,8 @@
+import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelToolRegistry } from '../registries/tool.registry';
-import { KritzelStore } from '../store.class';
 import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
+import { KritzelCore } from '../core/core.class';
 
 export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   override __class__: string = 'KritzelText';
@@ -19,7 +20,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   readonly rows: number = 1;
 
   get isReadonly(): boolean {
-    return !(this._store.state.activeTool instanceof KritzelTextTool);
+    return !(this._core.store.state.activeTool instanceof KritzelTextTool);
   }
 
   constructor(config?: {
@@ -48,21 +49,23 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     }
   }
 
-  static override create(store: KritzelStore, fontSize?: number, fontFamily?: string): KritzelText {
+  static override create(core: KritzelCore, fontSize?: number, fontFamily?: string): KritzelText {
     const object = new KritzelText();
 
-    object._store = store;
+    object._core = core;
+    object.id = object.generateId();
+    object.workspaceId = core.store.state.activeWorkspace.id
     object.fontSize = fontSize;
     object.fontFamily = fontFamily;
     object.translateX = 0;
     object.translateY = 0;
-    object.width = object.initialWidth / (object._store.state.scale < 0 ? object._store.state.scale : 1);
-    object.height = (object.fontSize * 1.2) / (object._store.state.scale < 0 ? object._store.state.scale : 1);
+    object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
+    object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.padding = 5;
     object.backgroundColor = 'transparent';
-    object.scale = object._store.state.scale;
+    object.scale = object._core.store.state.scale;
     object.value = ' ';
-    object.zIndex = store.currentZIndex;
+    object.zIndex = core.store.currentZIndex;
 
     return object;
   }
@@ -107,10 +110,10 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       this.value = target.value.trim();
     }
 
-    this.adjustTextareaSize();
+    this.updateTextareaDimensions();
   }
 
-  adjustTextareaSize() {
+  updateTextareaDimensions() {
     if (this.elementRef) {
       const span = document.createElement('span');
       span.style.position = 'absolute';
@@ -129,7 +132,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       this.width = textWidth;
       this.height = textHeight;
 
-      this._store.rerender();
+      this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, { ...this }));
     }
   }
 
@@ -158,7 +161,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
 
           this.elementRef.selectionStart = this.elementRef.selectionEnd = start + text.length;
           this.value = this.elementRef.value;
-          this.adjustTextareaSize();
+          this.updateTextareaDimensions();
         });
       } catch (err) {
         console.error('Failed to read clipboard contents:', err);
@@ -167,11 +170,11 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   }
 
   edit(): void {
-    this._store.setState('activeTool', KritzelToolRegistry.getTool('text'));
-    this._store.state.selectionGroup = null;
-    this._store.state.selectionBox = null;
-    this._store.state.activeText = this;
-
+    this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
+    this._core.store.setState('selectionGroup', null);
+    this._core.store.setState('selectionBox', null);
+    this._core.store.setState('activeText', this);
+ 
     setTimeout(() => {
       this.focus();
     }, 300);

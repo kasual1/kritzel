@@ -1,6 +1,11 @@
-import { Component, Host, h, Prop, Event, EventEmitter, Element, State, Watch } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter, State, Watch, Listen, Element } from '@stencil/core';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
+
+interface ProcessedMenuItem {
+  item: ContextMenuItem;
+  isDisabled: boolean;
+}
 
 @Component({
   tag: 'kritzel-context-menu',
@@ -8,111 +13,79 @@ import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
   shadow: true,
 })
 export class KritzelContextMenu {
-  @Prop()
-  items: ContextMenuItem[];
+  @Element() host: HTMLElement;
 
-  @Prop()
-  objects: KritzelBaseObject[];
-
-  @Event()
-  actionSelected: EventEmitter<ContextMenuItem>;
-
-  @Element()
-  hostElement: HTMLElement;
-
-  @State()
-  private disabledStates: Map<number, boolean> = new Map();
-
-  @State()
-  private visibleItems: ContextMenuItem[] = [];
-
-  componentWillLoad() {
-    this.resolveVisibleItems();
-    this.resolveDisabledStates();
-  }
-
-
+  @Prop() items: ContextMenuItem[];
   @Watch('items')
   onItemsChanged() {
-    this.resolveVisibleItems();
-    this.resolveDisabledStates();
+    this.updateMenuItems();
   }
 
-  private handleItemClick(item: ContextMenuItem, index: number) {
-    if (!this.disabledStates.get(index)) {
+  @Prop() objects: KritzelBaseObject[];
+
+  @Event() actionSelected: EventEmitter<ContextMenuItem>;
+  @Event() close: EventEmitter<void>;
+
+  @State() private processedItems: ProcessedMenuItem[] = [];
+
+  @Listen('pointerdown', { target: 'window' })
+  handleOutsideClick(event: MouseEvent) {
+    event.preventDefault();
+    const path = event.composedPath();
+    if (!path.includes(this.host)) {
+      this.close.emit();
+    }
+  }
+
+  componentWillLoad() {
+    this.updateMenuItems();
+  }
+
+  private handleItemClick(item: ContextMenuItem, isDisabled: boolean) {
+    if (!isDisabled) {
       this.actionSelected.emit(item);
     }
   }
 
-  private async resolveVisibleItems() {
-    const visibleItems: ContextMenuItem[] = [];
-    const visibilityPromises = this.items.map(async (item, index) => {
-      let isVisible = true;
-      if (item.visible !== undefined) {
-        if (typeof item.visible === 'boolean') {
-          isVisible = item.visible;
-        } else if (typeof item.visible === 'function') {
-          const result = item.visible(null, this.objects);
-          if (result instanceof Promise) {
-            isVisible = await result;
-          } else {
-            isVisible = result;
-          }
-        }
-      }
-      return { item, index, isVisible };
-    });
+  private async updateMenuItems() {
+    const processed: ProcessedMenuItem[] = [];
 
-    const visibilityResults = await Promise.all(visibilityPromises);
-    visibilityResults.forEach(({ item, isVisible }) => {
+    for (const item of this.items) {
+      const isVisible = await this.evaluateProperty(item.visible, true);
       if (isVisible) {
-        visibleItems.push(item);
+        const isDisabled = await this.evaluateProperty(item.disabled, false);
+        processed.push({ item, isDisabled });
       }
-    });
+    }
 
-    this.visibleItems = visibleItems;
+    this.processedItems = processed;
   }
 
-  private async resolveDisabledStates() {
-    const newStates = new Map<number, boolean>();
-    const disabledPromises = this.visibleItems.map(async (item, index) => {
-      let isDisabled = false;
-      if (typeof item.disabled === 'boolean') {
-        isDisabled = item.disabled;
-      } else if (typeof item.disabled === 'function') {
-        const result = item.disabled(null, this.objects);
-        if (result instanceof Promise) {
-          isDisabled = await result;
-        } else {
-          isDisabled = result;
-        }
-      }
-      newStates.set(index, isDisabled);
-    });
-
-    await Promise.all(disabledPromises);
-    this.disabledStates = new Map(newStates);
+  private async evaluateProperty(value: boolean | ((obj: KritzelBaseObject, objs: KritzelBaseObject[]) => boolean | Promise<boolean>), defaultValue: boolean): Promise<boolean> {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+    if (typeof value === 'function') {
+      return await Promise.resolve(value(null, this.objects));
+    }
+    return defaultValue;
   }
 
   render() {
     return (
       <Host>
         <div class="menu-container">
-          {this.visibleItems.map((item, index) => {
-            const isDisabled = this.disabledStates.get(index) ?? false;
-            return (
-              <button
-                key={`${item.label}-${index}`}
-                class={{ 'menu-item': true, 'disabled': isDisabled }}
-                onClick={() => this.handleItemClick(item, index)}
-                onTouchStart={() => this.handleItemClick(item, index)}
-                disabled={isDisabled}
-              >
-                {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
-                <span class="label">{item.label}</span>
-              </button>
-            );
-          })}
+          {this.processedItems.map(({ item, isDisabled }, index) => (
+            <button
+              key={`${item.label}-${index}`}
+              class={{ 'menu-item': true, 'disabled': isDisabled }}
+              onClick={() => this.handleItemClick(item, isDisabled)}
+              disabled={isDisabled}
+            >
+              {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
+              <span class="label">{item.label}</span>
+            </button>
+          ))}
         </div>
       </Host>
     );

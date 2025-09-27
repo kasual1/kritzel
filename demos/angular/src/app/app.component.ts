@@ -1,12 +1,5 @@
 import { Component } from '@angular/core';
-import {
-  DEFAULT_BRUSH_CONFIG,
-  KritzelBrushTool,
-  KritzelEditor,
-  KritzelImage,
-  KritzelSelectionTool,
-  KritzelToolbarControl,
-} from 'kritzel-angular';
+import { KritzelEditor, KritzelImage } from 'kritzel-angular';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +15,7 @@ export class AppComponent {
     this.kritzelEditor = event.detail;
 
     const img = new Image();
-    img.src = "https://placehold.co/600x400";
+    img.src = 'https://placehold.co/600x400';
 
     await new Promise<void>((resolve) => {
       img.onload = () => resolve();
@@ -40,7 +33,11 @@ export class AppComponent {
     image.width = scaledWidth;
     image.height = scaledHeight;
 
-    this.kritzelEditor.addObject(image);
+    const workspace = await this.kritzelEditor.getActiveWorkspace();
+
+    
+    workspace?.addObject(image);
+
     this.kritzelEditor.centerObjectInViewport(image);
     this.kritzelEditor.selectAllObjectsInViewport();
   }

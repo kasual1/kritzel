@@ -4,6 +4,11 @@
   user-select: none;
 }
 
+:host(.mobile) {
+  --kritzel-controls-control-hover-background-color: transparent;
+  --kritzel-controls-control-active-background-color: transparent;
+}
+
 .kritzel-controls {
   display: flex;
   flex-direction: row;
@@ -15,7 +20,7 @@
   background-color: var(--kritzel-controls-background-color, #ffffff);
   border-radius: var(--kritzel-controls-border-radius, 16px);
   box-shadow: var(--kritzel-controls-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
-  border: var(--kritzel-controls-border, 1px solid #f0f0f0);
+  border: var(--kritzel-controls-border, 1px solid #ebebeb);
   z-index: 10000;
   position: relative;
 }
@@ -35,20 +40,13 @@
   font-weight: bold;
 }
 
+.kritzel-control:focus,
 .kritzel-control:hover {
   background-color: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
-:host(.mobile) .kritzel-control:hover {
-  background-color: unset;
-}
-
 .kritzel-control:active {
   background-color: var(--kritzel-controls-control-active-background-color, hsl(0, 0%, 0%, 8.6%));
-}
-
-:host(.mobile) .kritzel-control:active {
-  background-color: unset;
 }
 
 .kritzel-control.selected,
@@ -56,6 +54,11 @@
 .kritzel-control.selected:active {
   background-color: var(--kritzel-controls-control-selected-background-color, #007AFF) !important;
   color: var(--kritzel-controls-control-selected-color, #ffffff) !important;
+}
+
+.kritzel-control.selected:focus {
+    background-color: var(--kritzel-controls-control-selected-background-color, #007bffe3) !important;
+
 }
 
 .kritzel-divider {
@@ -80,6 +83,11 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  border-radius: 50%;
+}
+
+.kritzel-config:focus {
+  outline: var(--kritzel-menu-focus-outline, 2px solid #e3e3e3);
 }
 
 .color-container {
@@ -92,7 +100,7 @@
   cursor: pointer;
   border: 2px solid transparent;
   box-sizing: border-box;
-  background-color: var(--kritzel-color-palette-hover-background-color, #f0f0f0);
+  background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
 }
 
 .font-container {
@@ -105,7 +113,7 @@
   cursor: pointer;
   border: 2px solid transparent;
   box-sizing: border-box;
-  background-color: var(--kritzel-color-palette-hover-background-color, #f0f0f0);
+  background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
 }
 
 .no-config {
@@ -117,7 +125,7 @@
 
 kritzel-tooltip {
   position: fixed;
-  bottom: 66px;
+  bottom: 56px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10001;

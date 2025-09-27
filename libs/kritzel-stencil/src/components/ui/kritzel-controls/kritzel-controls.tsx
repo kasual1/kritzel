@@ -14,38 +14,20 @@ type ToolConfig = Record<string, any>;
   assetsDirs: ['../assets'],
 })
 export class KritzelControls {
-  @Prop()
-  controls: KritzelToolbarControl[] = [];
+  @Element() host!: HTMLElement;
 
-  @Prop({ mutable: true })
-  activeControl: KritzelToolbarControl | null = null;
+  @Prop() controls: KritzelToolbarControl[] = [];
+  @Prop({ mutable: true }) activeControl: KritzelToolbarControl | null = null;
+  @Prop() isUtilityPanelVisible: boolean = true;
 
-  @Prop()
-  isUtilityPanelVisible: boolean = true;
+  @Event() isControlsReady: EventEmitter<void>;
 
-  @Event()
-  isControlsReady: EventEmitter<void>;
-
-  @State()
-  firstConfig: ToolConfig | null = null;
-
-  @State()
-  isTooltipVisible: boolean = false;
-
-  @State()
-  isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
-
-  @Element()
-  host!: HTMLElement;
-
-  @Listen('activeToolChange', { target: 'document' })
-  async handleActiveToolChange(event: CustomEvent) {
-    this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
-    await this.kritzelEngine?.setFocus();
-  }
+  @State() firstConfig: ToolConfig | null = null;
+  @State() isTooltipVisible: boolean = false;
+  @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
 
   @Listen('click', { target: 'document' })
-  handleClick(event: MouseEvent) {
+  handleDocumentClick(event: MouseEvent) {
     const element = event.target as HTMLElement;
 
     if (!this.kritzelEngine || element.closest('.kritzel-tooltip')) {
@@ -53,16 +35,29 @@ export class KritzelControls {
     }
 
     this.isTooltipVisible = false;
-    this.kritzelEngine.enable();
+  }
+
+  @Listen('keydown', { target: 'window' })
+  handleKeyDown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.closeTooltip();
+      this.kritzelEngine?.enable();
+    }
+  }
+
+  @Listen('activeToolChange', { target: 'document' })
+  async handleActiveToolChange(event: CustomEvent) {
+    this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
   }
 
   @Method()
   async closeTooltip() {
     this.isTooltipVisible = false;
-    this.kritzelEngine?.enable();
   }
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
+  tooltipRef: HTMLKritzelTooltipElement | null = null;
 
   get activeToolAsTextTool() {
     return this.activeControl?.tool as KritzelTextTool;
@@ -119,12 +114,25 @@ export class KritzelControls {
   private handleConfigClick(event: MouseEvent) {
     event.stopPropagation();
     this.isTooltipVisible = !this.isTooltipVisible;
-    this.kritzelEngine.disable();
+    if(this.isTooltipVisible){
+      this.kritzelEngine?.disable();
+    } else {
+      this.kritzelEngine?.enable();
+    }
+
+    setTimeout(() => {
+      this.tooltipRef?.focusContent();
+    }, 100);
   }
 
   private async handleToolChange(event: CustomEvent) {
     this.activeControl = { ...this.activeControl, tool: event.detail };
     await this.kritzelEngine.changeActiveTool((this.activeControl as any).tool);
+  }
+
+  private handleTooltipClosed() {
+    this.isTooltipVisible = false;
+    this.kritzelEngine?.enable();
   }
 
   render() {
@@ -173,7 +181,12 @@ export class KritzelControls {
             if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
                 <div class="kritzel-config-container" key={control.name}>
-                  <kritzel-tooltip isVisible={this.isTooltipVisible} anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}>
+                  <kritzel-tooltip
+                    ref={el => (this.tooltipRef = el)}
+                    isVisible={this.isTooltipVisible}
+                    anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}
+                    onTooltipClosed={() => this.handleTooltipClosed()}
+                  >
                     <div style={{ width: '294px', height: '100%' }}>
                       {this.activeControl.name === 'brush' && (
                         <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
@@ -186,8 +199,14 @@ export class KritzelControls {
                   </kritzel-tooltip>
 
                   <div
+                    tabIndex={0}
                     class="kritzel-config"
                     onClick={event => this.handleConfigClick?.(event)}
+                    onKeyDown={event => {
+                      if (event.key === 'Enter') {
+                        this.handleConfigClick?.(event as any);
+                      }
+                    }}
                     style={{
                       cursor: this.activeControl.config ? 'pointer' : 'default',
                       pointerEvents: hasNoConfig ? 'none' : 'auto',

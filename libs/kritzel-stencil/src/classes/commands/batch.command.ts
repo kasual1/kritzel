@@ -1,10 +1,11 @@
+import { KritzelCore } from "../core/core.class";
 import { KritzelBaseCommand } from "./base.command";
 
 export class BatchCommand extends KritzelBaseCommand {
     private commands: KritzelBaseCommand[];
-    
-    constructor(store, initiator: any,  commands: KritzelBaseCommand[]) {
-        super(store, initiator);
+
+    constructor(core: KritzelCore, initiator: any,  commands: KritzelBaseCommand[], skipHistory = false) {
+        super(core, initiator, skipHistory);
         this.commands = commands;
     }
     

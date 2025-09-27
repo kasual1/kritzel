@@ -2,17 +2,18 @@ import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
 import { KritzelObject } from '../../interfaces/object.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
-import { KritzelStore } from '../store.class';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
+import { KritzelCore } from '../core/core.class';
 
 export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable {
   __class__: string = 'KritzelBaseObject';
 
-  _store: KritzelStore;
+  _core: KritzelCore;
   _elementRef: T;
 
   id: string;
+  workspaceId: string;
   x: number;
   y: number;
   translateX: number;
@@ -150,11 +151,12 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.id = this.generateId();
   }
 
-  static create(store: KritzelStore): KritzelBaseObject<Element> {
+  static create(core: KritzelCore): KritzelBaseObject<Element> {
     const object = new KritzelBaseObject();
 
-    object._store = store;
-    object.zIndex = store.currentZIndex;
+    object._core = core;
+    object.zIndex = core.store.currentZIndex;
+    object.workspaceId = core.store.state.activeWorkspace.id;
 
     return object;
   }
@@ -190,11 +192,11 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
   isInViewport(): boolean {
     const viewportBounds: KritzelBoundingBox = {
-      x: -this._store.state.translateX / this._store.state.scale,
-      y: -this._store.state.translateY / this._store.state.scale,
-      z: this._store.state.scale,
-      width: this._store.state.viewportWidth / this._store.state.scale,
-      height: this._store.state.viewportHeight / this._store.state.scale,
+      x: -this._core.store.state.translateX / this._core.store.state.scale,
+      y: -this._core.store.state.translateY / this._core.store.state.scale,
+      z: this._core.store.state.scale,
+      width: this._core.store.state.viewportWidth / this._core.store.state.scale,
+      height: this._core.store.state.viewportHeight / this._core.store.state.scale,
       depth: 100,
     };
 
@@ -207,14 +209,14 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   centerInViewport(): void {
-    const scale = this._store.state.scale;
-    this.translateX = (this._store.state.viewportWidth / 2 - this.totalWidth / 2 - this._store.state.translateX) / scale;
-    this.translateY = (this._store.state.viewportHeight / 2 - this.totalHeight / 2 - this._store.state.translateY) / scale;
+    const scale = this._core.store.state.scale;
+    this.translateX = (this._core.store.state.viewportWidth / 2 - this.totalWidth / 2 - this._core.store.state.translateX) / scale;
+    this.translateY = (this._core.store.state.viewportHeight / 2 - this.totalHeight / 2 - this._core.store.state.translateY) / scale;
   }
 
   move(startX: number, startY: number, endX: number, endY: number): void {
-    const deltaX = (startX - endX) / this._store.state.scale;
-    const deltaY = (startY - endY) / this._store.state.scale;
+    const deltaX = (startX - endX) / this._core.store.state.scale;
+    const deltaY = (startY - endY) / this._core.store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
@@ -247,7 +249,13 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     // This method can be overridden by subclasses to handle click events when the object is selected.
   }
 
-  revive(object: any): KritzelBaseObject<T> {
+  serialize() {
+    return {
+      ...ObjectHelper.clone(this)
+    };
+  }
+
+  deserialize(object: any): KritzelBaseObject<T> {
     Object.assign(this, object);
     return this;
   }
@@ -272,7 +280,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   updatePosition(x: number, y: number): void {
     this.translateX = x;
     this.translateY = y;
-    this._store.state.objectsOctree.update(this);
+    this._core.store.state.objectsMap.update(this);
   }
 
 }

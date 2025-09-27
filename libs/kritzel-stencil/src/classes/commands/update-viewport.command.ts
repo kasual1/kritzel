@@ -1,7 +1,7 @@
+import { KritzelCore } from '../core/core.class';
 import { KritzelBaseCommand } from './base.command';
 
 export class UpdateViewportCommand extends KritzelBaseCommand {
-
   currentViewport: {
     scale: number;
     translateX: number;
@@ -14,29 +14,34 @@ export class UpdateViewportCommand extends KritzelBaseCommand {
     translateY: number;
   };
 
-  constructor(store, initiator: any,  previousViewport: {
-    scale: number;
-    translateX: number;
-    translateY: number;
-  }) {
-    super(store, initiator);
-    this.previousViewport = previousViewport
+  constructor(
+    core: KritzelCore,
+    initiator: any,
+    previousViewport: {
+      scale: number;
+      translateX: number;
+      translateY: number;
+    },
+    skipHistory = false,
+  ) {
+    super(core, initiator, skipHistory);
+    this.previousViewport = previousViewport;
     this.currentViewport = {
-      scale: this._store.state.scale,
-      translateX: this._store.state.translateX,
-      translateY: this._store.state.translateY,
+      scale: this._core.store.state.scale,
+      translateX: this._core.store.state.translateX,
+      translateY: this._core.store.state.translateY,
     };
   }
 
   execute(): void {
-    this._store.state.scale = this.currentViewport.scale;
-    this._store.state.translateX = this.currentViewport.translateX;
-    this._store.state.translateY = this.currentViewport.translateY;  
+    this._core.store.setState('scale', this.currentViewport.scale);
+    this._core.store.setState('translateX', this.currentViewport.translateX);
+    this._core.store.setState('translateY', this.currentViewport.translateY);
   }
 
   undo(): void {
-    this._store.state.scale = this.previousViewport.scale;
-    this._store.state.translateX = this.previousViewport.translateX;
-    this._store.state.translateY = this.previousViewport.translateY;
+    this._core.store.setState('scale', this.previousViewport.scale);
+    this._core.store.setState('translateX', this.previousViewport.translateX);
+    this._core.store.setState('translateY', this.previousViewport.translateY);
   }
 }

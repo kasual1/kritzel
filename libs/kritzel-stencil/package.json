@@ -1,6 +1,6 @@
 {
   "name": "kritzel-stencil",
-  "version": "0.0.127",
+  "version": "0.0.132",
   "description": "Stencil Component Starter",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -50,9 +50,11 @@
     "@stencil/vue-output-target": "0.11.8",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.14.1",
+    "fake-indexeddb": "^6.2.2",
     "jest": "^29.7.0",
     "jest-cli": "^29.7.0",
-    "puppeteer": "^24.6.1"
+    "puppeteer": "^24.6.1",
+    "ts-jest": "^29.4.4"
   },
   "license": "MIT",
   "dependencies": {

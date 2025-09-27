@@ -11,8 +11,7 @@ export interface FontOption {
   shadow: true,
 })
 export class KritzelFontFamily {
-  @Prop() 
-  fontOptions: FontOption[] = [
+  @Prop() fontOptions: FontOption[] = [
     { value: 'arial', label: 'Arial' },
     { value: 'verdana', label: 'Verdana' },
     { value: 'helvetica', label: 'Helvetica' },
@@ -25,11 +24,9 @@ export class KritzelFontFamily {
     { value: 'brush script mt', label: 'Brush Script MT' },
   ];
 
-  @Prop({ mutable: true }) 
-  selectedFontFamily: string;
+  @Prop({ mutable: true }) selectedFontFamily: string;
 
-  @Event()
-  fontFamilyChange: EventEmitter<string>;
+  @Event() fontFamilyChange: EventEmitter<string>;
 
   componentWillLoad() {
     if (this.fontOptions && this.fontOptions.length > 0) {

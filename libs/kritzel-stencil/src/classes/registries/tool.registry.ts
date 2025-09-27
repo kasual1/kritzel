@@ -1,11 +1,11 @@
-import { KritzelStore } from "../store.class";
+import { KritzelCore } from "../core/core.class";
 import { KritzelBaseTool } from "../tools/base-tool.class";
 
 export class KritzelToolRegistry {
 private static registry: Record<string, KritzelBaseTool> = {};
 
-  static registerTool(toolName: string, constructor: new (store: KritzelStore) => KritzelBaseTool, store: KritzelStore): KritzelBaseTool {
-    const toolInstance = new constructor(store);
+  static registerTool(toolName: string, constructor: new (core: KritzelCore) => KritzelBaseTool, core: KritzelCore): KritzelBaseTool {
+    const toolInstance = new constructor(core);
     toolInstance.name = toolName;
     this.registry[toolName] = toolInstance;
     return toolInstance;
