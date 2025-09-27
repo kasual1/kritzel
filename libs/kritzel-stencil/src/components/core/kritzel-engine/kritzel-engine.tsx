@@ -96,7 +96,9 @@ export class KritzelEngine {
       return;
     }
 
-    KritzelEventHelper.onLongPress(ev, (event: PointerEvent) => this.longpress.emit(event));
+    if(KritzelDevicesHelper.isTouchDevice()){
+      KritzelEventHelper.onLongPress(ev, (event: PointerEvent) => this.longpress.emit(event));
+    }
 
     this.host.setPointerCapture(ev.pointerId);
     this.core.store.state.pointers.set(ev.pointerId, ev);
