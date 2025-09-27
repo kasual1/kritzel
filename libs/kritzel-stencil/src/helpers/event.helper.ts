@@ -19,16 +19,11 @@ export class KritzelEventHelper {
     return !!contextMenu;
   }
 
-  public static onLongTouchPress(
+  public static onLongPress(
     event: PointerEvent,
     onSuccess: (event: PointerEvent) => void,
     onCancel?: () => void
   ): () => void {
-    if (event.pointerType !== 'touch') {
-      onCancel?.();
-      return () => {};
-    }
-
     const longPressTimeout = 400;
     const moveThreshold = 10;
 

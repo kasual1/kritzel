@@ -1,6 +1,6 @@
 import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelStore } from '../store.class';
-import { KritzelReviver } from '../reviver.class';
+import { KritzelCore } from '../core/core.class';
+import { KritzelReviver } from '../core/reviver.class';
 import { KritzelBaseObject } from './base-object.class';
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override __class__: string = 'KritzelSelectionGroup';
@@ -18,12 +18,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return this.objects.length;
   }
 
-  static override create(store: KritzelStore): KritzelSelectionGroup {
+  static override create(core: KritzelCore): KritzelSelectionGroup {
     const object = new KritzelSelectionGroup();
 
-    object._store = store;
+    object._core = core;
     object.id = object.generateId();
-    object.scale = store.state.scale;
+    object.workspaceId = core.store.state.activeWorkspace.id
+    object.scale = core.store.state.scale;
     object.zIndex = 99999;
 
     return object;
@@ -62,20 +63,20 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.translateX = x;
     this.translateY = y;
 
-    this._store.state.objectsOctree.update(this);
+    this._core.store.state.objectsMap.update(this);
   }
 
   override move(startX: number, startY: number, endX: number, endY: number): void {
-    const deltaX = (startX - endX) / this._store.state.scale;
-    const deltaY = (startY - endY) / this._store.state.scale;
+    const deltaX = (startX - endX) / this._core.store.state.scale;
+    const deltaY = (startY - endY) / this._core.store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
-    this._store.state.objectsOctree.update(this);
+    this._core.store.state.objectsMap.update(this);
 
     this.objects.forEach(obj => {
       obj.move(startX, startY, endX, endY);
-      this._store.state.objectsOctree.update(obj);
+      this._core.store.state.objectsMap.update(obj);
     });
 
     this.unchangedObjects.forEach(obj => {
@@ -100,7 +101,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
       child.resize(updatedX, updatedY, updatedWidth, updatedHeight);
 
-      this._store.state.objectsOctree.update(child);
+      this._core.store.state.objectsMap.update(child);
     });
 
     this.refreshObjectDimensions();
@@ -130,14 +131,14 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
 
       child.rotate(this.objects.length === 1 ? value : value + unchangedChild.rotation);
-      this._store.state.objectsOctree.update(child);
+      this._core.store.state.objectsMap.update(child);
     });
   }
 
   override copy(): KritzelBaseObject<HTMLElement> {
-    const selectionGroup = KritzelSelectionGroup.create(this._store);
+    const selectionGroup = KritzelSelectionGroup.create(this._core);
 
-    let currentZIndex = this._store.currentZIndex;
+    let currentZIndex = this._core.store.currentZIndex;
 
     this.objects.sort((a, b) => a.zIndex - b.zIndex).forEach(obj => {
       const copiedObject = obj.copy() as KritzelBaseObject<any>;
@@ -182,7 +183,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.height = (this.maxY - this.minY - this.padding) * this.scale;
     }
 
-    this._store.state.objectsOctree.update(this);
+    this._core.store.state.objectsMap.update(this);
   }
 
   private getOffsetXToCenter(obj: KritzelBaseObject<any>): number {
@@ -199,7 +200,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
   private getUnchangedObject(objectId: string): KritzelBaseObject<any> {
     const obj = this.unchangedObjects.find(obj => obj.id === objectId);
-    const reviver = new KritzelReviver(this._store);
+    const reviver = new KritzelReviver(this._core);
     return reviver.revive(obj);
   }
 }

@@ -6,14 +6,9 @@ import { Component, Host, h, Event, EventEmitter } from '@stencil/core';
   shadow: true,
 })
 export class KritzelUtilityPanel {
-  @Event()
-  undo: EventEmitter<void>;
-
-  @Event()
-  redo: EventEmitter<void>;
-
-  @Event()
-  delete: EventEmitter<void>;
+  @Event() undo: EventEmitter<void>;
+  @Event() redo: EventEmitter<void>;
+  @Event() delete: EventEmitter<void>;
 
   handleUndo(event: Event) {
     if (event.cancelable) {

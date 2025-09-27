@@ -20,7 +20,7 @@
 }
 
 .size-container:hover {
-  background-color: var(--kritzel-font-size-hover-background-color, #f0f0f0);
+  background-color: var(--kritzel-font-size-hover-background-color, #ebebeb);
 }
 
 .size-container.selected {

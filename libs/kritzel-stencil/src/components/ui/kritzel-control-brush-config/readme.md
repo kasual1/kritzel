@@ -28,20 +28,16 @@
 
 ### Depends on
 
-- [kritzel-brush-style](../../shared/kritzel-brush-style)
-- [kritzel-icon](../../shared/kritzel-icon)
 - [kritzel-color-palette](../../shared/kritzel-color-palette)
+- [kritzel-icon](../../shared/kritzel-icon)
 - [kritzel-stroke-size](../../shared/kritzel-stroke-size)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-control-brush-config --> kritzel-brush-style
-  kritzel-control-brush-config --> kritzel-icon
   kritzel-control-brush-config --> kritzel-color-palette
+  kritzel-control-brush-config --> kritzel-icon
   kritzel-control-brush-config --> kritzel-stroke-size
-  kritzel-brush-style --> kritzel-dropdown
-  kritzel-brush-style --> kritzel-icon
   kritzel-color-palette --> kritzel-color
   kritzel-stroke-size --> kritzel-color
   kritzel-controls --> kritzel-control-brush-config

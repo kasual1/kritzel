@@ -21,6 +21,11 @@ const INTERNAL_COMPONENTS = [
   'kritzel-stroke-size',
   'kritzel-tooltip',
   'kritzel-utility-panel',
+  'kritzel-portal',
+  'kritzel-menu',
+  'kritzel-menu-item',
+  'kritzel-split-button',
+  'kritzel-workspace-manager'
 ];
 
 export const config: Config = {
@@ -36,7 +41,7 @@ export const config: Config = {
       directivesArrayFile: '../kritzel-angular/projects/lib/src/lib/index.ts',
       outputType: 'standalone',
       customElementsDir: 'dist/components',
-      excludeComponents: INTERNAL_COMPONENTS
+      excludeComponents: INTERNAL_COMPONENTS,
     }),
     reactOutputTarget({
       outDir: '../kritzel-react/lib/components/stencil-generated/',
@@ -51,7 +56,7 @@ export const config: Config = {
       excludeComponents: INTERNAL_COMPONENTS,
     }),
   ],
-  testing: { browserHeadless: 'shell' },
+  testing: { browserHeadless: 'shell', transform: { '^.+\\.(ts|tsx)$': 'ts-jest' }, setupFiles: ['<rootDir>/jest.setup.ts'] },
   extras: {
     enableImportInjection: true,
   },

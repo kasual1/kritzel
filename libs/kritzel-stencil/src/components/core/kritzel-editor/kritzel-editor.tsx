@@ -11,21 +11,21 @@ import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface
 import { DEFAULT_BRUSH_CONFIG } from '../../../configs/default-brush-tool.config';
 import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
-
+import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
+import { KritzelWorkspace } from '../../../classes/core/workspace.class';
+import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
+import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
   shadow: false,
 })
 export class KritzelEditor {
-  @Prop()
-  scaleMax: number = ABSOLUTE_SCALE_MAX;
+  @Element() host!: HTMLElement;
 
-  @Prop()
-  scaleMin: number = ABSOLUTE_SCALE_MIN;
-
-  @Prop()
-  controls: KritzelToolbarControl[] = [
+  @Prop() scaleMax: number = ABSOLUTE_SCALE_MAX;
+  @Prop() scaleMin: number = ABSOLUTE_SCALE_MIN;
+  @Prop() controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
       type: 'tool',
@@ -69,8 +69,7 @@ export class KritzelEditor {
     },
   ];
 
-  @Prop()
-  globalContextMenuItems: ContextMenuItem[] = [
+  @Prop() globalContextMenuItems: ContextMenuItem[] = [
     {
       label: 'Paste',
       icon: 'paste',
@@ -80,8 +79,7 @@ export class KritzelEditor {
     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },
   ];
 
-  @Prop()
-  objectContextMenuItems: ContextMenuItem[] = [
+  @Prop() objectContextMenuItems: ContextMenuItem[] = [
     {
       label: 'Edit',
       icon: 'pen',
@@ -107,26 +105,18 @@ export class KritzelEditor {
     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },
   ];
 
-  @Prop()
-  customSvgIcons: Record<string, string> = {};
+  @Prop() customSvgIcons: Record<string, string> = {};
+  @Prop() isControlsVisible: boolean = true;
+  @Prop() isUtilityPanelVisible: boolean = true;
 
-  @Prop()
-  isControlsVisible: boolean = true;
+  @Event() isReady: EventEmitter<HTMLElement>;
 
-  @Prop()
-  isUtilityPanelVisible: boolean = true;
-
-  @Event()
-  isReady: EventEmitter<HTMLElement>;
-
-  @Element()
-  host!: HTMLElement;
-
-  @State()
-  isEngineReady: boolean = false;
-
-  @State()
-  isControlsReady: boolean = false;
+  @State() isEngineReady: boolean = false;
+  @State() isControlsReady: boolean = false;
+  @State() isWorkspaceManagerReady: boolean = false;
+  @State() workspaces: KritzelWorkspace[] = [];
+  @State() activeWorkspace: KritzelWorkspace;
+  @State() isVirtualKeyboardOpen: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -139,6 +129,13 @@ export class KritzelEditor {
   onIsControlsReady(newValue: boolean) {
     if (newValue && this.isEngineReady) {
       this.checkIsReady();
+    }
+  }
+
+  @Listen('dblclick', { passive: false })
+  handleTouchStart(event: MouseEvent) {
+    if (event.cancelable) {
+      event.preventDefault();
     }
   }
 
@@ -187,39 +184,59 @@ export class KritzelEditor {
     return this.engineRef.centerObjectInViewport(object);
   }
 
-  @Listen('dblclick', { passive: false })
-  handleTouchStart(event: MouseEvent) {
-    if (event.cancelable) {
-      event.preventDefault();
-    }
+  @Method()
+  async createWorkspace(name: string, viewport?: { translateX: number; translateY: number; scale: number }): Promise<KritzelWorkspace | null> {
+    const workspace = new KritzelWorkspace(`workspace-${Date.now()}`, name, viewport);
+    return this.engineRef.createWorkspace(workspace);
   }
 
-  @Listen('keydown', { target: 'window' })
-  handleKeyDown(event) {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      this.controlsRef?.closeTooltip();
-    }
+  @Method()
+  async updateWorkspace(workspace: KritzelWorkspace): Promise<void> {
+    return this.engineRef.updateWorkspace(workspace);
+  }
+
+  @Method()
+  async deleteWorkspace(workspace: KritzelWorkspace): Promise<void> {
+    return this.engineRef.deleteWorkspace(workspace);
+  }
+
+  @Method()
+  async getWorkspaces(): Promise<KritzelWorkspace[]> {
+    return this.engineRef.getWorkspaces();
+  }
+
+  @Method()
+  async getActiveWorkspace(): Promise<KritzelWorkspace> {
+    return this.engineRef.getActiveWorkspace();
   }
 
   engineRef!: HTMLKritzelEngineElement;
-
   controlsRef!: HTMLKritzelControlsElement;
+  splitButtonRef!: HTMLKritzelSplitButtonElement;
 
   componentDidLoad() {
     this.registerCustomSvgIcons();
+    this.listenForMobileKeyboard();
+    this.setOsSpecificCssVariables();
   }
 
   async checkIsReady() {
     await customElements.whenDefined('kritzel-editor');
+    await customElements.whenDefined('kritzel-workspace-manager');
     await customElements.whenDefined('kritzel-controls');
     await customElements.whenDefined('kritzel-engine');
 
-    if (!this.isEngineReady || !this.isControlsReady) {
+    if (!this.isEngineReady || !this.isControlsReady || !this.isWorkspaceManagerReady) {
       return;
     }
 
     this.isReady.emit(this.host);
+  }
+
+  onEngineReady(event: CustomEvent<KritzelEngineState>) {
+    this.isEngineReady = true;
+    this.activeWorkspace = event.detail.activeWorkspace;
+    this.workspaces = event.detail.workspaces;
   }
 
   private registerCustomSvgIcons() {
@@ -228,23 +245,69 @@ export class KritzelEditor {
     }
   }
 
+  private listenForMobileKeyboard() {
+    KritzelKeyboardHelper.onKeyboardVisibleChanged(isOpen => {
+      this.isVirtualKeyboardOpen = isOpen;
+    });
+  }
+
+  private setOsSpecificCssVariables() {
+    const os = KritzelDevicesHelper.detectOS();
+
+    switch (os) {
+      case 'iOS':
+        // iOS specific adjustments
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-top', '14px');
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-left', '14px');
+        this.host.style.setProperty('--kritzel-editor-controls-bottom', '14px');
+        this.host.style.setProperty('--kritzel-editor-controls-transition', 'cubic-bezier(0.25, 0.1, 0.25, 1.0)');
+        this.host.style.setProperty('--kritzel-editor-controls-transform', 'translateY(200%)');
+        this.host.style.setProperty('--kritzel-editor-controls-transition-duration', '0.25s');
+        break;
+
+      case 'Android':
+        // Android specific adjustments
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-top', '14px');
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-left', '14px');
+        this.host.style.setProperty('--kritzel-editor-controls-bottom', '24px');
+        break;
+
+      default:
+        // Default for Windows/Linux
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-top', '14px');
+        this.host.style.setProperty('--kritzel-editor-workspace-manager-left', '14px');
+        this.host.style.setProperty('--kritzel-editor-controls-bottom', '14px');
+        break;
+    }
+  }
+
   render() {
     return (
       <Host>
+        <kritzel-workspace-manager
+          workspaces={this.workspaces}
+          activeWorkspace={this.activeWorkspace}
+          onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
+          onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
+        ></kritzel-workspace-manager>
+
         <kritzel-engine
           ref={el => (this.engineRef = el)}
-          onIsEngineReady={() => (this.isEngineReady = true)}
+          workspace={this.activeWorkspace}
           scaleMax={this.scaleMax}
           scaleMin={this.scaleMin}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
+          onIsEngineReady={event => this.onEngineReady(event)}
+          onWorkspacesChange={event => (this.workspaces = event.detail)}
         ></kritzel-engine>
 
         <kritzel-controls
+          class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
+          style={{ display: this.isControlsVisible ? 'flex' : 'none' }}
           ref={el => (this.controlsRef = el)}
           controls={this.controls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}
-          style={this.isControlsVisible ? { display: 'flex' } : { display: 'none' }}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
       </Host>

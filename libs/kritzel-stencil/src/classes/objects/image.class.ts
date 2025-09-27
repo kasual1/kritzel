@@ -1,4 +1,4 @@
-import { KritzelStore } from '../store.class';
+import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
 
 export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
@@ -23,17 +23,18 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     this.scale = config?.scale || 1;
   }
 
-  static override create(store: KritzelStore): KritzelImage {
+  static override create(core: KritzelCore): KritzelImage {
     const object = new KritzelImage();
 
-    object._store = store;
+    object._core = core;
     object.id = object.generateId();
+    object.workspaceId = core.store.state.activeWorkspace.id
     object.x = 0;
     object.y = 0;
     object.translateX = 0;
     object.translateY = 0;
-    object.scale = object._store.state.scale;
-    object.zIndex = store.currentZIndex;
+    object.scale = object._core.store.state.scale;
+    object.zIndex = core.store.currentZIndex;
 
     return object;
   }

@@ -1,4 +1,4 @@
-import { KritzelStore } from '../store.class';
+import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseCommand } from './base.command';
 
@@ -6,20 +6,20 @@ export class RemoveSelectionGroupCommand extends KritzelBaseCommand {
 
   private previousSelectionGroup: KritzelSelectionGroup;
 
-  constructor(store: KritzelStore, initiator: any) {
-    super(store, initiator);
-    this.previousSelectionGroup = this._store.state.selectionGroup;
+  constructor(core: KritzelCore, initiator: any, skipHistory = false) {
+    super(core, initiator, skipHistory);
+    this.previousSelectionGroup = this._core.store.state.selectionGroup;
   }
 
   execute(): void {
-    this._store.state.objectsOctree.remove(object => object.id === this.previousSelectionGroup?.id);
-    this._store.state.selectionGroup = null;
+    this._core.store.state.objectsMap.remove(object => object.id === this.previousSelectionGroup?.id);
+    this._core.store.setState('selectionGroup', null);
   }
 
   undo(): void {
     if(this.previousSelectionGroup) {
-      this._store.state.objectsOctree.insert(this.previousSelectionGroup);
-      this._store.state.selectionGroup = this.previousSelectionGroup;
+      this._core.store.state.objectsMap.insert(this.previousSelectionGroup);
+      this._core.store.setState('selectionGroup', this.previousSelectionGroup);
     } 
   }
 }

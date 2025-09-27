@@ -1,3 +1,4 @@
+import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseCommand } from './base.command';
 
@@ -9,26 +10,26 @@ export class RotateSelectionGroupCommand extends KritzelBaseCommand {
 
   private selectionGroup: KritzelSelectionGroup;
 
-  constructor(store, initiator: any, rotation: number) {
-    super(store, initiator);
+  constructor(core: KritzelCore, initiator: any, rotation: number, skipHistory = false) {
+    super(core, initiator, skipHistory);
     this.rotation = rotation;
-    this.initialRotation = this._store.state.selectionGroup.rotation;
-    this.selectionGroup = this._store.state.selectionGroup;
+    this.initialRotation = this._core.store.state.selectionGroup.rotation;
+    this.selectionGroup = this._core.store.state.selectionGroup;
   }
 
   execute(): void {
-    this._store.state.selectionGroup = this.selectionGroup;
-    this._store.state.selectionGroup.rotate(this.rotation);
-    this._store.state.selectionGroup.objects.forEach(object => {
-      this._store.state.objectsOctree.update(object);
+    this._core.store.setState('selectionGroup', this.selectionGroup);
+    this._core.store.state.selectionGroup.rotate(this.rotation);
+    this._core.store.state.selectionGroup.objects.forEach(object => {
+      this._core.store.state.objectsMap.update(object);
     });
   }
 
   undo(): void {
-    this._store.state.selectionGroup = this.selectionGroup;
-    this._store.state.selectionGroup.rotate(this.rotation - this.initialRotation);
-    this._store.state.selectionGroup.objects.forEach(object => {
-      this._store.state.objectsOctree.update(object);
+    this._core.store.setState('selectionGroup', this.selectionGroup);
+    this._core.store.state.selectionGroup.rotate(this.rotation - this.initialRotation);
+    this._core.store.state.selectionGroup.objects.forEach(object => {
+      this._core.store.state.objectsMap.update(object);
     });
   }
 }

@@ -21,9 +21,12 @@ export * from './classes/tools/text-tool.class';
 export * from './classes/tools/selection-tool.class';
 
 export * from './interfaces/toolbar-control.interface';
+export * from './interfaces/menu-item.interface';
 
 export * from './configs/default-brush-tool.config';
 export * from './configs/default-text-tool.config';
+
+export * from './classes/core/workspace.class';
 
 
 

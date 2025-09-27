@@ -6,17 +6,12 @@ import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
   shadow: true,
 })
 export class KritzelFontSize {
-  @Prop()
-  sizes: number[] = [8, 10, 12, 16, 20, 24];
+  @Prop() sizes: number[] = [8, 10, 12, 16, 20, 24];
+  @Prop({ mutable: true }) selectedSize: number | null = null;
 
-  @Prop({ mutable: true })
-  selectedSize: number | null = null;
+  @Prop() fontFamily: string = 'Arial';
 
-  @Prop()
-  fontFamily: string = 'Arial';
-
-  @Event()
-  sizeChange: EventEmitter<number>;
+  @Event() sizeChange: EventEmitter<number>;
 
   private handleSizeClick(size: number) {
     this.selectedSize = size;
