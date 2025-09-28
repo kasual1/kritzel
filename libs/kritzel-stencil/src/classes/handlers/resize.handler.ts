@@ -1,9 +1,12 @@
+import { KritzelBaseObject } from '../..';
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
+import { ObjectHelper } from '../../helpers/object.helper';
 import { BatchCommand } from '../commands/batch.command';
 import { ResizeSelectionGroupCommand } from '../commands/resize-selection-group.command';
 import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelCore } from '../core/core.class';
+import { KritzelReviver } from '../core/reviver.class';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelResizeHandler extends KritzelBaseHandler {
@@ -13,6 +16,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   initialSize: { x: number; y: number; width: number; height: number } = { x: 0, y: 0, width: 0, height: 0 };
 
   newSize: { x: number; y: number; width: number; height: number } = { x: 0, y: 0, width: 0, height: 0 };
+
+  unchangedObjects: KritzelBaseObject<any>[] = [];
 
   constructor(core: KritzelCore) {
     super(core);
@@ -32,6 +37,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           this.initialSize.height = this._core.store.state.selectionGroup.height;
           this.initialSize.x = this._core.store.state.selectionGroup.translateX;
           this.initialSize.y = this._core.store.state.selectionGroup.translateY;
+
+          this.unchangedObjects = ObjectHelper.clone(this._core.store.state.selectionGroup.objects);
         }
       }
     }
@@ -56,6 +63,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           this.initialSize.height = this._core.store.state.selectionGroup.height;
           this.initialSize.x = this._core.store.state.selectionGroup.translateX;
           this.initialSize.y = this._core.store.state.selectionGroup.translateY;
+
+          this.unchangedObjects = ObjectHelper.clone(this._core.store.state.selectionGroup.objects);
 
           clearTimeout(this._core.store.state.longTouchTimeout);
         }
@@ -155,9 +164,12 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isResizing) {
+        const reviver = new KritzelReviver(this._core);
         const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize));
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
-          return new UpdateObjectCommand(this._core, this, object, { ...object });
+          const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
+          const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
+          return new UpdateObjectCommand(this._core, this, revivedObject, { ...object });
         });
 
         this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
@@ -168,9 +180,12 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isResizing) {
+        const reviver = new KritzelReviver(this._core);
         const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize));
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
-          return new UpdateObjectCommand(this._core, this, object, { ...object });
+          const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
+          const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
+          return new UpdateObjectCommand(this._core, this, revivedObject, { ...object });
         });
 
         this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
