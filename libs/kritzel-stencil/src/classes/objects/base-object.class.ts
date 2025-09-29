@@ -257,9 +257,15 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   serialize() {
-    return {
-      ...ObjectHelper.clone(this)
-    };
+    const { _core, _elementRef, element, totalWidth, totalHeight, ...remainingProps } = this as any;
+
+    const clonedProps = structuredClone(remainingProps);
+
+    if (element && typeof element === 'object' && 'nodeType' in element && element.nodeType === 1) {
+      clonedProps.element = element.cloneNode(true) as HTMLElement;
+    }
+
+    return clonedProps;
   }
 
   deserialize(object: any): KritzelBaseObject<T> {
