@@ -1,4 +1,3 @@
-import { KritzelBaseObject } from '../..';
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
@@ -7,6 +6,7 @@ import { ResizeSelectionGroupCommand } from '../commands/resize-selection-group.
 import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelCore } from '../core/core.class';
 import { KritzelReviver } from '../core/reviver.class';
+import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelBaseHandler } from './base.handler';
 
 export class KritzelResizeHandler extends KritzelBaseHandler {
@@ -172,6 +172,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           return new UpdateObjectCommand(this._core, this, revivedObject, { ...object });
         });
 
+        this.unchangedObjects = [];
+
         this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
 
         this._core.store.setState('isResizing', false);
@@ -187,6 +189,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
           return new UpdateObjectCommand(this._core, this, revivedObject, { ...object });
         });
+
+        this.unchangedObjects = [];
 
         this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
         this._core.store.setState('isResizing', false);
