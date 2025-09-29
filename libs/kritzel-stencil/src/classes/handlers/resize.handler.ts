@@ -165,7 +165,6 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize));
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
           const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-          debugger;
           return new UpdateObjectCommand(this._core, this, unchangedObject, { ...object });
         });
 

@@ -5,7 +5,6 @@ import { UpdateObjectCommand } from '../commands/update-object.command';
 import { BatchCommand } from '../commands/batch.command';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelReviver } from '../core/reviver.class';
 
 export class KritzelRotationHandler extends KritzelBaseHandler {
   initialRotation: number = 0;
@@ -123,12 +122,10 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
-        const reviver = new KritzelReviver(this._core);
         const rotateSelectionGroupCommand = new RotateSelectionGroupCommand(this._core, this, this.rotation);
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
           const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-          const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
-          return new UpdateObjectCommand(this._core, this, revivedObject, {
+          return new UpdateObjectCommand(this._core, this, unchangedObject, {
             rotation: object.rotation,
             translateX: object.translateX,
             translateY: object.translateY,
@@ -148,12 +145,10 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isRotating) {
-        const reviver = new KritzelReviver(this._core);
         const rotateSelectionGroupCommand = new RotateSelectionGroupCommand(this._core, this, this.rotation);
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
           const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-          const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
-          return new UpdateObjectCommand(this._core, this, revivedObject, {
+          return new UpdateObjectCommand(this._core, this, unchangedObject, {
             rotation: object.rotation,
           });
         });
