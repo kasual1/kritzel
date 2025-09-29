@@ -5,7 +5,6 @@ import { UpdateObjectCommand } from '../commands/update-object.command';
 import { BatchCommand } from '../commands/batch.command';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelReviver } from '../core/reviver.class';
 
 export class KritzelMoveHandler extends KritzelBaseHandler {
   dragStartX: number;
@@ -108,13 +107,11 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDragging) {
-        const reviver = new KritzelReviver(this._core);
         this._core.store.setState('isDragging', false);
         const moveSelectionGroupCommand = new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true);
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
           const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-          const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
-          return new UpdateObjectCommand(this._core, this, revivedObject, {
+          return new UpdateObjectCommand(this._core, this, unchangedObject, {
             translateX: object.translateX,
             translateY: object.translateY,
           });
@@ -128,13 +125,11 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isDragging) {
-        const reviver = new KritzelReviver(this._core);
         this._core.store.setState('isDragging', false);
         const moveSelectionGroupCommand = new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true);
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
           const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-          const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
-          return new UpdateObjectCommand(this._core, this, revivedObject, {
+          return new UpdateObjectCommand(this._core, this, unchangedObject, {
             translateX: object.translateX,
             translateY: object.translateY,
           });
