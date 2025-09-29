@@ -5,7 +5,6 @@ import { UpdateObjectCommand } from '../commands/update-object.command';
 import { BatchCommand } from '../commands/batch.command';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
-import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelReviver } from '../core/reviver.class';
 
 export class KritzelMoveHandler extends KritzelBaseHandler {
@@ -37,7 +36,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.startX = this.dragStartX;
           this.startY = this.dragStartY;
 
-          this.unchangedObjects = ObjectHelper.clone(this._core.store.state.selectionGroup.objects);
+          this.unchangedObjects = this._core.store.state.selectionGroup.objects.map(obj => obj.clone());
         }
       }
     }
@@ -55,7 +54,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.startX = x;
           this.startY = y;
 
-          this.unchangedObjects = ObjectHelper.clone(this._core.store.state.selectionGroup.objects);
+          this.unchangedObjects = this._core.store.state.selectionGroup.objects.map(obj => obj.clone());
         }
       }
     }

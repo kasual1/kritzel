@@ -1,11 +1,9 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { ObjectHelper } from '../../helpers/object.helper';
 import { BatchCommand } from '../commands/batch.command';
 import { ResizeSelectionGroupCommand } from '../commands/resize-selection-group.command';
 import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelCore } from '../core/core.class';
-import { KritzelReviver } from '../core/reviver.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelBaseHandler } from './base.handler';
 
@@ -38,7 +36,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           this.initialSize.x = this._core.store.state.selectionGroup.translateX;
           this.initialSize.y = this._core.store.state.selectionGroup.translateY;
 
-          this.unchangedObjects = ObjectHelper.clone(this._core.store.state.selectionGroup.objects);
+          this.unchangedObjects = this._core.store.state.selectionGroup.objects.map(obj => obj.clone());
         }
       }
     }
@@ -64,7 +62,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           this.initialSize.x = this._core.store.state.selectionGroup.translateX;
           this.initialSize.y = this._core.store.state.selectionGroup.translateY;
 
-          this.unchangedObjects = ObjectHelper.clone(this._core.store.state.selectionGroup.objects);
+          this.unchangedObjects = this._core.store.state.selectionGroup.objects.map(obj => obj.clone());
 
           clearTimeout(this._core.store.state.longTouchTimeout);
         }
@@ -164,12 +162,11 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isResizing) {
-        const reviver = new KritzelReviver(this._core);
         const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize));
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
           const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-          const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
-          return new UpdateObjectCommand(this._core, this, revivedObject, { ...object });
+          debugger;
+          return new UpdateObjectCommand(this._core, this, unchangedObject, { ...object });
         });
 
         this.unchangedObjects = [];
@@ -182,12 +179,10 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isResizing) {
-        const reviver = new KritzelReviver(this._core);
         const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize));
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
           const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-          const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
-          return new UpdateObjectCommand(this._core, this, revivedObject, { ...object });
+          return new UpdateObjectCommand(this._core, this, unchangedObject, { ...object });
         });
 
         this.unchangedObjects = [];

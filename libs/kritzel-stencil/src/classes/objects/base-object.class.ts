@@ -5,8 +5,9 @@ import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelCore } from '../core/core.class';
+import { KritzelClonable } from '../../interfaces/clonable.interface';
 
-export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable {
+export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable, KritzelClonable<KritzelBaseObject<T>> {
   __class__: string = 'KritzelBaseObject';
 
   _core: KritzelCore;
@@ -235,6 +236,12 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
   rotate(value: number): void {
     this.rotation = value;
+  }
+
+  clone(): KritzelBaseObject<T> {
+    const clone = new KritzelBaseObject<T>();
+    Object.assign(clone, this);
+    return clone;
   }
 
   copy(): KritzelBaseObject<T> {
