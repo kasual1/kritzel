@@ -4,6 +4,9 @@ import { KritzelBaseHandler } from './base.handler';
 import { UpdateObjectCommand } from '../commands/update-object.command';
 import { BatchCommand } from '../commands/batch.command';
 import { KritzelCore } from '../core/core.class';
+import { KritzelBaseObject } from '../objects/base-object.class';
+import { ObjectHelper } from '../../helpers/object.helper';
+import { KritzelReviver } from '../core/reviver.class';
 
 export class KritzelMoveHandler extends KritzelBaseHandler {
   dragStartX: number;
@@ -14,6 +17,8 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
   endX: number;
   endY: number;
+
+  unchangedObjects: KritzelBaseObject<any>[] = [];
 
   constructor(core: KritzelCore) {
     super(core);
@@ -31,6 +36,8 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.dragStartY = clientY;
           this.startX = this.dragStartX;
           this.startY = this.dragStartY;
+
+          this.unchangedObjects = ObjectHelper.clone(this._core.store.state.selectionGroup.objects);
         }
       }
     }
@@ -47,6 +54,8 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.dragStartY = y;
           this.startX = x;
           this.startY = y;
+
+          this.unchangedObjects = ObjectHelper.clone(this._core.store.state.selectionGroup.objects);
         }
       }
     }
@@ -69,7 +78,12 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     if (event.pointerType === 'touch') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
-      if (this._core.store.state.pointers.size === 1 && this._core.store.state.selectionGroup && !this._core.store.state.isResizeHandleSelected && !this._core.store.state.isRotationHandleSelected) {
+      if (
+        this._core.store.state.pointers.size === 1 &&
+        this._core.store.state.selectionGroup &&
+        !this._core.store.state.isResizeHandleSelected &&
+        !this._core.store.state.isRotationHandleSelected
+      ) {
         const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
         const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
 
@@ -95,14 +109,19 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDragging) {
+        const reviver = new KritzelReviver(this._core);
         this._core.store.setState('isDragging', false);
         const moveSelectionGroupCommand = new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true);
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
-          return new UpdateObjectCommand(this._core, this, object, {
+          const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
+          const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
+          return new UpdateObjectCommand(this._core, this, revivedObject, {
             translateX: object.translateX,
-            translateY: object.translateY
+            translateY: object.translateY,
           });
         });
+
+        this.unchangedObjects = [];
 
         this._core.history.executeCommand(new BatchCommand(this._core, this, [moveSelectionGroupCommand, ...updateObjectsCommand]));
       }
@@ -110,14 +129,19 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isDragging) {
+        const reviver = new KritzelReviver(this._core);
         this._core.store.setState('isDragging', false);
         const moveSelectionGroupCommand = new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true);
         const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
-          return new UpdateObjectCommand(this._core, this, object, {
+          const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
+          const revivedObject = reviver.revive<KritzelBaseObject<any>>(unchangedObject);
+          return new UpdateObjectCommand(this._core, this, revivedObject, {
             translateX: object.translateX,
-            translateY: object.translateY
+            translateY: object.translateY,
           });
         });
+
+        this.unchangedObjects = [];
 
         this._core.history.executeCommand(new BatchCommand(this._core, this, [moveSelectionGroupCommand, ...updateObjectsCommand]));
       }
