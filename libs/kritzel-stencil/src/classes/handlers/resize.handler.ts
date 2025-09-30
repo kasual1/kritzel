@@ -1,8 +1,6 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { BatchCommand } from '../commands/batch.command';
 import { ResizeSelectionGroupCommand } from '../commands/resize-selection-group.command';
-import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseHandler } from './base.handler';
 
@@ -16,6 +14,13 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
   constructor(core: KritzelCore) {
     super(core);
+  }
+
+  private reset() {
+    this.initialMouseX = 0;
+    this.initialMouseY = 0;
+    this.initialSize = { x: 0, y: 0, width: 0, height: 0 };
+    this.newSize = { x: 0, y: 0, width: 0, height: 0 };
   }
 
   handlePointerDown(event: PointerEvent): void {
@@ -155,26 +160,21 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isResizing) {
-        const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize));
-        const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
-          return new UpdateObjectCommand(this._core, this, object, { ...object });
-        });
-
-        this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
+        this._core.history.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
 
         this._core.store.setState('isResizing', false);
+
+        this.reset();
       }
     }
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isResizing) {
-        const resizeSelectionGroupCommand = new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize));
-        const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
-          return new UpdateObjectCommand(this._core, this, object, { ...object });
-        });
+        this._core.history.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
 
-        this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
         this._core.store.setState('isResizing', false);
+
+        this.reset();
 
         clearTimeout(this._core.store.state.longTouchTimeout);
       }
