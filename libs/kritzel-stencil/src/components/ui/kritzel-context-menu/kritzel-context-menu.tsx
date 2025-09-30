@@ -30,7 +30,6 @@ export class KritzelContextMenu {
 
   @Listen('pointerdown', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
-    event.preventDefault();
     const path = event.composedPath();
     if (!path.includes(this.host)) {
       this.close.emit();
