@@ -41,11 +41,9 @@ export class KritzelHistory {
 
   executeCommand(command: KritzelBaseCommand) {
     if (this._core.store.state.hasViewportChanged) {
-      console.log('viewport changed, adding command');
       this.addUpdateViewportCommand();
     }
 
-    console.log('executing command', command);
     command.execute();
 
     if (command.skipHistory === false) {

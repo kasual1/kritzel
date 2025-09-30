@@ -10,10 +10,10 @@ export class RotateSelectionGroupCommand extends KritzelBaseCommand {
 
   private selectionGroup: KritzelSelectionGroup;
 
-  constructor(core: KritzelCore, initiator: any, rotation: number, skipHistory = false) {
+  constructor(core: KritzelCore, initiator: any, rotation: number, initialRotation: number, skipHistory = false) {
     super(core, initiator, skipHistory);
     this.rotation = rotation;
-    this.initialRotation = this._core.store.state.selectionGroup.rotation;
+    this.initialRotation = initialRotation;
     this.selectionGroup = this._core.store.state.selectionGroup;
   }
 
@@ -22,14 +22,16 @@ export class RotateSelectionGroupCommand extends KritzelBaseCommand {
     this._core.store.state.selectionGroup.rotate(this.rotation);
     this._core.store.state.selectionGroup.objects.forEach(object => {
       this._core.store.state.objectsMap.update(object);
+      this._core.updateObjectInDatabase(object);
     });
   }
 
   undo(): void {
     this._core.store.setState('selectionGroup', this.selectionGroup);
-    this._core.store.state.selectionGroup.rotate(this.rotation - this.initialRotation);
+    this._core.store.state.selectionGroup.rotate(this.initialRotation);
     this._core.store.state.selectionGroup.objects.forEach(object => {
       this._core.store.state.objectsMap.update(object);
+      this._core.updateObjectInDatabase(object);
     });
   }
 }

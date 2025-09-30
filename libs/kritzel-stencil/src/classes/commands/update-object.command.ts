@@ -21,6 +21,7 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
+    console.log('Updated properties:', this.updatedProperties);
     for (const key in this.updatedProperties) {
       if (this.updatedProperties.hasOwnProperty(key)) {
         this.object[key] = this.updatedProperties[key];
@@ -31,6 +32,7 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
   }
 
   undo(): void {
+    console.log('Reverting to previous properties:', this.previousProperties);
     for (const key in this.previousProperties) {
       if (this.previousProperties.hasOwnProperty(key)) {
         this.object[key] = this.previousProperties[key];
