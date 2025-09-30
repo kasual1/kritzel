@@ -1,4 +1,3 @@
-import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelCore } from '../core/core.class';
 import { KritzelReviver } from '../core/reviver.class';
 import { KritzelBaseObject } from './base-object.class';
@@ -38,7 +37,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.objects.splice(index, 1);
     }
 
-    this.unchangedObjects = ObjectHelper.clone(this.objects);
+    this.unchangedObjects = this.objects.map(obj => obj.clone());
     this.refreshObjectDimensions();
   }
 
@@ -105,7 +104,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     });
 
     this.refreshObjectDimensions();
-    this.unchangedObjects = ObjectHelper.clone(this.objects);
+    this.unchangedObjects = this.objects.map(obj => obj.clone());
   }
 
   override rotate(value: number): void {
@@ -147,7 +146,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       currentZIndex++;
     });
 
-    selectionGroup.unchangedObjects = ObjectHelper.clone(selectionGroup.objects);
+    selectionGroup.unchangedObjects = selectionGroup.objects.map(obj => obj.clone());
 
     if (this.objects.length === 1) {
       selectionGroup.rotation = this.objects[0].rotation;

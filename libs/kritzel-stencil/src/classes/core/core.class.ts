@@ -173,9 +173,7 @@ export class KritzelCore {
 
     const reviver = new KritzelReviver(this);
 
-    return this._database
-      .get<KritzelWorkspace>('workspaces', id)
-      .then(rawWorkspace => rawWorkspace ? reviver.revive<KritzelWorkspace>(rawWorkspace) : null);
+    return this._database.get<KritzelWorkspace>('workspaces', id).then(rawWorkspace => (rawWorkspace ? reviver.revive<KritzelWorkspace>(rawWorkspace) : null));
   }
 
   async getWorkspaces(): Promise<KritzelWorkspace[]> {
@@ -185,9 +183,7 @@ export class KritzelCore {
 
     const reviver = new KritzelReviver(this);
 
-    return this._database
-      .getAll<KritzelWorkspace>('workspaces')
-      .then(rawWorkspaces => rawWorkspaces.map(ws => reviver.revive<KritzelWorkspace>(ws)));
+    return this._database.getAll<KritzelWorkspace>('workspaces').then(rawWorkspaces => rawWorkspaces.map(ws => reviver.revive<KritzelWorkspace>(ws)));
   }
 
   async createWorkspace(workspace: KritzelWorkspace) {
@@ -289,8 +285,8 @@ export class KritzelCore {
 
     this._store.setState('copiedObjects', copiedObjects);
 
-    const adjustedX = x !== undefined ? x : this._store.state.copiedObjects.translateX + 25;
-    const adjustedY = y !== undefined ? y : this._store.state.copiedObjects.translateY + 25;
+    const adjustedX = x !== undefined ? x : this._store.state.copiedObjects.translateX + 25 / this._store.state.scale;
+    const adjustedY = y !== undefined ? y : this._store.state.copiedObjects.translateY + 25 / this._store.state.scale;
 
     this._store.state.copiedObjects.updatePosition(adjustedX, adjustedY);
 

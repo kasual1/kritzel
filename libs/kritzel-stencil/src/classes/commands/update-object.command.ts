@@ -27,6 +27,7 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
       }
     }
 
+    this._core.store.state.objectsMap.update(this.object);
     this._core.updateObjectInDatabase(this.object);
   }
 
@@ -37,6 +38,7 @@ export class UpdateObjectCommand extends KritzelBaseCommand {
       }
     }
 
+    this._core.store.state.objectsMap.update(this.object);
     this._core.updateObjectInDatabase(this.object);
   }
 }

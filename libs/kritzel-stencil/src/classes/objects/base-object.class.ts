@@ -5,8 +5,9 @@ import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelCore } from '../core/core.class';
+import { KritzelClonable } from '../../interfaces/clonable.interface';
 
-export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable {
+export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable, KritzelClonable<KritzelBaseObject<T>> {
   __class__: string = 'KritzelBaseObject';
 
   _core: KritzelCore;
@@ -237,6 +238,12 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.rotation = value;
   }
 
+  clone(): KritzelBaseObject<T> {
+    const clone = new KritzelBaseObject<T>();
+    Object.assign(clone, this);
+    return clone;
+  }
+
   copy(): KritzelBaseObject<T> {
     const copiedObject: KritzelBaseObject<T> = Object.create(Object.getPrototypeOf(this));
     Object.assign(copiedObject, this);
@@ -250,9 +257,15 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   serialize() {
-    return {
-      ...ObjectHelper.clone(this)
-    };
+    const { _core, _elementRef, element, totalWidth, totalHeight, ...remainingProps } = this as any;
+
+    const clonedProps = structuredClone(remainingProps);
+
+    if (element && typeof element === 'object' && 'nodeType' in element && element.nodeType === 1) {
+      clonedProps.element = element.cloneNode(true) as HTMLElement;
+    }
+
+    return clonedProps;
   }
 
   deserialize(object: any): KritzelBaseObject<T> {
