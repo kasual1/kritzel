@@ -1,11 +1,7 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { MoveSelectionGroupCommand } from '../commands/move-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
-import { UpdateObjectCommand } from '../commands/update-object.command';
-import { BatchCommand } from '../commands/batch.command';
 import { KritzelCore } from '../core/core.class';
-import { KritzelBaseObject } from '../objects/base-object.class';
-
 export class KritzelMoveHandler extends KritzelBaseHandler {
   dragStartX: number;
   dragStartY: number;
@@ -17,8 +13,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   endY: number;
 
   hasMoved: boolean = false;
-
-  unchangedObjects: KritzelBaseObject<any>[] = [];
 
   constructor(core: KritzelCore) {
     super(core);
@@ -32,7 +26,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     this.endX = 0;
     this.endY = 0;
     this.hasMoved = false;
-    this.unchangedObjects = [];
   }
 
   handlePointerDown(event: PointerEvent) {
@@ -47,8 +40,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.dragStartY = clientY;
           this.startX = this.dragStartX;
           this.startY = this.dragStartY;
-
-          this.unchangedObjects = this._core.store.state.selectionGroup.objects.map(obj => obj.clone());
         }
       }
     }
@@ -65,8 +56,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.dragStartY = y;
           this.startX = x;
           this.startY = y;
-
-          this.unchangedObjects = this._core.store.state.selectionGroup.objects.map(obj => obj.clone());
         }
       }
     }
@@ -125,16 +114,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.setState('isDragging', false);
 
         if (this.hasMoved) {
-          const moveSelectionGroupCommand = new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true);
-          const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
-            const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-            return new UpdateObjectCommand(this._core, this, unchangedObject, {
-              translateX: object.translateX,
-              translateY: object.translateY,
-            });
-          });
-
-          this._core.history.executeCommand(new BatchCommand(this._core, this, [moveSelectionGroupCommand, ...updateObjectsCommand]));
+          this._core.history.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
         }
 
         this.reset();
@@ -146,16 +126,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.setState('isDragging', false);
 
         if (this.hasMoved) {
-          const moveSelectionGroupCommand = new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true);
-          const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
-            const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-            return new UpdateObjectCommand(this._core, this, unchangedObject, {
-              translateX: object.translateX,
-              translateY: object.translateY,
-            });
-          });
-
-          this._core.history.executeCommand(new BatchCommand(this._core, this, [moveSelectionGroupCommand, ...updateObjectsCommand]));
+          this._core.history.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
         }
 
         this.reset();
