@@ -1,8 +1,6 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { RotateSelectionGroupCommand } from '../commands/rotate-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
-import { UpdateObjectCommand } from '../commands/update-object.command';
-import { BatchCommand } from '../commands/batch.command';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 
@@ -12,6 +10,8 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   rotation: number = 0;
 
   unchangedObjects: KritzelBaseObject<any>[] = [];
+
+  initialSelectionGroupRotation: number = 0;
 
   constructor(core: KritzelCore) {
     super(core);
@@ -38,6 +38,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           const cursorX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
           const cursorY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
 
+          this.initialSelectionGroupRotation = this._core.store.state.selectionGroup.rotation;
           this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - this._core.store.state.selectionGroup.rotation;
 
           this.unchangedObjects = this._core.store.state.selectionGroup.objects.map(obj => obj.clone());
@@ -128,17 +129,8 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
-        const rotateSelectionGroupCommand = new RotateSelectionGroupCommand(this._core, this, this.rotation);
-        const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
-          const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-          return new UpdateObjectCommand(this._core, this, unchangedObject, {
-            rotation: object.rotation,
-            translateX: object.translateX,
-            translateY: object.translateY,
-          });
-        });
 
-        this._core.history.executeCommand(new BatchCommand(this._core, this, [rotateSelectionGroupCommand, ...updateObjectsCommand]));
+        this._core.history.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
 
         this._core.store.setState('isRotating', false);
 
@@ -148,15 +140,8 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isRotating) {
-        const rotateSelectionGroupCommand = new RotateSelectionGroupCommand(this._core, this, this.rotation);
-        const updateObjectsCommand = this._core.store.state.selectionGroup.objects.map(object => {
-          const unchangedObject = this.unchangedObjects.find(o => o.id === object.id);
-          return new UpdateObjectCommand(this._core, this, unchangedObject, {
-            rotation: object.rotation,
-          });
-        });
 
-        this._core.history.executeCommand(new BatchCommand(this._core, this, [rotateSelectionGroupCommand, ...updateObjectsCommand]));
+        this._core.history.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
 
         this._core.store.setState('isRotating', false);
 
