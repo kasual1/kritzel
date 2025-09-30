@@ -129,18 +129,16 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
-
         this._core.history.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
 
         this._core.store.setState('isRotating', false);
 
-       this.reset();
+        this.reset();
       }
     }
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isRotating) {
-
         this._core.history.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
 
         this._core.store.setState('isRotating', false);
