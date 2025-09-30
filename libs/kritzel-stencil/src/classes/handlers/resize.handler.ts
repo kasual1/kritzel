@@ -21,6 +21,14 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
     super(core);
   }
 
+  private reset() {
+    this.initialMouseX = 0;
+    this.initialMouseY = 0;
+    this.initialSize = { x: 0, y: 0, width: 0, height: 0 };
+    this.newSize = { x: 0, y: 0, width: 0, height: 0 };
+    this.unchangedObjects = [];
+  }
+
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
@@ -168,11 +176,11 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           return new UpdateObjectCommand(this._core, this, unchangedObject, { ...object });
         });
 
-        this.unchangedObjects = [];
-
         this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
 
         this._core.store.setState('isResizing', false);
+
+        this.reset();
       }
     }
 
@@ -184,10 +192,11 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           return new UpdateObjectCommand(this._core, this, unchangedObject, { ...object });
         });
 
-        this.unchangedObjects = [];
-
         this._core.history.executeCommand(new BatchCommand(this._core, this, [resizeSelectionGroupCommand, ...updateObjectsCommand]));
+
         this._core.store.setState('isResizing', false);
+
+        this.reset();
 
         clearTimeout(this._core.store.state.longTouchTimeout);
       }

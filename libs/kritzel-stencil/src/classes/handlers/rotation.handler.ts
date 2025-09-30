@@ -17,6 +17,12 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
     super(core);
   }
 
+  private reset() {
+    this.initialRotation = 0;
+    this.rotation = 0;
+    this.unchangedObjects = [];
+  }
+
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
@@ -132,14 +138,11 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           });
         });
 
-        this.unchangedObjects = [];
-
         this._core.history.executeCommand(new BatchCommand(this._core, this, [rotateSelectionGroupCommand, ...updateObjectsCommand]));
 
         this._core.store.setState('isRotating', false);
 
-        this.initialRotation = 0;
-        this.rotation = 0;
+       this.reset();
       }
     }
 
@@ -153,14 +156,11 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           });
         });
 
-        this.unchangedObjects = [];
-
         this._core.history.executeCommand(new BatchCommand(this._core, this, [rotateSelectionGroupCommand, ...updateObjectsCommand]));
 
         this._core.store.setState('isRotating', false);
 
-        this.initialRotation = 0;
-        this.rotation = 0;
+        this.reset();
 
         clearTimeout(this._core.store.state.longTouchTimeout);
       }
