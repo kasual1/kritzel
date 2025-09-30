@@ -22,6 +22,16 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     super(core);
   }
 
+  private reset() {
+    this.dragStartX = 0;
+    this.dragStartY = 0;
+    this.startX = 0;
+    this.startY = 0;
+    this.endX = 0;
+    this.endY = 0;
+    this.unchangedObjects = [];
+  }
+
   handlePointerDown(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
@@ -116,10 +126,10 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
             translateY: object.translateY,
           });
         });
-
-        this.unchangedObjects = [];
-
+        
         this._core.history.executeCommand(new BatchCommand(this._core, this, [moveSelectionGroupCommand, ...updateObjectsCommand]));
+        
+        this.reset();
       }
     }
 
@@ -135,9 +145,9 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           });
         });
 
-        this.unchangedObjects = [];
-
         this._core.history.executeCommand(new BatchCommand(this._core, this, [moveSelectionGroupCommand, ...updateObjectsCommand]));
+
+        this.reset();
       }
     }
   }
