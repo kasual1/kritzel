@@ -63,9 +63,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     if (shortcut) {
       event.preventDefault();
       shortcut.action(this._core);
-    } else if (event.ctrlKey) {
-      event.preventDefault();
-    }
+    } 
   }
 
   handleKeyUp(event: KeyboardEvent): void {
