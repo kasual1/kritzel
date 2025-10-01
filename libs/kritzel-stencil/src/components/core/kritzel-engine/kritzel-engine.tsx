@@ -172,11 +172,19 @@ export class KritzelEngine {
 
   @Listen('keydown', { target: 'window' })
   handleKeyDown(ev) {
+    if (this.core.store.isDisabled) {
+      return;
+    }
+
     this.keyHandler.handleKeyDown(ev);
   }
 
   @Listen('keyup', { target: 'window' })
   handleKeyUp(ev) {
+    if (this.core.store.isDisabled) {
+      return;
+    }
+    
     this.keyHandler.handleKeyUp(ev);
   }
 
@@ -434,6 +442,7 @@ export class KritzelEngine {
     }
 
     this.core.store.setState('skipContextMenu', false);
+    this.core.store.setState('copiedObjects', null);
     this.activeToolChange.emit(activeTool);
     KritzelKeyboardHelper.forceHideKeyboard();
   }
