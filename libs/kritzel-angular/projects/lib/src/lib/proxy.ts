@@ -6,7 +6,30 @@ import { ProxyCmp } from './angular-component-lib/utils';
 
 import type { Components } from 'kritzel-stencil/dist/components';
 
+import { defineCustomElement as defineKritzelBaseUi } from 'kritzel-stencil/dist/components/kritzel-base-ui.js';
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelBaseUi
+})
+@Component({
+  selector: 'kritzel-base-ui',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: [],
+})
+export class KritzelBaseUi {
+  protected el: HTMLKritzelBaseUiElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelBaseUi extends Components.KritzelBaseUi {}
+
+
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
   inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'objectContextMenuItems', 'scaleMax', 'scaleMin'],
