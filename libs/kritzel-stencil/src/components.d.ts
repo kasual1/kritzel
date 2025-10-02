@@ -34,6 +34,8 @@ export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export namespace Components {
+    interface KritzelBaseUi {
+    }
     interface KritzelBrushStyle {
         /**
           * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
@@ -412,6 +414,12 @@ export interface KritzelWorkspaceManagerCustomEvent<T> extends CustomEvent<T> {
     target: HTMLKritzelWorkspaceManagerElement;
 }
 declare global {
+    interface HTMLKritzelBaseUiElement extends Components.KritzelBaseUi, HTMLStencilElement {
+    }
+    var HTMLKritzelBaseUiElement: {
+        prototype: HTMLKritzelBaseUiElement;
+        new (): HTMLKritzelBaseUiElement;
+    };
     interface HTMLKritzelBrushStyleElementEventMap {
         "typeChange": 'pen' | 'highlighter';
     }
@@ -783,6 +791,7 @@ declare global {
         new (): HTMLKritzelWorkspaceManagerElement;
     };
     interface HTMLElementTagNameMap {
+        "kritzel-base-ui": HTMLKritzelBaseUiElement;
         "kritzel-brush-style": HTMLKritzelBrushStyleElement;
         "kritzel-color": HTMLKritzelColorElement;
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
@@ -809,6 +818,8 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface KritzelBaseUi {
+    }
     interface KritzelBrushStyle {
         /**
           * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
@@ -1104,6 +1115,7 @@ declare namespace LocalJSX {
         "workspaces"?: KritzelWorkspace[];
     }
     interface IntrinsicElements {
+        "kritzel-base-ui": KritzelBaseUi;
         "kritzel-brush-style": KritzelBrushStyle;
         "kritzel-color": KritzelColor;
         "kritzel-color-palette": KritzelColorPalette;
@@ -1133,6 +1145,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "kritzel-base-ui": LocalJSX.KritzelBaseUi & JSXBase.HTMLAttributes<HTMLKritzelBaseUiElement>;
             "kritzel-brush-style": LocalJSX.KritzelBrushStyle & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
             "kritzel-color": LocalJSX.KritzelColor & JSXBase.HTMLAttributes<HTMLKritzelColorElement>;
             "kritzel-color-palette": LocalJSX.KritzelColorPalette & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;

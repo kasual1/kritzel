@@ -11,7 +11,19 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 import { type KritzelEditorCustomEvent } from "../../../../kritzel-stencil";
+import { KritzelBaseUi as KritzelBaseUiElement, defineCustomElement as defineKritzelBaseUi } from "../../../../kritzel-stencil/dist/components/kritzel-base-ui.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
+
+export type KritzelBaseUiEvents = NonNullable<unknown>;
+
+export const KritzelBaseUi: StencilReactComponent<KritzelBaseUiElement, KritzelBaseUiEvents> = /*@__PURE__*/ createComponent<KritzelBaseUiElement, KritzelBaseUiEvents>({
+    tagName: 'kritzel-base-ui',
+    elementClass: KritzelBaseUiElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as KritzelBaseUiEvents,
+    defineCustomElement: defineKritzelBaseUi
+});
 
 export type KritzelEditorEvents = { onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>> };
 

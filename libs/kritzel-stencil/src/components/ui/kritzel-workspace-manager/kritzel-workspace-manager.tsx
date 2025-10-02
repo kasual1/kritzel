@@ -1,7 +1,7 @@
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
-import { Host, h, Component, State, Prop, Event, EventEmitter, Element } from '@stencil/core';
+import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen } from '@stencil/core';
 
 @Component({
   tag: 'kritzel-workspace-manager',
@@ -21,6 +21,13 @@ export class KritzelWorkspaceManager {
   @State() openChildMenuItem: IKritzelMenuItem = null;
   @State() newWorkspace: KritzelWorkspace | null = null;
   @State() editingItemId: string | null = null;
+
+  @Listen('wheel', { target: 'window', passive: false })
+  handleWheel(event: WheelEvent) {
+    if(event.ctrlKey){
+      event.preventDefault();
+    }
+  }
 
   kritzelEngineRef: HTMLKritzelEngineElement | null = null;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
