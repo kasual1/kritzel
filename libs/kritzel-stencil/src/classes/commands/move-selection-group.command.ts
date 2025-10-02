@@ -28,6 +28,11 @@ export class MoveSelectionGroupCommand extends KritzelBaseCommand {
   execute(): void {
     if (this.skipExecution) {
       this.skipExecution = false;
+      // Skip execution, but still update objects
+      this._core.store.state.selectionGroup.objects.forEach(object => {
+        this._core.store.state.objectsMap.update(object);
+        this._core.updateObjectInDatabase(object);
+      });
       return;
     }
 
