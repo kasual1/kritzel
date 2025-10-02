@@ -77,6 +77,7 @@ export class KritzelHistory {
       this.redoStack.add(command);
     }
 
+    this._core.store.setState('copiedObjects', null);
     this._core.rerender();
   }
 
