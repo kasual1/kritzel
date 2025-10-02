@@ -291,12 +291,14 @@ export class KritzelCore {
     this._store.state.copiedObjects.updatePosition(adjustedX, adjustedY);
 
     const commands = [];
+    let previousSelectionGroup = null;
     if (this._store.state.selectionGroup !== null) {
+      previousSelectionGroup = this._store.state.selectionGroup;
       commands.push(new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup));
     }
 
     const addCopiedObjectsCommands = this._store.state.copiedObjects.objects.map(obj => new AddObjectCommand(this, this, obj));
-    const addCopiedObjectsAsSelectionGroupCommand = new AddSelectionGroupCommand(this, this, this._store.state.copiedObjects);
+    const addCopiedObjectsAsSelectionGroupCommand = new AddSelectionGroupCommand(this, this, this._store.state.copiedObjects, previousSelectionGroup);
 
     commands.push(...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand);
 
