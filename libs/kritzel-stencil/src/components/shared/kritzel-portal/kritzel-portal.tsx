@@ -74,6 +74,19 @@ export class KritzelPortal {
     this.calculatePosition();
   }
 
+  @Listen('scroll', { target: 'window', capture: true })
+  handleWindowScroll() {
+    const isInViewport = KritzelHTMLHelper.isElementInViewport(this.anchor);
+
+    if (!isInViewport) {
+      this.anchor.blur();
+      this.closePortal();
+      return;
+    }
+
+    this.calculatePosition();
+  }
+
   private portal: HTMLElement;
   private id: string = `portal-${ObjectHelper.generateUUID()}`;
   private defaultOffset = 0;
@@ -115,7 +128,6 @@ export class KritzelPortal {
       }
     }
   }
-
 
   private get firstFocusableElement(): HTMLElement | null {
     const slotEl = this.host.shadowRoot?.querySelector('slot') as HTMLSlotElement | null;
