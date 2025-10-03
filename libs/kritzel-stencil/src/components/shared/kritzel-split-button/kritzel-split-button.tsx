@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method, Watch } from '@stencil/core';
+import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '../../../interfaces/menu-item.interface';
 
