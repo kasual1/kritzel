@@ -4,5 +4,4 @@ export interface KritzelBoundingBox {
   z: number;
   width: number;
   height: number;
-  depth: number;
 }
