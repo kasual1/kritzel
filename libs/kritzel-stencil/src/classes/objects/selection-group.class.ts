@@ -45,6 +45,17 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.objects.forEach(obj => (obj.isSelected = false));
   }
 
+  updateWorkspaceId(workspaceId: string) {
+    this.workspaceId = workspaceId;
+    this.objects.forEach(obj => (obj.workspaceId = workspaceId));
+  }
+
+  updateZIndices(startZIndex: number) {
+    this.objects.forEach((obj, i) => {
+      obj.zIndex = startZIndex + i;
+    });
+  }
+
   updatePosition(x: number, y: number) {
     this.objects.forEach(obj => {
       const deltaX = obj.translateX - this.translateX;
@@ -137,13 +148,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override copy(): KritzelBaseObject<HTMLElement> {
     const selectionGroup = KritzelSelectionGroup.create(this._core);
 
-    let currentZIndex = this._core.store.currentZIndex;
-
     this.objects.sort((a, b) => a.zIndex - b.zIndex).forEach(obj => {
       const copiedObject = obj.copy() as KritzelBaseObject<any>;
-      copiedObject.zIndex = currentZIndex;
       selectionGroup.addOrRemove(copiedObject);
-      currentZIndex++;
     });
 
     selectionGroup.unchangedObjects = selectionGroup.objects.map(obj => obj.clone());
