@@ -37,6 +37,22 @@ Type: `Promise<void>`
 
 
 
+### `setScrollTop(scrollTop: number) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name        | Type     | Description |
+| ----------- | -------- | ----------- |
+| `scrollTop` | `number` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 
 ## Dependencies
 
