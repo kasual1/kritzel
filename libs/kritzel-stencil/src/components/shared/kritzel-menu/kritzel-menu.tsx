@@ -1,10 +1,10 @@
-import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Method } from '@stencil/core';
+import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Method, Listen } from '@stencil/core';
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '../../../interfaces/menu-item.interface';
 
 @Component({
   tag: 'kritzel-menu',
   styleUrl: 'kritzel-menu.css',
-  shadow: true
+  shadow: true,
 })
 export class KritzelMenu {
   @Element() host: HTMLElement;
@@ -20,6 +20,12 @@ export class KritzelMenu {
   @Event() close: EventEmitter<void>;
 
   @State() selectedIndex: number | null = null;
+
+  @Method()
+  async setScrollTop(scrollTop: number) {
+    this.host.scrollTop = scrollTop;
+    this.host.scrollTo({ top: scrollTop, behavior: 'auto' });
+  }
 
   @Method()
   async setFocus() {
@@ -45,33 +51,33 @@ export class KritzelMenu {
   private handleItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => {
     event.stopPropagation();
     this.itemSelect.emit(event.detail);
-  }
+  };
 
   private handleSave = (event: CustomEvent<IKritzelMenuItem>) => {
     event.stopPropagation();
     this.itemSave.emit(event.detail);
-  }
+  };
 
   private handleCancel = (event: CustomEvent<IKritzelMenuItem>) => {
     event.stopPropagation();
     this.itemCancel.emit(event.detail);
-  }
+  };
 
   private handleToggleChildMenu = (event: CustomEvent<{ item: IKritzelMenuItem; childMenuAnchor: HTMLElement }>) => {
     event.stopPropagation();
     this.itemToggleChildMenu.emit(event.detail);
-  }
+  };
 
   private handleCloseChildMenu = (event: CustomEvent<IKritzelMenuItem>) => {
     event.stopPropagation();
     this.itemCloseChildMenu.emit(event.detail);
-  }
+  };
 
   render() {
     return (
       <Host tabIndex={0} onClick={e => e.stopPropagation()}>
         {this.openChildMenuItem && <div class="has-open-child-overlay" onClick={this.onOverlayClick}></div>}
-        {this.items.map((item) => (
+        {this.items.map(item => (
           <kritzel-menu-item
             key={item.id}
             item={item}

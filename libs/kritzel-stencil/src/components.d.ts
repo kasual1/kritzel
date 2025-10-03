@@ -258,6 +258,7 @@ export namespace Components {
          */
         "parent": IKritzelMenuItem;
         "setFocus": () => Promise<void>;
+        "setScrollTop": (scrollTop: number) => Promise<void>;
     }
     interface KritzelMenuItem {
         "item": IKritzelMenuItem;
