@@ -63,7 +63,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
       z: this.scale,
       width: this.totalWidth / this.scale,
       height: this.totalHeight / this.scale,
-      depth: 0,
     };
   }
 
@@ -74,7 +73,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
       z: this.scale,
       width: this.maxXRotated - this.minXRotated,
       height: this.maxYRotated - this.minYRotated,
-      depth: 0,
     };
   }
 
@@ -198,14 +196,13 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
       z: this._core.store.state.scale,
       width: this._core.store.state.viewportWidth / this._core.store.state.scale,
       height: this._core.store.state.viewportHeight / this._core.store.state.scale,
-      depth: 100,
     };
 
     return (
-      this.boundingBox.x < viewportBounds.x + viewportBounds.width &&
-      this.boundingBox.x + this.boundingBox.width > viewportBounds.x &&
-      this.boundingBox.y < viewportBounds.y + viewportBounds.height &&
-      this.boundingBox.y + this.boundingBox.height > viewportBounds.y
+      this.rotatedBoundingBox.x < viewportBounds.x + viewportBounds.width &&
+      this.rotatedBoundingBox.x + this.rotatedBoundingBox.width > viewportBounds.x &&
+      this.rotatedBoundingBox.y < viewportBounds.y + viewportBounds.height &&
+      this.rotatedBoundingBox.y + this.rotatedBoundingBox.height > viewportBounds.y
     );
   }
 

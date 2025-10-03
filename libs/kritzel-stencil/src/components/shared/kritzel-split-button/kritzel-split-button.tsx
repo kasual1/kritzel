@@ -28,6 +28,7 @@ export class KritzelSplitButton {
   @State() isMenuOpen = false;
   @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
   @State() anchorElement: HTMLElement;
+  @State() menuScrollTop: number = 0;
 
   splitMenuButtonRef: HTMLButtonElement;
   menuRef: HTMLKritzelMenuElement;
@@ -66,6 +67,10 @@ export class KritzelSplitButton {
     this.isMenuOpen = true;
     this.anchorElement = this.host;
     this.menuOpen.emit();
+
+    requestAnimationFrame(() => {
+      this.menuRef?.setScrollTop(this.menuScrollTop);
+    });
   };
 
   private closeMenu = () => {
@@ -95,6 +100,10 @@ export class KritzelSplitButton {
     this.itemCloseChildMenu.emit(event.detail);
   };
 
+  private handleScroll = event => {
+    this.menuScrollTop = (event.target as HTMLElement).scrollTop;
+  }
+
   render() {
     return (
       <Host class={{ mobile: this.isTouchDevice }}>
@@ -118,6 +127,7 @@ export class KritzelSplitButton {
             onItemToggleChildMenu={this.handleItemToggleChildMenu}
             onItemCloseChildMenu={this.handleItemCloseChildMenu}
             onClose={this.closeMenu}
+            onScroll={this.handleScroll}
           ></kritzel-menu>
         </kritzel-portal>
       </Host>
