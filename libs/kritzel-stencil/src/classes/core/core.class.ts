@@ -293,6 +293,8 @@ export class KritzelCore {
     const activeWorkspace = this._store.state.activeWorkspace;
     this.store.state.copiedObjects.updateWorkspaceId(activeWorkspace.id);
 
+    this.store.state.copiedObjects.updateZIndices(this.store.currentZIndex);
+
     const commands = [];
     let previousSelectionGroup = null;
     if (this._store.state.selectionGroup !== null) {
