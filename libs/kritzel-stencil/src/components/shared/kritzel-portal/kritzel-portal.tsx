@@ -79,7 +79,7 @@ export class KritzelPortal {
     const isInViewport = KritzelHTMLHelper.isElementInViewport(this.anchor);
 
     if (!isInViewport) {
-      this.anchor.blur();
+      this.anchor?.blur();
       this.closePortal();
       return;
     }
