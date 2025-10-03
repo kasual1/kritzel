@@ -290,6 +290,9 @@ export class KritzelCore {
 
     this._store.state.copiedObjects.updatePosition(adjustedX, adjustedY);
 
+    const activeWorkspace = this._store.state.activeWorkspace;
+    this.store.state.copiedObjects.updateWorkspaceId(activeWorkspace.id);
+
     const commands = [];
     let previousSelectionGroup = null;
     if (this._store.state.selectionGroup !== null) {

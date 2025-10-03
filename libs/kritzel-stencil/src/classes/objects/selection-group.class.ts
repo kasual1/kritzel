@@ -45,6 +45,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.objects.forEach(obj => (obj.isSelected = false));
   }
 
+  updateWorkspaceId(workspaceId: string) {
+    this.workspaceId = workspaceId;
+    this.objects.forEach(obj => (obj.workspaceId = workspaceId));
+  }
+
   updatePosition(x: number, y: number) {
     this.objects.forEach(obj => {
       const deltaX = obj.translateX - this.translateX;
