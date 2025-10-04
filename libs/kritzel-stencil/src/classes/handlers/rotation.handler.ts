@@ -67,6 +67,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           const cursorX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
           const cursorY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
 
+          this.initialSelectionGroupRotation = this._core.store.state.selectionGroup.rotation;
           this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - this._core.store.state.selectionGroup.rotation;
 
           this.unchangedObjects = this._core.store.state.selectionGroup.objects.map(obj => obj.clone());
