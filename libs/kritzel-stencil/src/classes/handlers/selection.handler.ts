@@ -232,14 +232,14 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       return;
     }
 
+    object.isSelected = false;
+
     const selectionGroup = KritzelSelectionGroup.create(this._core);
     selectionGroup.addOrRemove(object);
     selectionGroup.isSelected = true;
     selectionGroup.rotation = object.rotation;
 
-    this._core.store.setState('selectionGroup', selectionGroup);
-
-    this._core.history.executeCommand(new AddSelectionGroupCommand(this._core, this, this._core.store.state.selectionGroup));
+    this._core.history.executeCommand(new AddSelectionGroupCommand(this._core, this, selectionGroup));
   }
 
   private addSelectedObjectsToSelectionGroup(): void {
@@ -251,8 +251,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.setState('selectionGroup', KritzelSelectionGroup.create(this._core));
     selectedObjects.forEach(o => {
-      o.isSelected = false;
       this._core.store.state.selectionGroup.addOrRemove(o);
+      o.isSelected = false;
     });
 
     const selectionGroup = this._core.store.state.selectionGroup;
@@ -262,8 +262,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       selectionGroup.rotation = selectionGroup.objects[0].rotation;
     }
 
-    this._core.store.setState('selectionGroup', selectionGroup);
-
-    this._core.history.executeCommand(new AddSelectionGroupCommand(this._core, this, this._core.store.state.selectionGroup));
+    this._core.history.executeCommand(new AddSelectionGroupCommand(this._core, this, selectionGroup));
   }
 }
