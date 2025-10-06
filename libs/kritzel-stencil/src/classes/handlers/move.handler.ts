@@ -91,18 +91,18 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.setState('isDragging', true);
         this.endX = x;
         this.endY = y;
-        this.hasMoved = true;
-
+        
         const moveDeltaX = Math.abs(x - this.startX);
         const moveDeltaY = Math.abs(y - this.startY);
         const moveThreshold = 5;
-
+        
         if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
           clearTimeout(this._core.store.state.longTouchTimeout);
-
+          
           this._core.store.state.selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
           this.dragStartX = x;
           this.dragStartY = y;
+          this.hasMoved = true;
         }
       }
     }
