@@ -417,6 +417,8 @@ export class KritzelCore {
     this._store.setState('isSelecting', false);
     this._store.setState('isResizeHandleSelected', false);
     this._store.setState('isRotationHandleSelected', false);
+
+    this.rerender();
   }
 
   resetActiveText() {
