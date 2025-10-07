@@ -27,13 +27,12 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handlePointerDown(event: PointerEvent): void {
-     if (event.cancelable) {
+    if (event.cancelable) {
       event.preventDefault();
     }
 
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
-
         this._core.store.setState('isResizeHandleSelected', this.isHandleSelected(event));
         this._core.store.setState('isRotationHandleSelected', this.isRotationHandleSelected(event));
         this._core.store.setState('resizeHandleType', this.getHandleType(event));
@@ -50,7 +49,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           this._core.history.executeCommand(new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup));
         }
 
-        if(selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1 && selectedObject.objects[0].isInteractive) {
+        if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1 && selectedObject.objects[0].isInteractive) {
           return;
         }
       }
@@ -88,7 +87,6 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         ) {
           this._core.history.executeCommand(new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup));
         }
-
       }
 
       this.rotationHandler.handlePointerDown(event);
@@ -101,7 +99,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handlePointerMove(event: PointerEvent): void {
-     if (event.cancelable) {
+    if (event.cancelable) {
       event.preventDefault();
     }
 
@@ -130,15 +128,15 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   handlePointerUp(event: PointerEvent): void {
-     if (event.cancelable) {
+    if (event.cancelable) {
       event.preventDefault();
     }
 
     if (event.pointerType === 'mouse') {
       this.moveHandler.handlePointerUp(event);
-      this.selectionHandler.handlePointerUp(event);
       this.resizeHandler.handlePointerUp(event);
       this.rotationHandler.handlePointerUp(event);
+      this.selectionHandler.handlePointerUp(event);
 
       this._core.rerender();
     }
@@ -147,7 +145,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       if (this._core.store.state.isScaling === true) {
         return;
       }
-
+      
       this.rotationHandler.handlePointerUp(event);
       this.resizeHandler.handlePointerUp(event);
       this.moveHandler.handlePointerUp(event);

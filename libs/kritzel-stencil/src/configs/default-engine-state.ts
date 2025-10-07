@@ -11,6 +11,7 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   selectionGroup: null,
   resizeHandleType: null,
   hasViewportChanged: false,
+  hasObjectsChanged: false,
   isReady: false,
   isEnabled: true,
   isScaling: false,

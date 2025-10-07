@@ -71,20 +71,30 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   handlePointerUp(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event) && this._core.store.state.isSelecting) {
-        if (this.isSelectionClick) {
-          const x = this._core.store.state.pointerX;
-          const y = this._core.store.state.pointerY;
-          const selectedObject = this._core.getObjectsFromPointerEvent(event, '.object').find(obj => obj.hitTest(x, y));
+      if (KritzelEventHelper.isLeftClick(event)) {
+        const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
 
-          this.addObjectToSelectionGroup(selectedObject);
-          this.removeSelectionBox();
+        if (this._core.store.state.selectionGroup?.objects.length === 1 && hasObjectsMoved === false) {
+          this._core.store.state.selectionGroup.objects[0].edit();
         }
 
-        if (this.isSelectionDrag) {
-          this.updateMouseSelection(event);
-          this.addSelectedObjectsToSelectionGroup();
-          this.removeSelectionBox();
+        this._core.store.setState('hasObjectsChanged', false);
+
+        if (this._core.store.state.isSelecting) {
+          if (this.isSelectionClick) {
+            const x = this._core.store.state.pointerX;
+            const y = this._core.store.state.pointerY;
+            const selectedObject = this._core.getObjectsFromPointerEvent(event, '.object').find(obj => obj.hitTest(x, y));
+
+            this.addObjectToSelectionGroup(selectedObject);
+            this.removeSelectionBox();
+          }
+
+          if (this.isSelectionDrag) {
+            this.updateMouseSelection(event);
+            this.addSelectedObjectsToSelectionGroup();
+            this.removeSelectionBox();
+          }
         }
       }
     }
@@ -92,12 +102,19 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     if (event.pointerType === 'touch') {
       clearTimeout(this.touchStartTimeout);
 
+      const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
+
+      if (this._core.store.state.selectionGroup?.objects.length === 1 && hasObjectsMoved === false) {
+        this._core.store.state.selectionGroup.objects[0].edit();
+      }
+
+      this._core.store.setState('hasObjectsChanged', false);
+
       if (this._core.store.state.isSelecting) {
         if (this.isSelectionClick) {
           const x = this._core.store.state.pointerX;
           const y = this._core.store.state.pointerY;
           const selectedObject = this._core.getObjectsFromPointerEvent(event, '.object').find(obj => obj.hitTest(x, y));
-
           this.addObjectToSelectionGroup(selectedObject);
           this.removeSelectionBox();
         }

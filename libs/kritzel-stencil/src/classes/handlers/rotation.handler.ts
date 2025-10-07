@@ -133,6 +133,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
         this._core.history.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
 
         this._core.store.setState('isRotating', false);
+        this._core.store.setState('hasObjectsChanged', true);
 
         this.reset();
       }
@@ -143,6 +144,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
         this._core.history.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
 
         this._core.store.setState('isRotating', false);
+        this._core.store.setState('hasObjectsChanged', true);
 
         this.reset();
 
