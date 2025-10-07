@@ -96,7 +96,7 @@ export class KritzelEngine {
       return;
     }
 
-    if(KritzelDevicesHelper.isTouchDevice()){
+    if (KritzelDevicesHelper.isTouchDevice()) {
       KritzelEventHelper.onLongPress(ev, (event: PointerEvent) => this.longpress.emit(event));
     }
 
@@ -184,8 +184,13 @@ export class KritzelEngine {
     if (this.core.store.isDisabled) {
       return;
     }
-    
+
     this.keyHandler.handleKeyUp(ev);
+  }
+
+  @Listen('dblclick', { target: 'document' })
+  preventDoubleTapZoomOnTouchDevices(ev: MouseEvent) {
+    ev.preventDefault();
   }
 
   @Method()
@@ -542,11 +547,7 @@ export class KritzelEngine {
                         }}
                         viewBox={object?.viewBox}
                       >
-                        <path
-                          d={object?.d}
-                          fill={object.fill}
-                          stroke={object?.stroke}
-                        />
+                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} />
                       </svg>
                     )}
 
