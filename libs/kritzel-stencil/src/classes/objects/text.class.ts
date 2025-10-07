@@ -3,6 +3,7 @@ import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
+import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 
 export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   override __class__: string = 'KritzelText';
@@ -170,10 +171,14 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   }
 
   edit(): void {
+    KritzelKeyboardHelper.disableInteractiveWidget();
+
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
     this._core.store.setState('activeText', this);
     this._core.clearSelection();
 
     this.focus();
+
+    KritzelKeyboardHelper.enableInteractiveWidget();
   }
 }
