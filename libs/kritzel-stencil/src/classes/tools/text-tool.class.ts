@@ -43,18 +43,19 @@ export class KritzelTextTool extends KritzelBaseTool {
       const objectElement = path.find(element => element.classList && element.classList.contains('object'));
       const object = this._core.findObjectById(objectElement?.id);
 
-      if (this._core.store.state.activeText === null && object && object instanceof KritzelText) {
+      if (object instanceof KritzelText) {
         this._core.store.setState('activeText', object);
         object.focus();
         return;
       }
 
       if (this._core.store.state.activeText !== null && object instanceof KritzelText) {
+        this._core.store.setState('activeText', object);
         object.focus();
         return;
       }
 
-      if (this._core.store.state.activeText !== null) {
+      if (this._core.store.state.activeText !== null && object instanceof KritzelText === false) {
         this._core.resetActiveText();
         this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
         return;
@@ -85,18 +86,19 @@ export class KritzelTextTool extends KritzelBaseTool {
       const objectElement = path.find(element => element.classList && element.classList.contains('object'));
       const object = this._core.findObjectById(objectElement?.id);
 
-      if (this._core.store.state.activeText === null && object && object instanceof KritzelText) {
+      if (object instanceof KritzelText) {
         this._core.store.setState('activeText', object);
         object.focus();
         return;
       }
 
       if (this._core.store.state.activeText !== null && object instanceof KritzelText) {
+        this._core.store.setState('activeText', object);
         object.focus();
         return;
       }
 
-      if (this._core.store.state.activeText !== null) {
+      if (this._core.store.state.activeText !== null && object instanceof KritzelText === false) {
         this._core.resetActiveText();
         this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
         return;
