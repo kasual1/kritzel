@@ -163,6 +163,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.history.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
 
         this._core.store.setState('isResizing', false);
+        this._core.store.setState('hasObjectsChanged', true);
 
         this.reset();
       }
@@ -173,6 +174,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.history.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
 
         this._core.store.setState('isResizing', false);
+        this._core.store.setState('hasObjectsChanged', true);
 
         this.reset();
 

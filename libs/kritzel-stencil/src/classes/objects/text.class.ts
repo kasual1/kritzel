@@ -174,9 +174,6 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this._core.store.setState('activeText', this);
     this._core.clearSelection();
 
-
-    setTimeout(() => {
-      this.focus();
-    }, 300);
+    this.focus();
   }
 }

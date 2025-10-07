@@ -115,6 +115,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
         if (this.hasMoved) {
           this._core.history.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
+          this._core.store.setState('hasObjectsChanged', true);
         }
 
         this.reset();
@@ -127,6 +128,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
         if (this.hasMoved) {
           this._core.history.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
+          this._core.store.setState('hasObjectsChanged', true);
         }
 
         this.reset();
