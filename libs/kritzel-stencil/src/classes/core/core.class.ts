@@ -341,7 +341,7 @@ export class KritzelCore {
   }
 
   bringToFront(object?: KritzelBaseObject<any>) {
-    const max = Math.max(...this._store.allObjects.map(obj => obj.zIndex)) + 1;
+    const max = Math.max(...this._store.allNonSelectionObjects.map(obj => obj.zIndex)) + 1;
     const objects = object ? [object] : this._store.state.selectionGroup.objects;
     const increaseZIndexCommands = objects.map(obj => {
       return new UpdateObjectCommand(this, this, obj, { zIndex: max });
@@ -351,7 +351,7 @@ export class KritzelCore {
   }
 
   sendToBack(object?: KritzelBaseObject<any>) {
-    const min = Math.min(...this._store.allObjects.map(obj => obj.zIndex)) - 1;
+    const min = Math.min(...this._store.allNonSelectionObjects.map(obj => obj.zIndex)) - 1;
     const objects = object ? [object] : this._store.state.selectionGroup.objects;
     const decreaseZIndexCommands = objects.map(obj => {
       return new UpdateObjectCommand(this, this, obj, { zIndex: min });
