@@ -158,10 +158,12 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
           const end = this.elementRef.selectionEnd;
           const value = this.elementRef.value;
 
-          this.elementRef.value = value.substring(0, start) + text + value.substring(end);
+          this.value = (value.substring(0, start) + text + value.substring(end)).trim();
+          this.elementRef.value = this.value;
 
-          this.elementRef.selectionStart = this.elementRef.selectionEnd = start + text.length;
-          this.value = this.elementRef.value;
+          const length = this.elementRef.value.length;
+          this.elementRef.setSelectionRange(length, length);
+
           this.updateTextareaDimensions();
         });
       } catch (err) {
