@@ -20,6 +20,10 @@ export class KritzelStore {
     return this._state.objectsMap.allObjects();
   }
 
+  get allNonSelectionObjects() {
+    return this._state.objectsMap.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox));
+  }
+
   get selectedObjects() {
     return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.isSelected);
   }
