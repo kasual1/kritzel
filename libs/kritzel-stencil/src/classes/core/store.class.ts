@@ -13,7 +13,7 @@ export class KritzelStore {
   }
 
   get currentZIndex() {
-    return this._state.objectsMap.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox)).length;
+    return Math.max(0, ...this._state.objectsMap.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox)).map(o => o.zIndex)) + 1;
   }
 
   get allObjects() {
