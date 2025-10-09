@@ -315,8 +315,9 @@ export class KritzelCore {
   }
 
   bringForward(object?: KritzelBaseObject<any>) {
-    const max = this._store.allObjects.length + 1;
     const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
+    const max = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1 : 0;
     const increaseZIndexCommands = objects.map(obj => {
       if (obj.zIndex === max) {
         return;
@@ -328,8 +329,9 @@ export class KritzelCore {
   }
 
   sendBackward(object?: KritzelBaseObject<any>) {
-    const min = 0;
     const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
+    const min = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1 : 0;
     const decreaseZIndexCommands = objects.map(obj => {
       if (obj.zIndex === min) {
         return;
@@ -341,8 +343,9 @@ export class KritzelCore {
   }
 
   bringToFront(object?: KritzelBaseObject<any>) {
-    const max = Math.max(...this._store.allNonSelectionObjects.map(obj => obj.zIndex)) + 1;
     const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
+    const max = Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1;
     const increaseZIndexCommands = objects.map(obj => {
       return new UpdateObjectCommand(this, this, obj, { zIndex: max });
     });
@@ -351,8 +354,9 @@ export class KritzelCore {
   }
 
   sendToBack(object?: KritzelBaseObject<any>) {
-    const min = Math.min(...this._store.allNonSelectionObjects.map(obj => obj.zIndex)) - 1;
     const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
+    const min = Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1;
     const decreaseZIndexCommands = objects.map(obj => {
       return new UpdateObjectCommand(this, this, obj, { zIndex: min });
     });
