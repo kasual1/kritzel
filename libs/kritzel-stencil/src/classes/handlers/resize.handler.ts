@@ -30,7 +30,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           const clientX = event.clientX - this._core.store.offsetX;
           const clientY = event.clientY - this._core.store.offsetY;
 
-          this._core.store.setState('isResizing', true);
+          this._core.store.state.isResizing = true;
           this.initialMouseX = clientX;
           this.initialMouseY = clientY;
           this.initialSize.width = this._core.store.state.selectionGroup.width;
@@ -54,7 +54,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           const clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);
           const clientY = Math.round(firstTouch.clientY - this._core.store.offsetY);
 
-          this._core.store.setState('isResizing', true);
+          this._core.store.state.isResizing = true;
           this.initialMouseX = clientX;
           this.initialMouseY = clientY;
           this.initialSize.width = this._core.store.state.selectionGroup.width;
@@ -162,8 +162,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
       if (this._core.store.state.isResizing) {
         this._core.history.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
 
-        this._core.store.setState('isResizing', false);
-        this._core.store.setState('hasObjectsChanged', true);
+        this._core.store.state.isResizing = false;
+        this._core.store.state.hasObjectsChanged = true;
 
         this.reset();
       }
@@ -173,8 +173,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
       if (this._core.store.state.isResizing) {
         this._core.history.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
 
-        this._core.store.setState('isResizing', false);
-        this._core.store.setState('hasObjectsChanged', true);
+        this._core.store.state.isResizing = false;
+        this._core.store.state.hasObjectsChanged = true;
 
         this.reset();
 

@@ -176,7 +176,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     KritzelKeyboardHelper.disableInteractiveWidget();
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
-    this._core.store.setState('activeText', this);
+    this._core.store.state.activeText = this;
     this._core.clearSelection();
 
     this.focus();

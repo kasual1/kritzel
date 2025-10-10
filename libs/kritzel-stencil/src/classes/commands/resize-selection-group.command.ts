@@ -18,7 +18,7 @@ export class ResizeSelectionGroupCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
-    this._core.store.setState('selectionGroup', this.selectionGroup);
+    this._core.store.state.selectionGroup = this.selectionGroup;
     this._core.store.state.selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
     this._core.store.state.selectionGroup.objects.forEach(object => {
       this._core.store.state.objectsMap.update(object);
@@ -27,7 +27,7 @@ export class ResizeSelectionGroupCommand extends KritzelBaseCommand {
   }
 
   undo(): void {
-    this._core.store.setState('selectionGroup', this.selectionGroup);
+    this._core.store.state.selectionGroup = this.selectionGroup;
     this._core.store.state.selectionGroup.resize(this.previousSize.x, this.previousSize.y, this.previousSize.width, this.previousSize.height);
     this._core.store.state.selectionGroup.objects.forEach(object => {
       this._core.store.state.objectsMap.update(object);

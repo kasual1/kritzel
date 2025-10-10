@@ -14,14 +14,14 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
-        this._core.store.setState('isErasing', true);
+        this._core.store.state.isErasing = true;
       }
     }
 
     if (event.pointerType === 'touch') {
       this.touchStartTimeout = setTimeout(() => {
         if (this._core.store.state.pointers.size === 1 && !this._core.store.state.isScaling) {
-          this._core.store.setState('isErasing', true);
+          this._core.store.state.isErasing = true;
         }
       }, 80);
     }
@@ -79,7 +79,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
           this._core.history.executeCommand(new BatchCommand(this._core, this, removeCommands));
         }
 
-        this._core.store.setState('isErasing', false);
+        this._core.store.state.isErasing = false;
       }
     }
 
@@ -98,7 +98,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
           this._core.history.executeCommand(new BatchCommand(this._core, this, removeCommands));
         }
 
-        this._core.store.setState('isErasing', false);
+        this._core.store.state.isErasing = false;
       }
     }
   }

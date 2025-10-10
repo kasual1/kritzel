@@ -44,13 +44,13 @@ export class KritzelTextTool extends KritzelBaseTool {
       const object = this._core.findObjectById(objectElement?.id);
 
       if (object instanceof KritzelText) {
-        this._core.store.setState('activeText', object);
+        this._core.store.state.activeText = object;
         object.focus();
         return;
       }
 
       if (this._core.store.state.activeText !== null && object instanceof KritzelText) {
-        this._core.store.setState('activeText', object);
+        this._core.store.state.activeText = object;
         object.focus();
         return;
       }
@@ -74,7 +74,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       text.translateY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
       text.zIndex = this._core.store.currentZIndex;
 
-      this._core.store.setState('activeText', text);
+      this._core.store.state.activeText = text;
 
       this._core.history.executeCommand(new AddObjectCommand(this._core, this, text));
     }
@@ -87,13 +87,13 @@ export class KritzelTextTool extends KritzelBaseTool {
       const object = this._core.findObjectById(objectElement?.id);
 
       if (object instanceof KritzelText) {
-        this._core.store.setState('activeText', object);
+        this._core.store.state.activeText = object;
         object.focus();
         return;
       }
 
       if (this._core.store.state.activeText !== null && object instanceof KritzelText) {
-        this._core.store.setState('activeText', object);
+        this._core.store.state.activeText = object;
         object.focus();
         return;
       }
@@ -119,7 +119,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       text.translateY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
       text.zIndex = this._core.store.currentZIndex;
 
-      this._core.store.setState('activeText', text);
+      this._core.store.state.activeText = text;
 
       this._core.history.executeCommand(new AddObjectCommand(this._core, this, text));
     }

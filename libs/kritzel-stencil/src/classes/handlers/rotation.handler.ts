@@ -30,7 +30,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           const clientX = event.clientX - this._core.store.offsetX;
           const clientY = event.clientY - this._core.store.offsetY;
 
-          this._core.store.setState('isRotating', true);
+          this._core.store.state.isRotating = true;
 
           const centerX = this._core.store.state.selectionGroup.translateX + this._core.store.state.selectionGroup.width / 2 / this._core.store.state.scale;
           const centerY = this._core.store.state.selectionGroup.translateY + this._core.store.state.selectionGroup.height / 2 / this._core.store.state.scale;
@@ -59,7 +59,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           const clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);
           const clientY = Math.round(firstTouch.clientY - this._core.store.offsetY);
 
-          this._core.store.setState('isRotating', true);
+          this._core.store.state.isRotating = true;
 
           const centerX = this._core.store.state.selectionGroup.translateX + this._core.store.state.selectionGroup.width / 2 / this._core.store.state.scale;
           const centerY = this._core.store.state.selectionGroup.translateY + this._core.store.state.selectionGroup.height / 2 / this._core.store.state.scale;
@@ -132,8 +132,8 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
       if (this._core.store.state.isRotating) {
         this._core.history.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
 
-        this._core.store.setState('isRotating', false);
-        this._core.store.setState('hasObjectsChanged', true);
+        this._core.store.state.isRotating = false;
+        this._core.store.state.hasObjectsChanged = true;
 
         this.reset();
       }
@@ -143,8 +143,8 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
       if (this._core.store.state.isRotating) {
         this._core.history.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
 
-        this._core.store.setState('isRotating', false);
-        this._core.store.setState('hasObjectsChanged', true);
+        this._core.store.state.isRotating = false;
+        this._core.store.state.hasObjectsChanged = true;
 
         this.reset();
 

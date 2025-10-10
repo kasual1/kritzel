@@ -34,14 +34,14 @@ export class UpdateViewportCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
-    this._core.store.setState('scale', this.currentViewport.scale);
-    this._core.store.setState('translateX', this.currentViewport.translateX);
-    this._core.store.setState('translateY', this.currentViewport.translateY);
+    this._core.store.state.scale = this.currentViewport.scale;
+    this._core.store.state.translateX = this.currentViewport.translateX;
+    this._core.store.state.translateY = this.currentViewport.translateY;
   }
 
   undo(): void {
-    this._core.store.setState('scale', this.previousViewport.scale);
-    this._core.store.setState('translateX', this.previousViewport.translateX);
-    this._core.store.setState('translateY', this.previousViewport.translateY);
+    this._core.store.state.scale = this.previousViewport.scale;
+    this._core.store.state.translateX = this.previousViewport.translateX;
+    this._core.store.state.translateY = this.previousViewport.translateY;
   }
 }

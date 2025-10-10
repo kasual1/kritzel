@@ -18,7 +18,7 @@ export class RotateSelectionGroupCommand extends KritzelBaseCommand {
   }
 
   execute(): void {
-    this._core.store.setState('selectionGroup', this.selectionGroup);
+    this._core.store.state.selectionGroup = this.selectionGroup;
     this._core.store.state.selectionGroup.rotate(this.rotation);
     this._core.store.state.selectionGroup.objects.forEach(object => {
       this._core.store.state.objectsMap.update(object);
@@ -27,7 +27,7 @@ export class RotateSelectionGroupCommand extends KritzelBaseCommand {
   }
 
   undo(): void {
-    this._core.store.setState('selectionGroup', this.selectionGroup);
+    this._core.store.state.selectionGroup = this.selectionGroup;
     this._core.store.state.selectionGroup.rotate(this.initialRotation);
     this._core.store.state.selectionGroup.objects.forEach(object => {
       this._core.store.state.objectsMap.update(object);
