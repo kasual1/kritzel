@@ -35,7 +35,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           const clientX = event.clientX - this._core.store.offsetX;
           const clientY = event.clientY - this._core.store.offsetY;
 
-          this._core.store.setState('isDragging', true);
+          this._core.store.state.isDragging = true;
           this.dragStartX = clientX;
           this.dragStartY = clientY;
           this.startX = this.dragStartX;
@@ -88,7 +88,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
         const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
 
-        this._core.store.setState('isDragging', true);
+        this._core.store.state.isDragging = true;
         this.endX = x;
         this.endY = y;
         
@@ -111,11 +111,11 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDragging) {
-        this._core.store.setState('isDragging', false);
+        this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
           this._core.history.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
-          this._core.store.setState('hasObjectsChanged', true);
+          this._core.store.state.hasObjectsChanged = true;
         }
 
         this.reset();
@@ -124,11 +124,11 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isDragging) {
-        this._core.store.setState('isDragging', false);
+        this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
           this._core.history.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
-          this._core.store.setState('hasObjectsChanged', true);
+          this._core.store.state.hasObjectsChanged = true;
         }
 
         this.reset();

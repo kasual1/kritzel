@@ -65,7 +65,7 @@ export class KritzelHistory {
     if (this._core.store.state.hasViewportChanged) {
       const command = new UpdateViewportCommand(this._core, this, this.previousViewport);
       command.undo();
-      this._core.store.setState('hasViewportChanged', false);
+      this._core.store.state.hasViewportChanged = false;
       this._core.rerender();
       return;
     }
@@ -77,7 +77,7 @@ export class KritzelHistory {
       this.redoStack.add(command);
     }
 
-    this._core.store.setState('copiedObjects', null);
+    this._core.store.state.copiedObjects = null;
     this._core.rerender();
   }
 
@@ -101,7 +101,7 @@ export class KritzelHistory {
       this.redoStack.clear();
     }
 
-    this._core.store.setState('hasViewportChanged', false);
+    this._core.store.state.hasViewportChanged = false;
     this.previousViewport = {
       scale: this._core.store.state.scale,
       scaleStep: this._core.store.state.scaleStep,

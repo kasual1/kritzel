@@ -52,9 +52,9 @@ export class KritzelEngine {
     if (newValue > ABSOLUTE_SCALE_MAX) {
       console.warn(`scaleMax cannot be greater than ${ABSOLUTE_SCALE_MAX}.`);
       this.scaleMax = ABSOLUTE_SCALE_MAX;
-      this.core.store.setState('scaleMax', this.scaleMax);
+      this.core.store.state.scaleMax = this.scaleMax;
     } else {
-      this.core.store.setState('scaleMax', newValue);
+      this.core.store.state.scaleMax = newValue;
     }
   }
   @Prop({ mutable: true }) scaleMin: number = ABSOLUTE_SCALE_MIN;
@@ -63,9 +63,9 @@ export class KritzelEngine {
     if (newValue < ABSOLUTE_SCALE_MIN) {
       console.warn(`scaleMin cannot be less than ${ABSOLUTE_SCALE_MIN}.`);
       this.scaleMin = ABSOLUTE_SCALE_MIN;
-      this.core.store.setState('scaleMin', this.scaleMin);
+      this.core.store.state.scaleMin = this.scaleMin;
     } else {
-      this.core.store.setState('scaleMin', newValue);
+      this.core.store.state.scaleMin = newValue;
     }
   }
 
@@ -221,13 +221,13 @@ export class KritzelEngine {
 
   @Method()
   async disable() {
-    this.core.store.setState('isEnabled', false);
+    this.core.store.state.isEnabled = false;
     this.core.rerender();
   }
 
   @Method()
   async enable() {
-    this.core.store.setState('isEnabled', true);
+    this.core.store.state.isEnabled = true;
     this.core.rerender();
   }
 
@@ -279,10 +279,10 @@ export class KritzelEngine {
   @Method()
   async hideContextMenu() {
     this.core.store.state.pointers.clear();
-    this.core.store.setState('isContextMenuVisible', false);
-    this.core.store.setState('selectionBox', null);
-    this.core.store.setState('isSelecting', false);
-    this.core.store.setState('isEnabled', true);
+    this.core.store.state.isContextMenuVisible = false;
+    this.core.store.state.selectionBox = null;
+    this.core.store.state.isSelecting = false;
+    this.core.store.state.isEnabled = true;
     this.core.rerender();
   }
 
@@ -432,7 +432,7 @@ export class KritzelEngine {
     this._registerStateChangeListeners();
 
     if (this.core.store.state.isReady === false) {
-      this.core.store.setState('isReady', true);
+      this.core.store.state.isReady = true;
       this.isEngineReady.emit(this.core.store.state);
     }
   }
@@ -446,8 +446,8 @@ export class KritzelEngine {
       this.core.clearSelection();
     }
 
-    this.core.store.setState('skipContextMenu', false);
-    this.core.store.setState('copiedObjects', null);
+    this.core.store.state.skipContextMenu = false;
+    this.core.store.state.copiedObjects = null;
     this.activeToolChange.emit(activeTool);
     KritzelKeyboardHelper.forceHideKeyboard();
   }

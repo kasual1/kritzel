@@ -64,7 +64,7 @@ export class KritzelCore {
     const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
 
-    this._store.setState('activeWorkspace', workspace ?? mostRecentWorkspace ?? fallbackWorkspace);
+    this._store.state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
 
     const isExistingWorkspace = await this.getWorkspace(this._store.state.activeWorkspace.id);
 
@@ -74,11 +74,11 @@ export class KritzelCore {
       await this.createWorkspace(this._store.state.activeWorkspace);
     }
 
-    this._store.setState('workspaces', await this.getWorkspaces());
+    this._store.state.workspaces = await this.getWorkspaces();
 
-    this._store.setState('translateX', this._store.state.activeWorkspace.viewport.translateX);
-    this._store.setState('translateY', this._store.state.activeWorkspace.viewport.translateY);
-    this._store.setState('scale', this._store.state.activeWorkspace.viewport.scale);
+    this._store.state.translateX = this._store.state.activeWorkspace.viewport.translateX;
+    this._store.state.translateY = this._store.state.activeWorkspace.viewport.translateY;
+    this._store.state.scale = this._store.state.activeWorkspace.viewport.scale;
 
     await this.initializeWorkspaceObjects(this._store.state.activeWorkspace.id);
   }
@@ -213,7 +213,7 @@ export class KritzelCore {
 
     if (index !== -1) {
       workspaces[index] = workspace;
-      this._store.setState('workspaces', workspaces);
+      this._store.state.workspaces = workspaces;
     }
   }
 
@@ -228,10 +228,7 @@ export class KritzelCore {
 
     await this._database.delete('workspaces', workspace.id);
 
-    this._store.setState(
-      'workspaces',
-      this._store.state.workspaces.filter(ws => ws.id !== workspace.id),
-    );
+    this._store.state.workspaces = this._store.state.workspaces.filter(ws => ws.id !== workspace.id);
   }
 
   rerender() {
@@ -276,14 +273,14 @@ export class KritzelCore {
   }
 
   copy() {
-    this._store.setState('copiedObjects', this._store.state.selectionGroup.copy() as KritzelSelectionGroup);
+    this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
   }
 
   paste(x?: number, y?: number) {
     const copiedObjects = this._store.state.copiedObjects;
     copiedObjects.isSelected = true;
 
-    this._store.setState('copiedObjects', copiedObjects);
+    this._store.state.copiedObjects = copiedObjects;
 
     const adjustedX = x !== undefined ? x : this._store.state.copiedObjects.translateX + 25 / this._store.state.scale;
     const adjustedY = y !== undefined ? y : this._store.state.copiedObjects.translateY + 25 / this._store.state.scale;
@@ -309,8 +306,8 @@ export class KritzelCore {
 
     this.history.executeCommand(new BatchCommand(this, this, commands));
 
-    this._store.setState('isSelecting', false);
-    this._store.setState('copiedObjects', this._store.state.selectionGroup.copy() as KritzelSelectionGroup);
+    this._store.state.isSelecting = false;
+    this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
   }
 
@@ -377,7 +374,7 @@ export class KritzelCore {
 
     selectionGroup.isSelected = true;
 
-    this._store.setState('selectionGroup', selectionGroup);
+    this._store.state.selectionBox = selectionGroup;
 
     if (objects.length === 1) {
       selectionGroup.rotation = selectionGroup.objects[0].rotation;
@@ -401,7 +398,7 @@ export class KritzelCore {
 
       selectionGroup.isSelected = true;
 
-      this._store.setState('isSelecting', false);
+      this._store.state.isSelecting = false;
 
       if (objectsInViewport.length === 1) {
         selectionGroup.rotation = selectionGroup.objects[0].rotation;
@@ -416,11 +413,11 @@ export class KritzelCore {
     const command = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup);
     this.history.executeCommand(command);
 
-    this._store.setState('selectionGroup', null);
-    this._store.setState('selectionBox', null);
-    this._store.setState('isSelecting', false);
-    this._store.setState('isResizeHandleSelected', false);
-    this._store.setState('isRotationHandleSelected', false);
+    this._store.state.selectionGroup = null;
+    this._store.state.selectionBox = null;
+    this._store.state.isSelecting = false;
+    this._store.state.isResizeHandleSelected = false;
+    this._store.state.isRotationHandleSelected = false;
 
     this.rerender();
   }
@@ -430,7 +427,7 @@ export class KritzelCore {
       this.deleteObject(this._store.state.activeText.id, true);
     }
 
-    this._store.setState('activeText', null);
+    this._store.state.activeText = null;
   }
 
   getObjectFromPointerEvent(event: PointerEvent, selector = '.object'): KritzelBaseObject<any> | null {

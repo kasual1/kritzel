@@ -56,7 +56,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   }
 
   handleKeyDown(event: KeyboardEvent): void {
-    this._core.store.setState('isCtrlKeyPressed', event.ctrlKey);
+    this._core.store.state.isCtrlKeyPressed = event.ctrlKey;
 
     const shortcut = this.shortcuts.find(s => s.key === event.key && !!s.ctrl === event.ctrlKey && !!s.shift === event.shiftKey && (!s.condition || s.condition(this._core)));
 
@@ -67,6 +67,6 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
   }
 
   handleKeyUp(event: KeyboardEvent): void {
-    this._core.store.setState('isCtrlKeyPressed', event.ctrlKey);
+    this._core.store.state.isCtrlKeyPressed = event.ctrlKey;
   }
 }

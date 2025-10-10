@@ -23,7 +23,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     }
 
     if (this._core.store.state.skipContextMenu) {
-      this._core.store.setState('skipContextMenu', false);
+      this._core.store.state.skipContextMenu =  false;
       return;
     }
 
@@ -35,7 +35,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       selectionGroup.isSelected = true;
       selectionGroup.rotation = selectedObject.rotation;
 
-      this._core.store.setState('isSelecting', false);
+      this._core.store.state.isSelecting = false;
 
       const batch = new BatchCommand(this._core, this, [
         new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup),
@@ -45,7 +45,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       this._core.history.executeCommand(batch);
     }
 
-    this._core.store.setState('contextMenuItems', this._core.store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems);
+    this._core.store.state.contextMenuItems = this._core.store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
 
     let x: number = event.clientX - this._core.store.offsetX;
     let y: number = event.clientY - this._core.store.offsetY;
@@ -65,11 +65,11 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     x = Math.max(margin, x);
     y = Math.max(margin, y);
 
-    this._core.store.setState('contextMenuX', x);
-    this._core.store.setState('contextMenuY', y);
-    this._core.store.setState('isContextMenuVisible', true);
+    this._core.store.state.contextMenuX = x;
+    this._core.store.state.contextMenuY = y;
+    this._core.store.state.isContextMenuVisible = true;
 
-    this._core.store.setState('isEnabled', false);
+    this._core.store.state.isEnabled = false;
 
     this._core.rerender();
   }

@@ -78,7 +78,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
           this._core.store.state.selectionGroup.objects[0].edit();
         }
 
-        this._core.store.setState('hasObjectsChanged', false);
+        this._core.store.state.hasObjectsChanged = false;
 
         if (this._core.store.state.isSelecting) {
           if (this.isSelectionClick) {
@@ -108,7 +108,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
         this._core.store.state.selectionGroup.objects[0].edit();
       }
 
-      this._core.store.setState('hasObjectsChanged', false);
+      this._core.store.state.hasObjectsChanged = false;
 
       if (this._core.store.state.isSelecting) {
         if (this.isSelectionClick) {
@@ -125,14 +125,14 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
           this.removeSelectionBox();
         }
 
-        this._core.store.setState('skipContextMenu', false);
+        this._core.store.state.skipContextMenu = false;
       }
     }
   }
 
   private removeSelectionBox(): void {
-    this._core.store.setState('selectionBox', null);
-    this._core.store.setState('isSelecting', false);
+    this._core.store.state.selectionBox = null;
+    this._core.store.state.isSelecting = false;
     this._core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox);
   }
 
@@ -150,9 +150,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     selectionBox.translateX = this.startX;
     selectionBox.translateY = this.startY;
 
-    this._core.store.setState('selectionGroup', null);
-    this._core.store.setState('selectionBox', selectionBox);
-    this._core.store.setState('isSelecting', true);
+    this._core.store.state.selectionGroup = null;
+    this._core.store.state.selectionBox = selectionBox;
+    this._core.store.state.isSelecting = true;
 
     this._core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
     this._core.store.state.objectsMap.insert(selectionBox);
@@ -181,9 +181,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     selectionBox.translateX = this.startX;
     selectionBox.translateY = this.startY;
 
-    this._core.store.setState('selectionGroup', null);
-    this._core.store.setState('selectionBox', selectionBox);
-    this._core.store.setState('isSelecting', true);
+    this._core.store.state.selectionGroup = null;
+    this._core.store.state.selectionBox = selectionBox;
+    this._core.store.state.isSelecting  = true;
 
     this._core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
     this._core.store.state.objectsMap.insert(selectionBox);
@@ -266,7 +266,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       return;
     }
 
-    this._core.store.setState('selectionGroup', KritzelSelectionGroup.create(this._core));
+    this._core.store.state.selectionGroup = KritzelSelectionGroup.create(this._core);
     selectedObjects.forEach(o => {
       this._core.store.state.selectionGroup.addOrRemove(o);
       o.isSelected = false;

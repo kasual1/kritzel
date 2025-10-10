@@ -8,7 +8,7 @@ export class KritzelStore {
   private readonly _state: KritzelEngineState;
   private readonly _listeners: Map<StatePropertyKey, Set<StateChangeListener<any>>> = new Map();
 
-  get state(): Readonly<KritzelEngineState> {
+  get state(): KritzelEngineState {
     return this._state;
   }
 

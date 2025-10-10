@@ -33,9 +33,9 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
-        this._core.store.setState('isResizeHandleSelected', this.isHandleSelected(event));
-        this._core.store.setState('isRotationHandleSelected', this.isRotationHandleSelected(event));
-        this._core.store.setState('resizeHandleType', this.getHandleType(event));
+        this._core.store.state.isResizeHandleSelected = this.isHandleSelected(event);
+        this._core.store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
+        this._core.store.state.resizeHandleType = this.getHandleType(event);
 
         const selectedObject = this.getSelectedObject(event);
         const isDifferentObject = selectedObject && this._core.store.state.selectionGroup && selectedObject.id !== this._core.store.state.selectionGroup.id;
@@ -68,15 +68,15 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       }
 
       if (this._core.store.state.pointers.size === 1) {
-        this._core.store.setState('isResizeHandleSelected', this.isHandleSelected(event));
-        this._core.store.setState('isRotationHandleSelected', this.isRotationHandleSelected(event));
-        this._core.store.setState('resizeHandleType', this.getHandleType(event));
+        this._core.store.state.isResizeHandleSelected = this.isHandleSelected(event);
+        this._core.store.state.isRotationHandleSelected = this.isRotationHandleSelected(event);
+        this._core.store.state.resizeHandleType = this.getHandleType(event);
 
         const selectedObject = this.getSelectedObject(event);
         const isDifferentObject = selectedObject && this._core.store.state.selectionGroup && selectedObject.id !== this._core.store.state.selectionGroup.id;
 
         if (!this._core.store.state.selectionGroup && selectedObject) {
-          this._core.store.setState('skipContextMenu', true);
+          this._core.store.state.skipContextMenu = true;
         }
 
         if (
