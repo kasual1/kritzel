@@ -286,11 +286,13 @@ export class KritzelCore {
     const adjustedY = y !== undefined ? y : this._store.state.copiedObjects.translateY + 25 / this._store.state.scale;
 
     this._store.state.copiedObjects.updatePosition(adjustedX, adjustedY);
+    this._store.state.copiedObjects.updateZIndices(this._store.currentZIndex);
 
     const activeWorkspace = this._store.state.activeWorkspace;
-    this.store.state.copiedObjects.updateWorkspaceId(activeWorkspace.id);
-
-    this.store.state.copiedObjects.updateZIndices(this.store.currentZIndex);
+    if(this.store.state.copiedObjects.workspaceId !== activeWorkspace.id){
+      this.store.state.copiedObjects.updateWorkspaceId(activeWorkspace.id);
+      this.store.state.copiedObjects.centerInViewport();
+    }
 
     const commands = [];
     let previousSelectionGroup = null;

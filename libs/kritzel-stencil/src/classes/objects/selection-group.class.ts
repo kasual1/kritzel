@@ -22,7 +22,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.store.state.activeWorkspace.id
+    object.workspaceId = core.store.state.activeWorkspace.id;
     object.scale = core.store.state.scale;
     object.zIndex = 99999;
 
@@ -148,10 +148,12 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override copy(): KritzelBaseObject<HTMLElement> {
     const selectionGroup = KritzelSelectionGroup.create(this._core);
 
-    this.objects.sort((a, b) => a.zIndex - b.zIndex).forEach(obj => {
-      const copiedObject = obj.copy() as KritzelBaseObject<any>;
-      selectionGroup.addOrRemove(copiedObject);
-    });
+    this.objects
+      .sort((a, b) => a.zIndex - b.zIndex)
+      .forEach(obj => {
+        const copiedObject = obj.copy() as KritzelBaseObject<any>;
+        selectionGroup.addOrRemove(copiedObject);
+      });
 
     selectionGroup.unchangedObjects = selectionGroup.objects.map(obj => obj.clone());
 
@@ -160,6 +162,23 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     return selectionGroup;
+  }
+
+  override centerInViewport(): void {
+    const viewportWidth = this._core.store.state.viewportWidth;
+    const viewportHeight = this._core.store.state.viewportHeight;
+    const viewportScale = this._core.store.state.scale;
+
+    const translateX = this._core.store.state.translateX;
+    const translateY = this._core.store.state.translateY;
+
+    const selectionGroupWidth = this.totalWidth;
+    const selectionGroupHeight = this.totalHeight;
+
+    const centerX = (((viewportWidth / viewportScale / 2) - (selectionGroupWidth / this.scale / 2)) - translateX / viewportScale);
+    const centerY = (((viewportHeight / viewportScale / 2) - (selectionGroupHeight / this.scale / 2)) - translateY / viewportScale);
+
+    this.updatePosition(centerX, centerY);
   }
 
   refreshObjectDimensions() {

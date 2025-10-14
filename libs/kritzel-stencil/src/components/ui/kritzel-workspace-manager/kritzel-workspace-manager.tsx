@@ -11,7 +11,7 @@ import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen }
 export class KritzelWorkspaceManager {
   @Element() host!: HTMLElement;
 
-  @Prop() activeWorkspace: KritzelWorkspace;
+  @Prop({ mutable: true }) activeWorkspace: KritzelWorkspace;
   @Prop() workspaces: KritzelWorkspace[] = [];
 
   @Event() isWorkspaceManagerReady: EventEmitter<void>;

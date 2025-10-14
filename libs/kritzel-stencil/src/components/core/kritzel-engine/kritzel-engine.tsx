@@ -457,6 +457,8 @@ export class KritzelEngine {
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
+    const viewportCenterX = (this.core.store.state.viewportWidth / 2) + this.core.store.state.translateX;
+    const viewportCenterY = (this.core.store.state.viewportHeight / 2) + this.core.store.state.translateY;
 
     return (
       <Host>
@@ -482,6 +484,9 @@ export class KritzelEngine {
           <div>PointerX: {this.core.store.state?.pointerX}</div>
           <div>PointerY: {this.core.store.state?.pointerY}</div>
           <div>SelectedObjects: {this.core.store.state.selectionGroup?.objects.length || 0}</div>
+          <div>
+            ViewportCenter: ({viewportCenterX.toFixed(2)}, {viewportCenterY.toFixed(2)})
+          </div>
         </div>
 
         <div
