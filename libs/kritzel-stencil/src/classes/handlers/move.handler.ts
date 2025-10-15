@@ -13,6 +13,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   endY: number;
 
   hasMoved: boolean = false;
+  private trackedPointerId: number | null = null;
 
   constructor(core: KritzelCore) {
     super(core);
@@ -26,6 +27,12 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     this.endX = 0;
     this.endY = 0;
     this.hasMoved = false;
+    this.trackedPointerId = null;
+  }
+
+  cancelPendingDrag(): void {
+    this._core.store.state.isDragging = false;
+    this.reset();
   }
 
   handlePointerDown(event: PointerEvent) {
@@ -40,7 +47,12 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.dragStartY = clientY;
           this.startX = this.dragStartX;
           this.startY = this.dragStartY;
+          this.trackedPointerId = event.pointerId;
+        } else {
+          this.trackedPointerId = null;
         }
+      } else {
+        this.trackedPointerId = null;
       }
     }
 
@@ -56,12 +68,19 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.dragStartY = y;
           this.startX = x;
           this.startY = y;
+          this.trackedPointerId = event.pointerId;
+        } else {
+          this.trackedPointerId = null;
         }
       }
     }
   }
 
   handlePointerMove(event: PointerEvent) {
+    if (this.trackedPointerId === null || this.trackedPointerId !== event.pointerId) {
+      return;
+    }
+
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDragging && this._core.store.state.selectionGroup) {
         const clientX = event.clientX - this._core.store.offsetX;
@@ -109,6 +128,10 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   }
 
   handlePointerUp(event: PointerEvent) {
+    if (this.trackedPointerId === null || this.trackedPointerId !== event.pointerId) {
+      return;
+    }
+
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDragging) {
         this._core.store.state.isDragging = false;
@@ -117,8 +140,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this._core.history.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
           this._core.store.state.hasObjectsChanged = true;
         }
-
-        this.reset();
       }
     }
 
@@ -130,9 +151,9 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this._core.history.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
           this._core.store.state.hasObjectsChanged = true;
         }
-
-        this.reset();
       }
     }
+
+    this.reset();
   }
 }
