@@ -82,12 +82,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
         if (this._core.store.state.isSelecting) {
           if (this.isSelectionClick) {
-            const x = this._core.store.state.pointerX;
-            const y = this._core.store.state.pointerY;
-            const selectedObject = this._core.getObjectsFromPointerEvent(event, '.object').find(obj => obj.hitTest(x, y));
-
-            this.addObjectToSelectionGroup(selectedObject);
-            this.removeSelectionBox();
+            this.handleSelectionClick(event);
           }
 
           if (this.isSelectionDrag) {
@@ -112,11 +107,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
       if (this._core.store.state.isSelecting) {
         if (this.isSelectionClick) {
-          const x = this._core.store.state.pointerX;
-          const y = this._core.store.state.pointerY;
-          const selectedObject = this._core.getObjectsFromPointerEvent(event, '.object').find(obj => obj.hitTest(x, y));
-          this.addObjectToSelectionGroup(selectedObject);
-          this.removeSelectionBox();
+          this.handleSelectionClick(event);
         }
 
         if (this.isSelectionDrag) {
@@ -201,12 +192,19 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       const currentX = (clientX - this._core.store.state.translateX) / selectionBox.scale;
       const currentY = (clientY - this._core.store.state.translateY) / selectionBox.scale;
 
-      selectionBox.width = Math.abs(currentX - this.startX) * selectionBox.scale;
-      selectionBox.height = Math.abs(currentY - this.startY) * selectionBox.scale;
+      const width = Math.abs(currentX - this.startX) * selectionBox.scale;
+      const height = Math.abs(currentY - this.startY) * selectionBox.scale;
+
+      selectionBox.width = width;
+      selectionBox.height = height;
       selectionBox.translateX = Math.min(currentX, this.startX);
       selectionBox.translateY = Math.min(currentY, this.startY);
 
-      this.updateSelectedObjects();
+      if (width > 0 || height > 0) {
+        this.updateSelectedObjects();
+      } else {
+        this.clearSelectionPreview();
+      }
     }
   }
 
@@ -229,12 +227,19 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       const currentX = (clientX - this._core.store.state.translateX) / selectionBox.scale;
       const currentY = (clientY - this._core.store.state.translateY) / selectionBox.scale;
 
-      selectionBox.width = Math.abs(currentX - this.startX) * selectionBox.scale;
-      selectionBox.height = Math.abs(currentY - this.startY) * selectionBox.scale;
+      const width = Math.abs(currentX - this.startX) * selectionBox.scale;
+      const height = Math.abs(currentY - this.startY) * selectionBox.scale;
+
+      selectionBox.width = width;
+      selectionBox.height = height;
       selectionBox.translateX = Math.min(currentX, this.startX);
       selectionBox.translateY = Math.min(currentY, this.startY);
 
-      this.updateSelectedObjects();
+      if (width > 0 || height > 0) {
+        this.updateSelectedObjects();
+      } else {
+        this.clearSelectionPreview();
+      }
     }
   }
 
@@ -242,6 +247,35 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._core.store.allObjects
       .filter(o => !(o instanceof KrtizelSelectionBox))
       .forEach(object => (object.isSelected = object.hitTestPolygon(this._core.store.state.selectionBox.rotatedPolygon)));
+  }
+
+  private handleSelectionClick(event: PointerEvent): void {
+    const selectedObject = this.getTopmostHitObject(event);
+
+    this.clearSelectionPreview();
+
+    this.addObjectToSelectionGroup(selectedObject);
+    this.removeSelectionBox();
+  }
+
+  private getTopmostHitObject(event: PointerEvent): KritzelBaseObject<any> | null {
+    const pointerX = this._core.store.state.pointerX;
+    const pointerY = this._core.store.state.pointerY;
+    const overlappingObjects = this._core.getObjectsFromPointerEvent(event, '.object');
+
+    for (const object of overlappingObjects) {
+      if (object.hitTest(pointerX, pointerY)) {
+        return object;
+      }
+    }
+
+    return null;
+  }
+
+  private clearSelectionPreview(): void {
+    this._core.store.allNonSelectionObjects.forEach(object => {
+      object.isSelected = false;
+    });
   }
 
   private addObjectToSelectionGroup(object: KritzelBaseObject): void {
