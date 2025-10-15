@@ -1,3 +1,4 @@
+import { KritzelBaseObject } from '../..';
 import { KritzelMouseButton } from '../../enums/event-button.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelCore } from './core.class';
@@ -160,6 +161,41 @@ export class KritzelViewport {
     if (!event.ctrlKey) {
       this.handlePan(event);
     }
+  }
+
+  fitsIntoViewport(object: KritzelBaseObject): boolean {
+    const viewportScale = this._core.store.state.scale;
+    const viewportWidth = this._core.store.state.viewportWidth / viewportScale;
+    const viewportHeight = this._core.store.state.viewportHeight / viewportScale;
+
+    const objectWidth = object.rotatedBoundingBox.width;
+    const objectHeight = object.rotatedBoundingBox.height;
+
+    return objectWidth <= viewportWidth * 0.9 && objectHeight <= viewportHeight * 0.9;
+  }
+
+  fitInViewport(object: KritzelBaseObject): void {
+    if (this.fitsIntoViewport(object)) {
+      return;
+    }
+
+    const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
+    const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
+    const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
+    const clampedScale = Math.max(newScale, this._core.store.state.scaleMin);
+    
+    this._core.store.state.scale = clampedScale;
+
+    const translateX = ((this._core.store.state.viewportWidth / clampedScale) - object.rotatedBoundingBox.width) / 2 - object.minXRotated;
+    const translateY = ((this._core.store.state.viewportHeight / clampedScale) - object.rotatedBoundingBox.height) / 2 - object.minYRotated;
+
+    this._core.store.state.translateX = translateX * clampedScale;
+    this._core.store.state.translateY = translateY * clampedScale;
+
+    this._core.store.state.hasViewportChanged = true;
+
+    this._core.rerender();
+    this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
   }
 
   private handleZoom(event: WheelEvent): void {
