@@ -172,8 +172,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const translateX = this._core.store.state.translateX;
     const translateY = this._core.store.state.translateY;
 
-    const selectionGroupWidth = this.totalWidth;
-    const selectionGroupHeight = this.totalHeight;
+    const selectionGroupWidth = this.rotatedBoundingBox.width;
+    const selectionGroupHeight = this.rotatedBoundingBox.height;
 
     const centerX = (((viewportWidth / viewportScale / 2) - (selectionGroupWidth / this.scale / 2)) - translateX / viewportScale);
     const centerY = (((viewportHeight / viewportScale / 2) - (selectionGroupHeight / this.scale / 2)) - translateY / viewportScale);
