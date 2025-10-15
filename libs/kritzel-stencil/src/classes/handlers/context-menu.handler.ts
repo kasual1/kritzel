@@ -5,6 +5,7 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionTool } from '../tools/selection-tool.class';
 import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
 import { BatchCommand } from '../commands/batch.command';
+import { KrtizelSelectionBox } from '../objects/selection-box.class';
 
 export class KritzelContextMenuHandler extends KritzelBaseHandler {
   globalContextMenuItems = [];
@@ -32,7 +33,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
 
     const selectedObject = this._core.getObjectFromPointerEvent(event, '.object');
 
-    if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup)) {
+  if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup) && !(selectedObject instanceof KrtizelSelectionBox)) {
       const selectionGroup = KritzelSelectionGroup.create(this._core);
       selectionGroup.addOrRemove(selectedObject);
       selectionGroup.isSelected = true;
