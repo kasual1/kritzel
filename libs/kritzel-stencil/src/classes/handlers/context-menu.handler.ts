@@ -24,16 +24,22 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     }
 
     if (this._core.store.state.skipContextMenu) {
-      this._core.store.state.skipContextMenu =  false;
+      this._core.store.state.skipContextMenu = false;
       return;
     }
 
     const selectionTool = this._core.store.state.activeTool as KritzelSelectionTool;
     selectionTool?.moveHandler?.cancelPendingDrag();
 
+    if (this._core.store.state.selectionBox) {
+      this._core.store.state.objectsMap.remove(object => object instanceof KrtizelSelectionBox);
+      this._core.store.state.selectionBox = null;
+      this._core.store.state.isSelecting = false;
+    }
+
     const selectedObject = this._core.getObjectFromPointerEvent(event, '.object');
 
-  if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup) && !(selectedObject instanceof KrtizelSelectionBox)) {
+    if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup) && !(selectedObject instanceof KrtizelSelectionBox)) {
       const selectionGroup = KritzelSelectionGroup.create(this._core);
       selectionGroup.addOrRemove(selectedObject);
       selectionGroup.isSelected = true;
