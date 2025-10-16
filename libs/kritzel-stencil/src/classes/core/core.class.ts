@@ -291,8 +291,7 @@ export class KritzelCore {
     const activeWorkspace = this._store.state.activeWorkspace;
     if (this.store.state.copiedObjects.workspaceId !== activeWorkspace.id) {
       this.store.state.copiedObjects.updateWorkspaceId(activeWorkspace.id);
-      this.engine.viewport.centerInViewport(copiedObjects);
-      this.engine.viewport.fitInViewport(copiedObjects);
+      this.engine.viewport.centerFitInViewport(copiedObjects);
     }
 
     const commands = [];
