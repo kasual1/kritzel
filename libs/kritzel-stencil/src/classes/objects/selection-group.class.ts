@@ -164,23 +164,6 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return selectionGroup;
   }
 
-  override centerInViewport(): void {
-    const viewportWidth = this._core.store.state.viewportWidth;
-    const viewportHeight = this._core.store.state.viewportHeight;
-    const viewportScale = this._core.store.state.scale;
-
-    const translateX = this._core.store.state.translateX;
-    const translateY = this._core.store.state.translateY;
-
-    const selectionGroupWidth = this.rotatedBoundingBox.width;
-    const selectionGroupHeight = this.rotatedBoundingBox.height;
-
-    const centerX = (((viewportWidth / viewportScale / 2) - (selectionGroupWidth / this.scale / 2)) - translateX / viewportScale);
-    const centerY = (((viewportHeight / viewportScale / 2) - (selectionGroupHeight / this.scale / 2)) - translateY / viewportScale);
-
-    this.updatePosition(centerX, centerY);
-  }
-
   refreshObjectDimensions() {
     if (this.objects.length === 1) {
       const obj = this.objects[0];
