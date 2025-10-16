@@ -164,17 +164,14 @@ export class KritzelViewport {
   }
 
   centerInViewport(object: KritzelBaseObject): void {
-    const viewportScale = this._core.store.state.scale;
-    const viewportWidth = this._core.store.state.viewportWidth;
-    const viewportHeight = this._core.store.state.viewportHeight;
-    const translateX = this._core.store.state.translateX;
-    const translateY = this._core.store.state.translateY;
+    const { scale, viewportWidth, viewportHeight } = this._core.store.state;
+    const { x, y, width, height } = object.rotatedBoundingBox;
 
-    const centerX = (((viewportWidth / viewportScale / 2) - (object.rotatedBoundingBox.width / this._core.store.state.scale / 2)) - translateX / viewportScale) - object.minXRotated;
-    const centerY = (((viewportHeight / viewportScale / 2) - (object.rotatedBoundingBox.height / this._core.store.state.scale / 2)) - translateY / viewportScale) - object.minYRotated;
+    const objectCenterX = x + width / 2;
+    const objectCenterY = y + height / 2;
 
-    this._core.store.state.translateX = centerX * this._core.store.state.scale;
-    this._core.store.state.translateY = centerY * this._core.store.state.scale;
+    this._core.store.state.translateX = viewportWidth / 2 - objectCenterX * scale;
+    this._core.store.state.translateY = viewportHeight / 2 - objectCenterY * scale;
     this._core.store.state.hasViewportChanged = true;
 
     this._core.rerender();
@@ -182,38 +179,13 @@ export class KritzelViewport {
   }
 
   fitInViewport(object: KritzelBaseObject): void {
-    if (this.fitsIntoViewport(object)) {
-      return;
-    }
-
     const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
-    const newScale = Math.min(scaleX, this._core.store.state.scaleMax);
+    const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
+    const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
     const clampedScale = Math.max(newScale, this._core.store.state.scaleMin);
     
     this._core.store.state.scale = clampedScale;
-
-    const translateX = ((this._core.store.state.viewportWidth / clampedScale) - object.rotatedBoundingBox.width) / 2 - object.minXRotated;
-    const translateY = ((this._core.store.state.viewportHeight / clampedScale) - object.rotatedBoundingBox.height) / 2 - object.minYRotated;
-
-    this._core.store.state.translateX = translateX * clampedScale;
-    this._core.store.state.translateY = translateY * clampedScale;
-
-    
-    this._core.store.state.hasViewportChanged = true;
-    
-    this._core.rerender();
-    this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
-  }
-
-  private fitsIntoViewport(object: KritzelBaseObject): boolean {
-    const viewportScale = this._core.store.state.scale;
-    const viewportWidth = this._core.store.state.viewportWidth / viewportScale;
-    const viewportHeight = this._core.store.state.viewportHeight / viewportScale;
-
-    const objectWidth = object.rotatedBoundingBox.width;
-    const objectHeight = object.rotatedBoundingBox.height;
-
-    return objectWidth <= viewportWidth * 0.9 && objectHeight <= viewportHeight * 0.9;
+    this.centerInViewport(object);
   }
 
   private handleZoom(event: WheelEvent): void {
