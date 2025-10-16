@@ -207,9 +207,19 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   centerInViewport(): void {
-    const scale = this._core.store.state.scale;
-    this.translateX = (this._core.store.state.viewportWidth / 2 - this.totalWidth / 2 - this._core.store.state.translateX) / scale;
-    this.translateY = (this._core.store.state.viewportHeight / 2 - this.totalHeight / 2 - this._core.store.state.translateY) / scale;
+    const { viewportWidth, viewportHeight, translateX: viewportTranslateX, translateY: viewportTranslateY, scale: viewportScale } = this._core.store.state;
+    const { x, y, width, height } = this.rotatedBoundingBox;
+
+    const objectCenterX = x + width / 2;
+    const objectCenterY = y + height / 2;
+
+    const targetCenterX = (viewportWidth / 2 - viewportTranslateX) / viewportScale;
+    const targetCenterY = (viewportHeight / 2 - viewportTranslateY) / viewportScale;
+
+    const deltaX = targetCenterX - objectCenterX;
+    const deltaY = targetCenterY - objectCenterY;
+
+    this.updatePosition(this.translateX + deltaX, this.translateY + deltaY);
   }
 
   move(startX: number, startY: number, endX: number, endY: number): void {

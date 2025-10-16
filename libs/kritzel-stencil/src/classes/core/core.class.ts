@@ -64,21 +64,24 @@ export class KritzelCore {
     const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
 
-    this._store.state.activeWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
+    const candidateWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
+    const existingWorkspace = await this.getWorkspace(candidateWorkspace.id);
 
-    const isExistingWorkspace = await this.getWorkspace(this._store.state.activeWorkspace.id);
-
-    if (isExistingWorkspace) {
+    if (existingWorkspace) {
+      this._store.state.activeWorkspace = existingWorkspace;
       await this.updateWorkspace(this._store.state.activeWorkspace);
     } else {
+      this._store.state.activeWorkspace = candidateWorkspace;
       await this.createWorkspace(this._store.state.activeWorkspace);
     }
 
     this._store.state.workspaces = await this.getWorkspaces();
 
-    this._store.state.translateX = this._store.state.activeWorkspace.viewport.translateX;
-    this._store.state.translateY = this._store.state.activeWorkspace.viewport.translateY;
-    this._store.state.scale = this._store.state.activeWorkspace.viewport.scale;
+    const viewport = this._store.state.activeWorkspace.viewport ?? { translateX: 0, translateY: 0, scale: 1 };
+
+    this._store.state.translateX = viewport.translateX ?? 0;
+    this._store.state.translateY = viewport.translateY ?? 0;
+    this._store.state.scale = viewport.scale ?? 1;
 
     await this.initializeWorkspaceObjects(this._store.state.activeWorkspace.id);
   }
@@ -291,8 +294,13 @@ export class KritzelCore {
     const activeWorkspace = this._store.state.activeWorkspace;
     if (this.store.state.copiedObjects.workspaceId !== activeWorkspace.id) {
       this.store.state.copiedObjects.updateWorkspaceId(activeWorkspace.id);
-      this.store.state.copiedObjects.centerInViewport();
-      this.engine.viewport.fitInViewport(copiedObjects);
+
+      if (x !== undefined && y !== undefined) {
+        this._store.state.copiedObjects.updatePosition(x, y);
+      } else {
+        this.store.state.copiedObjects.centerInViewport();
+      }
+      this.engine.viewport.centerFitInViewport(copiedObjects);
     }
 
     const commands = [];
