@@ -178,7 +178,7 @@ export class KritzelViewport {
     this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
   }
 
-  fitInViewport(object: KritzelBaseObject): void {
+  centerFitInViewport(object: KritzelBaseObject): void {
     const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
     const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
     const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
