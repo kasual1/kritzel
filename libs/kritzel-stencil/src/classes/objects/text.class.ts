@@ -32,11 +32,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   fontSize: number = 8;
   fontColor: string = '#000000';
   initialWidth: number = 300;
-  initialHeight: number = 150;
+  initialHeight: number = 400;
 
   scale: number = 1;
-  scaleX: number = 1;
-  scaleY: number = 1;
+  scaleFactor: number = 1;
 
   isNew: boolean = true;
   isDebugInfoVisible: boolean = true;
@@ -77,8 +76,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       this.width = this.initialWidth / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
       this.height = (this.fontSize * 1.2) / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
       this.scale = config.scale || 1;
-      this.scaleX = config.scaleX ?? 1;
-      this.scaleY = config.scaleY ?? 1;
+      this.scaleFactor = config.scaleX ?? 1;
       this.editor = createEditor({
         namespace: 'Vanilla JS Demo',
         nodes: [HeadingNode, QuoteNode],
@@ -108,8 +106,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.backgroundColor = 'transparent';
     object.initialWidth = object.width;
     object.initialHeight = object.height;
-    object.scaleX = 1;
-    object.scaleY = 1;
+    object.scaleFactor = 1;
     object.scale = object._core.store.state.scale;
     object.value = ' ';
     object.zIndex = core.store.currentZIndex;
@@ -140,16 +137,13 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     mergeRegister(registerRichText(this.editor), registerDragonSupport(this.editor), registerHistory(this.editor, createEmptyHistoryState(), 300));
 
     this.editor.registerUpdateListener(() => {
-      this.initialHeight = this.elementRef.getBoundingClientRect().height;
-      this.initialWidth = this.elementRef.getBoundingClientRect().width;
-      this.width = this.elementRef.getBoundingClientRect().width;
-      this.height = this.elementRef.getBoundingClientRect().height;
-
-      console.log(this.initialHeight, this.initialWidth);
+      this.initialHeight = this.elementRef.scrollHeight;
+      this.initialWidth = this.elementRef.scrollWidth;
+      this.width = this.initialWidth;
+      this.height = this.initialHeight;
     });
 
     this.editor.update(prepopulatedRichText, { tag: HISTORY_MERGE_TAG });
-
 
     this.isMounted = true;
   }
@@ -164,11 +158,17 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    this.scaleX = width / this.initialWidth;
-    this.scaleY = height / this.initialHeight;
+    const scaleX = width / this.initialWidth;
+    const scaleY = height / this.initialHeight;
 
-    this.width = width * this.scaleX;
-    this.height = height * this.scaleY;
+    // Use the smaller scale factor to maintain aspect ratio and fit within the new bounds
+    this.scaleFactor = Math.min(scaleX, scaleY);
+
+
+    // The width and height of the object are scaled versions of the initial dimensions
+    this.width = this.initialWidth * this.scaleFactor;
+    this.height = this.initialHeight * this.scaleFactor;
+
     this.translateX = x;
     this.translateY = y;
   }

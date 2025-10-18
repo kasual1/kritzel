@@ -577,10 +577,10 @@ export class KritzelEngine {
                         ref={el => (el ? object.mount(el) : object.unmount())}
                         onInput={() => object.handleInput()}
                         style={{
-                          width: '100%',
-                          height: '100%',
+                          width: object.initialWidth + 'px',
+                          height: object.initialHeight + 'px',
                           transformOrigin: 'top left',
-                          transform: `scale(${object.scaleX}, ${object.scaleY})`,
+                          transform: `scale(${object.scaleFactor})`,
                           backgroundColor: 'red',
                           border: 'none',
                           outline: 'none',
