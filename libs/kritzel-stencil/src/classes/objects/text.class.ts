@@ -156,8 +156,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       const newHeight = this.elementRef.scrollHeight;
 
       if (this.width !== newWidth || this.height !== newHeight) {
-        this.initialWidth = newWidth;
-        this.initialHeight = newHeight;
         this.width = newWidth;
         this.height = newHeight;
         // Rerender to apply the new dimensions
