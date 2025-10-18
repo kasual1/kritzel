@@ -576,9 +576,13 @@ export class KritzelEngine {
                         contentEditable
                         ref={el => (el ? object.mount(el) : object.unmount())}
                         onInput={() => object.handleInput()}
+                        onPointerDown={e => e.stopPropagation()}
+                        onPointerMove={e => e.stopPropagation()}
+                        onPointerUp={e => e.stopPropagation()}
                         style={{
-                          width: object.initialWidth + 'px',
+                          minWidth: object.initialWidth + 'px',
                           height: object.initialHeight + 'px',
+                          width: 'max-content',
                           transformOrigin: 'top left',
                           transform: `scale(${object.scaleFactor})`,
                           backgroundColor: 'red',
