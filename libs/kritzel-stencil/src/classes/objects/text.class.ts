@@ -137,6 +137,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     mergeRegister(registerRichText(this.editor), registerDragonSupport(this.editor), registerHistory(this.editor, createEmptyHistoryState(), 300));
 
     this.editor.registerUpdateListener(() => {
+      console.log('Editor State Updated');
       this.initialHeight = this.elementRef.scrollHeight;
       this.initialWidth = this.elementRef.scrollWidth;
       this.width = this.initialWidth;
@@ -149,8 +150,20 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   handleInput(): void {
-    this.width = this.elementRef.getBoundingClientRect().width;
-    this.height = this.elementRef.getBoundingClientRect().height;
+    console.log('Input event detected');
+    if (this.elementRef) {
+      const newWidth = this.elementRef.scrollWidth;
+      const newHeight = this.elementRef.scrollHeight;
+
+      if (this.width !== newWidth || this.height !== newHeight) {
+        this.initialWidth = newWidth;
+        this.initialHeight = newHeight;
+        this.width = newWidth;
+        this.height = newHeight;
+        // Rerender to apply the new dimensions
+        this._core.rerender();
+      }
+    }
   }
 
   override resize(x: number, y: number, width: number, height: number): void {
@@ -163,7 +176,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     // Use the smaller scale factor to maintain aspect ratio and fit within the new bounds
     this.scaleFactor = Math.min(scaleX, scaleY);
-
 
     // The width and height of the object are scaled versions of the initial dimensions
     this.width = this.initialWidth * this.scaleFactor;
