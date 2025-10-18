@@ -1,22 +1,27 @@
-import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
+import { $createParagraphNode, $createTextNode, $getRoot, createEditor, LexicalEditor } from 'lexical';
 
-export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
+export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
   value: string = '';
   fontFamily: string = 'Arial';
   fontSize: number = 8;
   fontColor: string = '#000000';
-  initialWidth: number = 3;
+  initialWidth: number = 100;
+  initialHeight: number = 1;
+
+  scale: number = 1;
 
   isNew: boolean = true;
   isDebugInfoVisible: boolean = true;
   isEditable: boolean = true;
+
+  editor: LexicalEditor | null = null;
 
   readonly rows: number = 1;
 
@@ -47,6 +52,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       this.height = config.height || this.fontSize * 1.2;
       this.width = config.width || 0;
       this.scale = config.scale || 1;
+      this.editor = createEditor();
     }
   }
 
@@ -62,22 +68,34 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     object.translateY = 0;
     object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
-    object.padding = 5;
     object.backgroundColor = 'transparent';
     object.scale = object._core.store.state.scale;
     object.value = ' ';
     object.zIndex = core.store.currentZIndex;
+    object.editor = createEditor();
 
     return object;
   }
 
-  override mount(element: HTMLTextAreaElement): void {
+  override mount(element: HTMLDivElement): void {
     if ((this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
       return;
     }
 
     this.elementRef = element;
+    this.editor.setRootElement(this.elementRef);
     this.isMounted = true;
+    this.initialHeight = this.elementRef.offsetHeight;
+
+    this.editor.update(() => {
+      const root = $getRoot();
+      const paragraphNode = $createParagraphNode();
+      const textNode = $createTextNode('Hello world');
+      paragraphNode.append(textNode);
+      root.append(paragraphNode);
+    });
+
+    this.editor.setEditable(false);
   }
 
   override resize(x: number, y: number, width: number, height: number): void {
@@ -86,6 +104,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     }
 
     const scaleFactor = height / this.height;
+    console.log(scaleFactor);
 
     this.fontSize = this.fontSize * scaleFactor;
     this.width = this.width * scaleFactor;
@@ -115,26 +134,22 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   }
 
   updateTextareaDimensions() {
-    if (this.elementRef) {
-      const span = document.createElement('span');
-      span.style.position = 'absolute';
-      span.style.whiteSpace = 'pre-wrap';
-      span.style.visibility = 'hidden';
-      span.style.fontSize = window.getComputedStyle(this.elementRef).fontSize;
-      span.style.fontFamily = window.getComputedStyle(this.elementRef).fontFamily;
-
-      span.innerHTML = this.elementRef.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') + '<br>';
-
-      document.body.appendChild(span);
-      const textWidth = span.offsetWidth;
-      const textHeight = span.offsetHeight;
-      document.body.removeChild(span);
-
-      this.width = textWidth;
-      this.height = textHeight;
-
-      this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, { ...this }));
-    }
+    // if (this.elementRef) {
+    //   const span = document.createElement('span');
+    //   span.style.position = 'absolute';
+    //   span.style.whiteSpace = 'pre-wrap';
+    //   span.style.visibility = 'hidden';
+    //   span.style.fontSize = window.getComputedStyle(this.elementRef).fontSize;
+    //   span.style.fontFamily = window.getComputedStyle(this.elementRef).fontFamily;
+    //   span.innerHTML = this.elementRef.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') + '<br>';
+    //   document.body.appendChild(span);
+    //   const textWidth = span.offsetWidth;
+    //   const textHeight = span.offsetHeight;
+    //   document.body.removeChild(span);
+    //   this.width = textWidth;
+    //   this.height = textHeight;
+    //   this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, { ...this }));
+    // }
   }
 
   focus(): void {
@@ -144,32 +159,29 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   }
 
   selectAll(): void {
-    if (this.elementRef) {
-      this.elementRef.select();
-    }
+    // if (this.elementRef) {
+    //   this.elementRef.select();
+    // }
   }
 
   insertFromClipboard(): void {
-    if (this.elementRef) {
-      this.elementRef.focus();
-      try {
-        navigator.clipboard.readText().then(text => {
-          const start = this.elementRef.selectionStart;
-          const end = this.elementRef.selectionEnd;
-          const value = this.elementRef.value;
-
-          this.value = (value.substring(0, start) + text + value.substring(end)).trim();
-          this.elementRef.value = this.value;
-
-          const length = this.elementRef.value.length;
-          this.elementRef.setSelectionRange(length, length);
-
-          this.updateTextareaDimensions();
-        });
-      } catch (err) {
-        console.error('Failed to read clipboard contents:', err);
-      }
-    }
+    // if (this.elementRef) {
+    //   this.elementRef.focus();
+    //   try {
+    //     navigator.clipboard.readText().then(text => {
+    //       const start = this.elementRef.selectionStart;
+    //       const end = this.elementRef.selectionEnd;
+    //       const value = this.elementRef.value;
+    //       this.value = (value.substring(0, start) + text + value.substring(end)).trim();
+    //       this.elementRef.value = this.value;
+    //       const length = this.elementRef.value.length;
+    //       this.elementRef.setSelectionRange(length, length);
+    //       this.updateTextareaDimensions();
+    //     });
+    //   } catch (err) {
+    //     console.error('Failed to read clipboard contents:', err);
+    //   }
+    // }
   }
 
   edit(): void {
@@ -182,5 +194,17 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.focus();
 
     KritzelKeyboardHelper.enableInteractiveWidget();
+  }
+  
+  override serialize() {
+    const { _core, _elementRef, element, totalWidth, totalHeight, editor, ...remainingProps } = this as any;
+
+    const clonedProps = structuredClone(remainingProps);
+
+    if (element && typeof element === 'object' && 'nodeType' in element && element.nodeType === 1) {
+      clonedProps.element = element.cloneNode(true) as HTMLElement;
+    }
+
+    return clonedProps;
   }
 }
