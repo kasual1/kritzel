@@ -16,6 +16,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   initialHeight: number = 1;
 
   scale: number = 1;
+  scaleX: number = 1;
+  scaleY: number = 1;
 
   isNew: boolean = true;
   isDebugInfoVisible: boolean = true;
@@ -39,6 +41,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     height?: number;
     width?: number;
     scale?: number;
+    initialWidth?: number;
+    initialHeight?: number;
+    scaleX?: number;
+    scaleY?: number;
   }) {
     super();
 
@@ -49,9 +55,13 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       this.fontSize = config.fontSize || 8;
       this.fontFamily = config.fontFamily || 'Arial';
       this.fontColor = config.fontColor || '#000000';
-      this.height = config.height || this.fontSize * 1.2;
-      this.width = config.width || 0;
+      this.height = config.height ?? this.fontSize * 1.2;
+      this.width = config.width ?? this.initialWidth;
       this.scale = config.scale || 1;
+      this.initialWidth = config.initialWidth ?? (this.width > 0 ? this.width : this.initialWidth);
+      this.initialHeight = config.initialHeight ?? (this.height > 0 ? this.height : this.initialHeight);
+      this.scaleX = config.scaleX ?? (this.initialWidth > 0 ? this.width / this.initialWidth : 1);
+      this.scaleY = config.scaleY ?? (this.initialHeight > 0 ? this.height / this.initialHeight : 1);
       this.editor = createEditor();
     }
   }
@@ -69,12 +79,40 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.backgroundColor = 'transparent';
+    object.initialWidth = object.width;
+    object.initialHeight = object.height;
+    object.scaleX = 1;
+    object.scaleY = 1;
     object.scale = object._core.store.state.scale;
     object.value = ' ';
     object.zIndex = core.store.currentZIndex;
     object.editor = createEditor();
 
     return object;
+  }
+
+  get baseWidth(): number {
+    if (this.initialWidth > 0) {
+      return this.initialWidth;
+    }
+
+    if (this.scaleX !== 0 && this.width > 0) {
+      return this.width / this.scaleX;
+    }
+
+    return this.width > 0 ? this.width : 1;
+  }
+
+  get baseHeight(): number {
+    if (this.initialHeight > 0) {
+      return this.initialHeight;
+    }
+
+    if (this.scaleY !== 0 && this.height > 0) {
+      return this.height / this.scaleY;
+    }
+
+    return this.height > 0 ? this.height : 1;
   }
 
   override mount(element: HTMLDivElement): void {
@@ -85,7 +123,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.elementRef = element;
     this.editor.setRootElement(this.elementRef);
     this.isMounted = true;
-    this.initialHeight = this.elementRef.offsetHeight;
+
+    this.applyEditorStyles();
 
     this.editor.update(() => {
       const root = $getRoot();
@@ -98,19 +137,41 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.editor.setEditable(false);
   }
 
+  private applyEditorStyles(): void {
+    if (!this.elementRef) {
+      return;
+    }
+
+    this.elementRef.style.transformOrigin = 'top left';
+    this.elementRef.style.transform = `scale(${this.scaleX}, ${this.scaleY})`;
+    this.elementRef.style.width = `${this.baseWidth}px`;
+    this.elementRef.style.height = `${this.baseHeight}px`;
+  }
+
+  
+
   override resize(x: number, y: number, width: number, height: number): void {
     if (width <= 1 || height <= 1) {
       return;
     }
 
-    const scaleFactor = height / this.height;
-    console.log(scaleFactor);
+    if (this.initialWidth <= 0) {
+      this.initialWidth = this.width > 0 ? this.width : width;
+    }
 
-    this.fontSize = this.fontSize * scaleFactor;
-    this.width = this.width * scaleFactor;
+    if (this.initialHeight <= 0) {
+      this.initialHeight = this.height > 0 ? this.height : height;
+    }
+
+    this.scaleX = width / this.initialWidth;
+    this.scaleY = height / this.initialHeight;
+
+    this.width = width;
     this.height = height;
     this.translateX = x;
     this.translateY = y;
+
+    this.applyEditorStyles();
   }
 
   handleKeyDown(event: KeyboardEvent): void {

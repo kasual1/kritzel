@@ -576,16 +576,16 @@ export class KritzelEngine {
                         contentEditable
                         ref={el => (el ? object.mount(el) : object.unmount())}
                         style={{
-                          width: '100%',
-                          height: '100%',
-                          backgroundColor: 'red',
+                          width: `${object.baseWidth}px`,
+                          height: `${object.baseHeight}px`,
+                          transformOrigin: 'top left',
+                          transform: `scale(${object.scaleX}, ${object.scaleY})`,
+                          backgroundColor: object.backgroundColor,
                           border: 'none',
                           outline: 'none',
-                          resize: 'none',
                           overflow: 'hidden',
                           display: 'block',
                           whiteSpace: 'nowrap',
-                          transform: 'scale(' + object.scale + ')',
                           pointerEvents: object.isReadonly ? 'none' : 'auto',
                           cursor: object.isReadonly ? 'default' : 'text',
                           caretColor: object.isReadonly ? 'transparent' : 'auto',
