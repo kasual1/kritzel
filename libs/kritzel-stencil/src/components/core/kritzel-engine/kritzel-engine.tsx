@@ -575,20 +575,18 @@ export class KritzelEngine {
                       <div
                         contentEditable
                         ref={el => (el ? object.mount(el) : object.unmount())}
+                        onInput={() => object.handleInput()}
                         style={{
-                          width: `${object.baseWidth}px`,
-                          height: `${object.baseHeight}px`,
+                          width: '100%',
+                          height: '100%',
                           transformOrigin: 'top left',
                           transform: `scale(${object.scaleX}, ${object.scaleY})`,
-                          backgroundColor: object.backgroundColor,
+                          backgroundColor: 'red',
                           border: 'none',
                           outline: 'none',
                           overflow: 'hidden',
                           display: 'block',
                           whiteSpace: 'nowrap',
-                          pointerEvents: object.isReadonly ? 'none' : 'auto',
-                          cursor: object.isReadonly ? 'default' : 'text',
-                          caretColor: object.isReadonly ? 'transparent' : 'auto',
                         }}
                       ></div>
                     )}

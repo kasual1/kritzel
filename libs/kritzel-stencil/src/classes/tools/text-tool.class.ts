@@ -56,7 +56,8 @@ export class KritzelTextTool extends KritzelBaseTool {
       }
 
       if (this._core.store.state.activeText !== null && object instanceof KritzelText === false) {
-        this._core.resetActiveText();
+        // TODO: enable again or remove depending on how lexical integration goes
+        // this._core.resetActiveText();
         this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
         return;
       }

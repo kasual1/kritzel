@@ -3,7 +3,26 @@ import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { $createParagraphNode, $createTextNode, $getRoot, createEditor, LexicalEditor } from 'lexical';
+import { $createParagraphNode, $createTextNode, $getRoot, createEditor, HISTORY_MERGE_TAG, LexicalEditor } from 'lexical';
+import { $createHeadingNode, HeadingNode, QuoteNode, registerRichText } from '@lexical/rich-text';
+import { mergeRegister } from '@lexical/utils';
+import { registerDragonSupport } from '@lexical/dragon';
+import { createEmptyHistoryState, registerHistory } from '@lexical/history';
+
+function prepopulatedRichText() {
+  const root = $getRoot();
+  if (root.getFirstChild() !== null) {
+    return;
+  }
+
+  const heading = $createHeadingNode('h1');
+  heading.append($createTextNode('Hello World'));
+  root.append(heading);
+
+  const paragraph = $createParagraphNode();
+  paragraph.append($createTextNode('This is a demo environment built with Lexical'));
+  root.append(paragraph);
+}
 
 export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
@@ -12,8 +31,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   fontFamily: string = 'Arial';
   fontSize: number = 8;
   fontColor: string = '#000000';
-  initialWidth: number = 100;
-  initialHeight: number = 1;
+  initialWidth: number = 300;
+  initialHeight: number = 150;
 
   scale: number = 1;
   scaleX: number = 1;
@@ -55,14 +74,22 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       this.fontSize = config.fontSize || 8;
       this.fontFamily = config.fontFamily || 'Arial';
       this.fontColor = config.fontColor || '#000000';
-      this.height = config.height ?? this.fontSize * 1.2;
-      this.width = config.width ?? this.initialWidth;
+      this.width = this.initialWidth / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
+      this.height = (this.fontSize * 1.2) / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
       this.scale = config.scale || 1;
-      this.initialWidth = config.initialWidth ?? (this.width > 0 ? this.width : this.initialWidth);
-      this.initialHeight = config.initialHeight ?? (this.height > 0 ? this.height : this.initialHeight);
-      this.scaleX = config.scaleX ?? (this.initialWidth > 0 ? this.width / this.initialWidth : 1);
-      this.scaleY = config.scaleY ?? (this.initialHeight > 0 ? this.height / this.initialHeight : 1);
-      this.editor = createEditor();
+      this.scaleX = config.scaleX ?? 1;
+      this.scaleY = config.scaleY ?? 1;
+      this.editor = createEditor({
+        namespace: 'Vanilla JS Demo',
+        nodes: [HeadingNode, QuoteNode],
+        onError: (error: Error) => {
+          throw error;
+        },
+        theme: {
+          quote: 'PlaygroundEditorTheme__quote',
+        },
+        editable: true,
+      });
     }
   }
 
@@ -86,33 +113,19 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.scale = object._core.store.state.scale;
     object.value = ' ';
     object.zIndex = core.store.currentZIndex;
-    object.editor = createEditor();
+    object.editor = createEditor({
+      namespace: 'Vanilla JS Demo',
+      nodes: [HeadingNode, QuoteNode],
+      onError: (error: Error) => {
+        throw error;
+      },
+      theme: {
+        quote: 'PlaygroundEditorTheme__quote',
+      },
+      editable: true,
+    });
 
     return object;
-  }
-
-  get baseWidth(): number {
-    if (this.initialWidth > 0) {
-      return this.initialWidth;
-    }
-
-    if (this.scaleX !== 0 && this.width > 0) {
-      return this.width / this.scaleX;
-    }
-
-    return this.width > 0 ? this.width : 1;
-  }
-
-  get baseHeight(): number {
-    if (this.initialHeight > 0) {
-      return this.initialHeight;
-    }
-
-    if (this.scaleY !== 0 && this.height > 0) {
-      return this.height / this.scaleY;
-    }
-
-    return this.height > 0 ? this.height : 1;
   }
 
   override mount(element: HTMLDivElement): void {
@@ -121,57 +134,43 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     }
 
     this.elementRef = element;
+
     this.editor.setRootElement(this.elementRef);
-    this.isMounted = true;
 
-    this.applyEditorStyles();
+    mergeRegister(registerRichText(this.editor), registerDragonSupport(this.editor), registerHistory(this.editor, createEmptyHistoryState(), 300));
 
-    this.editor.update(() => {
-      const root = $getRoot();
-      const paragraphNode = $createParagraphNode();
-      const textNode = $createTextNode('Hello world');
-      paragraphNode.append(textNode);
-      root.append(paragraphNode);
+    this.editor.registerUpdateListener(() => {
+      this.initialHeight = this.elementRef.getBoundingClientRect().height;
+      this.initialWidth = this.elementRef.getBoundingClientRect().width;
+      this.width = this.elementRef.getBoundingClientRect().width;
+      this.height = this.elementRef.getBoundingClientRect().height;
+
+      console.log(this.initialHeight, this.initialWidth);
     });
 
-    this.editor.setEditable(false);
+    this.editor.update(prepopulatedRichText, { tag: HISTORY_MERGE_TAG });
+
+
+    this.isMounted = true;
   }
 
-  private applyEditorStyles(): void {
-    if (!this.elementRef) {
-      return;
-    }
-
-    this.elementRef.style.transformOrigin = 'top left';
-    this.elementRef.style.transform = `scale(${this.scaleX}, ${this.scaleY})`;
-    this.elementRef.style.width = `${this.baseWidth}px`;
-    this.elementRef.style.height = `${this.baseHeight}px`;
+  handleInput(): void {
+    this.width = this.elementRef.getBoundingClientRect().width;
+    this.height = this.elementRef.getBoundingClientRect().height;
   }
-
-  
 
   override resize(x: number, y: number, width: number, height: number): void {
     if (width <= 1 || height <= 1) {
       return;
     }
 
-    if (this.initialWidth <= 0) {
-      this.initialWidth = this.width > 0 ? this.width : width;
-    }
-
-    if (this.initialHeight <= 0) {
-      this.initialHeight = this.height > 0 ? this.height : height;
-    }
-
     this.scaleX = width / this.initialWidth;
     this.scaleY = height / this.initialHeight;
 
-    this.width = width;
-    this.height = height;
+    this.width = width * this.scaleX;
+    this.height = height * this.scaleY;
     this.translateX = x;
     this.translateY = y;
-
-    this.applyEditorStyles();
   }
 
   handleKeyDown(event: KeyboardEvent): void {
@@ -179,19 +178,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       event.preventDefault();
       event.stopPropagation();
     }
-  }
-
-  handleInput(event: InputEvent): void {
-    const target = event.target as HTMLTextAreaElement;
-    if (target.value === '') {
-      this.value = ' ';
-      target.value = ' ';
-      target.selectionStart = target.selectionEnd = target.value.length;
-    } else {
-      this.value = target.value.trim();
-    }
-
-    this.updateTextareaDimensions();
   }
 
   updateTextareaDimensions() {
@@ -256,7 +242,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     KritzelKeyboardHelper.enableInteractiveWidget();
   }
-  
+
   override serialize() {
     const { _core, _elementRef, element, totalWidth, totalHeight, editor, ...remainingProps } = this as any;
 
