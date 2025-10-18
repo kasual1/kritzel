@@ -457,8 +457,8 @@ export class KritzelEngine {
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
-    const viewportCenterX = (this.core.store.state.viewportWidth / 2) + this.core.store.state.translateX;
-    const viewportCenterY = (this.core.store.state.viewportHeight / 2) + this.core.store.state.translateY;
+    const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
+    const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
 
     return (
       <Host>
@@ -572,30 +572,25 @@ export class KritzelEngine {
                     )}
 
                     {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
-                      <textarea
+                      <div
+                        contentEditable
                         ref={el => (el ? object.mount(el) : object.unmount())}
-                        value={object.value}
-                        onKeyDown={event => object.handleKeyDown(event)}
-                        onInput={event => object.handleInput(event)}
-                        rows={object.rows}
                         style={{
                           width: '100%',
                           height: '100%',
-                          color: object.fontColor,
-                          fontSize: object.fontSize?.toString() + 'px',
-                          fontFamily: object.fontFamily,
+                          backgroundColor: 'red',
                           border: 'none',
                           outline: 'none',
                           resize: 'none',
                           overflow: 'hidden',
                           display: 'block',
-                          padding: '1px',
                           whiteSpace: 'nowrap',
+                          transform: 'scale(' + object.scale + ')',
                           pointerEvents: object.isReadonly ? 'none' : 'auto',
                           cursor: object.isReadonly ? 'default' : 'text',
                           caretColor: object.isReadonly ? 'transparent' : 'auto',
                         }}
-                      ></textarea>
+                      ></div>
                     )}
 
                     {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
