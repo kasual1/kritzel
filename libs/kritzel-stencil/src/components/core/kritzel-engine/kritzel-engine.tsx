@@ -572,8 +572,7 @@ export class KritzelEngine {
                     )}
 
                     {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
-                      <div
-                        contentEditable
+                      <textarea
                         ref={el => (el ? object.mount(el) : object.unmount())}
                         onInput={() => object.handleInput()}
                         onPointerDown={e => e.stopPropagation()}
@@ -581,7 +580,8 @@ export class KritzelEngine {
                         onPointerUp={e => e.stopPropagation()}
                         style={{
                           minWidth: object.initialWidth + 'px',
-                          height: object.initialHeight + 'px',
+                          minHeight: object.initialHeight + 'px',
+                          height: '100%',
                           width: 'max-content',
                           transformOrigin: 'top left',
                           transform: `scale(${object.scaleFactor})`,
@@ -592,7 +592,7 @@ export class KritzelEngine {
                           display: 'block',
                           whiteSpace: 'nowrap',
                         }}
-                      ></div>
+                      ></textarea>
                     )}
 
                     {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
