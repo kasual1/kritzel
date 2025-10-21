@@ -132,12 +132,10 @@ export class KritzelTextTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'mouse') {
-      this._core.store.state.activeText?.updateTextareaDimensions();
       this._core.store.state.activeText?.focus();
     }
 
     if (event.pointerType === 'touch') {
-      this._core.store.state.activeText?.updateTextareaDimensions();
       this._core.store.state.activeText?.focus();
 
       KritzelKeyboardHelper.enableInteractiveWidget();

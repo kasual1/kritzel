@@ -3,36 +3,20 @@ import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { $createParagraphNode, $createTextNode, $getRoot, createEditor, HISTORY_MERGE_TAG, LexicalEditor } from 'lexical';
-import { $createHeadingNode, HeadingNode, QuoteNode, registerRichText } from '@lexical/rich-text';
+import { createEditor, LexicalEditor } from 'lexical';
+import { HeadingNode, QuoteNode, registerRichText } from '@lexical/rich-text';
 import { mergeRegister } from '@lexical/utils';
 import { registerDragonSupport } from '@lexical/dragon';
 import { createEmptyHistoryState, registerHistory } from '@lexical/history';
-
-function prepopulatedRichText() {
-  const root = $getRoot();
-  if (root.getFirstChild() !== null) {
-    return;
-  }
-
-  const heading = $createHeadingNode('h1');
-  heading.append($createTextNode('Hello World'));
-  root.append(heading);
-
-  const paragraph = $createParagraphNode();
-  paragraph.append($createTextNode('This is a demo environment built with Lexical'));
-  root.append(paragraph);
-}
-
-export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
+export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   override __class__: string = 'KritzelText';
 
   value: string = '';
   fontFamily: string = 'Arial';
   fontSize: number = 8;
   fontColor: string = '#000000';
-  initialWidth: number = 300;
-  initialHeight: number = 400;
+  initialWidth: number = 1;
+  initialHeight: number = 1;
 
   scale: number = 1;
   scaleFactor: number = 1;
@@ -125,7 +109,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     return object;
   }
 
-  override mount(element: HTMLDivElement): void {
+  override mount(element: HTMLTextAreaElement): void {
     if ((this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
       return;
     }
@@ -136,21 +120,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     mergeRegister(registerRichText(this.editor), registerDragonSupport(this.editor), registerHistory(this.editor, createEmptyHistoryState(), 300));
 
-    this.editor.registerUpdateListener(() => {
-      console.log('Editor State Updated');
-      this.initialHeight = this.elementRef.scrollHeight;
-      this.initialWidth = this.elementRef.scrollWidth;
-      this.width = this.initialWidth;
-      this.height = this.initialHeight;
-    });
-
-    this.editor.update(prepopulatedRichText, { tag: HISTORY_MERGE_TAG });
-
     this.isMounted = true;
   }
 
   handleInput(): void {
-    console.log('Input event detected');
     if (this.elementRef) {
       const newWidth = this.elementRef.scrollWidth;
       const newHeight = this.elementRef.scrollHeight;
@@ -172,42 +145,15 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     const scaleX = width / this.initialWidth;
     const scaleY = height / this.initialHeight;
 
-    // Use the smaller scale factor to maintain aspect ratio and fit within the new bounds
     this.scaleFactor = Math.min(scaleX, scaleY);
 
-    // The width and height of the object are scaled versions of the initial dimensions
-    this.width = this.initialWidth * this.scaleFactor;
-    this.height = this.initialHeight * this.scaleFactor;
+    this.width = this.width * this.scaleFactor;
+    this.height = this.height * this.scaleFactor;
 
     this.translateX = x;
     this.translateY = y;
   }
 
-  handleKeyDown(event: KeyboardEvent): void {
-    if (this.isReadonly) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-  }
-
-  updateTextareaDimensions() {
-    // if (this.elementRef) {
-    //   const span = document.createElement('span');
-    //   span.style.position = 'absolute';
-    //   span.style.whiteSpace = 'pre-wrap';
-    //   span.style.visibility = 'hidden';
-    //   span.style.fontSize = window.getComputedStyle(this.elementRef).fontSize;
-    //   span.style.fontFamily = window.getComputedStyle(this.elementRef).fontFamily;
-    //   span.innerHTML = this.elementRef.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') + '<br>';
-    //   document.body.appendChild(span);
-    //   const textWidth = span.offsetWidth;
-    //   const textHeight = span.offsetHeight;
-    //   document.body.removeChild(span);
-    //   this.width = textWidth;
-    //   this.height = textHeight;
-    //   this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, { ...this }));
-    // }
-  }
 
   focus(): void {
     if (this.elementRef) {
