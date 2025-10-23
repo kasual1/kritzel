@@ -1,14 +1,19 @@
 import { KritzelToolRegistry } from '../registries/tool.registry';
-import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import Quill, { Delta } from 'quill';
 import { UpdateObjectCommand } from '../commands/update-object.command';
+import { EditorState, TextSelection } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
+import { Schema, DOMParser } from 'prosemirror-model';
+import { schema } from 'prosemirror-schema-basic';
+import { addListNodes } from 'prosemirror-schema-list';
+import { keymap } from 'prosemirror-keymap';
+import { history, undo, redo } from 'prosemirror-history';
+import { baseKeymap } from 'prosemirror-commands';
 export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
-  content: Delta = null;
   fontFamily: string = 'Arial';
   fontSize: number = 8;
   fontColor: string = '#000000';
@@ -21,21 +26,17 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   isNew: boolean = true;
   isDebugInfoVisible: boolean = true;
   isEditable: boolean = true;
+  isEditing: boolean = false;
 
-  editor: Quill | null = null;
+  editor: EditorView | null = null;
 
   readonly rows: number = 1;
 
-  get isReadonly(): boolean {
-    return this.editor ? this.editor.isEnabled() === false : true;
-  }
-
   get isEmpty(): boolean {
-    return this.content === null || this.content.length() === 0 || (this.content.length() === 1 && this.content.ops?.[0]?.insert === ' ');
+    return false;
   }
 
   constructor(config?: {
-    content: Delta;
     translateX?: number;
     translateY?: number;
     fontSize?: number;
@@ -52,7 +53,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     super();
 
     if (config) {
-      this.content = config.content || new Delta().insert(' ');
       this.translateX = config.translateX || 0;
       this.translateY = config.translateY || 0;
       this.fontSize = config.fontSize || 8;
@@ -82,7 +82,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.initialHeight = object.height;
     object.scaleFactor = 1;
     object.scale = object._core.store.state.scale;
-    object.content = new Delta().insert(' ');
     object.zIndex = core.store.currentZIndex;
 
     return object;
@@ -97,14 +96,32 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.elementRef = element;
 
-    this.editor = new Quill(this.elementRef, {
-      readOnly: true
-    });
+    setTimeout(() => {
+      // Create schema with basic formatting and list support
+      const mySchema = new Schema({
+        nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
+        marks: schema.spec.marks,
+      });
 
-    this.editor.on('editor-change', () => {
-      this.content = this.editor.getContents();
-      this.adjustSizeOnInput();
-    });
+      // Create initial document with a paragraph containing placeholder text
+      const doc = mySchema.node('doc', null, [mySchema.node('paragraph', null, [mySchema.text('Start typing...')])]);
+
+      // Initialize ProseMirror editor without menu bar (disabled by default)
+      this.editor = new EditorView(this.elementRef, {
+        state: EditorState.create({
+          doc: doc,
+          plugins: [history(), keymap({ 'Mod-z': undo, 'Mod-y': redo }), keymap(baseKeymap)],
+        }),
+        editable: () => false, // Start disabled, enable in edit()
+        dispatchTransaction: (transaction) => {
+          const newState = this.editor.state.apply(transaction);
+          this.editor.updateState(newState);
+          
+          // Adjust size after content changes
+          this.adjustSizeOnInput();
+        },
+      });
+    }, 0);
 
     this.isMounted = true;
   }
@@ -142,9 +159,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   focus(): void {
-    if (this.elementRef) {
-      this.editor?.focus();
-      this.editor?.setSelection(this.editor.getLength(), 0);
+    if (this.editor) {
+      const end = this.editor.state.doc.content.size;
+      this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(this.editor.state.doc, end)));
+      this.editor.focus();
     }
   }
 
@@ -156,7 +174,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this._core.store.state.activeText = this;
     this._core.clearSelection();
 
-    this.editor.enable();
+    // Enable the ProseMirror editor
+    if (this.editor) {
+      this.editor.setProps({ editable: () => true });
+    }
+
+    this.isEditing = true;
 
     this.focus();
 
@@ -165,14 +188,20 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   save(): void {
     console.log('Saving text object', this.id);
-    this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, this));
-
-    this.editor.disable();
     
+    // Disable the ProseMirror editor
+    if (this.editor) {
+      this.editor.setProps({ editable: () => false });
+      this.editor.dom.blur(); // Remove focus
+    }
+
+    this.isEditing = false;
+    
+    this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, this));
   }
 
   handlePointerDown(event: PointerEvent): void {
-    if(this.isReadonly){
+    if (!this.isEditing) {
       return;
     }
 
@@ -180,7 +209,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   handlePointerMove(event: PointerEvent): void {
-    if(this.isReadonly){
+    if (!this.isEditing) {
       return;
     }
 
@@ -188,7 +217,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   handlePointerUp(event: PointerEvent): void {
-    if(this.isReadonly){
+    if (!this.isEditing) {
       return;
     }
 
