@@ -143,7 +143,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   focus(): void {
     if (this.elementRef) {
-      this.elementRef.focus();
+      this.editor?.focus();
     }
   }
 
