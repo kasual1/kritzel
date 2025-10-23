@@ -585,7 +585,8 @@ export class KritzelEngine {
                           width: 'max-content',
                           transformOrigin: 'top left',
                           transform: `scale(${object.scaleFactor})`,
-                          backgroundColor: 'red',
+                          backgroundColor: object.backgroundColor,
+                          overflow: 'visible',
                         }}
                       ></div>
                     )}
