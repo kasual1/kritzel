@@ -13,6 +13,11 @@
   user-select: none;
 }
 
+p {
+  margin: 0;
+  padding: 0;
+}
+
 .debug-panel {
   position: absolute;
   pointer-events: none;
