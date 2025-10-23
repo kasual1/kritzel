@@ -62,8 +62,9 @@
     "@lexical/history": "^0.37.0",
     "@lexical/rich-text": "^0.37.0",
     "@lexical/utils": "^0.37.0",
-    "lexical": "^0.37.0",
     "browser-image-compression": "^2.0.2",
-    "perfect-freehand": "^1.2.2"
+    "lexical": "^0.37.0",
+    "perfect-freehand": "^1.2.2",
+    "quill": "^2.0.3"
   }
 }

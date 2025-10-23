@@ -3,12 +3,8 @@ import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { createEditor, LexicalEditor } from 'lexical';
-import { HeadingNode, QuoteNode, registerRichText } from '@lexical/rich-text';
-import { mergeRegister } from '@lexical/utils';
-import { registerDragonSupport } from '@lexical/dragon';
-import { createEmptyHistoryState, registerHistory } from '@lexical/history';
-export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
+import Quill from 'quill';
+export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
   value: string = '';
@@ -25,7 +21,7 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
   isDebugInfoVisible: boolean = true;
   isEditable: boolean = true;
 
-  editor: LexicalEditor | null = null;
+  editor: Quill | null = null;
 
   readonly rows: number = 1;
 
@@ -61,17 +57,6 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       this.height = (this.fontSize * 1.2) / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
       this.scale = config.scale || 1;
       this.scaleFactor = config.scaleX ?? 1;
-      this.editor = createEditor({
-        namespace: 'Vanilla JS Demo',
-        nodes: [HeadingNode, QuoteNode],
-        onError: (error: Error) => {
-          throw error;
-        },
-        theme: {
-          quote: 'PlaygroundEditorTheme__quote',
-        },
-        editable: true,
-      });
     }
   }
 
@@ -94,44 +79,37 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     object.scale = object._core.store.state.scale;
     object.value = ' ';
     object.zIndex = core.store.currentZIndex;
-    object.editor = createEditor({
-      namespace: 'Vanilla JS Demo',
-      nodes: [HeadingNode, QuoteNode],
-      onError: (error: Error) => {
-        throw error;
-      },
-      theme: {
-        quote: 'PlaygroundEditorTheme__quote',
-      },
-      editable: true,
-    });
 
     return object;
   }
 
-  override mount(element: HTMLTextAreaElement): void {
+  override mount(element: HTMLDivElement): void {
     if ((this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
       return;
     }
 
     this.elementRef = element;
 
-    this.editor.setRootElement(this.elementRef);
-
-    mergeRegister(registerRichText(this.editor), registerDragonSupport(this.editor), registerHistory(this.editor, createEmptyHistoryState(), 300));
+    this.editor = new Quill(this.elementRef);
+    this.editor.on('text-change', () => {
+      const newValue = this.editor?.getText() || '';
+      this.value = newValue;
+      this.adjustSizeOnInput();
+    });
 
     this.isMounted = true;
   }
 
-  handleInput(): void {
-    if (this.elementRef) {
-      const newWidth = this.elementRef.scrollWidth;
-      const newHeight = this.elementRef.scrollHeight;
+  adjustSizeOnInput(): void {
+    const element = this.elementRef;
+
+    if (element) {
+      const newWidth = element.scrollWidth;
+      const newHeight = element.scrollHeight;
 
       if (this.width !== newWidth || this.height !== newHeight) {
         this.width = newWidth;
         this.height = newHeight;
-        // Rerender to apply the new dimensions
         this._core.rerender();
       }
     }
@@ -161,33 +139,8 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     }
   }
 
-  selectAll(): void {
-    // if (this.elementRef) {
-    //   this.elementRef.select();
-    // }
-  }
-
-  insertFromClipboard(): void {
-    // if (this.elementRef) {
-    //   this.elementRef.focus();
-    //   try {
-    //     navigator.clipboard.readText().then(text => {
-    //       const start = this.elementRef.selectionStart;
-    //       const end = this.elementRef.selectionEnd;
-    //       const value = this.elementRef.value;
-    //       this.value = (value.substring(0, start) + text + value.substring(end)).trim();
-    //       this.elementRef.value = this.value;
-    //       const length = this.elementRef.value.length;
-    //       this.elementRef.setSelectionRange(length, length);
-    //       this.updateTextareaDimensions();
-    //     });
-    //   } catch (err) {
-    //     console.error('Failed to read clipboard contents:', err);
-    //   }
-    // }
-  }
-
   edit(): void {
+    console.log('Editing text object', this.id);
     KritzelKeyboardHelper.disableInteractiveWidget();
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
@@ -197,6 +150,10 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     this.focus();
 
     KritzelKeyboardHelper.enableInteractiveWidget();
+  }
+
+  save(): void {
+    console.log('Saving text object', this.id);
   }
 
   override serialize() {
