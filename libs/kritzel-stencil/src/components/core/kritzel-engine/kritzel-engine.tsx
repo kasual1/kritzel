@@ -572,9 +572,8 @@ export class KritzelEngine {
                     )}
 
                     {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
-                      <textarea
+                      <div
                         ref={el => (el ? object.mount(el) : object.unmount())}
-                        onInput={() => object.handleInput()}
                         onPointerDown={e => e.stopPropagation()}
                         onPointerMove={e => e.stopPropagation()}
                         onPointerUp={e => e.stopPropagation()}
@@ -586,13 +585,8 @@ export class KritzelEngine {
                           transformOrigin: 'top left',
                           transform: `scale(${object.scaleFactor})`,
                           backgroundColor: 'red',
-                          border: 'none',
-                          outline: 'none',
-                          overflow: 'hidden',
-                          display: 'block',
-                          whiteSpace: 'nowrap',
                         }}
-                      ></textarea>
+                      ></div>
                     )}
 
                     {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
