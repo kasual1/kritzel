@@ -45,6 +45,11 @@ textarea {
   overflow: visible;
 }
 
+p{
+  margin: 0;
+  padding: 0;
+}
+
 .resize-handle-overlay.top-left,
 .resize-handle-overlay.bottom-right {
   cursor: nwse-resize;
