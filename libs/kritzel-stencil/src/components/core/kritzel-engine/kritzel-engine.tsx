@@ -574,9 +574,9 @@ export class KritzelEngine {
                     {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
                       <div
                         ref={el => (el ? object.mount(el) : object.unmount())}
-                        onPointerDown={e => e.stopPropagation()}
-                        onPointerMove={e => e.stopPropagation()}
-                        onPointerUp={e => e.stopPropagation()}
+                        onPointerDown={e => object.handlePointerDown(e)}
+                        onPointerMove={e => object.handlePointerMove(e)}
+                        onPointerUp={e => object.handlePointerUp(e)}
                         style={{
                           minWidth: object.initialWidth + 'px',
                           minHeight: object.initialHeight + 'px',

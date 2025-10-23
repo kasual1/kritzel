@@ -27,7 +27,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   readonly rows: number = 1;
 
   get isReadonly(): boolean {
-    return !(this._core.store.state.activeTool instanceof KritzelTextTool);
+    return this.editor ? this.editor.isEnabled() === false : true;
   }
 
   get isEmpty(): boolean {
@@ -144,6 +144,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   focus(): void {
     if (this.elementRef) {
       this.editor?.focus();
+      this.editor?.setSelection(this.editor.getLength(), 0);
     }
   }
 
@@ -168,6 +169,30 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.editor.disable();
     
+  }
+
+  handlePointerDown(event: PointerEvent): void {
+    if(this.isReadonly){
+      return;
+    }
+
+    event.stopPropagation();
+  }
+
+  handlePointerMove(event: PointerEvent): void {
+    if(this.isReadonly){
+      return;
+    }
+
+    event.stopPropagation();
+  }
+
+  handlePointerUp(event: PointerEvent): void {
+    if(this.isReadonly){
+      return;
+    }
+
+    event.stopPropagation();
   }
 
   override serialize() {
