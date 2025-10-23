@@ -37,19 +37,6 @@
   overflow: visible;
 }
 
-textarea {
-  all: unset;
-  box-sizing: border-box;
-  outline: none !important;
-  border: none !important;
-  overflow: visible;
-}
-
-p{
-  margin: 0;
-  padding: 0;
-}
-
 .resize-handle-overlay.top-left,
 .resize-handle-overlay.bottom-right {
   cursor: nwse-resize;
