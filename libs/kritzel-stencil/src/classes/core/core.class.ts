@@ -434,8 +434,13 @@ export class KritzelCore {
   }
 
   resetActiveText() {
-    if (this._store.state.activeText && this._store.state.activeText.value === ' ') {
-      this.deleteObject(this._store.state.activeText.id, true);
+    if (this._store.state.activeText) {
+
+      if(this._store.state.activeText.isEmpty) {
+        this.deleteObject(this._store.state.activeText.id, true);
+      } else {
+        this._store.state.activeText.save();
+      }
     }
 
     this._store.state.activeText = null;

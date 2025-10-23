@@ -3,11 +3,12 @@ import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import Quill from 'quill';
+import Quill, { Delta } from 'quill';
+import { UpdateObjectCommand } from '../commands/update-object.command';
 export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
-  value: string = '';
+  content: Delta = null;
   fontFamily: string = 'Arial';
   fontSize: number = 8;
   fontColor: string = '#000000';
@@ -29,8 +30,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     return !(this._core.store.state.activeTool instanceof KritzelTextTool);
   }
 
+  get isEmpty(): boolean {
+    return this.content === null || this.content.length() === 0 || (this.content.length() === 1 && this.content.ops?.[0]?.insert === ' ');
+  }
+
   constructor(config?: {
-    value: string;
+    content: Delta;
     translateX?: number;
     translateY?: number;
     fontSize?: number;
@@ -47,7 +52,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     super();
 
     if (config) {
-      this.value = config.value || ' ';
+      this.content = config.content || new Delta().insert(' ');
       this.translateX = config.translateX || 0;
       this.translateY = config.translateY || 0;
       this.fontSize = config.fontSize || 8;
@@ -77,7 +82,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.initialHeight = object.height;
     object.scaleFactor = 1;
     object.scale = object._core.store.state.scale;
-    object.value = ' ';
+    object.content = new Delta().insert(' ');
     object.zIndex = core.store.currentZIndex;
 
     return object;
@@ -88,12 +93,13 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
+    console.log('Mounting text object', this.id);
+
     this.elementRef = element;
 
     this.editor = new Quill(this.elementRef);
-    this.editor.on('text-change', () => {
-      const newValue = this.editor?.getText() || '';
-      this.value = newValue;
+    this.editor.on('editor-change', () => {
+      this.content = this.editor.getContents();
       this.adjustSizeOnInput();
     });
 
@@ -132,7 +138,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.translateY = y;
   }
 
-
   focus(): void {
     if (this.elementRef) {
       this.elementRef.focus();
@@ -154,6 +159,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   save(): void {
     console.log('Saving text object', this.id);
+    this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, this));
   }
 
   override serialize() {
