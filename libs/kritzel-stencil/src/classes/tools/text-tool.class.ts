@@ -131,11 +131,11 @@ export class KritzelTextTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'mouse') {
-      this._core.store.state.activeText?.focus();
+      this._core.store.state.activeText?.edit();
     }
 
     if (event.pointerType === 'touch') {
-      this._core.store.state.activeText?.focus();
+      this._core.store.state.activeText?.edit();
 
       KritzelKeyboardHelper.enableInteractiveWidget();
     }

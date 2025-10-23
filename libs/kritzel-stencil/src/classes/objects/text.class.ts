@@ -97,7 +97,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.elementRef = element;
 
-    this.editor = new Quill(this.elementRef);
+    this.editor = new Quill(this.elementRef, {
+      readOnly: true
+    });
+
     this.editor.on('editor-change', () => {
       this.content = this.editor.getContents();
       this.adjustSizeOnInput();
@@ -152,6 +155,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this._core.store.state.activeText = this;
     this._core.clearSelection();
 
+    this.editor.enable();
+
     this.focus();
 
     KritzelKeyboardHelper.enableInteractiveWidget();
@@ -160,6 +165,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   save(): void {
     console.log('Saving text object', this.id);
     this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, this));
+
+    this.editor.disable();
+    
   }
 
   override serialize() {
