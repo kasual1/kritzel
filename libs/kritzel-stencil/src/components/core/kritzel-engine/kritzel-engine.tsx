@@ -580,7 +580,8 @@ export class KritzelEngine {
                         style={{
                           minWidth: object.initialWidth + 'px',
                           minHeight: object.initialHeight + 'px',
-                          height: '100%',
+                          maxWidth: '500px',
+                          height: 'auto',
                           width: 'max-content',
                           transformOrigin: 'top left',
                           transform: `scale(${object.scaleFactor})`,

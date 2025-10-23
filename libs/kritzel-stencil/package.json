@@ -65,6 +65,12 @@
     "browser-image-compression": "^2.0.2",
     "lexical": "^0.37.0",
     "perfect-freehand": "^1.2.2",
+    "prosemirror-example-setup": "^1.2.3",
+    "prosemirror-model": "^1.25.4",
+    "prosemirror-schema-basic": "^1.2.4",
+    "prosemirror-schema-list": "^1.5.1",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.41.3",
     "quill": "^2.0.3"
   }
 }
