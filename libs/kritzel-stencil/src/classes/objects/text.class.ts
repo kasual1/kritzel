@@ -5,7 +5,7 @@ import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { UpdateObjectCommand } from '../commands/update-object.command';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
-import { Schema, DOMParser } from 'prosemirror-model';
+import { Schema } from 'prosemirror-model';
 import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
@@ -117,8 +117,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         marks: schema.spec.marks,
       });
 
-      // Create initial document with a paragraph containing placeholder text
-      const doc = mySchema.node('doc', null, [mySchema.node('paragraph', null, [mySchema.text('Start typing...')])]);
+      // Create initial document with an empty paragraph
+      const doc = mySchema.node('doc', null, [mySchema.node('paragraph')]);
 
       // Initialize ProseMirror editor without menu bar (disabled by default)
       this.editor = new EditorView(this.elementRef, {
