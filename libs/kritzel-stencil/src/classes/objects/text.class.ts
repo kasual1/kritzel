@@ -92,7 +92,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.translateY = 0;
     object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
-    object.backgroundColor = 'transparent';
+    object.backgroundColor = 'red';
     object.initialWidth = object.width;
     object.initialHeight = object.height;
     object.scaleFactor = 1;
@@ -150,9 +150,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       const newWidth = element.scrollWidth;
       const newHeight = element.scrollHeight;
 
-      if (this.width !== newWidth || this.height !== newHeight) {
-        this.width = newWidth;
-        this.height = newHeight;
+      if (this.width !== newWidth * this.scaleFactor || this.height !== newHeight * this.scaleFactor) {
+        this.width = newWidth * this.scaleFactor;
+        this.height = newHeight * this.scaleFactor;
         this._core.rerender();
       }
     }
@@ -163,13 +163,16 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    const scaleX = width / this.initialWidth;
-    const scaleY = height / this.initialHeight;
+    const originalWidth = this.width / this.scaleFactor;
+    const originalHeight = this.height / this.scaleFactor;
+
+    const scaleX = width / originalWidth;
+    const scaleY = height / originalHeight;
 
     this.scaleFactor = Math.min(scaleX, scaleY);
 
-    this.width = this.width * this.scaleFactor;
-    this.height = this.height * this.scaleFactor;
+    this.width = originalWidth * this.scaleFactor;
+    this.height = originalHeight * this.scaleFactor;
 
     this.translateX = x;
     this.translateY = y;
