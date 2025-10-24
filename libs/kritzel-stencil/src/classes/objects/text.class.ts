@@ -29,6 +29,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   isEditing: boolean = false;
 
   editor: EditorView | null = null;
+  content: any = null; // Store ProseMirror document content
 
   readonly rows: number = 1;
 
@@ -117,8 +118,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         marks: schema.spec.marks,
       });
 
-      // Create initial document with an empty paragraph
-      const doc = mySchema.node('doc', null, [mySchema.node('paragraph')]);
+      // Create initial document - restore from saved content or start with empty paragraph
+      const doc = this.content 
+        ? mySchema.nodeFromJSON(this.content)
+        : mySchema.node('doc', null, [mySchema.node('paragraph')]);
 
       // Initialize ProseMirror editor without menu bar (disabled by default)
       this.editor = new EditorView(this.elementRef, {
@@ -203,8 +206,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   save(): void {
     console.log('Saving text object', this.id);
     
-    // Disable the ProseMirror editor
+    // Store the current editor content
     if (this.editor) {
+      this.content = this.editor.state.doc.toJSON();
+      
+      // Disable the ProseMirror editor
       this.editor.setProps({ editable: () => false });
       this.editor.dom.blur(); // Remove focus
     }
