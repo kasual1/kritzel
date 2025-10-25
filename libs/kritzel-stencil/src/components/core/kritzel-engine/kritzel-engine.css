@@ -13,6 +13,15 @@
   user-select: none;
 }
 
+.ProseMirror {
+  outline: none;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
 .debug-panel {
   position: absolute;
   pointer-events: none;
@@ -37,14 +46,6 @@
   overflow: visible;
 }
 
-textarea {
-  all: unset;
-  box-sizing: border-box;
-  outline: none !important;
-  border: none !important;
-  overflow: visible;
-}
-
 .resize-handle-overlay.top-left,
 .resize-handle-overlay.bottom-right {
   cursor: nwse-resize;
@@ -57,4 +58,16 @@ textarea {
 
 .rotation-handle-overlay {
   cursor: grab;
+}
+
+.PlaygroundEditorTheme__quote {
+  margin: 0;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: rgb(101, 103, 107);
+  border-left-color: rgb(206, 208, 212);
+  border-left-width: 4px;
+  border-left-style: solid;
+  padding-left: 16px;
 }

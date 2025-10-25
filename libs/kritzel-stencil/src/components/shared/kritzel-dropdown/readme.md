@@ -9,7 +9,7 @@
 
 | Property       | Attribute       | Description | Type               | Default     |
 | -------------- | --------------- | ----------- | ------------------ | ----------- |
-| `options`      | `options`       |             | `DropdownOption[]` | `[]`        |
+| `options`      | --              |             | `DropdownOption[]` | `[]`        |
 | `selectStyles` | `select-styles` |             | `any`              | `{}`        |
 | `value`        | `value`         |             | `string`           | `undefined` |
 | `width`        | `width`         |             | `string`           | `undefined` |

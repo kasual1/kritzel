@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property       | Attribute       | Description | Type                     | Default                                                                                         |
-| -------------- | --------------- | ----------- | ------------------------ | ----------------------------------------------------------------------------------------------- |
-| `brushOptions` | `brush-options` |             | `BrushStyleOption[]`     | `[     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]` |
-| `type`         | `type`          |             | `"highlighter" \| "pen"` | `'pen'`                                                                                         |
+| Property       | Attribute | Description | Type                     | Default                                                                                         |
+| -------------- | --------- | ----------- | ------------------------ | ----------------------------------------------------------------------------------------------- |
+| `brushOptions` | --        |             | `BrushStyleOption[]`     | `[     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]` |
+| `type`         | `type`    |             | `"highlighter" \| "pen"` | `'pen'`                                                                                         |
 
 
 ## Events

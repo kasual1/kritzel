@@ -36,5 +36,10 @@
   },
   "overrides": {
     "axios": "^0.30.0"
+  },
+  "dependencies": {
+    "prosemirror-commands": "^1.7.1",
+    "prosemirror-history": "^1.4.1",
+    "prosemirror-keymap": "^1.2.3"
   }
 }

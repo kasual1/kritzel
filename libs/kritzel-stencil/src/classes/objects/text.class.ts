@@ -1,31 +1,57 @@
-import { UpdateObjectCommand } from '../commands/update-object.command';
 import { KritzelToolRegistry } from '../registries/tool.registry';
-import { KritzelTextTool } from '../tools/text-tool.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-
-export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
+import { UpdateObjectCommand } from '../commands/update-object.command';
+import { EditorState, TextSelection } from 'prosemirror-state';
+import { DirectEditorProps, EditorView } from 'prosemirror-view';
+import { Schema } from 'prosemirror-model';
+import { schema } from 'prosemirror-schema-basic';
+import { addListNodes } from 'prosemirror-schema-list';
+import { keymap } from 'prosemirror-keymap';
+import { history, undo, redo } from 'prosemirror-history';
+import { baseKeymap } from 'prosemirror-commands';
+export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
-  value: string = '';
   fontFamily: string = 'Arial';
   fontSize: number = 8;
   fontColor: string = '#000000';
-  initialWidth: number = 3;
+  initialWidth: number = 1;
+  initialHeight: number = 1;
+
+  scale: number = 1;
+  scaleFactor: number = 1;
 
   isNew: boolean = true;
   isDebugInfoVisible: boolean = true;
   isEditable: boolean = true;
+  isEditing: boolean = false;
+
+  editor: EditorView | null = null;
+  content: any = null; // Store ProseMirror document content
 
   readonly rows: number = 1;
 
-  get isReadonly(): boolean {
-    return !(this._core.store.state.activeTool instanceof KritzelTextTool);
+  get isEmpty(): boolean {
+    if (!this.editor) {
+      return true;
+    }
+
+    const doc = this.editor.state.doc;
+    
+    // Check if document is empty (only has empty paragraph(s))
+    // A truly empty doc has size of 4: start of doc (1) + paragraph (1) + end of paragraph (1) + end of doc (1)
+    if (doc.content.size === 0) {
+      return true;
+    }
+
+    // Check if all content is whitespace
+    const text = doc.textContent.trim();
+    return text.length === 0;
   }
 
   constructor(config?: {
-    value: string;
     translateX?: number;
     translateY?: number;
     fontSize?: number;
@@ -34,19 +60,23 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     height?: number;
     width?: number;
     scale?: number;
+    initialWidth?: number;
+    initialHeight?: number;
+    scaleX?: number;
+    scaleY?: number;
   }) {
     super();
 
     if (config) {
-      this.value = config.value || ' ';
       this.translateX = config.translateX || 0;
       this.translateY = config.translateY || 0;
       this.fontSize = config.fontSize || 8;
       this.fontFamily = config.fontFamily || 'Arial';
       this.fontColor = config.fontColor || '#000000';
-      this.height = config.height || this.fontSize * 1.2;
-      this.width = config.width || 0;
+      this.width = this.initialWidth / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
+      this.height = (this.fontSize * 1.2) / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
       this.scale = config.scale || 1;
+      this.scaleFactor = config.scaleX ?? 1;
     }
   }
 
@@ -62,22 +92,66 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
     object.translateY = 0;
     object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
-    object.padding = 5;
     object.backgroundColor = 'transparent';
+    object.initialWidth = object.width;
+    object.initialHeight = object.height;
+    object.scaleFactor = 1;
     object.scale = object._core.store.state.scale;
-    object.value = ' ';
     object.zIndex = core.store.currentZIndex;
 
     return object;
   }
 
-  override mount(element: HTMLTextAreaElement): void {
+  override mount(element: HTMLDivElement): void {
     if ((this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
       return;
     }
 
     this.elementRef = element;
+    this.elementRef.style.fontFamily = this.fontFamily;
+    this.elementRef.style.fontSize = `${this.fontSize}pt`;
+    this.elementRef.style.color = this.fontColor;
+
+    requestAnimationFrame(() => {
+      const mySchema = new Schema({
+        nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
+        marks: schema.spec.marks,
+      });
+
+      const doc = this.content 
+        ? mySchema.nodeFromJSON(this.content)
+        : mySchema.node('doc', null, [mySchema.node('paragraph')]);
+
+      this.editor = new EditorView(this.elementRef, {
+        state: EditorState.create({
+          doc: doc,
+          plugins: [history(), keymap({ 'Mod-z': undo, 'Mod-y': redo }), keymap(baseKeymap)],
+        }),
+        editable: () => false,
+        dispatchTransaction: (transaction) => {
+          const newState = this.editor.state.apply(transaction);
+          this.editor.updateState(newState);
+          this.adjustSizeOnInput();
+        },
+      });
+    });
+
     this.isMounted = true;
+  }
+
+  adjustSizeOnInput(): void {
+    const element = this.elementRef;
+
+    if (element) {
+      const newWidth = element.scrollWidth;
+      const newHeight = element.scrollHeight;
+
+      if (this.width !== newWidth * this.scaleFactor || this.height !== newHeight * this.scaleFactor) {
+        this.width = newWidth * this.scaleFactor;
+        this.height = newHeight * this.scaleFactor;
+        this._core.rerender();
+      }
+    }
   }
 
   override resize(x: number, y: number, width: number, height: number): void {
@@ -85,102 +159,99 @@ export class KritzelText extends KritzelBaseObject<HTMLTextAreaElement> {
       return;
     }
 
-    const scaleFactor = height / this.height;
+    const originalWidth = this.width / this.scaleFactor;
+    const originalHeight = this.height / this.scaleFactor;
 
-    this.fontSize = this.fontSize * scaleFactor;
-    this.width = this.width * scaleFactor;
-    this.height = height;
+    const scaleX = width / originalWidth;
+    const scaleY = height / originalHeight;
+
+    this.scaleFactor = Math.min(scaleX, scaleY);
+
+    this.width = originalWidth * this.scaleFactor;
+    this.height = originalHeight * this.scaleFactor;
+
     this.translateX = x;
     this.translateY = y;
   }
 
-  handleKeyDown(event: KeyboardEvent): void {
-    if (this.isReadonly) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-  }
-
-  handleInput(event: InputEvent): void {
-    const target = event.target as HTMLTextAreaElement;
-    if (target.value === '') {
-      this.value = ' ';
-      target.value = ' ';
-      target.selectionStart = target.selectionEnd = target.value.length;
-    } else {
-      this.value = target.value.trim();
-    }
-
-    this.updateTextareaDimensions();
-  }
-
-  updateTextareaDimensions() {
-    if (this.elementRef) {
-      const span = document.createElement('span');
-      span.style.position = 'absolute';
-      span.style.whiteSpace = 'pre-wrap';
-      span.style.visibility = 'hidden';
-      span.style.fontSize = window.getComputedStyle(this.elementRef).fontSize;
-      span.style.fontFamily = window.getComputedStyle(this.elementRef).fontFamily;
-
-      span.innerHTML = this.elementRef.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') + '<br>';
-
-      document.body.appendChild(span);
-      const textWidth = span.offsetWidth;
-      const textHeight = span.offsetHeight;
-      document.body.removeChild(span);
-
-      this.width = textWidth;
-      this.height = textHeight;
-
-      this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, { ...this }));
-    }
-  }
-
   focus(): void {
-    if (this.elementRef) {
-      this.elementRef.focus();
-    }
-  }
-
-  selectAll(): void {
-    if (this.elementRef) {
-      this.elementRef.select();
-    }
-  }
-
-  insertFromClipboard(): void {
-    if (this.elementRef) {
-      this.elementRef.focus();
-      try {
-        navigator.clipboard.readText().then(text => {
-          const start = this.elementRef.selectionStart;
-          const end = this.elementRef.selectionEnd;
-          const value = this.elementRef.value;
-
-          this.value = (value.substring(0, start) + text + value.substring(end)).trim();
-          this.elementRef.value = this.value;
-
-          const length = this.elementRef.value.length;
-          this.elementRef.setSelectionRange(length, length);
-
-          this.updateTextareaDimensions();
-        });
-      } catch (err) {
-        console.error('Failed to read clipboard contents:', err);
-      }
+    if (this.editor) {
+      const end = this.editor.state.doc.content.size;
+      this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(this.editor.state.doc, end)));
+      this.editor.focus();
     }
   }
 
   edit(): void {
+    console.log('Editing text object', this.id);
     KritzelKeyboardHelper.disableInteractiveWidget();
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
     this._core.store.state.activeText = this;
     this._core.clearSelection();
 
+    // Enable the ProseMirror editor
+    if (this.editor) {
+      this.editor.setProps({ editable: () => true });
+    }
+
+    this.isEditing = true;
+
     this.focus();
 
     KritzelKeyboardHelper.enableInteractiveWidget();
+  }
+
+  save(): void {
+    console.log('Saving text object', this.id);
+    
+    // Store the current editor content
+    if (this.editor) {
+      this.content = this.editor.state.doc.toJSON();
+      
+      // Disable the ProseMirror editor
+      this.editor.setProps({ editable: () => false });
+      this.editor.dom.blur(); // Remove focus
+    }
+
+    this.isEditing = false;
+    
+    this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, this));
+  }
+
+  handlePointerDown(event: PointerEvent): void {
+    if (!this.isEditing) {
+      return;
+    }
+
+    event.stopPropagation();
+  }
+
+  handlePointerMove(event: PointerEvent): void {
+    if (!this.isEditing) {
+      return;
+    }
+
+    event.stopPropagation();
+  }
+
+  handlePointerUp(event: PointerEvent): void {
+    if (!this.isEditing) {
+      return;
+    }
+
+    event.stopPropagation();
+  }
+
+  override serialize() {
+    const { _core, _elementRef, element, totalWidth, totalHeight, editor, ...remainingProps } = this as any;
+
+    const clonedProps = structuredClone(remainingProps);
+
+    if (element && typeof element === 'object' && 'nodeType' in element && element.nodeType === 1) {
+      clonedProps.element = element.cloneNode(true) as HTMLElement;
+    }
+
+    return clonedProps;
   }
 }

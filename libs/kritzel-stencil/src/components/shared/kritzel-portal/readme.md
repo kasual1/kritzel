@@ -9,7 +9,7 @@
 
 | Property    | Attribute    | Description | Type          | Default     |
 | ----------- | ------------ | ----------- | ------------- | ----------- |
-| `anchor`    | `anchor`     |             | `HTMLElement` | `undefined` |
+| `anchor`    | --           |             | `HTMLElement` | `undefined` |
 | `autoFocus` | `auto-focus` |             | `boolean`     | `true`      |
 | `offsetX`   | `offset-x`   |             | `number`      | `undefined` |
 | `offsetY`   | `offset-y`   |             | `number`      | `undefined` |
