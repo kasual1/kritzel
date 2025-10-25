@@ -9,8 +9,8 @@
 
 | Property  | Attribute | Description | Type                                             | Default     |
 | --------- | --------- | ----------- | ------------------------------------------------ | ----------- |
-| `items`   | `items`   |             | `ContextMenuItem[]`                              | `undefined` |
-| `objects` | `objects` |             | `KritzelBaseObject<HTMLElement \| SVGElement>[]` | `undefined` |
+| `items`   | --        |             | `ContextMenuItem[]`                              | `undefined` |
+| `objects` | --        |             | `KritzelBaseObject<HTMLElement \| SVGElement>[]` | `undefined` |
 
 
 ## Events

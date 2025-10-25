@@ -11,7 +11,7 @@
 | -------------- | --------------- | ----------- | ---------- | ------------------------- |
 | `fontFamily`   | `font-family`   |             | `string`   | `'Arial'`                 |
 | `selectedSize` | `selected-size` |             | `number`   | `null`                    |
-| `sizes`        | `sizes`         |             | `number[]` | `[8, 10, 12, 16, 20, 24]` |
+| `sizes`        | --              |             | `number[]` | `[8, 10, 12, 16, 20, 24]` |
 
 
 ## Events
