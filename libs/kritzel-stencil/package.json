@@ -1,6 +1,6 @@
 {
   "name": "kritzel-stencil",
-  "version": "0.0.140",
+  "version": "0.0.141",
   "description": "Stencil Component Starter",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -58,19 +58,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@lexical/dragon": "^0.37.0",
-    "@lexical/history": "^0.37.0",
-    "@lexical/rich-text": "^0.37.0",
-    "@lexical/utils": "^0.37.0",
     "browser-image-compression": "^2.0.2",
-    "lexical": "^0.37.0",
     "perfect-freehand": "^1.2.2",
-    "prosemirror-example-setup": "^1.2.3",
     "prosemirror-model": "^1.25.4",
     "prosemirror-schema-basic": "^1.2.4",
     "prosemirror-schema-list": "^1.5.1",
     "prosemirror-state": "^1.4.4",
-    "prosemirror-view": "^1.41.3",
-    "quill": "^2.0.3"
+    "prosemirror-view": "^1.41.3"
   }
 }

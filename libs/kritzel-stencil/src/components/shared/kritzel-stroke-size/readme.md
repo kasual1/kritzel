@@ -10,7 +10,7 @@
 | Property       | Attribute       | Description | Type       | Default                 |
 | -------------- | --------------- | ----------- | ---------- | ----------------------- |
 | `selectedSize` | `selected-size` |             | `number`   | `null`                  |
-| `sizes`        | `sizes`         |             | `number[]` | `[4, 6, 8, 12, 16, 24]` |
+| `sizes`        | --              |             | `number[]` | `[4, 6, 8, 12, 16, 24]` |
 
 
 ## Events

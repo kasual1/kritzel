@@ -9,7 +9,7 @@
 
 | Property        | Attribute        | Description | Type       | Default |
 | --------------- | ---------------- | ----------- | ---------- | ------- |
-| `colors`        | `colors`         |             | `string[]` | `[]`    |
+| `colors`        | --               |             | `string[]` | `[]`    |
 | `isExpanded`    | `is-expanded`    |             | `boolean`  | `false` |
 | `isOpaque`      | `is-opaque`      |             | `boolean`  | `false` |
 | `selectedColor` | `selected-color` |             | `string`   | `null`  |

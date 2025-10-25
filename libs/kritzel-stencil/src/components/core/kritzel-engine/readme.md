@@ -7,14 +7,14 @@
 
 ## Properties
 
-| Property                 | Attribute                   | Description | Type                | Default              |
-| ------------------------ | --------------------------- | ----------- | ------------------- | -------------------- |
-| `activeTool`             | `active-tool`               |             | `KritzelTool`       | `undefined`          |
-| `globalContextMenuItems` | `global-context-menu-items` |             | `ContextMenuItem[]` | `undefined`          |
-| `objectContextMenuItems` | `object-context-menu-items` |             | `ContextMenuItem[]` | `undefined`          |
-| `scaleMax`               | `scale-max`                 |             | `number`            | `ABSOLUTE_SCALE_MAX` |
-| `scaleMin`               | `scale-min`                 |             | `number`            | `ABSOLUTE_SCALE_MIN` |
-| `workspace`              | `workspace`                 |             | `KritzelWorkspace`  | `undefined`          |
+| Property                 | Attribute   | Description | Type                | Default              |
+| ------------------------ | ----------- | ----------- | ------------------- | -------------------- |
+| `activeTool`             | --          |             | `KritzelTool`       | `undefined`          |
+| `globalContextMenuItems` | --          |             | `ContextMenuItem[]` | `undefined`          |
+| `objectContextMenuItems` | --          |             | `ContextMenuItem[]` | `undefined`          |
+| `scaleMax`               | `scale-max` |             | `number`            | `ABSOLUTE_SCALE_MAX` |
+| `scaleMin`               | `scale-min` |             | `number`            | `ABSOLUTE_SCALE_MIN` |
+| `workspace`              | --          |             | `KritzelWorkspace`  | `undefined`          |
 
 
 ## Events

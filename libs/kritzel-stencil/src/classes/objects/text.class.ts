@@ -4,7 +4,7 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { UpdateObjectCommand } from '../commands/update-object.command';
 import { EditorState, TextSelection } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
+import { DirectEditorProps, EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
 import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
@@ -92,7 +92,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.translateY = 0;
     object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
-    object.backgroundColor = 'red';
+    object.backgroundColor = 'transparent';
     object.initialWidth = object.width;
     object.initialHeight = object.height;
     object.scaleFactor = 1;
@@ -107,38 +107,34 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    console.log('Mounting text object', this.id);
-
     this.elementRef = element;
+    this.elementRef.style.fontFamily = this.fontFamily;
+    this.elementRef.style.fontSize = `${this.fontSize}pt`;
+    this.elementRef.style.color = this.fontColor;
 
-    setTimeout(() => {
-      // Create schema with basic formatting and list support
+    requestAnimationFrame(() => {
       const mySchema = new Schema({
         nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
         marks: schema.spec.marks,
       });
 
-      // Create initial document - restore from saved content or start with empty paragraph
       const doc = this.content 
         ? mySchema.nodeFromJSON(this.content)
         : mySchema.node('doc', null, [mySchema.node('paragraph')]);
 
-      // Initialize ProseMirror editor without menu bar (disabled by default)
       this.editor = new EditorView(this.elementRef, {
         state: EditorState.create({
           doc: doc,
           plugins: [history(), keymap({ 'Mod-z': undo, 'Mod-y': redo }), keymap(baseKeymap)],
         }),
-        editable: () => false, // Start disabled, enable in edit()
+        editable: () => false,
         dispatchTransaction: (transaction) => {
           const newState = this.editor.state.apply(transaction);
           this.editor.updateState(newState);
-          
-          // Adjust size after content changes
           this.adjustSizeOnInput();
         },
       });
-    }, 0);
+    });
 
     this.isMounted = true;
   }

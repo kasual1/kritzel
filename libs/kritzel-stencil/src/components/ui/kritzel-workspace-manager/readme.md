@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property          | Attribute          | Description | Type                 | Default     |
-| ----------------- | ------------------ | ----------- | -------------------- | ----------- |
-| `activeWorkspace` | `active-workspace` |             | `KritzelWorkspace`   | `undefined` |
-| `workspaces`      | `workspaces`       |             | `KritzelWorkspace[]` | `[]`        |
+| Property          | Attribute | Description | Type                 | Default     |
+| ----------------- | --------- | ----------- | -------------------- | ----------- |
+| `activeWorkspace` | --        |             | `KritzelWorkspace`   | `undefined` |
+| `workspaces`      | --        |             | `KritzelWorkspace[]` | `[]`        |
 
 
 ## Events

@@ -11,7 +11,7 @@
 | -------------------- | ---------------------- | ----------- | ------------------------- | ---------------- |
 | `buttonIcon`         | `button-icon`          |             | `string`                  | `'plus'`         |
 | `dropdownIcon`       | `dropdown-icon`        |             | `string`                  | `'chevron-down'` |
-| `items`              | `items`                |             | `IKritzelMenuItem<any>[]` | `[]`             |
+| `items`              | --                     |             | `IKritzelMenuItem<any>[]` | `[]`             |
 | `mainButtonDisabled` | `main-button-disabled` |             | `boolean`                 | `false`          |
 | `menuButtonDisabled` | `menu-button-disabled` |             | `boolean`                 | `false`          |
 
