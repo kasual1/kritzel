@@ -2,12 +2,12 @@ import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelBaseCommand } from './base.command';
 import { KritzelCore } from '../core/core.class';
 
-export class UpdateObjectCommand extends KritzelBaseCommand {
-  private object: KritzelBaseObject<any>;
-  private updatedProperties: Partial<KritzelBaseObject<any>>;
-  private previousProperties: Partial<KritzelBaseObject<any>>;
+export class UpdateObjectCommand<T extends KritzelBaseObject<any>> extends KritzelBaseCommand {
+  private object: T;
+  private updatedProperties: Partial<T>;
+  private previousProperties: Partial<T>;
 
-  constructor(core: KritzelCore, initiator: any, object: KritzelBaseObject<any>, updatedProperties: Partial<KritzelBaseObject<any>>, skipHistory = false) {
+  constructor(core: KritzelCore, initiator: any, object: T, updatedProperties: Partial<T>, skipHistory = false) {
     super(core, initiator, skipHistory);
     this.object = object;
     this.updatedProperties = updatedProperties;
