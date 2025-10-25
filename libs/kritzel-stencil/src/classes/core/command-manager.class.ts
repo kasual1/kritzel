@@ -3,7 +3,7 @@ import { UpdateViewportCommand } from '../commands/update-viewport.command';
 import { KritzelCore } from './core.class';
 
 export class KritzelCommandManager {
-  private readonly _core: KritzelCore;
+  private _core: KritzelCore;
 
   private readonly _history;
 
@@ -34,7 +34,7 @@ export class KritzelCommandManager {
 
     if (command.skipHistory === false) {
       if (this._core.store.state.debugInfo.logCommands) {
-        console.info('add', command);
+        console.trace('add', command);
       }
 
       this._history.undoStack.add(command);

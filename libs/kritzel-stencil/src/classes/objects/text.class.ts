@@ -28,7 +28,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   isEditing: boolean = false;
 
   editor: EditorView | null = null;
-  content: any = null; // Store ProseMirror document content
+  content: any = null;
 
   readonly rows: number = 1;
 
@@ -180,7 +180,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   edit(): void {
-    console.log('Editing text object', this.id);
     KritzelKeyboardHelper.disableInteractiveWidget();
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
@@ -200,17 +199,17 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   save(): void {
-    console.log('Saving text object', this.id);
-
     this.content = this.editor.state.doc.toJSON();
     this.editor.setProps({ editable: () => false });
     this.editor.dom.blur();
 
     this.isEditing = false;
 
-    this._core.commandManager.executeCommand(new UpdateObjectCommand<KritzelText>(this._core, this, this, {
-      content: this.content
-    }));
+    this._core.commandManager.executeCommand(
+      new UpdateObjectCommand<KritzelText>(this._core, this, this, {
+        content: this.content,
+      }),
+    );
   }
 
   handlePointerDown(event: PointerEvent): void {
@@ -238,7 +237,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   override serialize() {
-    const { _core, _elementRef, element, totalWidth, totalHeight, editor, ...remainingProps } = this as any;
+    const { _core, _elementRef, element, totalWidth, totalHeight, editor, uneditedObject, ...remainingProps } = this as any;
 
     const clonedProps = structuredClone(remainingProps);
 
@@ -247,5 +246,27 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     }
 
     return clonedProps;
+  }
+
+  override onExecuteUpdateCommand(updatedProperties: Partial<KritzelText>): void {
+    if ('content' in updatedProperties && this.editor) {
+      this.editor.updateState(
+        EditorState.create({
+          doc: this.editor.state.schema.nodeFromJSON(updatedProperties.content),
+          plugins: [keymap(baseKeymap)],
+        }),
+      );
+    }
+  }
+
+  override onUndoUpdateCommand(previousProperties: Partial<KritzelText>): void {
+    if ('content' in previousProperties && this.editor) {
+      this.editor.updateState(
+        EditorState.create({
+          doc: this.editor.state.schema.nodeFromJSON(previousProperties.content),
+          plugins: [keymap(baseKeymap)],
+        }),
+      );
+    }
   }
 }

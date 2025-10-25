@@ -27,6 +27,8 @@ export class UpdateObjectCommand<T extends KritzelBaseObject<any>> extends Kritz
       }
     }
 
+    this.object.onExecuteUpdateCommand(this.updatedProperties);
+
     this._core.store.state.objectsMap.update(this.object);
     this._core.updateObjectInDatabase(this.object);
   }
@@ -37,6 +39,8 @@ export class UpdateObjectCommand<T extends KritzelBaseObject<any>> extends Kritz
         this.object[key] = this.previousProperties[key];
       }
     }
+
+    this.object.onUndoUpdateCommand(this.previousProperties);
 
     this._core.store.state.objectsMap.update(this.object);
     this._core.updateObjectInDatabase(this.object);
