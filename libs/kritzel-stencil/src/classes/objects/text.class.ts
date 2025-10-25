@@ -4,7 +4,7 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { UpdateObjectCommand } from '../commands/update-object.command';
 import { EditorState, TextSelection } from 'prosemirror-state';
-import { DirectEditorProps, EditorView } from 'prosemirror-view';
+import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
 import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
