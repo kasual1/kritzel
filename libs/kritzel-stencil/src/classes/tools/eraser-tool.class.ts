@@ -76,7 +76,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
         });
 
         if (removeCommands.length > 0) {
-          this._core.history.executeCommand(new BatchCommand(this._core, this, removeCommands));
+          this._core.commandManager.executeCommand(new BatchCommand(this._core, this, removeCommands));
         }
 
         this._core.store.state.isErasing = false;
@@ -95,7 +95,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
           });
 
         if (removeCommands.length > 0) {
-          this._core.history.executeCommand(new BatchCommand(this._core, this, removeCommands));
+          this._core.commandManager.executeCommand(new BatchCommand(this._core, this, removeCommands));
         }
 
         this._core.store.state.isErasing = false;

@@ -52,7 +52,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
         new AddSelectionGroupCommand(this._core, this, selectionGroup),
       ]);
 
-      this._core.history.executeCommand(batch);
+      this._core.commandManager.executeCommand(batch);
     }
 
     this._core.store.state.contextMenuItems = this._core.store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;

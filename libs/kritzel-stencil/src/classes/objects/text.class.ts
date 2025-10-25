@@ -208,7 +208,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = false;
 
-    this._core.history.executeCommand(new UpdateObjectCommand<KritzelText>(this._core, this, this, {
+    this._core.commandManager.executeCommand(new UpdateObjectCommand<KritzelText>(this._core, this, this, {
       content: this.content
     }));
   }

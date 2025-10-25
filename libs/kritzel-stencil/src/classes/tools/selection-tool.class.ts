@@ -46,7 +46,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected
         ) {
-          this._core.history.executeCommand(new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup));
+          this._core.commandManager.executeCommand(new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup));
         }
 
         if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1 && selectedObject.objects[0].isInteractive) {
@@ -85,7 +85,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected
         ) {
-          this._core.history.executeCommand(new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup));
+          this._core.commandManager.executeCommand(new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup));
         }
       }
 

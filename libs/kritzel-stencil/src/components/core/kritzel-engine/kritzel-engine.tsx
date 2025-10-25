@@ -302,7 +302,7 @@ export class KritzelEngine {
     object.zIndex = this.core.store.currentZIndex;
 
     const command = new AddObjectCommand(this.core, this, object);
-    this.core.history.executeCommand(command);
+    this.core.commandManager.executeCommand(command);
 
     return object;
   }
@@ -312,7 +312,7 @@ export class KritzelEngine {
     this.core.deselectAllObjects();
 
     const command = new UpdateObjectCommand(this.core, this, object, updatedProperties);
-    this.core.history.executeCommand(command);
+    this.core.commandManager.executeCommand(command);
 
     return object;
   }
@@ -322,7 +322,7 @@ export class KritzelEngine {
     this.core.deselectAllObjects();
 
     const command = new RemoveObjectCommand(this.core, this, object);
-    this.core.history.executeCommand(command);
+    this.core.commandManager.executeCommand(command);
 
     return object;
   }
@@ -358,7 +358,7 @@ export class KritzelEngine {
     object.centerInViewport();
 
     const command = new UpdateObjectCommand(this.core, this, object, object);
-    this.core.history.executeCommand(command);
+    this.core.commandManager.executeCommand(command);
 
     return object;
   }

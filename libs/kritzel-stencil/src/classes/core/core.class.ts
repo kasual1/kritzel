@@ -17,11 +17,13 @@ import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelReviver } from './reviver.class';
 import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from './workspace.class';
+import { KritzelCommandManager } from './command-manager.class';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
   private readonly _store: KritzelStore;
   private readonly _history: KritzelHistory;
+  private readonly _commandManager: KritzelCommandManager;
   private readonly _database: KritzelDatabase;
 
   get engine(): KritzelEngine {
@@ -30,6 +32,10 @@ export class KritzelCore {
 
   get history(): KritzelHistory {
     return this._history;
+  }
+  
+  get commandManager(): KritzelCommandManager {
+    return this._commandManager;
   }
 
   get database(): KritzelDatabase {
@@ -44,6 +50,7 @@ export class KritzelCore {
     this._kritzelEngine = kritzelEngine;
     this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
     this._history = new KritzelHistory(this);
+    this._commandManager = new KritzelCommandManager(this);
     this._database = new KritzelDatabase('kritzelDB', 1, this._store.state.debugInfo.logDatabase);
   }
 
@@ -251,7 +258,7 @@ export class KritzelCore {
 
   deselectAllObjects(): void {
     if (this._store.state.selectionGroup) {
-      this._history.executeCommand(new RemoveSelectionGroupCommand(this, this));
+      this.commandManager.executeCommand(new RemoveSelectionGroupCommand(this, this));
     }
   }
 
@@ -264,14 +271,14 @@ export class KritzelCore {
     const removeSelectionGroupCommand = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup);
     const commands = [...deleteSelectedObjectsCommand, removeSelectionGroupCommand];
 
-    this.history.executeCommand(new BatchCommand(this, this._store.state.selectionGroup, commands));
+    this.commandManager.executeCommand(new BatchCommand(this, this._store.state.selectionGroup, commands));
   }
 
   deleteObject(id: string, skipHistory: boolean = false) {
     const object = this.findObjectById(id);
     if (object) {
       const removeObjectCommand = new RemoveObjectCommand(this, this, object, skipHistory);
-      this.history.executeCommand(removeObjectCommand);
+      this.commandManager.executeCommand(removeObjectCommand);
     }
   }
 
@@ -315,7 +322,7 @@ export class KritzelCore {
 
     commands.push(...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand);
 
-    this.history.executeCommand(new BatchCommand(this, this, commands));
+    this.commandManager.executeCommand(new BatchCommand(this, this, commands));
 
     this._store.state.isSelecting = false;
     this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
@@ -333,7 +340,7 @@ export class KritzelCore {
       return new UpdateObjectCommand(this, this, obj, { zIndex: obj.zIndex + 1 });
     });
 
-    this.history.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
+    this.commandManager.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
   }
 
   sendBackward(object?: KritzelBaseObject<any>) {
@@ -347,7 +354,7 @@ export class KritzelCore {
       return new UpdateObjectCommand(this, this, obj, { zIndex: obj.zIndex - 1 });
     });
 
-    this.history.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
+    this.commandManager.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
   }
 
   bringToFront(object?: KritzelBaseObject<any>) {
@@ -358,7 +365,7 @@ export class KritzelCore {
       return new UpdateObjectCommand(this, this, obj, { zIndex: max });
     });
 
-    this.history.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
+    this.commandManager.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
   }
 
   sendToBack(object?: KritzelBaseObject<any>) {
@@ -369,7 +376,7 @@ export class KritzelCore {
       return new UpdateObjectCommand(this, this, obj, { zIndex: min });
     });
 
-    this.history.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
+    this.commandManager.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
   }
 
   selectObjects(objects: KritzelBaseObject<any>[]) {
@@ -391,7 +398,7 @@ export class KritzelCore {
       selectionGroup.rotation = selectionGroup.objects[0].rotation;
     }
 
-    this.history.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
+    this.commandManager.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
   }
 
   selectAllObjectsInViewport() {
@@ -415,14 +422,14 @@ export class KritzelCore {
         selectionGroup.rotation = selectionGroup.objects[0].rotation;
       }
 
-      this.history.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
+      this.commandManager.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
       this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     }
   }
 
   clearSelection() {
     const command = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup);
-    this.history.executeCommand(command);
+    this.commandManager.executeCommand(command);
 
     this._store.state.selectionGroup = null;
     this._store.state.selectionBox = null;

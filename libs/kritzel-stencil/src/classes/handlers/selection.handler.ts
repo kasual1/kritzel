@@ -290,7 +290,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     selectionGroup.isSelected = true;
     selectionGroup.rotation = object.rotation;
 
-    this._core.history.executeCommand(new AddSelectionGroupCommand(this._core, this, selectionGroup));
+    this._core.commandManager.executeCommand(new AddSelectionGroupCommand(this._core, this, selectionGroup));
   }
 
   private addSelectedObjectsToSelectionGroup(): void {
@@ -313,6 +313,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       selectionGroup.rotation = selectionGroup.objects[0].rotation;
     }
 
-    this._core.history.executeCommand(new AddSelectionGroupCommand(this._core, this, selectionGroup));
+    this._core.commandManager.executeCommand(new AddSelectionGroupCommand(this._core, this, selectionGroup));
   }
 }

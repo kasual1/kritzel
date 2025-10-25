@@ -160,7 +160,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isResizing) {
-        this._core.history.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
+        this._core.commandManager.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
 
         this._core.store.state.isResizing = false;
         this._core.store.state.hasObjectsChanged = true;
@@ -171,7 +171,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isResizing) {
-        this._core.history.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
+        this._core.commandManager.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
 
         this._core.store.state.isResizing = false;
         this._core.store.state.hasObjectsChanged = true;
