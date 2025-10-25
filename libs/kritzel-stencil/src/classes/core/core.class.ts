@@ -258,7 +258,7 @@ export class KritzelCore {
 
   deselectAllObjects(): void {
     if (this._store.state.selectionGroup) {
-      this.commandManager.executeCommand(new RemoveSelectionGroupCommand(this, this));
+      this.commandManager.executeCommand(new RemoveSelectionGroupCommand(this, this, true));
     }
   }
 
@@ -428,7 +428,7 @@ export class KritzelCore {
   }
 
   clearSelection() {
-    const command = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup);
+    const command = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup, true);
     this.commandManager.executeCommand(command);
 
     this._store.state.selectionGroup = null;
