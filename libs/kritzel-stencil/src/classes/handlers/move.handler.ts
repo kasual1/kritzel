@@ -137,7 +137,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
-          this._core.history.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
+          this._core.commandManager.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
           this._core.store.state.hasObjectsChanged = true;
         }
       }
@@ -148,7 +148,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
-          this._core.history.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
+          this._core.commandManager.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
           this._core.store.state.hasObjectsChanged = true;
         }
       }

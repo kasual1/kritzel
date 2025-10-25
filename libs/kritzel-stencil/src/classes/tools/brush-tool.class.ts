@@ -127,7 +127,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
           this._core.store.state.currentPath = currentPath;
 
-          this._core.history.executeCommand(new AddObjectCommand(this._core, this, this._core.store.state.currentPath));
+          this._core.commandManager.executeCommand(new AddObjectCommand(this._core, this, this._core.store.state.currentPath));
         }
 
         this._core.store.state.currentPath = undefined;
@@ -144,7 +144,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
           this._core.store.state.currentPath = currentPath;
           
-          this._core.history.executeCommand(new AddObjectCommand(this._core, this, currentPath));
+          this._core.commandManager.executeCommand(new AddObjectCommand(this._core, this, currentPath));
         }
 
         this._core.store.state.currentPath = undefined;

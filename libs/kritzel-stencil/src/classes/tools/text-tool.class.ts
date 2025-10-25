@@ -76,7 +76,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       this._core.store.state.activeText = text;
 
-      this._core.history.executeCommand(new AddObjectCommand(this._core, this, text));
+      this._core.commandManager.executeCommand(new AddObjectCommand(this._core, this, text));
     }
 
     if (event.pointerType === 'touch') {
@@ -121,7 +121,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       this._core.store.state.activeText = text;
 
-      this._core.history.executeCommand(new AddObjectCommand(this._core, this, text));
+      this._core.commandManager.executeCommand(new AddObjectCommand(this._core, this, text));
     }
   }
 
