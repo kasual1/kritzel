@@ -9,8 +9,8 @@
 
 | Property                | Attribute                  | Description | Type                      | Default |
 | ----------------------- | -------------------------- | ----------- | ------------------------- | ------- |
-| `activeControl`         | `active-control`           |             | `KritzelToolbarControl`   | `null`  |
-| `controls`              | `controls`                 |             | `KritzelToolbarControl[]` | `[]`    |
+| `activeControl`         | --                         |             | `KritzelToolbarControl`   | `null`  |
+| `controls`              | --                         |             | `KritzelToolbarControl[]` | `[]`    |
 | `isUtilityPanelVisible` | `is-utility-panel-visible` |             | `boolean`                 | `true`  |
 
 

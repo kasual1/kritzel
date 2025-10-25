@@ -10,7 +10,7 @@
 | Property     | Attribute     | Description | Type               | Default     |
 | ------------ | ------------- | ----------- | ------------------ | ----------- |
 | `isExpanded` | `is-expanded` |             | `boolean`          | `false`     |
-| `tool`       | `tool`        |             | `KritzelBrushTool` | `undefined` |
+| `tool`       | --            |             | `KritzelBrushTool` | `undefined` |
 
 
 ## Events

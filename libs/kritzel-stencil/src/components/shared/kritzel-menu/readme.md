@@ -9,8 +9,8 @@
 
 | Property | Attribute | Description | Type                      | Default     |
 | -------- | --------- | ----------- | ------------------------- | ----------- |
-| `items`  | `items`   |             | `IKritzelMenuItem<any>[]` | `undefined` |
-| `parent` | `parent`  |             | `IKritzelMenuItem<any>`   | `null`      |
+| `items`  | --        |             | `IKritzelMenuItem<any>[]` | `undefined` |
+| `parent` | --        |             | `IKritzelMenuItem<any>`   | `null`      |
 
 
 ## Events
