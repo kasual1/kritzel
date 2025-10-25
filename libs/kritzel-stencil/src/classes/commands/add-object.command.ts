@@ -2,10 +2,10 @@ import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelBaseCommand } from './base.command';
 import { KritzelCore } from '../core/core.class';
 
-export class AddObjectCommand extends KritzelBaseCommand {
-  private object: KritzelBaseObject<any>;
+export class AddObjectCommand<T extends KritzelBaseObject<any>> extends KritzelBaseCommand {
+  private object: T;
 
-  constructor(core: KritzelCore, initiator: any,  object: KritzelBaseObject<any>, skipHistory = false) {
+  constructor(core: KritzelCore, initiator: any,  object: T, skipHistory = false) {
     super(core, initiator, skipHistory);
     this.object = object;
   }

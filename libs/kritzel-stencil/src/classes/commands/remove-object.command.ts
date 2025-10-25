@@ -3,10 +3,10 @@ import { KritzelBaseCommand } from './base.command';
 import { KritzelCustomElement } from '../objects/custom-element.class';
 import { KritzelCore } from '../core/core.class';
 
-export class RemoveObjectCommand extends KritzelBaseCommand {
-  private object: KritzelBaseObject<any>;
+export class RemoveObjectCommand<T extends KritzelBaseObject<any>> extends KritzelBaseCommand {
+  private object: T;
 
-  constructor(core: KritzelCore, initiator: any,  object: KritzelBaseObject<any>, skipHistory = false) {
+  constructor(core: KritzelCore, initiator: any,  object: T, skipHistory = false) {
     super(core, initiator, skipHistory);
     this.object = object;
   }

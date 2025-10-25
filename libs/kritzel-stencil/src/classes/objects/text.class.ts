@@ -9,7 +9,6 @@ import { Schema } from 'prosemirror-model';
 import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
-import { history, undo, redo } from 'prosemirror-history';
 import { baseKeymap } from 'prosemirror-commands';
 export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
@@ -39,7 +38,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     }
 
     const doc = this.editor.state.doc;
-    
+
     // Check if document is empty (only has empty paragraph(s))
     // A truly empty doc has size of 4: start of doc (1) + paragraph (1) + end of paragraph (1) + end of doc (1)
     if (doc.content.size === 0) {
@@ -118,17 +117,15 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         marks: schema.spec.marks,
       });
 
-      const doc = this.content 
-        ? mySchema.nodeFromJSON(this.content)
-        : mySchema.node('doc', null, [mySchema.node('paragraph')]);
+      const doc = this.content ? mySchema.nodeFromJSON(this.content) : mySchema.node('doc', null, [mySchema.node('paragraph')]);
 
       this.editor = new EditorView(this.elementRef, {
         state: EditorState.create({
           doc: doc,
-          plugins: [history(), keymap({ 'Mod-z': undo, 'Mod-y': redo }), keymap(baseKeymap)],
+          plugins: [keymap(baseKeymap)],
         }),
         editable: () => false,
-        dispatchTransaction: (transaction) => {
+        dispatchTransaction: transaction => {
           const newState = this.editor.state.apply(transaction);
           this.editor.updateState(newState);
           this.adjustSizeOnInput();
@@ -204,19 +201,16 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   save(): void {
     console.log('Saving text object', this.id);
-    
-    // Store the current editor content
-    if (this.editor) {
-      this.content = this.editor.state.doc.toJSON();
-      
-      // Disable the ProseMirror editor
-      this.editor.setProps({ editable: () => false });
-      this.editor.dom.blur(); // Remove focus
-    }
+
+    this.content = this.editor.state.doc.toJSON();
+    this.editor.setProps({ editable: () => false });
+    this.editor.dom.blur();
 
     this.isEditing = false;
-    
-    this._core.history.executeCommand(new UpdateObjectCommand(this._core, this, this, this));
+
+    this._core.history.executeCommand(new UpdateObjectCommand<KritzelText>(this._core, this, this, {
+      content: this.content
+    }));
   }
 
   handlePointerDown(event: PointerEvent): void {
