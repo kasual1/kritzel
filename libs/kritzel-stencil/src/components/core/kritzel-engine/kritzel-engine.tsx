@@ -542,7 +542,7 @@ export class KritzelEngine {
                   >
                     {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
                       <svg
-                        ref={el => (el ? object.mount(el) : object.unmount())}
+                        ref={el => object.mount(el)}
                         xmlns="http://www.w3.org/2000/svg"
                         style={{
                           height: object?.height.toString(),
@@ -558,7 +558,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <img
-                        ref={el => (el ? object.mount(el) : object.unmount())}
+                        ref={el => object.mount(el)}
                         src={object.src}
                         style={{
                           width: '100%',
@@ -573,7 +573,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
                       <div
-                        ref={el => (el ? object.mount(el) : object.unmount())}
+                        ref={el => object.mount(el)}
                         onPointerDown={e => object.handlePointerDown(e)}
                         onPointerMove={e => object.handlePointerMove(e)}
                         onPointerUp={e => object.handlePointerUp(e)}
@@ -593,7 +593,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
                       <div
-                        ref={el => (el ? object.mount(el) : object.unmount())}
+                        ref={el => object.mount(el)}
                         style={{
                           width: '100%',
                           height: '100%',
@@ -606,7 +606,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && (
                       <div
-                        ref={el => (el ? object.mount(el) : object.unmount())}
+                        ref={el => object.mount(el)}
                         style={{
                           width: '100%',
                           height: '100%',
@@ -616,7 +616,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KrtizelSelectionBox>(object, 'KrtizelSelectionBox') && (
                       <div
-                        ref={el => (el ? object.mount(el) : object.unmount())}
+                        ref={el => object.mount(el)}
                         style={{
                           width: '100%',
                           height: '100%',
