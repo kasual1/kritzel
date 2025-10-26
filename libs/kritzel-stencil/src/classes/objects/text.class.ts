@@ -263,23 +263,25 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   override onExecuteUpdateCommand(updatedProperties: Partial<KritzelText>): void {
     if ('content' in updatedProperties && this.editor) {
-      this.editor.updateState(
-        EditorState.create({
-          doc: this.editor.state.schema.nodeFromJSON(updatedProperties.content),
-          plugins: [keymap(baseKeymap)],
-        }),
-      );
+      const newDoc = this.editor.state.schema.nodeFromJSON(updatedProperties.content);
+      const newState = EditorState.create({
+        doc: newDoc,
+        plugins: this.editor.state.plugins,
+      });
+      this.editor.updateState(newState);
+      this.adjustSizeOnInput();
     }
   }
 
   override onUndoUpdateCommand(previousProperties: Partial<KritzelText>): void {
     if ('content' in previousProperties && this.editor) {
-      this.editor.updateState(
-        EditorState.create({
-          doc: this.editor.state.schema.nodeFromJSON(previousProperties.content),
-          plugins: [keymap(baseKeymap)],
-        }),
-      );
+      const newDoc = this.editor.state.schema.nodeFromJSON(previousProperties.content);
+      const newState = EditorState.create({
+        doc: newDoc,
+        plugins: this.editor.state.plugins,
+      });
+      this.editor.updateState(newState);
+      this.adjustSizeOnInput();
     }
   }
 }
