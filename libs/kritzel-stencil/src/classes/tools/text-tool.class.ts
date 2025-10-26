@@ -1,6 +1,5 @@
 import { KritzelText } from '../objects/text.class';
 import { KritzelBaseTool } from './base-tool.class';
-import { AddObjectCommand } from '../commands/add-object.command';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
@@ -69,6 +68,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       const clientY = event.clientY - this._core.store.offsetY;
       const text = KritzelText.create(this._core, this.fontSize, this.fontFamily);
 
+      text.isNew = true;
       text.fontColor = this.fontColor;
       text.translateX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
       text.translateY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
@@ -76,7 +76,9 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       this._core.store.state.activeText = text;
 
-      this._core.commandManager.executeCommand(new AddObjectCommand(this._core, this, text));
+      this._core.store.state.objectsMap.insert(text);
+
+      this._core.rerender();
     }
 
     if (event.pointerType === 'touch') {
@@ -114,6 +116,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       const clientY = Math.round(activePointers[0].clientY - this._core.store.offsetY);
       const text = KritzelText.create(this._core, this.fontSize, this.fontFamily);
 
+      text.isNew = true;
       text.fontColor = this.fontColor;
       text.translateX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
       text.translateY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
@@ -121,7 +124,9 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       this._core.store.state.activeText = text;
 
-      this._core.commandManager.executeCommand(new AddObjectCommand(this._core, this, text));
+      this._core.store.state.objectsMap.insert(text);
+
+      this._core.rerender();
     }
   }
 

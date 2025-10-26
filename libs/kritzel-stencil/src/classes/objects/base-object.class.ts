@@ -246,7 +246,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   clone(): KritzelBaseObject<T> {
-    const clone = new KritzelBaseObject<T>();
+    const clone = Object.create(Object.getPrototypeOf(this));
     Object.assign(clone, this);
     return clone;
   }
@@ -310,5 +310,4 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   onUndoUpdateCommand(_previousProperties: Partial<this>): void {
     // This method can be overridden by subclasses to handle actions after an update command is undone.
   }
-
 }

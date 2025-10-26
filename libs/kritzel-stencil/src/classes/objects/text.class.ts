@@ -10,6 +10,7 @@ import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
+import { AddObjectCommand } from '../commands/add-object.command';
 export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
@@ -29,6 +30,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   editor: EditorView | null = null;
   content: any = null;
+
+  uneditedObject: KritzelText | null = null;
 
   readonly rows: number = 1;
 
@@ -111,26 +114,24 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.elementRef.style.fontSize = `${this.fontSize}pt`;
     this.elementRef.style.color = this.fontColor;
 
-    requestAnimationFrame(() => {
-      const mySchema = new Schema({
-        nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
-        marks: schema.spec.marks,
-      });
+    const mySchema = new Schema({
+      nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
+      marks: schema.spec.marks,
+    });
 
-      const doc = this.content ? mySchema.nodeFromJSON(this.content) : mySchema.node('doc', null, [mySchema.node('paragraph')]);
+    const doc = this.content ? mySchema.nodeFromJSON(this.content) : mySchema.node('doc', null, [mySchema.node('paragraph')]);
 
-      this.editor = new EditorView(this.elementRef, {
-        state: EditorState.create({
-          doc: doc,
-          plugins: [keymap(baseKeymap)],
-        }),
-        editable: () => false,
-        dispatchTransaction: transaction => {
-          const newState = this.editor.state.apply(transaction);
-          this.editor.updateState(newState);
-          this.adjustSizeOnInput();
-        },
-      });
+    this.editor = new EditorView(this.elementRef, {
+      state: EditorState.create({
+        doc: doc,
+        plugins: [keymap(baseKeymap)],
+      }),
+      editable: () => false,
+      dispatchTransaction: transaction => {
+        const newState = this.editor.state.apply(transaction);
+        this.editor.updateState(newState);
+        this.adjustSizeOnInput();
+      },
     });
 
     this.isMounted = true;
@@ -182,11 +183,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   edit(): void {
     KritzelKeyboardHelper.disableInteractiveWidget();
 
+    this.uneditedObject = this.clone() as KritzelText;
+
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
     this._core.store.state.activeText = this;
     this._core.clearSelection();
 
-    // Enable the ProseMirror editor
     if (this.editor) {
       this.editor.setProps({ editable: () => true });
     }
@@ -205,11 +207,22 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = false;
 
-    this._core.commandManager.executeCommand(
-      new UpdateObjectCommand<KritzelText>(this._core, this, this, {
-        content: this.content,
-      }),
-    );
+    if (this.isNew) {
+      this.isNew = false;
+      this._core.commandManager.executeCommand(new AddObjectCommand<KritzelText>(this._core, this, this));
+    } else {
+      this._core.commandManager.executeCommand(
+        new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, {
+          content: this.content,
+          fontFamily: this.fontFamily,
+          fontSize: this.fontSize,
+          fontColor: this.fontColor,
+          width: this.width,
+          height: this.height,
+          scaleFactor: this.scaleFactor,
+        }),
+      );
+    }
   }
 
   handlePointerDown(event: PointerEvent): void {
