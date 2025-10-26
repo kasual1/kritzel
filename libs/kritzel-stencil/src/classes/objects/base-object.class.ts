@@ -260,9 +260,9 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     return clonedProps;
   }
 
-  deserialize(object: any): KritzelBaseObject<T> {
+  deserialize<T>(object: any): T {
     Object.assign(this, object);
-    return this;
+    return this as unknown as T;
   }
 
   isClass<T extends KritzelBaseObject>(this: T, className: string): this is T {
