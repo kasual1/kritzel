@@ -587,7 +587,7 @@ export class KritzelEngine {
                           transformOrigin: 'top left',
                           transform: `scale(${object.scaleFactor})`,
                           backgroundColor: object.backgroundColor,
-                          overflow: 'visible'
+                          overflow: 'visible',
                         }}
                       ></div>
                     )}
@@ -805,12 +805,12 @@ export class KritzelEngine {
                       style={{ minHeight: '0', minWidth: '0', display: object.isDebugInfoVisible ? 'block' : 'none' }}
                     >
                       <div style={{ width: '100%', height: '100%' }}>
-                        <div style={{ whitespace: 'nowrap'}}>Id: {object.id}</div>
+                        <div style={{ whitespace: 'nowrap' }}>Id: {object.id}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
                         {/* <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
-                        <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
-                        <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
