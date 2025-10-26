@@ -137,6 +137,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         const newState = this.editor.state.apply(transaction);
         this.editor.updateState(newState);
         this.adjustSizeOnInput();
+        this._core.store.state.objectsMap.update(this);
+        this._core.rerender();
       },
     });
   }
@@ -159,7 +161,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       if (this.width !== newWidth * this.scaleFactor || this.height !== newHeight * this.scaleFactor) {
         this.width = newWidth * this.scaleFactor;
         this.height = newHeight * this.scaleFactor;
-        this._core.rerender();
       }
     }
   }
@@ -214,7 +215,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   save(): void {
-    debugger;
     this.content = this.editor.state.doc.toJSON();
     this.editor.setProps({ editable: () => false });
     this.editor.dom.blur();
@@ -226,15 +226,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       this._core.commandManager.executeCommand(new AddObjectCommand<KritzelText>(this._core, this, this));
     } else {
       this._core.commandManager.executeCommand(
-        new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, {
-          content: this.content,
-          fontFamily: this.fontFamily,
-          fontSize: this.fontSize,
-          fontColor: this.fontColor,
-          width: this.width,
-          height: this.height,
-          scaleFactor: this.scaleFactor,
-        }),
+        new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, {...this}),
       );
     }
   }
