@@ -171,8 +171,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   focus(): void {
     if (this.editor) {
-      const end = this.editor.state.doc.content.size;
-      this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(this.editor.state.doc, end)));
+      const doc = this.editor.state.doc;
+      const end = Math.max(1, doc.content.size - 1);
+      this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor.focus();
     }
   }
