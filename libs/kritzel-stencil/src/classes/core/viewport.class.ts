@@ -5,6 +5,7 @@ import { KritzelCore } from './core.class';
 
 export class KritzelViewport {
   private readonly _core: KritzelCore;
+  private readonly _debounceUpdate: () => void;
 
   initialTouchDistance: number = 0;
   startX: number = 0;
@@ -19,6 +20,18 @@ export class KritzelViewport {
     this._core.store.state.startY = 0;
     this._core.store.state.translateX = 0;
     this._core.store.state.translateY = 0;
+
+    this._debounceUpdate = this.debounce(() => {
+      this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
+    }, 0);
+  }
+
+  private debounce(func: () => void, delay: number): () => void {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(func, delay);
+    };
   }
 
   handleResize(): void {
@@ -83,7 +96,7 @@ export class KritzelViewport {
         this._core.store.state.skipContextMenu = true;
 
         this._core.rerender();
-        this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
+        this._debounceUpdate();
       }
     }
 
@@ -132,7 +145,7 @@ export class KritzelViewport {
         this._core.store.state.hasViewportChanged = true;
 
         this._core.rerender();
-        this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
+        this._debounceUpdate();
       }
     }
   }
@@ -175,7 +188,7 @@ export class KritzelViewport {
     this._core.store.state.hasViewportChanged = true;
 
     this._core.rerender();
-    this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
+    this._debounceUpdate();
   }
 
   centerFitInViewport(object: KritzelBaseObject): void {
@@ -183,7 +196,7 @@ export class KritzelViewport {
     const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
     const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
     const clampedScale = Math.max(newScale, this._core.store.state.scaleMin);
-    
+
     this._core.store.state.scale = clampedScale;
     this.centerInViewport(object);
   }
@@ -212,7 +225,7 @@ export class KritzelViewport {
     this._core.store.state.hasViewportChanged = true;
 
     this._core.rerender();
-    this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
+    this._debounceUpdate();
 
     setTimeout(() => {
       this._core.store.state.isScaling = false;
@@ -228,6 +241,6 @@ export class KritzelViewport {
     this._core.store.state.hasViewportChanged = true;
 
     this._core.rerender();
-    this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
+    this._debounceUpdate();
   }
 }
