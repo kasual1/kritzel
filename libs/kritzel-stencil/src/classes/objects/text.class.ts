@@ -31,6 +31,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   editor: EditorView | null = null;
   content: any = null;
 
+  private readonly _schema: Schema = new Schema({
+    nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
+    marks: schema.spec.marks,
+  });
+
   uneditedObject: KritzelText | null = null;
 
   readonly rows: number = 1;
@@ -97,6 +102,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.scaleFactor = 1;
     object.scale = object._core.store.state.scale;
     object.zIndex = core.store.currentZIndex;
+    object.editor = object.createEditor();
 
     return object;
   }
@@ -113,14 +119,15 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.elementRef.style.whiteSpace = 'pre-wrap';
     this.elementRef.style.wordWrap = 'break-word';
 
-    const mySchema = new Schema({
-      nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
-      marks: schema.spec.marks,
-    });
+    this.elementRef.appendChild(this.editor.dom);
 
-    const doc = this.content ? mySchema.nodeFromJSON(this.content) : mySchema.node('doc', null, [mySchema.node('paragraph')]);
+    this.isMounted = true;
+  }
 
-    this.editor = new EditorView(this.elementRef, {
+  private createEditor(): EditorView {
+    const doc = this._schema.node('doc', null, [this._schema.node('paragraph')]);
+
+    return new EditorView(null, {
       state: EditorState.create({
         doc: doc,
         plugins: [keymap(baseKeymap)],
@@ -132,8 +139,14 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         this.adjustSizeOnInput();
       },
     });
+  }
 
-    this.isMounted = true;
+  public setContent(content: any): void {
+    if (this.editor) {
+      const newDoc = this.editor.state.schema.nodeFromJSON(content);
+      const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
+      this.editor.dispatch(tr);
+    }
   }
 
   adjustSizeOnInput(): void {
@@ -201,6 +214,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   save(): void {
+    debugger;
     this.content = this.editor.state.doc.toJSON();
     this.editor.setProps({ editable: () => false });
     this.editor.dom.blur();
@@ -250,7 +264,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   override serialize() {
-    const { _core, _elementRef, element, totalWidth, totalHeight, editor, uneditedObject, ...remainingProps } = this as any;
+    const { _core, _elementRef, _schema, element, totalWidth, totalHeight, editor, uneditedObject, ...remainingProps } = this as any;
 
     const clonedProps = structuredClone(remainingProps);
 
@@ -259,6 +273,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     }
 
     return clonedProps;
+  }
+
+  override deserialize<KritzelText>(object: any): KritzelText {
+    super.deserialize<KritzelText>(object);
+    this.setContent(object.content);
+    return this as unknown as KritzelText;
   }
 
   override onExecuteUpdateCommand(updatedProperties: Partial<KritzelText>): void {
