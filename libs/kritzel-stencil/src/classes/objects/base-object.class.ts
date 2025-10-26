@@ -169,22 +169,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.isMounted = true;
   }
 
-  unmount(): void {
-    if (!this.isMounted) {
-      return;
-    }
-
-    this.isMounted = false;
-  }
-
-  remount(): void {
-    if (!this.isMounted) {
-      return;
-    }
-
-    this.isMounted = false;
-  }
-
   generateId(): string {
     return ObjectHelper.generateUUID();
   }
