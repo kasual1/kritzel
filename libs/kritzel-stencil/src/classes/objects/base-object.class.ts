@@ -232,6 +232,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   clone(): KritzelBaseObject<T> {
     const clone = Object.create(Object.getPrototypeOf(this));
     Object.assign(clone, this);
+    clone.id = this.id;
     return clone;
   }
 
