@@ -9,7 +9,7 @@ export class UpdateObjectCommand<T extends KritzelBaseObject<any>> extends Kritz
 
   constructor(core: KritzelCore, initiator: any, object: T, updatedProperties: Partial<T>, skipHistory = false) {
     super(core, initiator, skipHistory);
-    this.object = object.copy() as T;
+    this.object = object;
     this.updatedProperties = updatedProperties;
 
     this.previousProperties = {};

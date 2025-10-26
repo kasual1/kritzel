@@ -102,7 +102,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   override mount(element: HTMLDivElement): void {
-    if ((this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
+    if (element === null || (this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
       return;
     }
 
