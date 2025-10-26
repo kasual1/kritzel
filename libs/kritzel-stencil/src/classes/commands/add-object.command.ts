@@ -16,7 +16,6 @@ export class AddObjectCommand<T extends KritzelBaseObject<any>> extends KritzelB
   }
 
   undo(): void {
-    console.log('undo add object', this.object);
     this._core.store.state.objectsMap.remove(object => object.id === this.object.id);
     this._core.deleteObjectFromDatabase(this.object.id);
   }
