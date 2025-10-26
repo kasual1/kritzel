@@ -42,13 +42,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     const doc = this.editor.state.doc;
 
-    // Check if document is empty (only has empty paragraph(s))
-    // A truly empty doc has size of 4: start of doc (1) + paragraph (1) + end of paragraph (1) + end of doc (1)
     if (doc.content.size === 0) {
       return true;
     }
 
-    // Check if all content is whitespace
     const text = doc.textContent.trim();
     return text.length === 0;
   }
