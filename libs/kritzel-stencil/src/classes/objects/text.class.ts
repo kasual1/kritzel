@@ -110,6 +110,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.elementRef.style.fontFamily = this.fontFamily;
     this.elementRef.style.fontSize = `${this.fontSize}pt`;
     this.elementRef.style.color = this.fontColor;
+    this.elementRef.style.whiteSpace = 'pre-wrap';
+    this.elementRef.style.wordWrap = 'break-word';
 
     const mySchema = new Schema({
       nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
