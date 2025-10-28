@@ -444,13 +444,20 @@ export class KritzelEngine {
 
   private _handleActiveToolChange(activeTool: KritzelBaseTool) {
     if (!(activeTool instanceof KritzelSelectionTool)) {
-      this.core.clearSelection();
+      this.core.store.state.objectsMap.remove(object => object.id === this.core.store.state.selectionGroup?.id);
+      this.core.store.state.selectionGroup = null;
+      this.core.store.state.selectionBox = null;
+      this.core.store.state.isSelecting = false;
+      this.core.store.state.isResizeHandleSelected = false;
+      this.core.store.state.isRotationHandleSelected = false;
     }
 
     this.core.store.state.skipContextMenu = false;
     this.core.store.state.copiedObjects = null;
     this.activeToolChange.emit(activeTool);
     KritzelKeyboardHelper.forceHideKeyboard();
+
+    this.core.rerender();
   }
 
   render() {

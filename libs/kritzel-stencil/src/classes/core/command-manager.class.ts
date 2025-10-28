@@ -1,3 +1,4 @@
+import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import { KritzelBaseCommand } from '../commands/base.command';
 import { UpdateViewportCommand } from '../commands/update-viewport.command';
 import { KritzelCore } from './core.class';
@@ -32,9 +33,9 @@ export class KritzelCommandManager {
 
     command.execute();
 
-    if (command.skipHistory === false) {
+    if (this.isSkipped(command) === false) {
       if (this._core.store.state.debugInfo.logCommands) {
-        console.trace('add', command);
+        console.log('execute', command);
       }
 
       this._history.undoStack.add(command);
@@ -45,6 +46,15 @@ export class KritzelCommandManager {
     }
 
     this._core.rerender();
+  }
+
+  private isSkipped(command: KritzelBaseCommand): boolean {
+    if( command instanceof AddSelectionGroupCommand) {
+      const hasOnlyOneTextObjects = this._core.store.state.selectionGroup?.objects.every(obj => obj.__class__ === 'KritzelText');
+      return hasOnlyOneTextObjects && this._core.store.state.selectionGroup?.objects.length === 1;
+    }
+
+    return command.skipHistory === true
   }
 
   private addUpdateViewportCommand() {
