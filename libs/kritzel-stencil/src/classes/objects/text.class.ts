@@ -144,7 +144,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   public setContent(content: any): void {
+    this.content = content;
+
     if (this.editor) {
+      console.log('Set content', content);
       const newDoc = this.editor.state.schema.nodeFromJSON(content);
       const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
       this.editor.dispatch(tr);
@@ -200,8 +203,13 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.uneditedObject = this.clone() as KritzelText;
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
+    this._core.store.state.objectsMap.remove(object => object.id === this._core.store.state.selectionGroup?.id);
     this._core.store.state.activeText = this;
-    this._core.clearSelection();
+    this._core.store.state.selectionGroup = null;
+    this._core.store.state.selectionBox = null;
+    this._core.store.state.isSelecting = false;
+    this._core.store.state.isResizeHandleSelected = false;
+    this._core.store.state.isRotationHandleSelected = false;
 
     if (this.editor) {
       this.editor.setProps({ editable: () => true });
@@ -211,6 +219,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.focus();
 
+    this._core.rerender();
+
     KritzelKeyboardHelper.enableInteractiveWidget();
   }
 
@@ -219,15 +229,14 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.editor.setProps({ editable: () => false });
     this.editor.dom.blur();
 
+
     this.isEditing = false;
 
     if (this.isNew) {
       this.isNew = false;
       this._core.commandManager.executeCommand(new AddObjectCommand<KritzelText>(this._core, this, this));
     } else {
-      this._core.commandManager.executeCommand(
-        new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, {...this}),
-      );
+      this._core.commandManager.executeCommand(new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, { ...this }));
     }
   }
 
@@ -274,25 +283,15 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   override onExecuteUpdateCommand(updatedProperties: Partial<KritzelText>): void {
-    if ('content' in updatedProperties && this.editor) {
-      const newDoc = this.editor.state.schema.nodeFromJSON(updatedProperties.content);
-      const newState = EditorState.create({
-        doc: newDoc,
-        plugins: this.editor.state.plugins,
-      });
-      this.editor.updateState(newState);
+    if ('content' in updatedProperties) {
+      this.setContent(updatedProperties.content);
       this.adjustSizeOnInput();
     }
   }
 
   override onUndoUpdateCommand(previousProperties: Partial<KritzelText>): void {
     if ('content' in previousProperties && this.editor) {
-      const newDoc = this.editor.state.schema.nodeFromJSON(previousProperties.content);
-      const newState = EditorState.create({
-        doc: newDoc,
-        plugins: this.editor.state.plugins,
-      });
-      this.editor.updateState(newState);
+      this.setContent(previousProperties.content);
       this.adjustSizeOnInput();
     }
   }
