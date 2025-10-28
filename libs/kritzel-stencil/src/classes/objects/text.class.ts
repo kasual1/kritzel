@@ -108,7 +108,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   override mount(element: HTMLDivElement): void {
-    if (element === null || (this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
+    if (element === null || this.isInViewport() === false) {
+      return;
+    }
+
+    // If already mounted to the same element and the editor DOM is still attached, skip
+    if (this.isMounted && this.elementRef === element && this.editor.dom.parentElement === element) {
       return;
     }
 
@@ -119,9 +124,21 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.elementRef.style.whiteSpace = 'pre-wrap';
     this.elementRef.style.wordWrap = 'break-word';
 
+    // Clear existing content and append the editor DOM
+    this.elementRef.innerHTML = '';
     this.elementRef.appendChild(this.editor.dom);
 
     this.isMounted = true;
+
+    // Adjust size after mounting to ensure correct dimensions
+    // Use setTimeout to ensure DOM has been laid out
+    setTimeout(() => {
+      this.adjustSizeOnInput();
+      if (this._core) {
+        this._core.store.state.objectsMap.update(this);
+        this._core.rerender();
+      }
+    }, 0);
   }
 
   private createEditor(): EditorView {
@@ -157,7 +174,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   adjustSizeOnInput(): void {
     const element = this.elementRef;
 
-    if (element) {
+    if (element && this.isMounted && element.scrollWidth > 0) {
       const newWidth = element.scrollWidth;
       const newHeight = element.scrollHeight;
 
@@ -285,14 +302,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override onExecuteUpdateCommand(updatedProperties: Partial<KritzelText>): void {
     if ('content' in updatedProperties) {
       this.setContent(updatedProperties.content);
-      this.adjustSizeOnInput();
     }
   }
 
   override onUndoUpdateCommand(previousProperties: Partial<KritzelText>): void {
     if ('content' in previousProperties && this.editor) {
       this.setContent(previousProperties.content);
-      this.adjustSizeOnInput();
     }
   }
 }
