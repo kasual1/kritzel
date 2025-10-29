@@ -269,7 +269,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     return this.__class__ === className;
   }
 
-  edit(): void {
+  edit(_event?: PointerEvent): void {
     // This method can be overridden by subclasses to handle edit actions.
   }
 

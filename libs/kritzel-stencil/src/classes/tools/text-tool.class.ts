@@ -42,16 +42,16 @@ export class KritzelTextTool extends KritzelBaseTool {
       const objectElement = path.find(element => element.classList && element.classList.contains('object'));
       const object = this._core.findObjectById(objectElement?.id);
 
-      if (object instanceof KritzelText) {
+      if (this._core.store.state.activeText === null && object instanceof KritzelText) {
         this._core.store.state.activeText = object;
-        object.edit();
+        object.edit(event);
         return;
       }
 
       if (this._core.store.state.activeText !== null && object instanceof KritzelText) {
         this._core.store.state.activeText.save();
         this._core.store.state.activeText = object;
-        object.edit();
+        object.edit(event);
         return;
       }
 
@@ -80,6 +80,8 @@ export class KritzelTextTool extends KritzelBaseTool {
       this._core.store.state.objectsMap.insert(text);
 
       this._core.rerender();
+
+      requestAnimationFrame(() => text.edit(event));
     }
 
     if (event.pointerType === 'touch') {
@@ -89,16 +91,16 @@ export class KritzelTextTool extends KritzelBaseTool {
       const objectElement = path.find(element => element.classList && element.classList.contains('object'));
       const object = this._core.findObjectById(objectElement?.id);
 
-      if (object instanceof KritzelText) {
+      if (this._core.store.state.activeText === null &&object instanceof KritzelText) {
         this._core.store.state.activeText = object;
-        object.edit();
+        object.edit(event);
         return;
       }
 
       if (this._core.store.state.activeText !== null && object instanceof KritzelText) {
         this._core.store.state.activeText.save();
         this._core.store.state.activeText = object;
-        object.edit();
+        object.edit(event);
         return;
       }
 
@@ -138,11 +140,11 @@ export class KritzelTextTool extends KritzelBaseTool {
     }
 
     if (event.pointerType === 'mouse') {
-      this._core.store.state.activeText?.edit();
+      this._core.store.state.activeText?.edit(event);
     }
 
     if (event.pointerType === 'touch') {
-      this._core.store.state.activeText?.edit();
+      this._core.store.state.activeText?.edit(event);
 
       KritzelKeyboardHelper.enableInteractiveWidget();
     }

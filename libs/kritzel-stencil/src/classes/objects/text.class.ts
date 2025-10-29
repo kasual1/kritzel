@@ -198,16 +198,28 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.translateY = y;
   }
 
-  focus(): void {
+  focus(coords?: { x: number; y: number }): void {
     if (this.editor) {
       const doc = this.editor.state.doc;
+      
+      if (coords) {
+        // Try to position cursor at the clicked coordinates
+        const pos = this.editor.posAtCoords({ left: coords.x, top: coords.y });
+        if (pos) {
+          this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
+          this.editor.focus();
+          return;
+        }
+      }
+      
+      // Fallback: position at the end
       const end = Math.max(1, doc.content.size - 1);
       this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor.focus();
     }
   }
 
-  edit(): void {
+  edit(event?: PointerEvent): void {
     KritzelKeyboardHelper.disableInteractiveWidget();
 
     this.uneditedObject = this.clone() as KritzelText;
@@ -221,7 +233,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = true;
 
-    this.focus();
+    // If an event is provided, use its coordinates to position the cursor
+    if (event) {
+      this.focus({ x: event.clientX, y: event.clientY });
+    } else {
+      this.focus();
+    }
 
     this._core.rerender();
 
@@ -231,6 +248,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   save(): void {
+    console.log('Saving text object...'); 
     requestAnimationFrame(() => this.adjustSizeOnInput());
 
     this.content = this.editor.state.doc.toJSON();
