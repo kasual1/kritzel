@@ -5,12 +5,14 @@ export class KritzelBaseCommand implements KritzelCommand {
   protected _core: KritzelCore;
 
   initiator: string;
-  skipHistory;
+  skipHistory: boolean;
+  timestamp: Date;
 
   constructor(core: KritzelCore, initiator: any, skipHistory = false) {
     this._core = core;
     this.initiator = initiator?.constructor?.name ?? 'Unknown';
     this.skipHistory = skipHistory;
+    this.timestamp = new Date();
   }
 
   execute(): void {
