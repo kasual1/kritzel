@@ -44,13 +44,14 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       if (object instanceof KritzelText) {
         this._core.store.state.activeText = object;
-        object.focus();
+        object.edit();
         return;
       }
 
       if (this._core.store.state.activeText !== null && object instanceof KritzelText) {
+        this._core.store.state.activeText.save();
         this._core.store.state.activeText = object;
-        object.focus();
+        object.edit();
         return;
       }
 
@@ -90,13 +91,14 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       if (object instanceof KritzelText) {
         this._core.store.state.activeText = object;
-        object.focus();
+        object.edit();
         return;
       }
 
       if (this._core.store.state.activeText !== null && object instanceof KritzelText) {
+        this._core.store.state.activeText.save();
         this._core.store.state.activeText = object;
-        object.focus();
+        object.edit();
         return;
       }
 
