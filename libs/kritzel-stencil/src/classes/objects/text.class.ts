@@ -112,7 +112,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    // If already mounted to the same element and the editor DOM is still attached, skip
     if (this.isMounted && this.elementRef === element && this.editor.dom.parentElement === element) {
       return;
     }
@@ -123,15 +122,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.elementRef.style.color = this.fontColor;
     this.elementRef.style.whiteSpace = 'pre-wrap';
     this.elementRef.style.wordWrap = 'break-word';
-
-    // Clear existing content and append the editor DOM
     this.elementRef.innerHTML = '';
     this.elementRef.appendChild(this.editor.dom);
 
     this.isMounted = true;
 
-    // Adjust size after mounting to ensure correct dimensions
-    // Use setTimeout to ensure DOM has been laid out
     setTimeout(() => {
       this.adjustSizeOnInput();
       if (this._core) {
@@ -164,7 +159,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.content = content;
 
     if (this.editor) {
-      console.log('Set content', content);
       const newDoc = this.editor.state.schema.nodeFromJSON(content);
       const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
       this.editor.dispatch(tr);
@@ -220,13 +214,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.uneditedObject = this.clone() as KritzelText;
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
-    this._core.store.state.objectsMap.remove(object => object.id === this._core.store.state.selectionGroup?.id);
     this._core.store.state.activeText = this;
-    this._core.store.state.selectionGroup = null;
-    this._core.store.state.selectionBox = null;
-    this._core.store.state.isSelecting = false;
-    this._core.store.state.isResizeHandleSelected = false;
-    this._core.store.state.isRotationHandleSelected = false;
 
     if (this.editor) {
       this.editor.setProps({ editable: () => true });
