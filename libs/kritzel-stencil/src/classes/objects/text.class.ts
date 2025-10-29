@@ -96,7 +96,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.translateY = 0;
     object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
-    object.backgroundColor = 'transparent';
+    object.backgroundColor = 'red';
     object.initialWidth = object.width;
     object.initialHeight = object.height;
     object.scaleFactor = 1;
@@ -127,13 +127,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isMounted = true;
 
-    requestAnimationFrame(() => {
-      this.adjustSizeOnInput();
-      if (this._core) {
-        this._core.store.state.objectsMap.update(this);
-        this._core.rerender();
-      }
-    });
+    requestAnimationFrame(() => this.adjustSizeOnInput());
   }
 
   private createEditor(): EditorView {
@@ -176,6 +170,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         this.width = newWidth * this.scaleFactor;
         this.height = newHeight * this.scaleFactor;
       }
+    }
+
+    if (this._core) {
+      this._core.store.state.objectsMap.update(this);
+      this._core.rerender();
     }
   }
 
@@ -226,10 +225,14 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this._core.rerender();
 
+    requestAnimationFrame(() => this.adjustSizeOnInput());
+
     KritzelKeyboardHelper.enableInteractiveWidget();
   }
 
   save(): void {
+    requestAnimationFrame(() => this.adjustSizeOnInput());
+
     this.content = this.editor.state.doc.toJSON();
     this.editor.setProps({ editable: () => false });
     this.editor.dom.blur();
