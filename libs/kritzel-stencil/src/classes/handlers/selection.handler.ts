@@ -75,7 +75,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
         const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
 
         if (this._core.store.state.selectionGroup?.objects.length === 1 && hasObjectsMoved === false) {
-          this._core.store.state.selectionGroup.objects[0].edit();
+          this._core.store.state.selectionGroup.objects[0].edit(event);
         }
 
         this._core.store.state.hasObjectsChanged = false;
@@ -100,7 +100,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
 
       if (this._core.store.state.selectionGroup?.objects.length === 1 && hasObjectsMoved === false) {
-        this._core.store.state.selectionGroup.objects[0].edit();
+        this._core.store.state.selectionGroup.objects[0].edit(event);
       }
 
       this._core.store.state.hasObjectsChanged = false;

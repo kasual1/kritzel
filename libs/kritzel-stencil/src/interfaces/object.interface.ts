@@ -50,7 +50,7 @@ export interface KritzelObject<T = Element> {
   copy(): KritzelBaseObject<Element>;
   onSelectedClick(): void;
   isClass<T extends KritzelBaseObject>(this: T, type: string): this is T;
-  edit(): void;
+  edit(event?: PointerEvent): void;
   hitTest(x: number, y: number): boolean;
   hitTestPolygon(polygon: KritzelPolygon): boolean;
   updatePosition(x: number, y: number): void;
