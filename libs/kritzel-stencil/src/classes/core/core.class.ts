@@ -428,7 +428,7 @@ export class KritzelCore {
   }
 
   clearSelection() {
-    const command = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup);
+    const command = new RemoveSelectionGroupCommand(this, this);
     this.commandManager.executeCommand(command);
 
     this._store.state.selectionGroup = null;
