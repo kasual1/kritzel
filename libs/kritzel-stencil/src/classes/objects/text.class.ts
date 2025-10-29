@@ -127,13 +127,13 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isMounted = true;
 
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       this.adjustSizeOnInput();
       if (this._core) {
         this._core.store.state.objectsMap.update(this);
         this._core.rerender();
       }
-    }, 0);
+    });
   }
 
   private createEditor(): EditorView {
@@ -234,15 +234,17 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.editor.setProps({ editable: () => false });
     this.editor.dom.blur();
 
-
     this.isEditing = false;
 
+    let saveCommand;
     if (this.isNew) {
       this.isNew = false;
-      this._core.commandManager.executeCommand(new AddObjectCommand<KritzelText>(this._core, this, this));
+      saveCommand = new AddObjectCommand<KritzelText>(this._core, this, this);
     } else {
-      this._core.commandManager.executeCommand(new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, { ...this }));
+      saveCommand = new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, { ...this });
     }
+
+    this._core.commandManager.executeCommand(saveCommand);
   }
 
   handlePointerDown(event: PointerEvent): void {
