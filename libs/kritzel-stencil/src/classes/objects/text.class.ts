@@ -203,7 +203,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       const doc = this.editor.state.doc;
       
       if (coords) {
-        // Try to position cursor at the clicked coordinates
         const pos = this.editor.posAtCoords({ left: coords.x, top: coords.y });
         if (pos) {
           this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
@@ -212,7 +211,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         }
       }
       
-      // Fallback: position at the end
       const end = Math.max(1, doc.content.size - 1);
       this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor.focus();
