@@ -290,6 +290,17 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     event.stopPropagation();
   }
 
+  override copy(): KritzelText {
+    const copiedObject = super.copy() as KritzelText;
+    copiedObject.editor = copiedObject.createEditor();
+    
+    if (this.content) {
+      copiedObject.setContent(this.content);
+    }
+    
+    return copiedObject;
+  }
+
   override serialize() {
     const { _core, _elementRef, _schema, element, totalWidth, totalHeight, editor, uneditedObject, ...remainingProps } = this as any;
 
