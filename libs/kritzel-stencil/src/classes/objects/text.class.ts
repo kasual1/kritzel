@@ -233,7 +233,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = true;
 
-    // If an event is provided, use its coordinates to position the cursor
     if (event) {
       this.focus({ x: event.clientX, y: event.clientY });
     } else {
@@ -248,7 +247,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   save(): void {
-    console.log('Saving text object...'); 
     requestAnimationFrame(() => this.adjustSizeOnInput());
 
     this.content = this.editor.state.doc.toJSON();
