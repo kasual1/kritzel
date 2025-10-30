@@ -32,9 +32,9 @@ export class KritzelCommandManager {
 
     command.execute();
 
-    if (command.skipHistory === false) {
+    if (this.isSkipped(command) === false) {
       if (this._core.store.state.debugInfo.logCommands) {
-        console.trace('add', command);
+        console.log('execute', command);
       }
 
       this._history.undoStack.add(command);
@@ -45,6 +45,10 @@ export class KritzelCommandManager {
     }
 
     this._core.rerender();
+  }
+
+  private isSkipped(command: KritzelBaseCommand): boolean {
+    return command.skipHistory === true
   }
 
   private addUpdateViewportCommand() {

@@ -232,6 +232,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   clone(): KritzelBaseObject<T> {
     const clone = Object.create(Object.getPrototypeOf(this));
     Object.assign(clone, this);
+    clone.id = this.id;
     return clone;
   }
 
@@ -259,16 +260,16 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     return clonedProps;
   }
 
-  deserialize(object: any): KritzelBaseObject<T> {
+  deserialize<T>(object: any): T {
     Object.assign(this, object);
-    return this;
+    return this as unknown as T;
   }
 
   isClass<T extends KritzelBaseObject>(this: T, className: string): this is T {
     return this.__class__ === className;
   }
 
-  edit(): void {
+  edit(_event?: PointerEvent): void {
     // This method can be overridden by subclasses to handle edit actions.
   }
 
@@ -285,6 +286,14 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.translateX = x;
     this.translateY = y;
     this._core.store.state.objectsMap.update(this);
+  }
+
+  onExecuteAddCommand(_object: KritzelBaseObject): void {
+    // This method can be overridden by subclasses to handle actions after an add command is executed.
+  }
+
+  onUndoAddCommand(_object: KritzelBaseObject): void {
+    // This method can be overridden by subclasses to handle actions after an add command is undone.
   }
 
   onExecuteUpdateCommand(_updatedProperties: Partial<this>): void {
