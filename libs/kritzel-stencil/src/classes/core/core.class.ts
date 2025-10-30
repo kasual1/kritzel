@@ -428,7 +428,7 @@ export class KritzelCore {
   }
 
   clearSelection() {
-    const command = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup, true);
+    const command = new RemoveSelectionGroupCommand(this, this);
     this.commandManager.executeCommand(command);
 
     this._store.state.selectionGroup = null;
@@ -500,7 +500,7 @@ export class KritzelCore {
     return [];
   }
 
-  public getCanvasPoint(event: PointerEvent): { x: number; y: number } {
+  getCanvasPoint(event: PointerEvent): { x: number; y: number } {
     if (!this._store.state.host) {
       return { x: 0, y: 0 };
     }
@@ -517,5 +517,11 @@ export class KritzelCore {
     const worldY = yWithoutTranslate / this._store.state.scale;
 
     return { x: worldX, y: worldY };
+  }
+
+  beforeWorkspaceChange() {
+    this.resetActiveText();
+    this.clearSelection();
+    this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
   }
 }

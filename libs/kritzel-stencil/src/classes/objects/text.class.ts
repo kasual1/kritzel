@@ -31,6 +31,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   editor: EditorView | null = null;
   content: any = null;
 
+  private readonly _schema: Schema = new Schema({
+    nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
+    marks: schema.spec.marks,
+  });
+
   uneditedObject: KritzelText | null = null;
 
   readonly rows: number = 1;
@@ -42,13 +47,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     const doc = this.editor.state.doc;
 
-    // Check if document is empty (only has empty paragraph(s))
-    // A truly empty doc has size of 4: start of doc (1) + paragraph (1) + end of paragraph (1) + end of doc (1)
     if (doc.content.size === 0) {
       return true;
     }
 
-    // Check if all content is whitespace
     const text = doc.textContent.trim();
     return text.length === 0;
   }
@@ -100,12 +102,17 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.scaleFactor = 1;
     object.scale = object._core.store.state.scale;
     object.zIndex = core.store.currentZIndex;
+    object.editor = object.createEditor();
 
     return object;
   }
 
   override mount(element: HTMLDivElement): void {
-    if ((this.isMounted && this.elementRef === element) || this.isInViewport() === false) {
+    if (element === null || this.isInViewport() === false) {
+      return;
+    }
+
+    if (this.isMounted && this.elementRef === element && this.editor.dom.parentElement === element) {
       return;
     }
 
@@ -113,15 +120,20 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.elementRef.style.fontFamily = this.fontFamily;
     this.elementRef.style.fontSize = `${this.fontSize}pt`;
     this.elementRef.style.color = this.fontColor;
+    this.elementRef.style.whiteSpace = 'pre-wrap';
+    this.elementRef.style.wordWrap = 'break-word';
+    this.elementRef.innerHTML = '';
+    this.elementRef.appendChild(this.editor.dom);
 
-    const mySchema = new Schema({
-      nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
-      marks: schema.spec.marks,
-    });
+    this.isMounted = true;
 
-    const doc = this.content ? mySchema.nodeFromJSON(this.content) : mySchema.node('doc', null, [mySchema.node('paragraph')]);
+    requestAnimationFrame(() => this.adjustSizeOnInput());
+  }
 
-    this.editor = new EditorView(this.elementRef, {
+  private createEditor(): EditorView {
+    const doc = this._schema.node('doc', null, [this._schema.node('paragraph')]);
+
+    return new EditorView(null, {
       state: EditorState.create({
         doc: doc,
         plugins: [keymap(baseKeymap)],
@@ -131,24 +143,38 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         const newState = this.editor.state.apply(transaction);
         this.editor.updateState(newState);
         this.adjustSizeOnInput();
+        this._core.store.state.objectsMap.update(this);
+        this._core.rerender();
       },
     });
+  }
 
-    this.isMounted = true;
+  public setContent(content: any): void {
+    this.content = content;
+
+    if (this.editor) {
+      const newDoc = this.editor.state.schema.nodeFromJSON(content);
+      const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
+      this.editor.dispatch(tr);
+    }
   }
 
   adjustSizeOnInput(): void {
     const element = this.elementRef;
 
-    if (element) {
+    if (element && this.isMounted && element.scrollWidth > 0) {
       const newWidth = element.scrollWidth;
       const newHeight = element.scrollHeight;
 
       if (this.width !== newWidth * this.scaleFactor || this.height !== newHeight * this.scaleFactor) {
         this.width = newWidth * this.scaleFactor;
         this.height = newHeight * this.scaleFactor;
-        this._core.rerender();
       }
+    }
+
+    if (this._core) {
+      this._core.store.state.objectsMap.update(this);
+      this._core.rerender();
     }
   }
 
@@ -172,22 +198,32 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.translateY = y;
   }
 
-  focus(): void {
+  focus(coords?: { x: number; y: number }): void {
     if (this.editor) {
-      const end = this.editor.state.doc.content.size;
-      this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(this.editor.state.doc, end)));
+      const doc = this.editor.state.doc;
+      
+      if (coords) {
+        const pos = this.editor.posAtCoords({ left: coords.x, top: coords.y });
+        if (pos) {
+          this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
+          this.editor.focus();
+          return;
+        }
+      }
+      
+      const end = Math.max(1, doc.content.size - 1);
+      this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor.focus();
     }
   }
 
-  edit(): void {
+  edit(event?: PointerEvent): void {
     KritzelKeyboardHelper.disableInteractiveWidget();
 
     this.uneditedObject = this.clone() as KritzelText;
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
     this._core.store.state.activeText = this;
-    this._core.clearSelection();
 
     if (this.editor) {
       this.editor.setProps({ editable: () => true });
@@ -195,34 +231,37 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = true;
 
-    this.focus();
+    if (event) {
+      this.focus({ x: event.clientX, y: event.clientY });
+    } else {
+      this.focus();
+    }
+
+    this._core.rerender();
+
+    requestAnimationFrame(() => this.adjustSizeOnInput());
 
     KritzelKeyboardHelper.enableInteractiveWidget();
   }
 
   save(): void {
+    requestAnimationFrame(() => this.adjustSizeOnInput());
+
     this.content = this.editor.state.doc.toJSON();
     this.editor.setProps({ editable: () => false });
     this.editor.dom.blur();
 
     this.isEditing = false;
 
+    let saveCommand;
     if (this.isNew) {
       this.isNew = false;
-      this._core.commandManager.executeCommand(new AddObjectCommand<KritzelText>(this._core, this, this));
+      saveCommand = new AddObjectCommand<KritzelText>(this._core, this, this);
     } else {
-      this._core.commandManager.executeCommand(
-        new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, {
-          content: this.content,
-          fontFamily: this.fontFamily,
-          fontSize: this.fontSize,
-          fontColor: this.fontColor,
-          width: this.width,
-          height: this.height,
-          scaleFactor: this.scaleFactor,
-        }),
-      );
+      saveCommand = new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, { ...this });
     }
+
+    this._core.commandManager.executeCommand(saveCommand);
   }
 
   handlePointerDown(event: PointerEvent): void {
@@ -249,8 +288,19 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     event.stopPropagation();
   }
 
+  override copy(): KritzelText {
+    const copiedObject = super.copy() as KritzelText;
+    copiedObject.editor = copiedObject.createEditor();
+    
+    if (this.content) {
+      copiedObject.setContent(this.content);
+    }
+    
+    return copiedObject;
+  }
+
   override serialize() {
-    const { _core, _elementRef, element, totalWidth, totalHeight, editor, uneditedObject, ...remainingProps } = this as any;
+    const { _core, _elementRef, _schema, element, totalWidth, totalHeight, editor, uneditedObject, ...remainingProps } = this as any;
 
     const clonedProps = structuredClone(remainingProps);
 
@@ -261,25 +311,21 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     return clonedProps;
   }
 
+  override deserialize<KritzelText>(object: any): KritzelText {
+    super.deserialize<KritzelText>(object);
+    this.setContent(object.content);
+    return this as unknown as KritzelText;
+  }
+
   override onExecuteUpdateCommand(updatedProperties: Partial<KritzelText>): void {
-    if ('content' in updatedProperties && this.editor) {
-      this.editor.updateState(
-        EditorState.create({
-          doc: this.editor.state.schema.nodeFromJSON(updatedProperties.content),
-          plugins: [keymap(baseKeymap)],
-        }),
-      );
+    if ('content' in updatedProperties) {
+      this.setContent(updatedProperties.content);
     }
   }
 
   override onUndoUpdateCommand(previousProperties: Partial<KritzelText>): void {
     if ('content' in previousProperties && this.editor) {
-      this.editor.updateState(
-        EditorState.create({
-          doc: this.editor.state.schema.nodeFromJSON(previousProperties.content),
-          plugins: [keymap(baseKeymap)],
-        }),
-      );
+      this.setContent(previousProperties.content);
     }
   }
 }

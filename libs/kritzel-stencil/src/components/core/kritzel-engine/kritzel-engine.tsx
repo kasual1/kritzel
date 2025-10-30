@@ -40,6 +40,7 @@ export class KritzelEngine {
   @Watch('workspace')
   onWorkspaceChange(newWorkspace: KritzelWorkspace | null) {
     if (this.core.store.state.activeWorkspace !== newWorkspace) {
+      this.core.beforeWorkspaceChange();
       this.core.initializeWorkspace(newWorkspace);
     }
   }
@@ -444,12 +445,18 @@ export class KritzelEngine {
   private _handleActiveToolChange(activeTool: KritzelBaseTool) {
     if (!(activeTool instanceof KritzelSelectionTool)) {
       this.core.clearSelection();
+      this.core.store.state.selectionBox = null;
+      this.core.store.state.isSelecting = false;
+      this.core.store.state.isResizeHandleSelected = false;
+      this.core.store.state.isRotationHandleSelected = false;
     }
 
     this.core.store.state.skipContextMenu = false;
     this.core.store.state.copiedObjects = null;
     this.activeToolChange.emit(activeTool);
     KritzelKeyboardHelper.forceHideKeyboard();
+
+    this.core.rerender();
   }
 
   render() {
@@ -586,7 +593,7 @@ export class KritzelEngine {
                           transformOrigin: 'top left',
                           transform: `scale(${object.scaleFactor})`,
                           backgroundColor: object.backgroundColor,
-                          overflow: 'visible'
+                          overflow: 'visible',
                         }}
                       ></div>
                     )}
@@ -804,15 +811,16 @@ export class KritzelEngine {
                       style={{ minHeight: '0', minWidth: '0', display: object.isDebugInfoVisible ? 'block' : 'none' }}
                     >
                       <div style={{ width: '100%', height: '100%' }}>
-                        <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
-                        <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
-                        <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
+                        <div style={{ whitespace: 'nowrap' }}>Id: {object.id}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
+                        {/* <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
-                        <div style={{ whiteSpace: 'nowrap' }}>y: {object.y}</div>
+                        <div style={{ whiteSpace: 'nowrap' }}>y: {object.y}</div> */}
                       </div>
                     </foreignObject>
                   </g>

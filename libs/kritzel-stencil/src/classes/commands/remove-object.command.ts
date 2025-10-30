@@ -11,6 +11,7 @@ export class RemoveObjectCommand<T extends KritzelBaseObject<any>> extends Kritz
   }
 
   execute(): void {
+    this.object.isMounted = false;
     this._core.store.state.objectsMap.remove(object => object.id === this.object.id);
     this._core.deleteObjectFromDatabase(this.object.id);
   }

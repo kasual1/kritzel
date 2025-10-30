@@ -40,12 +40,20 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }
 
   override mount(element: HTMLElement): void {
-    if (this.isMounted) {
+    if (element === null) {
+      return;
+    }
+
+    // If already mounted to the same element and content is still attached, skip
+    if (this.isMounted && this.elementRef === element && this.element.parentElement === element) {
       return;
     }
 
     this.elementRef = element;
     this.isMounted = true;
+    
+    // Clear existing content and append the element
+    this.elementRef.innerHTML = '';
     this.elementRef.appendChild(this.element);
   }
 
