@@ -96,7 +96,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.translateY = 0;
     object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
-    object.backgroundColor = 'red';
+    object.backgroundColor = 'transparent';
     object.initialWidth = object.width;
     object.initialHeight = object.height;
     object.scaleFactor = 1;
