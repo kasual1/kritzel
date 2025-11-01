@@ -163,12 +163,32 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     const element = this.elementRef;
 
     if (element && this.isMounted && element.scrollWidth > 0) {
+      const previousTotalWidth = this.totalWidth;
+      const previousTotalHeight = this.totalHeight;
+
       const newWidth = element.scrollWidth;
       const newHeight = element.scrollHeight;
 
-      if (this.width !== newWidth * this.scaleFactor || this.height !== newHeight * this.scaleFactor) {
-        this.width = newWidth * this.scaleFactor;
-        this.height = newHeight * this.scaleFactor;
+      this.width = newWidth * this.scaleFactor;
+      this.height = newHeight * this.scaleFactor;
+
+      if (this.rotation !== 0) {
+        const newTotalWidth = this.totalWidth;
+        const newTotalHeight = this.totalHeight;
+
+        const deltaWidth = (newTotalWidth - previousTotalWidth) / 2;
+        const deltaHeight = (newTotalHeight - previousTotalHeight) / 2;
+
+        if (deltaWidth !== 0 || deltaHeight !== 0) {
+          const cos = Math.cos(this.rotation);
+          const sin = Math.sin(this.rotation);
+
+          const rotatedDeltaX = cos * deltaWidth - sin * deltaHeight;
+          const rotatedDeltaY = sin * deltaWidth + cos * deltaHeight;
+
+          this.translateX += rotatedDeltaX - deltaWidth;
+          this.translateY += rotatedDeltaY - deltaHeight;
+        }
       }
     }
 
@@ -201,7 +221,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   focus(coords?: { x: number; y: number }): void {
     if (this.editor) {
       const doc = this.editor.state.doc;
-      
+
       if (coords) {
         const pos = this.editor.posAtCoords({ left: coords.x, top: coords.y });
         if (pos) {
@@ -210,7 +230,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
           return;
         }
       }
-      
+
       const end = Math.max(1, doc.content.size - 1);
       this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor.focus();
@@ -291,11 +311,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override copy(): KritzelText {
     const copiedObject = super.copy() as KritzelText;
     copiedObject.editor = copiedObject.createEditor();
-    
+
     if (this.content) {
       copiedObject.setContent(this.content);
     }
-    
+
     return copiedObject;
   }
 
