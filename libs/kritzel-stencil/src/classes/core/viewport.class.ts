@@ -1,6 +1,5 @@
 import { KritzelBaseObject } from '../..';
 import { KritzelMouseButton } from '../../enums/event-button.enum';
-import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelCore } from './core.class';
 
 export class KritzelViewport {
@@ -167,7 +166,7 @@ export class KritzelViewport {
   handleWheel(event: WheelEvent): void {
     event.preventDefault();
 
-    if (event.ctrlKey === true && KritzelEventHelper.isMainMouseWheel(event)) {
+    if (event.ctrlKey === true && Math.abs(event.deltaY) > 0 && Math.abs(event.deltaX) === 0) {
       this.handleZoom(event);
     }
 
