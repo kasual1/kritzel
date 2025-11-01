@@ -814,9 +814,9 @@ export class KritzelEngine {
                         <div style={{ whitespace: 'nowrap' }}>Id: {object.id}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
-                        {/* <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
+                        {/* <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
                         <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
