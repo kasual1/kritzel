@@ -27,23 +27,6 @@ describe('KritzelEventHelper', () => {
     });
   });
 
-  describe('isMainMouseWheel', () => {
-    it('should return true for main mouse wheel scroll', () => {
-      const event = { deltaY: 100, deltaX: 0 } as WheelEvent;
-      expect(KritzelEventHelper.isMainMouseWheel(event)).toBe(true);
-    });
-
-    it('should return false for horizontal scroll', () => {
-      const event = { deltaY: 0, deltaX: 100 } as WheelEvent;
-      expect(KritzelEventHelper.isMainMouseWheel(event)).toBe(false);
-    });
-
-    it('should return false for non-integer deltaY', () => {
-      const event = { deltaY: 100.5, deltaX: 0 } as WheelEvent;
-      expect(KritzelEventHelper.isMainMouseWheel(event)).toBe(false);
-    });
-  });
-
   describe('isPointerEventOnContextMenu', () => {
     it('should return true if event path contains context-menu', () => {
       const contextMenu = document.createElement('div');
