@@ -176,8 +176,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         const newTotalWidth = this.totalWidth;
         const newTotalHeight = this.totalHeight;
 
-        const deltaWidth = (newTotalWidth - previousTotalWidth) / 2;
-        const deltaHeight = (newTotalHeight - previousTotalHeight) / 2;
+        const deltaWidth = (newTotalWidth - previousTotalWidth) / 2 / this.scale;
+        const deltaHeight = (newTotalHeight - previousTotalHeight) / 2 / this.scale;
 
         if (deltaWidth !== 0 || deltaHeight !== 0) {
           const cos = Math.cos(this.rotation);
