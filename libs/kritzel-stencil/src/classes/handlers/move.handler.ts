@@ -60,6 +60,12 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (this._core.store.state.pointers.size === 1) {
+        
+        if (this._core.store.state.isScaling) {
+          this.trackedPointerId = null;
+          return;
+        }
+
         if (this._core.store.state.selectionGroup?.isSelected && !this._core.store.state.isResizeHandleSelected && !this._core.store.state.isRotationHandleSelected) {
           const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
           const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
@@ -109,7 +115,8 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.pointers.size === 1 &&
         this._core.store.state.selectionGroup &&
         !this._core.store.state.isResizeHandleSelected &&
-        !this._core.store.state.isRotationHandleSelected
+        !this._core.store.state.isRotationHandleSelected &&
+        !this._core.store.state.isScaling
       ) {
         const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
         const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);

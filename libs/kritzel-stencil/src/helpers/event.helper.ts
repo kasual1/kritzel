@@ -9,10 +9,6 @@ export class KritzelEventHelper {
     return ev.button === KritzelMouseButton.Left;
   }
 
-  public static isMainMouseWheel(event: WheelEvent): boolean {
-    return Math.abs(event.deltaY) > 0 && Math.abs(event.deltaX) === 0 && Number.isInteger(event.deltaY);
-  }
-
   public static isPointerEventOnContextMenu(event: PointerEvent): boolean {
     const path = event.composedPath() as HTMLElement[];
     const contextMenu = path.find(element => element.classList && element.classList.contains('context-menu'));

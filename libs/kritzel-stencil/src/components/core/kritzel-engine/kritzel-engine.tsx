@@ -526,7 +526,7 @@ export class KritzelEngine {
                     top: '0',
                     position: 'absolute',
                     transform: `rotate(${object.rotationDegrees}deg)`,
-                    transformOrigin: 'center',
+                    transformOrigin: `${object.totalWidth / 2}px ${object.totalHeight / 2}px`,
                     opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                     pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                   }}
