@@ -38,15 +38,16 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         this._core.store.state.resizeHandleType = this.getHandleType(event);
 
         const selectedObject = this.getSelectedObject(event);
-        const isDifferentObject = selectedObject && this._core.store.state.selectionGroup && selectedObject.id !== this._core.store.state.selectionGroup.id;
+        const selectionGroup = this._core.store.selectionGroup;
+        const isDifferentObject = selectedObject && selectionGroup && selectedObject.id !== selectionGroup.id;
 
         if (
           (selectedObject === null || isDifferentObject) &&
-          this._core.store.state.selectionGroup &&
+          selectionGroup &&
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected
         ) {
-          this._core.commandManager.executeCommand(new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup));
+          this._core.commandManager.executeCommand(new RemoveSelectionGroupCommand(this._core, selectionGroup));
         }
 
         if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1 && selectedObject.objects[0].isInteractive) {
@@ -73,19 +74,20 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         this._core.store.state.resizeHandleType = this.getHandleType(event);
 
         const selectedObject = this.getSelectedObject(event);
-        const isDifferentObject = selectedObject && this._core.store.state.selectionGroup && selectedObject.id !== this._core.store.state.selectionGroup.id;
+        const selectionGroup = this._core.store.selectionGroup;
+        const isDifferentObject = selectedObject && selectionGroup && selectedObject.id !== selectionGroup.id;
 
-        if (!this._core.store.state.selectionGroup && selectedObject) {
+        if (!selectionGroup && selectedObject) {
           this._core.store.state.skipContextMenu = true;
         }
 
         if (
           (selectedObject === null || isDifferentObject) &&
-          this._core.store.state.selectionGroup &&
+          selectionGroup &&
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected
         ) {
-          this._core.commandManager.executeCommand(new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup));
+          this._core.commandManager.executeCommand(new RemoveSelectionGroupCommand(this._core, selectionGroup));
         }
       }
 

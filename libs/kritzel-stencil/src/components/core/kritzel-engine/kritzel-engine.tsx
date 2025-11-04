@@ -330,7 +330,8 @@ export class KritzelEngine {
 
   @Method()
   async getSelectedObjects(): Promise<KritzelBaseObject<any>[]> {
-    return this.core.store.state.selectionGroup ? this.core.store.state.selectionGroup.objects : [];
+    const selectionGroup = this.core.store.selectionGroup;
+    return selectionGroup ? selectionGroup.objects : [];
   }
 
   @Method()
@@ -410,7 +411,7 @@ export class KritzelEngine {
   }
 
   get isSelectionActive() {
-    return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.selectionGroup !== null;
+    return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.selectionGroup !== null;
   }
 
   constructor() {
@@ -490,7 +491,7 @@ export class KritzelEngine {
           <div>IsWriting: {this.core.store.state.isWriting ? 'true' : 'false'}</div>
           <div>PointerX: {this.core.store.state?.pointerX}</div>
           <div>PointerY: {this.core.store.state?.pointerY}</div>
-          <div>SelectedObjects: {this.core.store.state.selectionGroup?.objects.length || 0}</div>
+          <div>SelectedObjects: {this.core.store.selectionGroup?.objects.length || 0}</div>
           <div>
             ViewportCenter: ({viewportCenterX.toFixed(2)}, {viewportCenterY.toFixed(2)})
           </div>
@@ -855,7 +856,7 @@ export class KritzelEngine {
             class="context-menu"
             ref={el => (this.contextMenuElement = el)}
             items={this.core.store.state.contextMenuItems}
-            objects={this.core.store.state.selectionGroup?.objects || []}
+            objects={this.core.store.selectionGroup?.objects || []}
             style={{
               position: 'fixed',
               left: `${this.core.store.state.contextMenuX}px`,
@@ -868,7 +869,7 @@ export class KritzelEngine {
                   x: (-this.core.store.state.translateX + this.core.store.state.contextMenuX) / this.core.store.state.scale,
                   y: (-this.core.store.state.translateY + this.core.store.state.contextMenuY) / this.core.store.state.scale,
                 },
-                this.core.store.state.selectionGroup?.objects,
+                this.core.store.selectionGroup?.objects,
               );
               this.hideContextMenu();
             }}

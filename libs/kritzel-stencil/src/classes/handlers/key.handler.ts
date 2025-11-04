@@ -7,8 +7,8 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
 
   private shortcuts: KritzelShortcut[] = [
     // General
-    { key: 'Escape', condition: c => !!c.store.state.selectionGroup, action: c => c.clearSelection() },
-    { key: 'Delete', condition: c => !!c.store.state.selectionGroup, action: c => c.delete() },
+    { key: 'Escape', condition: c => !!c.store.selectionGroup, action: c => c.clearSelection() },
+    { key: 'Delete', condition: c => !!c.store.selectionGroup, action: c => c.delete() },
 
     // History
     { key: 'z', ctrl: true, action: c => c.history.undo() },
@@ -25,7 +25,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     {
       key: 'c',
       ctrl: true,
-      condition: c => !!c.store.state.selectionGroup,
+      condition: c => !!c.store.selectionGroup,
       action: c => {
         c.copy();
         c.rerender();
@@ -38,10 +38,10 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     // { key: 'v', ctrl: true, condition: c => !!c.store.state.activeText, action: c => c.store.state.activeText.insertFromClipboard() },
 
     // Object layering
-    { key: '+', ctrl: true, condition: c => !!c.store.state.selectionGroup, action: c => c.bringForward() },
-    { key: '-', ctrl: true, condition: c => !!c.store.state.selectionGroup, action: c => c.sendBackward() },
-    { key: '*', shift: true, condition: c => !!c.store.state.selectionGroup, action: c => c.bringToFront() },
-    { key: '_', shift: true, condition: c => !!c.store.state.selectionGroup, action: c => c.sendToBack() },
+    { key: '+', ctrl: true, condition: c => !!c.store.selectionGroup, action: c => c.bringForward() },
+    { key: '-', ctrl: true, condition: c => !!c.store.selectionGroup, action: c => c.sendBackward() },
+    { key: '*', shift: true, condition: c => !!c.store.selectionGroup, action: c => c.bringToFront() },
+    { key: '_', shift: true, condition: c => !!c.store.selectionGroup, action: c => c.sendToBack() },
   ];
 
   constructor(core: KritzelCore) {
