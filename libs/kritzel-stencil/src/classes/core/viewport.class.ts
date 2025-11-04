@@ -21,14 +21,11 @@ export class KritzelViewport {
     this._core.store.state.translateY = 0;
 
     this._debounceUpdate = this.debounce(() => {
-      const activeWorkspace = this._core.store.state.activeWorkspace;
-      if (activeWorkspace) {
-        activeWorkspace.viewport = { 
-          translateX: this._core.store.state.translateX, 
-          translateY: this._core.store.state.translateY, 
-          scale: this._core.store.state.scale 
-        };
-      }
+      this._core.updateWorkspaceViewport(
+        this._core.store.state.translateX, 
+        this._core.store.state.translateY, 
+        this._core.store.state.scale
+      );
     }, 0);
   }
 

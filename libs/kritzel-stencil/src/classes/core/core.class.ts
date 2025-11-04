@@ -8,10 +8,12 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from './workspace.class';
+import { YjsDocumentManager } from './yjs-document.class';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
   private readonly _store: KritzelStore;
+  private readonly _yjsManager: YjsDocumentManager;
 
   get engine(): KritzelEngine {
     return this._kritzelEngine;
@@ -21,25 +23,67 @@ export class KritzelCore {
     return this._store;
   }
 
+  get yjsManager(): YjsDocumentManager {
+    return this._yjsManager;
+  }
+
   constructor(kritzelEngine: KritzelEngine) {
     this._kritzelEngine = kritzelEngine;
     this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
+    this._yjsManager = new YjsDocumentManager(this, 'kritzel-document');
+  }
+
+  /**
+   * Initialize the Yjs document and persistence layer
+   */
+  async initializeYjs(): Promise<void> {
+    await this._yjsManager.initialize();
   }
 
   async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
-    const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
-    const candidateWorkspace = workspace ?? fallbackWorkspace;
+    // Load all workspaces from Yjs
+    const workspaces = this._yjsManager.getAllWorkspaces<KritzelWorkspace>();
+    
+    // Find most recently updated workspace or use provided/fallback
+    const mostRecentWorkspace = workspaces.length > 0
+      ? [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0]
+      : null;
+    
+    let activeWorkspace: KritzelWorkspace;
+    
+    if (workspace) {
+      // Use provided workspace
+      activeWorkspace = workspace;
+      const existing = this._yjsManager.getWorkspace<KritzelWorkspace>(workspace.id);
+      if (!existing) {
+        // New workspace, save it
+        activeWorkspace._core = this;
+        this._yjsManager.setWorkspace(activeWorkspace);
+      }
+    } else if (mostRecentWorkspace) {
+      // Use most recent workspace
+      activeWorkspace = mostRecentWorkspace;
+    } else {
+      // Create fallback workspace
+      activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+      activeWorkspace._core = this;
+      this._yjsManager.setWorkspace(activeWorkspace);
+    }
 
-    this._store.state.activeWorkspace = candidateWorkspace;
-    this._store.state.workspaces = [candidateWorkspace];
+    // Set active workspace
+    this._store.state.activeWorkspace = activeWorkspace;
+    this._store.state.workspaces = this._yjsManager.getAllWorkspaces<KritzelWorkspace>();
 
-    const viewport = this._store.state.activeWorkspace.viewport ?? { translateX: 0, translateY: 0, scale: 1 };
-
+    // Set viewport from workspace
+    const viewport = activeWorkspace.viewport ?? { translateX: 0, translateY: 0, scale: 1 };
     this._store.state.translateX = viewport.translateX ?? 0;
     this._store.state.translateY = viewport.translateY ?? 0;
     this._store.state.scale = viewport.scale ?? 1;
 
-    this._store.state.objectsMap.reset();
+    // Connect ObjectMap to Yjs and load objects for this workspace
+    this._store.state.objectsMap.connect(this._yjsManager, activeWorkspace.id);
+    this._store.state.objectsMap.loadFromYjs();
+    
     this.rerender();
   }
 
@@ -58,7 +102,71 @@ export class KritzelCore {
     return null;
   }
 
-  // Direct action methods (replacing command pattern)
+  // ==================== Workspace Management Methods ====================
+
+  /**
+   * Get all workspaces from Yjs
+   */
+  getWorkspaces(): KritzelWorkspace[] {
+    return this._yjsManager.getAllWorkspaces<KritzelWorkspace>();
+  }
+
+  /**
+   * Create a new workspace and save to Yjs
+   */
+  createWorkspace(workspace: KritzelWorkspace): void {
+    workspace._core = this;
+    workspace.createdAt = new Date();
+    workspace.updatedAt = new Date();
+    this._yjsManager.setWorkspace(workspace);
+    this._store.state.workspaces = this.getWorkspaces();
+  }
+
+  /**
+   * Update an existing workspace in Yjs
+   */
+  updateWorkspace(workspace: KritzelWorkspace): void {
+    workspace.updatedAt = new Date();
+    this._yjsManager.setWorkspace(workspace);
+    
+    // Update local state
+    const workspaces = this._store.state.workspaces;
+    const index = workspaces.findIndex(w => w.id === workspace.id);
+    if (index !== -1) {
+      workspaces[index] = workspace;
+      this._store.state.workspaces = workspaces;
+    }
+  }
+
+  /**
+   * Delete a workspace from Yjs
+   */
+  deleteWorkspace(workspace: KritzelWorkspace): void {
+    // Delete all objects for this workspace
+    this._yjsManager.deleteObjectsByWorkspace(workspace.id);
+    
+    // Delete the workspace itself
+    this._yjsManager.deleteWorkspace(workspace.id);
+    
+    // Update local state
+    this._store.state.workspaces = this.getWorkspaces();
+  }
+
+  /**
+   * Update viewport and persist to Yjs
+   */
+  updateWorkspaceViewport(translateX: number, translateY: number, scale: number): void {
+    const activeWorkspace = this._store.state.activeWorkspace;
+    if (!activeWorkspace) {
+      return;
+    }
+
+    activeWorkspace.viewport = { translateX, translateY, scale };
+    activeWorkspace.updatedAt = new Date();
+    this._yjsManager.setWorkspace(activeWorkspace);
+  }
+
+  // ==================== Direct action methods (replacing command pattern) ====================
   addObjectDirect(object: KritzelBaseObject<any>): void {
     this._store.state.objectsMap.insert(object);
   }

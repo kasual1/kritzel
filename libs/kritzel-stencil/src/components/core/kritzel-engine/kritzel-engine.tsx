@@ -371,33 +371,26 @@ export class KritzelEngine {
 
   @Method()
   async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
-    workspace._core = this.core;
-    this.core.store.state.workspaces.push(workspace);
+    this.core.createWorkspace(workspace);
     this.workspacesChange.emit(this.core.store.state.workspaces);
     return workspace;
   }
 
   @Method()
   async updateWorkspace(workspace: KritzelWorkspace): Promise<void> {
-    const workspaces = this.core.store.state.workspaces;
-    const index = workspaces.findIndex(w => w.id === workspace.id);
-
-    if (index !== -1) {
-      workspaces[index] = workspace;
-      this.core.store.state.workspaces = workspaces;
-    }
+    this.core.updateWorkspace(workspace);
     this.workspacesChange.emit(this.core.store.state.workspaces);
   }
 
   @Method()
   async deleteWorkspace(workspace: KritzelWorkspace): Promise<void> {
-    this.core.store.state.workspaces = this.core.store.state.workspaces.filter(ws => ws.id !== workspace.id);
+    this.core.deleteWorkspace(workspace);
     this.workspacesChange.emit(this.core.store.state.workspaces);
   }
 
   @Method()
   async getWorkspaces(): Promise<KritzelWorkspace[]> {
-    return this.core.store.state.workspaces;
+    return this.core.getWorkspaces();
   }
 
   @Method()
@@ -433,6 +426,10 @@ export class KritzelEngine {
     this.keyHandler = new KritzelKeyHandler(this.core);
     this.viewport = new KritzelViewport(this.core, this.host);
 
+    // Initialize Yjs document and persistence layer
+    await this.core.initializeYjs();
+    
+    // Initialize workspace (will load from Yjs if available)
     await this.core.initializeWorkspace(this.workspace);
 
     this._registerStateChangeListeners();
