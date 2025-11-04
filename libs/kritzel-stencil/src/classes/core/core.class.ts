@@ -257,21 +257,23 @@ export class KritzelCore {
   }
 
   deselectAllObjects(): void {
-    if (this._store.state.selectionGroup) {
+    const selectionGroup = this._store.selectionGroup;
+    if (selectionGroup) {
       this.commandManager.executeCommand(new RemoveSelectionGroupCommand(this, this, true));
     }
   }
 
   delete() {
-    if (!this._store.state.selectionGroup) {
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup) {
       return;
     }
 
-    const deleteSelectedObjectsCommand = this._store.state.selectionGroup.objects.map(obj => new RemoveObjectCommand(this, this._store.state.selectionGroup, obj));
-    const removeSelectionGroupCommand = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup);
+    const deleteSelectedObjectsCommand = selectionGroup.objects.map(obj => new RemoveObjectCommand(this, selectionGroup, obj));
+    const removeSelectionGroupCommand = new RemoveSelectionGroupCommand(this, selectionGroup);
     const commands = [...deleteSelectedObjectsCommand, removeSelectionGroupCommand];
 
-    this.commandManager.executeCommand(new BatchCommand(this, this._store.state.selectionGroup, commands));
+    this.commandManager.executeCommand(new BatchCommand(this, selectionGroup, commands));
   }
 
   deleteObject(id: string, skipHistory: boolean = false) {
@@ -283,7 +285,10 @@ export class KritzelCore {
   }
 
   copy() {
-    this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
+    const selectionGroup = this._store.selectionGroup;
+    if (selectionGroup) {
+      this._store.state.copiedObjects = selectionGroup.copy() as KritzelSelectionGroup;
+    }
   }
 
   paste(x?: number, y?: number) {
@@ -312,9 +317,10 @@ export class KritzelCore {
 
     const commands = [];
     let previousSelectionGroup = null;
-    if (this._store.state.selectionGroup !== null) {
-      previousSelectionGroup = this._store.state.selectionGroup;
-      commands.push(new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup));
+    const currentSelectionGroup = this._store.selectionGroup;
+    if (currentSelectionGroup !== null) {
+      previousSelectionGroup = currentSelectionGroup;
+      commands.push(new RemoveSelectionGroupCommand(this, currentSelectionGroup));
     }
 
     const addCopiedObjectsCommands = this._store.state.copiedObjects.objects.map(obj => new AddObjectCommand(this, this, obj));
@@ -325,12 +331,16 @@ export class KritzelCore {
     this.commandManager.executeCommand(new BatchCommand(this, this, commands));
 
     this._store.state.isSelecting = false;
-    this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
+    const newSelectionGroup = this._store.selectionGroup;
+    if (newSelectionGroup) {
+      this._store.state.copiedObjects = newSelectionGroup.copy() as KritzelSelectionGroup;
+    }
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
   }
 
   bringForward(object?: KritzelBaseObject<any>) {
-    const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const selectionGroup = this._store.selectionGroup;
+    const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const max = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1 : 0;
     const increaseZIndexCommands = objects.map(obj => {
@@ -344,7 +354,8 @@ export class KritzelCore {
   }
 
   sendBackward(object?: KritzelBaseObject<any>) {
-    const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const selectionGroup = this._store.selectionGroup;
+    const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const min = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1 : 0;
     const decreaseZIndexCommands = objects.map(obj => {
@@ -358,7 +369,8 @@ export class KritzelCore {
   }
 
   bringToFront(object?: KritzelBaseObject<any>) {
-    const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const selectionGroup = this._store.selectionGroup;
+    const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const max = Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1;
     const increaseZIndexCommands = objects.map(obj => {
@@ -369,7 +381,8 @@ export class KritzelCore {
   }
 
   sendToBack(object?: KritzelBaseObject<any>) {
-    const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const selectionGroup = this._store.selectionGroup;
+    const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const min = Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1;
     const decreaseZIndexCommands = objects.map(obj => {
@@ -429,8 +442,7 @@ export class KritzelCore {
     const command = new RemoveSelectionGroupCommand(this, this);
     this.commandManager.executeCommand(command);
 
-    this._store.state.selectionGroup = null;
-    this._store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox);
+    this._store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
     this._store.state.isSelecting = false;
     this._store.state.isResizeHandleSelected = false;
     this._store.state.isRotationHandleSelected = false;

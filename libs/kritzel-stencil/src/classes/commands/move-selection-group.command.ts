@@ -22,32 +22,30 @@ export class MoveSelectionGroupCommand extends KritzelBaseCommand {
     this.endX = endX;
     this.endY = endY;
     this.skipExecution = skipFirstExecution;
-    this.selectionGroup = this._core.store.state.selectionGroup;
+    this.selectionGroup = this._core.store.selectionGroup;
   }
 
   execute(): void {
     if (this.skipExecution) {
       this.skipExecution = false;
       // Skip execution, but still update objects
-      this._core.store.state.selectionGroup.objects.forEach(object => {
+      this.selectionGroup.objects.forEach(object => {
         this._core.store.state.objectsMap.update(object);
         this._core.updateObjectInDatabase(object);
       });
       return;
     }
 
-    this._core.store.state.selectionGroup = this.selectionGroup;
-    this._core.store.state.selectionGroup.move(this.startX, this.startY, this.endX, this.endY);
-    this._core.store.state.selectionGroup.objects.forEach(object => {
+    this.selectionGroup.move(this.startX, this.startY, this.endX, this.endY);
+    this.selectionGroup.objects.forEach(object => {
       this._core.store.state.objectsMap.update(object);
       this._core.updateObjectInDatabase(object);
     });
   }
 
   undo(): void {
-    this._core.store.state.selectionGroup = this.selectionGroup;
-    this._core.store.state.selectionGroup.move(this.endX, this.endY, this.startX, this.startY);
-    this._core.store.state.selectionGroup.objects.forEach(object => {
+    this.selectionGroup.move(this.endX, this.endY, this.startX, this.startY);
+    this.selectionGroup.objects.forEach(object => {
       this._core.store.state.objectsMap.update(object);
       this._core.updateObjectInDatabase(object);
     });

@@ -31,14 +31,14 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   handlePointerDown(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event) && !this._core.store.state.selectionGroup) {
+      if (KritzelEventHelper.isLeftClick(event) && !this._core.store.selectionGroup) {
         this.startMouseSelection(event);
       }
     }
 
     if (event.pointerType === 'touch') {
       this.touchStartTimeout = setTimeout(() => {
-        if (this._core.store.state.pointers.size === 1 && !this._core.store.state.isScaling && !this._core.store.state.selectionGroup) {
+        if (this._core.store.state.pointers.size === 1 && !this._core.store.state.isScaling && !this._core.store.selectionGroup) {
           this.startTouchSelection();
           this.updateTouchSelection();
         }
@@ -75,9 +75,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
+        const selectionGroup = this._core.store.selectionGroup;
 
-        if (this._core.store.state.selectionGroup?.objects.length === 1 && hasObjectsMoved === false) {
-          this._core.store.state.selectionGroup.objects[0].edit(event);
+        if (selectionGroup?.objects.length === 1 && hasObjectsMoved === false) {
+          selectionGroup.objects[0].edit(event);
         }
 
         this._core.store.state.hasObjectsChanged = false;
@@ -100,9 +101,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       clearTimeout(this.touchStartTimeout);
 
       const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
+      const selectionGroup = this._core.store.selectionGroup;
 
-      if (this._core.store.state.selectionGroup?.objects.length === 1 && hasObjectsMoved === false) {
-        this._core.store.state.selectionGroup.objects[0].edit(event);
+      if (selectionGroup?.objects.length === 1 && hasObjectsMoved === false) {
+        selectionGroup.objects[0].edit(event);
       }
 
       this._core.store.state.hasObjectsChanged = false;
@@ -142,7 +144,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     selectionBox.translateX = this.startX;
     selectionBox.translateY = this.startY;
 
-    this._core.store.state.selectionGroup = null;
     this._core.store.state.isSelecting = true;
 
     this._core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
@@ -172,7 +173,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     selectionBox.translateX = this.startX;
     selectionBox.translateY = this.startY;
 
-    this._core.store.state.selectionGroup = null;
     this._core.store.state.isSelecting  = true;
 
     this._core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
@@ -302,13 +302,12 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       return;
     }
 
-    this._core.store.state.selectionGroup = KritzelSelectionGroup.create(this._core);
+    const selectionGroup = KritzelSelectionGroup.create(this._core);
     selectedObjects.forEach(o => {
-      this._core.store.state.selectionGroup.addOrRemove(o);
+      selectionGroup.addOrRemove(o);
       o.isSelected = false;
     });
 
-    const selectionGroup = this._core.store.state.selectionGroup;
     selectionGroup.isSelected = true;
 
     if (selectionGroup.length === 1) {

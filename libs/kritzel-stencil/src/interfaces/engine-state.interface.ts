@@ -16,7 +16,6 @@ export interface KritzelEngineState {
   currentPath?: KritzelPath;
   copiedObjects?: KritzelSelectionGroup;
   objectsMap: KritzelObjectMap<KritzelBaseObject<Element>>;
-  selectionGroup?: KritzelSelectionGroup;
   resizeHandleType: KritzelHandleType;
   hasViewportChanged: boolean;
   hasObjectsChanged: boolean;

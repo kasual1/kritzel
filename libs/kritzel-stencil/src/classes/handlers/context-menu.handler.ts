@@ -46,15 +46,16 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
 
       this._core.store.state.isSelecting = false;
 
+      const currentSelectionGroup = this._core.store.selectionGroup;
       const batch = new BatchCommand(this._core, this, [
-        new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup),
+        new RemoveSelectionGroupCommand(this._core, currentSelectionGroup),
         new AddSelectionGroupCommand(this._core, this, selectionGroup),
       ]);
 
       this._core.commandManager.executeCommand(batch);
     }
 
-    this._core.store.state.contextMenuItems = this._core.store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
+    this._core.store.state.contextMenuItems = this._core.store.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
 
     let x: number = event.clientX - this._core.store.offsetX;
     let y: number = event.clientY - this._core.store.offsetY;
