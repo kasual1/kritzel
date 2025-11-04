@@ -830,25 +830,6 @@ export class KritzelEngine {
             );
           })}
 
-          <svg
-            key="current-path"
-            class="object"
-            xmlns="http://www.w3.org/2000/svg"
-            width={this.core.store.state.currentPath?.width}
-            height={this.core.store.state.currentPath?.height}
-            style={{
-              left: '0',
-              top: '0',
-              zIndex: this.core.store.state.currentPath?.zIndex.toString(),
-              position: 'absolute',
-              transform: this.core.store.state.currentPath?.transformationMatrix,
-              transformOrigin: 'top left',
-              overflow: 'visible',
-            }}
-            viewBox={this.core.store.state.currentPath?.viewBox}
-          >
-            <path d={this.core.store.state.currentPath?.d} fill={this.core.store.state.currentPath?.fill} stroke={this.core.store.state.currentPath?.stroke} />
-          </svg>
         </div>
 
         {this.core.store.state.isContextMenuVisible && (

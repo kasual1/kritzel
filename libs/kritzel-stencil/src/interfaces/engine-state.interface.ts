@@ -1,5 +1,4 @@
 import { KritzelBaseObject } from "../classes/objects/base-object.class";
-import { KritzelPath } from "../classes/objects/path.class";
 import { KritzelSelectionGroup } from "../classes/objects/selection-group.class";
 import { KritzelObjectMap } from "../classes/structures/object-map.structure";
 import { KritzelBaseTool } from "../classes/tools/base-tool.class";
@@ -11,7 +10,6 @@ import { KritzelDebugInfo } from "./debug-info.interface";
 export interface KritzelEngineState {
   activeWorkspace: KritzelWorkspace;
   activeTool: KritzelBaseTool;
-  currentPath?: KritzelPath;
   copiedObjects?: KritzelSelectionGroup;
   objectsMap: KritzelObjectMap<KritzelBaseObject<Element>>;
   resizeHandleType: KritzelHandleType;

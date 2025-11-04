@@ -3,7 +3,6 @@ import { KritzelEngineState } from "../interfaces/engine-state.interface";
 export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   activeWorkspace: null,
   activeTool: null,
-  currentPath: null,
   copiedObjects: null,
   objectsMap: null,
   resizeHandleType: null,

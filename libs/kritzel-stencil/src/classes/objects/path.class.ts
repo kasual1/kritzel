@@ -25,6 +25,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   isVisible: boolean = true;
   isDebugInfoVisible: boolean = true;
+  isDrawing: boolean = false;
 
   private _adjustedPoints?: number[][] = null;
 
