@@ -28,6 +28,11 @@ export class KritzelStore {
     return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.isSelected);
   }
 
+  get selectionBox(): KrtizelSelectionBox | null {
+    const selectionBoxes = this._state.objectsMap.filter(o => o instanceof KrtizelSelectionBox);
+    return selectionBoxes.length > 0 ? (selectionBoxes[0] as KrtizelSelectionBox) : null;
+  }
+
   get offsetX() {
     return this._state.host.getBoundingClientRect().left;
   }

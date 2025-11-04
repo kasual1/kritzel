@@ -392,8 +392,6 @@ export class KritzelCore {
 
     selectionGroup.isSelected = true;
 
-    this._store.state.selectionBox = selectionGroup;
-
     if (objects.length === 1) {
       selectionGroup.rotation = selectionGroup.objects[0].rotation;
     }
@@ -432,7 +430,7 @@ export class KritzelCore {
     this.commandManager.executeCommand(command);
 
     this._store.state.selectionGroup = null;
-    this._store.state.selectionBox = null;
+    this._store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox);
     this._store.state.isSelecting = false;
     this._store.state.isResizeHandleSelected = false;
     this._store.state.isRotationHandleSelected = false;

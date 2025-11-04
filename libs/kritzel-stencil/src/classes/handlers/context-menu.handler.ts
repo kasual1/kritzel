@@ -31,9 +31,8 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     const selectionTool = this._core.store.state.activeTool as KritzelSelectionTool;
     selectionTool?.moveHandler?.cancelPendingDrag();
 
-    if (this._core.store.state.selectionBox) {
+    if (this._core.store.selectionBox) {
       this._core.store.state.objectsMap.remove(object => object instanceof KrtizelSelectionBox);
-      this._core.store.state.selectionBox = null;
       this._core.store.state.isSelecting = false;
     }
 
