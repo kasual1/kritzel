@@ -281,7 +281,7 @@ export class KritzelEngine {
   async hideContextMenu() {
     this.core.store.state.pointers.clear();
     this.core.store.state.isContextMenuVisible = false;
-    this.core.store.state.selectionBox = null;
+    this.core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox);
     this.core.store.state.isSelecting = false;
     this.core.store.state.isEnabled = true;
     this.core.rerender();
@@ -445,7 +445,7 @@ export class KritzelEngine {
   private _handleActiveToolChange(activeTool: KritzelBaseTool) {
     if (!(activeTool instanceof KritzelSelectionTool)) {
       this.core.clearSelection();
-      this.core.store.state.selectionBox = null;
+      this.core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox);
       this.core.store.state.isSelecting = false;
       this.core.store.state.isResizeHandleSelected = false;
       this.core.store.state.isRotationHandleSelected = false;

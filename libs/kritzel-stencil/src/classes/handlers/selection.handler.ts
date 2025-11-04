@@ -16,11 +16,13 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   touchStartTimeout: any = null;
 
   get isSelectionClick() {
-    return this._core.store.state.selectionBox && this._core.store.state.selectionBox.width === 0 && this._core.store.state.selectionBox.height === 0;
+    const selectionBox = this._core.store.selectionBox;
+    return selectionBox && selectionBox.width === 0 && selectionBox.height === 0;
   }
 
   get isSelectionDrag() {
-    return this._core.store.state.selectionBox && (this._core.store.state.selectionBox.width > 0 || this._core.store.state.selectionBox.height > 0);
+    const selectionBox = this._core.store.selectionBox;
+    return selectionBox && (selectionBox.width > 0 || selectionBox.height > 0);
   }
 
   constructor(core: KritzelCore) {
@@ -122,7 +124,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   private removeSelectionBox(): void {
-    this._core.store.state.selectionBox = null;
     this._core.store.state.isSelecting = false;
     this._core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox);
   }
@@ -142,7 +143,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     selectionBox.translateY = this.startY;
 
     this._core.store.state.selectionGroup = null;
-    this._core.store.state.selectionBox = selectionBox;
     this._core.store.state.isSelecting = true;
 
     this._core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
@@ -173,7 +173,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     selectionBox.translateY = this.startY;
 
     this._core.store.state.selectionGroup = null;
-    this._core.store.state.selectionBox = selectionBox;
     this._core.store.state.isSelecting  = true;
 
     this._core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
@@ -186,7 +185,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     clientX = event.clientX - this._core.store.offsetX;
     clientY = event.clientY - this._core.store.offsetY;
 
-    const selectionBox = this._core.store.state.selectionBox;
+    const selectionBox = this._core.store.selectionBox;
 
     if (selectionBox) {
       const currentX = (clientX - this._core.store.state.translateX) / selectionBox.scale;
@@ -221,7 +220,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);
     clientY = Math.round(firstTouch.clientY - this._core.store.offsetY);
 
-    const selectionBox = this._core.store.state.selectionBox;
+    const selectionBox = this._core.store.selectionBox;
 
     if (selectionBox) {
       const currentX = (clientX - this._core.store.state.translateX) / selectionBox.scale;
@@ -244,9 +243,12 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   private updateSelectedObjects(): void {
-    this._core.store.allObjects
-      .filter(o => !(o instanceof KrtizelSelectionBox))
-      .forEach(object => (object.isSelected = object.hitTestPolygon(this._core.store.state.selectionBox.rotatedPolygon)));
+    const selectionBox = this._core.store.selectionBox;
+    if (selectionBox) {
+      this._core.store.allObjects
+        .filter(o => !(o instanceof KrtizelSelectionBox))
+        .forEach(object => (object.isSelected = object.hitTestPolygon(selectionBox.rotatedPolygon)));
+    }
   }
 
   private handleSelectionClick(event: PointerEvent): void {
