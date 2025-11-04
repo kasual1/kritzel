@@ -1,6 +1,7 @@
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelEngineState } from '../../interfaces/engine-state.interface';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
+import { KritzelText } from '../objects/text.class';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 
@@ -36,6 +37,11 @@ export class KritzelStore {
   get selectionGroup(): KritzelSelectionGroup | null {
     const selectionGroups = this._state.objectsMap.filter(o => o instanceof KritzelSelectionGroup);
     return selectionGroups.length > 0 ? (selectionGroups[0] as KritzelSelectionGroup) : null;
+  }
+
+  get activeText(): KritzelText | null {
+    const activeTexts = this._state.objectsMap.filter(o => o instanceof KritzelText && (o as KritzelText).isEditing);
+    return activeTexts.length > 0 ? (activeTexts[0] as KritzelText) : null;
   }
 
   get offsetX() {

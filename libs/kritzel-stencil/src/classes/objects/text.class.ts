@@ -243,7 +243,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.uneditedObject = this.clone() as KritzelText;
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
-    this._core.store.state.activeText = this;
 
     if (this.editor) {
       this.editor.setProps({ editable: () => true });

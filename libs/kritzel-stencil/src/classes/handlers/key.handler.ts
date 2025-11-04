@@ -31,11 +31,11 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
         c.rerender();
       },
     },
-    { key: 'v', ctrl: true, condition: c => !!c.store.state.copiedObjects && !c.store.state.activeText, action: c => c.paste() },
+    { key: 'v', ctrl: true, condition: c => !!c.store.state.copiedObjects && !c.store.activeText, action: c => c.paste() },
 
     // Text editing
-    // { key: 'a', ctrl: true, condition: c => !!c.store.state.activeText, action: c => c.store.state.activeText.selectAll() },
-    // { key: 'v', ctrl: true, condition: c => !!c.store.state.activeText, action: c => c.store.state.activeText.insertFromClipboard() },
+    // { key: 'a', ctrl: true, condition: c => !!c.store.activeText, action: c => c.store.activeText.selectAll() },
+    // { key: 'v', ctrl: true, condition: c => !!c.store.activeText, action: c => c.store.activeText.insertFromClipboard() },
 
     // Object layering
     { key: '+', ctrl: true, condition: c => !!c.store.selectionGroup, action: c => c.bringForward() },
