@@ -451,16 +451,14 @@ export class KritzelCore {
   }
 
   resetActiveText() {
-    if (this._store.state.activeText) {
-
-      if(this._store.state.activeText.isEmpty) {
-        this.deleteObject(this._store.state.activeText.id, true);
+    const activeText = this._store.activeText;
+    if (activeText) {
+      if(activeText.isEmpty) {
+        this.deleteObject(activeText.id, true);
       } else {
-        this._store.state.activeText.save();
+        activeText.save();
       }
     }
-
-    this._store.state.activeText = null;
   }
 
   getObjectFromPointerEvent(event: PointerEvent, selector = '.object'): KritzelBaseObject<any> | null {
