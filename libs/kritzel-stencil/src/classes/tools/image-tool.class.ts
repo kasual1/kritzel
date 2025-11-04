@@ -1,9 +1,6 @@
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelBaseTool } from './base-tool.class';
-import { AddObjectCommand } from '../commands/add-object.command';
-import { BatchCommand } from '../commands/batch.command';
-import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import imageCompression from 'browser-image-compression';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelCore } from '../core/core.class';
@@ -93,12 +90,11 @@ export class KritzelImageTool extends KritzelBaseTool {
     selectionGroup.addOrRemove(image);
     selectionGroup.isSelected = true;
 
-    const addImageCommand = new AddObjectCommand(this._core, this, image);
-    const addSelectionGroupCommand = new AddSelectionGroupCommand(this._core, this, selectionGroup);
-
-    this._core.commandManager.executeCommand(new BatchCommand(this._core, this, [addImageCommand, addSelectionGroupCommand]));
+    this._core.addObjectDirect(image);
+    this._core.addSelectionGroupDirect(selectionGroup);
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this._core.rerender();
   }
 
   private handleCancel(): void {

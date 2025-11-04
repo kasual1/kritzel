@@ -1,5 +1,4 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { AddObjectCommand } from '../commands/add-object.command';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelCore } from '../core/core.class';
@@ -143,7 +142,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           currentPath.isDrawing = false;
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
-          this._core.commandManager.executeCommand(new AddObjectCommand(this._core, this, currentPath));
+          this._core.addObjectDirect(currentPath);
         }
       }
     }
@@ -157,7 +156,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           currentPath.isDrawing = false;
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
-          this._core.commandManager.executeCommand(new AddObjectCommand(this._core, this, currentPath));
+          this._core.addObjectDirect(currentPath);
         }
 
         this._core.rerender();

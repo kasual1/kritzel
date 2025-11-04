@@ -1,5 +1,4 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { MoveSelectionGroupCommand } from '../commands/move-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 export class KritzelMoveHandler extends KritzelBaseHandler {
@@ -155,8 +154,17 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
-          this._core.commandManager.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
+          // Objects have already been moved during handlePointerMove
+          // Just update them in the database
+          const selectionGroup = this._core.store.selectionGroup;
+          if (selectionGroup) {
+            selectionGroup.objects.forEach(object => {
+              this._core.store.state.objectsMap.update(object);
+              this._core.updateObjectInDatabase(object);
+            });
+          }
           this._core.store.state.hasObjectsChanged = true;
+          this._core.rerender();
         }
       }
     }
@@ -166,8 +174,17 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
-          this._core.commandManager.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
+          // Objects have already been moved during handlePointerMove
+          // Just update them in the database
+          const selectionGroup = this._core.store.selectionGroup;
+          if (selectionGroup) {
+            selectionGroup.objects.forEach(object => {
+              this._core.store.state.objectsMap.update(object);
+              this._core.updateObjectInDatabase(object);
+            });
+          }
           this._core.store.state.hasObjectsChanged = true;
+          this._core.rerender();
         }
       }
     }
