@@ -2,7 +2,6 @@ import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { UpdateObjectCommand } from '../commands/update-object.command';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
@@ -10,7 +9,6 @@ import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
-import { AddObjectCommand } from '../commands/add-object.command';
 export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
@@ -272,15 +270,16 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = false;
 
-    let saveCommand;
     if (this.isNew) {
       this.isNew = false;
-      saveCommand = new AddObjectCommand<KritzelText>(this._core, this, this);
+      this._core.addObjectDirect(this);
     } else {
-      saveCommand = new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, { ...this });
+      // Update the object with current properties
+      const updatedProperties: Partial<KritzelText> = { ...this };
+      this._core.updateObjectDirect(this, updatedProperties);
     }
-
-    this._core.commandManager.executeCommand(saveCommand);
+    
+    this._core.rerender();
   }
 
   handlePointerDown(event: PointerEvent): void {

@@ -1,6 +1,5 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { ResizeSelectionGroupCommand } from '../commands/resize-selection-group.command';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseHandler } from './base.handler';
 
@@ -193,8 +192,9 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.store.state.isResizing = false;
 
         if (this.hasResized) {
-          this._core.commandManager.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
+          this._core.resizeSelectionGroup(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
           this._core.store.state.hasObjectsChanged = true;
+          this._core.rerender();
         }
 
         this.reset();
@@ -206,8 +206,9 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.store.state.isResizing = false;
 
         if (this.hasResized) {
-          this._core.commandManager.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
+          this._core.resizeSelectionGroup(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
           this._core.store.state.hasObjectsChanged = true;
+          this._core.rerender();
         }
 
         this.reset();

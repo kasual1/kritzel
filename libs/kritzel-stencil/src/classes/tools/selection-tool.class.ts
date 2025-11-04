@@ -1,6 +1,5 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
 import { KritzelMoveHandler } from '../handlers/move.handler';
 import { KritzelResizeHandler } from '../handlers/resize.handler';
 import { KritzelRotationHandler } from '../handlers/rotation.handler';
@@ -47,7 +46,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected
         ) {
-          this._core.commandManager.executeCommand(new RemoveSelectionGroupCommand(this._core, selectionGroup));
+          this._core.removeSelectionGroupDirect();
+          this._core.rerender();
         }
 
         if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1 && selectedObject.objects[0].isInteractive) {
@@ -87,7 +87,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected
         ) {
-          this._core.commandManager.executeCommand(new RemoveSelectionGroupCommand(this._core, selectionGroup));
+          this._core.removeSelectionGroupDirect();
+          this._core.rerender();
         }
       }
 

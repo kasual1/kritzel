@@ -1,5 +1,4 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
@@ -292,7 +291,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     selectionGroup.isSelected = true;
     selectionGroup.rotation = object.rotation;
 
-    this._core.commandManager.executeCommand(new AddSelectionGroupCommand(this._core, this, selectionGroup));
+    this._core.addSelectionGroupDirect(selectionGroup);
+    this._core.rerender();
   }
 
   private addSelectedObjectsToSelectionGroup(): void {
@@ -314,6 +314,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       selectionGroup.rotation = selectionGroup.objects[0].rotation;
     }
 
-    this._core.commandManager.executeCommand(new AddSelectionGroupCommand(this._core, this, selectionGroup));
+    this._core.addSelectionGroupDirect(selectionGroup);
+    this._core.rerender();
   }
 }

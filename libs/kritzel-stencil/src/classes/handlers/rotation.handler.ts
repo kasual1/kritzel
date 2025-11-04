@@ -1,5 +1,4 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { RotateSelectionGroupCommand } from '../commands/rotate-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
@@ -134,22 +133,24 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
-        this._core.commandManager.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
+        this._core.rotateSelectionGroup(this.rotation);
 
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
 
+        this._core.rerender();
         this.reset();
       }
     }
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isRotating) {
-        this._core.commandManager.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
+        this._core.rotateSelectionGroup(this.rotation);
 
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
 
+        this._core.rerender();
         this.reset();
 
         clearTimeout(this._core.store.state.longTouchTimeout);

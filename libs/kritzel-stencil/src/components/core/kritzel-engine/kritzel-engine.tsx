@@ -14,10 +14,7 @@ import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
-import { AddObjectCommand } from '../../../classes/commands/add-object.command';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
-import { UpdateObjectCommand } from '../../../classes/commands/update-object.command';
-import { RemoveObjectCommand } from '../../../classes/commands/remove-object.command';
 import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
 import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
@@ -269,12 +266,14 @@ export class KritzelEngine {
 
   @Method()
   async undo() {
-    this.core.history.undo();
+    // Undo functionality has been removed
+    console.warn('Undo functionality is no longer available');
   }
 
   @Method()
   async redo() {
-    this.core.history.redo();
+    // Redo functionality has been removed
+    console.warn('Redo functionality is no longer available');
   }
 
   @Method()
@@ -302,8 +301,8 @@ export class KritzelEngine {
     object.scale = object.scale ? object.scale : this.core.store.state.scale;
     object.zIndex = this.core.store.currentZIndex;
 
-    const command = new AddObjectCommand(this.core, this, object);
-    this.core.commandManager.executeCommand(command);
+    this.core.addObjectDirect(object);
+    this.core.rerender();
 
     return object;
   }
@@ -312,8 +311,8 @@ export class KritzelEngine {
   async updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    const command = new UpdateObjectCommand(this.core, this, object, updatedProperties);
-    this.core.commandManager.executeCommand(command);
+    this.core.updateObjectDirect(object, updatedProperties);
+    this.core.rerender();
 
     return object;
   }
@@ -322,8 +321,8 @@ export class KritzelEngine {
   async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    const command = new RemoveObjectCommand(this.core, this, object);
-    this.core.commandManager.executeCommand(command);
+    this.core.removeObjectDirect(object);
+    this.core.rerender();
 
     return object;
   }
@@ -359,8 +358,8 @@ export class KritzelEngine {
   async centerObjectInViewport(object: KritzelBaseObject) {
     object.centerInViewport();
 
-    const command = new UpdateObjectCommand(this.core, this, object, object);
-    this.core.commandManager.executeCommand(command);
+    this.core.updateObjectDirect(object, object);
+    this.core.rerender();
 
     return object;
   }
