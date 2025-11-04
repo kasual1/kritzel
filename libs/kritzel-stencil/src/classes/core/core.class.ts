@@ -2,26 +2,19 @@ import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engi
 import { KritzelContextMenu } from '../../components/ui/kritzel-context-menu/kritzel-context-menu';
 import { DEFAULT_ENGINE_STATE } from '../../configs/default-engine-state';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelDatabase } from './database.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KrtizelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
-import { KritzelReviver } from './reviver.class';
 import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from './workspace.class';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
   private readonly _store: KritzelStore;
-  private readonly _database: KritzelDatabase;
 
   get engine(): KritzelEngine {
     return this._kritzelEngine;
-  }
-
-  get database(): KritzelDatabase {
-    return this._database;
   }
 
   get store(): KritzelStore {
@@ -31,38 +24,14 @@ export class KritzelCore {
   constructor(kritzelEngine: KritzelEngine) {
     this._kritzelEngine = kritzelEngine;
     this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
-    this._database = new KritzelDatabase('kritzelDB', 1, this._store.state.debugInfo.logDatabase);
-  }
-
-  async initializeDatabase(): Promise<void> {
-    await this._database.open([
-      {
-        name: 'objects',
-        options: { keyPath: ['workspaceId', 'id'] },
-      },
-      { name: 'workspaces', options: { keyPath: 'id' } },
-    ]);
-
-    this.rerender();
   }
 
   async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
-    const workspaces = await this.getWorkspaces();
-    const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
     const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+    const candidateWorkspace = workspace ?? fallbackWorkspace;
 
-    const candidateWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
-    const existingWorkspace = await this.getWorkspace(candidateWorkspace.id);
-
-    if (existingWorkspace) {
-      this._store.state.activeWorkspace = existingWorkspace;
-      await this.updateWorkspace(this._store.state.activeWorkspace);
-    } else {
-      this._store.state.activeWorkspace = candidateWorkspace;
-      await this.createWorkspace(this._store.state.activeWorkspace);
-    }
-
-    this._store.state.workspaces = await this.getWorkspaces();
+    this._store.state.activeWorkspace = candidateWorkspace;
+    this._store.state.workspaces = [candidateWorkspace];
 
     const viewport = this._store.state.activeWorkspace.viewport ?? { translateX: 0, translateY: 0, scale: 1 };
 
@@ -70,154 +39,8 @@ export class KritzelCore {
     this._store.state.translateY = viewport.translateY ?? 0;
     this._store.state.scale = viewport.scale ?? 1;
 
-    await this.initializeWorkspaceObjects(this._store.state.activeWorkspace.id);
-  }
-
-  private async initializeWorkspaceObjects(workspaceId: string): Promise<void> {
     this._store.state.objectsMap.reset();
-
-    const objectsFromDb = await this._database.getAllByRange<any>('objects', IDBKeyRange.bound([workspaceId], [workspaceId, '\uffff']));
-
-    const reviver = new KritzelReviver(this);
-
-    objectsFromDb.forEach(element => {
-      const revivedObject = reviver.revive<KritzelBaseObject<any>>(element);
-      this._store.state.objectsMap.insert(revivedObject);
-    });
-
     this.rerender();
-  }
-
-  async updateWorkspaceViewport(translateX: number, translateY: number, scale: number) {
-    const activeWorkspace = this._store.state.activeWorkspace;
-
-    if (!activeWorkspace) {
-      throw new Error('Workspace not initialized');
-    }
-
-    activeWorkspace.viewport = { translateX, translateY, scale };
-    activeWorkspace.updatedAt = new Date();
-
-    await this._database.update('workspaces', activeWorkspace);
-  }
-
-  async addObjectToDatabase(object: KritzelBaseObject<any>): Promise<void> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const activeWorkspace = this._store.state.activeWorkspace;
-
-    if (!activeWorkspace) {
-      throw new Error('Workspace not initialized');
-    }
-
-    activeWorkspace.updatedAt = new Date();
-
-    await this._database.batch([db => db.add('objects', object), db => db.update('workspaces', activeWorkspace)]).catch(err => {
-      console.error('Error adding object to database:', err);
-    });
-  }
-
-  async updateObjectInDatabase(object: KritzelBaseObject<any>): Promise<void> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const activeWorkspace = this._store.state.activeWorkspace;
-
-    if (!activeWorkspace) {
-      throw new Error('Workspace not initialized');
-    }
-
-    activeWorkspace.updatedAt = new Date();
-
-    await this._database.batch([db => db.update('objects', object), db => db.update('workspaces', activeWorkspace)]).catch(err => {
-      console.error('Error updating object in database:', err);
-    });
-  }
-
-  async deleteObjectFromDatabase(objectId: string): Promise<void> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const activeWorkspace = this._store.state.activeWorkspace;
-
-    if (!activeWorkspace) {
-      throw new Error('Workspace not initialized');
-    }
-
-    activeWorkspace.updatedAt = new Date();
-
-    await this._database.batch([db => db.delete('objects', [activeWorkspace.id, objectId]), db => db.update('workspaces', activeWorkspace)]).catch(err => {
-      console.error('Error deleting object from database:', err);
-    });
-  }
-
-  async getWorkspace(id: string): Promise<KritzelWorkspace | null> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const reviver = new KritzelReviver(this);
-
-    return this._database.get<KritzelWorkspace>('workspaces', id).then(rawWorkspace => (rawWorkspace ? reviver.revive<KritzelWorkspace>(rawWorkspace) : null));
-  }
-
-  async getWorkspaces(): Promise<KritzelWorkspace[]> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const reviver = new KritzelReviver(this);
-
-    return this._database.getAll<KritzelWorkspace>('workspaces').then(rawWorkspaces => rawWorkspaces.map(ws => reviver.revive<KritzelWorkspace>(ws)));
-  }
-
-  async createWorkspace(workspace: KritzelWorkspace) {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    workspace.createdAt = new Date();
-    workspace.updatedAt = new Date();
-
-    await this._database.add('workspaces', workspace);
-
-    this._store.state.workspaces.push(workspace);
-  }
-
-  async updateWorkspace(workspace: KritzelWorkspace) {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    workspace.updatedAt = new Date();
-
-    await this._database.update('workspaces', workspace);
-
-    const workspaces = this._store.state.workspaces;
-    const index = workspaces.findIndex(w => w.id === workspace.id);
-
-    if (index !== -1) {
-      workspaces[index] = workspace;
-      this._store.state.workspaces = workspaces;
-    }
-  }
-
-  async deleteWorkspace(workspace: KritzelWorkspace) {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const objectRange = IDBKeyRange.bound([workspace.id], [workspace.id, '\uffff']);
-
-    await this._database.deleteByRange('objects', objectRange);
-
-    await this._database.delete('workspaces', workspace.id);
-
-    this._store.state.workspaces = this._store.state.workspaces.filter(ws => ws.id !== workspace.id);
   }
 
   rerender() {
@@ -238,13 +61,11 @@ export class KritzelCore {
   // Direct action methods (replacing command pattern)
   addObjectDirect(object: KritzelBaseObject<any>): void {
     this._store.state.objectsMap.insert(object);
-    this.addObjectToDatabase(object);
   }
 
   removeObjectDirect(object: KritzelBaseObject<any>): void {
     object.isMounted = false;
     this._store.state.objectsMap.remove(o => o.id === object.id);
-    this.deleteObjectFromDatabase(object.id);
   }
 
   updateObjectDirect<T extends KritzelBaseObject<any>>(object: T, updatedProperties: Partial<T>): void {
@@ -257,7 +78,6 @@ export class KritzelCore {
     object.onExecuteUpdateCommand(updatedProperties);
 
     this._store.state.objectsMap.update(object);
-    this.updateObjectInDatabase(object);
   }
 
   addSelectionGroupDirect(selectionGroup: KritzelSelectionGroup): void {
@@ -278,7 +98,6 @@ export class KritzelCore {
       selectionGroup.move(startX, startY, endX, endY);
       selectionGroup.objects.forEach(object => {
         this._store.state.objectsMap.update(object);
-        this.updateObjectInDatabase(object);
       });
     }
   }
@@ -289,7 +108,6 @@ export class KritzelCore {
       selectionGroup.resize(x, y, width, height);
       selectionGroup.objects.forEach(object => {
         this._store.state.objectsMap.update(object);
-        this.updateObjectInDatabase(object);
       });
     }
   }
@@ -300,7 +118,6 @@ export class KritzelCore {
       selectionGroup.rotate(rotation);
       selectionGroup.objects.forEach(object => {
         this._store.state.objectsMap.update(object);
-        this.updateObjectInDatabase(object);
       });
     }
   }

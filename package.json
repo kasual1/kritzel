@@ -14,7 +14,6 @@
     "@ngrok/ngrok": "^1.5.2",
     "@types/node": "^22.14.1",
     "dotenv": "^17.2.2",
-    "fake-indexeddb": "^6.2.2",
     "typescript": "^5.8.3"
   },
   "scripts": {

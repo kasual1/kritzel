@@ -372,26 +372,32 @@ export class KritzelEngine {
   @Method()
   async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
     workspace._core = this.core;
-    await this.core.createWorkspace(workspace);
+    this.core.store.state.workspaces.push(workspace);
     this.workspacesChange.emit(this.core.store.state.workspaces);
     return workspace;
   }
 
   @Method()
   async updateWorkspace(workspace: KritzelWorkspace): Promise<void> {
-    await this.core.updateWorkspace(workspace);
+    const workspaces = this.core.store.state.workspaces;
+    const index = workspaces.findIndex(w => w.id === workspace.id);
+
+    if (index !== -1) {
+      workspaces[index] = workspace;
+      this.core.store.state.workspaces = workspaces;
+    }
     this.workspacesChange.emit(this.core.store.state.workspaces);
   }
 
   @Method()
   async deleteWorkspace(workspace: KritzelWorkspace): Promise<void> {
-    await this.core.deleteWorkspace(workspace);
+    this.core.store.state.workspaces = this.core.store.state.workspaces.filter(ws => ws.id !== workspace.id);
     this.workspacesChange.emit(this.core.store.state.workspaces);
   }
 
   @Method()
   async getWorkspaces(): Promise<KritzelWorkspace[]> {
-    return this.core.getWorkspaces();
+    return this.core.store.state.workspaces;
   }
 
   @Method()
@@ -427,7 +433,6 @@ export class KritzelEngine {
     this.keyHandler = new KritzelKeyHandler(this.core);
     this.viewport = new KritzelViewport(this.core, this.host);
 
-    await this.core.initializeDatabase();
     await this.core.initializeWorkspace(this.workspace);
 
     this._registerStateChangeListeners();
