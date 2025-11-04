@@ -52,7 +52,6 @@ export interface KritzelEngineState {
   translateYMin: number;
   viewportWidth: number;
   viewportHeight: number;
-  historyBufferSize: number;
   longTouchTimeout: number;
   longTouchDelay: number;
   pointers: Map<number, PointerEvent>;

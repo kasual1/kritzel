@@ -155,12 +155,10 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
         if (this.hasMoved) {
           // Objects have already been moved during handlePointerMove
-          // Just update them in the database
           const selectionGroup = this._core.store.selectionGroup;
           if (selectionGroup) {
             selectionGroup.objects.forEach(object => {
               this._core.store.state.objectsMap.update(object);
-              this._core.updateObjectInDatabase(object);
             });
           }
           this._core.store.state.hasObjectsChanged = true;
@@ -175,12 +173,10 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
         if (this.hasMoved) {
           // Objects have already been moved during handlePointerMove
-          // Just update them in the database
           const selectionGroup = this._core.store.selectionGroup;
           if (selectionGroup) {
             selectionGroup.objects.forEach(object => {
               this._core.store.state.objectsMap.update(object);
-              this._core.updateObjectInDatabase(object);
             });
           }
           this._core.store.state.hasObjectsChanged = true;
