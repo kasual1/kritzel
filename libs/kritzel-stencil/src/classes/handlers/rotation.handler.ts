@@ -139,15 +139,16 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
+        const selectionGroup = this._core.store.selectionGroup;
+
+        selectionGroup.objects.forEach(obj => obj.isInteracting = false);
+
         this._core.rotateSelectionGroup(this.rotation);
 
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
 
-        // Mark all objects in the selection as no longer interacting
-        const selectionGroup = this._core.store.selectionGroup;
         if (selectionGroup) {
-          selectionGroup.objects.forEach(obj => obj.isInteracting = false);
         }
 
         this._core.rerender();
@@ -157,16 +158,14 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isRotating) {
+        const selectionGroup = this._core.store.selectionGroup;
+
+        selectionGroup.objects.forEach(obj => obj.isInteracting = false);
+
         this._core.rotateSelectionGroup(this.rotation);
 
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
-
-        // Mark all objects in the selection as no longer interacting
-        const selectionGroup = this._core.store.selectionGroup;
-        if (selectionGroup) {
-          selectionGroup.objects.forEach(obj => obj.isInteracting = false);
-        }
 
         this._core.rerender();
         this.reset();
