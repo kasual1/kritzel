@@ -46,7 +46,7 @@ export class KritzelStore {
   }
 
   get currentPath(): KritzelPath | null {
-    const drawingPaths = this._state.objectsMap.filter(o => o instanceof KritzelPath && (o as KritzelPath).isDrawing);
+    const drawingPaths = this._state.objectsMap.filter(o => o instanceof KritzelPath && (o as KritzelPath).isInteracting);
     return drawingPaths.length > 0 ? (drawingPaths[0] as KritzelPath) : null;
   }
 

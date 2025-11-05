@@ -2,7 +2,6 @@ import { KritzelBaseObject } from '../objects/base-object.class';
 import { YjsDocumentManager } from '../core/yjs-document.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelPath } from '../objects/path.class';
 
 export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private map: Map<string, T>;
@@ -117,21 +116,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   private shouldPersist(object: T): boolean {
-
-    if (object instanceof KritzelSelectionGroup) {
-      return false;
-    }
-
-    if (object instanceof KritzelSelectionBox) {
+    // Don't persist transient UI objects
+    if (object instanceof KritzelSelectionGroup || object instanceof KritzelSelectionBox) {
       return false;
     }
     
-    if (object instanceof KritzelPath) {
-
-      if(object.isDrawing) {
-        return false;
-      }
-
+    // Don't persist objects while user is interacting with them (drawing, moving, resizing, rotating)
+    if (object.isInteracting) {
+      return false;
     }
     
     return true;
