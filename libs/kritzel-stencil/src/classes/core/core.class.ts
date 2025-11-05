@@ -1,9 +1,10 @@
 import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engine';
 import { KritzelContextMenu } from '../../components/ui/kritzel-context-menu/kritzel-context-menu';
 import { DEFAULT_ENGINE_STATE } from '../../configs/default-engine-state';
+import { YJS_DOCUMENT_NAME } from '../../constants/core.constants';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelBaseObject } from '../objects/base-object.class';
-import { KrtizelSelectionBox } from '../objects/selection-box.class';
+import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
@@ -30,9 +31,9 @@ export class KritzelCore {
   constructor(kritzelEngine: KritzelEngine) {
     this._kritzelEngine = kritzelEngine;
     this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
-    this._yjsManager = new YjsDocumentManager(this, 'kritzel-document');
+    this._yjsManager = new YjsDocumentManager(this, YJS_DOCUMENT_NAME);
   }
-  
+
   async initializeYjs(): Promise<void> {
     await this._yjsManager.initialize();
   }
@@ -163,7 +164,7 @@ export class KritzelCore {
   }
 
   addSelectionGroup(selectionGroup: KritzelSelectionGroup): void {
-    this._store.state.objectsMap.remove(object => object instanceof KrtizelSelectionBox || object instanceof KritzelSelectionGroup);
+    this._store.state.objectsMap.remove(object => object instanceof KritzelSelectionBox || object instanceof KritzelSelectionGroup);
     this._store.state.objectsMap.insert(selectionGroup);
   }
 
@@ -374,7 +375,7 @@ export class KritzelCore {
   selectAllObjectsInViewport() {
     const objectsInViewport = this._store.state.objectsMap
       .filter(o => o.isInViewport())
-      .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox) && !(o instanceof KritzelContextMenu));
+      .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox) && !(o instanceof KritzelContextMenu));
 
     if (objectsInViewport.length > 0) {
       const selectionGroup = KritzelSelectionGroup.create(this);
@@ -401,7 +402,7 @@ export class KritzelCore {
   clearSelection() {
     this.removeSelectionGroup();
 
-    this._store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
     this._store.state.isSelecting = false;
     this._store.state.isResizeHandleSelected = false;
     this._store.state.isRotationHandleSelected = false;

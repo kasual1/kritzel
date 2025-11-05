@@ -1,13 +1,13 @@
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
 
-export class KrtizelSelectionBox extends KritzelBaseObject<HTMLElement> {
-  override __class__: string = 'KrtizelSelectionBox';
+export class KritzelSelectionBox extends KritzelBaseObject<HTMLElement> {
+  override __class__: string = 'KritzelSelectionBox';
 
   objects: KritzelBaseObject<any>[] = [];
 
-  static override create(core: KritzelCore): KrtizelSelectionBox {
-    const object = new KrtizelSelectionBox();
+  static override create(core: KritzelCore): KritzelSelectionBox {
+    const object = new KritzelSelectionBox();
 
     object._core = core;
     object.id = object.generateId();

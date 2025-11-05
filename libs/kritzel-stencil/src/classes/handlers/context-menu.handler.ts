@@ -2,7 +2,7 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionTool } from '../tools/selection-tool.class';
-import { KrtizelSelectionBox } from '../objects/selection-box.class';
+import { KritzelSelectionBox } from '../objects/selection-box.class';
 
 export class KritzelContextMenuHandler extends KritzelBaseHandler {
   globalContextMenuItems = [];
@@ -29,13 +29,13 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     selectionTool?.moveHandler?.cancelPendingDrag();
 
     if (this._core.store.selectionBox) {
-      this._core.store.state.objectsMap.remove(object => object instanceof KrtizelSelectionBox);
+      this._core.store.state.objectsMap.remove(object => object instanceof KritzelSelectionBox);
       this._core.store.state.isSelecting = false;
     }
 
     const selectedObject = this._core.getObjectFromPointerEvent(event, '.object');
 
-    if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup) && !(selectedObject instanceof KrtizelSelectionBox)) {
+    if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup) && !(selectedObject instanceof KritzelSelectionBox)) {
       const selectionGroup = KritzelSelectionGroup.create(this._core);
       selectionGroup.addOrRemove(selectedObject);
       selectionGroup.isSelected = true;

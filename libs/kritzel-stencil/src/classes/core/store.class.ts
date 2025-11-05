@@ -1,6 +1,6 @@
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelEngineState } from '../../interfaces/engine-state.interface';
-import { KrtizelSelectionBox } from '../objects/selection-box.class';
+import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelText } from '../objects/text.class';
 import { KritzelPath } from '../objects/path.class';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
@@ -15,7 +15,7 @@ export class KritzelStore {
   }
 
   get currentZIndex() {
-    return Math.max(0, ...this._state.objectsMap.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox)).map(o => o.zIndex)) + 1;
+    return Math.max(0, ...this._state.objectsMap.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).map(o => o.zIndex)) + 1;
   }
 
   get allObjects() {
@@ -23,16 +23,16 @@ export class KritzelStore {
   }
 
   get allNonSelectionObjects() {
-    return this._state.objectsMap.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox));
+    return this._state.objectsMap.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
   }
 
   get selectedObjects() {
     return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.isSelected);
   }
 
-  get selectionBox(): KrtizelSelectionBox | null {
-    const selectionBoxes = this._state.objectsMap.filter(o => o instanceof KrtizelSelectionBox);
-    return selectionBoxes.length > 0 ? (selectionBoxes[0] as KrtizelSelectionBox) : null;
+  get selectionBox(): KritzelSelectionBox | null {
+    const selectionBoxes = this._state.objectsMap.filter(o => o instanceof KritzelSelectionBox);
+    return selectionBoxes.length > 0 ? (selectionBoxes[0] as KritzelSelectionBox) : null;
   }
 
   get selectionGroup(): KritzelSelectionGroup | null {

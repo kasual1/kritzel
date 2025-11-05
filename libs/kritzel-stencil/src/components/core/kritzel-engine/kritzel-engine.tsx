@@ -6,7 +6,7 @@ import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.clas
 import { KritzelImage } from '../../../classes/objects/image.class';
 import { KritzelText } from '../../../classes/objects/text.class';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
-import { KrtizelSelectionBox } from '../../../classes/objects/selection-box.class';
+import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelKeyHandler } from '../../../classes/handlers/key.handler';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
@@ -278,7 +278,7 @@ export class KritzelEngine {
   async hideContextMenu() {
     this.core.store.state.pointers.clear();
     this.core.store.state.isContextMenuVisible = false;
-    this.core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox);
+    this.core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox);
     this.core.store.state.isSelecting = false;
     this.core.store.state.isEnabled = true;
     this.core.rerender();
@@ -445,7 +445,7 @@ export class KritzelEngine {
   private _handleActiveToolChange(activeTool: KritzelBaseTool) {
     if (!(activeTool instanceof KritzelSelectionTool)) {
       this.core.clearSelection();
-      this.core.store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox);
+      this.core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox);
       this.core.store.state.isSelecting = false;
       this.core.store.state.isResizeHandleSelected = false;
       this.core.store.state.isRotationHandleSelected = false;
@@ -621,7 +621,7 @@ export class KritzelEngine {
                       ></div>
                     )}
 
-                    {KritzelClassHelper.isInstanceOf<KrtizelSelectionBox>(object, 'KrtizelSelectionBox') && (
+                    {KritzelClassHelper.isInstanceOf<KritzelSelectionBox>(object, 'KritzelSelectionBox') && (
                       <div
                         ref={el => object.mount(el)}
                         style={{
