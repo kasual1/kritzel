@@ -93,8 +93,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
           updatedPath.id = currentPath.id;
           updatedPath.workspaceId = currentPath.workspaceId;
           updatedPath.isDrawing = true;
-          // Skip undo tracking during drawing - only track final result
-          this._core.store.state.objectsMap.update(updatedPath, true);
+
+          this._core.store.state.objectsMap.update(updatedPath);
 
           this._core.rerender();
         }
@@ -121,8 +121,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
           updatedPath.id = currentPath.id;
           updatedPath.workspaceId = currentPath.workspaceId;
           updatedPath.isDrawing = true;
-          // Skip undo tracking during drawing - only track final result
-          this._core.store.state.objectsMap.update(updatedPath, true);
+
+          this._core.store.state.objectsMap.update(updatedPath);
 
           this._core.rerender();
         }
@@ -144,7 +144,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
           currentPath.isDrawing = false;
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
-          this._core.addObject(currentPath);
         }
       }
     }
@@ -158,7 +157,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
           currentPath.isDrawing = false;
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
-          this._core.addObject(currentPath);
         }
 
         this._core.rerender();

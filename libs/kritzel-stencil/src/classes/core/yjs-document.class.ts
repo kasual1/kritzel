@@ -13,7 +13,7 @@ export class YjsDocumentManager {
   private readonly _undoManager: Y.UndoManager;
   private _isReady: boolean = false;
 
-  constructor(core: KritzelCore, docName: string = 'kritzel-document') {
+  constructor(core: KritzelCore, docName: string) {
     this._reviver = new KritzelReviver(core);
     
     this._ydoc = new Y.Doc();

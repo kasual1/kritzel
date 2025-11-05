@@ -1,7 +1,8 @@
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { YjsDocumentManager } from '../core/yjs-document.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KrtizelSelectionBox } from '../objects/selection-box.class';
+import { KritzelSelectionBox } from '../objects/selection-box.class';
+import { KritzelPath } from '../objects/path.class';
 
 export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private map: Map<string, T>;
@@ -11,14 +12,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   constructor() {
     this.map = new Map<string, T>();
-  }
-
-  /**
-   * Check if an object should be persisted to Yjs
-   * Selection groups and boxes are temporary UI elements and should not be persisted
-   */
-  private shouldPersist(object: T): boolean {
-    return !(object instanceof KritzelSelectionGroup || object instanceof KrtizelSelectionBox);
   }
 
   /**
@@ -82,7 +75,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     return true;
   }
 
-  update(object: T, skipUndo: boolean = false): boolean {
+  update(object: T): boolean {
     if (!object.id || !this.map.has(object.id)) {
       return false;
     }
@@ -90,11 +83,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     
     // Sync to Yjs if connected and object should be persisted
     if (this.yjsManager && this.workspaceId && this.syncEnabled && this.shouldPersist(object)) {
-      if (skipUndo) {
-        this.yjsManager.setObjectUntracked(object);
-      } else {
-        this.yjsManager.setObject(object);
-      }
+      this.yjsManager.setObject(object);
     }
     
     return true;
@@ -125,5 +114,26 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   allObjects(): T[] {
     return Array.from(this.map.values());
+  }
+
+  private shouldPersist(object: T): boolean {
+
+    if (object instanceof KritzelSelectionGroup) {
+      return false;
+    }
+
+    if (object instanceof KritzelSelectionBox) {
+      return false;
+    }
+    
+    if (object instanceof KritzelPath) {
+
+      if(object.isDrawing) {
+        return false;
+      }
+
+    }
+    
+    return true;
   }
 }

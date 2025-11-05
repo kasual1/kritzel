@@ -1,0 +1,1 @@
+export const YJS_DOCUMENT_NAME = 'kritzel-document';
