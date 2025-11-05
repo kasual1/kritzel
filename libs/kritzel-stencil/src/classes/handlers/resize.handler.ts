@@ -40,9 +40,9 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           this.initialSize.height = selectionGroup.height;
           this.initialSize.x = selectionGroup.translateX;
           this.initialSize.y = selectionGroup.translateY;
-          
+
           // Mark all objects in the selection as interacting during resize
-          selectionGroup.objects.forEach(obj => obj.isInteracting = true);
+          selectionGroup.objects.forEach(obj => (obj.isInteracting = true));
         }
       }
     }
@@ -70,7 +70,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           this.initialSize.y = selectionGroup.translateY;
 
           // Mark all objects in the selection as interacting during resize
-          selectionGroup.objects.forEach(obj => obj.isInteracting = true);
+          selectionGroup.objects.forEach(obj => (obj.isInteracting = true));
 
           clearTimeout(this._core.store.state.longTouchTimeout);
         }
@@ -198,15 +198,13 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.store.state.isResizing = false;
 
         const selectionGroup = this._core.store.selectionGroup;
+
+        selectionGroup.objects.forEach(obj => (obj.isInteracting = false));
+
         if (this.hasResized) {
           this._core.resizeSelectionGroup(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
           this._core.store.state.hasObjectsChanged = true;
           this._core.rerender();
-        }
-
-        // Mark all objects as no longer interacting
-        if (selectionGroup) {
-          selectionGroup.objects.forEach(obj => obj.isInteracting = false);
         }
 
         this.reset();
@@ -218,15 +216,13 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.store.state.isResizing = false;
 
         const selectionGroup = this._core.store.selectionGroup;
+
+        selectionGroup.objects.forEach(obj => (obj.isInteracting = false));
+
         if (this.hasResized) {
           this._core.resizeSelectionGroup(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
           this._core.store.state.hasObjectsChanged = true;
           this._core.rerender();
-        }
-
-        // Mark all objects as no longer interacting
-        if (selectionGroup) {
-          selectionGroup.objects.forEach(obj => obj.isInteracting = false);
         }
 
         this.reset();
