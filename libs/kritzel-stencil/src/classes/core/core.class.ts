@@ -32,10 +32,7 @@ export class KritzelCore {
     this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
     this._yjsManager = new YjsDocumentManager(this, 'kritzel-document');
   }
-
-  /**
-   * Initialize the Yjs document and persistence layer
-   */
+  
   async initializeYjs(): Promise<void> {
     await this._yjsManager.initialize();
   }
@@ -102,18 +99,10 @@ export class KritzelCore {
     return null;
   }
 
-  // ==================== Workspace Management Methods ====================
-
-  /**
-   * Get all workspaces from Yjs
-   */
   getWorkspaces(): KritzelWorkspace[] {
     return this._yjsManager.getAllWorkspaces<KritzelWorkspace>();
   }
 
-  /**
-   * Create a new workspace and save to Yjs
-   */
   createWorkspace(workspace: KritzelWorkspace): void {
     workspace._core = this;
     workspace.createdAt = new Date();
@@ -122,39 +111,25 @@ export class KritzelCore {
     this._store.state.workspaces = this.getWorkspaces();
   }
 
-  /**
-   * Update an existing workspace in Yjs
-   */
   updateWorkspace(workspace: KritzelWorkspace): void {
     workspace.updatedAt = new Date();
     this._yjsManager.setWorkspace(workspace);
     
-    // Update local state
     const workspaces = this._store.state.workspaces;
     const index = workspaces.findIndex(w => w.id === workspace.id);
+
     if (index !== -1) {
       workspaces[index] = workspace;
       this._store.state.workspaces = workspaces;
     }
   }
 
-  /**
-   * Delete a workspace from Yjs
-   */
   deleteWorkspace(workspace: KritzelWorkspace): void {
-    // Delete all objects for this workspace
     this._yjsManager.deleteObjectsByWorkspace(workspace.id);
-    
-    // Delete the workspace itself
     this._yjsManager.deleteWorkspace(workspace.id);
-    
-    // Update local state
     this._store.state.workspaces = this.getWorkspaces();
   }
 
-  /**
-   * Update viewport and persist to Yjs
-   */
   updateWorkspaceViewport(translateX: number, translateY: number, scale: number): void {
     const activeWorkspace = this._store.state.activeWorkspace;
     if (!activeWorkspace) {
@@ -166,34 +141,33 @@ export class KritzelCore {
     this._yjsManager.setWorkspace(activeWorkspace);
   }
 
-  // ==================== Direct action methods (replacing command pattern) ====================
-  addObjectDirect(object: KritzelBaseObject<any>): void {
+  addObject(object: KritzelBaseObject<any>): void {
     this._store.state.objectsMap.insert(object);
   }
 
-  removeObjectDirect(object: KritzelBaseObject<any>): void {
+  removeObject(object: KritzelBaseObject<any>): void {
     object.isMounted = false;
     this._store.state.objectsMap.remove(o => o.id === object.id);
   }
 
-  updateObjectDirect<T extends KritzelBaseObject<any>>(object: T, updatedProperties: Partial<T>): void {
+  updateObject<T extends KritzelBaseObject<any>>(object: T, updatedProperties: Partial<T>): void {
     for (const key in updatedProperties) {
       if (updatedProperties.hasOwnProperty(key)) {
         object[key] = updatedProperties[key];
       }
     }
 
-    object.onExecuteUpdateCommand(updatedProperties);
+    object.onUpdate(updatedProperties);
 
     this._store.state.objectsMap.update(object);
   }
 
-  addSelectionGroupDirect(selectionGroup: KritzelSelectionGroup): void {
+  addSelectionGroup(selectionGroup: KritzelSelectionGroup): void {
     this._store.state.objectsMap.remove(object => object instanceof KrtizelSelectionBox || object instanceof KritzelSelectionGroup);
     this._store.state.objectsMap.insert(selectionGroup);
   }
 
-  removeSelectionGroupDirect(): void {
+  removeSelectionGroup(): void {
     const previousSelectionGroup = this._store.selectionGroup;
     if (previousSelectionGroup) {
       this._store.state.objectsMap.remove(object => object.id === previousSelectionGroup.id);
@@ -231,7 +205,7 @@ export class KritzelCore {
   }
 
   deselectAllObjects(): void {
-    this.removeSelectionGroupDirect();
+    this.removeSelectionGroup();
     this.rerender();
   }
 
@@ -241,16 +215,12 @@ export class KritzelCore {
       return;
     }
 
-    // Delete all selected objects
-    selectionGroup.objects.forEach(obj => this.removeObjectDirect(obj));
-    // Remove the selection group itself
-    this.removeSelectionGroupDirect();
+    selectionGroup.objects.forEach(obj => this.removeObject(obj));
+
+    this.removeSelectionGroup();
     this.rerender();
   }
 
-  /**
-   * Undo the last change tracked by Yjs
-   */
   undo(): void {
     this.deselectAllObjects();
     this._yjsManager.undo();
@@ -259,9 +229,6 @@ export class KritzelCore {
     this.rerender();
   }
 
-  /**
-   * Redo the last undone change tracked by Yjs
-   */
   redo(): void {
     this.deselectAllObjects();
     this._yjsManager.redo();
@@ -273,7 +240,7 @@ export class KritzelCore {
   deleteObject(id: string) {
     const object = this.findObjectById(id);
     if (object) {
-      this.removeObjectDirect(object);
+      this.removeObject(object);
       this.rerender();
     }
   }
@@ -311,13 +278,12 @@ export class KritzelCore {
 
     const currentSelectionGroup = this._store.selectionGroup;
     if (currentSelectionGroup !== null) {
-      this.removeSelectionGroupDirect();
+      this.removeSelectionGroup();
     }
 
-    // Add all copied objects
-    this._store.state.copiedObjects.objects.forEach(obj => this.addObjectDirect(obj));
-    // Add the selection group
-    this.addSelectionGroupDirect(this._store.state.copiedObjects);
+    this._store.state.copiedObjects.objects.forEach(obj => this.addObject(obj));
+
+    this.addSelectionGroup(this._store.state.copiedObjects);
 
     this._store.state.isSelecting = false;
     const newSelectionGroup = this._store.selectionGroup;
@@ -336,7 +302,7 @@ export class KritzelCore {
     
     objects.forEach(obj => {
       if (obj.zIndex !== max) {
-        this.updateObjectDirect(obj, { zIndex: obj.zIndex + 1 });
+        this.updateObject(obj, { zIndex: obj.zIndex + 1 });
       }
     });
 
@@ -351,7 +317,7 @@ export class KritzelCore {
     
     objects.forEach(obj => {
       if (obj.zIndex !== min) {
-        this.updateObjectDirect(obj, { zIndex: obj.zIndex - 1 });
+        this.updateObject(obj, { zIndex: obj.zIndex - 1 });
       }
     });
 
@@ -365,7 +331,7 @@ export class KritzelCore {
     const max = Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1;
     
     objects.forEach(obj => {
-      this.updateObjectDirect(obj, { zIndex: max });
+      this.updateObject(obj, { zIndex: max });
     });
 
     this.rerender();
@@ -378,7 +344,7 @@ export class KritzelCore {
     const min = Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1;
     
     objects.forEach(obj => {
-      this.updateObjectDirect(obj, { zIndex: min });
+      this.updateObject(obj, { zIndex: min });
     });
 
     this.rerender();
@@ -401,7 +367,7 @@ export class KritzelCore {
       selectionGroup.rotation = selectionGroup.objects[0].rotation;
     }
 
-    this.addSelectionGroupDirect(selectionGroup);
+    this.addSelectionGroup(selectionGroup);
     this.rerender();
   }
 
@@ -426,14 +392,14 @@ export class KritzelCore {
         selectionGroup.rotation = selectionGroup.objects[0].rotation;
       }
 
-      this.addSelectionGroupDirect(selectionGroup);
+      this.addSelectionGroup(selectionGroup);
       this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
       this.rerender();
     }
   }
 
   clearSelection() {
-    this.removeSelectionGroupDirect();
+    this.removeSelectionGroup();
 
     this._store.state.objectsMap.remove(o => o instanceof KrtizelSelectionBox || o instanceof KritzelSelectionGroup);
     this._store.state.isSelecting = false;

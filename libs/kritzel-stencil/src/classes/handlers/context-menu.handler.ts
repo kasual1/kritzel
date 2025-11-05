@@ -45,9 +45,9 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
 
       const currentSelectionGroup = this._core.store.selectionGroup;
       if (currentSelectionGroup) {
-        this._core.removeSelectionGroupDirect();
+        this._core.removeSelectionGroup();
       }
-      this._core.addSelectionGroupDirect(selectionGroup);
+      this._core.addSelectionGroup(selectionGroup);
       this._core.rerender();
     }
 

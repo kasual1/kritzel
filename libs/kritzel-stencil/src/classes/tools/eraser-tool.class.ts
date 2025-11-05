@@ -72,7 +72,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
         
         objectsToRemove.forEach(object => {
           object.markedForRemoval = false;
-          this._core.removeObjectDirect(object);
+          this._core.removeObject(object);
         });
 
         if (objectsToRemove.length > 0) {
@@ -91,7 +91,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
         
         objectsToRemove.forEach(object => {
           object.markedForRemoval = false;
-          this._core.removeObjectDirect(object);
+          this._core.removeObject(object);
         });
 
         if (objectsToRemove.length > 0) {

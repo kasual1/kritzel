@@ -288,19 +288,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this._core.store.state.objectsMap.update(this);
   }
 
-  onExecuteAddCommand(_object: KritzelBaseObject): void {
-    // This method can be overridden by subclasses to handle actions after an add command is executed.
-  }
-
-  onUndoAddCommand(_object: KritzelBaseObject): void {
-    // This method can be overridden by subclasses to handle actions after an add command is undone.
-  }
-
-  onExecuteUpdateCommand(_updatedProperties: Partial<this>): void {
+  onUpdate(_updatedProperties: Partial<this>): void {
     // This method can be overridden by subclasses to handle actions after an update command is executed.
-  }
-
-  onUndoUpdateCommand(_previousProperties: Partial<this>): void {
-    // This method can be overridden by subclasses to handle actions after an update command is undone.
   }
 }

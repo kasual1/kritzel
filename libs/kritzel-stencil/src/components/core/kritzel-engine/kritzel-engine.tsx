@@ -299,7 +299,7 @@ export class KritzelEngine {
     object.scale = object.scale ? object.scale : this.core.store.state.scale;
     object.zIndex = this.core.store.currentZIndex;
 
-    this.core.addObjectDirect(object);
+    this.core.addObject(object);
     this.core.rerender();
 
     return object;
@@ -309,7 +309,7 @@ export class KritzelEngine {
   async updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    this.core.updateObjectDirect(object, updatedProperties);
+    this.core.updateObject(object, updatedProperties);
     this.core.rerender();
 
     return object;
@@ -319,7 +319,7 @@ export class KritzelEngine {
   async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    this.core.removeObjectDirect(object);
+    this.core.removeObject(object);
     this.core.rerender();
 
     return object;
@@ -356,7 +356,7 @@ export class KritzelEngine {
   async centerObjectInViewport(object: KritzelBaseObject) {
     object.centerInViewport();
 
-    this.core.updateObjectDirect(object, object);
+    this.core.updateObject(object, object);
     this.core.rerender();
 
     return object;
