@@ -266,14 +266,12 @@ export class KritzelEngine {
 
   @Method()
   async undo() {
-    // Undo functionality has been removed
-    console.warn('Undo functionality is no longer available');
+    this.core.undo();
   }
 
   @Method()
   async redo() {
-    // Redo functionality has been removed
-    console.warn('Redo functionality is no longer available');
+    this.core.redo();
   }
 
   @Method()
