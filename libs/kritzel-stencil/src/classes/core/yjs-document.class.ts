@@ -16,14 +16,11 @@ export class YjsDocumentManager {
   constructor(core: KritzelCore, docName: string = 'kritzel-document') {
     this._reviver = new KritzelReviver(core);
     
-    // Initialize Yjs document
     this._ydoc = new Y.Doc();
     
-    // Get or create shared YMaps
     this._workspacesMap = this._ydoc.getMap('workspaces');
     this._objectsMap = this._ydoc.getMap('objects');
     
-    // Initialize IndexedDB persistence
     this._provider = new IndexeddbPersistence(docName, this._ydoc);
     
     this._undoManager = new Y.UndoManager([this._workspacesMap, this._objectsMap], {
@@ -32,9 +29,6 @@ export class YjsDocumentManager {
     });
   }
 
-  /**
-   * Initialize the Yjs document and wait for persistence to be ready
-   */
   async initialize(): Promise<void> {
     return new Promise((resolve) => {
       this._provider.on('synced', () => {
@@ -44,35 +38,21 @@ export class YjsDocumentManager {
     });
   }
 
-  /**
-   * Check if the document is ready
-   */
   get isReady(): boolean {
     return this._isReady;
   }
 
-  // ==================== Workspace Methods ====================
-
-  /**
-   * Add or update a workspace
-   */
   setWorkspace(workspace: KritzelSerializable): void {
     const serialized = workspace.serialize();
     this._workspacesMap.set(serialized.id, serialized);
   }
 
-  /**
-   * Get a workspace by ID
-   */
   getWorkspace<T extends KritzelSerializable>(id: string): T | null {
     const serialized = this._workspacesMap.get(id);
     if (!serialized) return null;
     return this._reviver.revive<T>(serialized);
   }
 
-  /**
-   * Get all workspaces
-   */
   getAllWorkspaces<T extends KritzelSerializable>(): T[] {
     const workspaces: T[] = [];
     this._workspacesMap.forEach((value) => {
@@ -81,32 +61,18 @@ export class YjsDocumentManager {
     return workspaces;
   }
 
-  /**
-   * Delete a workspace
-   */
   deleteWorkspace(id: string): void {
     this._workspacesMap.delete(id);
   }
 
-  /**
-   * Observe workspace changes
-   */
   observeWorkspaces(callback: (event: Y.YMapEvent<any>) => void): void {
     this._workspacesMap.observe(callback);
   }
 
-  /**
-   * Unobserve workspace changes
-   */
   unobserveWorkspaces(callback: (event: Y.YMapEvent<any>) => void): void {
     this._workspacesMap.unobserve(callback);
   }
 
-  // ==================== Object Methods ====================
-
-  /**
-   * Add or update an object (tracked in undo/redo history)
-   */
   setObject(object: KritzelSerializable): void {
     const serialized = object.serialize();
     // Create a composite key: workspaceId:objectId
@@ -114,10 +80,6 @@ export class YjsDocumentManager {
     this._objectsMap.set(key, serialized);
   }
 
-  /**
-   * Add or update an object without tracking in undo/redo history
-   * Use this for intermediate updates during drawing operations
-   */
   setObjectUntracked(object: KritzelSerializable): void {
     const serialized = object.serialize();
     // Create a composite key: workspaceId:objectId
@@ -128,9 +90,6 @@ export class YjsDocumentManager {
     }, 'skip-undo');
   }
 
-  /**
-   * Get an object by workspace ID and object ID
-   */
   getObject<T extends KritzelSerializable>(workspaceId: string, objectId: string): T | null {
     const key = `${workspaceId}:${objectId}`;
     const serialized = this._objectsMap.get(key);
@@ -138,9 +97,6 @@ export class YjsDocumentManager {
     return this._reviver.revive<T>(serialized);
   }
 
-  /**
-   * Get all objects for a specific workspace
-   */
   getObjectsByWorkspace<T extends KritzelSerializable>(workspaceId: string): T[] {
     const objects: T[] = [];
     const prefix = `${workspaceId}:`;
@@ -154,9 +110,6 @@ export class YjsDocumentManager {
     return objects;
   }
 
-  /**
-   * Get all objects across all workspaces
-   */
   getAllObjects<T extends KritzelSerializable>(): T[] {
     const objects: T[] = [];
     this._objectsMap.forEach((value) => {
@@ -165,17 +118,11 @@ export class YjsDocumentManager {
     return objects;
   }
 
-  /**
-   * Delete an object
-   */
   deleteObject(workspaceId: string, objectId: string): void {
     const key = `${workspaceId}:${objectId}`;
     this._objectsMap.delete(key);
   }
 
-  /**
-   * Delete all objects for a specific workspace
-   */
   deleteObjectsByWorkspace(workspaceId: string): void {
     const prefix = `${workspaceId}:`;
     const keysToDelete: string[] = [];
@@ -189,21 +136,14 @@ export class YjsDocumentManager {
     keysToDelete.forEach(key => this._objectsMap.delete(key));
   }
 
-  /**
-   * Observe object changes
-   */
   observeObjects(callback: (event: Y.YMapEvent<any>) => void): void {
     this._objectsMap.observe(callback);
   }
 
-  /**
-   * Unobserve object changes
-   */
   unobserveObjects(callback: (event: Y.YMapEvent<any>) => void): void {
     this._objectsMap.unobserve(callback);
   }
 
-  // ==================== Transaction Methods ====================
 
   /**
    * Execute multiple operations in a single transaction
@@ -212,7 +152,6 @@ export class YjsDocumentManager {
     this._ydoc.transact(callback);
   }
 
-  // ==================== Undo/Redo Methods ====================
 
   undo(): void {
     this._undoManager.undo();
