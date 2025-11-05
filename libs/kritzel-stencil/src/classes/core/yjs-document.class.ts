@@ -4,16 +4,13 @@ import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelReviver } from './reviver.class';
 import { KritzelCore } from './core.class';
 
-/**
- * Manages Yjs document and provides CRDT-based storage for workspaces and objects
- * with IndexedDB persistence layer
- */
 export class YjsDocumentManager {
   private readonly _ydoc: Y.Doc;
   private readonly _provider: IndexeddbPersistence;
   private readonly _workspacesMap: Y.Map<any>;
   private readonly _objectsMap: Y.Map<any>;
   private readonly _reviver: KritzelReviver;
+  private readonly _undoManager: Y.UndoManager;
   private _isReady: boolean = false;
 
   constructor(core: KritzelCore, docName: string = 'kritzel-document') {
@@ -28,6 +25,11 @@ export class YjsDocumentManager {
     
     // Initialize IndexedDB persistence
     this._provider = new IndexeddbPersistence(docName, this._ydoc);
+    
+    this._undoManager = new Y.UndoManager([this._workspacesMap, this._objectsMap], {
+      captureTimeout: 0,
+      trackedOrigins: new Set([null]), // Only track changes without an origin or with null origin
+    });
   }
 
   /**
@@ -103,13 +105,27 @@ export class YjsDocumentManager {
   // ==================== Object Methods ====================
 
   /**
-   * Add or update an object
+   * Add or update an object (tracked in undo/redo history)
    */
   setObject(object: KritzelSerializable): void {
     const serialized = object.serialize();
     // Create a composite key: workspaceId:objectId
     const key = `${serialized.workspaceId}:${serialized.id}`;
     this._objectsMap.set(key, serialized);
+  }
+
+  /**
+   * Add or update an object without tracking in undo/redo history
+   * Use this for intermediate updates during drawing operations
+   */
+  setObjectUntracked(object: KritzelSerializable): void {
+    const serialized = object.serialize();
+    // Create a composite key: workspaceId:objectId
+    const key = `${serialized.workspaceId}:${serialized.id}`;
+    // Use 'skip-undo' as the origin to exclude from undo tracking
+    this._ydoc.transact(() => {
+      this._objectsMap.set(key, serialized);
+    }, 'skip-undo');
   }
 
   /**
@@ -196,12 +212,26 @@ export class YjsDocumentManager {
     this._ydoc.transact(callback);
   }
 
-  // ==================== Cleanup ====================
+  // ==================== Undo/Redo Methods ====================
 
-  /**
-   * Destroy the document and clean up resources
-   */
+  undo(): void {
+    this._undoManager.undo();
+  }
+
+  redo(): void {
+    this._undoManager.redo();
+  }
+
+  clearHistory(): void {
+    this._undoManager.clear();
+  }
+
+  stopCapturing(): void {
+    this._undoManager.stopCapturing();
+  }
+
   destroy(): void {
+    this._undoManager.destroy();
     this._provider.destroy();
     this._ydoc.destroy();
   }

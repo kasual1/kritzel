@@ -10,6 +10,10 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     { key: 'Escape', condition: c => !!c.store.selectionGroup, action: c => c.clearSelection() },
     { key: 'Delete', condition: c => !!c.store.selectionGroup, action: c => c.delete() },
 
+    // Undo/Redo
+    { key: 'z', ctrl: true, action: c => c.undo() },
+    { key: 'y', ctrl: true, action: c => c.redo() },
+
     // Tool selection
     { key: 's', ctrl: true, action: () => this.switchTool('selection') },
     { key: 'b', ctrl: true, action: () => this.switchTool('brush') },

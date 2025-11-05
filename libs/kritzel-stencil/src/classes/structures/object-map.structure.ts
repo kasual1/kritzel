@@ -82,7 +82,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     return true;
   }
 
-  update(object: T): boolean {
+  update(object: T, skipUndo: boolean = false): boolean {
     if (!object.id || !this.map.has(object.id)) {
       return false;
     }
@@ -90,7 +90,11 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     
     // Sync to Yjs if connected and object should be persisted
     if (this.yjsManager && this.workspaceId && this.syncEnabled && this.shouldPersist(object)) {
-      this.yjsManager.setObject(object);
+      if (skipUndo) {
+        this.yjsManager.setObjectUntracked(object);
+      } else {
+        this.yjsManager.setObject(object);
+      }
     }
     
     return true;

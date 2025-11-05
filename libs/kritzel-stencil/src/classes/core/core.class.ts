@@ -248,6 +248,28 @@ export class KritzelCore {
     this.rerender();
   }
 
+  /**
+   * Undo the last change tracked by Yjs
+   */
+  undo(): void {
+    this.deselectAllObjects();
+    this._yjsManager.undo();
+    this._store.state.objectsMap.loadFromYjs();
+    this._store.state.workspaces = this._yjsManager.getAllWorkspaces();
+    this.rerender();
+  }
+
+  /**
+   * Redo the last undone change tracked by Yjs
+   */
+  redo(): void {
+    this.deselectAllObjects();
+    this._yjsManager.redo();
+    this._store.state.objectsMap.loadFromYjs();
+    this._store.state.workspaces = this._yjsManager.getAllWorkspaces();
+    this.rerender();
+  }
+
   deleteObject(id: string) {
     const object = this.findObjectById(id);
     if (object) {
