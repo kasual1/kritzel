@@ -144,7 +144,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           currentPath.isDrawing = false;
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
-          this._core.addObjectDirect(currentPath);
+          this._core.addObject(currentPath);
         }
       }
     }
@@ -158,7 +158,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           currentPath.isDrawing = false;
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
-          this._core.addObjectDirect(currentPath);
+          this._core.addObject(currentPath);
         }
 
         this._core.rerender();

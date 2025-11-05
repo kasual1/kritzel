@@ -291,7 +291,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     selectionGroup.isSelected = true;
     selectionGroup.rotation = object.rotation;
 
-    this._core.addSelectionGroupDirect(selectionGroup);
+    this._core.addSelectionGroup(selectionGroup);
     this._core.rerender();
   }
 
@@ -314,7 +314,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       selectionGroup.rotation = selectionGroup.objects[0].rotation;
     }
 
-    this._core.addSelectionGroupDirect(selectionGroup);
+    this._core.addSelectionGroup(selectionGroup);
     this._core.rerender();
   }
 }

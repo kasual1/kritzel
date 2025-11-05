@@ -272,11 +272,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     if (this.isNew) {
       this.isNew = false;
-      this._core.addObjectDirect(this);
+      this._core.addObject(this);
     } else {
-      // Update the object with current properties
       const updatedProperties: Partial<KritzelText> = { ...this };
-      this._core.updateObjectDirect(this, updatedProperties);
+      this._core.updateObject(this, updatedProperties);
     }
     
     this._core.rerender();
@@ -335,15 +334,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     return this as unknown as KritzelText;
   }
 
-  override onExecuteUpdateCommand(updatedProperties: Partial<KritzelText>): void {
+  override onUpdate(updatedProperties: Partial<KritzelText>): void {
     if ('content' in updatedProperties) {
       this.setContent(updatedProperties.content);
-    }
-  }
-
-  override onUndoUpdateCommand(previousProperties: Partial<KritzelText>): void {
-    if ('content' in previousProperties && this.editor) {
-      this.setContent(previousProperties.content);
     }
   }
 }

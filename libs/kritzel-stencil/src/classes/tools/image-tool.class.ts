@@ -90,8 +90,8 @@ export class KritzelImageTool extends KritzelBaseTool {
     selectionGroup.addOrRemove(image);
     selectionGroup.isSelected = true;
 
-    this._core.addObjectDirect(image);
-    this._core.addSelectionGroupDirect(selectionGroup);
+    this._core.addObject(image);
+    this._core.addSelectionGroup(selectionGroup);
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     this._core.rerender();

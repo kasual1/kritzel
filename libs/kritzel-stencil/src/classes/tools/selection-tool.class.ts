@@ -46,7 +46,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected
         ) {
-          this._core.removeSelectionGroupDirect();
+          this._core.removeSelectionGroup();
           this._core.rerender();
         }
 
@@ -87,7 +87,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected
         ) {
-          this._core.removeSelectionGroupDirect();
+          this._core.removeSelectionGroup();
           this._core.rerender();
         }
       }

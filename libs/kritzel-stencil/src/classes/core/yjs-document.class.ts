@@ -23,9 +23,9 @@ export class YjsDocumentManager {
     
     this._provider = new IndexeddbPersistence(docName, this._ydoc);
     
-    this._undoManager = new Y.UndoManager([this._workspacesMap, this._objectsMap], {
+    this._undoManager = new Y.UndoManager([this._objectsMap], {
       captureTimeout: 0,
-      trackedOrigins: new Set([null]), // Only track changes without an origin or with null origin
+      trackedOrigins: new Set([null]),
     });
   }
 
@@ -75,16 +75,15 @@ export class YjsDocumentManager {
 
   setObject(object: KritzelSerializable): void {
     const serialized = object.serialize();
-    // Create a composite key: workspaceId:objectId
     const key = `${serialized.workspaceId}:${serialized.id}`;
+
     this._objectsMap.set(key, serialized);
   }
 
   setObjectUntracked(object: KritzelSerializable): void {
     const serialized = object.serialize();
-    // Create a composite key: workspaceId:objectId
     const key = `${serialized.workspaceId}:${serialized.id}`;
-    // Use 'skip-undo' as the origin to exclude from undo tracking
+
     this._ydoc.transact(() => {
       this._objectsMap.set(key, serialized);
     }, 'skip-undo');
@@ -112,9 +111,11 @@ export class YjsDocumentManager {
 
   getAllObjects<T extends KritzelSerializable>(): T[] {
     const objects: T[] = [];
+
     this._objectsMap.forEach((value) => {
       objects.push(this._reviver.revive<T>(value));
     });
+    
     return objects;
   }
 
@@ -144,14 +145,9 @@ export class YjsDocumentManager {
     this._objectsMap.unobserve(callback);
   }
 
-
-  /**
-   * Execute multiple operations in a single transaction
-   */
   transaction(callback: () => void): void {
     this._ydoc.transact(callback);
   }
-
 
   undo(): void {
     this._undoManager.undo();
