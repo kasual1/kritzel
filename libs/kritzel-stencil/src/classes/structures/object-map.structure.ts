@@ -1,7 +1,7 @@
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { YjsDocumentManager } from '../core/yjs-document.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
+import { KritzelSelectionGroup } from '../objects/selection-group.class';
 
 export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private map: Map<string, T>;
@@ -53,49 +53,61 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   reset(): void {
     this.map.clear();
-    
+
     // If connected to Yjs, also clear objects for this workspace
     if (this.yjsManager && this.workspaceId && this.syncEnabled) {
       this.yjsManager.deleteObjectsByWorkspace(this.workspaceId);
     }
   }
 
-  insert(object: T): boolean {
+  insert(object: T, options: { skipHistory?: boolean } = {}): boolean {
     if (!object.id) {
       return false;
     }
     this.map.set(object.id, object);
-    
+
     // Sync to Yjs if connected and object should be persisted
     if (this.yjsManager && this.workspaceId && this.syncEnabled && this.shouldPersist(object)) {
-      this.yjsManager.setObject(object);
+      if (options.skipHistory) {
+        this.yjsManager.setObjectUntracked(object);
+      } else {
+        this.yjsManager.setObject(object);
+      }
     }
-    
+
     return true;
   }
 
-  update(object: T): boolean {
+  update(object: T, options: { skipHistory?: boolean } = {}): boolean {
     if (!object.id || !this.map.has(object.id)) {
       return false;
     }
     this.map.set(object.id, object);
-    
+
     // Sync to Yjs if connected and object should be persisted
     if (this.yjsManager && this.workspaceId && this.syncEnabled && this.shouldPersist(object)) {
-      this.yjsManager.setObject(object);
+       if (options.skipHistory) {
+        this.yjsManager.setObjectUntracked(object);
+      } else {
+        this.yjsManager.setObject(object);
+      }
     }
-    
+
     return true;
   }
 
-  remove(predicate: (object: T) => boolean): void {
+  remove(predicate: (object: T) => boolean, options: { skipHistory?: boolean } = {}): void {
     for (const [id, object] of this.map) {
       if (predicate(object)) {
         this.map.delete(id);
-        
+
         // Sync deletion to Yjs if connected and object should be persisted
         if (this.yjsManager && this.workspaceId && this.syncEnabled && this.shouldPersist(object)) {
-          this.yjsManager.deleteObject(this.workspaceId, id);
+          if (options.skipHistory) {
+            this.yjsManager.deleteObjectUntracked(this.workspaceId, id);
+          } else {
+            this.yjsManager.deleteObject(this.workspaceId, id);
+          }
         }
       }
     }
@@ -117,15 +129,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   private shouldPersist(object: T): boolean {
     // Don't persist transient UI objects
-    if (object instanceof KritzelSelectionGroup || object instanceof KritzelSelectionBox) {
+    if (object instanceof KritzelSelectionBox || object instanceof KritzelSelectionGroup) {
       return false;
     }
-    
-    // Don't persist objects while user is interacting with them (drawing, moving, resizing, rotating)
-    if (object.isInteracting) {
-      return false;
-    }
-    
+
     return true;
   }
 }

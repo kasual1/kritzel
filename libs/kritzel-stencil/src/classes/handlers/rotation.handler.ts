@@ -42,9 +42,6 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - selectionGroup.rotation;
 
           this.unchangedObjects = selectionGroup.objects.map(obj => obj.clone());
-          
-          // Mark all objects in the selection as interacting during rotation
-          selectionGroup.objects.forEach(obj => obj.isInteracting = true);
         }
       }
     }
@@ -75,9 +72,6 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - selectionGroup.rotation;
 
           this.unchangedObjects = selectionGroup.objects.map(obj => obj.clone());
-          
-          // Mark all objects in the selection as interacting during rotation
-          selectionGroup.objects.forEach(obj => obj.isInteracting = true);
 
           clearTimeout(this._core.store.state.longTouchTimeout);
         }
@@ -139,17 +133,10 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
-        const selectionGroup = this._core.store.selectionGroup;
-
-        selectionGroup.objects.forEach(obj => obj.isInteracting = false);
-
         this._core.rotateSelectionGroup(this.rotation);
 
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
-
-        if (selectionGroup) {
-        }
 
         this._core.rerender();
         this.reset();
@@ -158,10 +145,6 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isRotating) {
-        const selectionGroup = this._core.store.selectionGroup;
-
-        selectionGroup.objects.forEach(obj => obj.isInteracting = false);
-
         this._core.rotateSelectionGroup(this.rotation);
 
         this._core.store.state.isRotating = false;

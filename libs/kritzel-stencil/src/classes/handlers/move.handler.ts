@@ -48,9 +48,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.startX = this.dragStartX;
           this.startY = this.dragStartY;
           this.trackedPointerId = event.pointerId;
-          
-          // Mark all objects in the selection as interacting during the move
-          selectionGroup.objects.forEach(obj => obj.isInteracting = true);
+
         } else {
           this.trackedPointerId = null;
         }
@@ -80,8 +78,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.startY = y;
           this.trackedPointerId = event.pointerId;
           
-          // Mark all objects in the selection as interacting during the move
-          selectionGroup.objects.forEach(obj => obj.isInteracting = true);
         } else {
           this.trackedPointerId = null;
         }
@@ -164,21 +160,12 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           const selectionGroup = this._core.store.selectionGroup;
           if (selectionGroup) {
             selectionGroup.objects.forEach(object => {
-              object.isInteracting = false;
               this._core.store.state.objectsMap.update(object);
             });
           }
           this._core.store.state.hasObjectsChanged = true;
           this._core.rerender();
-        } else {
-          // If we didn't move, mark objects as not interacting anymore
-          const selectionGroup = this._core.store.selectionGroup;
-          if (selectionGroup) {
-            selectionGroup.objects.forEach(object => {
-              object.isInteracting = false;
-            });
-          }
-        }
+        } 
       }
     }
 
@@ -191,20 +178,11 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           const selectionGroup = this._core.store.selectionGroup;
           if (selectionGroup) {
             selectionGroup.objects.forEach(object => {
-              object.isInteracting = false;
               this._core.store.state.objectsMap.update(object);
             });
           }
           this._core.store.state.hasObjectsChanged = true;
           this._core.rerender();
-        } else {
-          // If we didn't move, mark objects as not interacting anymore
-          const selectionGroup = this._core.store.selectionGroup;
-          if (selectionGroup) {
-            selectionGroup.objects.forEach(object => {
-              object.isInteracting = false;
-            });
-          }
         }
       }
     }

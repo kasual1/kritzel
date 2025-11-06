@@ -76,6 +76,44 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this._core.store.state.objectsMap.update(this);
   }
 
+  override serialize() {
+    // Manually serialize to avoid structuredClone issues with functions
+    const { _core, _elementRef, element, totalWidth, totalHeight, objects, unchangedObjects, ...remainingProps } = this as any;
+
+    // Filter out any properties that are functions
+    const filteredProps = Object.keys(remainingProps).reduce((acc, key) => {
+      const value = remainingProps[key];
+      if (typeof value !== 'function') {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as any);
+
+    // Clone the filtered properties safely
+    const clonedProps = structuredClone(filteredProps);
+
+    // Handle element cloning if needed
+    if (element && typeof element === 'object' && 'nodeType' in element && element.nodeType === 1) {
+      clonedProps.element = element.cloneNode(true) as HTMLElement;
+    }
+
+    // Serialize objects array
+    clonedProps.objects = this.objects.map(obj => obj.serialize());
+
+    return clonedProps;
+  }
+
+  override deserialize<T>(object: any): T {
+    // Deserialize objects array
+    this.objects = object.objects.map((objData: any) => {
+      const reviver = new KritzelReviver(this._core);
+      return reviver.revive<KritzelBaseObject<any>>(objData);
+    });
+    this.unchangedObjects = this.objects.map(obj => obj.clone());
+    this.refreshObjectDimensions();
+    return this as unknown as T;
+  }
+
   override move(startX: number, startY: number, endX: number, endY: number): void {
     const deltaX = (startX - endX) / this._core.store.state.scale;
     const deltaY = (startY - endY) / this._core.store.state.scale;
