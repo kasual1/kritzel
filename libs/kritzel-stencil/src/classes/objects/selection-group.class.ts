@@ -114,17 +114,16 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return this as unknown as T;
   }
 
-  override move(startX: number, startY: number, endX: number, endY: number): void {
+  override move(startX: number, startY: number, endX: number, endY: number, options: { skipHistory?: boolean } = {}): void {
     const deltaX = (startX - endX) / this._core.store.state.scale;
     const deltaY = (startY - endY) / this._core.store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objectsMap.update(this, options);
 
     this.objects.forEach(obj => {
-      obj.move(startX, startY, endX, endY);
-      this._core.store.state.objectsMap.update(obj);
+      obj.move(startX, startY, endX, endY, options);
     });
 
     this.unchangedObjects.forEach(obj => {

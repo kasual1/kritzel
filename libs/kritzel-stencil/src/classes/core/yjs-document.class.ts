@@ -12,8 +12,10 @@ export class YjsDocumentManager {
   private readonly _reviver: KritzelReviver;
   private readonly _undoManager: Y.UndoManager;
   private _isReady: boolean = false;
+  private _core: KritzelCore;
 
   constructor(core: KritzelCore, docName: string) {
+    this._core = core;
     this._reviver = new KritzelReviver(core);
     
     this._ydoc = new Y.Doc();
@@ -27,13 +29,82 @@ export class YjsDocumentManager {
       captureTimeout: 0,
       trackedOrigins: new Set([null]),
     });
+
+    this._undoManager.on('stack-item-added', (event) => {
+      if (event.type === 'undo') {
+      console.log('stack-item-added', this._undoManager.undoStack.length, event.type);
+      }
+    });
+
+    this._undoManager.on('stack-item-popped', (event) => {
+      if (event.type === 'undo') {
+        console.log('stack-item-popped', this._undoManager.undoStack.length, event.type);
+      }
+    });
+
+    // Observe changes to _objectsMap and sync with application state
+    this._objectsMap.observe((event) => {
+      this.handleObjectsChange(event);
+    });
+  }
+
+  private handleObjectsChange(event: Y.YMapEvent<any>): void {
+    // Only process changes if we have an active workspace
+    if (!this._core.store.state.activeWorkspace) {
+      return;
+    }
+
+    const changedKeys = Array.from(event.keysChanged);
+    const objectsToUpdate = [];
+    const objectsToDelete = [];
+
+    changedKeys.forEach(key => {
+      const change = event.changes.keys.get(key);
+      
+      if (change && change.action === 'delete') {
+        // Handle deletion
+        const objectId = key.split(':')[1];
+        if (objectId) {
+          objectsToDelete.push(objectId);
+        }
+      } else {
+        // Handle add or update
+        const serialized = this._objectsMap.get(key);
+        if (serialized) {
+          const object = this._reviver.revive(serialized);
+          objectsToUpdate.push(object);
+        }
+      }
+    });
+
+    // Temporarily disable sync to prevent feedback loop
+    const objectsMap = this._core.store.state.objectsMap;
+    const wasSyncEnabled = objectsMap['syncEnabled'];
+    objectsMap.setSyncEnabled(false);
+
+    try {
+      // Delete objects
+      objectsToDelete.forEach(objectId => {
+        objectsMap.remove(obj => obj.id === objectId);
+      });
+
+      // Update objects
+      objectsToUpdate.forEach(object => {
+        objectsMap.update(object);
+      });
+
+      this._core.rerender();
+    } finally {
+      // Re-enable sync
+      objectsMap.setSyncEnabled(wasSyncEnabled);
+    }
   }
 
   async initialize(): Promise<void> {
     return new Promise((resolve) => {
       this._provider.on('synced', () => {
-        this._isReady = true;
         resolve();
+        this._isReady = true;
       });
     });
   }

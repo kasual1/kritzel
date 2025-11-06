@@ -223,19 +223,11 @@ export class KritzelCore {
   }
 
   undo(): void {
-    this.deselectAllObjects();
     this._yjsManager.undo();
-    this._store.state.objectsMap.loadFromYjs();
-    this._store.state.workspaces = this._yjsManager.getAllWorkspaces();
-    this.rerender();
   }
 
   redo(): void {
-    this.deselectAllObjects();
     this._yjsManager.redo();
-    this._store.state.objectsMap.loadFromYjs();
-    this._store.state.workspaces = this._yjsManager.getAllWorkspaces();
-    this.rerender();
   }
 
   deleteObject(id: string) {

@@ -206,12 +206,14 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.updatePosition(this.translateX + deltaX, this.translateY + deltaY);
   }
 
-  move(startX: number, startY: number, endX: number, endY: number): void {
+  move(startX: number, startY: number, endX: number, endY: number, options: { skipHistory?: boolean } = {}): void {
     const deltaX = (startX - endX) / this._core.store.state.scale;
     const deltaY = (startY - endY) / this._core.store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
+
+    this._core.store.state.objectsMap.update(this, options);
   }
 
   resize(x: number, y: number, width: number, height: number): void {

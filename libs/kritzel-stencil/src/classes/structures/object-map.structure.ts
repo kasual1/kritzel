@@ -1,7 +1,6 @@
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { YjsDocumentManager } from '../core/yjs-document.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
 
 export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private map: Map<string, T>;
@@ -129,7 +128,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   private shouldPersist(object: T): boolean {
     // Don't persist transient UI objects
-    if (object instanceof KritzelSelectionBox || object instanceof KritzelSelectionGroup) {
+    if (object instanceof KritzelSelectionBox) {
       return false;
     }
 

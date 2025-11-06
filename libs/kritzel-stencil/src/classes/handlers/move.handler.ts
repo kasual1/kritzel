@@ -42,13 +42,18 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           const clientX = event.clientX - this._core.store.offsetX;
           const clientY = event.clientY - this._core.store.offsetY;
 
+          this._core.yjsManager.transaction(() => {
+            selectionGroup.objects.forEach(object => {
+              this._core.store.state.objectsMap.update(object);
+            });
+          });
+
           this._core.store.state.isDragging = true;
           this.dragStartX = clientX;
           this.dragStartY = clientY;
           this.startX = this.dragStartX;
           this.startY = this.dragStartY;
           this.trackedPointerId = event.pointerId;
-
         } else {
           this.trackedPointerId = null;
         }
@@ -61,7 +66,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (this._core.store.state.pointers.size === 1) {
-        
         if (this._core.store.state.isScaling) {
           this.trackedPointerId = null;
           return;
@@ -77,7 +81,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.startX = x;
           this.startY = y;
           this.trackedPointerId = event.pointerId;
-          
         } else {
           this.trackedPointerId = null;
         }
@@ -98,13 +101,13 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
         this.endX = clientX;
         this.endY = clientY;
-        
+
         const moveDeltaX = Math.abs(clientX - this.startX);
         const moveDeltaY = Math.abs(clientY - this.startY);
         const moveThreshold = 5;
-        
+
         if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
-          selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
+          selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY, { skipHistory: true });
           this.dragStartX = clientX;
           this.dragStartY = clientY;
           this.hasMoved = true;
@@ -129,15 +132,15 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = true;
         this.endX = x;
         this.endY = y;
-        
+
         const moveDeltaX = Math.abs(x - this.startX);
         const moveDeltaY = Math.abs(y - this.startY);
         const moveThreshold = 5;
-        
+
         if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
           clearTimeout(this._core.store.state.longTouchTimeout);
-          
-          selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
+
+          selectionGroup.move(x, y, this.dragStartX, this.dragStartY, { skipHistory: true });
           this.dragStartX = x;
           this.dragStartY = y;
           this.hasMoved = true;
@@ -159,13 +162,16 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           // Objects have already been moved during handlePointerMove
           const selectionGroup = this._core.store.selectionGroup;
           if (selectionGroup) {
-            selectionGroup.objects.forEach(object => {
-              this._core.store.state.objectsMap.update(object);
+
+            this._core.yjsManager.transaction(() => {
+              selectionGroup.objects.forEach(object => {
+                this._core.store.state.objectsMap.update(object);
+              });
             });
           }
           this._core.store.state.hasObjectsChanged = true;
           this._core.rerender();
-        } 
+        }
       }
     }
 
@@ -174,7 +180,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
-          // Objects have already been moved during handlePointerMove
           const selectionGroup = this._core.store.selectionGroup;
           if (selectionGroup) {
             selectionGroup.objects.forEach(object => {
