@@ -94,7 +94,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           updatedPath.workspaceId = currentPath.workspaceId;
           updatedPath.isCompleted = false;
 
-          this._core.store.state.objectsMap.update(updatedPath);
+          this._core.store.state.objectsMap.update(updatedPath, { skipHistory: true });
 
           this._core.rerender();
         }
@@ -122,7 +122,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           updatedPath.workspaceId = currentPath.workspaceId;
           updatedPath.isCompleted = false;
 
-          this._core.store.state.objectsMap.update(updatedPath);
+          this._core.store.state.objectsMap.update(updatedPath, { skipHistory: true });
 
           this._core.rerender();
         }

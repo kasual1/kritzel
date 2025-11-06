@@ -107,7 +107,17 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         const moveThreshold = 5;
 
         if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
-          selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY, { skipHistory: true });
+          // Disable Yjs sync during move to prevent history pollution
+          this._core.store.state.objectsMap.setSyncEnabled(false);
+
+          selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
+          selectionGroup.objects.forEach(object => {
+            this._core.store.state.objectsMap.update(object);
+          });
+
+          this._core.store.state.objectsMap.setSyncEnabled(true);
+
+          this._core.rerender();
           this.dragStartX = clientX;
           this.dragStartY = clientY;
           this.hasMoved = true;
@@ -140,7 +150,17 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
           clearTimeout(this._core.store.state.longTouchTimeout);
 
-          selectionGroup.move(x, y, this.dragStartX, this.dragStartY, { skipHistory: true });
+          // Disable Yjs sync during move to prevent history pollution
+          this._core.store.state.objectsMap.setSyncEnabled(false);
+
+          selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
+          selectionGroup.objects.forEach(object => {
+            this._core.store.state.objectsMap.update(object);
+          });
+
+          this._core.store.state.objectsMap.setSyncEnabled(true);
+
+          this._core.rerender();
           this.dragStartX = x;
           this.dragStartY = y;
           this.hasMoved = true;
@@ -162,7 +182,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           // Objects have already been moved during handlePointerMove
           const selectionGroup = this._core.store.selectionGroup;
           if (selectionGroup) {
-
             this._core.yjsManager.transaction(() => {
               selectionGroup.objects.forEach(object => {
                 this._core.store.state.objectsMap.update(object);
