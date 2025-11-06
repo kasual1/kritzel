@@ -40,7 +40,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           fill: this.color,
           strokeWidth: this.size,
         });
-        path.isInteracting = true;
+        path.isCompleted = false;
         this._core.store.state.objectsMap.insert(path);
       }
     }
@@ -62,7 +62,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           fill: this.color,
           strokeWidth: this.size,
         });
-        path.isInteracting = true;
+        path.isCompleted = false;
         this._core.store.state.objectsMap.insert(path);
 
         this._core.rerender();
@@ -92,7 +92,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           });
           updatedPath.id = currentPath.id;
           updatedPath.workspaceId = currentPath.workspaceId;
-          updatedPath.isInteracting = true;
+          updatedPath.isCompleted = false;
 
           this._core.store.state.objectsMap.update(updatedPath);
 
@@ -120,7 +120,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           });
           updatedPath.id = currentPath.id;
           updatedPath.workspaceId = currentPath.workspaceId;
-          updatedPath.isInteracting = true;
+          updatedPath.isCompleted = false;
 
           this._core.store.state.objectsMap.update(updatedPath);
 
@@ -141,7 +141,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
         const currentPath = this._core.store.currentPath;
         if (currentPath) {
-          currentPath.isInteracting = false;
+          currentPath.isCompleted = true;
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
         }
@@ -154,7 +154,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
         const currentPath = this._core.store.currentPath;
         if (currentPath) {
-          currentPath.isInteracting = false;
+          currentPath.isCompleted = true;
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
         }

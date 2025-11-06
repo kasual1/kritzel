@@ -169,9 +169,9 @@ export class KritzelCore {
   }
 
   removeSelectionGroup(): void {
-    const previousSelectionGroup = this._store.selectionGroup;
-    if (previousSelectionGroup) {
-      this._store.state.objectsMap.remove(object => object.id === previousSelectionGroup.id);
+    const selectionGroup = this._store.selectionGroup;
+    if (selectionGroup) {
+      this._store.state.objectsMap.remove(object => object.id === selectionGroup.id);
     }
   }
 
