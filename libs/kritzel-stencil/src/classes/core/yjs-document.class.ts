@@ -151,15 +151,6 @@ export class YjsDocumentManager {
     this._objectsMap.set(key, serialized);
   }
 
-  setObjectUntracked(object: KritzelSerializable): void {
-    const serialized = object.serialize();
-    const key = `${serialized.workspaceId}:${serialized.id}`;
-
-    this._ydoc.transact(() => {
-      this._objectsMap.set(key, serialized);
-    }, 'untracked');
-  }
-
   getObject<T extends KritzelSerializable>(workspaceId: string, objectId: string): T | null {
     const key = `${workspaceId}:${objectId}`;
     const serialized = this._objectsMap.get(key);
@@ -195,12 +186,6 @@ export class YjsDocumentManager {
     this._objectsMap.delete(key);
   }
 
-  deleteObjectUntracked(workspaceId: string, objectId: string): void {
-    const key = `${workspaceId}:${objectId}`;
-    this._ydoc.transact(() => {
-      this._objectsMap.delete(key);
-    }, 'untracked');
-  }
 
   deleteObjectsByWorkspace(workspaceId: string): void {
     const prefix = `${workspaceId}:`;
