@@ -121,7 +121,11 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
             break;
         }
 
+        this._core.store.state.objectsMap.setSyncEnabled(false);
+
         selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+
+        this._core.store.state.objectsMap.setSyncEnabled(true);
       }
     }
 
@@ -181,7 +185,11 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
             break;
         }
 
+        this._core.store.state.objectsMap.setSyncEnabled(false);
+
         selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+
+        this._core.store.state.objectsMap.setSyncEnabled(true);
       }
     }
   }
@@ -192,9 +200,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.store.state.isResizing = false;
 
         if (this.hasResized) {
-          this._core.resizeSelectionGroup(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+          this._core.store.selectionGroup.update();
           this._core.store.state.hasObjectsChanged = true;
-          this._core.rerender();
         }
 
         this.reset();
@@ -206,9 +213,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.store.state.isResizing = false;
 
         if (this.hasResized) {
-          this._core.resizeSelectionGroup(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+          this._core.store.selectionGroup.update();
           this._core.store.state.hasObjectsChanged = true;
-          this._core.rerender();
         }
 
         this.reset();
