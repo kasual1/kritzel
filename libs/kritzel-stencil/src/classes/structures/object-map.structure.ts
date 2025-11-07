@@ -36,6 +36,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   /**
+   * Executes a set of operations as a single transaction for undo/redo purposes.
+   * @param callback The function containing operations to be batched.
+   */
+  transaction(callback: () => void): void {
+    this.yjsManager.transaction(callback);
+  }
+
+  /**
    * Load objects from Yjs for the current workspace
    */
   loadFromYjs(): void {
@@ -59,7 +67,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
   }
 
-  insert(object: T, options: { skipHistory?: boolean } = {}): boolean {
+  insert(object: T): boolean {
     if (!object.id) {
       return false;
     }
@@ -67,17 +75,13 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     // Sync to Yjs if connected and object should be persisted
     if (this.yjsManager && this.workspaceId && this.syncEnabled && this.shouldPersist(object)) {
-      if (options.skipHistory) {
-        this.yjsManager.setObjectUntracked(object);
-      } else {
-        this.yjsManager.setObject(object);
-      }
+      this.yjsManager.setObject(object);
     }
 
     return true;
   }
 
-  update(object: T, options: { skipHistory?: boolean } = {}): boolean {
+  update(object: T): boolean {
     if (!object.id || !this.map.has(object.id)) {
       return false;
     }
@@ -85,28 +89,20 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     // Sync to Yjs if connected and object should be persisted
     if (this.yjsManager && this.workspaceId && this.syncEnabled && this.shouldPersist(object)) {
-       if (options.skipHistory) {
-        this.yjsManager.setObjectUntracked(object);
-      } else {
-        this.yjsManager.setObject(object);
-      }
+      this.yjsManager.setObject(object);
     }
 
     return true;
   }
 
-  remove(predicate: (object: T) => boolean, options: { skipHistory?: boolean } = {}): void {
+  remove(predicate: (object: T) => boolean): void {
     for (const [id, object] of this.map) {
       if (predicate(object)) {
         this.map.delete(id);
 
         // Sync deletion to Yjs if connected and object should be persisted
         if (this.yjsManager && this.workspaceId && this.syncEnabled && this.shouldPersist(object)) {
-          if (options.skipHistory) {
-            this.yjsManager.deleteObjectUntracked(this.workspaceId, id);
-          } else {
-            this.yjsManager.deleteObject(this.workspaceId, id);
-          }
+          this.yjsManager.deleteObject(this.workspaceId, id);
         }
       }
     }

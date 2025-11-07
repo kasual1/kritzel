@@ -114,16 +114,29 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return this as unknown as T;
   }
 
+  override update(): void {
+    this._core.store.state.objectsMap.transaction(() => {
+      this._core.store.state.objectsMap.update(this);
+
+      this.objects.forEach(obj => {
+        obj.update();
+      });
+    });
+  }
+
   override move(startX: number, startY: number, endX: number, endY: number): void {
     const deltaX = (startX - endX) / this._core.store.state.scale;
     const deltaY = (startY - endY) / this._core.store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
-    this._core.store.state.objectsMap.update(this);
 
-    this.objects.forEach(obj => {
-      obj.move(startX, startY, endX, endY);
+    this._core.store.state.objectsMap.transaction(() => {
+      this._core.store.state.objectsMap.update(this);
+
+      this.objects.forEach(obj => {
+        obj.move(startX, startY, endX, endY);
+      });
     });
 
     this.unchangedObjects.forEach(obj => {
@@ -139,16 +152,18 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const deltaX = x - this.translateX;
     const deltaY = y - this.translateY;
 
-    this.objects.forEach(child => {
-      const updatedWidth = child.width * widthScaleFactor;
-      const updatedHeight = child.height * heightScaleFactor;
+    this._core.store.state.objectsMap.transaction(() => {
+      this.objects.forEach(child => {
+        const updatedWidth = child.width * widthScaleFactor;
+        const updatedHeight = child.height * heightScaleFactor;
 
-      const updatedX = child.translateX + deltaX + (child.translateX - this.translateX) * (widthScaleFactor - 1);
-      const updatedY = child.translateY + deltaY + (child.translateY - this.translateY) * (heightScaleFactor - 1);
+        const updatedX = child.translateX + deltaX + (child.translateX - this.translateX) * (widthScaleFactor - 1);
+        const updatedY = child.translateY + deltaY + (child.translateY - this.translateY) * (heightScaleFactor - 1);
 
-      child.resize(updatedX, updatedY, updatedWidth, updatedHeight);
+        child.resize(updatedX, updatedY, updatedWidth, updatedHeight);
 
-      this._core.store.state.objectsMap.update(child);
+        this._core.store.state.objectsMap.update(child);
+      });
     });
 
     this.refreshObjectDimensions();
@@ -165,20 +180,22 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
 
-    this.objects.forEach(child => {
-      const unchangedChild = this.getUnchangedObject(child.id);
+    this._core.store.state.objectsMap.transaction(() => {
+      this.objects.forEach(child => {
+        const unchangedChild = this.getUnchangedObject(child.id);
 
-      const offsetX = this.getOffsetXToCenter(unchangedChild);
-      const offsetY = this.getOffsetYToCenter(unchangedChild);
+        const offsetX = this.getOffsetXToCenter(unchangedChild);
+        const offsetY = this.getOffsetYToCenter(unchangedChild);
 
-      const rotatedX = cos * offsetX - sin * offsetY;
-      const rotatedY = sin * offsetX + cos * offsetY;
+        const rotatedX = cos * offsetX - sin * offsetY;
+        const rotatedY = sin * offsetX + cos * offsetY;
 
-      child.translateX = centerX + rotatedX - child.totalWidth / 2 / child.scale;
-      child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
+        child.translateX = centerX + rotatedX - child.totalWidth / 2 / child.scale;
+        child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
 
-      child.rotate(this.objects.length === 1 ? value : value + unchangedChild.rotation);
-      this._core.store.state.objectsMap.update(child);
+        child.rotate(this.objects.length === 1 ? value : value + unchangedChild.rotation);
+        this._core.store.state.objectsMap.update(child);
+      });
     });
   }
 
