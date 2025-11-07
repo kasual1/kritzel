@@ -108,7 +108,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
           this._core.store.state.objectsMap.setSyncEnabled(true);
 
-          this._core.rerender();
           this.dragStartX = clientX;
           this.dragStartY = clientY;
           this.hasMoved = true;
@@ -147,7 +146,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
           this._core.store.state.objectsMap.setSyncEnabled(true);
 
-          this._core.rerender();
           this.dragStartX = x;
           this.dragStartY = y;
           this.hasMoved = true;
@@ -168,7 +166,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         if (this.hasMoved) {
           this._core.store.selectionGroup.update();
           this._core.store.state.hasObjectsChanged = true;
-          this._core.rerender();
         }
       }
     }
@@ -180,7 +177,6 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         if (this.hasMoved) {
           this._core.store.selectionGroup.update();
           this._core.store.state.hasObjectsChanged = true;
-          this._core.rerender();
         }
       }
     }
