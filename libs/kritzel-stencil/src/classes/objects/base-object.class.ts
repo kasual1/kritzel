@@ -206,14 +206,12 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.updatePosition(this.translateX + deltaX, this.translateY + deltaY);
   }
 
-  move(startX: number, startY: number, endX: number, endY: number, options: { skipHistory?: boolean } = {}): void {
+  move(startX: number, startY: number, endX: number, endY: number): void {
     const deltaX = (startX - endX) / this._core.store.state.scale;
     const deltaY = (startY - endY) / this._core.store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
-
-    this._core.store.state.objectsMap.update(this, options);
   }
 
   resize(x: number, y: number, width: number, height: number): void {
@@ -244,10 +242,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     copiedObject.id = this.generateId();
     copiedObject.isMounted = false;
     return copiedObject;
-  }
-
-  onSelectedClick(): void {
-    // This method can be overridden by subclasses to handle click events when the object is selected.
   }
 
   serialize() {
