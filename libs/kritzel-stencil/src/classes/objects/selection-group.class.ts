@@ -161,8 +161,6 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
         const updatedY = child.translateY + deltaY + (child.translateY - this.translateY) * (heightScaleFactor - 1);
 
         child.resize(updatedX, updatedY, updatedWidth, updatedHeight);
-
-        this._core.store.state.objectsMap.update(child);
       });
     });
 
@@ -194,7 +192,6 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
         child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
 
         child.rotate(this.objects.length === 1 ? value : value + unchangedChild.rotation);
-        this._core.store.state.objectsMap.update(child);
       });
     });
   }
