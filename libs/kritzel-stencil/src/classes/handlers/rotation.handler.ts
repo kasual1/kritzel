@@ -96,7 +96,11 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         this.rotation = currentRotation - this.initialRotation;
 
+        this._core.store.state.objectsMap.setSyncEnabled(false);
+
         selectionGroup.rotate(this.rotation);
+
+        this._core.store.state.objectsMap.setSyncEnabled(true);
       }
     }
 
@@ -123,7 +127,11 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         this.rotation = currentRotation - this.initialRotation;
 
+        this._core.store.state.objectsMap.setSyncEnabled(false);
+
         selectionGroup.rotate(this.rotation);
+
+        this._core.store.state.objectsMap.setSyncEnabled(true);
 
         clearTimeout(this._core.store.state.longTouchTimeout);
       }
@@ -133,24 +141,20 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
-        this._core.rotateSelectionGroup(this.rotation);
-
+        this._core.store.selectionGroup.update();
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
 
-        this._core.rerender();
         this.reset();
       }
     }
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isRotating) {
-        this._core.rotateSelectionGroup(this.rotation);
-
+        this._core.store.selectionGroup.update();
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
 
-        this._core.rerender();
         this.reset();
 
         clearTimeout(this._core.store.state.longTouchTimeout);
