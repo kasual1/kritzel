@@ -41,6 +41,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           strokeWidth: this.size,
         });
         path.isCompleted = false;
+        
         this._core.store.state.objectsMap.insert(path);
       }
     }
@@ -63,9 +64,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
           strokeWidth: this.size,
         });
         path.isCompleted = false;
-        this._core.store.state.objectsMap.insert(path);
 
-        this._core.rerender();
+        this._core.store.state.objectsMap.insert(path);
       }
     }
   }
@@ -94,13 +94,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           updatedPath.workspaceId = currentPath.workspaceId;
           updatedPath.isCompleted = false;
 
-          this._core.store.state.objectsMap.setSyncEnabled(false);
-
           this._core.store.state.objectsMap.update(updatedPath);
-
-          this._core.store.state.objectsMap.setSyncEnabled(true);
-
-          this._core.rerender();
         }
       }
     }
@@ -126,13 +120,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           updatedPath.workspaceId = currentPath.workspaceId;
           updatedPath.isCompleted = false;
 
-          this._core.store.state.objectsMap.setSyncEnabled(false);
-
           this._core.store.state.objectsMap.update(updatedPath);
-
-          this._core.store.state.objectsMap.setSyncEnabled(true);
-
-          this._core.rerender();
         }
       }
     }
@@ -166,8 +154,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
         }
-
-        this._core.rerender();
       }
     }
   }
