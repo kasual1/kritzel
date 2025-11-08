@@ -5,6 +5,7 @@ import { KritzelReviver } from './reviver.class';
 import { KritzelCore } from './core.class';
 import { BroadcastChannelProvider } from './broadcast-channel-provider.class';
 import { KritzelPath } from '../objects/path.class';
+import { KritzelSelectionGroup } from '../objects/selection-group.class';
 
 export class YjsDocumentManager {
   private readonly _ydoc: Y.Doc;
@@ -81,6 +82,10 @@ export class YjsDocumentManager {
           const object = this._reviver.revive(serialized);
 
           if(object instanceof KritzelPath){
+            debugger;
+          }
+
+          if(object instanceof KritzelSelectionGroup){
             debugger;
           }
           
