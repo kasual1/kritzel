@@ -150,13 +150,10 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override update(): void {
-    this._core.store.state.objectsMap.transaction(() => {
-      this._core.store.state.objectsMap.update(this);
-
-      this.objects.forEach(obj => {
-        obj.update();
-      });
-    });
+    // Only update the selection group itself
+    // Child objects are already updated during move/resize/rotate operations
+    // Updating them again here would create redundant y.js updates
+    this._core.store.state.objectsMap.update(this);
   }
 
   override move(startX: number, startY: number, endX: number, endY: number): void {

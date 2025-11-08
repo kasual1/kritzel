@@ -64,6 +64,7 @@ export class YjsDocumentManager {
 
     const changedKeys = Array.from(event.keysChanged);
     const objectsToUpdate = [];
+    const selectionGroupsToUpdate = [];
     const objectsToDelete = [];
 
     changedKeys.forEach(key => {
@@ -85,11 +86,14 @@ export class YjsDocumentManager {
             debugger;
           }
 
+          // Separate SelectionGroups to process them after regular objects
+          // This ensures child objects are in the objectsMap before the SelectionGroup tries to access them
           if(object instanceof KritzelSelectionGroup){
             debugger;
+            selectionGroupsToUpdate.push(object);
+          } else {
+            objectsToUpdate.push(object);
           }
-          
-          objectsToUpdate.push(object);
         }
       }
     });
@@ -105,8 +109,16 @@ export class YjsDocumentManager {
         objectsMap.remove(obj => obj.id === objectId);
       });
 
-      // Update or insert objects
+      // First, update or insert regular objects (child objects)
       objectsToUpdate.forEach(object => {
+        // Try to update first, if it fails (object doesn't exist), insert it
+        if (!objectsMap.update(object)) {
+          objectsMap.insert(object);
+        }
+      });
+
+      // Then, update or insert SelectionGroups (which reference the child objects)
+      selectionGroupsToUpdate.forEach(object => {
         // Try to update first, if it fails (object doesn't exist), insert it
         if (!objectsMap.update(object)) {
           objectsMap.insert(object);
