@@ -223,12 +223,10 @@ export class KritzelCore {
   }
 
   undo(): void {
-    this.deselectAllObjects();
     this._yjsManager.undo();
   }
 
   redo(): void {
-    this.deselectAllObjects();
     this._yjsManager.redo();
   }
 
