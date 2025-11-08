@@ -195,10 +195,12 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
         child.resize(updatedX, updatedY, updatedWidth, updatedHeight);
       });
-    });
 
-    this.refreshObjectDimensions();
-    this.captureUnchangedSnapshots();
+      // Refresh dimensions and update the SelectionGroup to propagate changes to other tabs
+      this.refreshObjectDimensions();
+      this.captureUnchangedSnapshots();
+      this._core.store.state.objectsMap.update(this);
+    });
   }
 
   override rotate(value: number): void {
@@ -212,6 +214,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const sin = Math.sin(angle);
 
     this._core.store.state.objectsMap.transaction(() => {
+      // Update the SelectionGroup itself to propagate rotation to other tabs
+      this._core.store.state.objectsMap.update(this);
+
       this.objects.forEach(child => {
         const unchangedSnapshot = this.unchangedObjectSnapshots.get(child.id);
         if (!unchangedSnapshot) return;
