@@ -214,6 +214,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.translateX = x;
     this.translateY = y;
+
+    // Update to sync changes to y.js and propagate to other tabs
+    this._core.store.state.objectsMap.update(this);
   }
 
   focus(coords?: { x: number; y: number }): void {
