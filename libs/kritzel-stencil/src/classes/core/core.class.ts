@@ -71,6 +71,9 @@ export class KritzelCore {
     // Set active workspace
     this._store.state.activeWorkspace = activeWorkspace;
     this._store.state.workspaces = this._yjsManager.getAllWorkspaces<KritzelWorkspace>();
+    
+    // Clear undo/redo history when switching workspaces
+    this._yjsManager.clearHistory();
 
     // Set viewport from workspace
     const viewport = activeWorkspace.viewport ?? { translateX: 0, translateY: 0, scale: 1 };
