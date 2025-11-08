@@ -4,6 +4,7 @@ import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelReviver } from './reviver.class';
 import { KritzelCore } from './core.class';
 import { BroadcastChannelProvider } from './broadcast-channel-provider.class';
+import { KritzelPath } from '../objects/path.class';
 
 export class YjsDocumentManager {
   private readonly _ydoc: Y.Doc;
@@ -78,6 +79,11 @@ export class YjsDocumentManager {
         const serialized = this._objectsMap.get(key);
         if (serialized) {
           const object = this._reviver.revive(serialized);
+
+          if(object instanceof KritzelPath){
+            debugger;
+          }
+          
           objectsToUpdate.push(object);
         }
       }
