@@ -3,10 +3,12 @@ import { IndexeddbPersistence } from 'y-indexeddb';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelReviver } from './reviver.class';
 import { KritzelCore } from './core.class';
+import { BroadcastChannelProvider } from './broadcast-channel-provider.class';
 
 export class YjsDocumentManager {
   private readonly _ydoc: Y.Doc;
   private readonly _provider: IndexeddbPersistence;
+  private readonly _broadcastProvider: BroadcastChannelProvider;
   private readonly _workspacesMap: Y.Map<any>;
   private readonly _objectsMap: Y.Map<any>;
   private readonly _reviver: KritzelReviver;
@@ -24,6 +26,9 @@ export class YjsDocumentManager {
     this._objectsMap = this._ydoc.getMap('objects');
     
     this._provider = new IndexeddbPersistence(docName, this._ydoc);
+    
+    // Initialize BroadcastChannel provider for cross-tab synchronization
+    this._broadcastProvider = new BroadcastChannelProvider(docName, this._ydoc);
     
     this._undoManager = new Y.UndoManager([this._objectsMap], {
       captureTimeout: 500,
@@ -231,6 +236,7 @@ export class YjsDocumentManager {
 
   destroy(): void {
     this._undoManager.destroy();
+    this._broadcastProvider.destroy();
     this._provider.destroy();
     this._ydoc.destroy();
   }
