@@ -26,8 +26,9 @@ export class YjsDocumentManager {
     this._provider = new IndexeddbPersistence(docName, this._ydoc);
     
     this._undoManager = new Y.UndoManager([this._objectsMap], {
-      captureTimeout: 0,
+      captureTimeout: 500,
       trackedOrigins: new Set([null]),
+      ignoreRemoteMapChanges: true
     });
 
     this._undoManager.on('stack-item-added', (event) => {

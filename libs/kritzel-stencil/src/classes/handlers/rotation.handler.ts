@@ -96,11 +96,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         this.rotation = currentRotation - this.initialRotation;
 
-        this._core.store.state.objectsMap.setSyncEnabled(false);
-
         selectionGroup.rotate(this.rotation);
-
-        this._core.store.state.objectsMap.setSyncEnabled(true);
       }
     }
 
@@ -127,11 +123,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         this.rotation = currentRotation - this.initialRotation;
 
-        this._core.store.state.objectsMap.setSyncEnabled(false);
-
         selectionGroup.rotate(this.rotation);
-
-        this._core.store.state.objectsMap.setSyncEnabled(true);
 
         clearTimeout(this._core.store.state.longTouchTimeout);
       }
