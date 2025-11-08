@@ -19,37 +19,37 @@ export class YjsDocumentManager {
   constructor(core: KritzelCore, docName: string) {
     this._core = core;
     this._reviver = new KritzelReviver(core);
-    
+
     this._ydoc = new Y.Doc();
-    
+
     this._workspacesMap = this._ydoc.getMap('workspaces');
     this._objectsMap = this._ydoc.getMap('objects');
-    
+
     this._provider = new IndexeddbPersistence(docName, this._ydoc);
-    
+
     // Initialize BroadcastChannel provider for cross-tab synchronization
     this._broadcastProvider = new BroadcastChannelProvider(docName, this._ydoc);
-    
+
     this._undoManager = new Y.UndoManager([this._objectsMap], {
-      captureTimeout: 500,
+      captureTimeout: 200,
       trackedOrigins: new Set([null]),
-      ignoreRemoteMapChanges: true
+      ignoreRemoteMapChanges: true,
     });
 
-    this._undoManager.on('stack-item-added', (event) => {
+    this._undoManager.on('stack-item-added', event => {
       if (event.type === 'undo') {
-      console.log('stack-item-added', this._undoManager.undoStack.length, event.type);
+        console.log('stack-item-added', this._undoManager.undoStack.length, event.type);
       }
     });
 
-    this._undoManager.on('stack-item-popped', (event) => {
+    this._undoManager.on('stack-item-popped', event => {
       if (event.type === 'undo') {
         console.log('stack-item-popped', this._undoManager.undoStack.length, event.type);
       }
     });
 
     // Observe changes to _objectsMap and sync with application state
-    this._objectsMap.observe((event) => {
+    this._objectsMap.observe(event => {
       this.handleObjectsChange(event);
     });
   }
@@ -66,7 +66,7 @@ export class YjsDocumentManager {
 
     changedKeys.forEach(key => {
       const change = event.changes.keys.get(key);
-      
+
       if (change && change.action === 'delete') {
         // Handle deletion
         const objectId = key.split(':')[1];
@@ -94,9 +94,12 @@ export class YjsDocumentManager {
         objectsMap.remove(obj => obj.id === objectId);
       });
 
-      // Update objects
+      // Update or insert objects
       objectsToUpdate.forEach(object => {
-        objectsMap.update(object);
+        // Try to update first, if it fails (object doesn't exist), insert it
+        if (!objectsMap.update(object)) {
+          objectsMap.insert(object);
+        }
       });
 
       this._core.rerender();
@@ -107,7 +110,7 @@ export class YjsDocumentManager {
   }
 
   async initialize(): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this._provider.on('synced', () => {
         resolve();
         this._isReady = true;
@@ -132,7 +135,7 @@ export class YjsDocumentManager {
 
   getAllWorkspaces<T extends KritzelSerializable>(): T[] {
     const workspaces: T[] = [];
-    this._workspacesMap.forEach((value) => {
+    this._workspacesMap.forEach(value => {
       workspaces.push(this._reviver.revive<T>(value));
     });
     return workspaces;
@@ -167,23 +170,23 @@ export class YjsDocumentManager {
   getObjectsByWorkspace<T extends KritzelSerializable>(workspaceId: string): T[] {
     const objects: T[] = [];
     const prefix = `${workspaceId}:`;
-    
+
     this._objectsMap.forEach((value, key) => {
       if (key.startsWith(prefix)) {
         objects.push(this._reviver.revive<T>(value));
       }
     });
-    
+
     return objects;
   }
 
   getAllObjects<T extends KritzelSerializable>(): T[] {
     const objects: T[] = [];
 
-    this._objectsMap.forEach((value) => {
+    this._objectsMap.forEach(value => {
       objects.push(this._reviver.revive<T>(value));
     });
-    
+
     return objects;
   }
 
@@ -192,17 +195,16 @@ export class YjsDocumentManager {
     this._objectsMap.delete(key);
   }
 
-
   deleteObjectsByWorkspace(workspaceId: string): void {
     const prefix = `${workspaceId}:`;
     const keysToDelete: string[] = [];
-    
+
     this._objectsMap.forEach((_, key) => {
       if (key.startsWith(prefix)) {
         keysToDelete.push(key);
       }
     });
-    
+
     keysToDelete.forEach(key => this._objectsMap.delete(key));
   }
 
