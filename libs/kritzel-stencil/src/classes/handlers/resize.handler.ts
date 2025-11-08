@@ -121,11 +121,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
             break;
         }
 
-        this._core.store.state.objectsMap.setSyncEnabled(false);
-
         selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
 
-        this._core.store.state.objectsMap.setSyncEnabled(true);
       }
     }
 
@@ -185,11 +182,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
             break;
         }
 
-        this._core.store.state.objectsMap.setSyncEnabled(false);
-
         selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
 
-        this._core.store.state.objectsMap.setSyncEnabled(true);
       }
     }
   }

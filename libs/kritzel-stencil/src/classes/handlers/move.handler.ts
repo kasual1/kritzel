@@ -102,11 +102,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
         if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
 
-          this._core.store.state.objectsMap.setSyncEnabled(false);
-
           selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
-
-          this._core.store.state.objectsMap.setSyncEnabled(true);
 
           this.dragStartX = clientX;
           this.dragStartY = clientY;
@@ -140,11 +136,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
           clearTimeout(this._core.store.state.longTouchTimeout);
 
-          this._core.store.state.objectsMap.setSyncEnabled(false);
-
           selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
-
-          this._core.store.state.objectsMap.setSyncEnabled(true);
 
           this.dragStartX = x;
           this.dragStartY = y;
