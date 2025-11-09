@@ -9,7 +9,7 @@ import { KritzelWorkspace } from './workspace.class';
 
 export class YjsDocumentManager {
   private readonly _ydoc: Y.Doc;
-  private readonly _provider: IndexeddbPersistence;
+  private readonly _persistenceProvider: IndexeddbPersistence;
   private readonly _broadcastProvider: BroadcastChannelProvider;
   private readonly _workspacesMap: Y.Map<any>;
   private readonly _objectsMap: Y.Map<any>;
@@ -27,10 +27,11 @@ export class YjsDocumentManager {
     this._workspacesMap = this._ydoc.getMap('workspaces');
     this._objectsMap = this._ydoc.getMap('objects');
 
-    this._provider = new IndexeddbPersistence(docName, this._ydoc);
+    this._persistenceProvider = new IndexeddbPersistence(docName, this._ydoc);
+    console.info('IndexedDB Persistence initialized for', this._persistenceProvider);
 
-    // Initialize BroadcastChannel provider for cross-tab synchronization
     this._broadcastProvider = new BroadcastChannelProvider(docName, this._ydoc);
+    console.info('BroadcastChannel Provider initialized for', this._broadcastProvider);
 
     this._undoManager = new Y.UndoManager([this._objectsMap], {
       captureTimeout: 200,
@@ -161,7 +162,7 @@ export class YjsDocumentManager {
 
   async initialize(): Promise<void> {
     return new Promise(resolve => {
-      this._provider.on('synced', () => {
+      this._persistenceProvider.on('synced', () => {
         resolve();
         this._isReady = true;
       });
@@ -200,14 +201,6 @@ export class YjsDocumentManager {
     this._ydoc.transact(() => {
       this._workspacesMap.delete(id);
     }, 'local');
-  }
-
-  observeWorkspaces(callback: (event: Y.YMapEvent<any>) => void): void {
-    this._workspacesMap.observe(callback);
-  }
-
-  unobserveWorkspaces(callback: (event: Y.YMapEvent<any>) => void): void {
-    this._workspacesMap.unobserve(callback);
   }
 
   setObject(object: KritzelSerializable): void {
@@ -275,16 +268,7 @@ export class YjsDocumentManager {
     }, 'local');
   }
 
-  observeObjects(callback: (event: Y.YMapEvent<any>) => void): void {
-    this._objectsMap.observe(callback);
-  }
-
-  unobserveObjects(callback: (event: Y.YMapEvent<any>) => void): void {
-    this._objectsMap.unobserve(callback);
-  }
-
   transaction(callback: () => void): void {
-    // Tag as local transaction for undo/redo tracking and to skip handleObjectsChange
     this._ydoc.transact(callback, 'local');
   }
 
@@ -298,16 +282,5 @@ export class YjsDocumentManager {
 
   clearHistory(): void {
     this._undoManager.clear();
-  }
-
-  stopCapturing(): void {
-    this._undoManager.stopCapturing();
-  }
-
-  destroy(): void {
-    this._undoManager.destroy();
-    this._broadcastProvider.destroy();
-    this._provider.destroy();
-    this._ydoc.destroy();
   }
 }
