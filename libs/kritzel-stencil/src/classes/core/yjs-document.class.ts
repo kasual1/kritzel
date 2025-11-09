@@ -76,17 +76,23 @@ export class YjsDocumentManager {
       return;
     }
 
+    const activeWorkspaceId = this._core.store.state.activeWorkspace.id;
     const changedKeys = Array.from(event.keysChanged);
     const objectsToUpdate = [];
     const selectionGroupsToUpdate = [];
     const objectsToDelete = [];
 
     changedKeys.forEach(key => {
+      // Only process objects belonging to the active workspace
+      const [workspaceId, objectId] = key.split(':');
+      if (workspaceId !== activeWorkspaceId) {
+        return; // Skip objects from other workspaces
+      }
+
       const change = event.changes.keys.get(key);
 
       if (change && change.action === 'delete') {
         // Handle deletion
-        const objectId = key.split(':')[1];
         if (objectId) {
           objectsToDelete.push(objectId);
         }
