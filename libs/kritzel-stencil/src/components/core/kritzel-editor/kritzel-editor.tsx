@@ -119,6 +119,16 @@ export class KritzelEditor {
     }
   }
 
+  @Watch('workspaces')
+  onWorkspacesChange(newWorkspaces: KritzelWorkspace[]) {
+    if (this.activeWorkspace) {
+      const updatedActiveWorkspace = newWorkspaces.find(ws => ws.id === this.activeWorkspace.id);
+      if (updatedActiveWorkspace && updatedActiveWorkspace !== this.activeWorkspace) {
+        this.activeWorkspace = updatedActiveWorkspace;
+      }
+    }
+  }
+
   @Listen('dblclick', { passive: false })
   handleTouchStart(event: MouseEvent) {
     if (event.cancelable) {
