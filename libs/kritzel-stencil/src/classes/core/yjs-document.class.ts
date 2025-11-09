@@ -38,6 +38,18 @@ export class YjsDocumentManager {
       ignoreRemoteMapChanges: true,
     });
 
+    this._undoManager.on('stack-item-added', (event) => {
+      if(event.type === 'undo') {
+        console.log('Undo performed, rerendering core', this._undoManager.undoStack.length, this._undoManager.redoStack.length);
+      }
+    });
+
+    this._undoManager.on('stack-item-popped', (event) => {
+      if(event.type === 'undo') {
+        console.log('Redo performed, rerendering core', this._undoManager.undoStack.length, this._undoManager.redoStack.length);
+      }
+    });
+
     // Observe changes to _objectsMap and sync with application state
     this._objectsMap.observe(event => {
       this.handleObjectsChange(event);

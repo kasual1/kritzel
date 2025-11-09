@@ -41,14 +41,12 @@ export class KritzelCore {
   async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
     // Load all workspaces from Yjs
     const workspaces = this._yjsManager.getAllWorkspaces<KritzelWorkspace>();
-    
+
     // Find most recently updated workspace or use provided/fallback
-    const mostRecentWorkspace = workspaces.length > 0
-      ? [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0]
-      : null;
-    
+    const mostRecentWorkspace = workspaces.length > 0 ? [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0] : null;
+
     let activeWorkspace: KritzelWorkspace;
-    
+
     if (workspace) {
       // Use provided workspace
       activeWorkspace = workspace;
@@ -71,7 +69,7 @@ export class KritzelCore {
     // Set active workspace
     this._store.state.activeWorkspace = activeWorkspace;
     this._store.state.workspaces = this._yjsManager.getAllWorkspaces<KritzelWorkspace>();
-    
+
     // Clear undo/redo history when switching workspaces
     this._yjsManager.clearHistory();
 
@@ -84,7 +82,7 @@ export class KritzelCore {
     // Connect ObjectMap to Yjs and load objects for this workspace
     this._store.state.objectsMap.connect(this._yjsManager, activeWorkspace.id);
     this._store.state.objectsMap.loadFromYjs();
-    
+
     this.rerender();
   }
 
@@ -118,7 +116,7 @@ export class KritzelCore {
   updateWorkspace(workspace: KritzelWorkspace): void {
     workspace.updatedAt = new Date();
     this._yjsManager.setWorkspace(workspace);
-    
+
     const workspaces = this._store.state.workspaces;
     const index = workspaces.findIndex(w => w.id === workspace.id);
 
@@ -167,7 +165,8 @@ export class KritzelCore {
   }
 
   addSelectionGroup(selectionGroup: KritzelSelectionGroup): void {
-    this._store.state.objectsMap.remove(object => object instanceof KritzelSelectionBox || object instanceof KritzelSelectionGroup);
+    this.removeSelectionGroup();
+    this.removeSelectionBox();
     this._store.state.objectsMap.insert(selectionGroup);
   }
 
@@ -175,6 +174,13 @@ export class KritzelCore {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
       this._store.state.objectsMap.remove(object => object.id === selectionGroup.id);
+    }
+  }
+
+  removeSelectionBox(): void {
+    const selectionBox = this._store.selectionBox;
+    if (selectionBox) {
+      this._store.state.objectsMap.remove(object => object.id === selectionBox.id);
     }
   }
 
@@ -244,48 +250,107 @@ export class KritzelCore {
   copy() {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
-      this._store.state.copiedObjects = selectionGroup.copy() as KritzelSelectionGroup;
+      // Copy each object and store them in an array
+      this._store.state.copiedObjects = selectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => obj.copy() as KritzelBaseObject<any>);
     }
   }
 
   paste(x?: number, y?: number) {
     const copiedObjects = this._store.state.copiedObjects;
-    copiedObjects.isSelected = true;
-
-    this._store.state.copiedObjects = copiedObjects;
-
-    const adjustedX = x !== undefined ? x : this._store.state.copiedObjects.translateX + 25 / this._store.state.scale;
-    const adjustedY = y !== undefined ? y : this._store.state.copiedObjects.translateY + 25 / this._store.state.scale;
-
-    this._store.state.copiedObjects.updatePosition(adjustedX, adjustedY);
-    this._store.state.copiedObjects.updateZIndices(this._store.currentZIndex);
+    if (!copiedObjects || copiedObjects.length === 0) {
+      return;
+    }
 
     const activeWorkspace = this._store.state.activeWorkspace;
-    if (this.store.state.copiedObjects.workspaceId !== activeWorkspace.id) {
-      this.store.state.copiedObjects.updateWorkspaceId(activeWorkspace.id);
 
-      if (x !== undefined && y !== undefined) {
-        this._store.state.copiedObjects.updatePosition(x, y);
-      } else {
-        this.store.state.copiedObjects.centerInViewport();
+    // Check if we're pasting from a different workspace
+    const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
+
+    // Calculate the bounding box of all copied objects
+    const minX = Math.min(...copiedObjects.map(obj => obj.translateX));
+    const minY = Math.min(...copiedObjects.map(obj => obj.translateY));
+
+    // Determine the paste position
+    let pasteX: number;
+    let pasteY: number;
+
+    if (x !== undefined && y !== undefined) {
+      // Explicit position provided (e.g., right-click paste)
+      pasteX = x;
+      pasteY = y;
+    } else if (isDifferentWorkspace) {
+      // Pasting to different workspace without explicit position
+      // Keep original position; will be centered by centerInViewport() later
+      pasteX = minX;
+      pasteY = minY;
+    } else {
+      // Same workspace paste: offset by 25 pixels from original position
+      pasteX = minX + 25 / this._store.state.scale;
+      pasteY = minY + 25 / this._store.state.scale;
+    }
+
+    // Calculate the offset to apply to all objects
+    const offsetX = pasteX - minX;
+    const offsetY = pasteY - minY;
+
+    this.removeSelectionGroup();
+    this.removeSelectionBox();
+
+    // Create a new selection group for the pasted objects
+    const selectionGroup = KritzelSelectionGroup.create(this);
+
+    // First add all copied objects to the objectsMap with updated positions
+    copiedObjects.forEach((obj, i) => {
+      // Update workspace if pasting to a different workspace
+      if (obj.workspaceId !== activeWorkspace.id) {
+        obj.workspaceId = activeWorkspace.id;
       }
-      this.engine.viewport.centerFitInViewport(copiedObjects);
+
+      // Update position
+      obj.updatePosition(obj.translateX + offsetX, obj.translateY + offsetY);
+
+      // Update z-index
+      obj.zIndex = this._store.currentZIndex + i;
+
+      // Add to objectsMap
+      this.addObject(obj);
+
+      // Add to selection group
+      selectionGroup.addOrRemove(obj);
+    });
+
+    // Mark selection group as selected
+    selectionGroup.isSelected = true;
+
+    // Set rotation for single object
+    if (copiedObjects.length === 1) {
+      selectionGroup.rotation = copiedObjects[0].rotation;
     }
 
-    const currentSelectionGroup = this._store.selectionGroup;
-    if (currentSelectionGroup !== null) {
-      this.removeSelectionGroup();
+    // Add the selection group
+    this.addSelectionGroup(selectionGroup);
+
+    // Handle cross-workspace paste: center objects in viewport
+    if (isDifferentWorkspace) {
+      if (x !== undefined && y !== undefined) {
+        // Position was explicitly provided, use it
+        selectionGroup.updatePosition(x, y);
+      } else {
+        // Center the selection group in the viewport
+        selectionGroup.centerInViewport();
+      }
+      // Fit the viewport to show the pasted objects
+      this.engine.viewport.centerFitInViewport(selectionGroup);
     }
-
-    this._store.state.copiedObjects.objects.forEach(obj => this.addObject(obj));
-
-    this.addSelectionGroup(this._store.state.copiedObjects);
 
     this._store.state.isSelecting = false;
+
+    // Update copiedObjects to the newly created objects for potential future pastes
     const newSelectionGroup = this._store.selectionGroup;
     if (newSelectionGroup) {
-      this._store.state.copiedObjects = newSelectionGroup.copy() as KritzelSelectionGroup;
+      this._store.state.copiedObjects = newSelectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => obj.copy() as KritzelBaseObject<any>);
     }
+
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     this.rerender();
   }
@@ -295,7 +360,7 @@ export class KritzelCore {
     const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const max = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1 : 0;
-    
+
     objects.forEach(obj => {
       if (obj.zIndex !== max) {
         this.updateObject(obj, { zIndex: obj.zIndex + 1 });
@@ -310,7 +375,7 @@ export class KritzelCore {
     const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const min = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1 : 0;
-    
+
     objects.forEach(obj => {
       if (obj.zIndex !== min) {
         this.updateObject(obj, { zIndex: obj.zIndex - 1 });
@@ -325,7 +390,7 @@ export class KritzelCore {
     const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const max = Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1;
-    
+
     objects.forEach(obj => {
       this.updateObject(obj, { zIndex: max });
     });
@@ -338,7 +403,7 @@ export class KritzelCore {
     const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const min = Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1;
-    
+
     objects.forEach(obj => {
       this.updateObject(obj, { zIndex: min });
     });
@@ -408,7 +473,7 @@ export class KritzelCore {
   resetActiveText() {
     const activeText = this._store.activeText;
     if (activeText) {
-      if(activeText.isEmpty) {
+      if (activeText.isEmpty) {
         this.deleteObject(activeText.id);
       } else {
         activeText.save();

@@ -367,7 +367,7 @@ export class KritzelEngine {
 
   @Method()
   async getCopiedObjects(): Promise<KritzelBaseObject[]> {
-    return this.core.store.state.copiedObjects?.objects || [];
+    return this.core.store.state.copiedObjects || [];
   }
 
   @Method()
