@@ -36,7 +36,10 @@ export class KritzelEngine {
   @Prop() workspace?: KritzelWorkspace;
   @Watch('workspace')
   onWorkspaceChange(newWorkspace: KritzelWorkspace | null) {
-    if (this.core.store.state.activeWorkspace !== newWorkspace) {
+    const currentWorkspaceId = this.core.store.state.activeWorkspace?.id;
+    const newWorkspaceId = newWorkspace?.id;
+    
+    if (currentWorkspaceId !== newWorkspaceId) {
       this.core.beforeWorkspaceChange();
       this.core.initializeWorkspace(newWorkspace);
     }

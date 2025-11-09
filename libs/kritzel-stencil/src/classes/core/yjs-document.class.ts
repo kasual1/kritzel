@@ -5,6 +5,7 @@ import { KritzelReviver } from './reviver.class';
 import { KritzelCore } from './core.class';
 import { BroadcastChannelProvider } from './broadcast-channel-provider.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelWorkspace } from './workspace.class';
 
 export class YjsDocumentManager {
   private readonly _ydoc: Y.Doc;
@@ -41,6 +42,26 @@ export class YjsDocumentManager {
     this._objectsMap.observe(event => {
       this.handleObjectsChange(event);
     });
+
+    // Observe changes to _workspacesMap and sync with application state
+    this._workspacesMap.observe(event => {
+      this.handleWorkspacesChange(event);
+    });
+  }
+
+  private handleWorkspacesChange(event: Y.YMapEvent<any>): void {
+    // Skip local changes (already updated in the store)
+    if (event.transaction.origin === 'local') {
+      return;
+    }
+
+    // Update the workspaces list in the store
+    this._core.store.state.workspaces = this.getAllWorkspaces<KritzelWorkspace>();
+    
+    // Notify the engine to emit workspacesChange event
+    if (this._core.engine) {
+      this._core.engine.workspacesChange.emit(this._core.store.state.workspaces);
+    }
   }
 
   private handleObjectsChange(event: Y.YMapEvent<any>): void {
@@ -135,7 +156,11 @@ export class YjsDocumentManager {
 
   setWorkspace(workspace: KritzelSerializable): void {
     const serialized = workspace.serialize();
-    this._workspacesMap.set(serialized.id, serialized);
+    
+    // Tag as local transaction to avoid redundant processing in handleWorkspacesChange
+    this._ydoc.transact(() => {
+      this._workspacesMap.set(serialized.id, serialized);
+    }, 'local');
   }
 
   getWorkspace<T extends KritzelSerializable>(id: string): T | null {
@@ -153,7 +178,10 @@ export class YjsDocumentManager {
   }
 
   deleteWorkspace(id: string): void {
-    this._workspacesMap.delete(id);
+    // Tag as local transaction to avoid redundant processing in handleWorkspacesChange
+    this._ydoc.transact(() => {
+      this._workspacesMap.delete(id);
+    }, 'local');
   }
 
   observeWorkspaces(callback: (event: Y.YMapEvent<any>) => void): void {
