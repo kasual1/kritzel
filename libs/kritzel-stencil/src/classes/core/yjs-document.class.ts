@@ -4,7 +4,6 @@ import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { KritzelReviver } from './reviver.class';
 import { KritzelCore } from './core.class';
 import { BroadcastChannelProvider } from './broadcast-channel-provider.class';
-import { KritzelPath } from '../objects/path.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 
 export class YjsDocumentManager {
@@ -34,20 +33,8 @@ export class YjsDocumentManager {
 
     this._undoManager = new Y.UndoManager([this._objectsMap], {
       captureTimeout: 200,
-      trackedOrigins: new Set([null]),
+      trackedOrigins: new Set(['local']), // Only track local changes for undo/redo
       ignoreRemoteMapChanges: true,
-    });
-
-    this._undoManager.on('stack-item-added', event => {
-      if (event.type === 'undo') {
-        console.log('stack-item-added', this._undoManager.undoStack.length, event.type);
-      }
-    });
-
-    this._undoManager.on('stack-item-popped', event => {
-      if (event.type === 'undo') {
-        console.log('stack-item-popped', this._undoManager.undoStack.length, event.type);
-      }
     });
 
     // Observe changes to _objectsMap and sync with application state
@@ -59,6 +46,12 @@ export class YjsDocumentManager {
   private handleObjectsChange(event: Y.YMapEvent<any>): void {
     // Only process changes if we have an active workspace
     if (!this._core.store.state.activeWorkspace) {
+      return;
+    }
+
+    // Skip Map updates for local changes (already done), but still trigger re-render
+    if (event.transaction.origin === 'local') {
+      this._core.rerender();
       return;
     }
 
@@ -82,14 +75,9 @@ export class YjsDocumentManager {
         if (serialized) {
           const object = this._reviver.revive(serialized);
 
-          if(object instanceof KritzelPath){
-            debugger;
-          }
-
           // Separate SelectionGroups to process them after regular objects
           // This ensures child objects are in the objectsMap before the SelectionGroup tries to access them
           if(object instanceof KritzelSelectionGroup){
-            debugger;
             selectionGroupsToUpdate.push(object);
           } else {
             objectsToUpdate.push(object);
@@ -180,7 +168,10 @@ export class YjsDocumentManager {
     const serialized = object.serialize();
     const key = `${serialized.workspaceId}:${serialized.id}`;
 
-    this._objectsMap.set(key, serialized);
+    // Tag as local transaction to avoid redundant processing in handleObjectsChange
+    this._ydoc.transact(() => {
+      this._objectsMap.set(key, serialized);
+    }, 'local');
   }
 
   getObject<T extends KritzelSerializable>(workspaceId: string, objectId: string): T | null {
@@ -215,7 +206,11 @@ export class YjsDocumentManager {
 
   deleteObject(workspaceId: string, objectId: string): void {
     const key = `${workspaceId}:${objectId}`;
-    this._objectsMap.delete(key);
+    
+    // Tag as local transaction to avoid redundant processing in handleObjectsChange
+    this._ydoc.transact(() => {
+      this._objectsMap.delete(key);
+    }, 'local');
   }
 
   deleteObjectsByWorkspace(workspaceId: string): void {
@@ -228,7 +223,10 @@ export class YjsDocumentManager {
       }
     });
 
-    keysToDelete.forEach(key => this._objectsMap.delete(key));
+    // Tag as local transaction to avoid redundant processing in handleObjectsChange
+    this._ydoc.transact(() => {
+      keysToDelete.forEach(key => this._objectsMap.delete(key));
+    }, 'local');
   }
 
   observeObjects(callback: (event: Y.YMapEvent<any>) => void): void {
@@ -240,7 +238,8 @@ export class YjsDocumentManager {
   }
 
   transaction(callback: () => void): void {
-    this._ydoc.transact(callback);
+    // Tag as local transaction for undo/redo tracking and to skip handleObjectsChange
+    this._ydoc.transact(callback, 'local');
   }
 
   undo(): void {
