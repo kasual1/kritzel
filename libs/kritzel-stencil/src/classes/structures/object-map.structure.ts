@@ -17,7 +17,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _reviver: KritzelReviver | null = null;
   private _core: KritzelCore | null = null;
   private _workspaceId: string | null = null;
-  private _syncEnabled: boolean = true;
   private _isReady: boolean = false;
 
   get isReady(): boolean {
@@ -52,8 +51,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     for (const providerConfig of finalConfig.providers) {
       let provider: ISyncProvider;
 
-      debugger;
-
       // Check if it's a class constructor or a factory
       if (typeof providerConfig === 'function') {
         // It's a class constructor
@@ -73,13 +70,13 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       ignoreRemoteMapChanges: true,
     });
 
-    this._undoManager.on('stack-item-added', (event) => {
+    this._undoManager.on('stack-item-added', event => {
       if (event.type === 'undo') {
         console.log('Undo performed for workspace', workspaceId, this._undoManager.undoStack.length, this._undoManager.redoStack.length);
       }
     });
 
-    this._undoManager.on('stack-item-popped', (event) => {
+    this._undoManager.on('stack-item-popped', event => {
       if (event.type === 'undo') {
         console.log('Redo performed for workspace', workspaceId, this._undoManager.undoStack.length, this._undoManager.redoStack.length);
       }
@@ -167,13 +164,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   reset(): void {
     this.map.clear();
-
-    // Clear all objects from Yjs
-    if (this._objectsMap && this._syncEnabled) {
-      this._ydoc.transact(() => {
-        this._objectsMap.clear();
-      }, 'local');
-    }
+    this._ydoc.transact(() => {
+      this._objectsMap.clear();
+    }, 'local');
   }
 
   insert(object: T): boolean {
@@ -182,8 +175,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
     this.map.set(object.id, object);
 
-    // Sync to Yjs if enabled and object should be persisted
-    if (this._objectsMap && this._syncEnabled && this.shouldPersist(object)) {
+    if (this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
       this._ydoc.transact(() => {
         this._objectsMap.set(object.id, serialized);
@@ -199,8 +191,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
     this.map.set(object.id, object);
 
-    // Sync to Yjs if enabled and object should be persisted
-    if (this._objectsMap && this._syncEnabled && this.shouldPersist(object)) {
+    if (this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
       this._ydoc.transact(() => {
         this._objectsMap.set(object.id, serialized);
@@ -215,8 +206,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       if (predicate(object)) {
         this.map.delete(id);
 
-        // Sync deletion to Yjs if enabled and object should be persisted
-        if (this._objectsMap && this._syncEnabled && this.shouldPersist(object)) {
+        if (this._objectsMap && this.isPersistable(object)) {
           this._ydoc.transact(() => {
             this._objectsMap.delete(id);
           }, 'local');
@@ -239,8 +229,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     return Array.from(this.map.values());
   }
 
-  private shouldPersist(object: T): boolean {
-    // Don't persist transient UI objects
+  private isPersistable(object: T): boolean {
     if (object instanceof KritzelSelectionBox) {
       return false;
     }
@@ -275,7 +264,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   destroy(): void {
-    // Destroy all providers
     this._providers.forEach(p => p.destroy());
     this._providers = [];
 
