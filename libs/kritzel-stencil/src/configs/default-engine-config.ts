@@ -1,6 +1,6 @@
 import { KritzelEngineState } from "../interfaces/engine-state.interface";
 
-export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
+export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   activeWorkspace: null,
   activeTool: null,
   copiedObjects: null,

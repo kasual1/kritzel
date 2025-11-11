@@ -6,15 +6,7 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelCore } from '../core/core.class';
 import { ISyncProvider } from '../../interfaces/sync-provider.interface';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
-import { IndexedDBSyncProvider } from '../providers/indexeddb-sync-provider.class';
-import { BroadcastSyncProvider } from '../providers/broadcast-sync-provider.class';
-
-/**
- * Default sync configuration - IndexedDB + BroadcastChannel
- */
-const DEFAULT_SYNC_CONFIG: KritzelSyncConfig = {
-  providers: [IndexedDBSyncProvider, BroadcastSyncProvider],
-};
+import { DEFAULT_SYNC_CONFIG } from '../../configs/default-sync.config';
 
 export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private map: Map<string, T>;
@@ -59,6 +51,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     // Instantiate providers from configuration
     for (const providerConfig of finalConfig.providers) {
       let provider: ISyncProvider;
+
+      debugger;
 
       // Check if it's a class constructor or a factory
       if (typeof providerConfig === 'function') {
