@@ -137,15 +137,17 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       }),
       editable: () => false,
       dispatchTransaction: transaction => {
+        // Apply the transaction to get the new state
         const newState = this.editor.state.apply(transaction);
+        
+        // Update the editor state first
+        this.editor.updateState(newState);
         
         // Only update content and adjust size if the document actually changed
         if (transaction.docChanged) {
           this.content = newState.doc.toJSON();
           this.adjustSizeOnInput();
-          this.editor.updateState(newState);
         }
-        
       },
     });
   }
@@ -248,17 +250,20 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = true;
 
-    if (event) {
-      this.focus({ x: event.clientX, y: event.clientY });
-    } else {
-      this.focus();
-    }
-
     this._core.rerender();
 
-    requestAnimationFrame(() => this.adjustSizeOnInput());
-
-    KritzelKeyboardHelper.enableInteractiveWidget();
+    requestAnimationFrame(() => {
+      this.adjustSizeOnInput();
+      
+      // Focus after the DOM has been updated
+      if (event) {
+        this.focus({ x: event.clientX, y: event.clientY });
+      } else {
+        this.focus();
+      }
+      
+      KritzelKeyboardHelper.enableInteractiveWidget();
+    });
   }
 
   save(): void {
