@@ -150,7 +150,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
           this.adjustSizeOnInput();
 
           if (!transaction.getMeta('fromRemote')) {
-            this._core.store.state.objectsMap.update(this, { skipHistory: true });
+            this._core.store.state.objectsMap.update(this);
           }
         }
       },
