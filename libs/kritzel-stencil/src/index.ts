@@ -22,6 +22,7 @@ export * from './classes/tools/selection-tool.class';
 
 export * from './classes/providers/broadcast-sync-provider.class';
 export * from './classes/providers/indexeddb-sync-provider.class';
+export * from './classes/providers/websocket-sync-provider.class';
 
 export * from './classes/core/workspace.class';
 

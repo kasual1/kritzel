@@ -1,6 +1,6 @@
 import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engine';
 import { KritzelContextMenu } from '../../components/ui/kritzel-context-menu/kritzel-context-menu';
-import { DEFAULT_ENGINE_STATE } from '../../configs/default-engine-state';
+import { DEFAULT_ENGINE_CONFIG } from '../../configs/default-engine-config';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
@@ -36,7 +36,7 @@ export class KritzelCore {
 
   constructor(kritzelEngine: KritzelEngine) {
     this._kritzelEngine = kritzelEngine;
-    this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
+    this._store = new KritzelStore(DEFAULT_ENGINE_CONFIG);
     this._workspaceDB = new KritzelDatabase<WorkspaceData>('kritzel-workspaces', 'workspaces');
   }
 
