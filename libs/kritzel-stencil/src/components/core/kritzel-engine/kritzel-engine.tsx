@@ -24,6 +24,7 @@ import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelCore } from '../../../classes/core/core.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
+import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -34,6 +35,7 @@ export class KritzelEngine {
   @Element() host: HTMLElement;
 
   @Prop() workspace?: KritzelWorkspace;
+  @Prop() syncConfig?: KritzelSyncConfig;
   @Watch('workspace')
   onWorkspaceChange(newWorkspace: KritzelWorkspace | null) {
     const currentWorkspaceId = this.core.store.state.activeWorkspace?.id;
@@ -426,6 +428,11 @@ export class KritzelEngine {
     this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems, this.objectContextMenuItems);
     this.keyHandler = new KritzelKeyHandler(this.core);
     this.viewport = new KritzelViewport(this.core, this.host);
+
+    // Set sync configuration if provided
+    if (this.syncConfig) {
+      this.core.setSyncConfig(this.syncConfig);
+    }
 
     // Initialize Yjs document and persistence layer
     await this.core.initializeYjs();

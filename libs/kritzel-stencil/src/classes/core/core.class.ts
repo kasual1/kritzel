@@ -10,11 +10,13 @@ import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from './workspace.class';
 import { WorkspaceMetadataManager } from './workspace-metadata-manager.class';
 import { KritzelObjectMap } from '../structures/object-map.structure';
+import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
   private readonly _store: KritzelStore;
   private readonly _workspaceMetadataManager: WorkspaceMetadataManager;
+  private _syncConfig?: KritzelSyncConfig;
 
   get engine(): KritzelEngine {
     return this._kritzelEngine;
@@ -32,6 +34,10 @@ export class KritzelCore {
     this._kritzelEngine = kritzelEngine;
     this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
     this._workspaceMetadataManager = new WorkspaceMetadataManager(this);
+  }
+
+  setSyncConfig(config?: KritzelSyncConfig): void {
+    this._syncConfig = config;
   }
 
   async initializeYjs(): Promise<void> {
@@ -83,7 +89,7 @@ export class KritzelCore {
 
     // Create new ObjectMap with its own Y.Doc for this workspace
     const objectsMap = new KritzelObjectMap();
-    await objectsMap.initialize(this, activeWorkspace.id);
+    await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
     this._store.state.objectsMap = objectsMap;
 
     this.rerender();

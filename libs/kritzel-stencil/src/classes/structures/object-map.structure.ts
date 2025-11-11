@@ -1,18 +1,26 @@
 import * as Y from 'yjs';
-import { IndexeddbPersistence } from 'y-indexeddb';
-import { BroadcastChannelProvider } from '../core/broadcast-channel-provider.class';
 import { KritzelReviver } from '../core/reviver.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelCore } from '../core/core.class';
+import { ISyncProvider } from '../../interfaces/sync-provider.interface';
+import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
+import { IndexedDBSyncProvider } from '../providers/indexeddb-sync-provider.class';
+import { BroadcastSyncProvider } from '../providers/broadcast-sync-provider.class';
+
+/**
+ * Default sync configuration - IndexedDB + BroadcastChannel
+ */
+const DEFAULT_SYNC_CONFIG: KritzelSyncConfig = {
+  providers: [IndexedDBSyncProvider, BroadcastSyncProvider],
+};
 
 export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private map: Map<string, T>;
   private _ydoc: Y.Doc | null = null;
   private _objectsMap: Y.Map<any> | null = null;
-  private _persistenceProvider: IndexeddbPersistence | null = null;
-  private _broadcastProvider: BroadcastChannelProvider | null = null;
+  private _providers: ISyncProvider[] = [];
   private _undoManager: Y.UndoManager | null = null;
   private _reviver: KritzelReviver | null = null;
   private _core: KritzelCore | null = null;
@@ -36,7 +44,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     this.map = new Map<string, T>();
   }
 
-  async initialize(core: KritzelCore, workspaceId: string): Promise<void> {
+  async initialize(core: KritzelCore, workspaceId: string, config?: KritzelSyncConfig): Promise<void> {
     this._core = core;
     this._workspaceId = workspaceId;
     this._reviver = new KritzelReviver(core);
@@ -46,12 +54,23 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     this._objectsMap = this._ydoc.getMap('objects');
 
     const docName = `kritzel-workspace-${workspaceId}`;
-    
-    this._persistenceProvider = new IndexeddbPersistence(docName, this._ydoc);
-    console.info(`IndexedDB Persistence initialized for workspace ${workspaceId}`);
+    const finalConfig = config ?? DEFAULT_SYNC_CONFIG;
 
-    this._broadcastProvider = new BroadcastChannelProvider(docName, this._ydoc);
-    console.info(`BroadcastChannel Provider initialized for workspace ${workspaceId}`);
+    // Instantiate providers from configuration
+    for (const providerConfig of finalConfig.providers) {
+      let provider: ISyncProvider;
+
+      // Check if it's a class constructor or a factory
+      if (typeof providerConfig === 'function') {
+        // It's a class constructor
+        provider = new providerConfig(docName, this._ydoc);
+      } else {
+        // It's a factory with a create method
+        provider = providerConfig.create(docName, this._ydoc);
+      }
+
+      this._providers.push(provider);
+    }
 
     // Set up undo/redo manager for this workspace
     this._undoManager = new Y.UndoManager([this._objectsMap], {
@@ -77,13 +96,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       this.handleObjectsChange(event);
     });
 
-    // Wait for persistence to be ready
-    await new Promise<void>(resolve => {
-      this._persistenceProvider.on('synced', () => {
-        this._isReady = true;
-        resolve();
-      });
-    });
+    // Connect all providers in parallel
+    await Promise.all(this._providers.map(p => p.connect()));
+    this._isReady = true;
 
     // Load objects from Yjs
     this.loadFromYjs();
@@ -266,12 +281,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   destroy(): void {
-    if (this._persistenceProvider) {
-      this._persistenceProvider.destroy();
-    }
-    if (this._broadcastProvider) {
-      this._broadcastProvider.destroy();
-    }
+    // Destroy all providers
+    this._providers.forEach(p => p.destroy());
+    this._providers = [];
+
     if (this._ydoc) {
       this._ydoc.destroy();
     }
