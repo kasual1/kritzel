@@ -97,7 +97,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   private handleObjectsChange(event: Y.YMapEvent<any>): void {
     // Skip Map updates for local changes (already done), but still trigger re-render
-    if (event.transaction.origin === 'local') {
+    // 'skipHistory' is also a local change that shouldn't be re-deserialized
+    if (event.transaction.origin === 'local' || event.transaction.origin === 'skipHistory') {
       this._core?.rerender();
       return;
     }
@@ -185,7 +186,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     return true;
   }
 
-  update(object: T): boolean {
+  update(object: T, options: { skipHistory: boolean } = { skipHistory: false }): boolean {
     if (!object.id || !this.map.has(object.id)) {
       return false;
     }
@@ -193,9 +194,16 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     if (this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
-      this._ydoc.transact(() => {
-        this._objectsMap.set(object.id, serialized);
-      }, 'local');
+
+      if (options.skipHistory) {
+        this._ydoc.transact(() => {
+          this._objectsMap.set(object.id, serialized);
+        }, 'skipHistory');
+      } else {
+        this._ydoc.transact(() => {
+          this._objectsMap.set(object.id, serialized);
+        }, 'local');
+      }
     }
 
     return true;
