@@ -1,6 +1,5 @@
 import * as Y from 'yjs';
 import { IndexeddbPersistence } from 'y-indexeddb';
-import { BroadcastChannelProvider } from './broadcast-channel-provider.class';
 import { KritzelReviver } from './reviver.class';
 import { KritzelWorkspace } from './workspace.class';
 import { KritzelCore } from './core.class';
@@ -12,7 +11,6 @@ import { KritzelCore } from './core.class';
 export class WorkspaceMetadataManager {
   private readonly _ydoc: Y.Doc;
   private readonly _persistenceProvider: IndexeddbPersistence;
-  private readonly _broadcastProvider: BroadcastChannelProvider;
   private readonly _workspacesMap: Y.Map<any>;
   private readonly _reviver: KritzelReviver;
   private _isReady: boolean = false;
@@ -27,9 +25,6 @@ export class WorkspaceMetadataManager {
 
     this._persistenceProvider = new IndexeddbPersistence(docName, this._ydoc);
     console.info('Workspace metadata IndexedDB Persistence initialized');
-
-    this._broadcastProvider = new BroadcastChannelProvider(docName, this._ydoc);
-    console.info('Workspace metadata BroadcastChannel Provider initialized');
 
     // Observe changes to _workspacesMap and sync with application state
     this._workspacesMap.observe(event => {
@@ -107,7 +102,6 @@ export class WorkspaceMetadataManager {
    */
   destroy(): void {
     this._persistenceProvider.destroy();
-    this._broadcastProvider.destroy();
     this._ydoc.destroy();
   }
 }
