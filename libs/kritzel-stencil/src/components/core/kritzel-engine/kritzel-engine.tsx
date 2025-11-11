@@ -374,26 +374,26 @@ export class KritzelEngine {
 
   @Method()
   async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
-    this.core.createWorkspace(workspace);
+    await this.core.createWorkspace(workspace);
     this.workspacesChange.emit(this.core.store.state.workspaces);
     return workspace;
   }
 
   @Method()
   async updateWorkspace(workspace: KritzelWorkspace): Promise<void> {
-    this.core.updateWorkspace(workspace);
+    await this.core.updateWorkspace(workspace);
     this.workspacesChange.emit(this.core.store.state.workspaces);
   }
 
   @Method()
   async deleteWorkspace(workspace: KritzelWorkspace): Promise<void> {
-    this.core.deleteWorkspace(workspace);
+    await this.core.deleteWorkspace(workspace);
     this.workspacesChange.emit(this.core.store.state.workspaces);
   }
 
   @Method()
   async getWorkspaces(): Promise<KritzelWorkspace[]> {
-    return this.core.getWorkspaces();
+    return await this.core.getWorkspaces();
   }
 
   @Method()

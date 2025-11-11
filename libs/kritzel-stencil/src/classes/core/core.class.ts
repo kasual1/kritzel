@@ -8,15 +8,23 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from './workspace.class';
-import { WorkspaceMetadataManager } from './workspace-metadata-manager.class';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
+import { KritzelDatabase } from './database.class';
+
+interface WorkspaceData {
+  id: string;
+  name: string;
+  viewport?: { translateX: number; translateY: number; scale: number };
+  createdAt: string;
+  updatedAt: string;
+}
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
   private readonly _store: KritzelStore;
-  private readonly _workspaceMetadataManager: WorkspaceMetadataManager;
   private _syncConfig?: KritzelSyncConfig;
+  private readonly _workspaceDB: KritzelDatabase<WorkspaceData>;
 
   get engine(): KritzelEngine {
     return this._kritzelEngine;
@@ -26,14 +34,10 @@ export class KritzelCore {
     return this._store;
   }
 
-  get workspaceMetadataManager(): WorkspaceMetadataManager {
-    return this._workspaceMetadataManager;
-  }
-
   constructor(kritzelEngine: KritzelEngine) {
     this._kritzelEngine = kritzelEngine;
     this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
-    this._workspaceMetadataManager = new WorkspaceMetadataManager(this);
+    this._workspaceDB = new KritzelDatabase<WorkspaceData>('kritzel-workspaces', 'workspaces');
   }
 
   setSyncConfig(config?: KritzelSyncConfig): void {
@@ -41,12 +45,49 @@ export class KritzelCore {
   }
 
   async initializeYjs(): Promise<void> {
-    await this._workspaceMetadataManager.initialize();
+    await this._workspaceDB.initialize();
+  }
+
+  /**
+   * Load all workspaces from IndexedDB
+   */
+  private async loadWorkspacesFromDB(): Promise<KritzelWorkspace[]> {
+    const workspaceData = await this._workspaceDB.getAll();
+    
+    return workspaceData.map((data) => {
+      const workspace = new KritzelWorkspace(data.id, data.name, data.viewport);
+      workspace._core = this;
+      workspace.createdAt = new Date(data.createdAt);
+      workspace.updatedAt = new Date(data.updatedAt);
+      return workspace;
+    });
+  }
+
+  /**
+   * Save a workspace to IndexedDB
+   */
+  private async saveWorkspaceToDB(workspace: KritzelWorkspace): Promise<void> {
+    const data: WorkspaceData = {
+      id: workspace.id,
+      name: workspace.name,
+      viewport: workspace.viewport,
+      createdAt: workspace.createdAt.toISOString(),
+      updatedAt: workspace.updatedAt.toISOString(),
+    };
+    
+    await this._workspaceDB.put(data);
+  }
+
+  /**
+   * Delete a workspace from IndexedDB
+   */
+  private async deleteWorkspaceFromDB(workspaceId: string): Promise<void> {
+    await this._workspaceDB.delete(workspaceId);
   }
 
   async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
-    // Load all workspaces from metadata manager
-    const workspaces = this._workspaceMetadataManager.getAllWorkspaces();
+    // Load all workspaces from IndexedDB
+    const workspaces = await this.loadWorkspacesFromDB();
 
     // Find most recently updated workspace or use provided/fallback
     const mostRecentWorkspace = workspaces.length > 0 ? [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0] : null;
@@ -56,11 +97,11 @@ export class KritzelCore {
     if (workspace) {
       // Use provided workspace
       activeWorkspace = workspace;
-      const existing = this._workspaceMetadataManager.getWorkspace(workspace.id);
+      const existing = workspaces.find(w => w.id === workspace.id);
       if (!existing) {
         // New workspace, save it
         activeWorkspace._core = this;
-        this._workspaceMetadataManager.setWorkspace(activeWorkspace);
+        await this.saveWorkspaceToDB(activeWorkspace);
       }
     } else if (mostRecentWorkspace) {
       // Use most recent workspace
@@ -69,7 +110,7 @@ export class KritzelCore {
       // Create fallback workspace
       activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
       activeWorkspace._core = this;
-      this._workspaceMetadataManager.setWorkspace(activeWorkspace);
+      await this.saveWorkspaceToDB(activeWorkspace);
     }
 
     // Destroy old ObjectMap if switching workspaces
@@ -79,7 +120,7 @@ export class KritzelCore {
 
     // Set active workspace
     this._store.state.activeWorkspace = activeWorkspace;
-    this._store.state.workspaces = this._workspaceMetadataManager.getAllWorkspaces();
+    this._store.state.workspaces = await this.loadWorkspacesFromDB();
 
     // Set viewport from workspace
     const viewport = activeWorkspace.viewport ?? { translateX: 0, translateY: 0, scale: 1 };
@@ -110,21 +151,21 @@ export class KritzelCore {
     return null;
   }
 
-  getWorkspaces(): KritzelWorkspace[] {
-    return this._workspaceMetadataManager.getAllWorkspaces();
+  async getWorkspaces(): Promise<KritzelWorkspace[]> {
+    return await this.loadWorkspacesFromDB();
   }
 
-  createWorkspace(workspace: KritzelWorkspace): void {
+  async createWorkspace(workspace: KritzelWorkspace): Promise<void> {
     workspace._core = this;
     workspace.createdAt = new Date();
     workspace.updatedAt = new Date();
-    this._workspaceMetadataManager.setWorkspace(workspace);
-    this._store.state.workspaces = this.getWorkspaces();
+    await this.saveWorkspaceToDB(workspace);
+    this._store.state.workspaces = await this.loadWorkspacesFromDB();
   }
 
-  updateWorkspace(workspace: KritzelWorkspace): void {
+  async updateWorkspace(workspace: KritzelWorkspace): Promise<void> {
     workspace.updatedAt = new Date();
-    this._workspaceMetadataManager.setWorkspace(workspace);
+    await this.saveWorkspaceToDB(workspace);
 
     const workspaces = this._store.state.workspaces;
     const index = workspaces.findIndex(w => w.id === workspace.id);
@@ -141,15 +182,15 @@ export class KritzelCore {
       this._store.state.objectsMap?.destroy();
     }
 
-    this._workspaceMetadataManager.deleteWorkspace(workspace.id);
-    this._store.state.workspaces = this.getWorkspaces();
+    await this.deleteWorkspaceFromDB(workspace.id);
+    this._store.state.workspaces = await this.loadWorkspacesFromDB();
 
     // Also delete the workspace's IndexedDB database
     const dbName = `kritzel-workspace-${workspace.id}`;
     window.indexedDB.deleteDatabase(dbName);
   }
 
-  updateWorkspaceViewport(translateX: number, translateY: number, scale: number): void {
+  async updateWorkspaceViewport(translateX: number, translateY: number, scale: number): Promise<void> {
     const activeWorkspace = this._store.state.activeWorkspace;
     if (!activeWorkspace) {
       return;
@@ -157,7 +198,7 @@ export class KritzelCore {
 
     activeWorkspace.viewport = { translateX, translateY, scale };
     activeWorkspace.updatedAt = new Date();
-    this._workspaceMetadataManager.setWorkspace(activeWorkspace);
+    await this.saveWorkspaceToDB(activeWorkspace);
   }
 
   addObject(object: KritzelBaseObject<any>): void {
@@ -198,36 +239,6 @@ export class KritzelCore {
     const selectionBox = this._store.selectionBox;
     if (selectionBox) {
       this._store.state.objectsMap.remove(object => object.id === selectionBox.id);
-    }
-  }
-
-  moveSelectionGroup(startX: number, startY: number, endX: number, endY: number): void {
-    const selectionGroup = this._store.selectionGroup;
-    if (selectionGroup) {
-      selectionGroup.move(startX, startY, endX, endY);
-      selectionGroup.objects.forEach(object => {
-        this._store.state.objectsMap.update(object);
-      });
-    }
-  }
-
-  resizeSelectionGroup(x: number, y: number, width: number, height: number): void {
-    const selectionGroup = this._store.selectionGroup;
-    if (selectionGroup) {
-      selectionGroup.resize(x, y, width, height);
-      selectionGroup.objects.forEach(object => {
-        this._store.state.objectsMap.update(object);
-      });
-    }
-  }
-
-  rotateSelectionGroup(rotation: number): void {
-    const selectionGroup = this._store.selectionGroup;
-    if (selectionGroup) {
-      selectionGroup.rotate(rotation);
-      selectionGroup.objects.forEach(object => {
-        this._store.state.objectsMap.update(object);
-      });
     }
   }
 
