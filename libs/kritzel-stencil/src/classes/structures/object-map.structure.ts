@@ -20,13 +20,22 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _syncEnabled: boolean = true;
   private _isReady: boolean = false;
 
+  get isReady(): boolean {
+    return this._isReady;
+  }
+
+  get undoManager(): Y.UndoManager | null {
+    return this._undoManager;
+  }
+
+  get workspaceId(): string | null {
+    return this._workspaceId;
+  }
+
   constructor() {
     this.map = new Map<string, T>();
   }
 
-  /**
-   * Initialize this ObjectMap with its own Y.Doc for a specific workspace
-   */
   async initialize(core: KritzelCore, workspaceId: string): Promise<void> {
     this._core = core;
     this._workspaceId = workspaceId;
@@ -112,53 +121,29 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       }
     });
 
-    // Temporarily disable sync to prevent feedback loop
-    const wasSyncEnabled = this._syncEnabled;
-    this._syncEnabled = false;
+    // Delete objects from local map
+    objectsToDelete.forEach(objectId => {
+      this.map.delete(objectId);
+    });
 
-    try {
-      // Delete objects
-      objectsToDelete.forEach(objectId => {
-        this.map.delete(objectId);
-      });
+    // First, update or insert regular objects
+    objectsToUpdate.forEach(object => {
+      this.map.set(object.id, object);
+    });
 
-      // First, update or insert regular objects
-      objectsToUpdate.forEach(object => {
-        this.map.set(object.id, object);
-      });
+    // Then, update or insert SelectionGroups
+    selectionGroupsToUpdate.forEach(object => {
+      this.map.set(object.id, object);
+    });
 
-      // Then, update or insert SelectionGroups
-      selectionGroupsToUpdate.forEach(object => {
-        this.map.set(object.id, object);
-      });
-
-      this._core?.rerender();
-    } finally {
-      // Re-enable sync
-      this._syncEnabled = wasSyncEnabled;
-    }
+    this._core?.rerender();
   }
-
-  /**
-   * Enable or disable automatic syncing to Yjs
-   */
-  setSyncEnabled(enabled: boolean): void {
-    this._syncEnabled = enabled;
-  }
-
-  /**
-   * Executes a set of operations as a single transaction for undo/redo purposes.
-   * @param callback The function containing operations to be batched.
-   */
   transaction(callback: () => void): void {
     if (this._ydoc) {
       this._ydoc.transact(callback, 'local');
     }
   }
 
-  /**
-   * Load objects from Yjs
-   */
   loadFromYjs(): void {
     if (!this._objectsMap || !this._reviver) {
       return;
@@ -169,18 +154,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       const object = this._reviver.revive<T>(serialized);
       this.map.set(key, object);
     });
-  }
-
-  get isReady(): boolean {
-    return this._isReady;
-  }
-
-  get undoManager(): Y.UndoManager | null {
-    return this._undoManager;
-  }
-
-  get workspaceId(): string | null {
-    return this._workspaceId;
   }
 
   reset(): void {
@@ -266,50 +239,32 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     return true;
   }
 
-  /**
-   * Undo the last operation
-   */
   undo(): void {
     if (this._undoManager && this._undoManager.canUndo()) {
       this._undoManager.undo();
     }
   }
 
-  /**
-   * Redo the last undone operation
-   */
   redo(): void {
     if (this._undoManager && this._undoManager.canRedo()) {
       this._undoManager.redo();
     }
   }
 
-  /**
-   * Check if undo is available
-   */
   canUndo(): boolean {
     return this._undoManager ? this._undoManager.canUndo() : false;
   }
 
-  /**
-   * Check if redo is available
-   */
   canRedo(): boolean {
     return this._undoManager ? this._undoManager.canRedo() : false;
   }
 
-  /**
-   * Clear undo/redo history
-   */
   clearHistory(): void {
     if (this._undoManager) {
       this._undoManager.clear();
     }
   }
 
-  /**
-   * Cleanup resources when disposing this ObjectMap
-   */
   destroy(): void {
     if (this._persistenceProvider) {
       this._persistenceProvider.destroy();

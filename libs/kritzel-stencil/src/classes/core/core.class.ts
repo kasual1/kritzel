@@ -134,15 +134,13 @@ export class KritzelCore {
     if (this._store.state.activeWorkspace?.id === workspace.id) {
       this._store.state.objectsMap?.destroy();
     }
-    
+
     this._workspaceMetadataManager.deleteWorkspace(workspace.id);
     this._store.state.workspaces = this.getWorkspaces();
 
     // Also delete the workspace's IndexedDB database
-    if ('indexedDB' in window) {
-      const dbName = `kritzel-workspace-${workspace.id}`;
-      window.indexedDB.deleteDatabase(dbName);
-    }
+    const dbName = `kritzel-workspace-${workspace.id}`;
+    window.indexedDB.deleteDatabase(dbName);
   }
 
   updateWorkspaceViewport(translateX: number, translateY: number, scale: number): void {
