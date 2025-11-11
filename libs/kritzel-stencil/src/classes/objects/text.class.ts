@@ -139,14 +139,19 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       dispatchTransaction: transaction => {
         // Apply the transaction to get the new state
         const newState = this.editor.state.apply(transaction);
-        
+
         // Update the editor state first
         this.editor.updateState(newState);
-        
+
         // Only update content and adjust size if the document actually changed
+        // AND it's not from a remote source (to prevent infinite loops)
         if (transaction.docChanged) {
           this.content = newState.doc.toJSON();
           this.adjustSizeOnInput();
+
+          if (!transaction.getMeta('fromRemote')) {
+            this._core.store.state.objectsMap.update(this, { skipHistory: true });
+          }
         }
       },
     });
@@ -158,6 +163,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     if (this.editor && content) {
       const newDoc = this.editor.state.schema.nodeFromJSON(content);
       const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
+      // Mark this transaction as coming from remote/external source
+      tr.setMeta('fromRemote', true);
       this.editor.dispatch(tr);
     }
   }
@@ -254,14 +261,14 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     requestAnimationFrame(() => {
       this.adjustSizeOnInput();
-      
+
       // Focus after the DOM has been updated
       if (event) {
         this.focus({ x: event.clientX, y: event.clientY });
       } else {
         this.focus();
       }
-      
+
       KritzelKeyboardHelper.enableInteractiveWidget();
     });
   }
@@ -275,8 +282,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = false;
 
-    const updatedProperties: Partial<KritzelText> = { ...this };
-    this._core.updateObject(this, updatedProperties);
+    this._core.store.state.objectsMap.update(this);
   }
 
   handlePointerDown(event: PointerEvent): void {
@@ -332,11 +338,5 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       this.setContent(object.content);
     }
     return this as unknown as KritzelText;
-  }
-
-  override onUpdate(updatedProperties: Partial<KritzelText>): void {
-    if ('content' in updatedProperties && updatedProperties.content) {
-      this.setContent(updatedProperties.content);
-    }
   }
 }

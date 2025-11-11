@@ -217,8 +217,6 @@ export class KritzelCore {
       }
     }
 
-    object.onUpdate(updatedProperties);
-
     this._store.state.objectsMap.update(object);
   }
 
