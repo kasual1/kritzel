@@ -1,7 +1,6 @@
 import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engine';
 import { KritzelContextMenu } from '../../components/ui/kritzel-context-menu/kritzel-context-menu';
 import { DEFAULT_ENGINE_STATE } from '../../configs/default-engine-state';
-import { YJS_DOCUMENT_NAME } from '../../constants/core.constants';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
@@ -9,12 +8,13 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from './workspace.class';
-import { YjsDocumentManager } from './yjs-document.class';
+import { WorkspaceMetadataManager } from './workspace-metadata-manager.class';
+import { KritzelObjectMap } from '../structures/object-map.structure';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
   private readonly _store: KritzelStore;
-  private readonly _yjsManager: YjsDocumentManager;
+  private readonly _workspaceMetadataManager: WorkspaceMetadataManager;
 
   get engine(): KritzelEngine {
     return this._kritzelEngine;
@@ -24,23 +24,23 @@ export class KritzelCore {
     return this._store;
   }
 
-  get yjsManager(): YjsDocumentManager {
-    return this._yjsManager;
+  get workspaceMetadataManager(): WorkspaceMetadataManager {
+    return this._workspaceMetadataManager;
   }
 
   constructor(kritzelEngine: KritzelEngine) {
     this._kritzelEngine = kritzelEngine;
     this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
-    this._yjsManager = new YjsDocumentManager(this, YJS_DOCUMENT_NAME);
+    this._workspaceMetadataManager = new WorkspaceMetadataManager(this);
   }
 
   async initializeYjs(): Promise<void> {
-    await this._yjsManager.initialize();
+    await this._workspaceMetadataManager.initialize();
   }
 
   async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
-    // Load all workspaces from Yjs
-    const workspaces = this._yjsManager.getAllWorkspaces<KritzelWorkspace>();
+    // Load all workspaces from metadata manager
+    const workspaces = this._workspaceMetadataManager.getAllWorkspaces();
 
     // Find most recently updated workspace or use provided/fallback
     const mostRecentWorkspace = workspaces.length > 0 ? [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0] : null;
@@ -50,11 +50,11 @@ export class KritzelCore {
     if (workspace) {
       // Use provided workspace
       activeWorkspace = workspace;
-      const existing = this._yjsManager.getWorkspace<KritzelWorkspace>(workspace.id);
+      const existing = this._workspaceMetadataManager.getWorkspace(workspace.id);
       if (!existing) {
         // New workspace, save it
         activeWorkspace._core = this;
-        this._yjsManager.setWorkspace(activeWorkspace);
+        this._workspaceMetadataManager.setWorkspace(activeWorkspace);
       }
     } else if (mostRecentWorkspace) {
       // Use most recent workspace
@@ -63,15 +63,17 @@ export class KritzelCore {
       // Create fallback workspace
       activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
       activeWorkspace._core = this;
-      this._yjsManager.setWorkspace(activeWorkspace);
+      this._workspaceMetadataManager.setWorkspace(activeWorkspace);
+    }
+
+    // Destroy old ObjectMap if switching workspaces
+    if (this._store.state.objectsMap && this._store.state.objectsMap.isReady) {
+      this._store.state.objectsMap.destroy();
     }
 
     // Set active workspace
     this._store.state.activeWorkspace = activeWorkspace;
-    this._store.state.workspaces = this._yjsManager.getAllWorkspaces<KritzelWorkspace>();
-
-    // Clear undo/redo history when switching workspaces
-    this._yjsManager.clearHistory();
+    this._store.state.workspaces = this._workspaceMetadataManager.getAllWorkspaces();
 
     // Set viewport from workspace
     const viewport = activeWorkspace.viewport ?? { translateX: 0, translateY: 0, scale: 1 };
@@ -79,9 +81,10 @@ export class KritzelCore {
     this._store.state.translateY = viewport.translateY ?? 0;
     this._store.state.scale = viewport.scale ?? 1;
 
-    // Connect ObjectMap to Yjs and load objects for this workspace
-    this._store.state.objectsMap.connect(this._yjsManager, activeWorkspace.id);
-    this._store.state.objectsMap.loadFromYjs();
+    // Create new ObjectMap with its own Y.Doc for this workspace
+    const objectsMap = new KritzelObjectMap();
+    await objectsMap.initialize(this, activeWorkspace.id);
+    this._store.state.objectsMap = objectsMap;
 
     this.rerender();
   }
@@ -102,20 +105,20 @@ export class KritzelCore {
   }
 
   getWorkspaces(): KritzelWorkspace[] {
-    return this._yjsManager.getAllWorkspaces<KritzelWorkspace>();
+    return this._workspaceMetadataManager.getAllWorkspaces();
   }
 
   createWorkspace(workspace: KritzelWorkspace): void {
     workspace._core = this;
     workspace.createdAt = new Date();
     workspace.updatedAt = new Date();
-    this._yjsManager.setWorkspace(workspace);
+    this._workspaceMetadataManager.setWorkspace(workspace);
     this._store.state.workspaces = this.getWorkspaces();
   }
 
   updateWorkspace(workspace: KritzelWorkspace): void {
     workspace.updatedAt = new Date();
-    this._yjsManager.setWorkspace(workspace);
+    this._workspaceMetadataManager.setWorkspace(workspace);
 
     const workspaces = this._store.state.workspaces;
     const index = workspaces.findIndex(w => w.id === workspace.id);
@@ -126,10 +129,20 @@ export class KritzelCore {
     }
   }
 
-  deleteWorkspace(workspace: KritzelWorkspace): void {
-    this._yjsManager.deleteObjectsByWorkspace(workspace.id);
-    this._yjsManager.deleteWorkspace(workspace.id);
+  async deleteWorkspace(workspace: KritzelWorkspace): Promise<void> {
+    // If deleting the active workspace, need to handle ObjectMap cleanup
+    if (this._store.state.activeWorkspace?.id === workspace.id) {
+      this._store.state.objectsMap?.destroy();
+    }
+    
+    this._workspaceMetadataManager.deleteWorkspace(workspace.id);
     this._store.state.workspaces = this.getWorkspaces();
+
+    // Also delete the workspace's IndexedDB database
+    if ('indexedDB' in window) {
+      const dbName = `kritzel-workspace-${workspace.id}`;
+      window.indexedDB.deleteDatabase(dbName);
+    }
   }
 
   updateWorkspaceViewport(translateX: number, translateY: number, scale: number): void {
@@ -140,7 +153,7 @@ export class KritzelCore {
 
     activeWorkspace.viewport = { translateX, translateY, scale };
     activeWorkspace.updatedAt = new Date();
-    this._yjsManager.setWorkspace(activeWorkspace);
+    this._workspaceMetadataManager.setWorkspace(activeWorkspace);
   }
 
   addObject(object: KritzelBaseObject<any>): void {
@@ -232,11 +245,11 @@ export class KritzelCore {
   }
 
   undo(): void {
-    this._yjsManager.undo();
+    this._store.state.objectsMap?.undo();
   }
 
   redo(): void {
-    this._yjsManager.redo();
+    this._store.state.objectsMap?.redo();
   }
 
   deleteObject(id: string) {
