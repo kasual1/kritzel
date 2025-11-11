@@ -18,6 +18,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _core: KritzelCore | null = null;
   private _workspaceId: string | null = null;
   private _isReady: boolean = false;
+  private _temporaryItemsCount: number = 0;
 
   get isReady(): boolean {
     return this._isReady;
@@ -66,18 +67,26 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     // Set up undo/redo manager for this workspace
     this._undoManager = new Y.UndoManager([this._objectsMap], {
       captureTimeout: 200,
-      trackedOrigins: new Set(['local']),
+      trackedOrigins: new Set(['local', 'temporary']),
       ignoreRemoteMapChanges: true,
     });
 
     this._undoManager.on('stack-item-added', event => {
       if (event.type === 'undo') {
+        // Track if this was a temporary item
+        if (event.origin === 'temporary') {
+          this._temporaryItemsCount++;
+        }
         console.log('Undo performed for workspace', workspaceId, this._undoManager.undoStack.length, this._undoManager.redoStack.length);
       }
     });
 
     this._undoManager.on('stack-item-popped', event => {
       if (event.type === 'undo') {
+        // Reduce temporary count when items are undone
+        if (event.origin === 'temporary' && this._temporaryItemsCount > 0) {
+          this._temporaryItemsCount--;
+        }
         console.log('Redo performed for workspace', workspaceId, this._undoManager.undoStack.length, this._undoManager.redoStack.length);
       }
     });
@@ -97,8 +106,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   private handleObjectsChange(event: Y.YMapEvent<any>): void {
     // Skip Map updates for local changes (already done), but still trigger re-render
-    // 'skipHistory' is also a local change that shouldn't be re-deserialized
-    if (event.transaction.origin === 'local' || event.transaction.origin === 'skipHistory') {
+    // 'temporary' is also a local change that shouldn't be re-deserialized
+    if (event.transaction.origin === 'local' || event.transaction.origin === 'temporary') {
       this._core?.rerender();
       return;
     }
@@ -186,7 +195,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     return true;
   }
 
-  update(object: T, options: { skipHistory: boolean } = { skipHistory: false }): boolean {
+  update(object: T, options: { temporary?: boolean } = {}): boolean {
     if (!object.id || !this.map.has(object.id)) {
       return false;
     }
@@ -195,15 +204,11 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     if (this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
 
-      if (options.skipHistory) {
-        this._ydoc.transact(() => {
-          this._objectsMap.set(object.id, serialized);
-        }, 'skipHistory');
-      } else {
-        this._ydoc.transact(() => {
-          this._objectsMap.set(object.id, serialized);
-        }, 'local');
-      }
+      const origin = options.temporary ? 'temporary' : 'local';
+
+      this._ydoc.transact(() => {
+        this._objectsMap.set(object.id, serialized);
+      }, origin);
     }
 
     return true;
@@ -268,7 +273,83 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   clearHistory(): void {
     if (this._undoManager) {
       this._undoManager.clear();
+      this._temporaryItemsCount = 0;
     }
+  }
+
+  /**
+   * Consolidates all temporary items in the undo stack into a single undo item.
+   * Call this when you want to merge multiple temporary changes (e.g., keystrokes) into one.
+   */
+  consolidateTemporaryItems(): void {
+    if (!this._undoManager || this._temporaryItemsCount === 0) {
+      return;
+    }
+
+    // Get current stack length
+    const stackLength = this._undoManager.undoStack.length;
+    
+    if (stackLength === 0) {
+      this._temporaryItemsCount = 0;
+      return;
+    }
+
+    // Stop tracking temporarily
+    this._undoManager.stopCapturing();
+    
+    // The temporary items should be at the end of the stack
+    // We'll need to undo them all, then redo as a single transaction
+    const itemsToConsolidate = Math.min(this._temporaryItemsCount, stackLength);
+    
+    if (itemsToConsolidate > 1) {
+      // Store the current state before undoing
+      const undoneItems: any[] = [];
+      
+      // Undo all temporary items
+      for (let i = 0; i < itemsToConsolidate; i++) {
+        if (this._undoManager.canUndo()) {
+          undoneItems.push(this._undoManager.undoStack[this._undoManager.undoStack.length - 1]);
+          this._undoManager.undo();
+        }
+      }
+      
+      // Now redo them all as a single 'local' transaction
+      // This will consolidate them into one undo item
+      this._ydoc.transact(() => {
+        for (let i = itemsToConsolidate - 1; i >= 0; i--) {
+          if (this._undoManager.canRedo()) {
+            this._undoManager.redo();
+          }
+        }
+      }, 'local');
+    } else if (itemsToConsolidate === 1) {
+      // If only one temporary item, just change its origin to 'local'
+      // This is implicit - next transaction will be separate
+    }
+    
+    this._temporaryItemsCount = 0;
+  }
+
+  /**
+   * Removes all temporary items from the undo stack without consolidating them.
+   * Use this to discard temporary changes completely.
+   */
+  clearTemporaryItems(): void {
+    if (!this._undoManager || this._temporaryItemsCount === 0) {
+      return;
+    }
+
+    const stackLength = this._undoManager.undoStack.length;
+    const itemsToRemove = Math.min(this._temporaryItemsCount, stackLength);
+    
+    // Remove items from the end of the stack
+    for (let i = 0; i < itemsToRemove; i++) {
+      if (this._undoManager.undoStack.length > 0) {
+        this._undoManager.undoStack.pop();
+      }
+    }
+    
+    this._temporaryItemsCount = 0;
   }
 
   destroy(): void {

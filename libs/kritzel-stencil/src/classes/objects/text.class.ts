@@ -150,7 +150,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
           this.adjustSizeOnInput();
 
           if (!transaction.getMeta('fromRemote')) {
-            this._core.store.state.objectsMap.update(this);
+            // Mark updates as temporary while editing - they'll be consolidated on save
+            this._core.store.state.objectsMap.update(this, { temporary: true });
           }
         }
       },
@@ -282,6 +283,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = false;
 
+    // Consolidate all temporary keystrokes into a single undo item
+    this._core.store.state.objectsMap.consolidateTemporaryItems();
+    
+    // Final update with normal origin
     this._core.store.state.objectsMap.update(this);
   }
 
