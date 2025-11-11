@@ -21,7 +21,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   scale: number = 1;
   scaleFactor: number = 1;
 
-  isNew: boolean = true;
   isDebugInfoVisible: boolean = true;
   isEditable: boolean = true;
   isEditing: boolean = false;
@@ -139,10 +138,14 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       editable: () => false,
       dispatchTransaction: transaction => {
         const newState = this.editor.state.apply(transaction);
-        this.editor.updateState(newState);
-        this.adjustSizeOnInput();
-        this._core.store.state.objectsMap.update(this);
-        this._core.rerender();
+        
+        // Only update content and adjust size if the document actually changed
+        if (transaction.docChanged) {
+          this.content = newState.doc.toJSON();
+          this.adjustSizeOnInput();
+          this.editor.updateState(newState);
+        }
+        
       },
     });
   }
@@ -150,7 +153,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   public setContent(content: any): void {
     this.content = content;
 
-    if (this.editor) {
+    if (this.editor && content) {
       const newDoc = this.editor.state.schema.nodeFromJSON(content);
       const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
       this.editor.dispatch(tr);
@@ -189,11 +192,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         }
       }
     }
-
-    if (this._core) {
-      this._core.store.state.objectsMap.update(this);
-      this._core.rerender();
-    }
   }
 
   override resize(x: number, y: number, width: number, height: number): void {
@@ -215,7 +213,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.translateX = x;
     this.translateY = y;
 
-    // Update to sync changes to y.js and propagate to other tabs
     this._core.store.state.objectsMap.update(this);
   }
 
@@ -273,15 +270,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = false;
 
-    if (this.isNew) {
-      this.isNew = false;
-      this._core.addObject(this);
-    } else {
-      const updatedProperties: Partial<KritzelText> = { ...this };
-      this._core.updateObject(this, updatedProperties);
-    }
-    
-    this._core.rerender();
+    const updatedProperties: Partial<KritzelText> = { ...this };
+    this._core.updateObject(this, updatedProperties);
   }
 
   handlePointerDown(event: PointerEvent): void {
@@ -333,12 +323,14 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   override deserialize<KritzelText>(object: any): KritzelText {
     super.deserialize<KritzelText>(object);
-    this.setContent(object.content);
+    if (object.content) {
+      this.setContent(object.content);
+    }
     return this as unknown as KritzelText;
   }
 
   override onUpdate(updatedProperties: Partial<KritzelText>): void {
-    if ('content' in updatedProperties) {
+    if ('content' in updatedProperties && updatedProperties.content) {
       this.setContent(updatedProperties.content);
     }
   }
