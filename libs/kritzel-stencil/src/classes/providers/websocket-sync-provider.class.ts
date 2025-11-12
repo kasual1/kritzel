@@ -40,11 +40,6 @@ export interface WebSocketOptions {
    * Maximum number of connection attempts (optional, defaults to Infinity)
    */
   maxBackoffTime?: number;
-
-  /**
-   * Whether to disable background connection (optional, defaults to false)
-   */
-  disableBc?: boolean;
 }
 
 /**
@@ -64,7 +59,7 @@ export class WebSocketSyncProvider implements ISyncProvider {
       WebSocketPolyfill: options?.WebSocketPolyfill,
       awareness: options?.awareness,
       maxBackoffTime: options?.maxBackoffTime,
-      disableBc: options?.disableBc,
+      disableBc: true,
     });
 
     this.setupEventListeners();
