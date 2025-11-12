@@ -24,6 +24,8 @@ export * from './classes/providers/broadcast-sync-provider.class';
 export * from './classes/providers/indexeddb-sync-provider.class';
 export * from './classes/providers/websocket-sync-provider.class';
 
+export * from './classes/structures/app-state-map.structure';
+
 export * from './classes/core/workspace.class';
 
 export * from './interfaces/toolbar-control.interface';
