@@ -440,6 +440,11 @@ export class KritzelEngine {
     // Initialize workspace (will load from Yjs if available)
     await this.core.initializeWorkspace(this.workspace);
 
+    // Register callback for remote workspace changes
+    this.core.appStateMap.onRemoteChange(() => {
+      this.workspacesChange.emit(this.core.store.state.workspaces);
+    });
+
     this._registerStateChangeListeners();
 
     if (this.core.store.state.isReady === false) {
