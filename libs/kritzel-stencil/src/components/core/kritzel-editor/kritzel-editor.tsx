@@ -15,6 +15,7 @@ import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
+import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -95,6 +96,7 @@ export class KritzelEditor {
   @Prop() customSvgIcons: Record<string, string> = {};
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
+  @Prop() syncConfig?: KritzelSyncConfig;
 
   @Event() isReady: EventEmitter<HTMLElement>;
 
@@ -116,6 +118,16 @@ export class KritzelEditor {
   onIsControlsReady(newValue: boolean) {
     if (newValue && this.isEngineReady) {
       this.checkIsReady();
+    }
+  }
+
+  @Watch('workspaces')
+  onWorkspacesChange(newWorkspaces: KritzelWorkspace[]) {
+    if (this.activeWorkspace) {
+      const updatedActiveWorkspace = newWorkspaces.find(ws => ws.id === this.activeWorkspace.id);
+      if (updatedActiveWorkspace && updatedActiveWorkspace !== this.activeWorkspace) {
+        this.activeWorkspace = updatedActiveWorkspace;
+      }
     }
   }
 
@@ -281,6 +293,7 @@ export class KritzelEditor {
         <kritzel-engine
           ref={el => (this.engineRef = el)}
           workspace={this.activeWorkspace}
+          syncConfig={this.syncConfig}
           scaleMax={this.scaleMax}
           scaleMin={this.scaleMin}
           globalContextMenuItems={this.globalContextMenuItems}

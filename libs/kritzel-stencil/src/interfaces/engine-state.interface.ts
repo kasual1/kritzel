@@ -1,8 +1,4 @@
 import { KritzelBaseObject } from "../classes/objects/base-object.class";
-import { KritzelPath } from "../classes/objects/path.class";
-import { KrtizelSelectionBox } from "../classes/objects/selection-box.class";
-import { KritzelSelectionGroup } from "../classes/objects/selection-group.class";
-import { KritzelText } from "../classes/objects/text.class";
 import { KritzelObjectMap } from "../classes/structures/object-map.structure";
 import { KritzelBaseTool } from "../classes/tools/base-tool.class";
 import { KritzelWorkspace } from "../classes/core/workspace.class";
@@ -13,12 +9,8 @@ import { KritzelDebugInfo } from "./debug-info.interface";
 export interface KritzelEngineState {
   activeWorkspace: KritzelWorkspace;
   activeTool: KritzelBaseTool;
-  activeText: KritzelText;
-  currentPath?: KritzelPath;
-  copiedObjects?: KritzelSelectionGroup;
+  copiedObjects?: KritzelBaseObject<any>[];
   objectsMap: KritzelObjectMap<KritzelBaseObject<Element>>;
-  selectionBox?: KrtizelSelectionBox;
-  selectionGroup?: KritzelSelectionGroup;
   resizeHandleType: KritzelHandleType;
   hasViewportChanged: boolean;
   hasObjectsChanged: boolean;
@@ -59,7 +51,6 @@ export interface KritzelEngineState {
   translateYMin: number;
   viewportWidth: number;
   viewportHeight: number;
-  historyBufferSize: number;
   longTouchTimeout: number;
   longTouchDelay: number;
   pointers: Map<number, PointerEvent>;

@@ -1,1 +1,1 @@
-import 'fake-indexeddb/auto';
+// Jest setup file
