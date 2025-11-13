@@ -1,4 +1,3 @@
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelBaseTool } from './base-tool.class';
 import imageCompression from 'browser-image-compression';
@@ -86,15 +85,9 @@ export class KritzelImageTool extends KritzelBaseTool {
   }
 
   private addImageToStore(image: KritzelImage): void {
-    const selectionGroup = KritzelSelectionGroup.create(this._core);
-    selectionGroup.addOrRemove(image);
-    selectionGroup.isSelected = true;
-
     this._core.addObject(image);
-    this._core.addSelectionGroup(selectionGroup);
-
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
-    this._core.rerender();
+    this._core.selectObjects([image]);
   }
 
   private handleCancel(): void {
