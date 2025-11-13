@@ -71,6 +71,9 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       this.element.style.width = `${width}px`;
       this.element.style.height = `${height}px`;
     }
+
+    // Update to sync changes to y.js and propagate to other tabs
+    this._core.store.state.objectsMap.update(this);
   }
 
   override copy(): KritzelCustomElement {

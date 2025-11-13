@@ -9,24 +9,23 @@ Kritzel is a monorepo containing the core library and its framework-specific wra
 - **`libs/kritzel-angular`**, **`libs/kritzel-react`**, **`libs/kritzel-vue`**: Framework-specific wrapper libraries.
 - **`demos/*`**: Demo applications for each framework, useful for testing and showcasing features.
 - **`website`**: The Docusaurus-based documentation website.
+- **`server/websocket-demo`**: A NestJS-based WebSocket server for demoing real-time collaboration features.
 
 ### Stencil Folder Structure
 The core Stencil library follows a structured approach to organize its components, classes, and utilities.
 
 - **`src/classes`**: Houses TypeScript classes that encapsulate core logic and functionality of the library.
-    - **`src/classes/commands`**: Contains command pattern implementations for undo/redo functionality.
     - **`src/classes/tools`**: Contains classes for different drawing tools (e.g., pencil, eraser, text, image).
     - **`src/classes/objects`**: Contains classes for different drawable objects (e.g., objects, images, text elements).
     - **`src/classes/handlers`**: Contains event handlers for user interactions.
     - **`src/classes/structures`**: Contains data structures for efficiently managing objects rendered on the canvas.
     - **`src/classes/registries`**: Contains registries allowing dynamic registration of tools, icons, fonts etc.
     - **`src/classes/core`**: Contains core classes and utilities that are used throughout the library.
-        - **`src/classes/core/database`**: Contains classes and utilities for IndexedDB interactions.
-        - **`src/classes/core/history`**: Contains classes and utilities for managing undo/redo history.
         - **`src/classes/core/store`**: Contains classes and utilities for state management.
         - **`src/classes/core/viewport`**: Contains classes and utilities for managing the canvas viewport.
         - **`src/classes/core/workspace`**: Contains classes and utilities for managing the workspace.
         - **`src/classes/core/core`**: Encapsulates core functionalities like database, history, store, viewport.
+        - **`src/classes/core/yjs-document`**: Contains classes and utilities for collaborative features and persisting data to indexeddb using Yjs.
 - **`src/components`**: Contains all Stencil components, each in its own folder with related files (e.g., `.tsx`, `.css`, `.spec.ts`).
 - **`src/configs`**: Contains default configuration files for tools, objects, and the core library.
 - **`src/helpers`**: Contains utility functions and helpers used across the library.

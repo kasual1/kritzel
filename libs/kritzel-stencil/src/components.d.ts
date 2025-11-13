@@ -13,6 +13,7 @@ import { KritzelTextTool } from "./classes/tools/text-tool.class";
 import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelCore } from "./classes/core/core.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
@@ -27,6 +28,7 @@ export { KritzelTextTool } from "./classes/tools/text-tool.class";
 export { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelCore } from "./classes/core/core.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
@@ -162,6 +164,7 @@ export namespace Components {
         "scaleMin": number;
         "selectAllObjectsInViewport": () => Promise<void>;
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
+        "syncConfig"?: KritzelSyncConfig;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
     }
@@ -203,6 +206,7 @@ export namespace Components {
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "syncConfig"?: KritzelSyncConfig;
         "undo": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
@@ -934,6 +938,7 @@ declare namespace LocalJSX {
           * @default ABSOLUTE_SCALE_MIN
          */
         "scaleMin"?: number;
+        "syncConfig"?: KritzelSyncConfig;
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
@@ -951,6 +956,7 @@ declare namespace LocalJSX {
           * @default ABSOLUTE_SCALE_MIN
          */
         "scaleMin"?: number;
+        "syncConfig"?: KritzelSyncConfig;
         "workspace"?: KritzelWorkspace;
     }
     interface KritzelFont {
