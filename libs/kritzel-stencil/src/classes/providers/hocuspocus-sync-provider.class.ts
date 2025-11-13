@@ -79,13 +79,14 @@ export class HocuspocusSyncProvider implements ISyncProvider {
       name,
       document: doc,
       token: options?.token || null,
-      forceSyncInterval: options?.forceSyncInterval,
       onConnect: () => {
         this.isConnected = true;
         if (!options?.quiet) {
           console.info('Hocuspocus connected');
         }
-        options?.onConnect?.();
+        if (options?.onConnect) {
+          options.onConnect();
+        }
       },
       onDisconnect: () => {
         this.isConnected = false;
@@ -93,18 +94,33 @@ export class HocuspocusSyncProvider implements ISyncProvider {
         if (!options?.quiet) {
           console.info('Hocuspocus disconnected');
         }
-        options?.onDisconnect?.();
+        if (options?.onDisconnect) {
+          options.onDisconnect();
+        }
       },
       onSynced: () => {
         this.isSynced = true;
         if (!options?.quiet) {
           console.info('Hocuspocus synced');
         }
-        options?.onSynced?.();
+        if (options?.onSynced) {
+          options.onSynced();
+        }
       },
-      onAuthenticationFailed: options?.onAuthenticationFailed,
-      onStatus: options?.onStatus,
     };
+
+    // Add optional callbacks only if provided
+    if (options?.forceSyncInterval !== undefined) {
+      config.forceSyncInterval = options.forceSyncInterval;
+    }
+
+    if (options?.onAuthenticationFailed) {
+      config.onAuthenticationFailed = options.onAuthenticationFailed;
+    }
+
+    if (options?.onStatus) {
+      config.onStatus = options.onStatus;
+    }
 
     // Add WebSocketPolyfill if provided (for Node.js environments)
     if (options?.WebSocketPolyfill) {
