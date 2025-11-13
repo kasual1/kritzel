@@ -2,7 +2,6 @@ import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { UpdateObjectCommand } from '../commands/update-object.command';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
@@ -10,7 +9,6 @@ import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
-import { AddObjectCommand } from '../commands/add-object.command';
 export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
@@ -23,7 +21,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   scale: number = 1;
   scaleFactor: number = 1;
 
-  isNew: boolean = true;
   isDebugInfoVisible: boolean = true;
   isEditable: boolean = true;
   isEditing: boolean = false;
@@ -140,11 +137,23 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       }),
       editable: () => false,
       dispatchTransaction: transaction => {
+        // Apply the transaction to get the new state
         const newState = this.editor.state.apply(transaction);
+
+        // Update the editor state first
         this.editor.updateState(newState);
-        this.adjustSizeOnInput();
-        this._core.store.state.objectsMap.update(this);
-        this._core.rerender();
+
+        // Only update content and adjust size if the document actually changed
+        // AND it's not from a remote source (to prevent infinite loops)
+        if (transaction.docChanged) {
+          this.content = newState.doc.toJSON();
+          this.adjustSizeOnInput();
+
+          if (!transaction.getMeta('fromRemote')) {
+            // Mark updates as temporary while editing - they'll be consolidated on save
+            this._core.store.state.objectsMap.update(this, { temporary: true });
+          }
+        }
       },
     });
   }
@@ -152,9 +161,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   public setContent(content: any): void {
     this.content = content;
 
-    if (this.editor) {
+    if (this.editor && content) {
       const newDoc = this.editor.state.schema.nodeFromJSON(content);
       const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
+      // Mark this transaction as coming from remote/external source
+      tr.setMeta('fromRemote', true);
       this.editor.dispatch(tr);
     }
   }
@@ -191,11 +202,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         }
       }
     }
-
-    if (this._core) {
-      this._core.store.state.objectsMap.update(this);
-      this._core.rerender();
-    }
   }
 
   override resize(x: number, y: number, width: number, height: number): void {
@@ -216,6 +222,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.translateX = x;
     this.translateY = y;
+
+    this._core.store.state.objectsMap.update(this);
   }
 
   focus(coords?: { x: number; y: number }): void {
@@ -243,7 +251,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.uneditedObject = this.clone() as KritzelText;
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
-    this._core.store.state.activeText = this;
 
     if (this.editor) {
       this.editor.setProps({ editable: () => true });
@@ -251,17 +258,20 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = true;
 
-    if (event) {
-      this.focus({ x: event.clientX, y: event.clientY });
-    } else {
-      this.focus();
-    }
-
     this._core.rerender();
 
-    requestAnimationFrame(() => this.adjustSizeOnInput());
+    requestAnimationFrame(() => {
+      this.adjustSizeOnInput();
 
-    KritzelKeyboardHelper.enableInteractiveWidget();
+      // Focus after the DOM has been updated
+      if (event) {
+        this.focus({ x: event.clientX, y: event.clientY });
+      } else {
+        this.focus();
+      }
+
+      KritzelKeyboardHelper.enableInteractiveWidget();
+    });
   }
 
   save(): void {
@@ -273,15 +283,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = false;
 
-    let saveCommand;
-    if (this.isNew) {
-      this.isNew = false;
-      saveCommand = new AddObjectCommand<KritzelText>(this._core, this, this);
-    } else {
-      saveCommand = new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, { ...this });
-    }
-
-    this._core.commandManager.executeCommand(saveCommand);
+    // Consolidate all temporary keystrokes into a single undo item
+    this._core.store.state.objectsMap.consolidateTemporaryItems();
+    
+    // Final update with normal origin
+    this._core.store.state.objectsMap.update(this);
   }
 
   handlePointerDown(event: PointerEvent): void {
@@ -333,19 +339,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   override deserialize<KritzelText>(object: any): KritzelText {
     super.deserialize<KritzelText>(object);
-    this.setContent(object.content);
+    if (object.content) {
+      this.setContent(object.content);
+    }
     return this as unknown as KritzelText;
-  }
-
-  override onExecuteUpdateCommand(updatedProperties: Partial<KritzelText>): void {
-    if ('content' in updatedProperties) {
-      this.setContent(updatedProperties.content);
-    }
-  }
-
-  override onUndoUpdateCommand(previousProperties: Partial<KritzelText>): void {
-    if ('content' in previousProperties && this.editor) {
-      this.setContent(previousProperties.content);
-    }
   }
 }

@@ -12,6 +12,7 @@ const paths = [
   '../libs/kritzel-react',
   '../libs/kritzel-stencil',
   '../libs/kritzel-vue',
+  '../server/websocket-demo',
 ];
 
 // Helper function to delete a folder

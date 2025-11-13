@@ -50,6 +50,9 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     this.height = this.height * scaleFactor;
     this.translateX = x;
     this.translateY = y;
+
+    // Update to sync changes to y.js and propagate to other tabs
+    this._core.store.state.objectsMap.update(this);
   }
 
   calculateScaledDimensions(img: HTMLImageElement): { scaledWidth: number; scaledHeight: number } {

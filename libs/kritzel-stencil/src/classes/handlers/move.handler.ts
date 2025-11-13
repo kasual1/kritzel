@@ -1,5 +1,4 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { MoveSelectionGroupCommand } from '../commands/move-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 export class KritzelMoveHandler extends KritzelBaseHandler {
@@ -38,7 +37,8 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   handlePointerDown(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
-        if (this._core.store.state.selectionGroup?.isSelected && !this._core.store.state.isResizeHandleSelected && !this._core.store.state.isRotationHandleSelected) {
+        const selectionGroup = this._core.store.selectionGroup;
+        if (selectionGroup?.isSelected && !this._core.store.state.isResizeHandleSelected && !this._core.store.state.isRotationHandleSelected) {
           const clientX = event.clientX - this._core.store.offsetX;
           const clientY = event.clientY - this._core.store.offsetY;
 
@@ -60,13 +60,13 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (this._core.store.state.pointers.size === 1) {
-        
         if (this._core.store.state.isScaling) {
           this.trackedPointerId = null;
           return;
         }
 
-        if (this._core.store.state.selectionGroup?.isSelected && !this._core.store.state.isResizeHandleSelected && !this._core.store.state.isRotationHandleSelected) {
+        const selectionGroup = this._core.store.selectionGroup;
+        if (selectionGroup?.isSelected && !this._core.store.state.isResizeHandleSelected && !this._core.store.state.isRotationHandleSelected) {
           const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
           const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
 
@@ -88,19 +88,22 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     }
 
     if (event.pointerType === 'mouse') {
-      if (this._core.store.state.isDragging && this._core.store.state.selectionGroup) {
+      const selectionGroup = this._core.store.selectionGroup;
+      if (this._core.store.state.isDragging && selectionGroup) {
         const clientX = event.clientX - this._core.store.offsetX;
         const clientY = event.clientY - this._core.store.offsetY;
 
         this.endX = clientX;
         this.endY = clientY;
-        
+
         const moveDeltaX = Math.abs(clientX - this.startX);
         const moveDeltaY = Math.abs(clientY - this.startY);
         const moveThreshold = 5;
-        
+
         if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
-          this._core.store.state.selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
+
+          selectionGroup.move(clientX, clientY, this.dragStartX, this.dragStartY);
+
           this.dragStartX = clientX;
           this.dragStartY = clientY;
           this.hasMoved = true;
@@ -110,10 +113,11 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
+      const selectionGroup = this._core.store.selectionGroup;
 
       if (
         this._core.store.state.pointers.size === 1 &&
-        this._core.store.state.selectionGroup &&
+        selectionGroup &&
         !this._core.store.state.isResizeHandleSelected &&
         !this._core.store.state.isRotationHandleSelected &&
         !this._core.store.state.isScaling
@@ -124,15 +128,16 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = true;
         this.endX = x;
         this.endY = y;
-        
+
         const moveDeltaX = Math.abs(x - this.startX);
         const moveDeltaY = Math.abs(y - this.startY);
         const moveThreshold = 5;
-        
+
         if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
           clearTimeout(this._core.store.state.longTouchTimeout);
-          
-          this._core.store.state.selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
+
+          selectionGroup.move(x, y, this.dragStartX, this.dragStartY);
+
           this.dragStartX = x;
           this.dragStartY = y;
           this.hasMoved = true;
@@ -151,7 +156,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
-          this._core.commandManager.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
+          this._core.store.selectionGroup.update();
           this._core.store.state.hasObjectsChanged = true;
         }
       }
@@ -162,7 +167,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
-          this._core.commandManager.executeCommand(new MoveSelectionGroupCommand(this._core, this, this.endX, this.endY, this.startX, this.startY, true));
+          this._core.store.selectionGroup.update();
           this._core.store.state.hasObjectsChanged = true;
         }
       }

@@ -206,12 +206,18 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.updatePosition(this.translateX + deltaX, this.translateY + deltaY);
   }
 
+  update(): void {
+    this._core.store.state.objectsMap.update(this);
+  }
+
   move(startX: number, startY: number, endX: number, endY: number): void {
     const deltaX = (startX - endX) / this._core.store.state.scale;
     const deltaY = (startY - endY) / this._core.store.state.scale;
 
     this.translateX += deltaX;
     this.translateY += deltaY;
+
+    this._core.store.state.objectsMap.update(this);
   }
 
   resize(x: number, y: number, width: number, height: number): void {
@@ -223,10 +229,14 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.height = height;
     this.translateX = x;
     this.translateY = y;
+
+    this._core.store.state.objectsMap.update(this);
   }
 
   rotate(value: number): void {
     this.rotation = value;
+
+    this._core.store.state.objectsMap.update(this);
   }
 
   clone(): KritzelBaseObject<T> {
@@ -242,10 +252,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     copiedObject.id = this.generateId();
     copiedObject.isMounted = false;
     return copiedObject;
-  }
-
-  onSelectedClick(): void {
-    // This method can be overridden by subclasses to handle click events when the object is selected.
   }
 
   serialize() {
@@ -286,21 +292,5 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.translateX = x;
     this.translateY = y;
     this._core.store.state.objectsMap.update(this);
-  }
-
-  onExecuteAddCommand(_object: KritzelBaseObject): void {
-    // This method can be overridden by subclasses to handle actions after an add command is executed.
-  }
-
-  onUndoAddCommand(_object: KritzelBaseObject): void {
-    // This method can be overridden by subclasses to handle actions after an add command is undone.
-  }
-
-  onExecuteUpdateCommand(_updatedProperties: Partial<this>): void {
-    // This method can be overridden by subclasses to handle actions after an update command is executed.
-  }
-
-  onUndoUpdateCommand(_previousProperties: Partial<this>): void {
-    // This method can be overridden by subclasses to handle actions after an update command is undone.
   }
 }
