@@ -14,6 +14,7 @@
 | `objectContextMenuItems` | --          |             | `ContextMenuItem[]` | `undefined`          |
 | `scaleMax`               | `scale-max` |             | `number`            | `ABSOLUTE_SCALE_MAX` |
 | `scaleMin`               | `scale-min` |             | `number`            | `ABSOLUTE_SCALE_MIN` |
+| `syncConfig`             | --          |             | `KritzelSyncConfig` | `undefined`          |
 | `workspace`              | --          |             | `KritzelWorkspace`  | `undefined`          |
 
 
