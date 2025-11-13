@@ -1,53 +1,72 @@
 import {
   WebSocketGateway,
   WebSocketServer,
-  SubscribeMessage,
-  MessageBody,
-  ConnectedSocket,
   OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server } from 'ws';
-import * as WebSocket from 'ws';
+import { Hocuspocus } from '@hocuspocus/server';
+import { IncomingMessage } from 'http';
 
-@WebSocketGateway(1234, {
-  transports: ['websocket'],
-})
-export class WebsocketGateway
+@WebSocketGateway(1234)
+export class HocuspocusGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer()
   server: Server;
 
-  afterInit(server: Server) {
-    console.log('WebSocket Gateway initialized on port 1234');
-  }
+  private hocuspocus: Hocuspocus;
 
-  handleConnection(client: WebSocket, ...args: any[]) {
-    console.log('Client connected:', client);
-  }
+  constructor() {
+    this.hocuspocus = new Hocuspocus({
+      onConnect: async (data) => {
+        console.log(`Client connected: ${data.documentName}`);
+      },
 
-  handleDisconnect(client: WebSocket) {
-    console.log('Client disconnected');
-  }
+      onDisconnect: async (data) => {
+        console.log(`Client disconnected: ${data.documentName}`);
+      },
 
-  @SubscribeMessage('message')
-  handleMessage(
-    @MessageBody() data: any,
-    @ConnectedSocket() client: WebSocket,
-  ): void {
-    console.log('Received message:', data);
-    // Echo the message back to the client
-    client.send(JSON.stringify({ event: 'message', data }));
-  }
+      onAuthenticate: async (data) => {
+        // Optional: Add authentication logic here
+        // For now, allow all connections
+        return {};
+      },
 
-  // Broadcast message to all connected clients
-  broadcast(event: string, data: any) {
-    this.server.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ event, data }));
-      }
+      onChange: async (data) => {
+        console.log(`Document changed: ${data.documentName}`);
+      },
+
+      onLoadDocument: async (data) => {
+        // Optional: Load document from database
+        // For now, return empty document (will be synced from clients)
+        console.log(`Loading document: ${data.documentName}`);
+        return data.document;
+      },
+
+      onStoreDocument: async (data) => {
+        // Optional: Store document to database
+        console.log(`Storing document: ${data.documentName}`);
+      },
     });
+  }
+
+  afterInit(server: Server) {
+    console.log('Hocuspocus WebSocket Gateway initialized on port 1234');
+  }
+
+  handleConnection(client: any, request: IncomingMessage) {
+    console.log('New WebSocket connection');
+    // Handle the connection with Hocuspocus
+    this.hocuspocus.handleConnection(client, request);
+  }
+
+  handleDisconnect(client: any) {
+    console.log('Client disconnected from WebSocket');
+  }
+
+  getHocuspocus(): Hocuspocus {
+    return this.hocuspocus;
   }
 }
