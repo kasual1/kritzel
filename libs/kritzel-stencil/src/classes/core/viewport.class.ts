@@ -21,7 +21,11 @@ export class KritzelViewport {
     this._core.store.state.translateY = 0;
 
     this._debounceUpdate = this.debounce(() => {
-      this._core.updateWorkspaceViewport(this._core.store.state.translateX, this._core.store.state.translateY, this._core.store.state.scale);
+      this._core.updateWorkspaceViewport(
+        this._core.store.state.translateX, 
+        this._core.store.state.translateY, 
+        this._core.store.state.scale
+      );
     }, 0);
   }
 
@@ -56,7 +60,10 @@ export class KritzelViewport {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 2) {
-        this._core.store.state.currentPath = null;
+        const currentPath = this._core.store.currentPath;
+        if (currentPath) {
+          this._core.store.state.objectsMap.remove(obj => obj.id === currentPath.id);
+        }
         this._core.store.state.isScaling = true;
 
         const firstTouchX = activePointers[0].clientX - this._core.store.offsetX;

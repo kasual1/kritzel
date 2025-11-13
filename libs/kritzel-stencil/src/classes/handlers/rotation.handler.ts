@@ -1,5 +1,4 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { RotateSelectionGroupCommand } from '../commands/rotate-selection-group.command';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
@@ -26,22 +25,23 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
-        if (this._core.store.state.selectionGroup && this._core.store.state.isRotationHandleSelected) {
+        const selectionGroup = this._core.store.selectionGroup;
+        if (selectionGroup && this._core.store.state.isRotationHandleSelected) {
           const clientX = event.clientX - this._core.store.offsetX;
           const clientY = event.clientY - this._core.store.offsetY;
 
           this._core.store.state.isRotating = true;
 
-          const centerX = this._core.store.state.selectionGroup.translateX + this._core.store.state.selectionGroup.width / 2 / this._core.store.state.scale;
-          const centerY = this._core.store.state.selectionGroup.translateY + this._core.store.state.selectionGroup.height / 2 / this._core.store.state.scale;
+          const centerX = selectionGroup.translateX + selectionGroup.width / 2 / this._core.store.state.scale;
+          const centerY = selectionGroup.translateY + selectionGroup.height / 2 / this._core.store.state.scale;
 
           const cursorX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
           const cursorY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
 
-          this.initialSelectionGroupRotation = this._core.store.state.selectionGroup.rotation;
-          this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - this._core.store.state.selectionGroup.rotation;
+          this.initialSelectionGroupRotation = selectionGroup.rotation;
+          this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - selectionGroup.rotation;
 
-          this.unchangedObjects = this._core.store.state.selectionGroup.objects.map(obj => obj.clone());
+          this.unchangedObjects = selectionGroup.objects.map(obj => obj.clone());
         }
       }
     }
@@ -55,22 +55,23 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
       }
 
       if (activePointers.length === 1) {
-        if (this._core.store.state.selectionGroup && this._core.store.state.isRotationHandleSelected) {
+        const selectionGroup = this._core.store.selectionGroup;
+        if (selectionGroup && this._core.store.state.isRotationHandleSelected) {
           const clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);
           const clientY = Math.round(firstTouch.clientY - this._core.store.offsetY);
 
           this._core.store.state.isRotating = true;
 
-          const centerX = this._core.store.state.selectionGroup.translateX + this._core.store.state.selectionGroup.width / 2 / this._core.store.state.scale;
-          const centerY = this._core.store.state.selectionGroup.translateY + this._core.store.state.selectionGroup.height / 2 / this._core.store.state.scale;
+          const centerX = selectionGroup.translateX + selectionGroup.width / 2 / this._core.store.state.scale;
+          const centerY = selectionGroup.translateY + selectionGroup.height / 2 / this._core.store.state.scale;
 
           const cursorX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
           const cursorY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
 
-          this.initialSelectionGroupRotation = this._core.store.state.selectionGroup.rotation;
-          this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - this._core.store.state.selectionGroup.rotation;
+          this.initialSelectionGroupRotation = selectionGroup.rotation;
+          this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - selectionGroup.rotation;
 
-          this.unchangedObjects = this._core.store.state.selectionGroup.objects.map(obj => obj.clone());
+          this.unchangedObjects = selectionGroup.objects.map(obj => obj.clone());
 
           clearTimeout(this._core.store.state.longTouchTimeout);
         }
@@ -80,12 +81,13 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (this._core.store.state.isRotating && this._core.store.state.selectionGroup) {
+      const selectionGroup = this._core.store.selectionGroup;
+      if (this._core.store.state.isRotating && selectionGroup) {
         const clientX = event.clientX - this._core.store.offsetX;
         const clientY = event.clientY - this._core.store.offsetY;
 
-        const groupCenterX = this._core.store.state.selectionGroup.translateX + this._core.store.state.selectionGroup.width / 2 / this._core.store.state.scale;
-        const groupCenterY = this._core.store.state.selectionGroup.translateY + this._core.store.state.selectionGroup.height / 2 / this._core.store.state.scale;
+        const groupCenterX = selectionGroup.translateX + selectionGroup.width / 2 / this._core.store.state.scale;
+        const groupCenterY = selectionGroup.translateY + selectionGroup.height / 2 / this._core.store.state.scale;
 
         const cursorX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
         const cursorY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
@@ -94,7 +96,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         this.rotation = currentRotation - this.initialRotation;
 
-        this._core.store.state.selectionGroup.rotate(this.rotation);
+        selectionGroup.rotate(this.rotation);
       }
     }
 
@@ -106,12 +108,13 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
         return;
       }
 
-      if (this._core.store.state.isRotating && this._core.store.state.selectionGroup) {
+      const selectionGroup = this._core.store.selectionGroup;
+      if (this._core.store.state.isRotating && selectionGroup) {
         const clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);
         const clientY = Math.round(firstTouch.clientY - this._core.store.offsetY);
 
-        const groupCenterX = this._core.store.state.selectionGroup.translateX + this._core.store.state.selectionGroup.width / 2 / this._core.store.state.scale;
-        const groupCenterY = this._core.store.state.selectionGroup.translateY + this._core.store.state.selectionGroup.height / 2 / this._core.store.state.scale;
+        const groupCenterX = selectionGroup.translateX + selectionGroup.width / 2 / this._core.store.state.scale;
+        const groupCenterY = selectionGroup.translateY + selectionGroup.height / 2 / this._core.store.state.scale;
 
         const cursorX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
         const cursorY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
@@ -120,7 +123,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         this.rotation = currentRotation - this.initialRotation;
 
-        this._core.store.state.selectionGroup.rotate(this.rotation);
+        selectionGroup.rotate(this.rotation);
 
         clearTimeout(this._core.store.state.longTouchTimeout);
       }
@@ -130,8 +133,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
-        this._core.commandManager.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
-
+        this._core.store.selectionGroup.update();
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
 
@@ -141,8 +143,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isRotating) {
-        this._core.commandManager.executeCommand(new RotateSelectionGroupCommand(this._core, this, this.rotation, this.initialSelectionGroupRotation));
-
+        this._core.store.selectionGroup.update();
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
 

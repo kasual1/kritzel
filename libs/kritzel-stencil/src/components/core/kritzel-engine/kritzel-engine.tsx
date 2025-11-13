@@ -6,7 +6,7 @@ import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.clas
 import { KritzelImage } from '../../../classes/objects/image.class';
 import { KritzelText } from '../../../classes/objects/text.class';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
-import { KrtizelSelectionBox } from '../../../classes/objects/selection-box.class';
+import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelKeyHandler } from '../../../classes/handlers/key.handler';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
@@ -14,10 +14,7 @@ import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
-import { AddObjectCommand } from '../../../classes/commands/add-object.command';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
-import { UpdateObjectCommand } from '../../../classes/commands/update-object.command';
-import { RemoveObjectCommand } from '../../../classes/commands/remove-object.command';
 import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
 import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
@@ -27,6 +24,7 @@ import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelCore } from '../../../classes/core/core.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
+import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -37,9 +35,13 @@ export class KritzelEngine {
   @Element() host: HTMLElement;
 
   @Prop() workspace?: KritzelWorkspace;
+  @Prop() syncConfig?: KritzelSyncConfig;
   @Watch('workspace')
   onWorkspaceChange(newWorkspace: KritzelWorkspace | null) {
-    if (this.core.store.state.activeWorkspace !== newWorkspace) {
+    const currentWorkspaceId = this.core.store.state.activeWorkspace?.id;
+    const newWorkspaceId = newWorkspace?.id;
+    
+    if (currentWorkspaceId !== newWorkspaceId) {
       this.core.beforeWorkspaceChange();
       this.core.initializeWorkspace(newWorkspace);
     }
@@ -269,19 +271,19 @@ export class KritzelEngine {
 
   @Method()
   async undo() {
-    this.core.history.undo();
+    this.core.undo();
   }
 
   @Method()
   async redo() {
-    this.core.history.redo();
+    this.core.redo();
   }
 
   @Method()
   async hideContextMenu() {
     this.core.store.state.pointers.clear();
     this.core.store.state.isContextMenuVisible = false;
-    this.core.store.state.selectionBox = null;
+    this.core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox);
     this.core.store.state.isSelecting = false;
     this.core.store.state.isEnabled = true;
     this.core.rerender();
@@ -302,8 +304,8 @@ export class KritzelEngine {
     object.scale = object.scale ? object.scale : this.core.store.state.scale;
     object.zIndex = this.core.store.currentZIndex;
 
-    const command = new AddObjectCommand(this.core, this, object);
-    this.core.commandManager.executeCommand(command);
+    this.core.addObject(object);
+    this.core.rerender();
 
     return object;
   }
@@ -312,8 +314,8 @@ export class KritzelEngine {
   async updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    const command = new UpdateObjectCommand(this.core, this, object, updatedProperties);
-    this.core.commandManager.executeCommand(command);
+    this.core.updateObject(object, updatedProperties);
+    this.core.rerender();
 
     return object;
   }
@@ -322,15 +324,16 @@ export class KritzelEngine {
   async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    const command = new RemoveObjectCommand(this.core, this, object);
-    this.core.commandManager.executeCommand(command);
+    this.core.removeObject(object);
+    this.core.rerender();
 
     return object;
   }
 
   @Method()
   async getSelectedObjects(): Promise<KritzelBaseObject<any>[]> {
-    return this.core.store.state.selectionGroup ? this.core.store.state.selectionGroup.objects : [];
+    const selectionGroup = this.core.store.selectionGroup;
+    return selectionGroup ? selectionGroup.objects : [];
   }
 
   @Method()
@@ -358,20 +361,19 @@ export class KritzelEngine {
   async centerObjectInViewport(object: KritzelBaseObject) {
     object.centerInViewport();
 
-    const command = new UpdateObjectCommand(this.core, this, object, object);
-    this.core.commandManager.executeCommand(command);
+    this.core.updateObject(object, object);
+    this.core.rerender();
 
     return object;
   }
 
   @Method()
   async getCopiedObjects(): Promise<KritzelBaseObject[]> {
-    return this.core.store.state.copiedObjects?.objects || [];
+    return this.core.store.state.copiedObjects || [];
   }
 
   @Method()
   async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
-    workspace._core = this.core;
     await this.core.createWorkspace(workspace);
     this.workspacesChange.emit(this.core.store.state.workspaces);
     return workspace;
@@ -391,7 +393,7 @@ export class KritzelEngine {
 
   @Method()
   async getWorkspaces(): Promise<KritzelWorkspace[]> {
-    return this.core.getWorkspaces();
+    return await this.core.getWorkspaces();
   }
 
   @Method()
@@ -410,7 +412,7 @@ export class KritzelEngine {
   }
 
   get isSelectionActive() {
-    return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.selectionGroup !== null;
+    return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.selectionGroup !== null;
   }
 
   constructor() {
@@ -427,8 +429,21 @@ export class KritzelEngine {
     this.keyHandler = new KritzelKeyHandler(this.core);
     this.viewport = new KritzelViewport(this.core, this.host);
 
-    await this.core.initializeDatabase();
+    // Set sync configuration if provided
+    if (this.syncConfig) {
+      this.core.setSyncConfig(this.syncConfig);
+    }
+
+    // Initialize Yjs document and persistence layer
+    await this.core.initializeYjs();
+    
+    // Initialize workspace (will load from Yjs if available)
     await this.core.initializeWorkspace(this.workspace);
+
+    // Register callback for remote workspace changes
+    this.core.appStateMap.onRemoteChange(() => {
+      this.workspacesChange.emit(this.core.store.state.workspaces);
+    });
 
     this._registerStateChangeListeners();
 
@@ -445,7 +460,7 @@ export class KritzelEngine {
   private _handleActiveToolChange(activeTool: KritzelBaseTool) {
     if (!(activeTool instanceof KritzelSelectionTool)) {
       this.core.clearSelection();
-      this.core.store.state.selectionBox = null;
+      this.core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox);
       this.core.store.state.isSelecting = false;
       this.core.store.state.isResizeHandleSelected = false;
       this.core.store.state.isRotationHandleSelected = false;
@@ -490,7 +505,7 @@ export class KritzelEngine {
           <div>IsWriting: {this.core.store.state.isWriting ? 'true' : 'false'}</div>
           <div>PointerX: {this.core.store.state?.pointerX}</div>
           <div>PointerY: {this.core.store.state?.pointerY}</div>
-          <div>SelectedObjects: {this.core.store.state.selectionGroup?.objects.length || 0}</div>
+          <div>SelectedObjects: {this.core.store.selectionGroup?.objects.length || 0}</div>
           <div>
             ViewportCenter: ({viewportCenterX.toFixed(2)}, {viewportCenterY.toFixed(2)})
           </div>
@@ -621,7 +636,7 @@ export class KritzelEngine {
                       ></div>
                     )}
 
-                    {KritzelClassHelper.isInstanceOf<KrtizelSelectionBox>(object, 'KrtizelSelectionBox') && (
+                    {KritzelClassHelper.isInstanceOf<KritzelSelectionBox>(object, 'KritzelSelectionBox') && (
                       <div
                         ref={el => object.mount(el)}
                         style={{
@@ -829,25 +844,6 @@ export class KritzelEngine {
             );
           })}
 
-          <svg
-            key="current-path"
-            class="object"
-            xmlns="http://www.w3.org/2000/svg"
-            width={this.core.store.state.currentPath?.width}
-            height={this.core.store.state.currentPath?.height}
-            style={{
-              left: '0',
-              top: '0',
-              zIndex: this.core.store.state.currentPath?.zIndex.toString(),
-              position: 'absolute',
-              transform: this.core.store.state.currentPath?.transformationMatrix,
-              transformOrigin: 'top left',
-              overflow: 'visible',
-            }}
-            viewBox={this.core.store.state.currentPath?.viewBox}
-          >
-            <path d={this.core.store.state.currentPath?.d} fill={this.core.store.state.currentPath?.fill} stroke={this.core.store.state.currentPath?.stroke} />
-          </svg>
         </div>
 
         {this.core.store.state.isContextMenuVisible && (
@@ -855,7 +851,7 @@ export class KritzelEngine {
             class="context-menu"
             ref={el => (this.contextMenuElement = el)}
             items={this.core.store.state.contextMenuItems}
-            objects={this.core.store.state.selectionGroup?.objects || []}
+            objects={this.core.store.selectionGroup?.objects || []}
             style={{
               position: 'fixed',
               left: `${this.core.store.state.contextMenuX}px`,
@@ -868,7 +864,7 @@ export class KritzelEngine {
                   x: (-this.core.store.state.translateX + this.core.store.state.contextMenuX) / this.core.store.state.scale,
                   y: (-this.core.store.state.translateY + this.core.store.state.contextMenuY) / this.core.store.state.scale,
                 },
-                this.core.store.state.selectionGroup?.objects,
+                this.core.store.selectionGroup?.objects,
               );
               this.hideContextMenu();
             }}
