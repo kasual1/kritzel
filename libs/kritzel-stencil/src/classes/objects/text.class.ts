@@ -137,20 +137,15 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       }),
       editable: () => false,
       dispatchTransaction: transaction => {
-        // Apply the transaction to get the new state
         const newState = this.editor.state.apply(transaction);
 
-        // Update the editor state first
         this.editor.updateState(newState);
 
-        // Only update content and adjust size if the document actually changed
-        // AND it's not from a remote source (to prevent infinite loops)
         if (transaction.docChanged) {
           this.content = newState.doc.toJSON();
           this.adjustSizeOnInput();
 
           if (!transaction.getMeta('fromRemote')) {
-            // Mark updates as temporary while editing - they'll be consolidated on save
             this._core.store.state.objectsMap.update(this, { temporary: true });
           }
         }
@@ -164,7 +159,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     if (this.editor && content) {
       const newDoc = this.editor.state.schema.nodeFromJSON(content);
       const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
-      // Mark this transaction as coming from remote/external source
+      
       tr.setMeta('fromRemote', true);
       this.editor.dispatch(tr);
     }
@@ -252,9 +247,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
 
-    if (this.editor) {
-      this.editor.setProps({ editable: () => true });
-    }
+    this.editor.setProps({ editable: () => true });
 
     this.isEditing = true;
 
@@ -271,15 +264,15 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     requestAnimationFrame(() => this.adjustSizeOnInput());
 
     this.content = this.editor.state.doc.toJSON();
+
     this.editor.setProps({ editable: () => false });
+
     this.editor.dom.blur();
 
     this.isEditing = false;
 
-    // Consolidate all temporary keystrokes into a single undo item
     this._core.store.state.objectsMap.consolidateTemporaryItems();
 
-    // Final update with normal origin
     this._core.store.state.objectsMap.update(this);
   }
 

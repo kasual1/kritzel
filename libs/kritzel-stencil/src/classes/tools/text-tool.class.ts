@@ -133,6 +133,5 @@ export class KritzelTextTool extends KritzelBaseTool {
     }
 
     this._core.store.activeText?.edit(event);
-
   }
 }
