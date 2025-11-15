@@ -167,8 +167,10 @@ export class KritzelViewport {
     if (event.pointerType === 'touch') {
       
       if (this._core.store.state.pointers.size === 0) {
-        this._core.store.state.isScaling = false;
-        this._core.rerender();
+        setTimeout(() => {
+          this._core.store.state.isScaling = false;
+          this._core.rerender();
+        }, 300);
       }
     }
   }
