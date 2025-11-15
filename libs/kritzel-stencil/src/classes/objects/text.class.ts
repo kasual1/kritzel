@@ -2,6 +2,7 @@ import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
+import { KritzelDevicesHelper } from '../../helpers/devices.helper';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
@@ -137,20 +138,15 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       }),
       editable: () => false,
       dispatchTransaction: transaction => {
-        // Apply the transaction to get the new state
         const newState = this.editor.state.apply(transaction);
 
-        // Update the editor state first
         this.editor.updateState(newState);
 
-        // Only update content and adjust size if the document actually changed
-        // AND it's not from a remote source (to prevent infinite loops)
         if (transaction.docChanged) {
           this.content = newState.doc.toJSON();
           this.adjustSizeOnInput();
 
           if (!transaction.getMeta('fromRemote')) {
-            // Mark updates as temporary while editing - they'll be consolidated on save
             this._core.store.state.objectsMap.update(this, { temporary: true });
           }
         }
@@ -164,7 +160,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     if (this.editor && content) {
       const newDoc = this.editor.state.schema.nodeFromJSON(content);
       const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
-      // Mark this transaction as coming from remote/external source
+      
       tr.setMeta('fromRemote', true);
       this.editor.dispatch(tr);
     }
@@ -230,11 +226,15 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     if (this.editor) {
       const doc = this.editor.state.doc;
 
-      if (coords) {
+      if (coords.x && coords.y) {
         const pos = this.editor.posAtCoords({ left: coords.x, top: coords.y });
         if (pos) {
           this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
           this.editor.focus();
+          
+          if (KritzelDevicesHelper.isIOS()) {
+            this.scrollIntoViewOnIOS();
+          }
           return;
         }
       }
@@ -242,7 +242,23 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       const end = Math.max(1, doc.content.size - 1);
       this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor.focus();
+      
+      if (KritzelDevicesHelper.isIOS()) {
+        this.scrollIntoViewOnIOS();
+      }
     }
+  }
+
+  private scrollIntoViewOnIOS(): void {
+    setTimeout(() => {
+      if (this.editor && this.editor.dom) {
+        this.editor.dom.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        });
+      }
+    }, 300);
   }
 
   edit(event?: PointerEvent): void {
@@ -252,41 +268,32 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
 
-    if (this.editor) {
-      this.editor.setProps({ editable: () => true });
-    }
+    this.editor.setProps({ editable: () => true });
 
     this.isEditing = true;
 
     this._core.rerender();
 
-    requestAnimationFrame(() => {
-      this.adjustSizeOnInput();
+    this.adjustSizeOnInput();
 
-      // Focus after the DOM has been updated
-      if (event) {
-        this.focus({ x: event.clientX, y: event.clientY });
-      } else {
-        this.focus();
-      }
+    this.focus({ x: event?.clientX, y: event?.clientY });
 
-      KritzelKeyboardHelper.enableInteractiveWidget();
-    });
+    KritzelKeyboardHelper.enableInteractiveWidget();
   }
 
   save(): void {
     requestAnimationFrame(() => this.adjustSizeOnInput());
 
     this.content = this.editor.state.doc.toJSON();
+
     this.editor.setProps({ editable: () => false });
+
     this.editor.dom.blur();
 
     this.isEditing = false;
 
-    // Consolidate all temporary keystrokes into a single undo item
     this._core.store.state.objectsMap.consolidateTemporaryItems();
-    
-    // Final update with normal origin
+
     this._core.store.state.objectsMap.update(this);
   }
 

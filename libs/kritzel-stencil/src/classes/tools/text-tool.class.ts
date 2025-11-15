@@ -2,7 +2,6 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelToolRegistry } from '../registries/tool.registry';
-import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { KritzelCore } from '../core/core.class';
 
 export class KritzelTextTool extends KritzelBaseTool {
@@ -78,7 +77,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       this._core.rerender();
 
-      requestAnimationFrame(() => text.edit(event));
+      text.edit(event);
     }
 
     if (event.pointerType === 'touch') {
@@ -111,8 +110,6 @@ export class KritzelTextTool extends KritzelBaseTool {
         return;
       }
 
-      KritzelKeyboardHelper.disableInteractiveWidget();
-
       const clientX = Math.round(activePointers[0].clientX - this._core.store.offsetX);
       const clientY = Math.round(activePointers[0].clientY - this._core.store.offsetY);
       const text = KritzelText.create(this._core, this.fontSize, this.fontFamily);
@@ -125,6 +122,8 @@ export class KritzelTextTool extends KritzelBaseTool {
       this._core.store.state.objectsMap.insert(text);
 
       this._core.rerender();
+
+      text.edit(event);
     }
   }
 
@@ -133,14 +132,6 @@ export class KritzelTextTool extends KritzelBaseTool {
       event.preventDefault();
     }
 
-    if (event.pointerType === 'mouse') {
-      this._core.store.activeText?.edit(event);
-    }
-
-    if (event.pointerType === 'touch') {
-      this._core.store.activeText?.edit(event);
-
-      KritzelKeyboardHelper.enableInteractiveWidget();
-    }
+    this._core.store.activeText?.edit(event);
   }
 }
