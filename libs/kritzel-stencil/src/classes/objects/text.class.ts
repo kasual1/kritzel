@@ -230,7 +230,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     if (this.editor) {
       const doc = this.editor.state.doc;
 
-      if (coords) {
+      if (coords.x && coords.y) {
         const pos = this.editor.posAtCoords({ left: coords.x, top: coords.y });
         if (pos) {
           this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
@@ -260,18 +260,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this._core.rerender();
 
-    requestAnimationFrame(() => {
-      this.adjustSizeOnInput();
+    this.adjustSizeOnInput();
 
-      // Focus after the DOM has been updated
-      if (event) {
-        this.focus({ x: event.clientX, y: event.clientY });
-      } else {
-        this.focus();
-      }
+    this.focus({ x: event?.clientX, y: event?.clientY });
 
-      KritzelKeyboardHelper.enableInteractiveWidget();
-    });
+    KritzelKeyboardHelper.enableInteractiveWidget();
   }
 
   save(): void {
@@ -285,7 +278,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     // Consolidate all temporary keystrokes into a single undo item
     this._core.store.state.objectsMap.consolidateTemporaryItems();
-    
+
     // Final update with normal origin
     this._core.store.state.objectsMap.update(this);
   }
