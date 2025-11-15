@@ -43,6 +43,21 @@
     "bump": "npm version patch",
     "release": "npm publish"
   },
+  "license": "MIT",
+  "dependencies": {
+    "@hocuspocus/provider": "^3.4.0",
+    "browser-image-compression": "^2.0.2",
+    "lib0": "^0.2.98",
+    "perfect-freehand": "^1.2.2",
+    "prosemirror-model": "^1.25.4",
+    "prosemirror-schema-basic": "^1.2.4",
+    "prosemirror-schema-list": "^1.5.1",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.41.3",
+    "y-indexeddb": "^9.0.12",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.27"
+  },
   "devDependencies": {
     "@stencil/angular-output-target": "^1.1.1",
     "@stencil/core": "^4.36.3",
@@ -55,19 +70,5 @@
     "jest-cli": "^29.7.0",
     "puppeteer": "^24.6.1",
     "ts-jest": "^29.4.4"
-  },
-  "license": "MIT",
-  "dependencies": {
-    "@hocuspocus/provider": "^3.4.0",
-    "browser-image-compression": "^2.0.2",
-    "perfect-freehand": "^1.2.2",
-    "prosemirror-model": "^1.25.4",
-    "prosemirror-schema-basic": "^1.2.4",
-    "prosemirror-schema-list": "^1.5.1",
-    "prosemirror-state": "^1.4.4",
-    "prosemirror-view": "^1.41.3",
-    "y-indexeddb": "^9.0.12",
-    "y-websocket": "^3.0.0",
-    "yjs": "^13.6.27"
   }
 }
