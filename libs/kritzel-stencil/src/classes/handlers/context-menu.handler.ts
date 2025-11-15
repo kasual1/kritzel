@@ -1,11 +1,8 @@
-import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionTool } from '../tools/selection-tool.class';
-import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
-import { BatchCommand } from '../commands/batch.command';
-import { KrtizelSelectionBox } from '../objects/selection-box.class';
+import { KritzelSelectionBox } from '../objects/selection-box.class';
 
 export class KritzelContextMenuHandler extends KritzelBaseHandler {
   globalContextMenuItems = [];
@@ -31,15 +28,14 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     const selectionTool = this._core.store.state.activeTool as KritzelSelectionTool;
     selectionTool?.moveHandler?.cancelPendingDrag();
 
-    if (this._core.store.state.selectionBox) {
-      this._core.store.state.objectsMap.remove(object => object instanceof KrtizelSelectionBox);
-      this._core.store.state.selectionBox = null;
+    if (this._core.store.selectionBox) {
+      this._core.store.state.objectsMap.remove(object => object instanceof KritzelSelectionBox);
       this._core.store.state.isSelecting = false;
     }
 
     const selectedObject = this._core.getObjectFromPointerEvent(event, '.object');
 
-    if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup) && !(selectedObject instanceof KrtizelSelectionBox)) {
+    if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup) && !(selectedObject instanceof KritzelSelectionBox)) {
       const selectionGroup = KritzelSelectionGroup.create(this._core);
       selectionGroup.addOrRemove(selectedObject);
       selectionGroup.isSelected = true;
@@ -47,15 +43,15 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
 
       this._core.store.state.isSelecting = false;
 
-      const batch = new BatchCommand(this._core, this, [
-        new RemoveSelectionGroupCommand(this._core, this._core.store.state.selectionGroup),
-        new AddSelectionGroupCommand(this._core, this, selectionGroup),
-      ]);
-
-      this._core.commandManager.executeCommand(batch);
+      const currentSelectionGroup = this._core.store.selectionGroup;
+      if (currentSelectionGroup) {
+        this._core.removeSelectionGroup();
+      }
+      this._core.addSelectionGroup(selectionGroup);
+      this._core.rerender();
     }
 
-    this._core.store.state.contextMenuItems = this._core.store.state.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
+    this._core.store.state.contextMenuItems = this._core.store.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
 
     let x: number = event.clientX - this._core.store.offsetX;
     let y: number = event.clientY - this._core.store.offsetY;

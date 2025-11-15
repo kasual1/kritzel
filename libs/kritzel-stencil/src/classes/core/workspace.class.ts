@@ -27,7 +27,6 @@ export class KritzelWorkspace implements KritzelSerializable{
   static create(core: KritzelCore, obj): KritzelWorkspace {
     const workspace = new KritzelWorkspace(obj.id, obj.name, obj.viewport);
     workspace._core = core;
-    Object.assign(workspace, obj);
     return workspace;
   }
 
@@ -40,8 +39,8 @@ export class KritzelWorkspace implements KritzelSerializable{
       __class__: this.__class__,
       id: this.id,
       name: this.name,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
+      createdAt: this.createdAt.toISOString(),
+      updatedAt: this.updatedAt.toISOString(),
       viewport: this.viewport,
     };
   }

@@ -1,6 +1,4 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { BatchCommand } from '../commands/batch.command';
-import { RemoveObjectCommand } from '../commands/remove-object.command';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelCore } from '../core/core.class';
 
@@ -70,13 +68,15 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isErasing) {
-        const removeCommands = this._core.store.allObjects.filter(object => object.markedForRemoval).map(object => {
+        const objectsToRemove = this._core.store.allObjects.filter(object => object.markedForRemoval);
+        
+        objectsToRemove.forEach(object => {
           object.markedForRemoval = false;
-          return new RemoveObjectCommand(this._core, this, object);
+          this._core.removeObject(object);
         });
 
-        if (removeCommands.length > 0) {
-          this._core.commandManager.executeCommand(new BatchCommand(this._core, this, removeCommands));
+        if (objectsToRemove.length > 0) {
+          this._core.rerender();
         }
 
         this._core.store.state.isErasing = false;
@@ -87,15 +87,15 @@ export class KritzelEraserTool extends KritzelBaseTool {
       clearTimeout(this.touchStartTimeout);
 
       if (this._core.store.state.isErasing) {
-        const removeCommands = this._core.store.allObjects
-          .filter(object => object.markedForRemoval)
-          .map(object => {
-            object.markedForRemoval = false;
-            return new RemoveObjectCommand(this._core, this, object);
-          });
+        const objectsToRemove = this._core.store.allObjects.filter(object => object.markedForRemoval);
+        
+        objectsToRemove.forEach(object => {
+          object.markedForRemoval = false;
+          this._core.removeObject(object);
+        });
 
-        if (removeCommands.length > 0) {
-          this._core.commandManager.executeCommand(new BatchCommand(this._core, this, removeCommands));
+        if (objectsToRemove.length > 0) {
+          this._core.rerender();
         }
 
         this._core.store.state.isErasing = false;

@@ -2,7 +2,7 @@ import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { UpdateObjectCommand } from '../commands/update-object.command';
+import { KritzelDevicesHelper } from '../../helpers/devices.helper';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
@@ -10,7 +10,6 @@ import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
-import { AddObjectCommand } from '../commands/add-object.command';
 export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
@@ -23,7 +22,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   scale: number = 1;
   scaleFactor: number = 1;
 
-  isNew: boolean = true;
   isDebugInfoVisible: boolean = true;
   isEditable: boolean = true;
   isEditing: boolean = false;
@@ -141,10 +139,17 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       editable: () => false,
       dispatchTransaction: transaction => {
         const newState = this.editor.state.apply(transaction);
+
         this.editor.updateState(newState);
-        this.adjustSizeOnInput();
-        this._core.store.state.objectsMap.update(this);
-        this._core.rerender();
+
+        if (transaction.docChanged) {
+          this.content = newState.doc.toJSON();
+          this.adjustSizeOnInput();
+
+          if (!transaction.getMeta('fromRemote')) {
+            this._core.store.state.objectsMap.update(this, { temporary: true });
+          }
+        }
       },
     });
   }
@@ -152,9 +157,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   public setContent(content: any): void {
     this.content = content;
 
-    if (this.editor) {
+    if (this.editor && content) {
       const newDoc = this.editor.state.schema.nodeFromJSON(content);
       const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
+      
+      tr.setMeta('fromRemote', true);
       this.editor.dispatch(tr);
     }
   }
@@ -191,11 +198,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         }
       }
     }
-
-    if (this._core) {
-      this._core.store.state.objectsMap.update(this);
-      this._core.rerender();
-    }
   }
 
   override resize(x: number, y: number, width: number, height: number): void {
@@ -216,17 +218,23 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.translateX = x;
     this.translateY = y;
+
+    this._core.store.state.objectsMap.update(this);
   }
 
   focus(coords?: { x: number; y: number }): void {
     if (this.editor) {
       const doc = this.editor.state.doc;
 
-      if (coords) {
+      if (coords.x && coords.y) {
         const pos = this.editor.posAtCoords({ left: coords.x, top: coords.y });
         if (pos) {
           this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
           this.editor.focus();
+          
+          if (KritzelDevicesHelper.isIOS()) {
+            this.scrollIntoViewOnIOS();
+          }
           return;
         }
       }
@@ -234,7 +242,23 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       const end = Math.max(1, doc.content.size - 1);
       this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor.focus();
+      
+      if (KritzelDevicesHelper.isIOS()) {
+        this.scrollIntoViewOnIOS();
+      }
     }
+  }
+
+  private scrollIntoViewOnIOS(): void {
+    setTimeout(() => {
+      if (this.editor && this.editor.dom) {
+        this.editor.dom.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        });
+      }
+    }, 300);
   }
 
   edit(event?: PointerEvent): void {
@@ -243,23 +267,16 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.uneditedObject = this.clone() as KritzelText;
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
-    this._core.store.state.activeText = this;
 
-    if (this.editor) {
-      this.editor.setProps({ editable: () => true });
-    }
+    this.editor.setProps({ editable: () => true });
 
     this.isEditing = true;
 
-    if (event) {
-      this.focus({ x: event.clientX, y: event.clientY });
-    } else {
-      this.focus();
-    }
-
     this._core.rerender();
 
-    requestAnimationFrame(() => this.adjustSizeOnInput());
+    this.adjustSizeOnInput();
+
+    this.focus({ x: event?.clientX, y: event?.clientY });
 
     KritzelKeyboardHelper.enableInteractiveWidget();
   }
@@ -268,20 +285,16 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     requestAnimationFrame(() => this.adjustSizeOnInput());
 
     this.content = this.editor.state.doc.toJSON();
+
     this.editor.setProps({ editable: () => false });
+
     this.editor.dom.blur();
 
     this.isEditing = false;
 
-    let saveCommand;
-    if (this.isNew) {
-      this.isNew = false;
-      saveCommand = new AddObjectCommand<KritzelText>(this._core, this, this);
-    } else {
-      saveCommand = new UpdateObjectCommand<KritzelText>(this._core, this, this.uneditedObject, { ...this });
-    }
+    this._core.store.state.objectsMap.consolidateTemporaryItems();
 
-    this._core.commandManager.executeCommand(saveCommand);
+    this._core.store.state.objectsMap.update(this);
   }
 
   handlePointerDown(event: PointerEvent): void {
@@ -333,19 +346,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   override deserialize<KritzelText>(object: any): KritzelText {
     super.deserialize<KritzelText>(object);
-    this.setContent(object.content);
+    if (object.content) {
+      this.setContent(object.content);
+    }
     return this as unknown as KritzelText;
-  }
-
-  override onExecuteUpdateCommand(updatedProperties: Partial<KritzelText>): void {
-    if ('content' in updatedProperties) {
-      this.setContent(updatedProperties.content);
-    }
-  }
-
-  override onUndoUpdateCommand(previousProperties: Partial<KritzelText>): void {
-    if ('content' in previousProperties && this.editor) {
-      this.setContent(previousProperties.content);
-    }
   }
 }

@@ -1,244 +1,123 @@
 import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engine';
 import { KritzelContextMenu } from '../../components/ui/kritzel-context-menu/kritzel-context-menu';
-import { DEFAULT_ENGINE_STATE } from '../../configs/default-engine-state';
+import { DEFAULT_ENGINE_CONFIG } from '../../configs/default-engine-config';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { AddObjectCommand } from '../commands/add-object.command';
-import { AddSelectionGroupCommand } from '../commands/add-selection-group.command';
-import { BatchCommand } from '../commands/batch.command';
-import { RemoveObjectCommand } from '../commands/remove-object.command';
-import { RemoveSelectionGroupCommand } from '../commands/remove-selection-group.command';
-import { UpdateObjectCommand } from '../commands/update-object.command';
-import { KritzelDatabase } from './database.class';
-import { KritzelHistory } from './history.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
-import { KrtizelSelectionBox } from '../objects/selection-box.class';
+import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
-import { KritzelReviver } from './reviver.class';
 import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from './workspace.class';
-import { KritzelCommandManager } from './command-manager.class';
+import { KritzelObjectMap } from '../structures/object-map.structure';
+import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
+import { KritzelAppStateMap } from '../structures/app-state-map.structure';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
   private readonly _store: KritzelStore;
-  private readonly _history: KritzelHistory;
-  private readonly _commandManager: KritzelCommandManager;
-  private readonly _database: KritzelDatabase;
+  private _syncConfig?: KritzelSyncConfig;
+  private readonly _appStateMap: KritzelAppStateMap;
 
   get engine(): KritzelEngine {
     return this._kritzelEngine;
-  }
-
-  get history(): KritzelHistory {
-    return this._history;
-  }
-  
-  get commandManager(): KritzelCommandManager {
-    return this._commandManager;
-  }
-
-  get database(): KritzelDatabase {
-    return this._database;
   }
 
   get store(): KritzelStore {
     return this._store;
   }
 
-  constructor(kritzelEngine: KritzelEngine) {
-    this._kritzelEngine = kritzelEngine;
-    this._store = new KritzelStore(DEFAULT_ENGINE_STATE);
-    this._history = new KritzelHistory(this);
-    this._commandManager = new KritzelCommandManager(this);
-    this._database = new KritzelDatabase('kritzelDB', 1, this._store.state.debugInfo.logDatabase);
+  get appStateMap(): KritzelAppStateMap {
+    return this._appStateMap;
   }
 
-  async initializeDatabase(): Promise<void> {
-    await this._database.open([
-      {
-        name: 'objects',
-        options: { keyPath: ['workspaceId', 'id'] },
-      },
-      { name: 'workspaces', options: { keyPath: 'id' } },
-    ]);
+  constructor(kritzelEngine: KritzelEngine) {
+    this._kritzelEngine = kritzelEngine;
+    this._store = new KritzelStore(DEFAULT_ENGINE_CONFIG);
+    this._appStateMap = new KritzelAppStateMap();
+  }
 
-    this.rerender();
+  setSyncConfig(config?: KritzelSyncConfig): void {
+    this._syncConfig = config;
+  }
+
+  async initializeYjs(): Promise<void> {
+    await this._appStateMap.initialize(this, this._syncConfig);
+  }
+
+  /**
+   * Load all workspaces from app state map
+   */
+  private loadWorkspacesFromAppState(): KritzelWorkspace[] {
+    return this._appStateMap.allWorkspaces();
+  }
+
+  /**
+   * Save a workspace to app state map
+   */
+  private saveWorkspaceToAppState(workspace: KritzelWorkspace): void {
+    if (this._appStateMap.has(workspace.id)) {
+      this._appStateMap.update(workspace);
+    } else {
+      this._appStateMap.insert(workspace);
+    }
+  }
+
+  /**
+   * Delete a workspace from app state map
+   */
+  private deleteWorkspaceFromAppState(workspaceId: string): void {
+    this._appStateMap.remove(w => w.id === workspaceId);
   }
 
   async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
-    const workspaces = await this.getWorkspaces();
-    const mostRecentWorkspace = [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
-    const fallbackWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+    // Load all workspaces from app state map
+    const workspaces = this.loadWorkspacesFromAppState();
 
-    const candidateWorkspace = workspace ?? mostRecentWorkspace ?? fallbackWorkspace;
-    const existingWorkspace = await this.getWorkspace(candidateWorkspace.id);
+    // Find most recently updated workspace or use provided/fallback
+    const mostRecentWorkspace = workspaces.length > 0 ? [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0] : null;
 
-    if (existingWorkspace) {
-      this._store.state.activeWorkspace = existingWorkspace;
-      await this.updateWorkspace(this._store.state.activeWorkspace);
+    let activeWorkspace: KritzelWorkspace;
+
+    if (workspace) {
+      // Use provided workspace
+      activeWorkspace = workspace;
+      const existing = workspaces.find(w => w.id === workspace.id);
+      if (!existing) {
+        // New workspace, save it
+        activeWorkspace._core = this;
+        this.saveWorkspaceToAppState(activeWorkspace);
+      }
+    } else if (mostRecentWorkspace) {
+      // Use most recent workspace
+      activeWorkspace = mostRecentWorkspace;
     } else {
-      this._store.state.activeWorkspace = candidateWorkspace;
-      await this.createWorkspace(this._store.state.activeWorkspace);
+      // Create fallback workspace
+      activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+      activeWorkspace._core = this;
+      this.saveWorkspaceToAppState(activeWorkspace);
     }
 
-    this._store.state.workspaces = await this.getWorkspaces();
+    // Destroy old ObjectMap if switching workspaces
+    if (this._store.state.objectsMap && this._store.state.objectsMap.isReady) {
+      this._store.state.objectsMap.destroy();
+    }
 
-    const viewport = this._store.state.activeWorkspace.viewport ?? { translateX: 0, translateY: 0, scale: 1 };
+    // Set active workspace
+    this._store.state.activeWorkspace = activeWorkspace;
+    this._store.state.workspaces = this.loadWorkspacesFromAppState();
 
+    // Set viewport from workspace
+    const viewport = activeWorkspace.viewport ?? { translateX: 0, translateY: 0, scale: 1 };
     this._store.state.translateX = viewport.translateX ?? 0;
     this._store.state.translateY = viewport.translateY ?? 0;
     this._store.state.scale = viewport.scale ?? 1;
 
-    await this.initializeWorkspaceObjects(this._store.state.activeWorkspace.id);
-  }
-
-  private async initializeWorkspaceObjects(workspaceId: string): Promise<void> {
-    this._store.state.objectsMap.reset();
-    this._history.reset();
-
-    const objectsFromDb = await this._database.getAllByRange<any>('objects', IDBKeyRange.bound([workspaceId], [workspaceId, '\uffff']));
-
-    const reviver = new KritzelReviver(this);
-
-    objectsFromDb.forEach(element => {
-      const revivedObject = reviver.revive<KritzelBaseObject<any>>(element);
-      this._store.state.objectsMap.insert(revivedObject);
-    });
+    // Create new ObjectMap with its own Y.Doc for this workspace
+    const objectsMap = new KritzelObjectMap();
+    await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
+    this._store.state.objectsMap = objectsMap;
 
     this.rerender();
-  }
-
-  async updateWorkspaceViewport(translateX: number, translateY: number, scale: number) {
-    const activeWorkspace = this._store.state.activeWorkspace;
-
-    if (!activeWorkspace) {
-      throw new Error('Workspace not initialized');
-    }
-
-    activeWorkspace.viewport = { translateX, translateY, scale };
-    activeWorkspace.updatedAt = new Date();
-
-    await this._database.update('workspaces', activeWorkspace);
-  }
-
-  async addObjectToDatabase(object: KritzelBaseObject<any>): Promise<void> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const activeWorkspace = this._store.state.activeWorkspace;
-
-    if (!activeWorkspace) {
-      throw new Error('Workspace not initialized');
-    }
-
-    activeWorkspace.updatedAt = new Date();
-
-    await this._database.batch([db => db.add('objects', object), db => db.update('workspaces', activeWorkspace)]).catch(err => {
-      console.error('Error adding object to database:', err);
-    });
-  }
-
-  async updateObjectInDatabase(object: KritzelBaseObject<any>): Promise<void> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const activeWorkspace = this._store.state.activeWorkspace;
-
-    if (!activeWorkspace) {
-      throw new Error('Workspace not initialized');
-    }
-
-    activeWorkspace.updatedAt = new Date();
-
-    await this._database.batch([db => db.update('objects', object), db => db.update('workspaces', activeWorkspace)]).catch(err => {
-      console.error('Error updating object in database:', err);
-    });
-  }
-
-  async deleteObjectFromDatabase(objectId: string): Promise<void> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const activeWorkspace = this._store.state.activeWorkspace;
-
-    if (!activeWorkspace) {
-      throw new Error('Workspace not initialized');
-    }
-
-    activeWorkspace.updatedAt = new Date();
-
-    await this._database.batch([db => db.delete('objects', [activeWorkspace.id, objectId]), db => db.update('workspaces', activeWorkspace)]).catch(err => {
-      console.error('Error deleting object from database:', err);
-    });
-  }
-
-  async getWorkspace(id: string): Promise<KritzelWorkspace | null> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const reviver = new KritzelReviver(this);
-
-    return this._database.get<KritzelWorkspace>('workspaces', id).then(rawWorkspace => (rawWorkspace ? reviver.revive<KritzelWorkspace>(rawWorkspace) : null));
-  }
-
-  async getWorkspaces(): Promise<KritzelWorkspace[]> {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const reviver = new KritzelReviver(this);
-
-    return this._database.getAll<KritzelWorkspace>('workspaces').then(rawWorkspaces => rawWorkspaces.map(ws => reviver.revive<KritzelWorkspace>(ws)));
-  }
-
-  async createWorkspace(workspace: KritzelWorkspace) {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    workspace.createdAt = new Date();
-    workspace.updatedAt = new Date();
-
-    await this._database.add('workspaces', workspace);
-
-    this._store.state.workspaces.push(workspace);
-  }
-
-  async updateWorkspace(workspace: KritzelWorkspace) {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    workspace.updatedAt = new Date();
-
-    await this._database.update('workspaces', workspace);
-
-    const workspaces = this._store.state.workspaces;
-    const index = workspaces.findIndex(w => w.id === workspace.id);
-
-    if (index !== -1) {
-      workspaces[index] = workspace;
-      this._store.state.workspaces = workspaces;
-    }
-  }
-
-  async deleteWorkspace(workspace: KritzelWorkspace) {
-    if (!this._database) {
-      throw new Error('Database not initialized');
-    }
-
-    const objectRange = IDBKeyRange.bound([workspace.id], [workspace.id, '\uffff']);
-
-    await this._database.deleteByRange('objects', objectRange);
-
-    await this._database.delete('workspaces', workspace.id);
-
-    this._store.state.workspaces = this._store.state.workspaces.filter(ws => ws.id !== workspace.id);
   }
 
   rerender() {
@@ -256,127 +135,290 @@ export class KritzelCore {
     return null;
   }
 
-  deselectAllObjects(): void {
-    if (this._store.state.selectionGroup) {
-      this.commandManager.executeCommand(new RemoveSelectionGroupCommand(this, this, true));
+  getWorkspaces(): KritzelWorkspace[] {
+    return this.loadWorkspacesFromAppState();
+  }
+
+  createWorkspace(workspace: KritzelWorkspace): void {
+    workspace._core = this;
+    workspace.createdAt = new Date();
+    workspace.updatedAt = new Date();
+    this.saveWorkspaceToAppState(workspace);
+    this._store.state.workspaces = this.loadWorkspacesFromAppState();
+  }
+
+  updateWorkspace(workspace: KritzelWorkspace): void {
+    workspace.updatedAt = new Date();
+    this.saveWorkspaceToAppState(workspace);
+
+    const workspaces = this._store.state.workspaces;
+    const index = workspaces.findIndex(w => w.id === workspace.id);
+
+    if (index !== -1) {
+      workspaces[index] = workspace;
+      this._store.state.workspaces = workspaces;
     }
   }
 
-  delete() {
-    if (!this._store.state.selectionGroup) {
+  deleteWorkspace(workspace: KritzelWorkspace): void {
+    // If deleting the active workspace, need to handle ObjectMap cleanup
+    if (this._store.state.activeWorkspace?.id === workspace.id) {
+      this._store.state.objectsMap?.destroy();
+    }
+
+    this.deleteWorkspaceFromAppState(workspace.id);
+    this._store.state.workspaces = this.loadWorkspacesFromAppState();
+
+    // Also delete the workspace's IndexedDB database
+    const dbName = `kritzel-workspace-${workspace.id}`;
+    window.indexedDB.deleteDatabase(dbName);
+  }
+
+  updateWorkspaceViewport(translateX: number, translateY: number, scale: number): void {
+    const activeWorkspace = this._store.state.activeWorkspace;
+    if (!activeWorkspace) {
       return;
     }
 
-    const deleteSelectedObjectsCommand = this._store.state.selectionGroup.objects.map(obj => new RemoveObjectCommand(this, this._store.state.selectionGroup, obj));
-    const removeSelectionGroupCommand = new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup);
-    const commands = [...deleteSelectedObjectsCommand, removeSelectionGroupCommand];
-
-    this.commandManager.executeCommand(new BatchCommand(this, this._store.state.selectionGroup, commands));
+    activeWorkspace.viewport = { translateX, translateY, scale };
+    activeWorkspace.updatedAt = new Date();
+    this.saveWorkspaceToAppState(activeWorkspace);
   }
 
-  deleteObject(id: string, skipHistory: boolean = false) {
+  addObject(object: KritzelBaseObject<any>): void {
+    this._store.state.objectsMap.insert(object);
+  }
+
+  removeObject(object: KritzelBaseObject<any>): void {
+    object.isMounted = false;
+    this._store.state.objectsMap.remove(o => o.id === object.id);
+  }
+
+  updateObject<T extends KritzelBaseObject<any>>(object: T, updatedProperties: Partial<T>): void {
+    for (const key in updatedProperties) {
+      if (updatedProperties.hasOwnProperty(key)) {
+        object[key] = updatedProperties[key];
+      }
+    }
+
+    this._store.state.objectsMap.update(object);
+  }
+
+  addSelectionGroup(selectionGroup: KritzelSelectionGroup): void {
+    this.removeSelectionGroup();
+    this.removeSelectionBox();
+    this._store.state.objectsMap.insert(selectionGroup);
+  }
+
+  removeSelectionGroup(): void {
+    const selectionGroup = this._store.selectionGroup;
+    if (selectionGroup) {
+      this._store.state.objectsMap.remove(object => object.id === selectionGroup.id);
+    }
+  }
+
+  removeSelectionBox(): void {
+    const selectionBox = this._store.selectionBox;
+    if (selectionBox) {
+      this._store.state.objectsMap.remove(object => object.id === selectionBox.id);
+    }
+  }
+
+  deselectAllObjects(): void {
+    this.removeSelectionGroup();
+    this.rerender();
+  }
+
+  delete() {
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup) {
+      return;
+    }
+
+    selectionGroup.objects.forEach(obj => this.removeObject(obj));
+
+    this.removeSelectionGroup();
+    this.rerender();
+  }
+
+  undo(): void {
+    this._store.state.objectsMap?.undo();
+  }
+
+  redo(): void {
+    this._store.state.objectsMap?.redo();
+  }
+
+  deleteObject(id: string) {
     const object = this.findObjectById(id);
     if (object) {
-      const removeObjectCommand = new RemoveObjectCommand(this, this, object, skipHistory);
-      this.commandManager.executeCommand(removeObjectCommand);
+      this.removeObject(object);
+      this.rerender();
     }
   }
 
   copy() {
-    this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
+    const selectionGroup = this._store.selectionGroup;
+    if (selectionGroup) {
+      // Copy each object and store them in an array
+      this._store.state.copiedObjects = selectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => obj.copy() as KritzelBaseObject<any>);
+    }
   }
 
   paste(x?: number, y?: number) {
     const copiedObjects = this._store.state.copiedObjects;
-    copiedObjects.isSelected = true;
-
-    this._store.state.copiedObjects = copiedObjects;
-
-    const adjustedX = x !== undefined ? x : this._store.state.copiedObjects.translateX + 25 / this._store.state.scale;
-    const adjustedY = y !== undefined ? y : this._store.state.copiedObjects.translateY + 25 / this._store.state.scale;
-
-    this._store.state.copiedObjects.updatePosition(adjustedX, adjustedY);
-    this._store.state.copiedObjects.updateZIndices(this._store.currentZIndex);
+    if (!copiedObjects || copiedObjects.length === 0) {
+      return;
+    }
 
     const activeWorkspace = this._store.state.activeWorkspace;
-    if (this.store.state.copiedObjects.workspaceId !== activeWorkspace.id) {
-      this.store.state.copiedObjects.updateWorkspaceId(activeWorkspace.id);
 
-      if (x !== undefined && y !== undefined) {
-        this._store.state.copiedObjects.updatePosition(x, y);
-      } else {
-        this.store.state.copiedObjects.centerInViewport();
+    // Check if we're pasting from a different workspace
+    const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
+
+    // Calculate the bounding box of all copied objects
+    const minX = Math.min(...copiedObjects.map(obj => obj.translateX));
+    const minY = Math.min(...copiedObjects.map(obj => obj.translateY));
+
+    // Determine the paste position
+    let pasteX: number;
+    let pasteY: number;
+
+    if (x !== undefined && y !== undefined) {
+      // Explicit position provided (e.g., right-click paste)
+      pasteX = x;
+      pasteY = y;
+    } else if (isDifferentWorkspace) {
+      // Pasting to different workspace without explicit position
+      // Keep original position; will be centered by centerInViewport() later
+      pasteX = minX;
+      pasteY = minY;
+    } else {
+      // Same workspace paste: offset by 25 pixels from original position
+      pasteX = minX + 25 / this._store.state.scale;
+      pasteY = minY + 25 / this._store.state.scale;
+    }
+
+    // Calculate the offset to apply to all objects
+    const offsetX = pasteX - minX;
+    const offsetY = pasteY - minY;
+
+    this.removeSelectionGroup();
+    this.removeSelectionBox();
+
+    // Create a new selection group for the pasted objects
+    const selectionGroup = KritzelSelectionGroup.create(this);
+
+    // First add all copied objects to the objectsMap with updated positions
+    copiedObjects.forEach((obj, i) => {
+      // Update workspace if pasting to a different workspace
+      if (obj.workspaceId !== activeWorkspace.id) {
+        obj.workspaceId = activeWorkspace.id;
       }
-      this.engine.viewport.centerFitInViewport(copiedObjects);
+
+      // Update position
+      obj.updatePosition(obj.translateX + offsetX, obj.translateY + offsetY);
+
+      // Update z-index
+      obj.zIndex = this._store.currentZIndex + i;
+
+      // Add to objectsMap
+      this.addObject(obj);
+
+      // Add to selection group
+      selectionGroup.addOrRemove(obj);
+    });
+
+    // Mark selection group as selected
+    selectionGroup.isSelected = true;
+
+    // Set rotation for single object
+    if (copiedObjects.length === 1) {
+      selectionGroup.rotation = copiedObjects[0].rotation;
     }
 
-    const commands = [];
-    let previousSelectionGroup = null;
-    if (this._store.state.selectionGroup !== null) {
-      previousSelectionGroup = this._store.state.selectionGroup;
-      commands.push(new RemoveSelectionGroupCommand(this, this._store.state.selectionGroup));
+    // Add the selection group
+    this.addSelectionGroup(selectionGroup);
+
+    // Handle cross-workspace paste: center objects in viewport
+    if (isDifferentWorkspace) {
+      if (x !== undefined && y !== undefined) {
+        // Position was explicitly provided, use it
+        selectionGroup.updatePosition(x, y);
+      } else {
+        // Center the selection group in the viewport
+        selectionGroup.centerInViewport();
+      }
+      // Fit the viewport to show the pasted objects
+      this.engine.viewport.centerFitInViewport(selectionGroup);
     }
-
-    const addCopiedObjectsCommands = this._store.state.copiedObjects.objects.map(obj => new AddObjectCommand(this, this, obj));
-    const addCopiedObjectsAsSelectionGroupCommand = new AddSelectionGroupCommand(this, this, this._store.state.copiedObjects, previousSelectionGroup);
-
-    commands.push(...addCopiedObjectsCommands, addCopiedObjectsAsSelectionGroupCommand);
-
-    this.commandManager.executeCommand(new BatchCommand(this, this, commands));
 
     this._store.state.isSelecting = false;
-    this._store.state.copiedObjects = this._store.state.selectionGroup.copy() as KritzelSelectionGroup;
+
+    // Update copiedObjects to the newly created objects for potential future pastes
+    const newSelectionGroup = this._store.selectionGroup;
+    if (newSelectionGroup) {
+      this._store.state.copiedObjects = newSelectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => obj.copy() as KritzelBaseObject<any>);
+    }
+
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this.rerender();
   }
 
   bringForward(object?: KritzelBaseObject<any>) {
-    const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const selectionGroup = this._store.selectionGroup;
+    const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const max = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1 : 0;
-    const increaseZIndexCommands = objects.map(obj => {
-      if (obj.zIndex === max) {
-        return;
+
+    objects.forEach(obj => {
+      if (obj.zIndex !== max) {
+        this.updateObject(obj, { zIndex: obj.zIndex + 1 });
       }
-      return new UpdateObjectCommand(this, this, obj, { zIndex: obj.zIndex + 1 });
     });
 
-    this.commandManager.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
+    this.rerender();
   }
 
   sendBackward(object?: KritzelBaseObject<any>) {
-    const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const selectionGroup = this._store.selectionGroup;
+    const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const min = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1 : 0;
-    const decreaseZIndexCommands = objects.map(obj => {
-      if (obj.zIndex === min) {
-        return;
+
+    objects.forEach(obj => {
+      if (obj.zIndex !== min) {
+        this.updateObject(obj, { zIndex: obj.zIndex - 1 });
       }
-      return new UpdateObjectCommand(this, this, obj, { zIndex: obj.zIndex - 1 });
     });
 
-    this.commandManager.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
+    this.rerender();
   }
 
   bringToFront(object?: KritzelBaseObject<any>) {
-    const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const selectionGroup = this._store.selectionGroup;
+    const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const max = Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1;
-    const increaseZIndexCommands = objects.map(obj => {
-      return new UpdateObjectCommand(this, this, obj, { zIndex: max });
+
+    objects.forEach(obj => {
+      this.updateObject(obj, { zIndex: max });
     });
 
-    this.commandManager.executeCommand(new BatchCommand(this, this, increaseZIndexCommands));
+    this.rerender();
   }
 
   sendToBack(object?: KritzelBaseObject<any>) {
-    const objects = object ? [object] : this._store.state.selectionGroup.objects;
+    const selectionGroup = this._store.selectionGroup;
+    const objects = object ? [object] : selectionGroup?.objects || [];
     const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
     const min = Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1;
-    const decreaseZIndexCommands = objects.map(obj => {
-      return new UpdateObjectCommand(this, this, obj, { zIndex: min });
+
+    objects.forEach(obj => {
+      this.updateObject(obj, { zIndex: min });
     });
 
-    this.commandManager.executeCommand(new BatchCommand(this, this, decreaseZIndexCommands));
+    this.rerender();
   }
 
   selectObjects(objects: KritzelBaseObject<any>[]) {
@@ -392,19 +434,18 @@ export class KritzelCore {
 
     selectionGroup.isSelected = true;
 
-    this._store.state.selectionBox = selectionGroup;
-
     if (objects.length === 1) {
       selectionGroup.rotation = selectionGroup.objects[0].rotation;
     }
 
-    this.commandManager.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
+    this.addSelectionGroup(selectionGroup);
+    this.rerender();
   }
 
   selectAllObjectsInViewport() {
     const objectsInViewport = this._store.state.objectsMap
       .filter(o => o.isInViewport())
-      .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KrtizelSelectionBox) && !(o instanceof KritzelContextMenu));
+      .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox) && !(o instanceof KritzelContextMenu));
 
     if (objectsInViewport.length > 0) {
       const selectionGroup = KritzelSelectionGroup.create(this);
@@ -422,17 +463,16 @@ export class KritzelCore {
         selectionGroup.rotation = selectionGroup.objects[0].rotation;
       }
 
-      this.commandManager.executeCommand(new AddSelectionGroupCommand(this, this, selectionGroup));
+      this.addSelectionGroup(selectionGroup);
       this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+      this.rerender();
     }
   }
 
   clearSelection() {
-    const command = new RemoveSelectionGroupCommand(this, this);
-    this.commandManager.executeCommand(command);
+    this.removeSelectionGroup();
 
-    this._store.state.selectionGroup = null;
-    this._store.state.selectionBox = null;
+    this._store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
     this._store.state.isSelecting = false;
     this._store.state.isResizeHandleSelected = false;
     this._store.state.isRotationHandleSelected = false;
@@ -441,16 +481,14 @@ export class KritzelCore {
   }
 
   resetActiveText() {
-    if (this._store.state.activeText) {
-
-      if(this._store.state.activeText.isEmpty) {
-        this.deleteObject(this._store.state.activeText.id, true);
+    const activeText = this._store.activeText;
+    if (activeText) {
+      if (activeText.isEmpty) {
+        this.deleteObject(activeText.id);
       } else {
-        this._store.state.activeText.save();
+        activeText.save();
       }
     }
-
-    this._store.state.activeText = null;
   }
 
   getObjectFromPointerEvent(event: PointerEvent, selector = '.object'): KritzelBaseObject<any> | null {
