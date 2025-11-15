@@ -1,6 +1,5 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { ResizeSelectionGroupCommand } from '../commands/resize-selection-group.command';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseHandler } from './base.handler';
 
@@ -29,17 +28,18 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
-        if (this._core.store.state.selectionGroup && this._core.store.state.isResizeHandleSelected) {
+        const selectionGroup = this._core.store.selectionGroup;
+        if (selectionGroup && this._core.store.state.isResizeHandleSelected) {
           const clientX = event.clientX - this._core.store.offsetX;
           const clientY = event.clientY - this._core.store.offsetY;
 
           this._core.store.state.isResizing = true;
           this.initialMouseX = clientX;
           this.initialMouseY = clientY;
-          this.initialSize.width = this._core.store.state.selectionGroup.width;
-          this.initialSize.height = this._core.store.state.selectionGroup.height;
-          this.initialSize.x = this._core.store.state.selectionGroup.translateX;
-          this.initialSize.y = this._core.store.state.selectionGroup.translateY;
+          this.initialSize.width = selectionGroup.width;
+          this.initialSize.height = selectionGroup.height;
+          this.initialSize.x = selectionGroup.translateX;
+          this.initialSize.y = selectionGroup.translateY;
         }
       }
     }
@@ -53,17 +53,18 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
       }
 
       if (activePointers.length === 1) {
-        if (this._core.store.state.selectionGroup && this._core.store.state.isResizeHandleSelected) {
+        const selectionGroup = this._core.store.selectionGroup;
+        if (selectionGroup && this._core.store.state.isResizeHandleSelected) {
           const clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);
           const clientY = Math.round(firstTouch.clientY - this._core.store.offsetY);
 
           this._core.store.state.isResizing = true;
           this.initialMouseX = clientX;
           this.initialMouseY = clientY;
-          this.initialSize.width = this._core.store.state.selectionGroup.width;
-          this.initialSize.height = this._core.store.state.selectionGroup.height;
-          this.initialSize.x = this._core.store.state.selectionGroup.translateX;
-          this.initialSize.y = this._core.store.state.selectionGroup.translateY;
+          this.initialSize.width = selectionGroup.width;
+          this.initialSize.height = selectionGroup.height;
+          this.initialSize.x = selectionGroup.translateX;
+          this.initialSize.y = selectionGroup.translateY;
 
           clearTimeout(this._core.store.state.longTouchTimeout);
         }
@@ -73,7 +74,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      if (this._core.store.state.isResizing && this._core.store.state.selectionGroup) {
+      const selectionGroup = this._core.store.selectionGroup;
+      if (this._core.store.state.isResizing && selectionGroup) {
         const clientX = event.clientX - this._core.store.offsetX;
         const clientY = event.clientY - this._core.store.offsetY;
 
@@ -119,7 +121,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
             break;
         }
 
-        this._core.store.state.selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+        selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+
       }
     }
 
@@ -131,7 +134,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         return;
       }
 
-      if (this._core.store.state.isResizing && this._core.store.state.selectionGroup) {
+      const selectionGroup = this._core.store.selectionGroup;
+      if (this._core.store.state.isResizing && selectionGroup) {
         const clientX = Math.round(oneFingerTouch.clientX - this._core.store.offsetX);
         const clientY = Math.round(oneFingerTouch.clientY - this._core.store.offsetY);
 
@@ -178,7 +182,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
             break;
         }
 
-        this._core.store.state.selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+        selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+
       }
     }
   }
@@ -189,7 +194,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.store.state.isResizing = false;
 
         if (this.hasResized) {
-          this._core.commandManager.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
+          this._core.store.selectionGroup.update();
           this._core.store.state.hasObjectsChanged = true;
         }
 
@@ -202,7 +207,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.store.state.isResizing = false;
 
         if (this.hasResized) {
-          this._core.commandManager.executeCommand(new ResizeSelectionGroupCommand(this._core, this, structuredClone(this.initialSize), structuredClone(this.newSize)));
+          this._core.store.selectionGroup.update();
           this._core.store.state.hasObjectsChanged = true;
         }
 

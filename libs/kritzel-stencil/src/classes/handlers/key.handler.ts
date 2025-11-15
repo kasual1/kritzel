@@ -7,12 +7,12 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
 
   private shortcuts: KritzelShortcut[] = [
     // General
-    { key: 'Escape', condition: c => !!c.store.state.selectionGroup, action: c => c.clearSelection() },
-    { key: 'Delete', condition: c => !!c.store.state.selectionGroup, action: c => c.delete() },
+    { key: 'Escape', condition: c => !!c.store.selectionGroup, action: c => c.clearSelection() },
+    { key: 'Delete', condition: c => !!c.store.selectionGroup, action: c => c.delete() },
 
-    // History
-    { key: 'z', ctrl: true, action: c => c.history.undo() },
-    { key: 'y', ctrl: true, action: c => c.history.redo() },
+    // Undo/Redo
+    { key: 'z', ctrl: true, action: c => c.undo() },
+    { key: 'y', ctrl: true, action: c => c.redo() },
 
     // Tool selection
     { key: 's', ctrl: true, action: () => this.switchTool('selection') },
@@ -25,23 +25,23 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     {
       key: 'c',
       ctrl: true,
-      condition: c => !!c.store.state.selectionGroup,
+      condition: c => !!c.store.selectionGroup,
       action: c => {
         c.copy();
         c.rerender();
       },
     },
-    { key: 'v', ctrl: true, condition: c => !!c.store.state.copiedObjects && !c.store.state.activeText, action: c => c.paste() },
+    { key: 'v', ctrl: true, condition: c => !!c.store.state.copiedObjects && !c.store.activeText, action: c => c.paste() },
 
     // Text editing
-    // { key: 'a', ctrl: true, condition: c => !!c.store.state.activeText, action: c => c.store.state.activeText.selectAll() },
-    // { key: 'v', ctrl: true, condition: c => !!c.store.state.activeText, action: c => c.store.state.activeText.insertFromClipboard() },
+    // { key: 'a', ctrl: true, condition: c => !!c.store.activeText, action: c => c.store.activeText.selectAll() },
+    // { key: 'v', ctrl: true, condition: c => !!c.store.activeText, action: c => c.store.activeText.insertFromClipboard() },
 
     // Object layering
-    { key: '+', ctrl: true, condition: c => !!c.store.state.selectionGroup, action: c => c.bringForward() },
-    { key: '-', ctrl: true, condition: c => !!c.store.state.selectionGroup, action: c => c.sendBackward() },
-    { key: '*', shift: true, condition: c => !!c.store.state.selectionGroup, action: c => c.bringToFront() },
-    { key: '_', shift: true, condition: c => !!c.store.state.selectionGroup, action: c => c.sendToBack() },
+    { key: '+', ctrl: true, condition: c => !!c.store.selectionGroup, action: c => c.bringForward() },
+    { key: '-', ctrl: true, condition: c => !!c.store.selectionGroup, action: c => c.sendBackward() },
+    { key: '*', shift: true, condition: c => !!c.store.selectionGroup, action: c => c.bringToFront() },
+    { key: '_', shift: true, condition: c => !!c.store.selectionGroup, action: c => c.sendToBack() },
   ];
 
   constructor(core: KritzelCore) {

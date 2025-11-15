@@ -44,11 +44,11 @@ export interface KritzelObject<T = Element> {
   generateId(): string;
   isInViewport(viewport: KritzelBoundingBox, scale: number): boolean;
   centerInViewport(): void;
+  update(): void;
   move(startX: number, startY: number, endX: number, endY: number): void;
   resize(x: number, y: number, width: number, height: number): void;
   rotate(value: number): void;
   copy(): KritzelBaseObject<Element>;
-  onSelectedClick(): void;
   isClass<T extends KritzelBaseObject>(this: T, type: string): this is T;
   edit(event?: PointerEvent): void;
   hitTest(x: number, y: number): boolean;

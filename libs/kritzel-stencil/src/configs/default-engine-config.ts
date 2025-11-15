@@ -1,14 +1,10 @@
 import { KritzelEngineState } from "../interfaces/engine-state.interface";
 
-export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
+export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   activeWorkspace: null,
   activeTool: null,
-  activeText: null,
-  currentPath: null,
   copiedObjects: null,
   objectsMap: null,
-  selectionBox: null,
-  selectionGroup: null,
   resizeHandleType: null,
   hasViewportChanged: false,
   hasObjectsChanged: false,
@@ -35,7 +31,6 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
     showObjectInfo: false,
     showViewportInfo: false,
     logCommands: false,
-    logDatabase: false,
   },
   host: null,
   pointerX: 0,
@@ -54,7 +49,6 @@ export const DEFAULT_ENGINE_STATE: KritzelEngineState = {
   translateYMin: 0,
   viewportWidth: 0,
   viewportHeight: 0,
-  historyBufferSize: 1000,
   longTouchTimeout: null,
   longTouchDelay: 300,
   pointers: new Map<number, PointerEvent>(),
