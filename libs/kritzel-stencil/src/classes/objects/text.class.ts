@@ -2,6 +2,7 @@ import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
+import { KritzelDevicesHelper } from '../../helpers/devices.helper';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
@@ -230,6 +231,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         if (pos) {
           this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
           this.editor.focus();
+          
+          if (KritzelDevicesHelper.isIOS()) {
+            this.scrollIntoViewOnIOS();
+          }
           return;
         }
       }
@@ -237,7 +242,23 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       const end = Math.max(1, doc.content.size - 1);
       this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor.focus();
+      
+      if (KritzelDevicesHelper.isIOS()) {
+        this.scrollIntoViewOnIOS();
+      }
     }
+  }
+
+  private scrollIntoViewOnIOS(): void {
+    setTimeout(() => {
+      if (this.editor && this.editor.dom) {
+        this.editor.dom.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        });
+      }
+    }, 300);
   }
 
   edit(event?: PointerEvent): void {
