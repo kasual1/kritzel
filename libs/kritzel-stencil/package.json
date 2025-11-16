@@ -46,8 +46,10 @@
   "license": "MIT",
   "dependencies": {
     "@hocuspocus/provider": "^3.4.0",
+    "@types/lodash": "^4.17.20",
     "browser-image-compression": "^2.0.2",
     "lib0": "^0.2.98",
+    "lodash": "^4.17.21",
     "perfect-freehand": "^1.2.2",
     "prosemirror-model": "^1.25.4",
     "prosemirror-schema-basic": "^1.2.4",
