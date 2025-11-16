@@ -1,6 +1,7 @@
 import { KritzelBaseObject } from '../..';
 import { KritzelMouseButton } from '../../enums/event-button.enum';
 import { KritzelCore } from './core.class';
+import { debounce } from 'lodash';
 
 export class KritzelViewport {
   private readonly _core: KritzelCore;
@@ -20,21 +21,13 @@ export class KritzelViewport {
     this._core.store.state.translateX = 0;
     this._core.store.state.translateY = 0;
 
-    this._debounceUpdate = this.debounce(() => {
+    this._debounceUpdate = debounce(() => {
       this._core.updateWorkspaceViewport(
         this._core.store.state.translateX, 
         this._core.store.state.translateY, 
         this._core.store.state.scale
       );
-    }, 0);
-  }
-
-  private debounce(func: () => void, delay: number): () => void {
-    let timeoutId: ReturnType<typeof setTimeout>;
-    return () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(func, delay);
-    };
+    }, 300);
   }
 
   handleResize(): void {
