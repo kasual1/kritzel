@@ -119,17 +119,23 @@ export class KritzelEngine {
 
     this.core.store.state.pointers.set(ev.pointerId, ev);
 
-    this.throttleTimeout = this.core.store.state.pointers.size > 1 ? 100 : 0;
-
-    this.throttledPointerMove(ev);
+    // Use different throttle functions based on pointer count
+    if (this.core.store.state.pointers.size > 1) {
+      this.throttledPointerMoveMulti(ev);
+    } else {
+      this.throttledPointerMoveSingle(ev);
+    }
   }
 
-  throttleTimeout: number = 0;
-
-  private throttledPointerMove = throttle((ev: PointerEvent) => {
+  private throttledPointerMoveSingle = throttle((ev: PointerEvent) => {
     this.viewport.handlePointerMove(ev);
     this.core.store.state?.activeTool?.handlePointerMove(ev);
-  }, this.throttleTimeout); 
+  }, 0);
+
+  private throttledPointerMoveMulti = throttle((ev: PointerEvent) => {
+    this.viewport.handlePointerMove(ev);
+    this.core.store.state?.activeTool?.handlePointerMove(ev);
+  }, 100); 
 
   @Listen('pointerup', { passive: false })
   handlePointerUp(ev: PointerEvent) {
@@ -429,7 +435,8 @@ export class KritzelEngine {
   }
 
   disconnectedCallback() {
-    this.throttledPointerMove.cancel();
+    this.throttledPointerMoveSingle.cancel();
+    this.throttledPointerMoveMulti.cancel();
   }
 
   componentWillLoad() {
@@ -504,7 +511,7 @@ export class KritzelEngine {
           <div>TranslateY: {this.core.store.state?.translateY}</div>
           <div>ViewportWidth: {this.core.store.state?.viewportWidth}</div>
           <div>ViewportHeight: {this.core.store.state?.viewportHeight}</div>
-          <div>ThrottleTimout: {this.throttleTimeout}</div>
+          <div>PointerCount: {this.core.store.state.pointers.size}</div>
           <div>Scale: {this.core.store.state?.scale}</div>
           <div>ActiveTool: {this.core.store.state?.activeTool?.name}</div>
           <div>HasViewportChanged: {this.core.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
@@ -530,6 +537,7 @@ export class KritzelEngine {
           class="origin"
           style={{
             transform: `matrix(${this.core.store.state?.scale}, 0, 0, ${this.core.store.state?.scale}, ${this.core.store.state?.translateX}, ${this.core.store.state?.translateY})`,
+            willChange: 'transform',
           }}
         >
           {this.core.store.state.objectsMap.allObjects()?.map(object => {
@@ -543,6 +551,7 @@ export class KritzelEngine {
                   zIndex: object.zIndex.toString(),
                   position: 'absolute',
                   pointerEvents: this.core.store.state.isScaling ? 'none' : 'auto',
+                  willChange: this.core.store.state.isScaling ? 'transform' : 'auto',
                 }}
               >
                 <svg
