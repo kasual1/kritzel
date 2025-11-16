@@ -110,7 +110,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerDown(ev);
   }
 
-  @Listen('pointermove', { passive: false })
+  @Listen('pointermove', { passive: true })
   handlePointerMove(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
@@ -528,6 +528,7 @@ export class KritzelEngine {
                   transformOrigin: 'top left',
                   zIndex: object.zIndex.toString(),
                   position: 'absolute',
+                  pointerEvents: this.core.store.state.isScaling ? 'none' : 'auto',
                 }}
               >
                 <svg
