@@ -25,6 +25,7 @@ import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelCore } from '../../../classes/core/core.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
+import { throttle } from 'lodash';
 
 @Component({
   tag: 'kritzel-engine',
@@ -110,7 +111,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerDown(ev);
   }
 
-  @Listen('pointermove', { passive: false })
+  @Listen('pointermove', { passive: true })
   handlePointerMove(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
@@ -118,9 +119,17 @@ export class KritzelEngine {
 
     this.core.store.state.pointers.set(ev.pointerId, ev);
 
+    this.throttleTimeout = this.core.store.state.pointers.size > 1 ? 100 : 0;
+
+    this.throttledPointerMove(ev);
+  }
+
+  throttleTimeout: number = 0;
+
+  private throttledPointerMove = throttle((ev: PointerEvent) => {
     this.viewport.handlePointerMove(ev);
     this.core.store.state?.activeTool?.handlePointerMove(ev);
-  }
+  }, this.throttleTimeout); 
 
   @Listen('pointerup', { passive: false })
   handlePointerUp(ev: PointerEvent) {
@@ -419,6 +428,10 @@ export class KritzelEngine {
     this.core = new KritzelCore(this);
   }
 
+  disconnectedCallback() {
+    this.throttledPointerMove.cancel();
+  }
+
   componentWillLoad() {
     this.validateScaleMax(this.scaleMax);
     this.validateScaleMin(this.scaleMin);
@@ -491,6 +504,7 @@ export class KritzelEngine {
           <div>TranslateY: {this.core.store.state?.translateY}</div>
           <div>ViewportWidth: {this.core.store.state?.viewportWidth}</div>
           <div>ViewportHeight: {this.core.store.state?.viewportHeight}</div>
+          <div>ThrottleTimout: {this.throttleTimeout}</div>
           <div>Scale: {this.core.store.state?.scale}</div>
           <div>ActiveTool: {this.core.store.state?.activeTool?.name}</div>
           <div>HasViewportChanged: {this.core.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
@@ -528,6 +542,7 @@ export class KritzelEngine {
                   transformOrigin: 'top left',
                   zIndex: object.zIndex.toString(),
                   position: 'absolute',
+                  pointerEvents: this.core.store.state.isScaling ? 'none' : 'auto',
                 }}
               >
                 <svg
