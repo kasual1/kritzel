@@ -77,7 +77,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
         if (event.origin === 'temporary') {
           this._temporaryItemsCount++;
         }
-        console.log('Undo performed for workspace', workspaceId, this._undoManager.undoStack.length, this._undoManager.redoStack.length);
       }
     });
 
@@ -87,7 +86,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
         if (event.origin === 'temporary' && this._temporaryItemsCount > 0) {
           this._temporaryItemsCount--;
         }
-        console.log('Redo performed for workspace', workspaceId, this._undoManager.undoStack.length, this._undoManager.redoStack.length);
       }
     });
 
