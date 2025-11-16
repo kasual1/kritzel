@@ -41,7 +41,7 @@ export class KritzelEngine {
   onWorkspaceChange(newWorkspace: KritzelWorkspace | null) {
     const currentWorkspaceId = this.core.store.state.activeWorkspace?.id;
     const newWorkspaceId = newWorkspace?.id;
-    
+
     if (currentWorkspaceId !== newWorkspaceId) {
       this.core.beforeWorkspaceChange();
       this.core.initializeWorkspace(newWorkspace);
@@ -111,6 +111,11 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerDown(ev);
   }
 
+  private throttledPointerMoveMulti = throttle((ev: PointerEvent) => {
+    this.viewport.handlePointerMove(ev);
+    this.core.store.state?.activeTool?.handlePointerMove(ev);
+  }, 16);
+
   @Listen('pointermove', { passive: false })
   handlePointerMove(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
@@ -119,23 +124,13 @@ export class KritzelEngine {
 
     this.core.store.state.pointers.set(ev.pointerId, ev);
 
-    // Use different throttle functions based on pointer count
     if (this.core.store.state.pointers.size > 1) {
       this.throttledPointerMoveMulti(ev);
-    } else {
-      this.throttledPointerMoveSingle(ev);
     }
+
+    this.viewport.handlePointerMove(ev);
+    this.core.store.state?.activeTool?.handlePointerMove(ev);
   }
-
-  private throttledPointerMoveSingle = throttle((ev: PointerEvent) => {
-    this.viewport.handlePointerMove(ev);
-    this.core.store.state?.activeTool?.handlePointerMove(ev);
-  }, 0);
-
-  private throttledPointerMoveMulti = throttle((ev: PointerEvent) => {
-    this.viewport.handlePointerMove(ev);
-    this.core.store.state?.activeTool?.handlePointerMove(ev);
-  }, 100); 
 
   @Listen('pointerup', { passive: false })
   handlePointerUp(ev: PointerEvent) {
@@ -435,7 +430,6 @@ export class KritzelEngine {
   }
 
   disconnectedCallback() {
-    this.throttledPointerMoveSingle.cancel();
     this.throttledPointerMoveMulti.cancel();
   }
 
@@ -456,7 +450,7 @@ export class KritzelEngine {
 
     // Initialize Yjs document and persistence layer
     await this.core.initializeYjs();
-    
+
     // Initialize workspace (will load from Yjs if available)
     await this.core.initializeWorkspace(this.workspace);
 
@@ -537,7 +531,6 @@ export class KritzelEngine {
           class="origin"
           style={{
             transform: `matrix(${this.core.store.state?.scale}, 0, 0, ${this.core.store.state?.scale}, ${this.core.store.state?.translateX}, ${this.core.store.state?.translateY})`,
-            willChange: 'transform',
           }}
         >
           {this.core.store.state.objectsMap.allObjects()?.map(object => {
@@ -551,7 +544,6 @@ export class KritzelEngine {
                   zIndex: object.zIndex.toString(),
                   position: 'absolute',
                   pointerEvents: this.core.store.state.isScaling ? 'none' : 'auto',
-                  willChange: this.core.store.state.isScaling ? 'transform' : 'auto',
                 }}
               >
                 <svg
@@ -598,7 +590,7 @@ export class KritzelEngine {
                         }}
                         viewBox={object?.viewBox}
                       >
-                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} />
+                        <path d={object?.d} fill={object.fill} stroke={object?.stroke}/>
                       </svg>
                     )}
 
@@ -867,7 +859,6 @@ export class KritzelEngine {
               </div>
             );
           })}
-
         </div>
 
         {this.core.store.state.isContextMenuVisible && (
