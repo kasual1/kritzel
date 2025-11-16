@@ -111,7 +111,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerDown(ev);
   }
 
-  @Listen('pointermove', { passive: true })
+  @Listen('pointermove', { passive: false })
   handlePointerMove(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
