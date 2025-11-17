@@ -174,6 +174,16 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   isInViewport(): boolean {
+
+    const viewportScale = this._core.store.state.scale;
+    const scaledWidth = this.boundingBox.width * viewportScale;
+    const scaledHeight = this.boundingBox.height * viewportScale;
+    
+    if(scaledWidth * scaledHeight < 0.5){
+      return false;
+    }
+
+
     const viewportBounds: KritzelBoundingBox = {
       x: -this._core.store.state.translateX / this._core.store.state.scale,
       y: -this._core.store.state.translateY / this._core.store.state.scale,
