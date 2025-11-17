@@ -80,6 +80,11 @@ export class KritzelEngine {
 
   @State() forceUpdate: number = 0;
 
+  private throttledWheel = throttle((ev: WheelEvent) => {
+    this.viewport.handleWheel(ev);
+    this.core.store.state?.activeTool?.handleWheel(ev);
+  }, 16);
+
   @Listen('wheel', { passive: false })
   handleWheel(ev) {
     if (this.core.store.isDisabled) {
@@ -90,8 +95,7 @@ export class KritzelEngine {
       this.hideContextMenu();
     }
 
-    this.viewport.handleWheel(ev);
-    this.core.store.state?.activeTool?.handleWheel(ev);
+    this.throttledWheel(ev);
   }
 
   @Listen('pointerdown', { passive: false })
@@ -430,6 +434,7 @@ export class KritzelEngine {
   }
 
   disconnectedCallback() {
+    this.throttledWheel.cancel();
     this.throttledPointerMoveMulti.cancel();
   }
 
