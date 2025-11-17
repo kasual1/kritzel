@@ -502,9 +502,7 @@ export class KritzelEngine {
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
 
     // Performance optimization: skip viewport filtering during scaling/panning
-    const visibleObjects = this.core.store.state.isScaling || this.core.store.state.isPanning
-      ? this.core.store.state.objectsMap.allObjects()
-      : this.core.store.state.objectsMap.allObjects().filter(obj => obj.isInViewport());
+    const visibleObjects = this.core.store.state.objectsMap.allObjects().filter(obj => obj.isInViewport());
 
 
 
@@ -551,7 +549,6 @@ export class KritzelEngine {
               <div
                 key={object.id}
                 style={{
-                  display:  object.isInViewport() ? 'block' : 'none',
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
                   zIndex: object.zIndex.toString(),
