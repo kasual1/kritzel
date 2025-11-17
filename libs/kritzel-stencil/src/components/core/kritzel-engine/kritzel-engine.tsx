@@ -546,7 +546,7 @@ export class KritzelEngine {
               <div
                 key={object.id}
                 style={{
-                  display: 'block',
+                  display:  object.isInViewport() ? 'block' : 'none',
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
                   zIndex: object.zIndex.toString(),
