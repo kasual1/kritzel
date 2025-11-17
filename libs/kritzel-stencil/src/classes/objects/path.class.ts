@@ -348,12 +348,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   }
 
   isLowRes(): boolean {
+    if (!this._core) {
+      return false;
+    }
+
     const viewportScale = this._core.store.state.scale;
     const scaledWidth = this.boundingBox.width * viewportScale;
     const scaledHeight = this.boundingBox.height * viewportScale;
 
-    if (scaledWidth * scaledHeight < 300) {
-      return false;
-    }
+    return (scaledWidth * scaledHeight) < 500;
   }
 }
