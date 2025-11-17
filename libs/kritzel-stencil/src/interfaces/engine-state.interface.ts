@@ -40,7 +40,6 @@ export interface KritzelEngineState {
   scale: number;
   scaleMax: number;
   scaleMin: number;
-  scaleStep: number;
   startX: number;
   startY: number;
   translateX: number;
