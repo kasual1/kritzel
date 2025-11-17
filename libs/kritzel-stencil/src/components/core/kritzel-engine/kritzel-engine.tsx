@@ -590,7 +590,7 @@ export class KritzelEngine {
                         }}
                         viewBox={object?.viewBox}
                       >
-                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={this.core.store.state.isScaling ? 'optimizeSpeed' : 'auto'}/>
+                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering="auto" />
                       </svg>
                     )}
 
@@ -603,7 +603,7 @@ export class KritzelEngine {
                           height: '100%',
                           userSelect: 'none',
                           pointerEvents: 'none',
-                          imageRendering: this.core.store.state.isScaling ? 'pixelated' : 'auto',
+                          imageRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'pixelated' : 'auto',
                         }}
                         draggable={false}
                         onDragStart={e => e.preventDefault()}
@@ -626,7 +626,7 @@ export class KritzelEngine {
                           transform: `scale(${object.scaleFactor})`,
                           backgroundColor: object.backgroundColor,
                           overflow: 'visible',
-                          textRendering: this.core.store.state.isScaling ? 'optimizeSpeed' : 'auto',
+                          textRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'optimizeSpeed' : 'auto',
                         }}
                       ></div>
                     )}
