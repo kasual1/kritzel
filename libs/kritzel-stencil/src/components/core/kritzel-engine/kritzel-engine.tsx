@@ -600,7 +600,7 @@ export class KritzelEngine {
                         }}
                         viewBox={object?.viewBox}
                       >
-                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering="auto" />
+                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'} />
                       </svg>
                     )}
 
