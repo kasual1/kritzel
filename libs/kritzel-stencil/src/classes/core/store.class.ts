@@ -5,6 +5,7 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelPath } from '../objects/path.class';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
+import { KritzelBaseObject } from '../..';
 
 export class KritzelStore {
   private readonly _state: KritzelEngineState;
@@ -18,15 +19,15 @@ export class KritzelStore {
     return Math.max(0, ...this._state.objectsMap.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).map(o => o.zIndex)) + 1;
   }
 
-  get allObjects() {
+  get allObjects(): KritzelBaseObject<Element>[]  {
     return this._state.objectsMap.allObjects();
   }
 
-  get allNonSelectionObjects() {
+  get allNonSelectionObjects(): KritzelBaseObject<Element>[]  {
     return this._state.objectsMap.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
   }
 
-  get selectedObjects() {
+  get selectedObjects(): KritzelBaseObject<Element>[] {
     return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.isSelected);
   }
 

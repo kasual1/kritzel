@@ -92,6 +92,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
             this.addSelectedObjectsToSelectionGroup();
             this.removeSelectionBox();
           }
+
+          this._core.engine.emitObjectsChange();
         }
       }
     }
@@ -119,6 +121,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
           this.removeSelectionBox();
         }
 
+        this._core.engine.emitObjectsChange();
         this._core.store.state.skipContextMenu = false;
       }
     }

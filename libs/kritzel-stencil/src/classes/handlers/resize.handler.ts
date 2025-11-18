@@ -195,6 +195,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
         if (this.hasResized) {
           this._core.store.selectionGroup.update();
+          this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
         }
 
@@ -208,6 +209,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
         if (this.hasResized) {
           this._core.store.selectionGroup.update();
+          this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
         }
 

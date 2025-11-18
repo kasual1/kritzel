@@ -28,7 +28,6 @@ export class KritzelEraserTool extends KritzelBaseTool {
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isErasing) {
-        
         const selectedObjects = this._core.getObjectsFromPointerEvent(event, '.object');
 
         if (selectedObjects.length === 0) return;
@@ -48,7 +47,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
       if (this._core.store.state.pointers.size === 1 && this._core.store.state.isErasing) {
         const shadowRoot = this._core.store.state.host?.shadowRoot;
         if (!shadowRoot) return;
-        
+
         const selectedObjects = this._core.getObjectsFromPointerEvent(event, '.object');
 
         if (selectedObjects.length === 0) return;
@@ -69,7 +68,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isErasing) {
         const objectsToRemove = this._core.store.allObjects.filter(object => object.markedForRemoval);
-        
+
         objectsToRemove.forEach(object => {
           object.markedForRemoval = false;
           this._core.removeObject(object);
@@ -80,6 +79,8 @@ export class KritzelEraserTool extends KritzelBaseTool {
         }
 
         this._core.store.state.isErasing = false;
+
+        this._core.engine.emitObjectsChange();
       }
     }
 
@@ -99,6 +100,8 @@ export class KritzelEraserTool extends KritzelBaseTool {
         }
 
         this._core.store.state.isErasing = false;
+
+        this._core.engine.emitObjectsChange();
       }
     }
   }

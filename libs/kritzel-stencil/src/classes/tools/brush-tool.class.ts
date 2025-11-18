@@ -140,6 +140,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           currentPath.isCompleted = true;
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
+          this._core.engine.emitObjectsChange();
         }
       }
     }
@@ -153,6 +154,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           currentPath.isCompleted = true;
           currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objectsMap.update(currentPath);
+          this._core.engine.emitObjectsChange();
         }
       }
     }
