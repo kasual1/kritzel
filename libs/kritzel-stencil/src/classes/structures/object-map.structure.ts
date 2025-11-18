@@ -251,12 +251,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   undo(): void {
     if (this._undoManager && this._undoManager.canUndo()) {
       this._undoManager.undo();
+      this._core.engine.emitObjectsChange();
     }
   }
 
   redo(): void {
     if (this._undoManager && this._undoManager.canRedo()) {
       this._undoManager.redo();
+      this._core.engine.emitObjectsChange();
     }
   }
 

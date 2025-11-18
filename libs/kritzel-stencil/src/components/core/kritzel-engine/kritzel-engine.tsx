@@ -77,6 +77,7 @@ export class KritzelEngine {
   @Event() activeToolChange: EventEmitter<KritzelBaseTool>;
   @Event() workspacesChange: EventEmitter<KritzelWorkspace[]>;
   @Event() longpress: EventEmitter<PointerEvent>;
+  @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
 
   @State() forceUpdate: number = 0;
 
@@ -338,7 +339,7 @@ export class KritzelEngine {
   async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    this.core.removeObject(object);
+    this.core.store.state.objectsMap.remove(o => o.id === object.id);
     this.core.rerender();
 
     return object;
@@ -470,6 +471,12 @@ export class KritzelEngine {
       this.core.store.state.isReady = true;
       this.isEngineReady.emit(this.core.store.state);
     }
+  }
+
+  emitObjectsChange() {
+    const objects = this.core.store.allObjects as KritzelBaseObject<HTMLElement | SVGElement>[];
+    this.objectsChange.emit(objects);
+    console.log('emitObjectsChange emitted', objects);
   }
 
   private _registerStateChangeListeners() {

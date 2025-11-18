@@ -88,6 +88,7 @@ export class KritzelImageTool extends KritzelBaseTool {
     this._core.addObject(image);
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     this._core.selectObjects([image]);
+    this._core.engine.emitObjectsChange();
   }
 
   private handleCancel(): void {

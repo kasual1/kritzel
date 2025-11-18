@@ -134,6 +134,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
         this._core.store.selectionGroup.update();
+        this._core.engine.emitObjectsChange();
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
 
@@ -144,6 +145,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
     if (event.pointerType === 'touch') {
       if (this._core.store.state.isRotating) {
         this._core.store.selectionGroup.update();
+        this._core.engine.emitObjectsChange();
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
 

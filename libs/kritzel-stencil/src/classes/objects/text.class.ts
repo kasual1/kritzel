@@ -295,6 +295,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this._core.store.state.objectsMap.consolidateTemporaryItems();
 
     this._core.store.state.objectsMap.update(this);
+
+    this._core.engine.emitObjectsChange();
   }
 
   handlePointerDown(event: PointerEvent): void {

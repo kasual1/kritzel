@@ -117,6 +117,8 @@ export class KritzelCore {
     await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
     this._store.state.objectsMap = objectsMap;
 
+    this.engine.emitObjectsChange();
+
     this.rerender();
   }
 
