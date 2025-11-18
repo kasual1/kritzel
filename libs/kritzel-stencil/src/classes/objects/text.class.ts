@@ -147,7 +147,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
           this.adjustSizeOnInput();
 
           if (!transaction.getMeta('fromRemote')) {
-            this._core.store.state.objectsMap.update(this, { temporary: true });
+            this._core.store.state.objects.update(this, { temporary: true });
           }
         }
       },
@@ -219,7 +219,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.translateX = x;
     this.translateY = y;
 
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   focus(coords?: { x: number; y: number }): void {
@@ -292,9 +292,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.isEditing = false;
 
-    this._core.store.state.objectsMap.consolidateTemporaryItems();
+    this._core.store.state.objects.consolidateTemporaryItems();
 
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
 
     this._core.engine.emitObjectsChange();
   }

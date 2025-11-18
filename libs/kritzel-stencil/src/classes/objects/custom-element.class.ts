@@ -73,7 +73,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     }
 
     // Update to sync changes to y.js and propagate to other tabs
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   override copy(): KritzelCustomElement {
