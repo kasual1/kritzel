@@ -4,6 +4,7 @@ import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
+import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 
 type ToolConfig = Record<string, any>;
 
@@ -19,6 +20,7 @@ export class KritzelControls {
   @Prop() controls: KritzelToolbarControl[] = [];
   @Prop({ mutable: true }) activeControl: KritzelToolbarControl | null = null;
   @Prop() isUtilityPanelVisible: boolean = true;
+  @Prop() undoState: KritzelUndoState = null;
 
   @Event() isControlsReady: EventEmitter<void>;
 
@@ -151,6 +153,7 @@ export class KritzelControls {
               bottom: '56px',
               left: '12px',
             }}
+            undoState={this.undoState}
             onUndo={() => this.kritzelEngine?.undo()}
             onRedo={() => this.kritzelEngine?.redo()}
             onDelete={() => this.kritzelEngine?.delete()}

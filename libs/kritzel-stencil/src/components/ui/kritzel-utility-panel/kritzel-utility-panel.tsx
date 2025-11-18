@@ -1,4 +1,5 @@
-import { Component, Host, h, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, Event, EventEmitter, Prop } from '@stencil/core';
+import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 
 @Component({
   tag: 'kritzel-utility-panel',
@@ -6,6 +7,8 @@ import { Component, Host, h, Event, EventEmitter } from '@stencil/core';
   shadow: true,
 })
 export class KritzelUtilityPanel {
+  @Prop() undoState: KritzelUndoState = null;
+
   @Event() undo: EventEmitter<void>;
   @Event() redo: EventEmitter<void>;
   @Event() delete: EventEmitter<void>;
@@ -27,10 +30,10 @@ export class KritzelUtilityPanel {
   render() {
     return (
       <Host>
-        <button class="utility-button" onClick={event => this.handleUndo(event)}>
+        <button class="utility-button" disabled={!this.undoState?.canUndo} onClick={event => this.handleUndo(event)}>
           <kritzel-icon name="undo"></kritzel-icon>
         </button>
-        <button class="utility-button" onClick={event => this.handleRedo(event)}>
+        <button class="utility-button" disabled={!this.undoState?.canRedo} onClick={event => this.handleRedo(event)}>
           <kritzel-icon name="redo"></kritzel-icon>
         </button>
 

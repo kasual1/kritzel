@@ -7,6 +7,7 @@ import { KritzelCore } from '../core/core.class';
 import { ISyncProvider } from '../../interfaces/sync-provider.interface';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { DEFAULT_SYNC_CONFIG } from '../../configs/default-sync.config';
+import { KritzelUndoState } from '../..';
 
 export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private map: Map<string, T>;
@@ -30,6 +31,15 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   get workspaceId(): string | null {
     return this._workspaceId;
+  }
+
+  get undoState() : KritzelUndoState {
+    return {
+      canUndo: this._undoManager ? this._undoManager.canUndo() : false,
+      canRedo: this._undoManager ? this._undoManager.canRedo() : false,
+      undoStackSize: this._undoManager ? this._undoManager.undoStack.length : 0,
+      redoStackSize: this._undoManager ? this._undoManager.redoStack.length : 0,
+    };
   }
 
   constructor() {
