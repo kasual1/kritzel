@@ -16,9 +16,6 @@
   max-height: 300px;
 }
 
-:host(:focus-visible) {
-  outline: var(--kritzel-menu-focus-outline, 2px solid #e3e3e3);
-}
 
 .has-open-child-overlay {
   position: absolute;

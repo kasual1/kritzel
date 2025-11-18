@@ -54,7 +54,6 @@ button {
 
 .split-main-button:focus,
 .split-menu-button:focus {
-  outline: none;
   background-color: var(--kritzel-split-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
