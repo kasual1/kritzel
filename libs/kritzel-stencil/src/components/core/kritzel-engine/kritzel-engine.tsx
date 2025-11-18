@@ -26,6 +26,7 @@ import { KritzelCore } from '../../../classes/core/core.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { throttle } from 'lodash';
+import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -78,6 +79,7 @@ export class KritzelEngine {
   @Event() workspacesChange: EventEmitter<KritzelWorkspace[]>;
   @Event() longpress: EventEmitter<PointerEvent>;
   @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
+  @Event() undoStateChange: EventEmitter<KritzelUndoState>;
 
   @State() forceUpdate: number = 0;
 
@@ -475,8 +477,10 @@ export class KritzelEngine {
 
   emitObjectsChange() {
     const objects = this.core.store.allObjects as KritzelBaseObject<HTMLElement | SVGElement>[];
+    const undoState = this.core.store.state.objects.undoState;
+
     this.objectsChange.emit(objects);
-    console.log('emitObjectsChange emitted', objects);
+    this.undoStateChange.emit(undoState);
   }
 
   private _registerStateChangeListeners() {

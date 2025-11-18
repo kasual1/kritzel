@@ -16,6 +16,7 @@ import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
+import { KritzelUndoState } from '../../..';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -99,6 +100,8 @@ export class KritzelEditor {
   @Prop() syncConfig?: KritzelSyncConfig;
 
   @Event() isReady: EventEmitter<HTMLElement>;
+  @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
+  @Event() undoStateChange: EventEmitter<KritzelUndoState>;
 
   @State() isEngineReady: boolean = false;
   @State() isControlsReady: boolean = false;
@@ -106,6 +109,7 @@ export class KritzelEditor {
   @State() workspaces: KritzelWorkspace[] = [];
   @State() activeWorkspace: KritzelWorkspace;
   @State() isVirtualKeyboardOpen: boolean = false;
+  @State() undoState: KritzelUndoState = null;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -132,7 +136,7 @@ export class KritzelEditor {
   }
 
   @Listen('dblclick', { passive: false })
-  handleTouchStart(event: MouseEvent) {
+  onTouchStart(event: MouseEvent) {
     if (event.cancelable) {
       event.preventDefault();
     }
@@ -238,6 +242,19 @@ export class KritzelEditor {
     this.workspaces = event.detail.workspaces;
   }
 
+  handleWorkspacesChange(event: CustomEvent<KritzelWorkspace[]>) {
+    this.workspaces = event.detail;
+  }
+
+  handleObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
+    this.objectsChange.emit(event.detail);
+  }
+
+  handleUndoStateChange(event: CustomEvent<KritzelUndoState>) {
+    this.undoStateChange.emit(event.detail);
+    this.undoState = event.detail;
+  }
+
   private registerCustomSvgIcons() {
     for (const [name, svg] of Object.entries(this.customSvgIcons)) {
       KritzelIconRegistry.register(name, svg);
@@ -299,7 +316,9 @@ export class KritzelEditor {
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
           onIsEngineReady={event => this.onEngineReady(event)}
-          onWorkspacesChange={event => (this.workspaces = event.detail)}
+          onWorkspacesChange={event => this.handleWorkspacesChange(event)}
+          onObjectsChange={event => this.handleObjectsChange(event)}
+          onUndoStateChange={event => this.handleUndoStateChange(event)}
         ></kritzel-engine>
 
         <kritzel-controls
@@ -308,6 +327,7 @@ export class KritzelEditor {
           ref={el => (this.controlsRef = el)}
           controls={this.controls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}
+          undoState={this.undoState}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
       </Host>
