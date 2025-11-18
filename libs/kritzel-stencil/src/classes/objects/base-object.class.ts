@@ -217,7 +217,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   update(): void {
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   move(startX: number, startY: number, endX: number, endY: number): void {
@@ -227,7 +227,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.translateX += deltaX;
     this.translateY += deltaY;
 
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   resize(x: number, y: number, width: number, height: number): void {
@@ -240,13 +240,13 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.translateX = x;
     this.translateY = y;
 
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   rotate(value: number): void {
     this.rotation = value;
 
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   clone(): KritzelBaseObject<T> {
@@ -301,6 +301,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   updatePosition(x: number, y: number): void {
     this.translateX = x;
     this.translateY = y;
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 }

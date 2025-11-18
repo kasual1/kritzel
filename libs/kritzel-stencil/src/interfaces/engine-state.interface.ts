@@ -10,7 +10,7 @@ export interface KritzelEngineState {
   activeWorkspace: KritzelWorkspace;
   activeTool: KritzelBaseTool;
   copiedObjects?: KritzelBaseObject<any>[];
-  objectsMap: KritzelObjectMap<KritzelBaseObject<Element>>;
+  objects: KritzelObjectMap<KritzelBaseObject<Element>>;
   resizeHandleType: KritzelHandleType;
   hasViewportChanged: boolean;
   hasObjectsChanged: boolean;

@@ -11,9 +11,11 @@ import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushTool } from "./classes/tools/brush-tool.class";
 import { KritzelTextTool } from "./classes/tools/text-tool.class";
 import { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelCore } from "./classes/core/core.class";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
+import { KritzelUndoState as KritzelUndoState1 } from ".";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
@@ -26,9 +28,11 @@ export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushTool } from "./classes/tools/brush-tool.class";
 export { KritzelTextTool } from "./classes/tools/text-tool.class";
 export { KritzelBrushToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelCore } from "./classes/core/core.class";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
+export { KritzelUndoState as KritzelUndoState1 } from ".";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
@@ -103,6 +107,10 @@ export namespace Components {
           * @default true
          */
         "isUtilityPanelVisible": boolean;
+        /**
+          * @default null
+         */
+        "undoState": KritzelUndoState;
     }
     interface KritzelCursorTrail {
         "core": KritzelCore;
@@ -331,6 +339,10 @@ export namespace Components {
         "offsetY": number;
     }
     interface KritzelUtilityPanel {
+        /**
+          * @default null
+         */
+        "undoState": KritzelUndoState;
     }
     interface KritzelWorkspaceManager {
         "activeWorkspace": KritzelWorkspace;
@@ -551,6 +563,8 @@ declare global {
     };
     interface HTMLKritzelEditorElementEventMap {
         "isReady": HTMLElement;
+        "objectsChange": KritzelBaseObject[];
+        "undoStateChange": KritzelUndoState1;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -571,6 +585,8 @@ declare global {
         "activeToolChange": KritzelBaseTool;
         "workspacesChange": KritzelWorkspace[];
         "longpress": PointerEvent;
+        "objectsChange": KritzelBaseObject[];
+        "undoStateChange": KritzelUndoState;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -887,6 +903,10 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         "onIsControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
+        /**
+          * @default null
+         */
+        "undoState"?: KritzelUndoState;
     }
     interface KritzelCursorTrail {
         "core"?: KritzelCore;
@@ -930,6 +950,8 @@ declare namespace LocalJSX {
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
+        "onObjectsChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
+        "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState1>) => void;
         /**
           * @default ABSOLUTE_SCALE_MAX
          */
@@ -947,6 +969,8 @@ declare namespace LocalJSX {
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
         "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
+        "onObjectsChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject[]>) => void;
+        "onUndoStateChange"?: (event: KritzelEngineCustomEvent<KritzelUndoState>) => void;
         "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
         /**
           * @default ABSOLUTE_SCALE_MAX
@@ -1100,6 +1124,10 @@ declare namespace LocalJSX {
         "onDelete"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
         "onRedo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
         "onUndo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
+        /**
+          * @default null
+         */
+        "undoState"?: KritzelUndoState;
     }
     interface KritzelWorkspaceManager {
         "activeWorkspace"?: KritzelWorkspace;
