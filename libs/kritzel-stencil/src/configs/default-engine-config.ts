@@ -4,7 +4,7 @@ export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   activeWorkspace: null,
   activeTool: null,
   copiedObjects: null,
-  objectsMap: null,
+  objects: null,
   resizeHandleType: null,
   hasViewportChanged: false,
   hasObjectsChanged: false,

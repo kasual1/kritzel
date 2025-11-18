@@ -16,15 +16,15 @@ export class KritzelStore {
   }
 
   get currentZIndex() {
-    return Math.max(0, ...this._state.objectsMap.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).map(o => o.zIndex)) + 1;
+    return Math.max(0, ...this._state.objects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).map(o => o.zIndex)) + 1;
   }
 
   get allObjects(): KritzelBaseObject<Element>[]  {
-    return this._state.objectsMap.allObjects();
+    return this._state.objects.allObjects();
   }
 
   get allNonSelectionObjects(): KritzelBaseObject<Element>[]  {
-    return this._state.objectsMap.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
+    return this._state.objects.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
   }
 
   get selectedObjects(): KritzelBaseObject<Element>[] {
@@ -32,22 +32,22 @@ export class KritzelStore {
   }
 
   get selectionBox(): KritzelSelectionBox | null {
-    const selectionBoxes = this._state.objectsMap.filter(o => o instanceof KritzelSelectionBox);
+    const selectionBoxes = this._state.objects.filter(o => o instanceof KritzelSelectionBox);
     return selectionBoxes.length > 0 ? (selectionBoxes[0] as KritzelSelectionBox) : null;
   }
 
   get selectionGroup(): KritzelSelectionGroup | null {
-    const selectionGroups = this._state.objectsMap.filter(o => o instanceof KritzelSelectionGroup);
+    const selectionGroups = this._state.objects.filter(o => o instanceof KritzelSelectionGroup);
     return selectionGroups.length > 0 ? (selectionGroups[0] as KritzelSelectionGroup) : null;
   }
 
   get activeText(): KritzelText | null {
-    const activeTexts = this._state.objectsMap.filter(o => o instanceof KritzelText && (o as KritzelText).isEditing);
+    const activeTexts = this._state.objects.filter(o => o instanceof KritzelText && (o as KritzelText).isEditing);
     return activeTexts.length > 0 ? (activeTexts[0] as KritzelText) : null;
   }
 
   get currentPath(): KritzelPath | null {
-    const drawingPaths = this._state.objectsMap.filter(o => o instanceof KritzelPath && (o as KritzelPath).isCompleted === false);
+    const drawingPaths = this._state.objects.filter(o => o instanceof KritzelPath && (o as KritzelPath).isCompleted === false);
     return drawingPaths.length > 0 ? (drawingPaths[0] as KritzelPath) : null;
   }
 
@@ -65,7 +65,7 @@ export class KritzelStore {
 
   constructor(state: KritzelEngineState) {
     this._state = state;
-    this._state.objectsMap = new KritzelObjectMap();
+    this._state.objects = new KritzelObjectMap();
   }
 
   onStateChange<K extends StatePropertyKey>(property: K, listener: StateChangeListener<KritzelEngineState[K]>): void {

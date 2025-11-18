@@ -298,7 +298,7 @@ export class KritzelEngine {
   async hideContextMenu() {
     this.core.store.state.pointers.clear();
     this.core.store.state.isContextMenuVisible = false;
-    this.core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox);
+    this.core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
     this.core.store.state.isSelecting = false;
     this.core.store.state.isEnabled = true;
     this.core.rerender();
@@ -339,7 +339,7 @@ export class KritzelEngine {
   async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    this.core.store.state.objectsMap.remove(o => o.id === object.id);
+    this.core.store.state.objects.remove(o => o.id === object.id);
     this.core.rerender();
 
     return object;
@@ -486,7 +486,7 @@ export class KritzelEngine {
   private _handleActiveToolChange(activeTool: KritzelBaseTool) {
     if (!(activeTool instanceof KritzelSelectionTool)) {
       this.core.clearSelection();
-      this.core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox);
+      this.core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
       this.core.store.state.isSelecting = false;
       this.core.store.state.isResizeHandleSelected = false;
       this.core.store.state.isRotationHandleSelected = false;
@@ -509,7 +509,7 @@ export class KritzelEngine {
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
 
     // Performance optimization: skip viewport filtering during scaling/panning
-    const visibleObjects = this.core.store.state.objectsMap.allObjects().filter(obj => obj.isInViewport());
+    const visibleObjects = this.core.store.state.objects.allObjects().filter(obj => obj.isInViewport());
 
 
 

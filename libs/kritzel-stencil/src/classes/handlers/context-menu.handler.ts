@@ -29,7 +29,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     selectionTool?.moveHandler?.cancelPendingDrag();
 
     if (this._core.store.selectionBox) {
-      this._core.store.state.objectsMap.remove(object => object instanceof KritzelSelectionBox);
+      this._core.store.state.objects.remove(object => object instanceof KritzelSelectionBox);
       this._core.store.state.isSelecting = false;
     }
 

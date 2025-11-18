@@ -91,14 +91,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     this._adjustedPoints = null;
 
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   override rotate(value: number): void {
     this.rotation = value;
     this._adjustedPoints = null;
 
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   override move(startX: number, startY: number, endX: number, endY: number): void {
@@ -110,7 +110,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     this._adjustedPoints = null;
 
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   override hitTest(x: number, y: number): boolean {
@@ -207,7 +207,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateX = x;
     this.translateY = y;
     this._adjustedPoints = null;
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   private computeAdjustedPoints(): number[][] {

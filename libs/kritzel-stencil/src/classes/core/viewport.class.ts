@@ -61,7 +61,7 @@ export class KritzelViewport {
       if (activePointers.length === 2) {
         const currentPath = this._core.store.currentPath;
         if (currentPath) {
-          this._core.store.state.objectsMap.remove(obj => obj.id === currentPath.id);
+          this._core.store.state.objects.remove(obj => obj.id === currentPath.id);
         }
         this._core.store.state.isScaling = true;
 

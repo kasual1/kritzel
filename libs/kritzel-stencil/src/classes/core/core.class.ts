@@ -98,8 +98,8 @@ export class KritzelCore {
     }
 
     // Destroy old ObjectMap if switching workspaces
-    if (this._store.state.objectsMap && this._store.state.objectsMap.isReady) {
-      this._store.state.objectsMap.destroy();
+    if (this._store.state.objects && this._store.state.objects.isReady) {
+      this._store.state.objects.destroy();
     }
 
     // Set active workspace
@@ -115,7 +115,7 @@ export class KritzelCore {
     // Create new ObjectMap with its own Y.Doc for this workspace
     const objectsMap = new KritzelObjectMap();
     await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
-    this._store.state.objectsMap = objectsMap;
+    this._store.state.objects = objectsMap;
 
     this.engine.emitObjectsChange();
 
@@ -165,7 +165,7 @@ export class KritzelCore {
   deleteWorkspace(workspace: KritzelWorkspace): void {
     // If deleting the active workspace, need to handle ObjectMap cleanup
     if (this._store.state.activeWorkspace?.id === workspace.id) {
-      this._store.state.objectsMap?.destroy();
+      this._store.state.objects?.destroy();
     }
 
     this.deleteWorkspaceFromAppState(workspace.id);
@@ -188,12 +188,12 @@ export class KritzelCore {
   }
 
   addObject(object: KritzelBaseObject<any>): void {
-    this._store.state.objectsMap.insert(object);
+    this._store.state.objects.insert(object);
   }
 
   removeObject(object: KritzelBaseObject<any>): void {
     object.isMounted = false;
-    this._store.state.objectsMap.remove(o => o.id === object.id);
+    this._store.state.objects.remove(o => o.id === object.id);
   }
 
   updateObject<T extends KritzelBaseObject<any>>(object: T, updatedProperties: Partial<T>): void {
@@ -203,26 +203,26 @@ export class KritzelCore {
       }
     }
 
-    this._store.state.objectsMap.update(object);
+    this._store.state.objects.update(object);
   }
 
   addSelectionGroup(selectionGroup: KritzelSelectionGroup): void {
     this.removeSelectionGroup();
     this.removeSelectionBox();
-    this._store.state.objectsMap.insert(selectionGroup);
+    this._store.state.objects.insert(selectionGroup);
   }
 
   removeSelectionGroup(): void {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
-      this._store.state.objectsMap.remove(object => object.id === selectionGroup.id);
+      this._store.state.objects.remove(object => object.id === selectionGroup.id);
     }
   }
 
   removeSelectionBox(): void {
     const selectionBox = this._store.selectionBox;
     if (selectionBox) {
-      this._store.state.objectsMap.remove(object => object.id === selectionBox.id);
+      this._store.state.objects.remove(object => object.id === selectionBox.id);
     }
   }
 
@@ -244,11 +244,11 @@ export class KritzelCore {
   }
 
   undo(): void {
-    this._store.state.objectsMap?.undo();
+    this._store.state.objects?.undo();
   }
 
   redo(): void {
-    this._store.state.objectsMap?.redo();
+    this._store.state.objects?.redo();
   }
 
   deleteObject(id: string) {
@@ -445,7 +445,7 @@ export class KritzelCore {
   }
 
   selectAllObjectsInViewport() {
-    const objectsInViewport = this._store.state.objectsMap
+    const objectsInViewport = this._store.state.objects
       .filter(o => o.isInViewport())
       .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox) && !(o instanceof KritzelContextMenu));
 
@@ -474,7 +474,7 @@ export class KritzelCore {
   clearSelection() {
     this.removeSelectionGroup();
 
-    this._store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._store.state.objects.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
     this._store.state.isSelecting = false;
     this._store.state.isResizeHandleSelected = false;
     this._store.state.isRotationHandleSelected = false;

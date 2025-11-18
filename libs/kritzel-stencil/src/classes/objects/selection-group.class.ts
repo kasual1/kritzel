@@ -32,7 +32,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   get objects(): KritzelBaseObject<any>[] {
     return this.objectIds
       .map(id => {
-        const found = this._core.store.state.objectsMap.filter(obj => obj.id === id);
+        const found = this._core.store.state.objects.filter(obj => obj.id === id);
         return found.length > 0 ? found[0] : null;
       })
       .filter(obj => obj !== null) as KritzelBaseObject<any>[];
@@ -99,7 +99,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.translateX = x;
     this.translateY = y;
 
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   /**
@@ -153,7 +153,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     // Only update the selection group itself
     // Child objects are already updated during move/resize/rotate operations
     // Updating them again here would create redundant y.js updates
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   override move(startX: number, startY: number, endX: number, endY: number): void {
@@ -163,8 +163,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.translateX += deltaX;
     this.translateY += deltaY;
 
-    this._core.store.state.objectsMap.transaction(() => {
-      this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.transaction(() => {
+      this._core.store.state.objects.update(this);
 
       this.objects.forEach(obj => {
         obj.move(startX, startY, endX, endY);
@@ -185,7 +185,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const deltaX = x - this.translateX;
     const deltaY = y - this.translateY;
 
-    this._core.store.state.objectsMap.transaction(() => {
+    this._core.store.state.objects.transaction(() => {
       this.objects.forEach(child => {
         const updatedWidth = child.width * widthScaleFactor;
         const updatedHeight = child.height * heightScaleFactor;
@@ -199,7 +199,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       // Refresh dimensions and update the SelectionGroup to propagate changes to other tabs
       this.refreshObjectDimensions();
       this.captureUnchangedSnapshots();
-      this._core.store.state.objectsMap.update(this);
+      this._core.store.state.objects.update(this);
     });
   }
 
@@ -213,9 +213,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
 
-    this._core.store.state.objectsMap.transaction(() => {
+    this._core.store.state.objects.transaction(() => {
       // Update the SelectionGroup itself to propagate rotation to other tabs
-      this._core.store.state.objectsMap.update(this);
+      this._core.store.state.objects.update(this);
 
       this.objects.forEach(child => {
         const unchangedSnapshot = this.unchangedObjectSnapshots.get(child.id);
@@ -281,7 +281,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.height = (this.maxY - this.minY - this.padding) * this.scale;
     }
 
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   private getOffsetXToCenterFromSnapshot(snapshot: UnchangedObjectSnapshot): number {
