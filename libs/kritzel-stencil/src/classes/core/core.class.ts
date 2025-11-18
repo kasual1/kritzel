@@ -364,6 +364,9 @@ export class KritzelCore {
     }
 
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+
+    this.engine.emitObjectsChange();
+    
     this.rerender();
   }
 
