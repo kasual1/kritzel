@@ -690,171 +690,164 @@ export class KritzelEngine {
                     )}
                   </foreignObject>
 
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2={object.totalWidth}
-                    y2="0"
-                    style={{
-                      stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                      strokeLinecap: 'square',
-                    }}
-                    visibility={object.isSelected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2={object.totalHeight}
-                    style={{
-                      stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                      strokeLinecap: 'square',
-                    }}
-                    visibility={object.isSelected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1="0"
-                    y1={object.totalHeight}
-                    x2={object.totalWidth}
-                    y2={object.totalHeight}
-                    style={{
-                      stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                      strokeLinecap: 'square',
-                    }}
-                    visibility={object.isSelected ? 'visible' : 'hidden'}
-                  />
-                  <line
-                    x1={object.totalWidth}
-                    y1="0"
-                    x2={object.totalWidth}
-                    y2={object.totalHeight}
-                    style={{
-                      stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                      strokeLinecap: 'square',
-                    }}
-                    visibility={object.isSelected ? 'visible' : 'hidden'}
-                  />
+                  {object.isSelected && (
+                    <g class="selection-borders">
+                      <line
+                        x1="0"
+                        y1="0"
+                        x2={object.totalWidth}
+                        y2="0"
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                      <line
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2={object.totalHeight}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                      <line
+                        x1="0"
+                        y1={object.totalHeight}
+                        x2={object.totalWidth}
+                        y2={object.totalHeight}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                      <line
+                        x1={object.totalWidth}
+                        y1="0"
+                        x2={object.totalWidth}
+                        y2={object.totalHeight}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                    </g>
+                  )}
 
-                  <circle
-                    class="resize-handle top-left"
-                    cx="0"
-                    cy="0"
-                    r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                    style={{
-                      fill: 'var(--kritzel-selection-handle-color, #000000)',
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="resize-handle-overlay top-left"
-                    cx="0"
-                    cy="0"
-                    r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                    style={{
-                      fill: 'transparent',
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
+                  {object.isSelected && !this.isSelecting && (
+                    <g class="selection-handles">
+                      <circle
+                        class="resize-handle top-left"
+                        cx="0"
+                        cy="0"
+                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                        style={{
+                          fill: 'var(--kritzel-selection-handle-color, #000000)',
+                        }}
+                      />
+                      <circle
+                        class="resize-handle-overlay top-left"
+                        cx="0"
+                        cy="0"
+                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                        style={{
+                          fill: 'transparent',
+                        }}
+                      />
 
-                  <circle
-                    class="resize-handle top-right"
-                    cx={object.totalWidth}
-                    cy="0"
-                    r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                    style={{
-                      fill: 'var(--kritzel-selection-handle-color, #000000)',
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="resize-handle-overlay top-right"
-                    cx={object.totalWidth}
-                    cy="0"
-                    r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                    style={{
-                      fill: 'transparent',
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
+                      <circle
+                        class="resize-handle top-right"
+                        cx={object.totalWidth}
+                        cy="0"
+                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                        style={{
+                          fill: 'var(--kritzel-selection-handle-color, #000000)',
+                        }}
+                      />
+                      <circle
+                        class="resize-handle-overlay top-right"
+                        cx={object.totalWidth}
+                        cy="0"
+                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                        style={{
+                          fill: 'transparent',
+                        }}
+                      />
 
-                  <circle
-                    class="resize-handle bottom-left"
-                    cx="0"
-                    cy={object.totalHeight}
-                    r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                    style={{
-                      fill: 'var(--kritzel-selection-handle-color, #000000)',
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="resize-handle-overlay bottom-left"
-                    cx="0"
-                    cy={object.totalHeight}
-                    r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                    style={{
-                      fill: 'transparent',
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
+                      <circle
+                        class="resize-handle bottom-left"
+                        cx="0"
+                        cy={object.totalHeight}
+                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                        style={{
+                          fill: 'var(--kritzel-selection-handle-color, #000000)',
+                        }}
+                      />
+                      <circle
+                        class="resize-handle-overlay bottom-left"
+                        cx="0"
+                        cy={object.totalHeight}
+                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                        style={{
+                          fill: 'transparent',
+                        }}
+                      />
 
-                  <circle
-                    class="resize-handle bottom-right"
-                    cx={object.totalWidth}
-                    cy={object.totalHeight}
-                    r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                    style={{
-                      fill: 'var(--kritzel-selection-handle-color, #000000)',
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="resize-handle-overlay bottom-right"
-                    cx={object.totalWidth}
-                    cy={object.totalHeight}
-                    r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                    style={{
-                      fill: 'transparent',
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
+                      <circle
+                        class="resize-handle bottom-right"
+                        cx={object.totalWidth}
+                        cy={object.totalHeight}
+                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                        style={{
+                          fill: 'var(--kritzel-selection-handle-color, #000000)',
+                        }}
+                      />
+                      <circle
+                        class="resize-handle-overlay bottom-right"
+                        cx={object.totalWidth}
+                        cy={object.totalHeight}
+                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                        style={{
+                          fill: 'transparent',
+                        }}
+                      />
 
-                  <line
-                    x1={object.totalWidth / 2}
-                    y1="0"
-                    x2={object.totalWidth / 2}
-                    y2={-((15 * object.scale) / this.core.store.state?.scale)}
-                    style={{
-                      stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                      strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="rotation-handle"
-                    cx={object.totalWidth / 2}
-                    cy={-((15 * object.scale) / this.core.store.state?.scale)}
-                    r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                    style={{
-                      fill: 'var(--kritzel-selection-handle-color, #000000)',
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
-                  <circle
-                    class="rotation-handle-overlay"
-                    cx={object.totalWidth / 2}
-                    cy={-((15 * object.scale) / this.core.store.state?.scale)}
-                    r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                    style={{
-                      fill: 'transparent',
-                      cursor: 'grab',
-                    }}
-                    visibility={object.isSelected && !this.isSelecting ? 'visible' : 'hidden'}
-                  />
+                      <line
+                        x1={object.totalWidth / 2}
+                        y1="0"
+                        x2={object.totalWidth / 2}
+                        y2={-((15 * object.scale) / this.core.store.state?.scale)}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                        }}
+                      />
+                      <circle
+                        class="rotation-handle"
+                        cx={object.totalWidth / 2}
+                        cy={-((15 * object.scale) / this.core.store.state?.scale)}
+                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                        style={{
+                          fill: 'var(--kritzel-selection-handle-color, #000000)',
+                        }}
+                      />
+                      <circle
+                        class="rotation-handle-overlay"
+                        cx={object.totalWidth / 2}
+                        cy={-((15 * object.scale) / this.core.store.state?.scale)}
+                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                        style={{
+                          fill: 'transparent',
+                          cursor: 'grab',
+                        }}
+                      />
+                    </g>
+                  )}
 
                   <g style={{ display: this.core.store.state.debugInfo.showObjectInfo ? 'block' : 'none', pointerEvents: 'none' }}>
                     <foreignObject
