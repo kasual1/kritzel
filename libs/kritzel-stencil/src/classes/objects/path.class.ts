@@ -51,7 +51,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.store.state.activeWorkspace.id
+    object.workspaceId = core.store.state.activeWorkspace.id;
     object.options = options;
     object.points = options?.points ?? [];
     object.translateX = options?.translateX ?? 0;
@@ -90,15 +90,15 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateY = y;
 
     this._adjustedPoints = null;
-    
-    this._core.store.state.objectsMap.update(this);
+
+    this._core.store.state.objects.update(this);
   }
 
   override rotate(value: number): void {
     this.rotation = value;
     this._adjustedPoints = null;
-    
-    this._core.store.state.objectsMap.update(this);
+
+    this._core.store.state.objects.update(this);
   }
 
   override move(startX: number, startY: number, endX: number, endY: number): void {
@@ -109,8 +109,8 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateY += deltaY;
 
     this._adjustedPoints = null;
-    
-    this._core.store.state.objectsMap.update(this);
+
+    this._core.store.state.objects.update(this);
   }
 
   override hitTest(x: number, y: number): boolean {
@@ -207,7 +207,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateX = x;
     this.translateY = y;
     this._adjustedPoints = null;
-    this._core.store.state.objectsMap.update(this);
+    this._core.store.state.objects.update(this);
   }
 
   private computeAdjustedPoints(): number[][] {
@@ -234,7 +234,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
       return [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos];
     });
 
-    return rotatedPoints.map(([px, py]) => [((Math.abs(px - this.x) / this.scale + this.translateX)), ((Math.abs(py - this.y) / this.scale + this.translateY))]);
+    return rotatedPoints.map(([px, py]) => [Math.abs(px - this.x) / this.scale + this.translateX, Math.abs(py - this.y) / this.scale + this.translateY]);
   }
 
   private pointToLineSegmentDistance(x: number, y: number, x1: number, y1: number, x2: number, y2: number): number {
@@ -345,5 +345,17 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     }
 
     return result;
+  }
+
+  isLowRes(): boolean {
+    if (!this._core) {
+      return false;
+    }
+
+    const viewportScale = this._core.store.state.scale;
+    const scaledWidth = this.boundingBox.width * viewportScale;
+    const scaledHeight = this.boundingBox.height * viewportScale;
+
+    return (scaledWidth * scaledHeight) < 500;
   }
 }

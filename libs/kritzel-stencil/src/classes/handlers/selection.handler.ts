@@ -92,6 +92,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
             this.addSelectedObjectsToSelectionGroup();
             this.removeSelectionBox();
           }
+
+          this._core.engine.emitObjectsChange();
         }
       }
     }
@@ -119,6 +121,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
           this.removeSelectionBox();
         }
 
+        this._core.engine.emitObjectsChange();
         this._core.store.state.skipContextMenu = false;
       }
     }
@@ -126,7 +129,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   private removeSelectionBox(): void {
     this._core.store.state.isSelecting = false;
-    this._core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox);
+    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
   }
 
   private startMouseSelection(event: MouseEvent): void {
@@ -145,8 +148,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.state.isSelecting = true;
 
-    this._core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
-    this._core.store.state.objectsMap.insert(selectionBox);
+    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._core.store.state.objects.insert(selectionBox);
   }
 
   private startTouchSelection(): void {
@@ -174,8 +177,8 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.state.isSelecting  = true;
 
-    this._core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
-    this._core.store.state.objectsMap.insert(selectionBox);
+    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._core.store.state.objects.insert(selectionBox);
   }
 
   private updateMouseSelection(event: MouseEvent): void {

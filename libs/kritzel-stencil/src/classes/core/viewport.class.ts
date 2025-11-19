@@ -6,6 +6,7 @@ import { debounce } from 'lodash';
 export class KritzelViewport {
   private readonly _core: KritzelCore;
   private readonly _debounceUpdate: () => void;
+  private readonly _debounceEndScaling: () => void;
 
   initialTouchDistance: number = 0;
   startX: number = 0;
@@ -28,6 +29,11 @@ export class KritzelViewport {
         this._core.store.state.scale
       );
     }, 300);
+
+    this._debounceEndScaling = debounce(() => {
+      this._core.store.state.isScaling = false;
+      this._core.rerender();
+    }, 100);
   }
 
   handleResize(): void {
@@ -55,7 +61,7 @@ export class KritzelViewport {
       if (activePointers.length === 2) {
         const currentPath = this._core.store.currentPath;
         if (currentPath) {
-          this._core.store.state.objectsMap.remove(obj => obj.id === currentPath.id);
+          this._core.store.state.objects.remove(obj => obj.id === currentPath.id);
         }
         this._core.store.state.isScaling = true;
 
@@ -160,10 +166,7 @@ export class KritzelViewport {
     if (event.pointerType === 'touch') {
       
       if (this._core.store.state.pointers.size === 0) {
-        setTimeout(() => {
-          this._core.store.state.isScaling = false;
-          this._core.rerender();
-        }, 300);
+        this._debounceEndScaling();
       }
     }
   }
@@ -214,8 +217,9 @@ export class KritzelViewport {
     this._core.store.state.pointerX = (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale;
     this._core.store.state.pointerY = (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale;
 
-    const delta = event.deltaY > 0 ? -this._core.store.state.scaleStep * this._core.store.state.scale : this._core.store.state.scaleStep * this._core.store.state.scale;
-    const newScale = Math.min(this._core.store.state.scaleMax, Math.max(this._core.store.state.scaleMin, this._core.store.state.scale + delta));
+    const rawScaleFactor = 1 + (event.deltaY * -0.012);
+    const scaleFactor = Math.max(0.8, Math.min(1.2, rawScaleFactor));
+    const newScale = Math.min(this._core.store.state.scaleMax, Math.max(this._core.store.state.scaleMin, this._core.store.state.scale * scaleFactor));
 
     const scaleRatio = newScale / this._core.store.state.scale;
     const translateXAdjustment = (xRelativeToHost - this._core.store.state.translateX) * (scaleRatio - 1);
@@ -230,10 +234,7 @@ export class KritzelViewport {
 
     this._core.rerender();
     this._debounceUpdate();
-
-    setTimeout(() => {
-      this._core.store.state.isScaling = false;
-    }, 300);
+    this._debounceEndScaling();
   }
 
   private handlePan(event: WheelEvent): void {

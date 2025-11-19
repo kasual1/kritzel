@@ -26,6 +26,7 @@ import { KritzelCore } from '../../../classes/core/core.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { throttle } from 'lodash';
+import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -77,8 +78,15 @@ export class KritzelEngine {
   @Event() activeToolChange: EventEmitter<KritzelBaseTool>;
   @Event() workspacesChange: EventEmitter<KritzelWorkspace[]>;
   @Event() longpress: EventEmitter<PointerEvent>;
+  @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
+  @Event() undoStateChange: EventEmitter<KritzelUndoState>;
 
   @State() forceUpdate: number = 0;
+
+  private throttledWheel = throttle((ev: WheelEvent) => {
+    this.viewport.handleWheel(ev);
+    this.core.store.state?.activeTool?.handleWheel(ev);
+  }, 16);
 
   @Listen('wheel', { passive: false })
   handleWheel(ev) {
@@ -90,8 +98,7 @@ export class KritzelEngine {
       this.hideContextMenu();
     }
 
-    this.viewport.handleWheel(ev);
-    this.core.store.state?.activeTool?.handleWheel(ev);
+    this.throttledWheel(ev);
   }
 
   @Listen('pointerdown', { passive: false })
@@ -293,7 +300,7 @@ export class KritzelEngine {
   async hideContextMenu() {
     this.core.store.state.pointers.clear();
     this.core.store.state.isContextMenuVisible = false;
-    this.core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox);
+    this.core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
     this.core.store.state.isSelecting = false;
     this.core.store.state.isEnabled = true;
     this.core.rerender();
@@ -334,7 +341,7 @@ export class KritzelEngine {
   async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    this.core.removeObject(object);
+    this.core.store.state.objects.remove(o => o.id === object.id);
     this.core.rerender();
 
     return object;
@@ -430,6 +437,7 @@ export class KritzelEngine {
   }
 
   disconnectedCallback() {
+    this.throttledWheel.cancel();
     this.throttledPointerMoveMulti.cancel();
   }
 
@@ -467,6 +475,14 @@ export class KritzelEngine {
     }
   }
 
+  emitObjectsChange() {
+    const objects = this.core.store.allObjects as KritzelBaseObject<HTMLElement | SVGElement>[];
+    const undoState = this.core.store.state.objects.undoState;
+
+    this.objectsChange.emit(objects);
+    this.undoStateChange.emit(undoState);
+  }
+
   private _registerStateChangeListeners() {
     this.core.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
   }
@@ -474,7 +490,7 @@ export class KritzelEngine {
   private _handleActiveToolChange(activeTool: KritzelBaseTool) {
     if (!(activeTool instanceof KritzelSelectionTool)) {
       this.core.clearSelection();
-      this.core.store.state.objectsMap.remove(o => o instanceof KritzelSelectionBox);
+      this.core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
       this.core.store.state.isSelecting = false;
       this.core.store.state.isResizeHandleSelected = false;
       this.core.store.state.isRotationHandleSelected = false;
@@ -495,6 +511,12 @@ export class KritzelEngine {
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
+
+    // Performance optimization: skip viewport filtering during scaling/panning
+    const visibleObjects = this.core.store.state.objects.allObjects().filter(obj => obj.isInViewport());
+
+
+
 
     return (
       <Host>
@@ -533,12 +555,11 @@ export class KritzelEngine {
             transform: `matrix(${this.core.store.state?.scale}, 0, 0, ${this.core.store.state?.scale}, ${this.core.store.state?.translateX}, ${this.core.store.state?.translateY})`,
           }}
         >
-          {this.core.store.state.objectsMap.allObjects()?.map(object => {
+          {visibleObjects?.map(object => {
             return (
               <div
                 key={object.id}
                 style={{
-                  display: object.isInViewport() ? 'block' : 'none',
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
                   zIndex: object.zIndex.toString(),
@@ -590,7 +611,7 @@ export class KritzelEngine {
                         }}
                         viewBox={object?.viewBox}
                       >
-                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={this.core.store.state.isScaling ? 'optimizeSpeed' : 'auto'}/>
+                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'} />
                       </svg>
                     )}
 
@@ -603,7 +624,7 @@ export class KritzelEngine {
                           height: '100%',
                           userSelect: 'none',
                           pointerEvents: 'none',
-                          imageRendering: this.core.store.state.isScaling ? 'pixelated' : 'auto',
+                          imageRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'pixelated' : 'auto',
                         }}
                         draggable={false}
                         onDragStart={e => e.preventDefault()}
@@ -626,7 +647,7 @@ export class KritzelEngine {
                           transform: `scale(${object.scaleFactor})`,
                           backgroundColor: object.backgroundColor,
                           overflow: 'visible',
-                          textRendering: this.core.store.state.isScaling ? 'optimizeSpeed' : 'auto',
+                          textRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'optimizeSpeed' : 'auto',
                         }}
                       ></div>
                     )}

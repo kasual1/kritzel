@@ -10,16 +10,24 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type KritzelEditorCustomEvent } from "../../../../kritzel-stencil";
+import { type KritzelBaseObject, type KritzelEditorCustomEvent, type KritzelUndoState } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 
-export type KritzelEditorEvents = { onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>> };
+export type KritzelEditorEvents = {
+    onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>>,
+    onObjectsChange: EventName<KritzelEditorCustomEvent<KritzelBaseObject[]>>,
+    onUndoStateChange: EventName<KritzelEditorCustomEvent<KritzelUndoState>>
+};
 
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents>({
     tagName: 'kritzel-editor',
     elementClass: KritzelEditorElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: { onIsReady: 'isReady' } as KritzelEditorEvents,
+    events: {
+        onIsReady: 'isReady',
+        onObjectsChange: 'objectsChange',
+        onUndoStateChange: 'undoStateChange'
+    } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
 });
