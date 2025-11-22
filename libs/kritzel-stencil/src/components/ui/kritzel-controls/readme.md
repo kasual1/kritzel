@@ -12,6 +12,7 @@
 | `activeControl`         | --                         |             | `KritzelToolbarControl`   | `null`  |
 | `controls`              | --                         |             | `KritzelToolbarControl[]` | `[]`    |
 | `isUtilityPanelVisible` | `is-utility-panel-visible` |             | `boolean`                 | `true`  |
+| `undoState`             | --                         |             | `KritzelUndoState`        | `null`  |
 
 
 ## Events
