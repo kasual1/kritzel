@@ -20,12 +20,14 @@
 
 ## Events
 
-| Event              | Description | Type                              |
-| ------------------ | ----------- | --------------------------------- |
-| `activeToolChange` |             | `CustomEvent<KritzelBaseTool>`    |
-| `isEngineReady`    |             | `CustomEvent<KritzelEngineState>` |
-| `longpress`        |             | `CustomEvent<PointerEvent>`       |
-| `workspacesChange` |             | `CustomEvent<KritzelWorkspace[]>` |
+| Event              | Description | Type                                                          |
+| ------------------ | ----------- | ------------------------------------------------------------- |
+| `activeToolChange` |             | `CustomEvent<KritzelBaseTool>`                                |
+| `isEngineReady`    |             | `CustomEvent<KritzelEngineState>`                             |
+| `longpress`        |             | `CustomEvent<PointerEvent>`                                   |
+| `objectsChange`    |             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `undoStateChange`  |             | `CustomEvent<KritzelUndoState>`                               |
+| `workspacesChange` |             | `CustomEvent<KritzelWorkspace[]>`                             |
 
 
 ## Methods
