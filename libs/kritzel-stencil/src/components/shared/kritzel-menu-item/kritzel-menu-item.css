@@ -13,7 +13,6 @@
   font-size: var(--kritzel-menu-item-font-size, 14px);
   color: var(--kritzel-menu-item-color, #333333);
   border-radius: var(--kritzel-menu-item-border-radius, 12px);
-  outline: none;
   cursor: default;
 }
 
@@ -132,7 +131,6 @@ kritzel-icon {
   justify-content: center;
   background-color: transparent;
   background: transparent;
-  outline: none;
   -webkit-tap-highlight-color: transparent;
 }
 

@@ -686,69 +686,93 @@ export class KritzelEngine {
                       ></div>
                     )}
 
-                    {object.isSelected && (
-                      <svg
-                        style={{
-                          height: object?.height.toString(),
-                          width: object?.width.toString(),
-                          position: 'absolute',
-                          overflow: 'visible',
-                          top: '0',
-                          left: '0',
-                        }}
-                      >
-                        <g class="selection-borders">
-                          <line
-                            x1="0"
-                            y1="0"
-                            x2={object.totalWidth}
-                            y2="0"
-                            style={{
-                              stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                              strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                              strokeLinecap: 'square',
-                            }}
-                          />
-                          <line
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2={object.totalHeight}
-                            style={{
-                              stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                              strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                              strokeLinecap: 'square',
-                            }}
-                          />
-                          <line
-                            x1="0"
-                            y1={object.totalHeight}
-                            x2={object.totalWidth}
-                            y2={object.totalHeight}
-                            style={{
-                              stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                              strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                              strokeLinecap: 'square',
-                            }}
-                          />
-                          <line
-                            x1={object.totalWidth}
-                            y1="0"
-                            x2={object.totalWidth}
-                            y2={object.totalHeight}
-                            style={{
-                              stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                              strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                              strokeLinecap: 'square',
-                            }}
-                          />
-                        </g>
-                      </svg>
-                    )}
                   </foreignObject>
 
+                  {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
+                    <g style={{ pointerEvents: 'none' }}>
+                      <foreignObject x={object.totalWidth.toString()} y="0" width="400px" height="160px" style={{ minHeight: '0', minWidth: '0' }}>
+                        <div style={{ width: '100%', height: '100%' }}>
+                          <div style={{ whiteSpace: 'nowrap' }}>Id: {object.id}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
+                          {/* <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>y: {object.y}</div> */}
+                        </div>
+                      </foreignObject>
+                    </g>
+                  )}
+                </svg>
+
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{
+                    height: object?.totalHeight.toString(),
+                    width: object?.totalWidth.toString(),
+                    left: '0',
+                    top: '0',
+                    position: 'absolute',
+                    transform: `rotate(${object.rotationDegrees}deg)`,
+                    transformOrigin: `${object.totalWidth / 2}px ${object.totalHeight / 2}px`,
+                    overflow: 'visible',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {object.isSelected && (
+                    <g class="selection-borders" style={{ pointerEvents: 'none' }}>
+                      <line
+                        x1="0"
+                        y1="0"
+                        x2={object.totalWidth}
+                        y2="0"
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                      <line
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2={object.totalHeight}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                      <line
+                        x1="0"
+                        y1={object.totalHeight}
+                        x2={object.totalWidth}
+                        y2={object.totalHeight}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                      <line
+                        x1={object.totalWidth}
+                        y1="0"
+                        x2={object.totalWidth}
+                        y2={object.totalHeight}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                    </g>
+                  )}
+
                   {object.isSelected && !this.isSelecting && (
-                    <g class="selection-handles">
+                    <g class="selection-handles" style={{ pointerEvents: 'auto' }}>
                       <circle
                         class="resize-handle top-left"
                         cx="0"
@@ -756,6 +780,7 @@ export class KritzelEngine {
                         r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'var(--kritzel-selection-handle-color, #000000)',
+                          paintOrder: 'fill',
                         }}
                       />
                       <circle
@@ -765,6 +790,7 @@ export class KritzelEngine {
                         r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'transparent',
+                          paintOrder: 'fill',
                         }}
                       />
 
@@ -775,6 +801,7 @@ export class KritzelEngine {
                         r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'var(--kritzel-selection-handle-color, #000000)',
+                          paintOrder: 'fill',
                         }}
                       />
                       <circle
@@ -784,6 +811,7 @@ export class KritzelEngine {
                         r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'transparent',
+                          paintOrder: 'fill',
                         }}
                       />
 
@@ -794,6 +822,7 @@ export class KritzelEngine {
                         r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'var(--kritzel-selection-handle-color, #000000)',
+                          paintOrder: 'fill',
                         }}
                       />
                       <circle
@@ -803,6 +832,7 @@ export class KritzelEngine {
                         r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'transparent',
+                          paintOrder: 'fill',
                         }}
                       />
 
@@ -813,6 +843,7 @@ export class KritzelEngine {
                         r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'var(--kritzel-selection-handle-color, #000000)',
+                          paintOrder: 'fill',
                         }}
                       />
                       <circle
@@ -822,6 +853,7 @@ export class KritzelEngine {
                         r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'transparent',
+                          paintOrder: 'fill',
                         }}
                       />
 
@@ -842,6 +874,7 @@ export class KritzelEngine {
                         r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'var(--kritzel-selection-handle-color, #000000)',
+                          paintOrder: 'fill',
                         }}
                       />
                       <circle
@@ -852,27 +885,9 @@ export class KritzelEngine {
                         style={{
                           fill: 'transparent',
                           cursor: 'grab',
+                          paintOrder: 'fill',
                         }}
                       />
-                    </g>
-                  )}
-
-                  {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
-                    <g style={{ pointerEvents: 'none' }}>
-                      <foreignObject x={object.totalWidth.toString()} y="0" width="400px" height="160px" style={{ minHeight: '0', minWidth: '0' }}>
-                        <div style={{ width: '100%', height: '100%' }}>
-                          <div style={{ whiteSpace: 'nowrap' }}>Id: {object.id}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
-                          {/* <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>y: {object.y}</div> */}
-                        </div>
-                      </foreignObject>
                     </g>
                   )}
                 </svg>

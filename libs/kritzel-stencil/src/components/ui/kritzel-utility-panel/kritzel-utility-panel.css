@@ -19,7 +19,6 @@
   height: 28px;
   padding: 8px 4px;
   border: none;
-  outline: none;
   background: none;
   cursor: pointer;
   color: #333333;
@@ -27,7 +26,8 @@
   border-radius: var(--kritzel-utility-panel-button-border-radius, 8px);
 }
 
-.utility-button:focus {
+.utility-button:hover,
+.utility-button:focus-visible {
   background-color: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 

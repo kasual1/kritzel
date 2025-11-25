@@ -22,9 +22,11 @@
 
 ## Events
 
-| Event     | Description | Type                       |
-| --------- | ----------- | -------------------------- |
-| `isReady` |             | `CustomEvent<HTMLElement>` |
+| Event             | Description | Type                                                          |
+| ----------------- | ----------- | ------------------------------------------------------------- |
+| `isReady`         |             | `CustomEvent<HTMLElement>`                                    |
+| `objectsChange`   |             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `undoStateChange` |             | `CustomEvent<KritzelUndoState>`                               |
 
 
 ## Methods
