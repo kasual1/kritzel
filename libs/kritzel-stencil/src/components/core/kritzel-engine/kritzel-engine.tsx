@@ -423,6 +423,7 @@ export class KritzelEngine {
   contextMenuHandler: KritzelContextMenuHandler;
   keyHandler: KritzelKeyHandler;
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
+  private visibleObjectsTimings: number[] = [];
 
   get isSelecting() {
     return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
@@ -512,8 +513,24 @@ export class KritzelEngine {
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
 
-    // Performance optimization: skip viewport filtering during scaling/panning
+    const startTime = performance.now();
     const visibleObjects = this.core.store.state.objects.allObjects().filter(obj => obj.isInViewport());
+    const endTime = performance.now();
+    const elapsed = endTime - startTime;
+    
+    this.visibleObjectsTimings.push(elapsed);
+    if (this.visibleObjectsTimings.length > 25) {
+      this.visibleObjectsTimings.shift();
+    }
+    
+    if (this.visibleObjectsTimings.length === 25) {
+      const avg = this.visibleObjectsTimings.reduce((a, b) => a + b, 0) / 25;
+      const min = Math.min(...this.visibleObjectsTimings);
+      const max = Math.max(...this.visibleObjectsTimings);
+      console.log(`[Performance] Visible objects over 25 calls - Avg: ${avg.toFixed(2)}ms, Min: ${min.toFixed(2)}ms, Max: ${max.toFixed(2)}ms, Current: ${elapsed.toFixed(2)}ms (${visibleObjects.length} objects)`);
+    } else {
+      console.log(`[Performance] Getting visible objects took ${elapsed.toFixed(2)}ms (${visibleObjects.length} objects visible) [${this.visibleObjectsTimings.length}/25 samples]`);
+    }
 
     return (
       <Host>
