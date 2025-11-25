@@ -5,6 +5,13 @@
 <!-- Auto Generated Below -->
 
 
+## Properties
+
+| Property    | Attribute | Description | Type               | Default |
+| ----------- | --------- | ----------- | ------------------ | ------- |
+| `undoState` | --        |             | `KritzelUndoState` | `null`  |
+
+
 ## Events
 
 | Event    | Description | Type                |

@@ -33,7 +33,6 @@
   border-radius: var(--kritzel-controls-control-border-radius, 12px);
   padding: var(--kritzel-controls-control-padding, 8px);
   border: none;
-  outline: none;
   background: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -84,10 +83,6 @@
   align-items: center;
   cursor: pointer;
   border-radius: 50%;
-}
-
-.kritzel-config:focus {
-  outline: var(--kritzel-menu-focus-outline, 2px solid #e3e3e3);
 }
 
 .color-container {
