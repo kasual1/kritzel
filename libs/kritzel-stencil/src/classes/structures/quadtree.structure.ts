@@ -7,7 +7,7 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
   private objects: T[] = [];
   private children: KritzelQuadtree<T>[] | null = null;
 
-  constructor(bounds: KritzelBoundingBox, capacity: number = 8) {
+  constructor(bounds: KritzelBoundingBox, capacity: number = 16) {
     this.bounds = bounds;
     this.capacity = capacity;
   }
