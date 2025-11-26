@@ -8,9 +8,11 @@ import { ISyncProvider } from '../../interfaces/sync-provider.interface';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { DEFAULT_SYNC_CONFIG } from '../../configs/default-sync.config';
 import { KritzelUndoState } from '../..';
+import { KritzelQuadtree } from './quadtree.structure';
 
 export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private map: Map<string, T>;
+  private quadtree: KritzelQuadtree<T>;
   private _ydoc: Y.Doc | null = null;
   private _objectsMap: Y.Map<any> | null = null;
   private _providers: ISyncProvider[] = [];
@@ -44,6 +46,16 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   constructor() {
     this.map = new Map<string, T>();
+    this.quadtree = new KritzelQuadtree<T>(
+      {
+        x: -Infinity,
+        y: -Infinity,
+        z: 0,
+        width: Infinity,
+        height: Infinity,
+      },
+      8
+    );
   }
 
   async initialize(core: KritzelCore, workspaceId: string, config?: KritzelSyncConfig): Promise<void> {
@@ -148,16 +160,29 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     // Delete objects from local map
     objectsToDelete.forEach(objectId => {
       this.map.delete(objectId);
+      this.quadtree.remove(o => o.id === objectId);
     });
 
     // First, update or insert regular objects
     objectsToUpdate.forEach(object => {
+      const existed = this.map.has(object.id);
       this.map.set(object.id, object);
+      if (existed) {
+        this.quadtree.update(object);
+      } else {
+        this.quadtree.insert(object);
+      }
     });
 
     // Then, update or insert SelectionGroups
     selectionGroupsToUpdate.forEach(object => {
+      const existed = this.map.has(object.id);
       this.map.set(object.id, object);
+      if (existed) {
+        this.quadtree.update(object);
+      } else {
+        this.quadtree.insert(object);
+      }
     });
 
     this._core?.rerender();
@@ -174,14 +199,17 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
 
     this.map.clear();
+    this.quadtree.reset();
     this._objectsMap.forEach((serialized, key) => {
       const object = this._reviver.revive<T>(serialized);
       this.map.set(key, object);
+      this.quadtree.insert(object);
     });
   }
 
   reset(): void {
     this.map.clear();
+    this.quadtree.reset();
     this._ydoc.transact(() => {
       this._objectsMap.clear();
     }, 'local');
@@ -192,6 +220,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       return false;
     }
     this.map.set(object.id, object);
+    this.quadtree.insert(object);
 
     if (this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
@@ -208,6 +237,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       return false;
     }
     this.map.set(object.id, object);
+    this.quadtree.update(object);
 
     if (this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
@@ -226,6 +256,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     for (const [id, object] of this.map) {
       if (predicate(object)) {
         this.map.delete(id);
+        this.quadtree.remove(o => o.id === id);
 
         if (this._objectsMap && this.isPersistable(object)) {
           this._ydoc.transact(() => {
@@ -237,17 +268,15 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   filter(predicate: (object: T) => boolean): T[] {
-    const results: T[] = [];
-    for (const object of this.map.values()) {
-      if (predicate(object)) {
-        results.push(object);
-      }
-    }
-    return results;
+    return this.quadtree.filter(predicate);
   }
 
   allObjects(): T[] {
-    return Array.from(this.map.values());
+    return this.quadtree.allObjects();
+  }
+
+  query(range: { x: number; y: number; z: number; width: number; height: number; depth?: number }): T[] {
+    return this.quadtree.query(range);
   }
 
   private isPersistable(object: T): boolean {
