@@ -448,7 +448,17 @@ export class KritzelCore {
   }
 
   selectAllObjectsInViewport() {
+    const viewportBounds = {
+      x: -this._store.state.translateX / this._store.state.scale,
+      y: -this._store.state.translateY / this._store.state.scale,
+      z: this._store.state.scale,
+      width: this._store.state.viewportWidth / this._store.state.scale,
+      height: this._store.state.viewportHeight / this._store.state.scale,
+      depth: 100,
+    };
+
     const objectsInViewport = this._store.state.objects
+      .query(viewportBounds)
       .filter(o => o.isInViewport())
       .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox) && !(o instanceof KritzelContextMenu));
 
