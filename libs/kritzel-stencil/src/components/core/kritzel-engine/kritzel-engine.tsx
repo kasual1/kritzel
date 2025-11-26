@@ -423,6 +423,7 @@ export class KritzelEngine {
   contextMenuHandler: KritzelContextMenuHandler;
   keyHandler: KritzelKeyHandler;
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
+  private visibleObjectsTimings: number[] = [];
 
   get isSelecting() {
     return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
@@ -512,38 +513,66 @@ export class KritzelEngine {
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
 
-    // Performance optimization: skip viewport filtering during scaling/panning
-    const visibleObjects = this.core.store.state.objects.allObjects().filter(obj => obj.isInViewport());
+    const startTime = performance.now();
+    
+    const viewportBounds = {
+      x: -this.core.store.state.translateX / this.core.store.state.scale,
+      y: -this.core.store.state.translateY / this.core.store.state.scale,
+      z: this.core.store.state.scale,
+      width: this.core.store.state.viewportWidth / this.core.store.state.scale,
+      height: this.core.store.state.viewportHeight / this.core.store.state.scale,
+      depth: 100,
+    };
+    
+    const visibleObjects = this.core.store.state.objects.query(viewportBounds);
+    const endTime = performance.now();
+    const elapsed = endTime - startTime;
+    
+    this.visibleObjectsTimings.push(elapsed);
+    if (this.visibleObjectsTimings.length > 25) {
+      this.visibleObjectsTimings.shift();
+    }
+    
+    if (this.visibleObjectsTimings.length === 25) {
+      const avg = this.visibleObjectsTimings.reduce((a, b) => a + b, 0) / 25;
+      const min = Math.min(...this.visibleObjectsTimings);
+      const max = Math.max(...this.visibleObjectsTimings);
+      console.log(`[Performance] Visible objects over 25 calls - Avg: ${avg.toFixed(2)}ms, Min: ${min.toFixed(2)}ms, Max: ${max.toFixed(2)}ms, Current: ${elapsed.toFixed(2)}ms (${visibleObjects.length} objects)`);
+    } else {
+      console.log(`[Performance] Getting visible objects took ${elapsed.toFixed(2)}ms (${visibleObjects.length} objects visible) [${this.visibleObjectsTimings.length}/25 samples]`);
+    }
 
     return (
       <Host>
-        <div class="debug-panel" style={{ display: this.core.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
-          <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
-          <div>ActiveWorkspaceName: {this.core.store.state?.activeWorkspace?.name}</div>
-          <div>TranslateX: {this.core.store.state?.translateX}</div>
-          <div>TranslateY: {this.core.store.state?.translateY}</div>
-          <div>ViewportWidth: {this.core.store.state?.viewportWidth}</div>
-          <div>ViewportHeight: {this.core.store.state?.viewportHeight}</div>
-          <div>PointerCount: {this.core.store.state.pointers.size}</div>
-          <div>Scale: {this.core.store.state?.scale}</div>
-          <div>ActiveTool: {this.core.store.state?.activeTool?.name}</div>
-          <div>HasViewportChanged: {this.core.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
-          <div>IsEnabled: {this.core.store.state?.isEnabled ? 'true' : 'false'}</div>
-          <div>IsScaling: {this.core.store.state?.isScaling ? 'true' : 'false'}</div>
-          <div>IsPanning: {this.core.store.state?.isPanning ? 'true' : 'false'}</div>
-          <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
-          <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
-          <div>IsResizeHandleSelected: {this.core.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
-          <div>IsRotationHandleSelected: {this.core.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
-          <div>IsDrawing: {this.core.store.state.isDrawing ? 'true' : 'false'}</div>
-          <div>IsWriting: {this.core.store.state.isWriting ? 'true' : 'false'}</div>
-          <div>PointerX: {this.core.store.state?.pointerX}</div>
-          <div>PointerY: {this.core.store.state?.pointerY}</div>
-          <div>SelectedObjects: {this.core.store.selectionGroup?.objects.length || 0}</div>
-          <div>
-            ViewportCenter: ({viewportCenterX.toFixed(2)}, {viewportCenterY.toFixed(2)})
+        {this.core.store.state.debugInfo.showViewportInfo && (
+          <div class="debug-panel">
+            <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
+            <div>ActiveWorkspaceName: {this.core.store.state?.activeWorkspace?.name}</div>
+            <div>TranslateX: {this.core.store.state?.translateX}</div>
+            <div>TranslateY: {this.core.store.state?.translateY}</div>
+            <div>ViewportWidth: {this.core.store.state?.viewportWidth}</div>
+            <div>ViewportHeight: {this.core.store.state?.viewportHeight}</div>
+            <div>PointerCount: {this.core.store.state.pointers.size}</div>
+            <div>Scale: {this.core.store.state?.scale}</div>
+            <div>ActiveTool: {this.core.store.state?.activeTool?.name}</div>
+            <div>HasViewportChanged: {this.core.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
+            <div>IsEnabled: {this.core.store.state?.isEnabled ? 'true' : 'false'}</div>
+            <div>IsScaling: {this.core.store.state?.isScaling ? 'true' : 'false'}</div>
+            <div>IsPanning: {this.core.store.state?.isPanning ? 'true' : 'false'}</div>
+            <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
+            <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
+            <div>IsResizeHandleSelected: {this.core.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
+            <div>IsRotationHandleSelected: {this.core.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
+            <div>IsDrawing: {this.core.store.state.isDrawing ? 'true' : 'false'}</div>
+            <div>IsWriting: {this.core.store.state.isWriting ? 'true' : 'false'}</div>
+            <div>PointerX: {this.core.store.state?.pointerX}</div>
+            <div>PointerY: {this.core.store.state?.pointerY}</div>
+            <div>SelectedObjects: {this.core.store.selectionGroup?.objects.length || 0}</div>
+            <div>
+              ViewportCenter: ({viewportCenterX.toFixed(2)}, {viewportCenterY.toFixed(2)})
+            </div>
           </div>
-        </div>
+        )}
 
         <div
           id="origin"
