@@ -423,7 +423,6 @@ export class KritzelEngine {
   contextMenuHandler: KritzelContextMenuHandler;
   keyHandler: KritzelKeyHandler;
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
-  private visibleObjectsTimings: number[] = [];
 
   get isSelecting() {
     return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
@@ -512,9 +511,6 @@ export class KritzelEngine {
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
-
-    const startTime = performance.now();
-    
     const viewportBounds = {
       x: -this.core.store.state.translateX / this.core.store.state.scale,
       y: -this.core.store.state.translateY / this.core.store.state.scale,
@@ -523,24 +519,7 @@ export class KritzelEngine {
       height: this.core.store.state.viewportHeight / this.core.store.state.scale,
       depth: 100,
     };
-    
     const visibleObjects = this.core.store.state.objects.query(viewportBounds);
-    const endTime = performance.now();
-    const elapsed = endTime - startTime;
-    
-    this.visibleObjectsTimings.push(elapsed);
-    if (this.visibleObjectsTimings.length > 25) {
-      this.visibleObjectsTimings.shift();
-    }
-    
-    if (this.visibleObjectsTimings.length === 25) {
-      const avg = this.visibleObjectsTimings.reduce((a, b) => a + b, 0) / 25;
-      const min = Math.min(...this.visibleObjectsTimings);
-      const max = Math.max(...this.visibleObjectsTimings);
-      console.log(`[Performance] Visible objects over 25 calls - Avg: ${avg.toFixed(2)}ms, Min: ${min.toFixed(2)}ms, Max: ${max.toFixed(2)}ms, Current: ${elapsed.toFixed(2)}ms (${visibleObjects.length} objects)`);
-    } else {
-      console.log(`[Performance] Getting visible objects took ${elapsed.toFixed(2)}ms (${visibleObjects.length} objects visible) [${this.visibleObjectsTimings.length}/25 samples]`);
-    }
 
     return (
       <Host>
