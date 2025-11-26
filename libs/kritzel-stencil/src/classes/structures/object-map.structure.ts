@@ -11,7 +11,6 @@ import { KritzelUndoState } from '../..';
 import { KritzelQuadtree } from './quadtree.structure';
 
 export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
-  private map: Map<string, T>;
   private quadtree: KritzelQuadtree<T>;
   private _ydoc: Y.Doc | null = null;
   private _objectsMap: Y.Map<any> | null = null;
@@ -45,7 +44,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   constructor() {
-    this.map = new Map<string, T>();
     this.quadtree = new KritzelQuadtree<T>(
       {
         x: -Infinity,
@@ -159,14 +157,12 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     // Delete objects from local map
     objectsToDelete.forEach(objectId => {
-      this.map.delete(objectId);
       this.quadtree.remove(o => o.id === objectId);
     });
 
     // First, update or insert regular objects
     objectsToUpdate.forEach(object => {
-      const existed = this.map.has(object.id);
-      this.map.set(object.id, object);
+      const existed = this.quadtree.filter(o => o.id === object.id).length > 0;
       if (existed) {
         this.quadtree.update(object);
       } else {
@@ -176,8 +172,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     // Then, update or insert SelectionGroups
     selectionGroupsToUpdate.forEach(object => {
-      const existed = this.map.has(object.id);
-      this.map.set(object.id, object);
+      const existed = this.quadtree.filter(o => o.id === object.id).length > 0;
       if (existed) {
         this.quadtree.update(object);
       } else {
@@ -198,17 +193,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       return;
     }
 
-    this.map.clear();
     this.quadtree.reset();
-    this._objectsMap.forEach((serialized, key) => {
+    this._objectsMap.forEach(serialized => {
       const object = this._reviver.revive<T>(serialized);
-      this.map.set(key, object);
       this.quadtree.insert(object);
     });
   }
 
   reset(): void {
-    this.map.clear();
     this.quadtree.reset();
     this._ydoc.transact(() => {
       this._objectsMap.clear();
@@ -219,7 +211,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     if (!object.id) {
       return false;
     }
-    this.map.set(object.id, object);
     this.quadtree.insert(object);
 
     if (this._objectsMap && this.isPersistable(object)) {
@@ -233,10 +224,13 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   update(object: T, options: { temporary?: boolean } = {}): boolean {
-    if (!object.id || !this.map.has(object.id)) {
+    if (!object.id) {
       return false;
     }
-    this.map.set(object.id, object);
+    const existed = this.quadtree.filter(o => o.id === object.id).length > 0;
+    if (!existed) {
+      return false;
+    }
     this.quadtree.update(object);
 
     if (this._objectsMap && this.isPersistable(object)) {
@@ -253,16 +247,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   remove(predicate: (object: T) => boolean): void {
-    for (const [id, object] of this.map) {
-      if (predicate(object)) {
-        this.map.delete(id);
-        this.quadtree.remove(o => o.id === id);
+    const objectsToRemove = this.quadtree.filter(predicate);
+    for (const object of objectsToRemove) {
+      this.quadtree.remove(o => o.id === object.id);
 
-        if (this._objectsMap && this.isPersistable(object)) {
-          this._ydoc.transact(() => {
-            this._objectsMap.delete(id);
-          }, 'local');
-        }
+      if (this._objectsMap && this.isPersistable(object)) {
+        this._ydoc.transact(() => {
+          this._objectsMap.delete(object.id);
+        }, 'local');
       }
     }
   }
@@ -398,6 +390,5 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     if (this._ydoc) {
       this._ydoc.destroy();
     }
-    this.map.clear();
   }
 }
