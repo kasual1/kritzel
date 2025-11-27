@@ -511,39 +511,47 @@ export class KritzelEngine {
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
-
-    // Performance optimization: skip viewport filtering during scaling/panning
-    const visibleObjects = this.core.store.state.objects.allObjects().filter(obj => obj.isInViewport());
+    const viewportBounds = {
+      x: -this.core.store.state.translateX / this.core.store.state.scale,
+      y: -this.core.store.state.translateY / this.core.store.state.scale,
+      z: this.core.store.state.scale,
+      width: this.core.store.state.viewportWidth / this.core.store.state.scale,
+      height: this.core.store.state.viewportHeight / this.core.store.state.scale,
+      depth: 100,
+    };
+    const visibleObjects = this.core.store.state.objects.query(viewportBounds);
 
     return (
       <Host>
-        <div class="debug-panel" style={{ display: this.core.store.state.debugInfo.showViewportInfo ? 'block' : 'none' }}>
-          <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
-          <div>ActiveWorkspaceName: {this.core.store.state?.activeWorkspace?.name}</div>
-          <div>TranslateX: {this.core.store.state?.translateX}</div>
-          <div>TranslateY: {this.core.store.state?.translateY}</div>
-          <div>ViewportWidth: {this.core.store.state?.viewportWidth}</div>
-          <div>ViewportHeight: {this.core.store.state?.viewportHeight}</div>
-          <div>PointerCount: {this.core.store.state.pointers.size}</div>
-          <div>Scale: {this.core.store.state?.scale}</div>
-          <div>ActiveTool: {this.core.store.state?.activeTool?.name}</div>
-          <div>HasViewportChanged: {this.core.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
-          <div>IsEnabled: {this.core.store.state?.isEnabled ? 'true' : 'false'}</div>
-          <div>IsScaling: {this.core.store.state?.isScaling ? 'true' : 'false'}</div>
-          <div>IsPanning: {this.core.store.state?.isPanning ? 'true' : 'false'}</div>
-          <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
-          <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
-          <div>IsResizeHandleSelected: {this.core.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
-          <div>IsRotationHandleSelected: {this.core.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
-          <div>IsDrawing: {this.core.store.state.isDrawing ? 'true' : 'false'}</div>
-          <div>IsWriting: {this.core.store.state.isWriting ? 'true' : 'false'}</div>
-          <div>PointerX: {this.core.store.state?.pointerX}</div>
-          <div>PointerY: {this.core.store.state?.pointerY}</div>
-          <div>SelectedObjects: {this.core.store.selectionGroup?.objects.length || 0}</div>
-          <div>
-            ViewportCenter: ({viewportCenterX.toFixed(2)}, {viewportCenterY.toFixed(2)})
+        {this.core.store.state.debugInfo.showViewportInfo && (
+          <div class="debug-panel">
+            <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
+            <div>ActiveWorkspaceName: {this.core.store.state?.activeWorkspace?.name}</div>
+            <div>TranslateX: {this.core.store.state?.translateX}</div>
+            <div>TranslateY: {this.core.store.state?.translateY}</div>
+            <div>ViewportWidth: {this.core.store.state?.viewportWidth}</div>
+            <div>ViewportHeight: {this.core.store.state?.viewportHeight}</div>
+            <div>PointerCount: {this.core.store.state.pointers.size}</div>
+            <div>Scale: {this.core.store.state?.scale}</div>
+            <div>ActiveTool: {this.core.store.state?.activeTool?.name}</div>
+            <div>HasViewportChanged: {this.core.store.state?.hasViewportChanged ? 'true' : 'false'}</div>
+            <div>IsEnabled: {this.core.store.state?.isEnabled ? 'true' : 'false'}</div>
+            <div>IsScaling: {this.core.store.state?.isScaling ? 'true' : 'false'}</div>
+            <div>IsPanning: {this.core.store.state?.isPanning ? 'true' : 'false'}</div>
+            <div>IsSelecting: {this.isSelecting ? 'true' : 'false'}</div>
+            <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
+            <div>IsResizeHandleSelected: {this.core.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
+            <div>IsRotationHandleSelected: {this.core.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
+            <div>IsDrawing: {this.core.store.state.isDrawing ? 'true' : 'false'}</div>
+            <div>IsWriting: {this.core.store.state.isWriting ? 'true' : 'false'}</div>
+            <div>PointerX: {this.core.store.state?.pointerX}</div>
+            <div>PointerY: {this.core.store.state?.pointerY}</div>
+            <div>SelectedObjects: {this.core.store.selectionGroup?.objects.length || 0}</div>
+            <div>
+              ViewportCenter: ({viewportCenterX.toFixed(2)}, {viewportCenterY.toFixed(2)})
+            </div>
           </div>
-        </div>
+        )}
 
         <div
           id="origin"
@@ -686,69 +694,93 @@ export class KritzelEngine {
                       ></div>
                     )}
 
-                    {object.isSelected && (
-                      <svg
-                        style={{
-                          height: object?.height.toString(),
-                          width: object?.width.toString(),
-                          position: 'absolute',
-                          overflow: 'visible',
-                          top: '0',
-                          left: '0',
-                        }}
-                      >
-                        <g class="selection-borders">
-                          <line
-                            x1="0"
-                            y1="0"
-                            x2={object.totalWidth}
-                            y2="0"
-                            style={{
-                              stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                              strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                              strokeLinecap: 'square',
-                            }}
-                          />
-                          <line
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2={object.totalHeight}
-                            style={{
-                              stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                              strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                              strokeLinecap: 'square',
-                            }}
-                          />
-                          <line
-                            x1="0"
-                            y1={object.totalHeight}
-                            x2={object.totalWidth}
-                            y2={object.totalHeight}
-                            style={{
-                              stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                              strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                              strokeLinecap: 'square',
-                            }}
-                          />
-                          <line
-                            x1={object.totalWidth}
-                            y1="0"
-                            x2={object.totalWidth}
-                            y2={object.totalHeight}
-                            style={{
-                              stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                              strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                              strokeLinecap: 'square',
-                            }}
-                          />
-                        </g>
-                      </svg>
-                    )}
                   </foreignObject>
 
+                  {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
+                    <g style={{ pointerEvents: 'none' }}>
+                      <foreignObject x={object.totalWidth.toString()} y="0" width="400px" height="160px" style={{ minHeight: '0', minWidth: '0' }}>
+                        <div style={{ width: '100%', height: '100%' }}>
+                          <div style={{ whiteSpace: 'nowrap' }}>Id: {object.id}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
+                          {/* <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>y: {object.y}</div> */}
+                        </div>
+                      </foreignObject>
+                    </g>
+                  )}
+                </svg>
+
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{
+                    height: object?.totalHeight.toString(),
+                    width: object?.totalWidth.toString(),
+                    left: '0',
+                    top: '0',
+                    position: 'absolute',
+                    transform: `rotate(${object.rotationDegrees}deg)`,
+                    transformOrigin: `${object.totalWidth / 2}px ${object.totalHeight / 2}px`,
+                    overflow: 'visible',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  {object.isSelected && (
+                    <g class="selection-borders" style={{ pointerEvents: 'none' }}>
+                      <line
+                        x1="0"
+                        y1="0"
+                        x2={object.totalWidth}
+                        y2="0"
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                      <line
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2={object.totalHeight}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                      <line
+                        x1="0"
+                        y1={object.totalHeight}
+                        x2={object.totalWidth}
+                        y2={object.totalHeight}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                      <line
+                        x1={object.totalWidth}
+                        y1="0"
+                        x2={object.totalWidth}
+                        y2={object.totalHeight}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'square',
+                        }}
+                      />
+                    </g>
+                  )}
+
                   {object.isSelected && !this.isSelecting && (
-                    <g class="selection-handles">
+                    <g class="selection-handles" style={{ pointerEvents: 'auto' }}>
                       <circle
                         class="resize-handle top-left"
                         cx="0"
@@ -756,6 +788,7 @@ export class KritzelEngine {
                         r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'var(--kritzel-selection-handle-color, #000000)',
+                          paintOrder: 'fill',
                         }}
                       />
                       <circle
@@ -765,6 +798,7 @@ export class KritzelEngine {
                         r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'transparent',
+                          paintOrder: 'fill',
                         }}
                       />
 
@@ -775,6 +809,7 @@ export class KritzelEngine {
                         r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'var(--kritzel-selection-handle-color, #000000)',
+                          paintOrder: 'fill',
                         }}
                       />
                       <circle
@@ -784,6 +819,7 @@ export class KritzelEngine {
                         r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'transparent',
+                          paintOrder: 'fill',
                         }}
                       />
 
@@ -794,6 +830,7 @@ export class KritzelEngine {
                         r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'var(--kritzel-selection-handle-color, #000000)',
+                          paintOrder: 'fill',
                         }}
                       />
                       <circle
@@ -803,6 +840,7 @@ export class KritzelEngine {
                         r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'transparent',
+                          paintOrder: 'fill',
                         }}
                       />
 
@@ -813,6 +851,7 @@ export class KritzelEngine {
                         r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'var(--kritzel-selection-handle-color, #000000)',
+                          paintOrder: 'fill',
                         }}
                       />
                       <circle
@@ -822,6 +861,7 @@ export class KritzelEngine {
                         r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'transparent',
+                          paintOrder: 'fill',
                         }}
                       />
 
@@ -842,6 +882,7 @@ export class KritzelEngine {
                         r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'var(--kritzel-selection-handle-color, #000000)',
+                          paintOrder: 'fill',
                         }}
                       />
                       <circle
@@ -852,27 +893,9 @@ export class KritzelEngine {
                         style={{
                           fill: 'transparent',
                           cursor: 'grab',
+                          paintOrder: 'fill',
                         }}
                       />
-                    </g>
-                  )}
-
-                  {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
-                    <g style={{ pointerEvents: 'none' }}>
-                      <foreignObject x={object.totalWidth.toString()} y="0" width="400px" height="160px" style={{ minHeight: '0', minWidth: '0' }}>
-                        <div style={{ width: '100%', height: '100%' }}>
-                          <div style={{ whiteSpace: 'nowrap' }}>Id: {object.id}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
-                          {/* <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>y: {object.y}</div> */}
-                        </div>
-                      </foreignObject>
                     </g>
                   )}
                 </svg>
