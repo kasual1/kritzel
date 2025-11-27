@@ -110,8 +110,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         // The center moves by half of the screen delta (scaled)
         // This is true regardless of rotation because the resize happens symmetrically around the center
         // relative to the fixed point logic
-        const newCenterX = initialCenterX + dx / this._core.store.state.scale / 2;
-        const newCenterY = initialCenterY + dy / this._core.store.state.scale / 2;
+        const newCenterX = initialCenterX + dx / 2;
+        const newCenterY = initialCenterY + dy / 2;
 
         switch (this._core.store.state.resizeHandleType) {
           case KritzelHandleType.TopLeft:
@@ -180,8 +180,8 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         const initialCenterX = this.initialSize.x + this.initialSize.width / 2;
         const initialCenterY = this.initialSize.y + this.initialSize.height / 2;
 
-        const newCenterX = initialCenterX + dx / this._core.store.state.scale / 2;
-        const newCenterY = initialCenterY + dy / this._core.store.state.scale / 2;
+        const newCenterX = initialCenterX + dx / 2;
+        const newCenterY = initialCenterY + dy / 2;
 
         switch (this._core.store.state.resizeHandleType) {
           case KritzelHandleType.TopLeft:
