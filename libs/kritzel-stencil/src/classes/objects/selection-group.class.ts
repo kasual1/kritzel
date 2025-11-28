@@ -225,8 +225,24 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
         const newChildCenterY = newCenterY + rotatedY;
 
         // New child top-left
-        const updatedWidth = child.width * widthScaleFactor;
-        const updatedHeight = child.height * heightScaleFactor;
+        // Calculate relative rotation
+        const relativeRotation = child.rotation - rotation;
+        const cosRel = Math.cos(relativeRotation);
+        const sinRel = Math.sin(relativeRotation);
+
+        // Project the group's scale factors onto the child's local axes
+        // We use absolute values because scaling is magnitude-based
+        // If the child is aligned (0 deg), cos=1, sin=0 -> scales match
+        // If the child is 90 deg, cos=0, sin=1 -> scales swap
+        const newChildWidthScale = Math.sqrt(
+          Math.pow(widthScaleFactor * cosRel, 2) + Math.pow(heightScaleFactor * sinRel, 2)
+        );
+        const newChildHeightScale = Math.sqrt(
+          Math.pow(widthScaleFactor * sinRel, 2) + Math.pow(heightScaleFactor * cosRel, 2)
+        );
+
+        const updatedWidth = child.width * newChildWidthScale;
+        const updatedHeight = child.height * newChildHeightScale;
         const updatedTotalWidth = updatedWidth + child.padding * 2;
         const updatedTotalHeight = updatedHeight + child.padding * 2;
 
