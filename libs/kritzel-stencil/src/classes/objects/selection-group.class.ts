@@ -182,16 +182,56 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const widthScaleFactor = width / this.width;
     const heightScaleFactor = height / this.height;
 
-    const deltaX = x - this.translateX;
-    const deltaY = y - this.translateY;
+    // Calculate old center
+    const oldCenterX = this.translateX + this.totalWidth / 2 / this.scale;
+    const oldCenterY = this.translateY + this.totalHeight / 2 / this.scale;
+
+    // Calculate new center
+    const newTotalWidth = width + this.padding * 2;
+    const newTotalHeight = height + this.padding * 2;
+    const newCenterX = x + newTotalWidth / 2 / this.scale;
+    const newCenterY = y + newTotalHeight / 2 / this.scale;
+
+    const rotation = this.rotation;
+    const cos = Math.cos(-rotation);
+    const sin = Math.sin(-rotation);
+    const cosR = Math.cos(rotation);
+    const sinR = Math.sin(rotation);
 
     this._core.store.state.objects.transaction(() => {
       this.objects.forEach(child => {
+        // Calculate child center
+        const childCenterX = child.translateX + child.totalWidth / 2 / child.scale;
+        const childCenterY = child.translateY + child.totalHeight / 2 / child.scale;
+
+        // Vector from old group center to child center
+        const dx = childCenterX - oldCenterX;
+        const dy = childCenterY - oldCenterY;
+
+        // Rotate to local space (align with group axes)
+        const localX = dx * cos - dy * sin;
+        const localY = dx * sin + dy * cos;
+
+        // Scale in local space
+        const scaledLocalX = localX * widthScaleFactor;
+        const scaledLocalY = localY * heightScaleFactor;
+
+        // Rotate back to world space
+        const rotatedX = scaledLocalX * cosR - scaledLocalY * sinR;
+        const rotatedY = scaledLocalX * sinR + scaledLocalY * cosR;
+
+        // New child center
+        const newChildCenterX = newCenterX + rotatedX;
+        const newChildCenterY = newCenterY + rotatedY;
+
+        // New child top-left
         const updatedWidth = child.width * widthScaleFactor;
         const updatedHeight = child.height * heightScaleFactor;
+        const updatedTotalWidth = updatedWidth + child.padding * 2;
+        const updatedTotalHeight = updatedHeight + child.padding * 2;
 
-        const updatedX = child.translateX + deltaX + (child.translateX - this.translateX) * (widthScaleFactor - 1);
-        const updatedY = child.translateY + deltaY + (child.translateY - this.translateY) * (heightScaleFactor - 1);
+        const updatedX = newChildCenterX - updatedTotalWidth / 2 / child.scale;
+        const updatedY = newChildCenterY - updatedTotalHeight / 2 / child.scale;
 
         child.resize(updatedX, updatedY, updatedWidth, updatedHeight);
       });
@@ -268,17 +308,51 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.width = (this.maxX - this.minX - this.padding) * this.scale;
       this.height = (this.maxY - this.minY - this.padding) * this.scale;
     } else {
-      this.minX = Math.min(...this.objects.map(obj => obj.minXRotated));
-      this.maxX = Math.max(...this.objects.map(obj => obj.maxXRotated));
+      const rotation = this.rotation;
+      const cos = Math.cos(-rotation);
+      const sin = Math.sin(-rotation);
 
-      this.minY = Math.min(...this.objects.map(obj => obj.minYRotated));
-      this.maxY = Math.max(...this.objects.map(obj => obj.maxYRotated));
+      let minX = Infinity;
+      let maxX = -Infinity;
+      let minY = Infinity;
+      let maxY = -Infinity;
 
-      this.translateX = this.minX - this.padding;
-      this.translateY = this.minY - this.padding;
+      this.objects.forEach(obj => {
+        const polygon = obj.rotatedPolygon;
+        const corners = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
 
-      this.width = (this.maxX - this.minX - this.padding) * this.scale;
-      this.height = (this.maxY - this.minY - this.padding) * this.scale;
+        corners.forEach(corner => {
+          // Rotate corner into local space (aligned with group rotation)
+          const rx = corner.x * cos - corner.y * sin;
+          const ry = corner.x * sin + corner.y * cos;
+
+          if (rx < minX) minX = rx;
+          if (rx > maxX) maxX = rx;
+          if (ry < minY) minY = ry;
+          if (ry > maxY) maxY = ry;
+        });
+      });
+
+      // Dimensions in world units (unrotated)
+      const worldWidth = maxX - minX;
+      const worldHeight = maxY - minY;
+
+      this.width = (worldWidth - this.padding) * this.scale;
+      this.height = (worldHeight - this.padding) * this.scale;
+
+      // Center of the box in rotated space
+      const cRx = (minX + maxX) / 2;
+      const cRy = (minY + maxY) / 2;
+
+      // Rotate center back to world space
+      const cosR = Math.cos(rotation);
+      const sinR = Math.sin(rotation);
+
+      const cx = cRx * cosR - cRy * sinR;
+      const cy = cRx * sinR + cRy * cosR;
+
+      this.translateX = cx - (this.width / this.scale + 2 * this.padding) / 2;
+      this.translateY = cy - (this.height / this.scale + 2 * this.padding) / 2;
     }
 
     this._core.store.state.objects.update(this);
