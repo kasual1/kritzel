@@ -21,6 +21,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   
   // Store snapshots of object state for transformations (rotation, resize)
   unchangedObjectSnapshots: Map<string, UnchangedObjectSnapshot> = new Map();
+  snapshotRotation: number = 0;
 
   minX: number;
   maxX: number;
@@ -107,6 +108,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
    */
   private captureUnchangedSnapshots(): void {
     this.unchangedObjectSnapshots.clear();
+    this.snapshotRotation = this.rotation;
     this.objects.forEach(obj => {
       this.unchangedObjectSnapshots.set(obj.id, {
         id: obj.id,
@@ -265,7 +267,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const centerX = this.translateX + this.totalWidth / 2 / this.scale;
     const centerY = this.translateY + this.totalHeight / 2 / this.scale;
 
-    const angle = value;
+    const angle = value - this.snapshotRotation;
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
 
@@ -286,7 +288,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
         child.translateX = centerX + rotatedX - child.totalWidth / 2 / child.scale;
         child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
 
-        child.rotate(this.objects.length === 1 ? value : value + unchangedSnapshot.rotation);
+        child.rotate(this.objects.length === 1 ? value : unchangedSnapshot.rotation + angle);
       });
     });
   }
