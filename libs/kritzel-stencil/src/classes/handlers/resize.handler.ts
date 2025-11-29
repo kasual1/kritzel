@@ -94,35 +94,49 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           return;
         }
 
+        const rotation = selectionGroup.rotation;
+        const sin = Math.sin(rotation);
+        const cos = Math.cos(rotation);
+        const activeScale = selectionGroup.scale || this._core.store.state.scale;
+
+        // Calculate delta in local unrotated space
+        // We rotate the screen delta by -rotation to align with the object's axes
+        const localDx = dx * cos + dy * sin;
+        const localDy = -dx * sin + dy * cos;
+
+        // Calculate the center of the selection group before resize
+        const initialCenterX = this.initialSize.x + this.initialSize.width / activeScale / 2;
+        const initialCenterY = this.initialSize.y + this.initialSize.height / activeScale / 2;
+
+        // The center moves by half of the screen delta (scaled)
+        // This is true regardless of rotation because the resize happens symmetrically around the center
+        // relative to the fixed point logic
+        const newCenterX = initialCenterX + dx / activeScale / 2;
+        const newCenterY = initialCenterY + dy / activeScale / 2;
+
         switch (this._core.store.state.resizeHandleType) {
           case KritzelHandleType.TopLeft:
-            this.newSize.width = this.initialSize.width - dx;
-            this.newSize.height = this.initialSize.height - dy;
-            this.newSize.x = dx / this._core.store.state.scale + this.initialSize.x;
-            this.newSize.y = dy / this._core.store.state.scale + this.initialSize.y;
+            this.newSize.width = this.initialSize.width - localDx;
+            this.newSize.height = this.initialSize.height - localDy;
             break;
           case KritzelHandleType.TopRight:
-            this.newSize.width = this.initialSize.width + dx;
-            this.newSize.height = this.initialSize.height - dy;
-            this.newSize.x = this.initialSize.x;
-            this.newSize.y = dy / this._core.store.state.scale + this.initialSize.y;
+            this.newSize.width = this.initialSize.width + localDx;
+            this.newSize.height = this.initialSize.height - localDy;
             break;
           case KritzelHandleType.BottomLeft:
-            this.newSize.width = this.initialSize.width - dx;
-            this.newSize.height = this.initialSize.height + dy;
-            this.newSize.x = dx / this._core.store.state.scale + this.initialSize.x;
-            this.newSize.y = this.initialSize.y;
+            this.newSize.width = this.initialSize.width - localDx;
+            this.newSize.height = this.initialSize.height + localDy;
             break;
           case KritzelHandleType.BottomRight:
-            this.newSize.width = this.initialSize.width + dx;
-            this.newSize.height = this.initialSize.height + dy;
-            this.newSize.x = this.initialSize.x;
-            this.newSize.y = this.initialSize.y;
+            this.newSize.width = this.initialSize.width + localDx;
+            this.newSize.height = this.initialSize.height + localDy;
             break;
         }
 
-        selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+        this.newSize.x = newCenterX - this.newSize.width / activeScale / 2;
+        this.newSize.y = newCenterY - this.newSize.height / activeScale / 2;
 
+        selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
       }
     }
 
@@ -155,35 +169,43 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           return;
         }
 
+        const rotation = selectionGroup.rotation;
+        const sin = Math.sin(rotation);
+        const cos = Math.cos(rotation);
+        const activeScale = selectionGroup.scale || this._core.store.state.scale;
+
+        const localDx = dx * cos + dy * sin;
+        const localDy = -dx * sin + dy * cos;
+
+        const initialCenterX = this.initialSize.x + this.initialSize.width / activeScale / 2;
+        const initialCenterY = this.initialSize.y + this.initialSize.height / activeScale / 2;
+
+        const newCenterX = initialCenterX + dx / activeScale / 2;
+        const newCenterY = initialCenterY + dy / activeScale / 2;
+
         switch (this._core.store.state.resizeHandleType) {
           case KritzelHandleType.TopLeft:
-            this.newSize.width = this.initialSize.width - dx;
-            this.newSize.height = this.initialSize.height - dy;
-            this.newSize.x = dx / this._core.store.state.scale + this.initialSize.x;
-            this.newSize.y = dy / this._core.store.state.scale + this.initialSize.y;
+            this.newSize.width = this.initialSize.width - localDx;
+            this.newSize.height = this.initialSize.height - localDy;
             break;
           case KritzelHandleType.TopRight:
-            this.newSize.width = this.initialSize.width + dx;
-            this.newSize.height = this.initialSize.height - dy;
-            this.newSize.x = this.initialSize.x;
-            this.newSize.y = dy / this._core.store.state.scale + this.initialSize.y;
+            this.newSize.width = this.initialSize.width + localDx;
+            this.newSize.height = this.initialSize.height - localDy;
             break;
           case KritzelHandleType.BottomLeft:
-            this.newSize.width = this.initialSize.width - dx;
-            this.newSize.height = this.initialSize.height + dy;
-            this.newSize.x = dx / this._core.store.state.scale + this.initialSize.x;
-            this.newSize.y = this.initialSize.y;
+            this.newSize.width = this.initialSize.width - localDx;
+            this.newSize.height = this.initialSize.height + localDy;
             break;
           case KritzelHandleType.BottomRight:
-            this.newSize.width = this.initialSize.width + dx;
-            this.newSize.height = this.initialSize.height + dy;
-            this.newSize.x = this.initialSize.x;
-            this.newSize.y = this.initialSize.y;
+            this.newSize.width = this.initialSize.width + localDx;
+            this.newSize.height = this.initialSize.height + localDy;
             break;
         }
 
-        selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+        this.newSize.x = newCenterX - this.newSize.width / activeScale / 2;
+        this.newSize.y = newCenterY - this.newSize.height / activeScale / 2;
 
+        selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
       }
     }
   }
