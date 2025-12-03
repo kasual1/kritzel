@@ -186,6 +186,7 @@ export namespace Components {
         "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;
         "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
+        "cursorTarget"?: HTMLElement;
         "delete": () => Promise<void>;
         "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "disable": () => Promise<void>;
@@ -964,6 +965,7 @@ declare namespace LocalJSX {
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
+        "cursorTarget"?: HTMLElement;
         "globalContextMenuItems"?: ContextMenuItem[];
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;

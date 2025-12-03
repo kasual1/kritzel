@@ -74,6 +74,16 @@ export class KritzelEngine {
       this.core.store.state.scaleMin = newValue;
     }
   }
+  @Prop() cursorTarget?: HTMLElement;
+  @Watch('cursorTarget')
+  onCursorTargetChange(newValue: HTMLElement | undefined) {
+    // Reset cursor on old target
+    if (this.cursorTargetElement) {
+      this.cursorTargetElement.style.cursor = '';
+    }
+    // Set new target (defaults to document.body)
+    this.cursorTargetElement = newValue || document.body;
+  }
 
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
   @Event() activeToolChange: EventEmitter<KritzelBaseTool>;
@@ -436,6 +446,7 @@ export class KritzelEngine {
   contextMenuHandler: KritzelContextMenuHandler;
   keyHandler: KritzelKeyHandler;
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
+  cursorTargetElement: HTMLElement | null = null;
 
   get isSelecting() {
     return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
@@ -452,6 +463,12 @@ export class KritzelEngine {
   disconnectedCallback() {
     this.throttledWheel.cancel();
     this.throttledPointerMoveMulti.cancel();
+    
+    // Reset cursor on target element
+    if (this.cursorTargetElement) {
+      this.cursorTargetElement.style.cursor = '';
+      this.cursorTargetElement = null;
+    }
   }
 
   componentWillLoad() {
@@ -463,6 +480,9 @@ export class KritzelEngine {
     this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems, this.objectContextMenuItems);
     this.keyHandler = new KritzelKeyHandler(this.core);
     this.viewport = new KritzelViewport(this.core, this.host);
+
+    // Set cursor target element (use prop value or default to document.body)
+    this.cursorTargetElement = this.cursorTarget || document.body;
 
     // Set sync configuration if provided
     if (this.syncConfig) {
@@ -517,7 +537,7 @@ export class KritzelEngine {
     this.core.rerender();
   }
 
-  private getCursor(): string | undefined {
+  private updateCursor(): void {
     const state = this.core.store.state;
     
     const isPointerDown = this.core.store.isPointerDown;
@@ -526,13 +546,19 @@ export class KritzelEngine {
     const iconActive = state.cursor?.iconActive ?? icon;
     const rotation = state.cursor?.rotation;
 
-    return KritzelCursorHelper.getCursor({
+    const cursor = KritzelCursorHelper.getCursor({
       iconName: isPointerDown ? iconActive : icon,
       rotation: rotation,
-    })
+    });
+
+    if (this.cursorTargetElement) {
+      this.cursorTargetElement.style.cursor = cursor;
+    }
   }
 
   render() {
+    this.updateCursor();
+
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
@@ -550,11 +576,7 @@ export class KritzelEngine {
     const visibleObjects = this.core.store.state.objects.query(viewportBounds);
 
     return (
-      <Host
-        style={{
-          cursor: this.getCursor(),
-        }}
-      >
+      <Host>
         {this.core.store.state.debugInfo.showViewportInfo && (
           <div class="debug-panel">
             <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
