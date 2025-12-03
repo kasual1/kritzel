@@ -18,6 +18,8 @@ export * from './classes/tools/brush-tool.class';
 export * from './classes/tools/eraser-tool.class';
 export * from './classes/tools/image-tool.class';
 export * from './classes/tools/text-tool.class';
+
+export * from './helpers/cursor.helper';
 export * from './classes/tools/selection-tool.class';
 
 export * from './classes/providers/broadcast-sync-provider.class';

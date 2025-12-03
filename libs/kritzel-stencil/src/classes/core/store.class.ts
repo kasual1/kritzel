@@ -63,6 +63,10 @@ export class KritzelStore {
     return this._state.isEnabled === false || this._state.isReady === false || this._state.activeWorkspace === null;
   }
 
+  get isPointerDown() {
+    return this._state.pointers.size > 0;
+  }
+
   constructor(state: KritzelEngineState) {
     this._state = state;
     this._state.objects = new KritzelObjectMap();
