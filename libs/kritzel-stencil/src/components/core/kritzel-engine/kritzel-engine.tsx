@@ -27,6 +27,7 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { throttle } from 'lodash';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
+import { KritzelCursorHelper } from '../../../helpers/cursor.helper';
 
 @Component({
   tag: 'kritzel-engine',
@@ -129,7 +130,9 @@ export class KritzelEngine {
       return;
     }
 
-    this.core.store.state.pointers.set(ev.pointerId, ev);
+    if (this.core.store.state.pointers.has(ev.pointerId)) {
+      this.core.store.state.pointers.set(ev.pointerId, ev);
+    }
 
     if (this.core.store.state.pointers.size > 1) {
       this.throttledPointerMoveMulti(ev);
@@ -504,6 +507,18 @@ export class KritzelEngine {
     this.core.rerender();
   }
 
+  private getCursor(): string | undefined {
+    const state = this.core.store.state;
+    const rotation = this.core.store.selectionGroup?.rotationDegrees ?? 0;
+    
+    const isPointerDown = this.core.store.isPointerDown;
+
+    return KritzelCursorHelper.getCursor({
+      iconName: isPointerDown ? state.cursor.iconActive : state.cursor.icon,
+      rotation: rotation,
+    })
+  }
+
   render() {
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
@@ -522,7 +537,11 @@ export class KritzelEngine {
     const visibleObjects = this.core.store.state.objects.query(viewportBounds);
 
     return (
-      <Host>
+      <Host
+        style={{
+          cursor: this.getCursor(),
+        }}
+      >
         {this.core.store.state.debugInfo.showViewportInfo && (
           <div class="debug-panel">
             <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
@@ -542,8 +561,10 @@ export class KritzelEngine {
             <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
             <div>IsResizeHandleSelected: {this.core.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
             <div>IsRotationHandleSelected: {this.core.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
+            <div>IsRotationHandleHovered: {this.core.store.state.isRotationHandleHovered ? 'true' : 'false'}</div>
             <div>IsDrawing: {this.core.store.state.isDrawing ? 'true' : 'false'}</div>
             <div>IsWriting: {this.core.store.state.isWriting ? 'true' : 'false'}</div>
+            <div>IsPointerDown: {this.core.store.isPointerDown ? 'true' : 'false'}</div>
             <div>PointerX: {this.core.store.state?.pointerX}</div>
             <div>PointerY: {this.core.store.state?.pointerY}</div>
             <div>SelectedObjects: {this.core.store.selectionGroup?.objects.length || 0}</div>
@@ -693,7 +714,6 @@ export class KritzelEngine {
                         }}
                       ></div>
                     )}
-
                   </foreignObject>
 
                   {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
@@ -705,11 +725,6 @@ export class KritzelEngine {
                           <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
                           <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
                           <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
-                          {/* <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>y: {object.y}</div> */}
                         </div>
                       </foreignObject>
                     </g>
@@ -892,9 +907,9 @@ export class KritzelEngine {
                         r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'transparent',
-                          cursor: 'grab',
                           paintOrder: 'fill',
                         }}
+                        onPointerEnter={() => this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' }}
                       />
                     </g>
                   )}
