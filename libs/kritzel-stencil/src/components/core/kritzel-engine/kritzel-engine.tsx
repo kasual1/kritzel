@@ -828,7 +828,7 @@ export class KritzelEngine {
                           fill: 'transparent',
                           paintOrder: 'fill',
                         }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
                         onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
 

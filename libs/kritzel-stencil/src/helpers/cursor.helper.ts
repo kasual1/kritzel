@@ -14,16 +14,18 @@ export class KritzelCursorHelper {
       hotspot?: { x: number; y: number };
     }
   ): string {
-    const iconSvg = KritzelIconRegistry.get(options.iconName);
+    const iconName = options.iconName === 'default' ? 'mouse-pointer' : options.iconName;
+    const iconSvg = KritzelIconRegistry.get(iconName);
     if (!iconSvg) {
-        console.warn(`Icon "${options.iconName}" not found in registry.`);
-        return 'auto';
+      console.warn(`Icon "${iconName}" not found in registry.`);
+      return 'auto';
     }
 
-    const size = options.size || 32;
+    const size = options.size || 24;
     const rotation = options.rotation || 0;
     const color = options.color || 'black';
-    const hotspot = options.hotspot || { x: size / 2, y: size / 2 };
+    // Default cursor (mouse-pointer) has hotspot at (4, 4), others at center
+    const hotspot = options.hotspot || (options.iconName === 'default' ? { x: 4, y: 4 } : { x: size / 2, y: size / 2 });
 
     // Modify the SVG string to set size and color
     // We replace width and height to match the requested size
