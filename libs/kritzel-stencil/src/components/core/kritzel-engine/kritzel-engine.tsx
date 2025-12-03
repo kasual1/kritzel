@@ -151,6 +151,11 @@ export class KritzelEngine {
     this.core.store.state.pointers.delete(ev.pointerId);
     this.host.releasePointerCapture(ev.pointerId);
 
+    // Reset cursor to default when all pointers are released
+    if (this.core.store.state.pointers.size === 0) {
+      this.core.store.state.cursor = { icon: 'default', iconActive: 'default' };
+    }
+
     this.viewport.handlePointerUp(ev);
     this.core.store.state?.activeTool?.handlePointerUp(ev);
   }
@@ -163,6 +168,11 @@ export class KritzelEngine {
 
     this.host.releasePointerCapture(ev.pointerId);
     this.core.store.state.pointers.delete(ev.pointerId);
+
+    // Reset cursor to default when all pointers are released
+    if (this.core.store.state.pointers.size === 0) {
+      this.core.store.state.cursor = { icon: 'default', iconActive: 'default' };
+    }
 
     this.viewport.handlePointerUp(ev);
     this.core.store.state?.activeTool?.handlePointerUp(ev);
@@ -509,12 +519,15 @@ export class KritzelEngine {
 
   private getCursor(): string | undefined {
     const state = this.core.store.state;
-    const rotation = this.core.store.selectionGroup?.rotationDegrees ?? 0;
     
     const isPointerDown = this.core.store.isPointerDown;
 
+    const icon = state.cursor?.icon;
+    const iconActive = state.cursor?.iconActive ?? icon;
+    const rotation = state.cursor?.rotation;
+
     return KritzelCursorHelper.getCursor({
-      iconName: isPointerDown ? state.cursor.iconActive : state.cursor.icon,
+      iconName: isPointerDown ? iconActive : icon,
       rotation: rotation,
     })
   }
@@ -815,6 +828,8 @@ export class KritzelEngine {
                           fill: 'transparent',
                           paintOrder: 'fill',
                         }}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
+                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
 
                       <circle
@@ -836,6 +851,8 @@ export class KritzelEngine {
                           fill: 'transparent',
                           paintOrder: 'fill',
                         }}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
+                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
 
                       <circle
@@ -857,6 +874,8 @@ export class KritzelEngine {
                           fill: 'transparent',
                           paintOrder: 'fill',
                         }}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
+                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
 
                       <circle
@@ -878,6 +897,8 @@ export class KritzelEngine {
                           fill: 'transparent',
                           paintOrder: 'fill',
                         }}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
+                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
 
                       <line
@@ -909,7 +930,8 @@ export class KritzelEngine {
                           fill: 'transparent',
                           paintOrder: 'fill',
                         }}
-                        onPointerEnter={() => this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' }}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' })}
+                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
                     </g>
                   )}
