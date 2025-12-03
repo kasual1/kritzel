@@ -58,6 +58,7 @@ export interface KritzelEngineState {
   workspaces: KritzelWorkspace[];
   cursor: {
     icon: string;
-    iconActive: string;
+    iconActive?: string;
+    rotation?: number;
   }
 }
