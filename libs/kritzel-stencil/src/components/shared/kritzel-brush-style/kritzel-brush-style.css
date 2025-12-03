@@ -17,7 +17,6 @@
   border: none;
   outline: none;
   background: none;
-  cursor: default;
   border-radius: 0; 
   color: var(--control-text-color);
   font-weight: bold;
