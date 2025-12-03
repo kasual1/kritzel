@@ -557,8 +557,6 @@ export class KritzelEngine {
   }
 
   render() {
-    this.updateCursor();
-
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
@@ -574,6 +572,8 @@ export class KritzelEngine {
       depth: 100,
     };
     const visibleObjects = this.core.store.state.objects.query(viewportBounds);
+
+    this.updateCursor();
 
     return (
       <Host>
