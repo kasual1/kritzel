@@ -97,44 +97,45 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         const rotation = selectionGroup.rotation;
         const sin = Math.sin(rotation);
         const cos = Math.cos(rotation);
-        const activeScale = selectionGroup.scale || this._core.store.state.scale;
+        const objectScale = selectionGroup.scale || 1;
+        const currentScale = this._core.store.state.scale;
 
         // Calculate delta in local unrotated space
         // We rotate the screen delta by -rotation to align with the object's axes
-        const localDx = dx * cos + dy * sin;
-        const localDy = -dx * sin + dy * cos;
+        const localDx = (dx * cos + dy * sin) / currentScale;
+        const localDy = (-dx * sin + dy * cos) / currentScale;
 
         // Calculate the center of the selection group before resize
-        const initialCenterX = this.initialSize.x + this.initialSize.width / activeScale / 2;
-        const initialCenterY = this.initialSize.y + this.initialSize.height / activeScale / 2;
+        const initialCenterX = this.initialSize.x + this.initialSize.width / objectScale / 2;
+        const initialCenterY = this.initialSize.y + this.initialSize.height / objectScale / 2;
 
         // The center moves by half of the screen delta (scaled)
         // This is true regardless of rotation because the resize happens symmetrically around the center
         // relative to the fixed point logic
-        const newCenterX = initialCenterX + dx / activeScale / 2;
-        const newCenterY = initialCenterY + dy / activeScale / 2;
+        const newCenterX = initialCenterX + dx / currentScale / 2;
+        const newCenterY = initialCenterY + dy / currentScale / 2;
 
         switch (this._core.store.state.resizeHandleType) {
           case KritzelHandleType.TopLeft:
-            this.newSize.width = this.initialSize.width - localDx;
-            this.newSize.height = this.initialSize.height - localDy;
+            this.newSize.width = this.initialSize.width - localDx * objectScale;
+            this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
           case KritzelHandleType.TopRight:
-            this.newSize.width = this.initialSize.width + localDx;
-            this.newSize.height = this.initialSize.height - localDy;
+            this.newSize.width = this.initialSize.width + localDx * objectScale;
+            this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
           case KritzelHandleType.BottomLeft:
-            this.newSize.width = this.initialSize.width - localDx;
-            this.newSize.height = this.initialSize.height + localDy;
+            this.newSize.width = this.initialSize.width - localDx * objectScale;
+            this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;
           case KritzelHandleType.BottomRight:
-            this.newSize.width = this.initialSize.width + localDx;
-            this.newSize.height = this.initialSize.height + localDy;
+            this.newSize.width = this.initialSize.width + localDx * objectScale;
+            this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;
         }
 
-        this.newSize.x = newCenterX - this.newSize.width / activeScale / 2;
-        this.newSize.y = newCenterY - this.newSize.height / activeScale / 2;
+        this.newSize.x = newCenterX - this.newSize.width / objectScale / 2;
+        this.newSize.y = newCenterY - this.newSize.height / objectScale / 2;
 
         selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
       }
@@ -172,38 +173,45 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         const rotation = selectionGroup.rotation;
         const sin = Math.sin(rotation);
         const cos = Math.cos(rotation);
-        const activeScale = selectionGroup.scale || this._core.store.state.scale;
+        const objectScale = selectionGroup.scale || 1;
+        const currentScale = this._core.store.state.scale;
 
-        const localDx = dx * cos + dy * sin;
-        const localDy = -dx * sin + dy * cos;
+        // Calculate delta in local unrotated space
+        // We rotate the screen delta by -rotation to align with the object's axes
+        const localDx = (dx * cos + dy * sin) / currentScale;
+        const localDy = (-dx * sin + dy * cos) / currentScale;
 
-        const initialCenterX = this.initialSize.x + this.initialSize.width / activeScale / 2;
-        const initialCenterY = this.initialSize.y + this.initialSize.height / activeScale / 2;
+        // Calculate the center of the selection group before resize
+        const initialCenterX = this.initialSize.x + this.initialSize.width / objectScale / 2;
+        const initialCenterY = this.initialSize.y + this.initialSize.height / objectScale / 2;
 
-        const newCenterX = initialCenterX + dx / activeScale / 2;
-        const newCenterY = initialCenterY + dy / activeScale / 2;
+        // The center moves by half of the screen delta (scaled)
+        // This is true regardless of rotation because the resize happens symmetrically around the center
+        // relative to the fixed point logic
+        const newCenterX = initialCenterX + dx / currentScale / 2;
+        const newCenterY = initialCenterY + dy / currentScale / 2;
 
         switch (this._core.store.state.resizeHandleType) {
           case KritzelHandleType.TopLeft:
-            this.newSize.width = this.initialSize.width - localDx;
-            this.newSize.height = this.initialSize.height - localDy;
+            this.newSize.width = this.initialSize.width - localDx * objectScale;
+            this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
           case KritzelHandleType.TopRight:
-            this.newSize.width = this.initialSize.width + localDx;
-            this.newSize.height = this.initialSize.height - localDy;
+            this.newSize.width = this.initialSize.width + localDx * objectScale;
+            this.newSize.height = this.initialSize.height - localDy * objectScale;
             break;
           case KritzelHandleType.BottomLeft:
-            this.newSize.width = this.initialSize.width - localDx;
-            this.newSize.height = this.initialSize.height + localDy;
+            this.newSize.width = this.initialSize.width - localDx * objectScale;
+            this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;
           case KritzelHandleType.BottomRight:
-            this.newSize.width = this.initialSize.width + localDx;
-            this.newSize.height = this.initialSize.height + localDy;
+            this.newSize.width = this.initialSize.width + localDx * objectScale;
+            this.newSize.height = this.initialSize.height + localDy * objectScale;
             break;
         }
 
-        this.newSize.x = newCenterX - this.newSize.width / activeScale / 2;
-        this.newSize.y = newCenterY - this.newSize.height / activeScale / 2;
+        this.newSize.x = newCenterX - this.newSize.width / objectScale / 2;
+        this.newSize.y = newCenterY - this.newSize.height / objectScale / 2;
 
         selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
       }

@@ -14,8 +14,10 @@ export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   isPanning: false,
   isSelecting: false,
   isResizing: false,
+  isResizeHandleHovered: false,
   isResizeHandleSelected: false,
   isRotating: false,
+  isRotationHandleHovered: false,
   isRotationHandleSelected: false,
   isDragging: false,
   isDrawing: false,
@@ -51,4 +53,8 @@ export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   longTouchDelay: 300,
   pointers: new Map<number, PointerEvent>(),
   workspaces: [],
+  cursor: {
+    icon: 'default',
+    iconActive: 'default'
+  }
 };

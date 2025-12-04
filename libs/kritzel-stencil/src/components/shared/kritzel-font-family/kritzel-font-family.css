@@ -17,7 +17,7 @@
   border: none;
   outline: none;
   background: none;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   border-radius: 0; 
   color: var(--control-text-color);
   font-weight: bold;
