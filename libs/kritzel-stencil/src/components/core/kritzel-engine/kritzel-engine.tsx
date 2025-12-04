@@ -27,6 +27,7 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { throttle } from 'lodash';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
+import { KritzelCursorHelper } from '../../../helpers/cursor.helper';
 
 @Component({
   tag: 'kritzel-engine',
@@ -72,6 +73,16 @@ export class KritzelEngine {
     } else {
       this.core.store.state.scaleMin = newValue;
     }
+  }
+  @Prop() cursorTarget?: HTMLElement;
+  @Watch('cursorTarget')
+  onCursorTargetChange(newValue: HTMLElement | undefined) {
+    // Reset cursor on old target
+    if (this.cursorTargetElement) {
+      this.cursorTargetElement.style.cursor = '';
+    }
+    // Set new target (defaults to document.body)
+    this.cursorTargetElement = newValue || document.body;
   }
 
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
@@ -129,7 +140,9 @@ export class KritzelEngine {
       return;
     }
 
-    this.core.store.state.pointers.set(ev.pointerId, ev);
+    if (this.core.store.state.pointers.has(ev.pointerId)) {
+      this.core.store.state.pointers.set(ev.pointerId, ev);
+    }
 
     if (this.core.store.state.pointers.size > 1) {
       this.throttledPointerMoveMulti(ev);
@@ -148,6 +161,11 @@ export class KritzelEngine {
     this.core.store.state.pointers.delete(ev.pointerId);
     this.host.releasePointerCapture(ev.pointerId);
 
+    // Reset cursor to default when all pointers are released
+    if (this.core.store.state.pointers.size === 0) {
+      this.core.store.state.cursor = { icon: 'default', iconActive: 'default' };
+    }
+
     this.viewport.handlePointerUp(ev);
     this.core.store.state?.activeTool?.handlePointerUp(ev);
   }
@@ -160,6 +178,11 @@ export class KritzelEngine {
 
     this.host.releasePointerCapture(ev.pointerId);
     this.core.store.state.pointers.delete(ev.pointerId);
+
+    // Reset cursor to default when all pointers are released
+    if (this.core.store.state.pointers.size === 0) {
+      this.core.store.state.cursor = { icon: 'default', iconActive: 'default' };
+    }
 
     this.viewport.handlePointerUp(ev);
     this.core.store.state?.activeTool?.handlePointerUp(ev);
@@ -423,6 +446,7 @@ export class KritzelEngine {
   contextMenuHandler: KritzelContextMenuHandler;
   keyHandler: KritzelKeyHandler;
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
+  cursorTargetElement: HTMLElement | null = null;
 
   get isSelecting() {
     return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
@@ -439,6 +463,13 @@ export class KritzelEngine {
   disconnectedCallback() {
     this.throttledWheel.cancel();
     this.throttledPointerMoveMulti.cancel();
+    
+    // Reset cursor on target element
+    if (this.cursorTargetElement) {
+      this.cursorTargetElement.style.cursor = '';
+      this.cursorTargetElement.style.removeProperty('--kritzel-pointer-cursor');
+      this.cursorTargetElement = null;
+    }
   }
 
   componentWillLoad() {
@@ -450,6 +481,12 @@ export class KritzelEngine {
     this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems, this.objectContextMenuItems);
     this.keyHandler = new KritzelKeyHandler(this.core);
     this.viewport = new KritzelViewport(this.core, this.host);
+
+    // Set cursor target element (use prop value or default to document.body)
+    this.cursorTargetElement = this.cursorTarget || document.body;
+    
+    // Set the pointer cursor CSS variable for child components to use
+    this.cursorTargetElement.style.setProperty('--kritzel-pointer-cursor', KritzelCursorHelper.getPointerCursor());
 
     // Set sync configuration if provided
     if (this.syncConfig) {
@@ -504,6 +541,25 @@ export class KritzelEngine {
     this.core.rerender();
   }
 
+  private updateCursor(): void {
+    const state = this.core.store.state;
+    
+    const isPointerDown = this.core.store.isPointerDown;
+
+    const icon = state.cursor?.icon;
+    const iconActive = state.cursor?.iconActive ?? icon;
+    const rotation = state.cursor?.rotation;
+
+    const cursor = KritzelCursorHelper.getCursor({
+      iconName: isPointerDown ? iconActive : icon,
+      rotation: rotation,
+    });
+
+    if (this.cursorTargetElement) {
+      this.cursorTargetElement.style.cursor = cursor;
+    }
+  }
+
   render() {
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
@@ -520,6 +576,8 @@ export class KritzelEngine {
       depth: 100,
     };
     const visibleObjects = this.core.store.state.objects.query(viewportBounds);
+
+    this.updateCursor();
 
     return (
       <Host>
@@ -542,8 +600,10 @@ export class KritzelEngine {
             <div>IsSelectionActive: {this.isSelectionActive ? 'true' : 'false'}</div>
             <div>IsResizeHandleSelected: {this.core.store.state.isResizeHandleSelected ? 'true' : 'false'}</div>
             <div>IsRotationHandleSelected: {this.core.store.state.isRotationHandleSelected ? 'true' : 'false'}</div>
+            <div>IsRotationHandleHovered: {this.core.store.state.isRotationHandleHovered ? 'true' : 'false'}</div>
             <div>IsDrawing: {this.core.store.state.isDrawing ? 'true' : 'false'}</div>
             <div>IsWriting: {this.core.store.state.isWriting ? 'true' : 'false'}</div>
+            <div>IsPointerDown: {this.core.store.isPointerDown ? 'true' : 'false'}</div>
             <div>PointerX: {this.core.store.state?.pointerX}</div>
             <div>PointerY: {this.core.store.state?.pointerY}</div>
             <div>SelectedObjects: {this.core.store.selectionGroup?.objects.length || 0}</div>
@@ -693,7 +753,6 @@ export class KritzelEngine {
                         }}
                       ></div>
                     )}
-
                   </foreignObject>
 
                   {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
@@ -705,11 +764,6 @@ export class KritzelEngine {
                           <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
                           <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
                           <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
-                          {/* <div style={{ whiteSpace: 'nowrap' }}>zIndex: {object.zIndex}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>scale: {object.scale}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>rotation: {object.rotation}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>x: {object.x}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>y: {object.y}</div> */}
                         </div>
                       </foreignObject>
                     </g>
@@ -800,6 +854,8 @@ export class KritzelEngine {
                           fill: 'transparent',
                           paintOrder: 'fill',
                         }}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
+                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
 
                       <circle
@@ -821,6 +877,8 @@ export class KritzelEngine {
                           fill: 'transparent',
                           paintOrder: 'fill',
                         }}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
+                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
 
                       <circle
@@ -842,6 +900,8 @@ export class KritzelEngine {
                           fill: 'transparent',
                           paintOrder: 'fill',
                         }}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
+                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
 
                       <circle
@@ -863,6 +923,8 @@ export class KritzelEngine {
                           fill: 'transparent',
                           paintOrder: 'fill',
                         }}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
+                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
 
                       <line
@@ -892,9 +954,10 @@ export class KritzelEngine {
                         r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                         style={{
                           fill: 'transparent',
-                          cursor: 'grab',
                           paintOrder: 'fill',
                         }}
+                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' })}
+                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                       />
                     </g>
                   )}

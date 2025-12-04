@@ -20,8 +20,10 @@ export interface KritzelEngineState {
   isPanning: boolean;
   isSelecting: boolean;
   isResizing: boolean;
+  isResizeHandleHovered: boolean;
   isResizeHandleSelected: boolean;
   isRotating: boolean;
+  isRotationHandleHovered: boolean;
   isRotationHandleSelected: boolean;
   isDragging: boolean;
   isDrawing: boolean;
@@ -54,4 +56,9 @@ export interface KritzelEngineState {
   longTouchDelay: number;
   pointers: Map<number, PointerEvent>;
   workspaces: KritzelWorkspace[];
+  cursor: {
+    icon: string;
+    iconActive?: string;
+    rotation?: number;
+  }
 }
