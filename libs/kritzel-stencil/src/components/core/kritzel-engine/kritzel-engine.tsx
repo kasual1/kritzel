@@ -467,6 +467,7 @@ export class KritzelEngine {
     // Reset cursor on target element
     if (this.cursorTargetElement) {
       this.cursorTargetElement.style.cursor = '';
+      this.cursorTargetElement.style.removeProperty('--kritzel-pointer-cursor');
       this.cursorTargetElement = null;
     }
   }
@@ -483,6 +484,9 @@ export class KritzelEngine {
 
     // Set cursor target element (use prop value or default to document.body)
     this.cursorTargetElement = this.cursorTarget || document.body;
+    
+    // Set the pointer cursor CSS variable for child components to use
+    this.cursorTargetElement.style.setProperty('--kritzel-pointer-cursor', KritzelCursorHelper.getPointerCursor());
 
     // Set sync configuration if provided
     if (this.syncConfig) {
