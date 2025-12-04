@@ -1,6 +1,19 @@
 import { KritzelIconRegistry } from '../classes/registries/icon-registry.class';
 
 export class KritzelCursorHelper {
+  private static _pointerCursor: string | null = null;
+
+  /**
+   * Returns the custom pointer cursor CSS value.
+   * This can be used instead of `cursor: pointer` for consistent styling.
+   */
+  static getPointerCursor(): string {
+    if (!this._pointerCursor) {
+      this._pointerCursor = this.getCursor({ iconName: 'pointer' });
+    }
+    return this._pointerCursor;
+  }
+
   /**
    * Returns a custom cursor CSS value with support for rotation.
    * The icon is retrieved from the KritzelIconRegistry.

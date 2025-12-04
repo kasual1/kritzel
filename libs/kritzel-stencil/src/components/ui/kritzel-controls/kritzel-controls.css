@@ -34,7 +34,7 @@
   padding: var(--kritzel-controls-control-padding, 8px);
   border: none;
   background: none;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
   font-weight: bold;
 }
@@ -81,7 +81,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   border-radius: 50%;
 }
 
@@ -92,7 +92,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
   background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
@@ -105,7 +105,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
   background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);

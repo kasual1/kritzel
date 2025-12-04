@@ -7,7 +7,7 @@
 .expand-toggle {
   background: none;
   border: none;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   font-size: 14px;
   line-height: 1;
   padding: 8px;

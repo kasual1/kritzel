@@ -23,7 +23,7 @@
   border-radius: 0; 
   border: none; 
   background-color: #fff;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   outline: none;
   font-size: inherit;
   color: var(--kritzel-controls-text-color, #333333); /* Use CSS var with fallback */
