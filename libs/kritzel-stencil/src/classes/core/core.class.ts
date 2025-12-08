@@ -509,11 +509,7 @@ export class KritzelCore {
   resetActiveShape() {
     const activeShape = this._store.activeShape;
     if (activeShape) {
-      if (activeShape.isEmpty) {
-        this.deleteObject(activeShape.id);
-      } else {
-        activeShape.save();
-      }
+      activeShape.save();
     }
   }
 
