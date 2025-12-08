@@ -1,4 +1,5 @@
 import { KritzelBaseTool } from '../classes/tools/base-tool.class';
+import { ShapeType } from '../enums/shape-type.enum';
 
 export interface KritzelToolbarControl {
   type: 'tool' | 'divider' | 'config';
@@ -6,7 +7,7 @@ export interface KritzelToolbarControl {
   icon?: string;
   isDefault?: boolean;
   name: string;
-  config?: KritzelTextToolConfig | KritzelBrushToolConfig;
+  config?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelShapeToolConfig;
 }
 
 export interface KritzelTextToolConfig {
@@ -23,4 +24,15 @@ export interface KritzelBrushToolConfig {
   palettes: {
     [brushType: string]: string[]; 
   }
+}
+
+export interface KritzelShapeToolConfig {
+  shapeType: ShapeType;
+  fillColor: string;
+  strokeColor: string;
+  strokeWidth: number;
+  fontColor: string;
+  fontSize: number;
+  fontFamily: string;
+  palette: string[];
 }

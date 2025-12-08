@@ -7,9 +7,11 @@ import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelImageTool } from '../../../classes/tools/image-tool.class';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
+import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { DEFAULT_BRUSH_CONFIG } from '../../../configs/default-brush-tool.config';
 import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
+import { DEFAULT_SHAPE_CONFIG } from '../../../configs/default-shape-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
@@ -54,6 +56,13 @@ export class KritzelEditor {
       tool: KritzelTextTool,
       icon: 'type',
       config: DEFAULT_TEXT_CONFIG,
+    },
+    {
+      name: 'shape',
+      type: 'tool',
+      tool: KritzelShapeTool,
+      icon: 'shapes',
+      config: DEFAULT_SHAPE_CONFIG,
     },
     {
       name: 'image',

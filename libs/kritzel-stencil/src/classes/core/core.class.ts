@@ -506,6 +506,17 @@ export class KritzelCore {
     }
   }
 
+  resetActiveShape() {
+    const activeShape = this._store.activeShape;
+    if (activeShape) {
+      if (activeShape.isEmpty) {
+        this.deleteObject(activeShape.id);
+      } else {
+        activeShape.save();
+      }
+    }
+  }
+
   getObjectFromPointerEvent(event: PointerEvent, selector = '.object'): KritzelBaseObject<any> | null {
     const shadowRoot = this._store.state.host?.shadowRoot;
     if (!shadowRoot) return null;
