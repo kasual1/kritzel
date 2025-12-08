@@ -41,21 +41,6 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
   uneditedObject: KritzelShape | null = null;
 
-  get isEmpty(): boolean {
-    if (!this.editor) {
-      return true;
-    }
-
-    const doc = this.editor.state.doc;
-
-    if (doc.content.size === 0) {
-      return true;
-    }
-
-    const text = doc.textContent.trim();
-    return text.length === 0;
-  }
-
   constructor(config?: {
     translateX?: number;
     translateY?: number;
