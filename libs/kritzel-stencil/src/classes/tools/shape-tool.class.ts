@@ -9,7 +9,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
   shapeType: ShapeType = ShapeType.Rectangle;
   fillColor: string = 'transparent';
   strokeColor: string = '#000000';
-  strokeWidth: number = 2;
+  strokeWidth: number = 4;
   fontFamily: string = 'Arial';
   fontSize: number = 16;
   fontColor: string = '#000000';

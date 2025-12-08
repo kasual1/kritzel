@@ -18,7 +18,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   shapeType: ShapeType = ShapeType.Rectangle;
   fillColor: string = 'transparent';
   strokeColor: string = '#000000';
-  strokeWidth: number = 2;
+  strokeWidth: number = 4;
 
   fontFamily: string = 'Arial';
   fontSize: number = 16;
@@ -82,7 +82,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.shapeType = config.shapeType ?? ShapeType.Rectangle;
       this.fillColor = config.fillColor ?? 'transparent';
       this.strokeColor = config.strokeColor ?? '#000000';
-      this.strokeWidth = config.strokeWidth ?? 2;
+      this.strokeWidth = config.strokeWidth ?? 4;
       this.fontSize = config.fontSize ?? 16;
       this.fontFamily = config.fontFamily ?? 'Arial';
       this.fontColor = config.fontColor ?? '#000000';
@@ -119,7 +119,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.shapeType = config?.shapeType ?? ShapeType.Rectangle;
     object.fillColor = config?.fillColor ?? 'transparent';
     object.strokeColor = config?.strokeColor ?? '#000000';
-    object.strokeWidth = config?.strokeWidth ?? 2;
+    object.strokeWidth = config?.strokeWidth ?? 4;
     object.fontSize = config?.fontSize ?? 16;
     object.fontFamily = config?.fontFamily ?? 'Arial';
     object.fontColor = config?.fontColor ?? '#000000';
