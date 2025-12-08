@@ -5,7 +5,7 @@ export const DEFAULT_SHAPE_CONFIG: KritzelShapeToolConfig = {
   shapeType: ShapeType.Rectangle,
   fillColor: 'transparent',
   strokeColor: '#000000',
-  strokeWidth: 2,
+  strokeWidth: 4,
   fontColor: '#000000',
   fontSize: 16,
   fontFamily: 'Arial',
