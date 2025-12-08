@@ -6,9 +6,11 @@ import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.clas
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelImageTool } from '../../../classes/tools/image-tool.class';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
+import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { DEFAULT_BRUSH_CONFIG } from '../../../configs/default-brush-tool.config';
+import { DEFAULT_LINE_TOOL_CONFIG } from '../../../configs/default-line-tool.config';
 import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
@@ -41,6 +43,13 @@ export class KritzelEditor {
       tool: KritzelBrushTool,
       icon: 'pen',
       config: DEFAULT_BRUSH_CONFIG,
+    },
+    {
+      name: 'line',
+      type: 'tool',
+      tool: KritzelLineTool,
+      icon: 'slash',
+      config: DEFAULT_LINE_TOOL_CONFIG,
     },
     {
       name: 'eraser',

@@ -6,7 +6,7 @@ export interface KritzelToolbarControl {
   icon?: string;
   isDefault?: boolean;
   name: string;
-  config?: KritzelTextToolConfig | KritzelBrushToolConfig;
+  config?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig;
 }
 
 export interface KritzelTextToolConfig {
@@ -23,4 +23,10 @@ export interface KritzelBrushToolConfig {
   palettes: {
     [brushType: string]: string[]; 
   }
+}
+
+export interface KritzelLineToolConfig {
+  color: string;
+  size: number;
+  palette: string[];
 }

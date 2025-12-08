@@ -2,6 +2,7 @@ import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventE
 import { KritzelTool } from '../../../interfaces/tool.interface';
 import { KritzelViewport } from '../../../classes/core/viewport.class';
 import { KritzelPath } from '../../../classes/objects/path.class';
+import { KritzelLine } from '../../../classes/objects/line.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelImage } from '../../../classes/objects/image.class';
 import { KritzelText } from '../../../classes/objects/text.class';
@@ -11,7 +12,7 @@ import { KritzelKeyHandler } from '../../../classes/handlers/key.handler';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
-import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
+import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
@@ -237,7 +238,7 @@ export class KritzelEngine {
   }
 
   @Method()
-  async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig): Promise<KritzelBaseTool> {
+  async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig): Promise<KritzelBaseTool> {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return null;
@@ -677,6 +678,22 @@ export class KritzelEngine {
                         viewBox={object?.viewBox}
                       >
                         <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'} />
+                      </svg>
+                    )}
+
+                    {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
+                      <svg
+                        ref={el => object.mount(el)}
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{
+                          height: object?.height.toString(),
+                          width: object?.width.toString(),
+                          position: 'absolute',
+                          overflow: 'visible',
+                        }}
+                        viewBox={object?.viewBox}
+                      >
+                        <path d={object?.d} fill="none" stroke={object?.stroke} stroke-width={object?.strokeWidth} stroke-linecap="round" />
                       </svg>
                     )}
 
