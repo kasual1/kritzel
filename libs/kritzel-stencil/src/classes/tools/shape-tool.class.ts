@@ -214,6 +214,8 @@ export class KritzelShapeTool extends KritzelBaseTool {
       this.currentShape.zIndex = this._core.store.currentZIndex;
       this._core.store.state.objects.update(this.currentShape);
       this._core.engine.emitObjectsChange();
+      this._core.selectObjects([this.currentShape]);
+      this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     }
 
     this.isDrawing = false;
