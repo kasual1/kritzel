@@ -2,6 +2,7 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelEngineState } from '../../interfaces/engine-state.interface';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelText } from '../objects/text.class';
+import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
@@ -44,6 +45,11 @@ export class KritzelStore {
   get activeText(): KritzelText | null {
     const activeTexts = this._state.objects.filter(o => o instanceof KritzelText && (o as KritzelText).isEditing);
     return activeTexts.length > 0 ? (activeTexts[0] as KritzelText) : null;
+  }
+
+  get activeShape(): KritzelShape | null {
+    const activeShapes = this._state.objects.filter(o => o instanceof KritzelShape && (o as KritzelShape).isEditing);
+    return activeShapes.length > 0 ? (activeShapes[0] as KritzelShape) : null;
   }
 
   get currentPath(): KritzelPath | null {
