@@ -586,7 +586,8 @@ export class KritzelCore {
 
     const selectionGroup = this._store.selectionGroup;
     if (!selectionGroup) {
-      return true;
+      // During selection phase (no group yet), hide UI for KritzelLine objects
+      return !(object instanceof KritzelLine);
     }
 
     // Show UI if selection contains more than one object
