@@ -801,181 +801,237 @@ export class KritzelEngine {
                     pointerEvents: 'none',
                   }}
                 >
-                  {object.isSelected && (
-                    <g class="selection-borders" style={{ pointerEvents: 'none' }}>
-                      <line
-                        x1="0"
-                        y1="0"
-                        x2={object.totalWidth}
-                        y2="0"
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                          strokeLinecap: 'square',
-                        }}
-                      />
-                      <line
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2={object.totalHeight}
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                          strokeLinecap: 'square',
-                        }}
-                      />
-                      <line
-                        x1="0"
-                        y1={object.totalHeight}
-                        x2={object.totalWidth}
-                        y2={object.totalHeight}
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                          strokeLinecap: 'square',
-                        }}
-                      />
-                      <line
-                        x1={object.totalWidth}
-                        y1="0"
-                        x2={object.totalWidth}
-                        y2={object.totalHeight}
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                          strokeLinecap: 'square',
-                        }}
-                      />
+                  {this.core.displaySelectionGroupUI(object) && (
+                    <g class="selection-group-ui" style={{ pointerEvents: 'none' }}>
+                      <g class="selection-borders">
+                        <line
+                          x1="0"
+                          y1="0"
+                          x2={object.totalWidth}
+                          y2="0"
+                          style={{
+                            stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                            strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            strokeLinecap: 'square',
+                          }}
+                        />
+                        <line
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2={object.totalHeight}
+                          style={{
+                            stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                            strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            strokeLinecap: 'square',
+                          }}
+                        />
+                        <line
+                          x1="0"
+                          y1={object.totalHeight}
+                          x2={object.totalWidth}
+                          y2={object.totalHeight}
+                          style={{
+                            stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                            strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            strokeLinecap: 'square',
+                          }}
+                        />
+                        <line
+                          x1={object.totalWidth}
+                          y1="0"
+                          x2={object.totalWidth}
+                          y2={object.totalHeight}
+                          style={{
+                            stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                            strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            strokeLinecap: 'square',
+                          }}
+                        />
+                      </g>
+
+                      {!this.isSelecting && (
+                        <g class="selection-handles" style={{ pointerEvents: 'auto' }}>
+                          <circle
+                            class="resize-handle top-left"
+                            cx="0"
+                            cy="0"
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="resize-handle-overlay top-left"
+                            cx="0"
+                            cy="0"
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
+                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
+                          />
+
+                          <circle
+                            class="resize-handle top-right"
+                            cx={object.totalWidth}
+                            cy="0"
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="resize-handle-overlay top-right"
+                            cx={object.totalWidth}
+                            cy="0"
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
+                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
+                          />
+
+                          <circle
+                            class="resize-handle bottom-left"
+                            cx="0"
+                            cy={object.totalHeight}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="resize-handle-overlay bottom-left"
+                            cx="0"
+                            cy={object.totalHeight}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
+                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
+                          />
+
+                          <circle
+                            class="resize-handle bottom-right"
+                            cx={object.totalWidth}
+                            cy={object.totalHeight}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="resize-handle-overlay bottom-right"
+                            cx={object.totalWidth}
+                            cy={object.totalHeight}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
+                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
+                          />
+
+                          <line
+                            x1={object.totalWidth / 2}
+                            y1="0"
+                            x2={object.totalWidth / 2}
+                            y2={-((15 * object.scale) / this.core.store.state?.scale)}
+                            style={{
+                              stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                              strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            }}
+                          />
+                          <circle
+                            class="rotation-handle"
+                            cx={object.totalWidth / 2}
+                            cy={-((15 * object.scale) / this.core.store.state?.scale)}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="rotation-handle-overlay"
+                            cx={object.totalWidth / 2}
+                            cy={-((15 * object.scale) / this.core.store.state?.scale)}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' })}
+                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
+                          />
+                        </g>
+                      )}
                     </g>
                   )}
 
-                  {object.isSelected && !this.isSelecting && (
-                    <g class="selection-handles" style={{ pointerEvents: 'auto' }}>
-                      <circle
-                        class="resize-handle top-left"
-                        cx="0"
-                        cy="0"
-                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'var(--kritzel-selection-handle-color, #000000)',
-                          paintOrder: 'fill',
-                        }}
-                      />
-                      <circle
-                        class="resize-handle-overlay top-left"
-                        cx="0"
-                        cy="0"
-                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'transparent',
-                          paintOrder: 'fill',
-                        }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
-                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
-                      />
+                  {this.core.displaySelectionLineUI(object) && KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
+                    <g class="selection-line-ui" style={{ pointerEvents: 'none' }}>
+                      {!this.isSelecting && (
+                        <g class="line-handles" style={{ pointerEvents: 'auto' }}>
+                          <circle
+                            class="line-handle start"
+                            cx={object.startX - object.x}
+                            cy={object.startY - object.y}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="line-handle-overlay start"
+                            cx={object.startX - object.x}
+                            cy={object.startY - object.y}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move', rotation: 0 })}
+                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
+                          />
 
-                      <circle
-                        class="resize-handle top-right"
-                        cx={object.totalWidth}
-                        cy="0"
-                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'var(--kritzel-selection-handle-color, #000000)',
-                          paintOrder: 'fill',
-                        }}
-                      />
-                      <circle
-                        class="resize-handle-overlay top-right"
-                        cx={object.totalWidth}
-                        cy="0"
-                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'transparent',
-                          paintOrder: 'fill',
-                        }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
-                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
-                      />
-
-                      <circle
-                        class="resize-handle bottom-left"
-                        cx="0"
-                        cy={object.totalHeight}
-                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'var(--kritzel-selection-handle-color, #000000)',
-                          paintOrder: 'fill',
-                        }}
-                      />
-                      <circle
-                        class="resize-handle-overlay bottom-left"
-                        cx="0"
-                        cy={object.totalHeight}
-                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'transparent',
-                          paintOrder: 'fill',
-                        }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
-                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
-                      />
-
-                      <circle
-                        class="resize-handle bottom-right"
-                        cx={object.totalWidth}
-                        cy={object.totalHeight}
-                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'var(--kritzel-selection-handle-color, #000000)',
-                          paintOrder: 'fill',
-                        }}
-                      />
-                      <circle
-                        class="resize-handle-overlay bottom-right"
-                        cx={object.totalWidth}
-                        cy={object.totalHeight}
-                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'transparent',
-                          paintOrder: 'fill',
-                        }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
-                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
-                      />
-
-                      <line
-                        x1={object.totalWidth / 2}
-                        y1="0"
-                        x2={object.totalWidth / 2}
-                        y2={-((15 * object.scale) / this.core.store.state?.scale)}
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                        }}
-                      />
-                      <circle
-                        class="rotation-handle"
-                        cx={object.totalWidth / 2}
-                        cy={-((15 * object.scale) / this.core.store.state?.scale)}
-                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'var(--kritzel-selection-handle-color, #000000)',
-                          paintOrder: 'fill',
-                        }}
-                      />
-                      <circle
-                        class="rotation-handle-overlay"
-                        cx={object.totalWidth / 2}
-                        cy={-((15 * object.scale) / this.core.store.state?.scale)}
-                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'transparent',
-                          paintOrder: 'fill',
-                        }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' })}
-                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
-                      />
+                          <circle
+                            class="line-handle end"
+                            cx={object.endX - object.x}
+                            cy={object.endY - object.y}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="line-handle-overlay end"
+                            cx={object.endX - object.x}
+                            cy={object.endY - object.y}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move', rotation: 0 })}
+                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
+                          />
+                        </g>
+                      )}
                     </g>
                   )}
                 </svg>

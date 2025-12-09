@@ -5,6 +5,7 @@ import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelLine } from '../objects/line.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from './workspace.class';
@@ -576,5 +577,49 @@ export class KritzelCore {
     this.resetActiveText();
     this.clearSelection();
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+  }
+
+  displaySelectionGroupUI(object: KritzelBaseObject<any>): boolean {
+    if (!object.isSelected) {
+      return false;
+    }
+
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup) {
+      return true;
+    }
+
+    // Show UI if selection contains more than one object
+    if (selectionGroup.objects.length > 1) {
+      return true;
+    }
+
+    // Hide UI if selection contains a single KritzelLine
+    if (selectionGroup.objects.length === 1) {
+      const selectedObject = selectionGroup.objects[0];
+      return !(selectedObject instanceof KritzelLine);
+    }
+
+    return true;
+  }
+
+  displaySelectionLineUI(object: KritzelBaseObject<any>): boolean {
+    // Only show line UI on KritzelLine objects, not on selection groups
+    if (!(object instanceof KritzelLine)) {
+      return false;
+    }
+
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup || !selectionGroup.isSelected) {
+      return false;
+    }
+
+    // Show UI only if selection contains exactly one KritzelLine and it's this object
+    if (selectionGroup.objects.length === 1) {
+      const selectedObject = selectionGroup.objects[0];
+      return selectedObject instanceof KritzelLine && selectedObject.id === object.id;
+    }
+
+    return false;
   }
 }
