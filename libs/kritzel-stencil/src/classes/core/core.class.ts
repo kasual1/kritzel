@@ -492,6 +492,9 @@ export class KritzelCore {
     this._store.state.isSelecting = false;
     this._store.state.isResizeHandleSelected = false;
     this._store.state.isRotationHandleSelected = false;
+    this._store.state.isLineHandleSelected = false;
+    this._store.state.isLineHandleDragging = false;
+    this._store.state.lineHandleType = null;
 
     this.rerender();
   }

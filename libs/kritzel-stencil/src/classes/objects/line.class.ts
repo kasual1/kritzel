@@ -197,6 +197,54 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Updates a specific endpoint of the line (start or end).
+   * The coordinates are in viewBox-local space (relative to x, y origin).
+   * This method recalculates the bounding box dimensions.
+   *
+   * @param handleType - Which endpoint to update: 'start' or 'end'
+   * @param newX - New X coordinate in viewBox-local space
+   * @param newY - New Y coordinate in viewBox-local space
+   */
+  updateEndpoint(handleType: 'start' | 'end', newX: number, newY: number): void {
+    // Update the appropriate endpoint
+    if (handleType === 'start') {
+      this.startX = newX;
+      this.startY = newY;
+    } else {
+      this.endX = newX;
+      this.endY = newY;
+    }
+
+    // Recalculate the bounding box (viewBox dimensions)
+    const halfStroke = this.strokeWidth / 2;
+
+    const minX = Math.min(this.startX, this.endX) - halfStroke;
+    const minY = Math.min(this.startY, this.endY) - halfStroke;
+    const maxX = Math.max(this.startX, this.endX) + halfStroke;
+    const maxY = Math.max(this.startY, this.endY) + halfStroke;
+
+    // Calculate the change in origin
+    const deltaX = minX - this.x;
+    const deltaY = minY - this.y;
+
+    // Update viewBox dimensions
+    this.x = minX;
+    this.y = minY;
+    this.width = maxX - minX;
+    this.height = maxY - minY;
+
+    // Adjust translateX/Y to compensate for the origin shift
+    // so the line stays visually in the same position
+    this.translateX += deltaX / this.scale;
+    this.translateY += deltaY / this.scale;
+
+    // Clear cached adjusted points
+    this._adjustedPoints = null;
+
+    this._core.store.state.objects.update(this);
+  }
+
   private computeAdjustedPoints(): number[][] {
     const points = [
       [this.startX, this.startY],
