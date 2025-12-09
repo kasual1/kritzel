@@ -76,13 +76,24 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     const scaleX = width / this.width;
     const scaleY = height / this.height;
 
+    // Scale the line endpoints
     this.startX = this.startX * scaleX;
     this.startY = this.startY * scaleY;
     this.endX = this.endX * scaleX;
     this.endY = this.endY * scaleY;
 
-    this.updateDimensions();
+    // Recalculate dimensions from scaled endpoints
+    const minX = Math.min(this.startX, this.endX) - this.strokeWidth / 2;
+    const minY = Math.min(this.startY, this.endY) - this.strokeWidth / 2;
+    const maxX = Math.max(this.startX, this.endX) + this.strokeWidth / 2;
+    const maxY = Math.max(this.startY, this.endY) + this.strokeWidth / 2;
 
+    this.width = maxX - minX;
+    this.height = maxY - minY;
+    this.x = minX;
+    this.y = minY;
+
+    // Set the new position
     this.translateX = x;
     this.translateY = y;
 
