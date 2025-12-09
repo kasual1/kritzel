@@ -2,6 +2,8 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelCore } from '../core/core.class';
+import { KritzelToolRegistry } from '../registries/tool.registry';
+import { KritzelSelectionGroup } from '../objects/selection-group.class';
 
 export class KritzelLineTool extends KritzelBaseTool {
   color: string = '#000000';
@@ -154,6 +156,9 @@ export class KritzelLineTool extends KritzelBaseTool {
           currentLine.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objects.update(currentLine);
           this._core.engine.emitObjectsChange();
+
+          // Switch to selection tool and select the drawn line
+          this.selectLineAndSwitchTool(currentLine);
         }
       }
     }
@@ -168,8 +173,28 @@ export class KritzelLineTool extends KritzelBaseTool {
           currentLine.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objects.update(currentLine);
           this._core.engine.emitObjectsChange();
+
+          // Switch to selection tool and select the drawn line
+          this.selectLineAndSwitchTool(currentLine);
         }
       }
     }
+  }
+
+  private selectLineAndSwitchTool(line: KritzelLine): void {
+    // Create a selection group with the drawn line
+    const selectionGroup = KritzelSelectionGroup.create(this._core);
+    selectionGroup.addOrRemove(line);
+    selectionGroup.isSelected = true;
+    selectionGroup.rotation = line.rotation;
+
+    // Add the selection group
+    this._core.addSelectionGroup(selectionGroup);
+
+    // Switch to selection tool
+    this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+
+    // Rerender
+    this._core.rerender();
   }
 }
