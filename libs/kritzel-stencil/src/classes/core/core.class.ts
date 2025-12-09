@@ -610,8 +610,13 @@ export class KritzelCore {
       return false;
     }
 
+    // During selection phase (no group yet), show line UI if line is selected
     const selectionGroup = this._store.selectionGroup;
-    if (!selectionGroup || !selectionGroup.isSelected) {
+    if (!selectionGroup) {
+      return object.isSelected;
+    }
+
+    if (!selectionGroup.isSelected) {
       return false;
     }
 
