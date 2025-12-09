@@ -983,6 +983,18 @@ export class KritzelEngine {
 
                   {this.core.displaySelectionLineUI(object) && KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
                     <g class="selection-line-ui" style={{ pointerEvents: 'none' }}>
+                      <line
+                        class="selection-line-border"
+                        x1={object.startX - object.x}
+                        y1={object.startY - object.y}
+                        x2={object.endX - object.x}
+                        y2={object.endY - object.y}
+                        style={{
+                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                          strokeLinecap: 'round',
+                        }}
+                      />
                       {!this.isSelecting && (
                         <g class="line-handles" style={{ pointerEvents: 'auto' }}>
                           <circle
