@@ -197,9 +197,9 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return;
 
-    const elementAtPoint = shadowRoot.elementFromPoint(event.clientX, event.clientY);
+    const elementsAtPoint = shadowRoot.elementsFromPoint(event.clientX, event.clientY);
 
-    const handle = elementAtPoint?.closest('.resize-handle-overlay') as HTMLElement | null;
+    const handle = elementsAtPoint.find(el => el.classList.contains('resize-handle-overlay'));
 
     return handle?.classList[1] as KritzelHandleType;
   }
@@ -208,33 +208,36 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return false;
 
-    const elementAtPoint = shadowRoot.elementFromPoint(event.clientX, event.clientY);
+    const elementsAtPoint = shadowRoot.elementsFromPoint(event.clientX, event.clientY);
 
-    return !!elementAtPoint?.classList.contains('resize-handle-overlay');
+    return elementsAtPoint.some(el => el.classList.contains('resize-handle-overlay'));
   }
 
   private isRotationHandleSelected(event: PointerEvent): boolean {
-    const path = event.composedPath() as HTMLElement[];
+    const shadowRoot = this._core.store.state.host?.shadowRoot;
+    if (!shadowRoot) return false;
 
-    return !!path.find(element => element.classList && element.classList.contains('rotation-handle-overlay'));
+    const elementsAtPoint = shadowRoot.elementsFromPoint(event.clientX, event.clientY);
+
+    return elementsAtPoint.some(el => el.classList.contains('rotation-handle-overlay'));
   }
 
   private isLineHandleSelected(event: PointerEvent): boolean {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return false;
 
-    const elementAtPoint = shadowRoot.elementFromPoint(event.clientX, event.clientY);
+    const elementsAtPoint = shadowRoot.elementsFromPoint(event.clientX, event.clientY);
 
-    return !!elementAtPoint?.classList.contains('selection-line-handle-overlay');
+    return elementsAtPoint.some(el => el.classList.contains('selection-line-handle-overlay'));
   }
 
   private getLineHandleType(event: PointerEvent): LineHandleType | undefined {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return;
 
-    const elementAtPoint = shadowRoot.elementFromPoint(event.clientX, event.clientY);
+    const elementsAtPoint = shadowRoot.elementsFromPoint(event.clientX, event.clientY);
 
-    const handle = elementAtPoint?.closest('.selection-line-handle-overlay') as HTMLElement | null;
+    const handle = elementsAtPoint.find(el => el.classList.contains('selection-line-handle-overlay'));
 
     return handle?.classList[1] as LineHandleType;
   }

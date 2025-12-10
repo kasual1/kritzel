@@ -149,6 +149,9 @@ export class KritzelEngine {
       this.throttledPointerMoveMulti(ev);
     }
 
+    // Update cursor for handle hover states using elementsFromPoint
+    this.updateHandleHoverCursor(ev);
+
     this.viewport.handlePointerMove(ev);
     this.core.store.state?.activeTool?.handlePointerMove(ev);
   }
@@ -542,6 +545,52 @@ export class KritzelEngine {
     this.core.rerender();
   }
 
+  /**
+   * Detects handle hover states using elementsFromPoint() to work with overlapped elements.
+   * This approach finds all elements at the pointer position instead of relying on pointerenter/pointerleave.
+   */
+  private updateHandleHoverCursor(ev: PointerEvent): void {
+    if (this.core.store.isPointerDown) return;
+
+    const shadowRoot = this.host.shadowRoot;
+    if (!shadowRoot) return;
+
+    const elementsAtPoint = shadowRoot.elementsFromPoint(ev.clientX, ev.clientY);
+    if (!elementsAtPoint || elementsAtPoint.length === 0) return;
+
+    // Check for resize handle overlays (selection group)
+    const resizeHandleOverlay = elementsAtPoint.find(el => el.classList.contains('resize-handle-overlay'));
+    if (resizeHandleOverlay) {
+      const selectionGroup = this.core.store.selectionGroup;
+      const rotationDegrees = selectionGroup?.rotationDegrees ?? 0;
+      
+      // Determine rotation offset based on handle position
+      const isTopLeft = resizeHandleOverlay.classList.contains('top-left');
+      const isBottomRight = resizeHandleOverlay.classList.contains('bottom-right');
+      const rotationOffset = (isTopLeft || isBottomRight) ? -45 : 45;
+      
+      this.core.store.state.cursor = { icon: 'move-vertical', rotation: rotationDegrees + rotationOffset };
+      return;
+    }
+
+    // Check for rotation handle overlay
+    const rotationHandleOverlay = elementsAtPoint.find(el => el.classList.contains('rotation-handle-overlay'));
+    if (rotationHandleOverlay) {
+      this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' };
+      return;
+    }
+
+    // Check for line handle overlays (selection line)
+    const lineHandleOverlay = elementsAtPoint.find(el => el.classList.contains('selection-line-handle-overlay'));
+    if (lineHandleOverlay) {
+      this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' };
+      return;
+    }
+
+    // Reset cursor if not hovering any handle
+    this.core.store.state.cursor = { icon: 'default', iconActive: 'default' };
+  }
+
   private updateCursor(): void {
     const state = this.core.store.state;
 
@@ -628,7 +677,6 @@ export class KritzelEngine {
                 style={{
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
-                  zIndex: object.zIndex.toString(),
                   position: 'absolute',
                   pointerEvents: this.core.store.state.isScaling ? 'none' : 'auto',
                 }}
@@ -638,6 +686,7 @@ export class KritzelEngine {
                   id={object.id}
                   class="object"
                   style={{
+                  zIndex: object.zIndex.toString(),
                     height: object?.totalHeight.toString(),
                     width: object?.totalWidth.toString(),
                     left: '0',
@@ -649,6 +698,28 @@ export class KritzelEngine {
                     pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                   }}
                 >
+                  {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
+                    <svg
+                      ref={el => object.mount(el)}
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ overflow: 'visible' }}
+                      viewBox={object?.viewBox}
+                    >
+                      <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'} />
+                    </svg>
+                  )}
+
+                  {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
+                    <svg
+                      ref={el => object.mount(el)}
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ overflow: 'visible' }}
+                      viewBox={object?.viewBox}
+                    >
+                      <path d={object?.d} fill="none" stroke={object?.stroke} stroke-width={object?.strokeWidth} stroke-linecap="round" />
+                    </svg>
+                  )}
+
                   <foreignObject
                     x="0"
                     y="0"
@@ -663,40 +734,9 @@ export class KritzelEngine {
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
                       overflow: 'visible',
+                      display: KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') || KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath')  ? 'none' : 'block'
                     }}
                   >
-                    {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
-                      <svg
-                        ref={el => object.mount(el)}
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{
-                          height: object?.height.toString(),
-                          width: object?.width.toString(),
-                          position: 'absolute',
-                          overflow: 'visible',
-                        }}
-                        viewBox={object?.viewBox}
-                      >
-                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'} />
-                      </svg>
-                    )}
-
-                    {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
-                      <svg
-                        ref={el => object.mount(el)}
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{
-                          height: object?.height.toString(),
-                          width: object?.width.toString(),
-                          position: 'absolute',
-                          overflow: 'visible',
-                        }}
-                        viewBox={object?.viewBox}
-                      >
-                        <path d={object?.d} fill="none" stroke={object?.stroke} stroke-width={object?.strokeWidth} stroke-linecap="round" />
-                      </svg>
-                    )}
-
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <img
                         ref={el => object.mount(el)}
@@ -792,6 +832,7 @@ export class KritzelEngine {
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   style={{
+                    zIndex: (object.zIndex + 1).toString(),
                     height: object?.totalHeight.toString(),
                     width: object?.totalWidth.toString(),
                     left: '0',
@@ -873,10 +914,6 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() =>
-                              !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })
-                            }
-                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
 
                           <circle
@@ -898,10 +935,6 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() =>
-                              !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })
-                            }
-                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
 
                           <circle
@@ -923,10 +956,6 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() =>
-                              !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })
-                            }
-                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
 
                           <circle
@@ -948,10 +977,6 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() =>
-                              !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })
-                            }
-                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
 
                           <line
@@ -983,8 +1008,6 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' })}
-                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
                         </g>
                       )}
@@ -1029,8 +1052,27 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' })}
-                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
+                          />
+
+                          <circle
+                            class="selection-line-handle center"
+                            cx={(object.startX - object.x + object.endX - object.x) / 2}
+                            cy={(object.startY - object.y + object.endY - object.y) / 2}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="selection-line-handle-overlay center"
+                            cx={(object.startX - object.x + object.endX - object.x) / 2}
+                            cy={(object.startY - object.y + object.endY - object.y) / 2}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
                           />
 
                           <circle
@@ -1052,8 +1094,6 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' })}
-                            onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
                         </g>
                       )}
