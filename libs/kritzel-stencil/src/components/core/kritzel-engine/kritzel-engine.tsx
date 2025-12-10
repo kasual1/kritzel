@@ -464,7 +464,7 @@ export class KritzelEngine {
   disconnectedCallback() {
     this.throttledWheel.cancel();
     this.throttledPointerMoveMulti.cancel();
-    
+
     // Reset cursor on target element
     if (this.cursorTargetElement) {
       this.cursorTargetElement.style.cursor = '';
@@ -485,7 +485,7 @@ export class KritzelEngine {
 
     // Set cursor target element (use prop value or default to document.body)
     this.cursorTargetElement = this.cursorTarget || document.body;
-    
+
     // Set the pointer cursor CSS variable for child components to use
     this.cursorTargetElement.style.setProperty('--kritzel-pointer-cursor', KritzelCursorHelper.getPointerCursor());
 
@@ -544,7 +544,7 @@ export class KritzelEngine {
 
   private updateCursor(): void {
     const state = this.core.store.state;
-    
+
     const isPointerDown = this.core.store.isPointerDown;
 
     const icon = state.cursor?.icon;
@@ -715,6 +715,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
                       <div
+                        id="text-object"
                         ref={el => object.mount(el)}
                         onPointerDown={e => object.handlePointerDown(e)}
                         onPointerMove={e => object.handlePointerMove(e)}
@@ -747,7 +748,7 @@ export class KritzelEngine {
                       ></div>
                     )}
 
-                    {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && (
+                    {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && !this.core.displaySelectionLineUI(object) && (
                       <div
                         ref={el => object.mount(el)}
                         style={{
@@ -804,7 +805,7 @@ export class KritzelEngine {
                 >
                   {this.core.displaySelectionGroupUI(object) && (
                     <g class="selection-group-ui" style={{ pointerEvents: 'none' }}>
-                      <g class="selection-borders">
+                      <g class="selection-group-borders">
                         <line
                           x1="0"
                           y1="0"
@@ -852,7 +853,7 @@ export class KritzelEngine {
                       </g>
 
                       {!this.isSelecting && (
-                        <g class="selection-handles" style={{ pointerEvents: 'auto' }}>
+                        <g class="selection-group-handles" style={{ pointerEvents: 'auto' }}>
                           <circle
                             class="resize-handle top-left"
                             cx="0"
@@ -872,7 +873,9 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
+                            onPointerEnter={() =>
+                              !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })
+                            }
                             onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
 
@@ -895,7 +898,9 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
+                            onPointerEnter={() =>
+                              !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })
+                            }
                             onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
 
@@ -918,7 +923,9 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
+                            onPointerEnter={() =>
+                              !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })
+                            }
                             onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
 
@@ -941,7 +948,9 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
+                            onPointerEnter={() =>
+                              !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })
+                            }
                             onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
 
@@ -984,33 +993,35 @@ export class KritzelEngine {
 
                   {this.core.displaySelectionLineUI(object) && KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
                     <g class="selection-line-ui" style={{ pointerEvents: 'none' }}>
-                      <line
-                        class="selection-line-border"
-                        x1={object.startX - object.x}
-                        y1={object.startY - object.y}
-                        x2={object.endX - object.x}
-                        y2={object.endY - object.y}
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                          strokeLinecap: 'round',
-                        }}
-                      />
+                      <g class="selection-line-borders">
+                        <line
+                          class="selection-line-border"
+                          x1={object.startX - object.x}
+                          y1={object.startY - object.y}
+                          x2={object.endX - object.x}
+                          y2={object.endY - object.y}
+                          style={{
+                            stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                            strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            strokeLinecap: 'round',
+                          }}
+                        />
+                      </g>
+
                       {!this.isSelecting && (
-                        <g class="line-handles" style={{ pointerEvents: 'auto' }}>
+                        <g class="selection-line-handles" style={{ pointerEvents: 'auto' }}>
                           <circle
-                            class="line-handle start"
+                            class="selection-line-handle start"
                             cx={object.startX - object.x}
                             cy={object.startY - object.y}
                             r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                             style={{
                               fill: 'var(--kritzel-selection-handle-color, #000000)',
                               paintOrder: 'fill',
-                              pointerEvents: 'none',
                             }}
                           />
                           <circle
-                            class="line-handle-overlay start"
+                            class="selection-line-handle-overlay start"
                             cx={object.startX - object.x}
                             cy={object.startY - object.y}
                             r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
@@ -1023,18 +1034,17 @@ export class KritzelEngine {
                           />
 
                           <circle
-                            class="line-handle end"
+                            class="selection-line-handle end"
                             cx={object.endX - object.x}
                             cy={object.endY - object.y}
                             r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                             style={{
                               fill: 'var(--kritzel-selection-handle-color, #000000)',
                               paintOrder: 'fill',
-                              pointerEvents: 'none',
                             }}
                           />
                           <circle
-                            class="line-handle-overlay end"
+                            class="selection-line-handle-overlay end"
                             cx={object.endX - object.x}
                             cy={object.endY - object.y}
                             r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}

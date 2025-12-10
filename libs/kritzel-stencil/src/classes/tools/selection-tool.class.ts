@@ -225,7 +225,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     const elementAtPoint = shadowRoot.elementFromPoint(event.clientX, event.clientY);
 
-    return !!elementAtPoint?.classList.contains('line-handle-overlay');
+    return !!elementAtPoint?.classList.contains('selection-line-handle-overlay');
   }
 
   private getLineHandleType(event: PointerEvent): LineHandleType | undefined {
@@ -234,7 +234,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     const elementAtPoint = shadowRoot.elementFromPoint(event.clientX, event.clientY);
 
-    const handle = elementAtPoint?.closest('.line-handle-overlay') as HTMLElement | null;
+    const handle = elementAtPoint?.closest('.selection-line-handle-overlay') as HTMLElement | null;
 
     return handle?.classList[1] as LineHandleType;
   }
