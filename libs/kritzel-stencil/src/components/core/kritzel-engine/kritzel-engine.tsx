@@ -1006,6 +1006,7 @@ export class KritzelEngine {
                             style={{
                               fill: 'var(--kritzel-selection-handle-color, #000000)',
                               paintOrder: 'fill',
+                              pointerEvents: 'none',
                             }}
                           />
                           <circle
@@ -1017,7 +1018,7 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move', rotation: 0 })}
+                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' })}
                             onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
 
@@ -1029,6 +1030,7 @@ export class KritzelEngine {
                             style={{
                               fill: 'var(--kritzel-selection-handle-color, #000000)',
                               paintOrder: 'fill',
+                              pointerEvents: 'none',
                             }}
                           />
                           <circle
@@ -1040,7 +1042,7 @@ export class KritzelEngine {
                               fill: 'transparent',
                               paintOrder: 'fill',
                             }}
-                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move', rotation: 0 })}
+                            onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' })}
                             onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
                           />
                         </g>
