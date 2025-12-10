@@ -137,20 +137,34 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     const newWidth = maxX - minX;
     const newHeight = maxY - minY;
 
-    // Calculate how much the bounding box origin shifted
+    // Calculate old bounding box
     const oldMinX = Math.min(this.initialStartX, this.initialEndX) - line.strokeWidth / 2;
     const oldMinY = Math.min(this.initialStartY, this.initialEndY) - line.strokeWidth / 2;
+    const oldMaxX = Math.max(this.initialStartX, this.initialEndX) + line.strokeWidth / 2;
+    const oldMaxY = Math.max(this.initialStartY, this.initialEndY) + line.strokeWidth / 2;
 
-    // Calculate the shift in the bounding box origin in local space
+    const oldWidth = oldMaxX - oldMinX;
+    const oldHeight = oldMaxY - oldMinY;
+
+    // Calculate center shift in local space
     const shiftX = minX - oldMinX;
     const shiftY = minY - oldMinY;
 
-    // Convert the shift to world coordinates (accounting for rotation)
+    const deltaCx = shiftX + (newWidth - oldWidth) / 2;
+    const deltaCy = shiftY + (newHeight - oldHeight) / 2;
+
+    // Convert the center shift to world coordinates
     const rotation = line.rotation;
     const cos = Math.cos(rotation);
     const sin = Math.sin(rotation);
-    const worldShiftX = (shiftX * cos - shiftY * sin) / line.scale;
-    const worldShiftY = (shiftX * sin + shiftY * cos) / line.scale;
+    const scale = 1 / line.scale;
+
+    const rotatedDeltaCx = deltaCx * cos - deltaCy * sin;
+    const rotatedDeltaCy = deltaCx * sin + deltaCy * cos;
+
+    // Calculate new translate
+    const newTranslateX = this.initialTranslateX + scale * (oldWidth - newWidth) / 2 + scale * rotatedDeltaCx;
+    const newTranslateY = this.initialTranslateY + scale * (oldHeight - newHeight) / 2 + scale * rotatedDeltaCy;
 
     // Update the line properties
     line.startX = startX;
@@ -163,8 +177,8 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     line.height = newHeight;
 
     // Adjust translateX/Y to compensate for the bounding box shift
-    line.translateX = this.initialTranslateX + worldShiftX;
-    line.translateY = this.initialTranslateY + worldShiftY;
+    line.translateX = newTranslateX;
+    line.translateY = newTranslateY;
 
     // Clear cached adjusted points
     (line as unknown as { _adjustedPoints: number[][] | null })._adjustedPoints = null;
