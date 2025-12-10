@@ -270,7 +270,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
       return [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos];
     });
 
-    return rotatedPoints.map(([px, py]) => [Math.abs(px - this.x) / this.scale + this.translateX, Math.abs(py - this.y) / this.scale + this.translateY]);
+    return rotatedPoints.map(([px, py]) => [(px - this.x) / this.scale + this.translateX, (py - this.y) / this.scale + this.translateY]);
   }
 
   private pointToLineSegmentDistance(x: number, y: number, x1: number, y1: number, x2: number, y2: number): number {
