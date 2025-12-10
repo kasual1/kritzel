@@ -304,23 +304,65 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
+  override get rotatedPolygon(): KritzelPolygon {
+    const padding = this.padding;
+    const p1x = this.startX - this.x + padding;
+    const p1y = this.startY - this.y + padding;
+    const p2x = this.endX - this.x + padding;
+    const p2y = this.endY - this.y + padding;
+
+    const dx = p2x - p1x;
+    const dy = p2y - p1y;
+    const len = Math.sqrt(dx * dx + dy * dy);
+
+    if (len === 0) return super.rotatedPolygon;
+
+    const nx = -dy / len;
+    const ny = dx / len;
+
+    const halfStroke = this.strokeWidth / 2;
+    const ox = nx * halfStroke;
+    const oy = ny * halfStroke;
+
+    const c1 = { x: p1x + ox, y: p1y + oy };
+    const c2 = { x: p2x + ox, y: p2y + oy };
+    const c3 = { x: p2x - ox, y: p2y - oy };
+    const c4 = { x: p1x - ox, y: p1y - oy };
+
+    const cx = this.totalWidth / 2;
+    const cy = this.totalHeight / 2;
+    const angle = this.rotation;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    const transform = (p: { x: number; y: number }) => {
+      const rx = (p.x - cx) * cos - (p.y - cy) * sin + cx;
+      const ry = (p.x - cx) * sin + (p.y - cy) * cos + cy;
+      return {
+        x: rx / this.scale + this.translateX,
+        y: ry / this.scale + this.translateY,
+      };
+    };
+
+    return {
+      topLeft: transform(c1),
+      topRight: transform(c2),
+      bottomRight: transform(c3),
+      bottomLeft: transform(c4),
+    };
+  }
+
   private updateDimensions(): void {
     const points = [
       [this.startX, this.startY],
       [this.endX, this.endY],
     ];
 
-    const rotatedPoints = points.map(([x, y]) => {
-      const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
-      const rotatedY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation);
-      return [rotatedX, rotatedY];
-    });
+    const minX = Math.min(...points.map(p => p[0] - this.strokeWidth / 2));
+    const minY = Math.min(...points.map(p => p[1] - this.strokeWidth / 2));
 
-    const minX = Math.min(...rotatedPoints.map(p => p[0] - this.strokeWidth / 2));
-    const minY = Math.min(...rotatedPoints.map(p => p[1] - this.strokeWidth / 2));
-
-    const maxX = Math.max(...rotatedPoints.map(p => p[0] + this.strokeWidth / 2));
-    const maxY = Math.max(...rotatedPoints.map(p => p[1] + this.strokeWidth / 2));
+    const maxX = Math.max(...points.map(p => p[0] + this.strokeWidth / 2));
+    const maxY = Math.max(...points.map(p => p[1] + this.strokeWidth / 2));
 
     this.width = maxX - minX;
     this.height = maxY - minY;
