@@ -557,6 +557,28 @@ export class KritzelCore {
     return [];
   }
 
+  /**
+   * Get all elements at a pointer position that match a given selector.
+   * Uses elementsFromPoint to find overlapped elements.
+   */
+  getElementsAtPoint(event: PointerEvent, selector: string): Element[] {
+    const shadowRoot = this._store.state.host?.shadowRoot;
+    if (!shadowRoot) return [];
+
+    const elementsAtPoint = shadowRoot.elementsFromPoint(event.clientX, event.clientY);
+    if (!elementsAtPoint || elementsAtPoint.length === 0) return [];
+
+    return elementsAtPoint.filter(el => el.matches(selector));
+  }
+
+  /**
+   * Check if any element at the pointer position matches the given selector.
+   * Useful for detecting hover states on overlapped elements.
+   */
+  isPointerOverElement(event: PointerEvent, selector: string): boolean {
+    return this.getElementsAtPoint(event, selector).length > 0;
+  }
+
   getCanvasPoint(event: PointerEvent): { x: number; y: number } {
     if (!this._store.state.host) {
       return { x: 0, y: 0 };
