@@ -255,6 +255,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
         const updatedY = newChildCenterY - updatedTotalHeight / 2 / child.scale;
 
         child.resize(updatedX, updatedY, updatedWidth, updatedHeight);
+
+        // Update any lines that are anchored to this child object
+        this._core.anchorManager.updateAnchorsForObject(child.id);
       });
 
       // Refresh dimensions and update the SelectionGroup to propagate changes to other tabs

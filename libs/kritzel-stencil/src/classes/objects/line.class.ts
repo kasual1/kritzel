@@ -121,6 +121,16 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._adjustedPoints = null;
 
     this._core.store.state.objects.update(this);
+
+    // Update anchors after the line is updated
+    this._core.anchorManager.updateAnchorsForObject(this.id);
+
+    if (this.startAnchor) {
+      this._core.anchorManager.updateAnchorsForObject(this.startAnchor.objectId);
+    }
+    if (this.endAnchor) {
+      this._core.anchorManager.updateAnchorsForObject(this.endAnchor.objectId);
+    }
   }
 
   override rotate(value: number): void {
@@ -136,6 +146,14 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
 
     this.translateX += deltaX;
     this.translateY += deltaY;
+
+    // If the line is anchored, we need to ensure the anchored endpoints stay at the target
+    if (this.startAnchor) {
+      this._core.anchorManager.updateAnchorsForObject(this.startAnchor.objectId);
+    }
+    if (this.endAnchor) {
+      this._core.anchorManager.updateAnchorsForObject(this.endAnchor.objectId);
+    }
 
     this._adjustedPoints = null;
 
