@@ -97,19 +97,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     }
 
     // Recalculate dimensions from scaled endpoints
-    const points = [
-      [this.startX, this.startY],
-      [this.endX, this.endY],
-    ];
-
-    if (this.controlX !== undefined && this.controlY !== undefined) {
-      points.push([this.controlX, this.controlY]);
-    }
-
-    const minX = Math.min(...points.map(p => p[0])) - this.strokeWidth / 2;
-    const minY = Math.min(...points.map(p => p[1])) - this.strokeWidth / 2;
-    const maxX = Math.max(...points.map(p => p[0])) + this.strokeWidth / 2;
-    const maxY = Math.max(...points.map(p => p[1])) + this.strokeWidth / 2;
+    const { minX, minY, maxX, maxY } = this.calculateBoundingBox();
 
     this.width = maxX - minX;
     this.height = maxY - minY;
@@ -151,6 +139,13 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
       this._adjustedPoints = this.computeAdjustedPoints();
     }
 
+    // For curved lines, use distance to the Bezier curve
+    if (this.controlX !== undefined && this.controlY !== undefined) {
+      const distance = this.pointToBezierDistance(x, y);
+      return distance <= halfStroke + 2;
+    }
+
+    // For straight lines, use distance to line segment
     const p1 = this._adjustedPoints[0];
     const p2 = this._adjustedPoints[1];
 
@@ -179,14 +174,46 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
       }
     }
 
-    // Check if any polygon vertex is on the line
+    // Check if any polygon vertex is on the line/curve
     for (const pt of polyPoints) {
       if (this.hitTest(pt.x, pt.y)) {
         return true;
       }
     }
 
-    // Check if line intersects any polygon edge
+    // For curved lines, sample points along the curve and check if any are inside the polygon
+    if (this.controlX !== undefined && this.controlY !== undefined) {
+      const p0 = this._adjustedPoints[0];
+      const p2 = this._adjustedPoints[1];
+      const controlAdjusted = this.computeAdjustedControlPoint();
+
+      const samples = 20;
+      for (let i = 1; i < samples; i++) {
+        const t = i / samples;
+        const oneMinusT = 1 - t;
+
+        const bx = oneMinusT * oneMinusT * p0[0] + 2 * oneMinusT * t * controlAdjusted[0] + t * t * p2[0];
+        const by = oneMinusT * oneMinusT * p0[1] + 2 * oneMinusT * t * controlAdjusted[1] + t * t * p2[1];
+
+        if (KritzelGeometryHelper.isPointInPolygon({ x: bx, y: by }, polyPoints)) {
+          return true;
+        }
+
+        // Also check if curve point is within stroke distance of polygon edges
+        for (let j = 0; j < polyPoints.length; j++) {
+          const q1 = polyPoints[j];
+          const q2 = polyPoints[(j + 1) % polyPoints.length];
+          const d = this.pointToLineSegmentDistance(bx, by, q1.x, q1.y, q2.x, q2.y);
+          if (d <= halfStroke) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    // For straight lines, check if line intersects any polygon edge
     const p1 = { x: this._adjustedPoints[0][0], y: this._adjustedPoints[0][1] };
     const p2 = { x: this._adjustedPoints[1][0], y: this._adjustedPoints[1][1] };
 
@@ -240,12 +267,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     }
 
     // Recalculate the bounding box (viewBox dimensions)
-    const halfStroke = this.strokeWidth / 2;
-
-    const minX = Math.min(this.startX, this.endX) - halfStroke;
-    const minY = Math.min(this.startY, this.endY) - halfStroke;
-    const maxX = Math.max(this.startX, this.endX) + halfStroke;
-    const maxY = Math.max(this.startY, this.endY) + halfStroke;
+    const { minX, minY, maxX, maxY } = this.calculateBoundingBox();
 
     // Calculate the change in origin
     const deltaX = minX - this.x;
@@ -273,18 +295,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.controlY = newY;
 
     // Recalculate the bounding box (viewBox dimensions)
-    const halfStroke = this.strokeWidth / 2;
-
-    const points = [
-      [this.startX, this.startY],
-      [this.endX, this.endY],
-      [this.controlX, this.controlY],
-    ];
-
-    const minX = Math.min(...points.map(p => p[0])) - halfStroke;
-    const minY = Math.min(...points.map(p => p[1])) - halfStroke;
-    const maxX = Math.max(...points.map(p => p[0])) + halfStroke;
-    const maxY = Math.max(...points.map(p => p[1])) + halfStroke;
+    const { minX, minY, maxX, maxY } = this.calculateBoundingBox();
 
     // Calculate the change in origin
     const deltaX = minX - this.x;
@@ -366,30 +377,101 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
+  /**
+   * Calculates the minimum distance from a point to a quadratic Bezier curve.
+   * Uses sampling along the curve to find the closest point.
+   */
+  private pointToBezierDistance(x: number, y: number): number {
+    if (this._adjustedPoints === null) {
+      this._adjustedPoints = this.computeAdjustedPoints();
+    }
+
+    const p0 = this._adjustedPoints[0];
+    const p2 = this._adjustedPoints[1];
+
+    // Calculate the adjusted control point
+    const controlAdjusted = this.computeAdjustedControlPoint();
+
+    let minDistance = Infinity;
+    const samples = 20; // Number of samples along the curve
+
+    for (let i = 0; i <= samples; i++) {
+      const t = i / samples;
+      const oneMinusT = 1 - t;
+
+      // Quadratic Bezier: B(t) = (1-t)²P₀ + 2(1-t)tP₁ + t²P₂
+      const bx = oneMinusT * oneMinusT * p0[0] + 2 * oneMinusT * t * controlAdjusted[0] + t * t * p2[0];
+      const by = oneMinusT * oneMinusT * p0[1] + 2 * oneMinusT * t * controlAdjusted[1] + t * t * p2[1];
+
+      const dx = x - bx;
+      const dy = y - by;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+      }
+    }
+
+    return minDistance;
+  }
+
+  /**
+   * Computes the adjusted control point in world coordinates, accounting for rotation and translation.
+   */
+  private computeAdjustedControlPoint(): number[] {
+    if (this.controlX === undefined || this.controlY === undefined) {
+      // Return midpoint if no control point
+      return [(this.startX + this.endX) / 2, (this.startY + this.endY) / 2];
+    }
+
+    const angle = this.rotation;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    // Calculate pivot (center of bounding box for endpoints)
+    const xs = [this.startX, this.endX];
+    const ys = [this.startY, this.endY];
+    const pivot = {
+      x: (Math.min(...xs) + Math.max(...xs)) / 2,
+      y: (Math.min(...ys) + Math.max(...ys)) / 2,
+    };
+
+    const { x: cx, y: cy } = pivot;
+
+    // Rotate control point around pivot
+    const dx = this.controlX - cx;
+    const dy = this.controlY - cy;
+    const rotatedX = cx + dx * cos - dy * sin;
+    const rotatedY = cy + dx * sin + dy * cos;
+
+    // Transform to world coordinates
+    return [(rotatedX - this.x) / this.scale + this.translateX, (rotatedY - this.y) / this.scale + this.translateY];
+  }
+
   override get rotatedPolygon(): KritzelPolygon {
     const padding = this.padding;
-    const p1x = this.startX - this.x + padding;
-    const p1y = this.startY - this.y + padding;
-    const p2x = this.endX - this.x + padding;
-    const p2y = this.endY - this.y + padding;
 
-    const dx = p2x - p1x;
-    const dy = p2y - p1y;
-    const len = Math.sqrt(dx * dx + dy * dy);
+    // Use the bounding box which accounts for curve extrema
+    const { minX, minY, maxX, maxY } = KritzelLine.calculateBoundingBox(
+      this.startX,
+      this.startY,
+      this.endX,
+      this.endY,
+      this.controlX,
+      this.controlY,
+      this.strokeWidth,
+    );
 
-    if (len === 0) return super.rotatedPolygon;
+    // Convert to local coordinates (relative to this.x, this.y)
+    const localMinX = minX - this.x + padding;
+    const localMinY = minY - this.y + padding;
+    const localMaxX = maxX - this.x + padding;
+    const localMaxY = maxY - this.y + padding;
 
-    const nx = -dy / len;
-    const ny = dx / len;
-
-    const halfStroke = this.strokeWidth / 2;
-    const ox = nx * halfStroke;
-    const oy = ny * halfStroke;
-
-    const c1 = { x: p1x + ox, y: p1y + oy };
-    const c2 = { x: p2x + ox, y: p2y + oy };
-    const c3 = { x: p2x - ox, y: p2y - oy };
-    const c4 = { x: p1x - ox, y: p1y - oy };
+    const c1 = { x: localMinX, y: localMinY }; // top-left
+    const c2 = { x: localMaxX, y: localMinY }; // top-right
+    const c3 = { x: localMaxX, y: localMaxY }; // bottom-right
+    const c4 = { x: localMinX, y: localMaxY }; // bottom-left
 
     const cx = this.totalWidth / 2;
     const cy = this.totalHeight / 2;
@@ -414,21 +496,75 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     };
   }
 
-  private updateDimensions(): void {
-    const points = [
-      [this.startX, this.startY],
-      [this.endX, this.endY],
-    ];
+  /**
+   * Calculates the tight bounding box for a quadratic Bezier curve or straight line.
+   * For curves, it finds the extrema points where the derivative equals zero.
+   */
+  static calculateBoundingBox(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    controlX: number | undefined,
+    controlY: number | undefined,
+    strokeWidth: number,
+  ): { minX: number; minY: number; maxX: number; maxY: number } {
+    let minX = Math.min(startX, endX);
+    let minY = Math.min(startY, endY);
+    let maxX = Math.max(startX, endX);
+    let maxY = Math.max(startY, endY);
 
-    if (this.controlX !== undefined && this.controlY !== undefined) {
-      points.push([this.controlX, this.controlY]);
+    if (controlX !== undefined && controlY !== undefined) {
+      // For a quadratic Bezier: B(t) = (1-t)²P₀ + 2(1-t)tP₁ + t²P₂
+      // Derivative: B'(t) = 2(1-t)(P₁-P₀) + 2t(P₂-P₁) = 0
+      // Solving for t: t = (P₀ - P₁) / (P₀ - 2P₁ + P₂)
+
+      // Find extrema for X
+      const aX = startX - 2 * controlX + endX;
+      if (aX !== 0) {
+        const tX = (startX - controlX) / aX;
+        if (tX > 0 && tX < 1) {
+          const extremaX = (1 - tX) * (1 - tX) * startX + 2 * (1 - tX) * tX * controlX + tX * tX * endX;
+          minX = Math.min(minX, extremaX);
+          maxX = Math.max(maxX, extremaX);
+        }
+      }
+
+      // Find extrema for Y
+      const aY = startY - 2 * controlY + endY;
+      if (aY !== 0) {
+        const tY = (startY - controlY) / aY;
+        if (tY > 0 && tY < 1) {
+          const extremaY = (1 - tY) * (1 - tY) * startY + 2 * (1 - tY) * tY * controlY + tY * tY * endY;
+          minY = Math.min(minY, extremaY);
+          maxY = Math.max(maxY, extremaY);
+        }
+      }
     }
 
-    const minX = Math.min(...points.map(p => p[0] - this.strokeWidth / 2));
-    const minY = Math.min(...points.map(p => p[1] - this.strokeWidth / 2));
+    const halfStroke = strokeWidth / 2;
+    return {
+      minX: minX - halfStroke,
+      minY: minY - halfStroke,
+      maxX: maxX + halfStroke,
+      maxY: maxY + halfStroke,
+    };
+  }
 
-    const maxX = Math.max(...points.map(p => p[0] + this.strokeWidth / 2));
-    const maxY = Math.max(...points.map(p => p[1] + this.strokeWidth / 2));
+  calculateBoundingBox(): { minX: number; minY: number; maxX: number; maxY: number } {
+    return KritzelLine.calculateBoundingBox(
+      this.startX,
+      this.startY,
+      this.endX,
+      this.endY,
+      this.controlX,
+      this.controlY,
+      this.strokeWidth,
+    );
+  }
+
+  private updateDimensions(): void {
+    const { minX, minY, maxX, maxY } = this.calculateBoundingBox();
 
     this.width = maxX - minX;
     this.height = maxY - minY;
