@@ -1,4 +1,5 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
+import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseHandler } from './base.handler';
@@ -145,12 +146,37 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
         const localCoords = this.worldToLineLocal(line, snapTarget.centerX, snapTarget.centerY);
         this.updateLineEndpoint(line, localCoords.x, localCoords.y, this.initialEndX, this.initialEndY);
 
+        // Get the other endpoint's world position for edge intersection calculation
+        const otherEndpointWorld = this.lineLocalToWorld(line, this.initialEndX, this.initialEndY);
+        
+        // Calculate edge intersection point
+        const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === snapTarget.objectId);
+        let edgeX: number | undefined;
+        let edgeY: number | undefined;
+        if (targetObject) {
+          const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+            { x: otherEndpointWorld.x, y: otherEndpointWorld.y },
+            { x: snapTarget.centerX, y: snapTarget.centerY },
+            targetObject.rotatedPolygon
+          );
+          if (edgeIntersection) {
+            edgeX = edgeIntersection.x;
+            edgeY = edgeIntersection.y;
+          }
+        }
+
         // Update snap indicator
         this._core.anchorManager.setSnapCandidate({
           objectId: snapTarget.objectId,
           endpoint: 'start',
           centerX: snapTarget.centerX,
           centerY: snapTarget.centerY,
+          lineEndpointX: otherEndpointWorld.x,
+          lineEndpointY: otherEndpointWorld.y,
+          edgeX,
+          edgeY,
+          lineStroke: line.stroke,
+          lineStrokeWidth: line.strokeWidth / line.scale,
         });
       } else {
         // No snap - use regular position
@@ -178,12 +204,37 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
         const localCoords = this.worldToLineLocal(line, snapTarget.centerX, snapTarget.centerY);
         this.updateLineEndpoint(line, this.initialStartX, this.initialStartY, localCoords.x, localCoords.y);
 
+        // Get the other endpoint's world position for edge intersection calculation
+        const otherEndpointWorld = this.lineLocalToWorld(line, this.initialStartX, this.initialStartY);
+        
+        // Calculate edge intersection point
+        const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === snapTarget.objectId);
+        let edgeX: number | undefined;
+        let edgeY: number | undefined;
+        if (targetObject) {
+          const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+            { x: otherEndpointWorld.x, y: otherEndpointWorld.y },
+            { x: snapTarget.centerX, y: snapTarget.centerY },
+            targetObject.rotatedPolygon
+          );
+          if (edgeIntersection) {
+            edgeX = edgeIntersection.x;
+            edgeY = edgeIntersection.y;
+          }
+        }
+
         // Update snap indicator
         this._core.anchorManager.setSnapCandidate({
           objectId: snapTarget.objectId,
           endpoint: 'end',
           centerX: snapTarget.centerX,
           centerY: snapTarget.centerY,
+          lineEndpointX: otherEndpointWorld.x,
+          lineEndpointY: otherEndpointWorld.y,
+          edgeX,
+          edgeY,
+          lineStroke: line.stroke,
+          lineStrokeWidth: line.strokeWidth / line.scale,
         });
       } else {
         // No snap - use regular position
@@ -224,6 +275,27 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     const localY = rotatedY * line.scale + line.y;
 
     return { x: localX, y: localY };
+  }
+
+  /**
+   * Converts a line's local coordinate system to world coordinates.
+   */
+  private lineLocalToWorld(line: KritzelLine, localX: number, localY: number): { x: number; y: number } {
+    // Remove origin offset and scale
+    const scaledX = (localX - line.x) / line.scale;
+    const scaledY = (localY - line.y) / line.scale;
+
+    // Apply rotation
+    const cos = Math.cos(line.rotation);
+    const sin = Math.sin(line.rotation);
+    const rotatedX = scaledX * cos - scaledY * sin;
+    const rotatedY = scaledX * sin + scaledY * cos;
+
+    // Translate from line's origin
+    const worldX = rotatedX + line.translateX;
+    const worldY = rotatedY + line.translateY;
+
+    return { x: worldX, y: worldY };
   }
 
   private updateLineEndpoint(line: KritzelLine, startX: number, startY: number, endX: number, endY: number): void {
