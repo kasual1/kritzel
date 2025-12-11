@@ -12,6 +12,8 @@ export interface KritzelEngineState {
   activeWorkspace: KritzelWorkspace;
   activeTool: KritzelBaseTool;
   copiedObjects?: KritzelBaseObject<any>[];
+  /** Maps copied object IDs to their original source object IDs (for anchor remapping during paste) */
+  copiedObjectIdMapping?: Map<string, string>;
   objects: KritzelObjectMap<KritzelBaseObject<Element>>;
   snapCandidate?: SnapCandidate | null;
   resizeHandleType: KritzelHandleType;

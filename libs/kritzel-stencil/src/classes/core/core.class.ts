@@ -282,8 +282,19 @@ export class KritzelCore {
   copy() {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
-      // Copy each object and store them in an array
-      this._store.state.copiedObjects = selectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => obj.copy() as KritzelBaseObject<any>);
+      // Copy each object and store them in an array, also track the ID mapping
+      const idMapping = new Map<string, string>();
+      const copiedObjects = selectionGroup.objects
+        .sort((a, b) => a.zIndex - b.zIndex)
+        .map(obj => {
+          const copiedObj = obj.copy() as KritzelBaseObject<any>;
+          // Map: newId -> originalId
+          idMapping.set(copiedObj.id, obj.id);
+          return copiedObj;
+        });
+      
+      this._store.state.copiedObjects = copiedObjects;
+      this._store.state.copiedObjectIdMapping = idMapping;
     }
   }
 
@@ -294,6 +305,7 @@ export class KritzelCore {
     }
 
     const activeWorkspace = this._store.state.activeWorkspace;
+    const originalIdMapping = this._store.state.copiedObjectIdMapping;
 
     // Check if we're pasting from a different workspace
     const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
@@ -331,6 +343,15 @@ export class KritzelCore {
     // Create a new selection group for the pasted objects
     const selectionGroup = KritzelSelectionGroup.create(this);
 
+    // Build a reverse mapping: originalId -> newCopiedObjectId
+    // This is used to remap anchor references from original IDs to the copied object IDs
+    const originalToNewIdMap = new Map<string, string>();
+    if (originalIdMapping) {
+      originalIdMapping.forEach((originalId, copiedId) => {
+        originalToNewIdMap.set(originalId, copiedId);
+      });
+    }
+
     // First add all copied objects to the objectsMap with updated positions
     copiedObjects.forEach((obj, i) => {
       // Update workspace if pasting to a different workspace
@@ -350,6 +371,32 @@ export class KritzelCore {
       // Add to selection group
       selectionGroup.addOrRemove(obj);
     });
+
+    // Update line anchors to point to the newly pasted objects
+    // Only remap if the anchor target was also part of the copied selection
+    copiedObjects.forEach(obj => {
+      if (obj instanceof KritzelLine) {
+        let updated = false;
+
+        if (obj.startAnchor && originalToNewIdMap.has(obj.startAnchor.objectId)) {
+          obj.startAnchor = { objectId: originalToNewIdMap.get(obj.startAnchor.objectId)! };
+          updated = true;
+        }
+
+        if (obj.endAnchor && originalToNewIdMap.has(obj.endAnchor.objectId)) {
+          obj.endAnchor = { objectId: originalToNewIdMap.get(obj.endAnchor.objectId)! };
+          updated = true;
+        }
+
+        // If anchors were updated, rebuild the anchor index and persist the change
+        if (updated) {
+          this._store.state.objects.update(obj);
+        }
+      }
+    });
+
+    // Rebuild anchor index after all anchor updates
+    this._anchorManager.rebuildIndex();
 
     // Mark selection group as selected
     selectionGroup.isSelected = true;
@@ -380,7 +427,18 @@ export class KritzelCore {
     // Update copiedObjects to the newly created objects for potential future pastes
     const newSelectionGroup = this._store.selectionGroup;
     if (newSelectionGroup) {
-      this._store.state.copiedObjects = newSelectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => obj.copy() as KritzelBaseObject<any>);
+      // Create new copies and track the ID mapping for future pastes
+      const newIdMapping = new Map<string, string>();
+      const newCopiedObjects = newSelectionGroup.objects
+        .sort((a, b) => a.zIndex - b.zIndex)
+        .map(obj => {
+          const copiedObj = obj.copy() as KritzelBaseObject<any>;
+          newIdMapping.set(copiedObj.id, obj.id);
+          return copiedObj;
+        });
+      
+      this._store.state.copiedObjects = newCopiedObjects;
+      this._store.state.copiedObjectIdMapping = newIdMapping;
     }
 
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
