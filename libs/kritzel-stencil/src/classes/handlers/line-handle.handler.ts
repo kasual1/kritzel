@@ -140,38 +140,35 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
   }
 
   private updateLineEndpoint(line: KritzelLine, startX: number, startY: number, endX: number, endY: number): void {
-    const points = [
-      [startX, startY],
-      [endX, endY],
-    ];
-
-    if (line.controlX !== undefined && line.controlY !== undefined) {
-      points.push([line.controlX, line.controlY]);
-    }
-
-    // Calculate new bounding box
-    const minX = Math.min(...points.map(p => p[0])) - line.strokeWidth / 2;
-    const minY = Math.min(...points.map(p => p[1])) - line.strokeWidth / 2;
-    const maxX = Math.max(...points.map(p => p[0])) + line.strokeWidth / 2;
-    const maxY = Math.max(...points.map(p => p[1])) + line.strokeWidth / 2;
+    // Calculate new bounding box using the static method that accounts for curve extrema
+    const { minX, minY, maxX, maxY } = KritzelLine.calculateBoundingBox(
+      startX,
+      startY,
+      endX,
+      endY,
+      line.controlX,
+      line.controlY,
+      line.strokeWidth,
+    );
 
     const newWidth = maxX - minX;
     const newHeight = maxY - minY;
 
     // Calculate old bounding box
-    const oldPoints = [
-      [this.initialStartX, this.initialStartY],
-      [this.initialEndX, this.initialEndY],
-    ];
-
-    if (this.initialControlX !== undefined && this.initialControlY !== undefined) {
-      oldPoints.push([this.initialControlX, this.initialControlY]);
-    }
-
-    const oldMinX = Math.min(...oldPoints.map(p => p[0])) - line.strokeWidth / 2;
-    const oldMinY = Math.min(...oldPoints.map(p => p[1])) - line.strokeWidth / 2;
-    const oldMaxX = Math.max(...oldPoints.map(p => p[0])) + line.strokeWidth / 2;
-    const oldMaxY = Math.max(...oldPoints.map(p => p[1])) + line.strokeWidth / 2;
+    const {
+      minX: oldMinX,
+      minY: oldMinY,
+      maxX: oldMaxX,
+      maxY: oldMaxY,
+    } = KritzelLine.calculateBoundingBox(
+      this.initialStartX,
+      this.initialStartY,
+      this.initialEndX,
+      this.initialEndY,
+      this.initialControlX,
+      this.initialControlY,
+      line.strokeWidth,
+    );
 
     const oldWidth = oldMaxX - oldMinX;
     const oldHeight = oldMaxY - oldMinY;
