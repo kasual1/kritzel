@@ -139,11 +139,11 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   get centerX(): number {
-    return this.translateX + this.totalWidth / 2;
+    return this.translateX + this.totalWidth / 2 / this.scale;
   }
 
   get centerY(): number {
-    return this.translateY + this.totalHeight / 2;
+    return this.translateY + this.totalHeight / 2 / this.scale;
   }
 
   constructor() {
