@@ -3,7 +3,7 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseHandler } from './base.handler';
 
-export type LineHandleType = 'start' | 'end';
+export type LineHandleType = 'start' | 'end' | 'center';
 
 export class KritzelLineHandleHandler extends KritzelBaseHandler {
   initialMouseX = 0;
@@ -13,6 +13,8 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
   initialStartY = 0;
   initialEndX = 0;
   initialEndY = 0;
+  initialControlX: number | undefined;
+  initialControlY: number | undefined;
   initialTranslateX = 0;
   initialTranslateY = 0;
 
@@ -29,6 +31,8 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     this.initialStartY = 0;
     this.initialEndX = 0;
     this.initialEndY = 0;
+    this.initialControlX = undefined;
+    this.initialControlY = undefined;
     this.initialTranslateX = 0;
     this.initialTranslateY = 0;
     this.hasMoved = false;
@@ -67,6 +71,8 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     this.initialStartY = line.startY;
     this.initialEndX = line.endX;
     this.initialEndY = line.endY;
+    this.initialControlX = line.controlX;
+    this.initialControlY = line.controlY;
     this.initialTranslateX = line.translateX;
     this.initialTranslateY = line.translateY;
 
@@ -122,26 +128,50 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       const newEndY = this.initialEndY + localDy;
       
       this.updateLineEndpoint(line, this.initialStartX, this.initialStartY, newEndX, newEndY);
+    } else if (handleType === 'center') {
+      const startControlX = this.initialControlX ?? (this.initialStartX + this.initialEndX) / 2;
+      const startControlY = this.initialControlY ?? (this.initialStartY + this.initialEndY) / 2;
+      const newControlX = startControlX + localDx * 2;
+      const newControlY = startControlY + localDy * 2;
+      line.updateControlPoint(newControlX, newControlY);
     }
 
     this._core.rerender();
   }
 
   private updateLineEndpoint(line: KritzelLine, startX: number, startY: number, endX: number, endY: number): void {
+    const points = [
+      [startX, startY],
+      [endX, endY],
+    ];
+
+    if (line.controlX !== undefined && line.controlY !== undefined) {
+      points.push([line.controlX, line.controlY]);
+    }
+
     // Calculate new bounding box
-    const minX = Math.min(startX, endX) - line.strokeWidth / 2;
-    const minY = Math.min(startY, endY) - line.strokeWidth / 2;
-    const maxX = Math.max(startX, endX) + line.strokeWidth / 2;
-    const maxY = Math.max(startY, endY) + line.strokeWidth / 2;
+    const minX = Math.min(...points.map(p => p[0])) - line.strokeWidth / 2;
+    const minY = Math.min(...points.map(p => p[1])) - line.strokeWidth / 2;
+    const maxX = Math.max(...points.map(p => p[0])) + line.strokeWidth / 2;
+    const maxY = Math.max(...points.map(p => p[1])) + line.strokeWidth / 2;
 
     const newWidth = maxX - minX;
     const newHeight = maxY - minY;
 
     // Calculate old bounding box
-    const oldMinX = Math.min(this.initialStartX, this.initialEndX) - line.strokeWidth / 2;
-    const oldMinY = Math.min(this.initialStartY, this.initialEndY) - line.strokeWidth / 2;
-    const oldMaxX = Math.max(this.initialStartX, this.initialEndX) + line.strokeWidth / 2;
-    const oldMaxY = Math.max(this.initialStartY, this.initialEndY) + line.strokeWidth / 2;
+    const oldPoints = [
+      [this.initialStartX, this.initialStartY],
+      [this.initialEndX, this.initialEndY],
+    ];
+
+    if (this.initialControlX !== undefined && this.initialControlY !== undefined) {
+      oldPoints.push([this.initialControlX, this.initialControlY]);
+    }
+
+    const oldMinX = Math.min(...oldPoints.map(p => p[0])) - line.strokeWidth / 2;
+    const oldMinY = Math.min(...oldPoints.map(p => p[1])) - line.strokeWidth / 2;
+    const oldMaxX = Math.max(...oldPoints.map(p => p[0])) + line.strokeWidth / 2;
+    const oldMaxY = Math.max(...oldPoints.map(p => p[1])) + line.strokeWidth / 2;
 
     const oldWidth = oldMaxX - oldMinX;
     const oldHeight = oldMaxY - oldMinY;

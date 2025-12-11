@@ -3,6 +3,8 @@ export interface KritzelLineOptions {
   startY: number;
   endX: number;
   endY: number;
+  controlX?: number;
+  controlY?: number;
   translateX?: number;
   translateY?: number;
   scale?: number;
