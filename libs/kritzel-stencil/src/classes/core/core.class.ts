@@ -12,12 +12,14 @@ import { KritzelWorkspace } from './workspace.class';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { KritzelAppStateMap } from '../structures/app-state-map.structure';
+import { KritzelAnchorManager } from '../managers/anchor.manager';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
   private readonly _store: KritzelStore;
   private _syncConfig?: KritzelSyncConfig;
   private readonly _appStateMap: KritzelAppStateMap;
+  private readonly _anchorManager: KritzelAnchorManager;
 
   get engine(): KritzelEngine {
     return this._kritzelEngine;
@@ -31,10 +33,15 @@ export class KritzelCore {
     return this._appStateMap;
   }
 
+  get anchorManager(): KritzelAnchorManager {
+    return this._anchorManager;
+  }
+
   constructor(kritzelEngine: KritzelEngine) {
     this._kritzelEngine = kritzelEngine;
     this._store = new KritzelStore(DEFAULT_ENGINE_CONFIG);
     this._appStateMap = new KritzelAppStateMap();
+    this._anchorManager = new KritzelAnchorManager(this);
   }
 
   setSyncConfig(config?: KritzelSyncConfig): void {
@@ -118,6 +125,9 @@ export class KritzelCore {
     await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
     this._store.state.objects = objectsMap;
 
+    // Rebuild anchor index after loading objects
+    this._anchorManager.rebuildIndex();
+
     this.engine.emitObjectsChange();
 
     this.rerender();
@@ -193,6 +203,15 @@ export class KritzelCore {
   }
 
   removeObject(object: KritzelBaseObject<any>): void {
+    // Handle anchor cleanup
+    if (object instanceof KritzelLine) {
+      // If removing a line, clean up its anchor index entries
+      this._anchorManager.handleLineDeleted(object.id);
+    } else {
+      // If removing a non-line object, detach any lines anchored to it
+      this._anchorManager.handleObjectDeleted(object.id);
+    }
+
     object.isMounted = false;
     this._store.state.objects.remove(o => o.id === object.id);
   }

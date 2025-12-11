@@ -170,6 +170,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
       this.objects.forEach(obj => {
         obj.move(startX, startY, endX, endY);
+
+        // Update any lines that are anchored to this object
+        this._core.anchorManager.updateAnchorsForObject(obj.id);
       });
     });
 

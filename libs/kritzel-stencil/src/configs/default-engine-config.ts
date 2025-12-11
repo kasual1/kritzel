@@ -5,6 +5,7 @@ export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   activeTool: null,
   copiedObjects: null,
   objects: null,
+  snapCandidate: null,
   resizeHandleType: null,
   lineHandleType: null,
   hasViewportChanged: false,

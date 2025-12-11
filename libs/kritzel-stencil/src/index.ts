@@ -33,10 +33,13 @@ export * from './classes/structures/app-state-map.structure';
 
 export * from './classes/core/workspace.class';
 
+export * from './classes/managers/anchor.manager';
+
 export * from './interfaces/toolbar-control.interface';
 export * from './interfaces/menu-item.interface';
 export * from './interfaces/sync-provider.interface';
 export * from './interfaces/sync-config.interface';
+export * from './interfaces/anchor.interface';
 
 export * from './configs/default-brush-tool.config';
 export * from './configs/default-text-tool.config';
