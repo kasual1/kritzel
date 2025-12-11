@@ -4,6 +4,7 @@ import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelCore } from '../core/core.class';
+import { LineAnchor } from '../../interfaces/anchor.interface';
 
 export class KritzelLine extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelLine';
@@ -18,6 +19,11 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   strokeWidth: number;
   scale: number = 1;
   options: KritzelLineOptions | undefined;
+
+  /** Anchor connection for the start point of the line */
+  startAnchor?: LineAnchor;
+  /** Anchor connection for the end point of the line */
+  endAnchor?: LineAnchor;
 
   isVisible: boolean = true;
   isDebugInfoVisible: boolean = true;
@@ -50,6 +56,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.scale = config?.scale ?? 1;
     this.strokeWidth = config?.strokeWidth ?? 4;
     this.stroke = config?.stroke ?? '#000000';
+    this.startAnchor = config?.startAnchor;
+    this.endAnchor = config?.endAnchor;
     this.updateDimensions();
   }
 
@@ -71,6 +79,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     object.scale = options?.scale ?? 1;
     object.strokeWidth = options?.strokeWidth ?? 4;
     object.stroke = options?.stroke ?? '#000000';
+    object.startAnchor = options?.startAnchor;
+    object.endAnchor = options?.endAnchor;
     object.zIndex = core.store.currentZIndex;
     object.updateDimensions();
 

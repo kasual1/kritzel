@@ -2,6 +2,7 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseHandler } from './base.handler';
+import { SnapTarget } from '../../interfaces/anchor.interface';
 
 export type LineHandleType = 'start' | 'end' | 'center';
 
@@ -20,6 +21,9 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
 
   hasMoved = false;
 
+  /** Current snap target during drag, if any */
+  private currentSnapTarget: SnapTarget | null = null;
+
   constructor(core: KritzelCore) {
     super(core);
   }
@@ -36,6 +40,8 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     this.initialTranslateX = 0;
     this.initialTranslateY = 0;
     this.hasMoved = false;
+    this.currentSnapTarget = null;
+    this._core.anchorManager.clearSnapCandidate();
   }
 
   handlePointerDown(event: PointerEvent): void {
@@ -75,6 +81,12 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     this.initialControlY = line.controlY;
     this.initialTranslateX = line.translateX;
     this.initialTranslateY = line.translateY;
+
+    // Remove existing anchor for this endpoint when starting to drag
+    const handleType = this._core.store.state.lineHandleType;
+    if (handleType === 'start' || handleType === 'end') {
+      this._core.anchorManager.removeAnchor(line.id, handleType);
+    }
 
     clearTimeout(this._core.store.state.longTouchTimeout);
   }
@@ -117,17 +129,71 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     const handleType = this._core.store.state.lineHandleType;
 
     if (handleType === 'start') {
-      // Update start point in local coordinates
-      const newStartX = this.initialStartX + localDx;
-      const newStartY = this.initialStartY + localDy;
-      
-      this.updateLineEndpoint(line, newStartX, newStartY, this.initialEndX, this.initialEndY);
+      // Calculate world position directly from mouse position for snap detection
+      const worldX = (clientX - this._core.store.state.translateX) / viewportScale;
+      const worldY = (clientY - this._core.store.state.translateY) / viewportScale;
+
+      // Get other endpoint's anchor to prevent anchoring both to same object
+      const otherAnchorId = line.endAnchor?.objectId;
+
+      // Check for snap target
+      const snapTarget = this._core.anchorManager.findSnapTarget(worldX, worldY, line.id, otherAnchorId);
+      this.currentSnapTarget = snapTarget;
+
+      if (snapTarget) {
+        // Snap to target center - convert world coords to local
+        const localCoords = this.worldToLineLocal(line, snapTarget.centerX, snapTarget.centerY);
+        this.updateLineEndpoint(line, localCoords.x, localCoords.y, this.initialEndX, this.initialEndY);
+
+        // Update snap indicator
+        this._core.anchorManager.setSnapCandidate({
+          objectId: snapTarget.objectId,
+          endpoint: 'start',
+          centerX: snapTarget.centerX,
+          centerY: snapTarget.centerY,
+        });
+      } else {
+        // No snap - use regular position
+        const newStartX = this.initialStartX + localDx;
+        const newStartY = this.initialStartY + localDy;
+        this.updateLineEndpoint(line, newStartX, newStartY, this.initialEndX, this.initialEndY);
+
+        // Clear snap indicator
+        this._core.anchorManager.clearSnapCandidate();
+      }
     } else if (handleType === 'end') {
-      // Update end point in local coordinates
-      const newEndX = this.initialEndX + localDx;
-      const newEndY = this.initialEndY + localDy;
-      
-      this.updateLineEndpoint(line, this.initialStartX, this.initialStartY, newEndX, newEndY);
+      // Calculate world position directly from mouse position for snap detection
+      const worldX = (clientX - this._core.store.state.translateX) / viewportScale;
+      const worldY = (clientY - this._core.store.state.translateY) / viewportScale;
+
+      // Get other endpoint's anchor to prevent anchoring both to same object
+      const otherAnchorId = line.startAnchor?.objectId;
+
+      // Check for snap target
+      const snapTarget = this._core.anchorManager.findSnapTarget(worldX, worldY, line.id, otherAnchorId);
+      this.currentSnapTarget = snapTarget;
+
+      if (snapTarget) {
+        // Snap to target center - convert world coords to local
+        const localCoords = this.worldToLineLocal(line, snapTarget.centerX, snapTarget.centerY);
+        this.updateLineEndpoint(line, this.initialStartX, this.initialStartY, localCoords.x, localCoords.y);
+
+        // Update snap indicator
+        this._core.anchorManager.setSnapCandidate({
+          objectId: snapTarget.objectId,
+          endpoint: 'end',
+          centerX: snapTarget.centerX,
+          centerY: snapTarget.centerY,
+        });
+      } else {
+        // No snap - use regular position
+        const newEndX = this.initialEndX + localDx;
+        const newEndY = this.initialEndY + localDy;
+        this.updateLineEndpoint(line, this.initialStartX, this.initialStartY, newEndX, newEndY);
+
+        // Clear snap indicator
+        this._core.anchorManager.clearSnapCandidate();
+      }
     } else if (handleType === 'center') {
       const startControlX = this.initialControlX ?? (this.initialStartX + this.initialEndX) / 2;
       const startControlY = this.initialControlY ?? (this.initialStartY + this.initialEndY) / 2;
@@ -137,6 +203,27 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     }
 
     this._core.rerender();
+  }
+
+  /**
+   * Converts world coordinates to a line's local coordinate system.
+   */
+  private worldToLineLocal(line: KritzelLine, worldX: number, worldY: number): { x: number; y: number } {
+    // Translate to line's origin
+    const dx = worldX - line.translateX;
+    const dy = worldY - line.translateY;
+
+    // Apply inverse rotation
+    const cos = Math.cos(-line.rotation);
+    const sin = Math.sin(-line.rotation);
+    const rotatedX = dx * cos - dy * sin;
+    const rotatedY = dx * sin + dy * cos;
+
+    // Apply scale and add origin offset
+    const localX = rotatedX * line.scale + line.x;
+    const localY = rotatedY * line.scale + line.y;
+
+    return { x: localX, y: localY };
   }
 
   private updateLineEndpoint(line: KritzelLine, startX: number, startY: number, endX: number, endY: number): void {
@@ -216,7 +303,14 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
   handlePointerUp(_event: PointerEvent): void {
     if (this._core.store.state.isLineHandleDragging) {
       const line = this.getSelectedLine();
+      const handleType = this._core.store.state.lineHandleType;
+
       if (line && this.hasMoved) {
+        // If we were snapped to a target, create the anchor
+        if (this.currentSnapTarget && (handleType === 'start' || handleType === 'end')) {
+          this._core.anchorManager.setAnchor(line.id, handleType, this.currentSnapTarget.objectId);
+        }
+
         // Refresh the selection group dimensions after line endpoint change
         const selectionGroup = this._core.store.selectionGroup;
         if (selectionGroup) {
@@ -229,6 +323,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
 
       this._core.store.state.isLineHandleDragging = false;
       this.reset();
+      this._core.rerender();
     }
   }
 

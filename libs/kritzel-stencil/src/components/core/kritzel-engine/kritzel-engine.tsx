@@ -1105,6 +1105,41 @@ export class KritzelEngine {
               </div>
             );
           })}
+
+          {/* Snap indicator for line anchoring */}
+          {this.core.anchorManager.getSnapCandidate() && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="snap-indicator"
+              style={{
+                position: 'absolute',
+                left: '0',
+                top: '0',
+                width: '1px',
+                height: '1px',
+                pointerEvents: 'none',
+                zIndex: '9999',
+                overflow: 'visible',
+              }}
+            >
+              {(() => {
+                const snapCandidate = this.core.anchorManager.getSnapCandidate();
+                const indicatorRadius = 8 / this.core.store.state.scale;
+                return (
+                  <circle
+                    cx={snapCandidate.centerX}
+                    cy={snapCandidate.centerY}
+                    r={indicatorRadius}
+                    style={{
+                      fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                      stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                      strokeWidth: `${2 / this.core.store.state.scale}`,
+                    }}
+                  />
+                );
+              })()}
+            </svg>
+          )}
         </div>
 
         {this.core.store.state.isContextMenuVisible && (

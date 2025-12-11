@@ -6,12 +6,14 @@ import { KritzelHandleType } from "../enums/handle-type.enum";
 import { ContextMenuItem } from "./context-menu-item.interface";
 import { KritzelDebugInfo } from "./debug-info.interface";
 import { LineHandleType } from "../classes/handlers/line-handle.handler";
+import { SnapCandidate } from "./anchor.interface";
 
 export interface KritzelEngineState {
   activeWorkspace: KritzelWorkspace;
   activeTool: KritzelBaseTool;
   copiedObjects?: KritzelBaseObject<any>[];
   objects: KritzelObjectMap<KritzelBaseObject<Element>>;
+  snapCandidate?: SnapCandidate | null;
   resizeHandleType: KritzelHandleType;
   lineHandleType: LineHandleType;
   hasViewportChanged: boolean;
