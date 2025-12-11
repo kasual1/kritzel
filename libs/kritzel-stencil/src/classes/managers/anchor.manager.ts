@@ -171,9 +171,13 @@ export class KritzelAnchorManager {
    * Converts world coordinates to a line's local coordinate system.
    */
   private worldToLineLocal(line: KritzelLine, worldX: number, worldY: number): { x: number; y: number } {
-    // Translate to line's origin
-    const dx = worldX - line.translateX;
-    const dy = worldY - line.translateY;
+    // Get line center in world coordinates
+    const cx = line.centerX;
+    const cy = line.centerY;
+
+    // Translate to center
+    const dx = worldX - cx;
+    const dy = worldY - cy;
 
     // Apply inverse rotation
     const cos = Math.cos(-line.rotation);
@@ -181,9 +185,13 @@ export class KritzelAnchorManager {
     const rotatedX = dx * cos - dy * sin;
     const rotatedY = dx * sin + dy * cos;
 
-    // Apply scale and add origin offset
-    const localX = rotatedX * line.scale + line.x;
-    const localY = rotatedY * line.scale + line.y;
+    // Calculate local coordinates relative to the unrotated bounding box top-left
+    const relativeX = rotatedX + (line.totalWidth / 2) / line.scale;
+    const relativeY = rotatedY + (line.totalHeight / 2) / line.scale;
+
+    // Convert to internal coordinates
+    const localX = relativeX * line.scale + line.x;
+    const localY = relativeY * line.scale + line.y;
 
     return { x: localX, y: localY };
   }
