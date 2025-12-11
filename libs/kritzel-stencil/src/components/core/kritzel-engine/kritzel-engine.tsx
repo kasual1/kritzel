@@ -1017,16 +1017,18 @@ export class KritzelEngine {
                   {this.core.displaySelectionLineUI(object) && KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
                     <g class="selection-line-ui" style={{ pointerEvents: 'none' }}>
                       <g class="selection-line-borders">
-                        <line
+                        <path
                           class="selection-line-border"
-                          x1={object.startX - object.x}
-                          y1={object.startY - object.y}
-                          x2={object.endX - object.x}
-                          y2={object.endY - object.y}
+                          d={
+                            object.controlX !== undefined && object.controlY !== undefined
+                              ? `M ${object.startX - object.x} ${object.startY - object.y} Q ${object.controlX - object.x} ${object.controlY - object.y} ${object.endX - object.x} ${object.endY - object.y}`
+                              : `M ${object.startX - object.x} ${object.startY - object.y} L ${object.endX - object.x} ${object.endY - object.y}`
+                          }
                           style={{
                             stroke: 'var(--kritzel-selection-border-color, #007AFF)',
                             strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
                             strokeLinecap: 'round',
+                            fill: 'none',
                           }}
                         />
                       </g>
@@ -1056,8 +1058,8 @@ export class KritzelEngine {
 
                           <circle
                             class="selection-line-handle center"
-                            cx={(object.startX - object.x + object.endX - object.x) / 2}
-                            cy={(object.startY - object.y + object.endY - object.y) / 2}
+                            cx={object.controlX !== undefined ? (object.startX + 2 * object.controlX + object.endX) / 4 - object.x : (object.startX - object.x + object.endX - object.x) / 2}
+                            cy={object.controlY !== undefined ? (object.startY + 2 * object.controlY + object.endY) / 4 - object.y : (object.startY - object.y + object.endY - object.y) / 2}
                             r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                             style={{
                               fill: 'var(--kritzel-selection-handle-color, #000000)',
@@ -1066,8 +1068,8 @@ export class KritzelEngine {
                           />
                           <circle
                             class="selection-line-handle-overlay center"
-                            cx={(object.startX - object.x + object.endX - object.x) / 2}
-                            cy={(object.startY - object.y + object.endY - object.y) / 2}
+                            cx={object.controlX !== undefined ? (object.startX + 2 * object.controlX + object.endX) / 4 - object.x : (object.startX - object.x + object.endX - object.x) / 2}
+                            cy={object.controlY !== undefined ? (object.startY + 2 * object.controlY + object.endY) / 4 - object.y : (object.startY - object.y + object.endY - object.y) / 2}
                             r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                             style={{
                               fill: 'transparent',

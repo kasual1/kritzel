@@ -12,6 +12,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   startY: number;
   endX: number;
   endY: number;
+  controlX?: number;
+  controlY?: number;
   stroke: string;
   strokeWidth: number;
   scale: number = 1;
@@ -24,6 +26,9 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   private _adjustedPoints?: number[][] = null;
 
   get d(): string {
+    if (this.controlX !== undefined && this.controlY !== undefined) {
+      return `M ${this.startX} ${this.startY} Q ${this.controlX} ${this.controlY} ${this.endX} ${this.endY}`;
+    }
     return `M ${this.startX} ${this.startY} L ${this.endX} ${this.endY}`;
   }
 
@@ -38,6 +43,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.startY = config?.startY ?? 0;
     this.endX = config?.endX ?? 0;
     this.endY = config?.endY ?? 0;
+    this.controlX = config?.controlX;
+    this.controlY = config?.controlY;
     this.translateX = config?.translateX ?? 0;
     this.translateY = config?.translateY ?? 0;
     this.scale = config?.scale ?? 1;
@@ -57,6 +64,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     object.startY = options?.startY ?? 0;
     object.endX = options?.endX ?? 0;
     object.endY = options?.endY ?? 0;
+    object.controlX = options?.controlX;
+    object.controlY = options?.controlY;
     object.translateX = options?.translateX ?? 0;
     object.translateY = options?.translateY ?? 0;
     object.scale = options?.scale ?? 1;
@@ -82,11 +91,25 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.endX = this.endX * scaleX;
     this.endY = this.endY * scaleY;
 
+    if (this.controlX !== undefined && this.controlY !== undefined) {
+      this.controlX = this.controlX * scaleX;
+      this.controlY = this.controlY * scaleY;
+    }
+
     // Recalculate dimensions from scaled endpoints
-    const minX = Math.min(this.startX, this.endX) - this.strokeWidth / 2;
-    const minY = Math.min(this.startY, this.endY) - this.strokeWidth / 2;
-    const maxX = Math.max(this.startX, this.endX) + this.strokeWidth / 2;
-    const maxY = Math.max(this.startY, this.endY) + this.strokeWidth / 2;
+    const points = [
+      [this.startX, this.startY],
+      [this.endX, this.endY],
+    ];
+
+    if (this.controlX !== undefined && this.controlY !== undefined) {
+      points.push([this.controlX, this.controlY]);
+    }
+
+    const minX = Math.min(...points.map(p => p[0])) - this.strokeWidth / 2;
+    const minY = Math.min(...points.map(p => p[1])) - this.strokeWidth / 2;
+    const maxX = Math.max(...points.map(p => p[0])) + this.strokeWidth / 2;
+    const maxY = Math.max(...points.map(p => p[1])) + this.strokeWidth / 2;
 
     this.width = maxX - minX;
     this.height = maxY - minY;
@@ -245,6 +268,45 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  updateControlPoint(newX: number, newY: number): void {
+    this.controlX = newX;
+    this.controlY = newY;
+
+    // Recalculate the bounding box (viewBox dimensions)
+    const halfStroke = this.strokeWidth / 2;
+
+    const points = [
+      [this.startX, this.startY],
+      [this.endX, this.endY],
+      [this.controlX, this.controlY],
+    ];
+
+    const minX = Math.min(...points.map(p => p[0])) - halfStroke;
+    const minY = Math.min(...points.map(p => p[1])) - halfStroke;
+    const maxX = Math.max(...points.map(p => p[0])) + halfStroke;
+    const maxY = Math.max(...points.map(p => p[1])) + halfStroke;
+
+    // Calculate the change in origin
+    const deltaX = minX - this.x;
+    const deltaY = minY - this.y;
+
+    // Update viewBox dimensions
+    this.x = minX;
+    this.y = minY;
+    this.width = maxX - minX;
+    this.height = maxY - minY;
+
+    // Adjust translateX/Y to compensate for the origin shift
+    // so the line stays visually in the same position
+    this.translateX += deltaX / this.scale;
+    this.translateY += deltaY / this.scale;
+
+    // Clear cached adjusted points
+    this._adjustedPoints = null;
+
+    this._core.store.state.objects.update(this);
+  }
+
   private computeAdjustedPoints(): number[][] {
     const points = [
       [this.startX, this.startY],
@@ -357,6 +419,10 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
       [this.startX, this.startY],
       [this.endX, this.endY],
     ];
+
+    if (this.controlX !== undefined && this.controlY !== undefined) {
+      points.push([this.controlX, this.controlY]);
+    }
 
     const minX = Math.min(...points.map(p => p[0] - this.strokeWidth / 2));
     const minY = Math.min(...points.map(p => p[1] - this.strokeWidth / 2));
