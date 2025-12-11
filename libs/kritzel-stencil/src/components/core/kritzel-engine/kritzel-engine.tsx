@@ -1326,7 +1326,7 @@ export class KritzelEngine {
                       cy={startAnchorViz.centerY}
                       r={indicatorRadius}
                       style={{
-                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                        fill: 'var(--kritzel-snap-indicator-fill, rgba(0, 0, 0))',
                         stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
                         strokeWidth: indicatorStrokeWidth,
                       }}
