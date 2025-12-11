@@ -40,4 +40,16 @@ export interface SnapCandidate {
   centerX: number;
   /** The center Y coordinate for the snap indicator */
   centerY: number;
+  /** The X coordinate of the line endpoint (world coords) */
+  lineEndpointX: number;
+  /** The Y coordinate of the line endpoint (world coords) */
+  lineEndpointY: number;
+  /** The X coordinate where the line intersects the object's edge (world coords) */
+  edgeX?: number;
+  /** The Y coordinate where the line intersects the object's edge (world coords) */
+  edgeY?: number;
+  /** The stroke color of the line being snapped */
+  lineStroke?: string;
+  /** The stroke width of the line being snapped */
+  lineStrokeWidth?: number;
 }

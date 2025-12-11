@@ -19,6 +19,7 @@ import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
 import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
+import { KritzelGeometryHelper } from '../../../helpers/geometry.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelCustomElement } from '../../../classes/objects/custom-element.class';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
@@ -610,6 +611,163 @@ export class KritzelEngine {
     }
   }
 
+  /**
+   * Computes anchor visualization data for a line with anchors.
+   * Returns edge intersection points for rendering dashed lines from edge to center.
+   */
+  private computeAnchorVisualization(line: KritzelLine, endpoint: 'start' | 'end'): {
+    edgeX: number;
+    edgeY: number;
+    centerX: number;
+    centerY: number;
+  } | null {
+    const anchor = endpoint === 'start' ? line.startAnchor : line.endAnchor;
+    if (!anchor) return null;
+
+    const targetObject = this.core.store.allNonSelectionObjects.find(obj => obj.id === anchor.objectId);
+    if (!targetObject) return null;
+
+    // Get the other endpoint in world coordinates
+    const otherEndpoint = endpoint === 'start' 
+      ? { x: line.endX, y: line.endY }
+      : { x: line.startX, y: line.startY };
+
+    // Convert local coordinates to world coordinates
+    const localToWorld = (localX: number, localY: number) => {
+      const scaledX = (localX - line.x) / line.scale;
+      const scaledY = (localY - line.y) / line.scale;
+      const cos = Math.cos(line.rotation);
+      const sin = Math.sin(line.rotation);
+      const rotatedX = scaledX * cos - scaledY * sin;
+      const rotatedY = scaledX * sin + scaledY * cos;
+      return {
+        x: rotatedX + line.translateX,
+        y: rotatedY + line.translateY
+      };
+    };
+
+    const otherEndpointWorld = localToWorld(otherEndpoint.x, otherEndpoint.y);
+    const centerX = targetObject.centerX;
+    const centerY = targetObject.centerY;
+
+    // Calculate edge intersection
+    const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+      otherEndpointWorld,
+      { x: centerX, y: centerY },
+      targetObject.rotatedPolygon
+    );
+
+    if (!edgeIntersection) return null;
+
+    return {
+      edgeX: edgeIntersection.x,
+      edgeY: edgeIntersection.y,
+      centerX,
+      centerY
+    };
+  }
+
+  /**
+   * Computes a clipped line path that stops at anchor edges instead of going to anchor centers.
+   * Returns the SVG path 'd' attribute string, or the original path if no clipping is needed.
+   * @param line The line object
+   * @param offsetByViewBox If true, subtracts line.x and line.y from coordinates (for selection UI)
+   */
+  private computeClippedLinePath(line: KritzelLine, offsetByViewBox: boolean = false): string {
+    // If no anchors, return original path (with or without offset)
+    if (!line.startAnchor && !line.endAnchor) {
+      if (offsetByViewBox) {
+        if (line.controlX !== undefined && line.controlY !== undefined) {
+          return `M ${line.startX - line.x} ${line.startY - line.y} Q ${line.controlX - line.x} ${line.controlY - line.y} ${line.endX - line.x} ${line.endY - line.y}`;
+        }
+        return `M ${line.startX - line.x} ${line.startY - line.y} L ${line.endX - line.x} ${line.endY - line.y}`;
+      }
+      return line.d;
+    }
+
+    // Helper to convert world coordinates to line's local SVG coordinates (relative to viewBox)
+    const worldToLocal = (worldX: number, worldY: number) => {
+      // Reverse the transform: world -> rotated -> scaled -> local
+      const dx = worldX - line.translateX;
+      const dy = worldY - line.translateY;
+      const cos = Math.cos(-line.rotation);
+      const sin = Math.sin(-line.rotation);
+      const rotatedX = dx * cos - dy * sin;
+      const rotatedY = dx * sin + dy * cos;
+      return {
+        x: rotatedX * line.scale + line.x,
+        y: rotatedY * line.scale + line.y
+      };
+    };
+
+    // Helper to convert local coordinates to world coordinates
+    const localToWorld = (localX: number, localY: number) => {
+      const scaledX = (localX - line.x) / line.scale;
+      const scaledY = (localY - line.y) / line.scale;
+      const cos = Math.cos(line.rotation);
+      const sin = Math.sin(line.rotation);
+      const rotatedX = scaledX * cos - scaledY * sin;
+      const rotatedY = scaledX * sin + scaledY * cos;
+      return {
+        x: rotatedX + line.translateX,
+        y: rotatedY + line.translateY
+      };
+    };
+
+    let startX = line.startX;
+    let startY = line.startY;
+    let endX = line.endX;
+    let endY = line.endY;
+
+    // Clip start point if anchored
+    if (line.startAnchor) {
+      const targetObject = this.core.store.allNonSelectionObjects.find(obj => obj.id === line.startAnchor.objectId);
+      if (targetObject) {
+        const endWorld = localToWorld(line.endX, line.endY);
+        const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+          endWorld,
+          { x: targetObject.centerX, y: targetObject.centerY },
+          targetObject.rotatedPolygon
+        );
+        if (edgeIntersection) {
+          const localEdge = worldToLocal(edgeIntersection.x, edgeIntersection.y);
+          startX = localEdge.x;
+          startY = localEdge.y;
+        }
+      }
+    }
+
+    // Clip end point if anchored
+    if (line.endAnchor) {
+      const targetObject = this.core.store.allNonSelectionObjects.find(obj => obj.id === line.endAnchor.objectId);
+      if (targetObject) {
+        const startWorld = localToWorld(line.startX, line.startY);
+        const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+          startWorld,
+          { x: targetObject.centerX, y: targetObject.centerY },
+          targetObject.rotatedPolygon
+        );
+        if (edgeIntersection) {
+          const localEdge = worldToLocal(edgeIntersection.x, edgeIntersection.y);
+          endX = localEdge.x;
+          endY = localEdge.y;
+        }
+      }
+    }
+
+    // Apply offset if requested (for selection UI which uses coordinates relative to 0,0)
+    const offsetX = offsetByViewBox ? line.x : 0;
+    const offsetY = offsetByViewBox ? line.y : 0;
+
+    // Generate the clipped path
+    if (line.controlX !== undefined && line.controlY !== undefined) {
+      // For curved lines, we need to adjust the control point proportionally
+      // This is a simplification - for perfect curves we'd need to split the bezier
+      return `M ${startX - offsetX} ${startY - offsetY} Q ${line.controlX - offsetX} ${line.controlY - offsetY} ${endX - offsetX} ${endY - offsetY}`;
+    }
+    return `M ${startX - offsetX} ${startY - offsetY} L ${endX - offsetX} ${endY - offsetY}`;
+  }
+
   render() {
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
@@ -713,10 +871,17 @@ export class KritzelEngine {
                     <svg
                       ref={el => object.mount(el)}
                       xmlns="http://www.w3.org/2000/svg"
-                      style={{ overflow: 'visible' }}
+                      style={{ 
+                        overflow: 'visible',
+                        // Hide line when it's being snapped to an anchor target
+                        visibility: this.core.anchorManager.getSnapCandidate() && 
+                          this.core.store.selectionGroup?.objects[0]?.id === object.id 
+                          ? 'hidden' 
+                          : 'visible'
+                      }}
                       viewBox={object?.viewBox}
                     >
-                      <path d={object?.d} fill="none" stroke={object?.stroke} stroke-width={object?.strokeWidth} stroke-linecap="round" />
+                      <path d={this.computeClippedLinePath(object)} fill="none" stroke={object?.stroke} stroke-width={object?.strokeWidth} stroke-linecap="round" />
                     </svg>
                   )}
 
@@ -1019,11 +1184,7 @@ export class KritzelEngine {
                       <g class="selection-line-borders">
                         <path
                           class="selection-line-border"
-                          d={
-                            object.controlX !== undefined && object.controlY !== undefined
-                              ? `M ${object.startX - object.x} ${object.startY - object.y} Q ${object.controlX - object.x} ${object.controlY - object.y} ${object.endX - object.x} ${object.endY - object.y}`
-                              : `M ${object.startX - object.x} ${object.startY - object.y} L ${object.endX - object.x} ${object.endY - object.y}`
-                          }
+                          d={this.computeClippedLinePath(object, true)}
                           style={{
                             stroke: 'var(--kritzel-selection-border-color, #007AFF)',
                             strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
@@ -1106,6 +1267,102 @@ export class KritzelEngine {
             );
           })}
 
+          {/* Anchor lines for selected line objects - show dashed lines from edge to center */}
+          {(() => {
+            const selectionGroup = this.core.store.selectionGroup;
+            if (!selectionGroup || selectionGroup.objects.length !== 1) return null;
+            
+            const selectedObject = selectionGroup.objects[0];
+            if (!KritzelClassHelper.isInstanceOf<KritzelLine>(selectedObject, 'KritzelLine')) return null;
+            
+            const line = selectedObject as KritzelLine;
+            
+            // Don't render if we're currently dragging (snap indicator handles that)
+            if (this.core.anchorManager.getSnapCandidate()) return null;
+            
+            const startAnchorViz = this.computeAnchorVisualization(line, 'start');
+            const endAnchorViz = this.computeAnchorVisualization(line, 'end');
+            
+            if (!startAnchorViz && !endAnchorViz) return null;
+            
+            const lineStrokeWidth = line.strokeWidth / line.scale;
+            const indicatorStrokeWidth = `${2 / this.core.store.state.scale}`;
+            // Dash array scales with line stroke width for consistent appearance at all zoom levels
+            const dashLength = Math.max(lineStrokeWidth * 2, 4 / this.core.store.state.scale);
+            const dashArray = `${dashLength} ${dashLength}`;
+            const indicatorRadius = 8 / this.core.store.state.scale;
+            
+            return (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="anchor-lines"
+                style={{
+                  position: 'absolute',
+                  left: '0',
+                  top: '0',
+                  width: '1px',
+                  height: '1px',
+                  pointerEvents: 'none',
+                  zIndex: '9998',
+                  overflow: 'visible',
+                }}
+              >
+                {startAnchorViz && (
+                  <g class="anchor-line-start">
+                    <line
+                      x1={startAnchorViz.edgeX}
+                      y1={startAnchorViz.edgeY}
+                      x2={startAnchorViz.centerX}
+                      y2={startAnchorViz.centerY}
+                      style={{
+                        stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                        strokeWidth: `${lineStrokeWidth}`,
+                        strokeDasharray: dashArray,
+                        strokeLinecap: 'round',
+                      }}
+                    />
+                    <circle
+                      cx={startAnchorViz.centerX}
+                      cy={startAnchorViz.centerY}
+                      r={indicatorRadius}
+                      style={{
+                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                        stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                        strokeWidth: indicatorStrokeWidth,
+                      }}
+                    />
+                  </g>
+                )}
+                {endAnchorViz && (
+                  <g class="anchor-line-end">
+                    <line
+                      x1={endAnchorViz.edgeX}
+                      y1={endAnchorViz.edgeY}
+                      x2={endAnchorViz.centerX}
+                      y2={endAnchorViz.centerY}
+                      style={{
+                        stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                        strokeWidth: `${lineStrokeWidth}`,
+                        strokeDasharray: dashArray,
+                        strokeLinecap: 'round',
+                      }}
+                    />
+                    <circle
+                      cx={endAnchorViz.centerX}
+                      cy={endAnchorViz.centerY}
+                      r={indicatorRadius}
+                      style={{
+                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                        stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                        strokeWidth: indicatorStrokeWidth,
+                      }}
+                    />
+                  </g>
+                )}
+              </svg>
+            );
+          })()}
+
           {/* Snap indicator for line anchoring */}
           {this.core.anchorManager.getSnapCandidate() && (
             <svg
@@ -1125,17 +1382,58 @@ export class KritzelEngine {
               {(() => {
                 const snapCandidate = this.core.anchorManager.getSnapCandidate();
                 const indicatorRadius = 8 / this.core.store.state.scale;
+                const indicatorStrokeWidth = `${2 / this.core.store.state.scale}`;
+                const lineStrokeWidth = snapCandidate.lineStrokeWidth 
+                  ? `${snapCandidate.lineStrokeWidth}` 
+                  : `${4 / this.core.store.state.scale}`;
+                const lineStrokeWidthNum = snapCandidate.lineStrokeWidth || (4 / this.core.store.state.scale);
+                // Dash array scales with line stroke width for consistent appearance at all zoom levels
+                const dashLength = Math.max(lineStrokeWidthNum * 2, 4 / this.core.store.state.scale);
+                const dashArray = `${dashLength} ${dashLength}`;
+                const lineStroke = snapCandidate.lineStroke || '#000000';
                 return (
-                  <circle
-                    cx={snapCandidate.centerX}
-                    cy={snapCandidate.centerY}
-                    r={indicatorRadius}
-                    style={{
-                      fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
-                      stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
-                      strokeWidth: `${2 / this.core.store.state.scale}`,
-                    }}
-                  />
+                  <g>
+                    {/* Solid line from other endpoint to edge - this visually shows line stopping at edge */}
+                    {snapCandidate.edgeX !== undefined && snapCandidate.edgeY !== undefined && (
+                      <line
+                        x1={snapCandidate.lineEndpointX}
+                        y1={snapCandidate.lineEndpointY}
+                        x2={snapCandidate.edgeX}
+                        y2={snapCandidate.edgeY}
+                        style={{
+                          stroke: lineStroke,
+                          strokeWidth: lineStrokeWidth,
+                          strokeLinecap: 'round',
+                        }}
+                      />
+                    )}
+                    {/* Dashed line from edge to center */}
+                    {snapCandidate.edgeX !== undefined && snapCandidate.edgeY !== undefined && (
+                      <line
+                        x1={snapCandidate.edgeX}
+                        y1={snapCandidate.edgeY}
+                        x2={snapCandidate.centerX}
+                        y2={snapCandidate.centerY}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          strokeWidth: lineStrokeWidth,
+                          strokeDasharray: dashArray,
+                          strokeLinecap: 'round',
+                        }}
+                      />
+                    )}
+                    {/* Center indicator circle */}
+                    <circle
+                      cx={snapCandidate.centerX}
+                      cy={snapCandidate.centerY}
+                      r={indicatorRadius}
+                      style={{
+                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                        stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                        strokeWidth: indicatorStrokeWidth,
+                      }}
+                    />
+                  </g>
                 );
               })()}
             </svg>
