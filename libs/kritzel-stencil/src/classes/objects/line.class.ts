@@ -266,23 +266,53 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
       this.endY = newY;
     }
 
+    const oldWidth = this.width;
+    const oldHeight = this.height;
+
     // Recalculate the bounding box (viewBox dimensions)
     const { minX, minY, maxX, maxY } = this.calculateBoundingBox();
 
-    // Calculate the change in origin
+    // Calculate the change in origin (in local coordinates)
     const deltaX = minX - this.x;
     const deltaY = minY - this.y;
+
+    const newWidth = maxX - minX;
+    const newHeight = maxY - minY;
+
+    const deltaWidth = newWidth - oldWidth;
+    const deltaHeight = newHeight - oldHeight;
+
+    const deltaCx = deltaWidth / 2;
+    const deltaCy = deltaHeight / 2;
 
     // Update viewBox dimensions
     this.x = minX;
     this.y = minY;
-    this.width = maxX - minX;
-    this.height = maxY - minY;
+    this.width = newWidth;
+    this.height = newHeight;
+
+    // Rotate the delta to world coordinates before applying to translate
+    const cos = Math.cos(this.rotation);
+    const sin = Math.sin(this.rotation);
+
+    // We need to compensate for:
+    // 1. The shift of the top-left corner (deltaX, deltaY)
+    // 2. The shift of the center point (deltaCx, deltaCy) which affects rotation pivot
+    // Formula: DeltaT = R(DeltaPos + DeltaCenter) - DeltaCenter
+
+    const vx = deltaX + deltaCx;
+    const vy = deltaY + deltaCy;
+
+    const rotatedVx = vx * cos - vy * sin;
+    const rotatedVy = vx * sin + vy * cos;
+
+    const correctionX = rotatedVx - deltaCx;
+    const correctionY = rotatedVy - deltaCy;
 
     // Adjust translateX/Y to compensate for the origin shift
     // so the line stays visually in the same position
-    this.translateX += deltaX / this.scale;
-    this.translateY += deltaY / this.scale;
+    this.translateX += correctionX / this.scale;
+    this.translateY += correctionY / this.scale;
 
     // Clear cached adjusted points
     this._adjustedPoints = null;
@@ -294,23 +324,53 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.controlX = newX;
     this.controlY = newY;
 
+    const oldWidth = this.width;
+    const oldHeight = this.height;
+
     // Recalculate the bounding box (viewBox dimensions)
     const { minX, minY, maxX, maxY } = this.calculateBoundingBox();
 
-    // Calculate the change in origin
+    // Calculate the change in origin (in local coordinates)
     const deltaX = minX - this.x;
     const deltaY = minY - this.y;
+
+    const newWidth = maxX - minX;
+    const newHeight = maxY - minY;
+
+    const deltaWidth = newWidth - oldWidth;
+    const deltaHeight = newHeight - oldHeight;
+
+    const deltaCx = deltaWidth / 2;
+    const deltaCy = deltaHeight / 2;
 
     // Update viewBox dimensions
     this.x = minX;
     this.y = minY;
-    this.width = maxX - minX;
-    this.height = maxY - minY;
+    this.width = newWidth;
+    this.height = newHeight;
+
+    // Rotate the delta to world coordinates before applying to translate
+    const cos = Math.cos(this.rotation);
+    const sin = Math.sin(this.rotation);
+
+    // We need to compensate for:
+    // 1. The shift of the top-left corner (deltaX, deltaY)
+    // 2. The shift of the center point (deltaCx, deltaCy) which affects rotation pivot
+    // Formula: DeltaT = R(DeltaPos + DeltaCenter) - DeltaCenter
+
+    const vx = deltaX + deltaCx;
+    const vy = deltaY + deltaCy;
+
+    const rotatedVx = vx * cos - vy * sin;
+    const rotatedVy = vx * sin + vy * cos;
+
+    const correctionX = rotatedVx - deltaCx;
+    const correctionY = rotatedVy - deltaCy;
 
     // Adjust translateX/Y to compensate for the origin shift
     // so the line stays visually in the same position
-    this.translateX += deltaX / this.scale;
-    this.translateY += deltaY / this.scale;
+    this.translateX += correctionX / this.scale;
+    this.translateY += correctionY / this.scale;
 
     // Clear cached adjusted points
     this._adjustedPoints = null;
