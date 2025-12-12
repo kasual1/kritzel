@@ -260,42 +260,44 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
    * Converts world coordinates to a line's local coordinate system.
    */
   private worldToLineLocal(line: KritzelLine, worldX: number, worldY: number): { x: number; y: number } {
-    // Translate to line's origin
-    const dx = worldX - line.translateX;
-    const dy = worldY - line.translateY;
+    const dx = (worldX - line.translateX) * line.scale;
+    const dy = (worldY - line.translateY) * line.scale;
 
-    // Apply inverse rotation
+    const cx = line.totalWidth / 2;
+    const cy = line.totalHeight / 2;
+
     const cos = Math.cos(-line.rotation);
     const sin = Math.sin(-line.rotation);
-    const rotatedX = dx * cos - dy * sin;
-    const rotatedY = dx * sin + dy * cos;
 
-    // Apply scale and add origin offset
-    const localX = rotatedX * line.scale + line.x;
-    const localY = rotatedY * line.scale + line.y;
+    const rotatedX = (dx - cx) * cos - (dy - cy) * sin + cx;
+    const rotatedY = (dx - cx) * sin + (dy - cy) * cos + cy;
 
-    return { x: localX, y: localY };
+    return {
+      x: rotatedX + line.x,
+      y: rotatedY + line.y,
+    };
   }
 
   /**
    * Converts a line's local coordinate system to world coordinates.
    */
   private lineLocalToWorld(line: KritzelLine, localX: number, localY: number): { x: number; y: number } {
-    // Remove origin offset and scale
-    const scaledX = (localX - line.x) / line.scale;
-    const scaledY = (localY - line.y) / line.scale;
+    const px = localX - line.x;
+    const py = localY - line.y;
 
-    // Apply rotation
+    const cx = line.totalWidth / 2;
+    const cy = line.totalHeight / 2;
+
     const cos = Math.cos(line.rotation);
     const sin = Math.sin(line.rotation);
-    const rotatedX = scaledX * cos - scaledY * sin;
-    const rotatedY = scaledX * sin + scaledY * cos;
 
-    // Translate from line's origin
-    const worldX = rotatedX + line.translateX;
-    const worldY = rotatedY + line.translateY;
+    const rotatedX = (px - cx) * cos - (py - cy) * sin + cx;
+    const rotatedY = (px - cx) * sin + (py - cy) * cos + cy;
 
-    return { x: worldX, y: worldY };
+    return {
+      x: rotatedX / line.scale + line.translateX,
+      y: rotatedY / line.scale + line.translateY,
+    };
   }
 
   private updateLineEndpoint(line: KritzelLine, startX: number, startY: number, endX: number, endY: number): void {
