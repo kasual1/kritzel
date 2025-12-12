@@ -634,15 +634,21 @@ export class KritzelEngine {
 
     // Convert local coordinates to world coordinates
     const localToWorld = (localX: number, localY: number) => {
-      const scaledX = (localX - line.x) / line.scale;
-      const scaledY = (localY - line.y) / line.scale;
+      const px = localX - line.x;
+      const py = localY - line.y;
+
+      const cx = line.totalWidth / 2;
+      const cy = line.totalHeight / 2;
+
       const cos = Math.cos(line.rotation);
       const sin = Math.sin(line.rotation);
-      const rotatedX = scaledX * cos - scaledY * sin;
-      const rotatedY = scaledX * sin + scaledY * cos;
+
+      const rotatedX = (px - cx) * cos - (py - cy) * sin + cx;
+      const rotatedY = (px - cx) * sin + (py - cy) * cos + cy;
+
       return {
-        x: rotatedX + line.translateX,
-        y: rotatedY + line.translateY
+        x: rotatedX / line.scale + line.translateX,
+        y: rotatedY / line.scale + line.translateY,
       };
     };
 
@@ -688,29 +694,41 @@ export class KritzelEngine {
     // Helper to convert world coordinates to line's local SVG coordinates (relative to viewBox)
     const worldToLocal = (worldX: number, worldY: number) => {
       // Reverse the transform: world -> rotated -> scaled -> local
-      const dx = worldX - line.translateX;
-      const dy = worldY - line.translateY;
+      const dx = (worldX - line.translateX) * line.scale;
+      const dy = (worldY - line.translateY) * line.scale;
+
+      const cx = line.totalWidth / 2;
+      const cy = line.totalHeight / 2;
+
       const cos = Math.cos(-line.rotation);
       const sin = Math.sin(-line.rotation);
-      const rotatedX = dx * cos - dy * sin;
-      const rotatedY = dx * sin + dy * cos;
+
+      const rotatedX = (dx - cx) * cos - (dy - cy) * sin + cx;
+      const rotatedY = (dx - cx) * sin + (dy - cy) * cos + cy;
+
       return {
-        x: rotatedX * line.scale + line.x,
-        y: rotatedY * line.scale + line.y
+        x: rotatedX + line.x,
+        y: rotatedY + line.y,
       };
     };
 
     // Helper to convert local coordinates to world coordinates
     const localToWorld = (localX: number, localY: number) => {
-      const scaledX = (localX - line.x) / line.scale;
-      const scaledY = (localY - line.y) / line.scale;
+      const px = localX - line.x;
+      const py = localY - line.y;
+
+      const cx = line.totalWidth / 2;
+      const cy = line.totalHeight / 2;
+
       const cos = Math.cos(line.rotation);
       const sin = Math.sin(line.rotation);
-      const rotatedX = scaledX * cos - scaledY * sin;
-      const rotatedY = scaledX * sin + scaledY * cos;
+
+      const rotatedX = (px - cx) * cos - (py - cy) * sin + cx;
+      const rotatedY = (px - cx) * sin + (py - cy) * cos + cy;
+
       return {
-        x: rotatedX + line.translateX,
-        y: rotatedY + line.translateY
+        x: rotatedX / line.scale + line.translateX,
+        y: rotatedY / line.scale + line.translateY,
       };
     };
 
