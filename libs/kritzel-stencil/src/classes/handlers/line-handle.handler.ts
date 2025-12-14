@@ -177,6 +177,9 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
           edgeY,
           lineStroke: line.stroke,
           lineStrokeWidth: line.strokeWidth / line.scale,
+          arrowOffset: line.hasStartArrow ? line.getArrowSize('start') / line.scale : undefined,
+          arrowStyle: line.hasStartArrow ? line.arrows?.start?.style : undefined,
+          arrowFill: line.hasStartArrow ? line.getArrowFill('start') : undefined,
         });
       } else {
         // No snap - use regular position
@@ -235,6 +238,9 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
           edgeY,
           lineStroke: line.stroke,
           lineStrokeWidth: line.strokeWidth / line.scale,
+          arrowOffset: line.hasEndArrow ? line.getArrowSize('end') / line.scale : undefined,
+          arrowStyle: line.hasEndArrow ? line.arrows?.end?.style : undefined,
+          arrowFill: line.hasEndArrow ? line.getArrowFill('end') : undefined,
         });
       } else {
         // No snap - use regular position

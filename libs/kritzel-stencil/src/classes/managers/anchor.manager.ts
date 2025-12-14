@@ -353,6 +353,9 @@ export class KritzelAnchorManager {
       lineEndpointY: snapCandidate.lineEndpointY,
       edgeX: snapCandidate.edgeX,
       edgeY: snapCandidate.edgeY,
+      arrowOffset: snapCandidate.arrowOffset,
+      arrowStyle: snapCandidate.arrowStyle,
+      arrowFill: snapCandidate.arrowFill,
     };
   }
 
@@ -533,6 +536,7 @@ export class KritzelAnchorManager {
 
   /**
    * Computes a clipped line path that stops at anchor edges instead of going to anchor centers.
+   * When arrows are present on anchored ends, the line is shortened so the arrow tip appears at the edge.
    * Returns the SVG path 'd' attribute string, or the original path if no clipping is needed.
    * @param line The line object
    * @param offsetByViewBox If true, subtracts line.x and line.y from coordinates (for selection UI)
@@ -568,6 +572,18 @@ export class KritzelAnchorManager {
           const localEdge = this.lineWorldToLocal(line, edgeIntersection.x, edgeIntersection.y);
           startX = localEdge.x;
           startY = localEdge.y;
+
+          // If start arrow is present, offset the start point along the line direction
+          if (line.hasStartArrow) {
+            const arrowOffset = line.getArrowSize('start');
+            const dx = line.endX - startX;
+            const dy = line.endY - startY;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            if (length > arrowOffset) {
+              startX += (dx / length) * arrowOffset;
+              startY += (dy / length) * arrowOffset;
+            }
+          }
         }
       }
     }
@@ -586,6 +602,18 @@ export class KritzelAnchorManager {
           const localEdge = this.lineWorldToLocal(line, edgeIntersection.x, edgeIntersection.y);
           endX = localEdge.x;
           endY = localEdge.y;
+
+          // If end arrow is present, offset the end point along the line direction
+          if (line.hasEndArrow) {
+            const arrowOffset = line.getArrowSize('end');
+            const dx = line.startX - endX;
+            const dy = line.startY - endY;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            if (length > arrowOffset) {
+              endX += (dx / length) * arrowOffset;
+              endY += (dy / length) * arrowOffset;
+            }
+          }
         }
       }
     }

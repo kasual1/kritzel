@@ -52,6 +52,12 @@ export interface SnapCandidate {
   lineStroke?: string;
   /** The stroke width of the line being snapped */
   lineStrokeWidth?: number;
+  /** Arrow offset to apply to the edge point (in world coords) */
+  arrowOffset?: number;
+  /** Arrow style for the snapping endpoint */
+  arrowStyle?: 'triangle' | 'open' | 'diamond' | 'circle';
+  /** Arrow fill color */
+  arrowFill?: string;
 }
 
 /**
@@ -112,5 +118,11 @@ export interface SnapIndicatorRenderData {
   edgeX?: number;
   /** The Y coordinate where the line intersects the object's edge */
   edgeY?: number;
+  /** Arrow offset to apply to the edge point */
+  arrowOffset?: number;
+  /** Arrow style for the snapping endpoint */
+  arrowStyle?: 'triangle' | 'open' | 'diamond' | 'circle';
+  /** Arrow fill color */
+  arrowFill?: string;
 }
 
