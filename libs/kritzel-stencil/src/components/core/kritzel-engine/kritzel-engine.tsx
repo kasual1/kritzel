@@ -643,7 +643,51 @@ export class KritzelEngine {
                       }}
                       viewBox={object?.viewBox}
                     >
-                      <path d={this.core.anchorManager.computeClippedLinePath(object)} fill="none" stroke={object?.stroke} stroke-width={object?.strokeWidth} stroke-linecap="round" />
+                      <defs>
+                        {object.hasStartArrow && (
+                          <marker
+                            id={object.startMarkerId}
+                            markerWidth={object.getArrowSize('start')}
+                            markerHeight={object.getArrowSize('start')}
+                            refX={0}
+                            refY={object.getArrowSize('start') / 2}
+                            orient="auto-start-reverse"
+                            markerUnits="userSpaceOnUse"
+                          >
+                            <path
+                              d={object.getArrowPath(object.arrows?.start?.style)}
+                              fill={object.getArrowFill('start')}
+                              transform={`scale(${object.getArrowSize('start') / 10})`}
+                            />
+                          </marker>
+                        )}
+                        {object.hasEndArrow && (
+                          <marker
+                            id={object.endMarkerId}
+                            markerWidth={object.getArrowSize('end')}
+                            markerHeight={object.getArrowSize('end')}
+                            refX={0}
+                            refY={object.getArrowSize('end') / 2}
+                            orient="auto"
+                            markerUnits="userSpaceOnUse"
+                          >
+                            <path
+                              d={object.getArrowPath(object.arrows?.end?.style)}
+                              fill={object.getArrowFill('end')}
+                              transform={`scale(${object.getArrowSize('end') / 10})`}
+                            />
+                          </marker>
+                        )}
+                      </defs>
+                      <path 
+                        d={this.core.anchorManager.computeClippedLinePath(object)} 
+                        fill="none" 
+                        stroke={object?.stroke} 
+                        stroke-width={object?.strokeWidth} 
+                        stroke-linecap="round"
+                        marker-start={object.hasStartArrow ? `url(#${object.startMarkerId})` : undefined}
+                        marker-end={object.hasEndArrow ? `url(#${object.endMarkerId})` : undefined}
+                      />
                     </svg>
                   )}
 

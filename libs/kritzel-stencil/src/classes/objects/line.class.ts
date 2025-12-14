@@ -5,6 +5,7 @@ import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelCore } from '../core/core.class';
 import { LineAnchor } from '../../interfaces/anchor.interface';
+import { ArrowHeadStyle, LineArrowConfig } from '../../interfaces/arrow-head.interface';
 
 export class KritzelLine extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelLine';
@@ -24,6 +25,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   startAnchor?: LineAnchor;
   /** Anchor connection for the end point of the line */
   endAnchor?: LineAnchor;
+  /** Arrow head configuration for start and end of line */
+  arrows?: LineArrowConfig;
 
   isVisible: boolean = true;
   isDebugInfoVisible: boolean = true;
@@ -58,6 +61,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.stroke = config?.stroke ?? '#000000';
     this.startAnchor = config?.startAnchor;
     this.endAnchor = config?.endAnchor;
+    this.arrows = config?.arrows;
     this.updateDimensions();
   }
 
@@ -81,6 +85,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     object.stroke = options?.stroke ?? '#000000';
     object.startAnchor = options?.startAnchor;
     object.endAnchor = options?.endAnchor;
+    object.arrows = options?.arrows;
     object.zIndex = core.store.currentZIndex;
     object.updateDimensions();
 
@@ -662,5 +667,58 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
 
     this.translateX = (this.x + this.translateX) / this.scale;
     this.translateY = (this.y + this.translateY) / this.scale;
+  }
+
+  /** Get unique marker ID for SVG defs at the start of the line */
+  get startMarkerId(): string {
+    return `arrow-start-${this.id}`;
+  }
+
+  /** Get unique marker ID for SVG defs at the end of the line */
+  get endMarkerId(): string {
+    return `arrow-end-${this.id}`;
+  }
+
+  /** Get the arrow size for start or end, defaulting to strokeWidth * 3 */
+  getArrowSize(end: 'start' | 'end'): number {
+    const config = end === 'start' ? this.arrows?.start : this.arrows?.end;
+    return config?.size ?? this.strokeWidth * 3;
+  }
+
+  /** Get the arrow fill color for start or end, defaulting to stroke color */
+  getArrowFill(end: 'start' | 'end'): string {
+    const config = end === 'start' ? this.arrows?.start : this.arrows?.end;
+    return config?.fill ?? this.stroke;
+  }
+
+  /**
+   * Generate SVG path data for an arrow head based on the given style.
+   * The path is designed to fit in a 10x10 viewBox with the tip at (10, 5).
+   * @param style The arrow head style
+   * @returns SVG path data string
+   */
+  getArrowPath(style: ArrowHeadStyle = 'triangle'): string {
+    switch (style) {
+      case 'triangle':
+        return 'M 0 0 L 10 5 L 0 10 z';
+      case 'open':
+        return 'M 0 0 L 10 5 L 0 10';
+      case 'diamond':
+        return 'M 0 5 L 5 0 L 10 5 L 5 10 z';
+      case 'circle':
+        return 'M 5,0 A 5,5 0 1,1 5,10 A 5,5 0 1,1 5,0';
+      default:
+        return 'M 0 0 L 10 5 L 0 10 z';
+    }
+  }
+
+  /** Check if start arrow is enabled */
+  get hasStartArrow(): boolean {
+    return this.arrows?.start?.enabled === true;
+  }
+
+  /** Check if end arrow is enabled */
+  get hasEndArrow(): boolean {
+    return this.arrows?.end?.enabled === true;
   }
 }
