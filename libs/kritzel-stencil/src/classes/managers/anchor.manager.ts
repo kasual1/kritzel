@@ -1,4 +1,4 @@
-import { AnchorIndexEntry, LineAnchor, SnapCandidate, SnapTarget } from '../../interfaces/anchor.interface';
+import { AnchorIndexEntry, AnchorVisualization, LineAnchor, SnapCandidate, SnapTarget } from '../../interfaces/anchor.interface';
 import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
@@ -411,6 +411,163 @@ export class KritzelAnchorManager {
   private getObjectById(objectId: string): KritzelBaseObject<Element> | null {
     const objects = this._core.store.state.objects.filter(o => o.id === objectId);
     return objects.length > 0 ? objects[0] : null;
+  }
+
+  // ============================================
+  // Visualization Helpers
+  // ============================================
+
+  /**
+   * Computes anchor visualization data for a line with anchors.
+   * Returns edge intersection points for rendering dashed lines from edge to center.
+   */
+  computeAnchorVisualization(line: KritzelLine, endpoint: 'start' | 'end'): AnchorVisualization | null {
+    const anchor = endpoint === 'start' ? line.startAnchor : line.endAnchor;
+    if (!anchor) return null;
+
+    const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === anchor.objectId);
+    if (!targetObject) return null;
+
+    // Get the other endpoint in world coordinates
+    const otherEndpoint = endpoint === 'start'
+      ? { x: line.endX, y: line.endY }
+      : { x: line.startX, y: line.startY };
+
+    const otherEndpointWorld = this.lineLocalToWorld(line, otherEndpoint.x, otherEndpoint.y);
+    const centerX = targetObject.centerX;
+    const centerY = targetObject.centerY;
+
+    // Calculate edge intersection
+    const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+      otherEndpointWorld,
+      { x: centerX, y: centerY },
+      targetObject.rotatedPolygon
+    );
+
+    if (!edgeIntersection) return null;
+
+    return {
+      edgeX: edgeIntersection.x,
+      edgeY: edgeIntersection.y,
+      centerX,
+      centerY,
+    };
+  }
+
+  /**
+   * Computes a clipped line path that stops at anchor edges instead of going to anchor centers.
+   * Returns the SVG path 'd' attribute string, or the original path if no clipping is needed.
+   * @param line The line object
+   * @param offsetByViewBox If true, subtracts line.x and line.y from coordinates (for selection UI)
+   */
+  computeClippedLinePath(line: KritzelLine, offsetByViewBox: boolean = false): string {
+    // If no anchors, return original path (with or without offset)
+    if (!line.startAnchor && !line.endAnchor) {
+      if (offsetByViewBox) {
+        if (line.controlX !== undefined && line.controlY !== undefined) {
+          return `M ${line.startX - line.x} ${line.startY - line.y} Q ${line.controlX - line.x} ${line.controlY - line.y} ${line.endX - line.x} ${line.endY - line.y}`;
+        }
+        return `M ${line.startX - line.x} ${line.startY - line.y} L ${line.endX - line.x} ${line.endY - line.y}`;
+      }
+      return line.d;
+    }
+
+    let startX = line.startX;
+    let startY = line.startY;
+    let endX = line.endX;
+    let endY = line.endY;
+
+    // Clip start point if anchored
+    if (line.startAnchor) {
+      const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === line.startAnchor.objectId);
+      if (targetObject) {
+        const endWorld = this.lineLocalToWorld(line, line.endX, line.endY);
+        const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+          endWorld,
+          { x: targetObject.centerX, y: targetObject.centerY },
+          targetObject.rotatedPolygon
+        );
+        if (edgeIntersection) {
+          const localEdge = this.lineWorldToLocal(line, edgeIntersection.x, edgeIntersection.y);
+          startX = localEdge.x;
+          startY = localEdge.y;
+        }
+      }
+    }
+
+    // Clip end point if anchored
+    if (line.endAnchor) {
+      const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === line.endAnchor.objectId);
+      if (targetObject) {
+        const startWorld = this.lineLocalToWorld(line, line.startX, line.startY);
+        const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+          startWorld,
+          { x: targetObject.centerX, y: targetObject.centerY },
+          targetObject.rotatedPolygon
+        );
+        if (edgeIntersection) {
+          const localEdge = this.lineWorldToLocal(line, edgeIntersection.x, edgeIntersection.y);
+          endX = localEdge.x;
+          endY = localEdge.y;
+        }
+      }
+    }
+
+    // Apply offset if requested (for selection UI which uses coordinates relative to 0,0)
+    const offsetX = offsetByViewBox ? line.x : 0;
+    const offsetY = offsetByViewBox ? line.y : 0;
+
+    // Generate the clipped path
+    if (line.controlX !== undefined && line.controlY !== undefined) {
+      // For curved lines, we need to adjust the control point proportionally
+      // This is a simplification - for perfect curves we'd need to split the bezier
+      return `M ${startX - offsetX} ${startY - offsetY} Q ${line.controlX - offsetX} ${line.controlY - offsetY} ${endX - offsetX} ${endY - offsetY}`;
+    }
+    return `M ${startX - offsetX} ${startY - offsetY} L ${endX - offsetX} ${endY - offsetY}`;
+  }
+
+  /**
+   * Converts local line coordinates to world coordinates.
+   */
+  private lineLocalToWorld(line: KritzelLine, localX: number, localY: number): { x: number; y: number } {
+    const px = localX - line.x;
+    const py = localY - line.y;
+
+    const cx = line.totalWidth / 2;
+    const cy = line.totalHeight / 2;
+
+    const cos = Math.cos(line.rotation);
+    const sin = Math.sin(line.rotation);
+
+    const rotatedX = (px - cx) * cos - (py - cy) * sin + cx;
+    const rotatedY = (px - cx) * sin + (py - cy) * cos + cy;
+
+    return {
+      x: rotatedX / line.scale + line.translateX,
+      y: rotatedY / line.scale + line.translateY,
+    };
+  }
+
+  /**
+   * Converts world coordinates to line's local SVG coordinates.
+   */
+  private lineWorldToLocal(line: KritzelLine, worldX: number, worldY: number): { x: number; y: number } {
+    const dx = (worldX - line.translateX) * line.scale;
+    const dy = (worldY - line.translateY) * line.scale;
+
+    const cx = line.totalWidth / 2;
+    const cy = line.totalHeight / 2;
+
+    const cos = Math.cos(-line.rotation);
+    const sin = Math.sin(-line.rotation);
+
+    const rotatedX = (dx - cx) * cos - (dy - cy) * sin + cx;
+    const rotatedY = (dx - cx) * sin + (dy - cy) * cos + cy;
+
+    return {
+      x: rotatedX + line.x,
+      y: rotatedY + line.y,
+    };
   }
 
   /**

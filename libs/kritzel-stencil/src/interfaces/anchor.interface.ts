@@ -53,3 +53,17 @@ export interface SnapCandidate {
   /** The stroke width of the line being snapped */
   lineStrokeWidth?: number;
 }
+
+/**
+ * Visualization data for rendering anchor indicator lines.
+ */
+export interface AnchorVisualization {
+  /** The X coordinate where the line intersects the object's edge */
+  edgeX: number;
+  /** The Y coordinate where the line intersects the object's edge */
+  edgeY: number;
+  /** The center X coordinate of the anchored object */
+  centerX: number;
+  /** The center Y coordinate of the anchored object */
+  centerY: number;
+}
