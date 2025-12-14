@@ -1,4 +1,5 @@
 import { LineAnchor } from './anchor.interface';
+import { LineArrowConfig } from './arrow-head.interface';
 
 export interface KritzelLineOptions {
   startX: number;
@@ -16,4 +17,6 @@ export interface KritzelLineOptions {
   startAnchor?: LineAnchor;
   /** Anchor connection for the end point */
   endAnchor?: LineAnchor;
+  /** Arrow head configuration for start and end of line */
+  arrows?: LineArrowConfig;
 }

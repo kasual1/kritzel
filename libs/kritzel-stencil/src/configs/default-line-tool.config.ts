@@ -29,4 +29,7 @@ export const DEFAULT_LINE_TOOL_CONFIG: KritzelLineToolConfig = {
     '#b3e5fc',
     '#e1bee7',
   ],
+  arrows: {
+    end: { enabled: true, style: 'triangle' },
+  },
 };

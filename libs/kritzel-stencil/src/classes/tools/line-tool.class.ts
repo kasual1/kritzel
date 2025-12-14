@@ -4,6 +4,7 @@ import { KritzelBaseTool } from './base-tool.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
 
 export class KritzelLineTool extends KritzelBaseTool {
   color: string = '#000000';
@@ -11,6 +12,9 @@ export class KritzelLineTool extends KritzelBaseTool {
   size: number = 4;
 
   palettes: string[] = ['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#808080', '#C0C0C0', '#800000', '#008000', '#000080', '#808000', '#800080'];
+
+  /** Arrow head configuration for lines created with this tool */
+  arrows?: LineArrowConfig;
 
   private _startX: number = 0;
   private _startY: number = 0;
@@ -43,6 +47,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           scale: this._core.store.state.scale,
           stroke: this.color,
           strokeWidth: this.size,
+          arrows: this.arrows,
         });
         line.isCompleted = false;
 
@@ -71,6 +76,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           scale: this._core.store.state.scale,
           stroke: this.color,
           strokeWidth: this.size,
+          arrows: this.arrows,
         });
         line.isCompleted = false;
 
@@ -101,6 +107,7 @@ export class KritzelLineTool extends KritzelBaseTool {
             scale: this._core.store.state.scale,
             stroke: this.color,
             strokeWidth: this.size,
+            arrows: this.arrows,
           });
           updatedLine.id = currentLine.id;
           updatedLine.workspaceId = currentLine.workspaceId;
@@ -130,6 +137,7 @@ export class KritzelLineTool extends KritzelBaseTool {
             scale: this._core.store.state.scale,
             stroke: this.color,
             strokeWidth: this.size,
+            arrows: this.arrows,
           });
           updatedLine.id = currentLine.id;
           updatedLine.workspaceId = currentLine.workspaceId;
