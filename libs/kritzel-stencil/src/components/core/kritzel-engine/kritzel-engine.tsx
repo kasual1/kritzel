@@ -1031,29 +1031,9 @@ export class KritzelEngine {
 
           {/* Anchor lines for selected line objects - show dashed lines from edge to center */}
           {(() => {
-            const selectionGroup = this.core.store.selectionGroup;
-            if (!selectionGroup || selectionGroup.objects.length !== 1) return null;
-            
-            const selectedObject = selectionGroup.objects[0];
-            if (!KritzelClassHelper.isInstanceOf<KritzelLine>(selectedObject, 'KritzelLine')) return null;
-            
-            const line = selectedObject as KritzelLine;
-            
-            // Don't render if we're currently dragging (snap indicator handles that)
-            if (this.core.anchorManager.getSnapCandidate()) return null;
-            
-            const startAnchorViz = this.core.anchorManager.computeAnchorVisualization(line, 'start');
-            const endAnchorViz = this.core.anchorManager.computeAnchorVisualization(line, 'end');
-            
-            if (!startAnchorViz && !endAnchorViz) return null;
-            
-            const lineStrokeWidth = line.strokeWidth / line.scale;
-            const indicatorStrokeWidth = `${2 / this.core.store.state.scale}`;
-            // Dash array scales with line stroke width for consistent appearance at all zoom levels
-            const dashLength = Math.max(lineStrokeWidth * 2, 4 / this.core.store.state.scale);
-            const dashArray = `${dashLength} ${dashLength}`;
-            const indicatorRadius = 8 / this.core.store.state.scale;
-            
+            const data = this.core.anchorManager.getAnchorLinesRenderData();
+            if (!data) return null;
+
             return (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1069,54 +1049,54 @@ export class KritzelEngine {
                   overflow: 'visible',
                 }}
               >
-                {startAnchorViz && (
+                {data.startAnchorViz && (
                   <g class="anchor-line-start">
                     <line
-                      x1={startAnchorViz.edgeX}
-                      y1={startAnchorViz.edgeY}
-                      x2={startAnchorViz.centerX}
-                      y2={startAnchorViz.centerY}
+                      x1={data.startAnchorViz.edgeX}
+                      y1={data.startAnchorViz.edgeY}
+                      x2={data.startAnchorViz.centerX}
+                      y2={data.startAnchorViz.centerY}
                       style={{
                         stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
-                        strokeWidth: `${lineStrokeWidth}`,
-                        strokeDasharray: dashArray,
+                        strokeWidth: `${data.lineStrokeWidth}`,
+                        strokeDasharray: data.dashArray,
                         strokeLinecap: 'round',
                       }}
                     />
                     <circle
-                      cx={startAnchorViz.centerX}
-                      cy={startAnchorViz.centerY}
-                      r={indicatorRadius}
+                      cx={data.startAnchorViz.centerX}
+                      cy={data.startAnchorViz.centerY}
+                      r={data.indicatorRadius}
                       style={{
                         fill: 'var(--kritzel-snap-indicator-fill, rgba(0, 0, 0))',
                         stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
-                        strokeWidth: indicatorStrokeWidth,
+                        strokeWidth: data.indicatorStrokeWidth,
                       }}
                     />
                   </g>
                 )}
-                {endAnchorViz && (
+                {data.endAnchorViz && (
                   <g class="anchor-line-end">
                     <line
-                      x1={endAnchorViz.edgeX}
-                      y1={endAnchorViz.edgeY}
-                      x2={endAnchorViz.centerX}
-                      y2={endAnchorViz.centerY}
+                      x1={data.endAnchorViz.edgeX}
+                      y1={data.endAnchorViz.edgeY}
+                      x2={data.endAnchorViz.centerX}
+                      y2={data.endAnchorViz.centerY}
                       style={{
                         stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
-                        strokeWidth: `${lineStrokeWidth}`,
-                        strokeDasharray: dashArray,
+                        strokeWidth: `${data.lineStrokeWidth}`,
+                        strokeDasharray: data.dashArray,
                         strokeLinecap: 'round',
                       }}
                     />
                     <circle
-                      cx={endAnchorViz.centerX}
-                      cy={endAnchorViz.centerY}
-                      r={indicatorRadius}
+                      cx={data.endAnchorViz.centerX}
+                      cy={data.endAnchorViz.centerY}
+                      r={data.indicatorRadius}
                       style={{
                         fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
                         stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
-                        strokeWidth: indicatorStrokeWidth,
+                        strokeWidth: data.indicatorStrokeWidth,
                       }}
                     />
                   </g>
@@ -1126,80 +1106,70 @@ export class KritzelEngine {
           })()}
 
           {/* Snap indicator for line anchoring */}
-          {this.core.anchorManager.getSnapCandidate() && (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="snap-indicator"
-              style={{
-                position: 'absolute',
-                left: '0',
-                top: '0',
-                width: '1px',
-                height: '1px',
-                pointerEvents: 'none',
-                zIndex: '9999',
-                overflow: 'visible',
-              }}
-            >
-              {(() => {
-                const snapCandidate = this.core.anchorManager.getSnapCandidate();
-                const indicatorRadius = 8 / this.core.store.state.scale;
-                const indicatorStrokeWidth = `${2 / this.core.store.state.scale}`;
-                const lineStrokeWidth = snapCandidate.lineStrokeWidth 
-                  ? `${snapCandidate.lineStrokeWidth}` 
-                  : `${4 / this.core.store.state.scale}`;
-                const lineStrokeWidthNum = snapCandidate.lineStrokeWidth || (4 / this.core.store.state.scale);
-                // Dash array scales with line stroke width for consistent appearance at all zoom levels
-                const dashLength = Math.max(lineStrokeWidthNum * 2, 4 / this.core.store.state.scale);
-                const dashArray = `${dashLength} ${dashLength}`;
-                const lineStroke = snapCandidate.lineStroke || '#000000';
-                return (
-                  <g>
-                    {/* Solid line from other endpoint to edge - this visually shows line stopping at edge */}
-                    {snapCandidate.edgeX !== undefined && snapCandidate.edgeY !== undefined && (
-                      <line
-                        x1={snapCandidate.lineEndpointX}
-                        y1={snapCandidate.lineEndpointY}
-                        x2={snapCandidate.edgeX}
-                        y2={snapCandidate.edgeY}
-                        style={{
-                          stroke: lineStroke,
-                          strokeWidth: lineStrokeWidth,
-                          strokeLinecap: 'round',
-                        }}
-                      />
-                    )}
-                    {/* Dashed line from edge to center */}
-                    {snapCandidate.edgeX !== undefined && snapCandidate.edgeY !== undefined && (
-                      <line
-                        x1={snapCandidate.edgeX}
-                        y1={snapCandidate.edgeY}
-                        x2={snapCandidate.centerX}
-                        y2={snapCandidate.centerY}
-                        style={{
-                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
-                          strokeWidth: lineStrokeWidth,
-                          strokeDasharray: dashArray,
-                          strokeLinecap: 'round',
-                        }}
-                      />
-                    )}
-                    {/* Center indicator circle */}
-                    <circle
-                      cx={snapCandidate.centerX}
-                      cy={snapCandidate.centerY}
-                      r={indicatorRadius}
+          {(() => {
+            const data = this.core.anchorManager.getSnapIndicatorRenderData();
+            if (!data) return null;
+
+            return (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="snap-indicator"
+                style={{
+                  position: 'absolute',
+                  left: '0',
+                  top: '0',
+                  width: '1px',
+                  height: '1px',
+                  pointerEvents: 'none',
+                  zIndex: '9999',
+                  overflow: 'visible',
+                }}
+              >
+                <g>
+                  {/* Solid line from other endpoint to edge */}
+                  {data.edgeX !== undefined && data.edgeY !== undefined && (
+                    <line
+                      x1={data.lineEndpointX}
+                      y1={data.lineEndpointY}
+                      x2={data.edgeX}
+                      y2={data.edgeY}
                       style={{
-                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
-                        stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
-                        strokeWidth: indicatorStrokeWidth,
+                        stroke: data.lineStroke,
+                        strokeWidth: data.lineStrokeWidth,
+                        strokeLinecap: 'round',
                       }}
                     />
-                  </g>
-                );
-              })()}
-            </svg>
-          )}
+                  )}
+                  {/* Dashed line from edge to center */}
+                  {data.edgeX !== undefined && data.edgeY !== undefined && (
+                    <line
+                      x1={data.edgeX}
+                      y1={data.edgeY}
+                      x2={data.centerX}
+                      y2={data.centerY}
+                      style={{
+                        stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                        strokeWidth: data.lineStrokeWidth,
+                        strokeDasharray: data.dashArray,
+                        strokeLinecap: 'round',
+                      }}
+                    />
+                  )}
+                  {/* Center indicator circle */}
+                  <circle
+                    cx={data.centerX}
+                    cy={data.centerY}
+                    r={data.indicatorRadius}
+                    style={{
+                      fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                      stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                      strokeWidth: data.indicatorStrokeWidth,
+                    }}
+                  />
+                </g>
+              </svg>
+            );
+          })()}
         </div>
 
         {this.core.store.state.isContextMenuVisible && (

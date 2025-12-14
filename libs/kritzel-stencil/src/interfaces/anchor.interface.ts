@@ -67,3 +67,50 @@ export interface AnchorVisualization {
   /** The center Y coordinate of the anchored object */
   centerY: number;
 }
+
+/**
+ * Render data for anchor lines visualization (dashed lines from edge to center).
+ */
+export interface AnchorLinesRenderData {
+  /** The stroke width of the line */
+  lineStrokeWidth: number;
+  /** The stroke width for the indicator circle */
+  indicatorStrokeWidth: string;
+  /** The dash array for the dashed line */
+  dashArray: string;
+  /** The radius of the indicator circle */
+  indicatorRadius: number;
+  /** Visualization data for the start anchor, if any */
+  startAnchorViz: AnchorVisualization | null;
+  /** Visualization data for the end anchor, if any */
+  endAnchorViz: AnchorVisualization | null;
+}
+
+/**
+ * Render data for snap indicator visualization.
+ */
+export interface SnapIndicatorRenderData {
+  /** The radius of the indicator circle */
+  indicatorRadius: number;
+  /** The stroke width for the indicator circle */
+  indicatorStrokeWidth: string;
+  /** The stroke width for the line */
+  lineStrokeWidth: string;
+  /** The dash array for the dashed line */
+  dashArray: string;
+  /** The stroke color of the line */
+  lineStroke: string;
+  /** The center X coordinate */
+  centerX: number;
+  /** The center Y coordinate */
+  centerY: number;
+  /** The X coordinate of the line endpoint */
+  lineEndpointX: number;
+  /** The Y coordinate of the line endpoint */
+  lineEndpointY: number;
+  /** The X coordinate where the line intersects the object's edge */
+  edgeX?: number;
+  /** The Y coordinate where the line intersects the object's edge */
+  edgeY?: number;
+}
+
