@@ -28,7 +28,6 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { throttle } from 'lodash';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
-import { KritzelCursorHelper } from '../../../helpers/cursor.helper';
 
 @Component({
   tag: 'kritzel-engine',
@@ -78,12 +77,7 @@ export class KritzelEngine {
   @Prop() cursorTarget?: HTMLElement;
   @Watch('cursorTarget')
   onCursorTargetChange(newValue: HTMLElement | undefined) {
-    // Reset cursor on old target
-    if (this.cursorTargetElement) {
-      this.cursorTargetElement.style.cursor = '';
-    }
-    // Set new target (defaults to document.body)
-    this.cursorTargetElement = newValue || document.body;
+    this.core.cursorManager.setTargetElement(newValue || document.body);
   }
 
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
@@ -150,7 +144,7 @@ export class KritzelEngine {
     }
 
     // Update cursor for handle hover states using elementsFromPoint
-    this.updateHandleHoverCursor(ev);
+    this.core.cursorManager.updateHoverState(ev);
 
     this.viewport.handlePointerMove(ev);
     this.core.store.state?.activeTool?.handlePointerMove(ev);
@@ -167,7 +161,7 @@ export class KritzelEngine {
 
     // Reset cursor to default when all pointers are released
     if (this.core.store.state.pointers.size === 0) {
-      this.core.store.state.cursor = { icon: 'default', iconActive: 'default' };
+      this.core.cursorManager.resetToDefault();
     }
 
     this.viewport.handlePointerUp(ev);
@@ -185,7 +179,7 @@ export class KritzelEngine {
 
     // Reset cursor to default when all pointers are released
     if (this.core.store.state.pointers.size === 0) {
-      this.core.store.state.cursor = { icon: 'default', iconActive: 'default' };
+      this.core.cursorManager.resetToDefault();
     }
 
     this.viewport.handlePointerUp(ev);
@@ -450,7 +444,6 @@ export class KritzelEngine {
   contextMenuHandler: KritzelContextMenuHandler;
   keyHandler: KritzelKeyHandler;
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
-  cursorTargetElement: HTMLElement | null = null;
 
   get isSelecting() {
     return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
@@ -467,13 +460,7 @@ export class KritzelEngine {
   disconnectedCallback() {
     this.throttledWheel.cancel();
     this.throttledPointerMoveMulti.cancel();
-
-    // Reset cursor on target element
-    if (this.cursorTargetElement) {
-      this.cursorTargetElement.style.cursor = '';
-      this.cursorTargetElement.style.removeProperty('--kritzel-pointer-cursor');
-      this.cursorTargetElement = null;
-    }
+    this.core.cursorManager.cleanup();
   }
 
   componentWillLoad() {
@@ -486,11 +473,9 @@ export class KritzelEngine {
     this.keyHandler = new KritzelKeyHandler(this.core);
     this.viewport = new KritzelViewport(this.core, this.host);
 
-    // Set cursor target element (use prop value or default to document.body)
-    this.cursorTargetElement = this.cursorTarget || document.body;
-
-    // Set the pointer cursor CSS variable for child components to use
-    this.cursorTargetElement.style.setProperty('--kritzel-pointer-cursor', KritzelCursorHelper.getPointerCursor());
+    // Initialize cursor manager with target element and shadow root
+    this.core.cursorManager.setTargetElement(this.cursorTarget || document.body);
+    this.core.cursorManager.setShadowRoot(this.host.shadowRoot);
 
     // Set sync configuration if provided
     if (this.syncConfig) {
@@ -545,71 +530,6 @@ export class KritzelEngine {
     this.core.rerender();
   }
 
-  /**
-   * Detects handle hover states using elementsFromPoint() to work with overlapped elements.
-   * This approach finds all elements at the pointer position instead of relying on pointerenter/pointerleave.
-   */
-  private updateHandleHoverCursor(ev: PointerEvent): void {
-    if (this.core.store.isPointerDown) return;
-
-    const shadowRoot = this.host.shadowRoot;
-    if (!shadowRoot) return;
-
-    const elementsAtPoint = shadowRoot.elementsFromPoint(ev.clientX, ev.clientY);
-    if (!elementsAtPoint || elementsAtPoint.length === 0) return;
-
-    // Check for resize handle overlays (selection group)
-    const resizeHandleOverlay = elementsAtPoint.find(el => el.classList.contains('resize-handle-overlay'));
-    if (resizeHandleOverlay) {
-      const selectionGroup = this.core.store.selectionGroup;
-      const rotationDegrees = selectionGroup?.rotationDegrees ?? 0;
-      
-      // Determine rotation offset based on handle position
-      const isTopLeft = resizeHandleOverlay.classList.contains('top-left');
-      const isBottomRight = resizeHandleOverlay.classList.contains('bottom-right');
-      const rotationOffset = (isTopLeft || isBottomRight) ? -45 : 45;
-      
-      this.core.store.state.cursor = { icon: 'move-vertical', rotation: rotationDegrees + rotationOffset };
-      return;
-    }
-
-    // Check for rotation handle overlay
-    const rotationHandleOverlay = elementsAtPoint.find(el => el.classList.contains('rotation-handle-overlay'));
-    if (rotationHandleOverlay) {
-      this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' };
-      return;
-    }
-
-    // Check for line handle overlays (selection line)
-    const lineHandleOverlay = elementsAtPoint.find(el => el.classList.contains('selection-line-handle-overlay'));
-    if (lineHandleOverlay) {
-      this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' };
-      return;
-    }
-
-    // Reset cursor if not hovering any handle
-    this.core.store.state.cursor = { icon: 'default', iconActive: 'default' };
-  }
-
-  private updateCursor(): void {
-    const state = this.core.store.state;
-
-    const isPointerDown = this.core.store.isPointerDown;
-
-    const icon = state.cursor?.icon;
-    const iconActive = state.cursor?.iconActive ?? icon;
-    const rotation = state.cursor?.rotation;
-
-    const cursor = KritzelCursorHelper.getCursor({
-      iconName: isPointerDown ? iconActive : icon,
-      rotation: rotation,
-    });
-
-    if (this.cursorTargetElement) {
-      this.cursorTargetElement.style.cursor = cursor;
-    }
-  }
-
   render() {
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
@@ -627,7 +547,7 @@ export class KritzelEngine {
     };
     const visibleObjects = this.core.store.state.objects.query(viewportBounds);
 
-    this.updateCursor();
+    this.core.cursorManager.applyCursor();
 
     return (
       <Host>
