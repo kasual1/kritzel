@@ -1,10 +1,11 @@
-import { AnchorIndexEntry, AnchorVisualization, LineAnchor, SnapCandidate, SnapTarget } from '../../interfaces/anchor.interface';
+import { AnchorIndexEntry, AnchorLinesRenderData, AnchorVisualization, LineAnchor, SnapCandidate, SnapIndicatorRenderData, SnapTarget } from '../../interfaces/anchor.interface';
 import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
+import { KritzelClassHelper } from '../../helpers/class.helper';
 
 /**
  * Manages anchor connections between line endpoints and other objects.
@@ -277,6 +278,82 @@ export class KritzelAnchorManager {
   clearSnapCandidate(): void {
     this._core.store.state.snapCandidate = null;
     this._core.rerender();
+  }
+
+  // ============================================
+  // Render Data
+  // ============================================
+
+  /**
+   * Gets render data for anchor lines visualization.
+   * Returns null if there's no selected line with anchors or if snap is in progress.
+   */
+  getAnchorLinesRenderData(): AnchorLinesRenderData | null {
+    const selectionGroup = this._core.store.selectionGroup;
+    if (!selectionGroup || selectionGroup.objects.length !== 1) return null;
+
+    const selectedObject = selectionGroup.objects[0];
+    if (!KritzelClassHelper.isInstanceOf<KritzelLine>(selectedObject, 'KritzelLine')) return null;
+
+    const line = selectedObject as KritzelLine;
+
+    // Don't render if we're currently dragging (snap indicator handles that)
+    if (this.getSnapCandidate()) return null;
+
+    const startAnchorViz = this.computeAnchorVisualization(line, 'start');
+    const endAnchorViz = this.computeAnchorVisualization(line, 'end');
+
+    if (!startAnchorViz && !endAnchorViz) return null;
+
+    const scale = this._core.store.state.scale;
+    const lineStrokeWidth = line.strokeWidth / line.scale;
+    const indicatorStrokeWidth = `${2 / scale}`;
+    const dashLength = Math.max(lineStrokeWidth * 2, 4 / scale);
+    const dashArray = `${dashLength} ${dashLength}`;
+    const indicatorRadius = 8 / scale;
+
+    return {
+      lineStrokeWidth,
+      indicatorStrokeWidth,
+      dashArray,
+      indicatorRadius,
+      startAnchorViz,
+      endAnchorViz,
+    };
+  }
+
+  /**
+   * Gets render data for snap indicator visualization.
+   * Returns null if there's no snap candidate.
+   */
+  getSnapIndicatorRenderData(): SnapIndicatorRenderData | null {
+    const snapCandidate = this.getSnapCandidate();
+    if (!snapCandidate) return null;
+
+    const scale = this._core.store.state.scale;
+    const indicatorRadius = 8 / scale;
+    const indicatorStrokeWidth = `${2 / scale}`;
+    const lineStrokeWidth = snapCandidate.lineStrokeWidth
+      ? `${snapCandidate.lineStrokeWidth}`
+      : `${4 / scale}`;
+    const lineStrokeWidthNum = snapCandidate.lineStrokeWidth || (4 / scale);
+    const dashLength = Math.max(lineStrokeWidthNum * 2, 4 / scale);
+    const dashArray = `${dashLength} ${dashLength}`;
+    const lineStroke = snapCandidate.lineStroke || '#000000';
+
+    return {
+      indicatorRadius,
+      indicatorStrokeWidth,
+      lineStrokeWidth,
+      dashArray,
+      lineStroke,
+      centerX: snapCandidate.centerX,
+      centerY: snapCandidate.centerY,
+      lineEndpointX: snapCandidate.lineEndpointX,
+      lineEndpointY: snapCandidate.lineEndpointY,
+      edgeX: snapCandidate.edgeX,
+      edgeY: snapCandidate.edgeY,
+    };
   }
 
   // ============================================
