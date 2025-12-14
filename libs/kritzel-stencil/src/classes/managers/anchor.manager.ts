@@ -422,7 +422,11 @@ export class KritzelAnchorManager {
       return false;
     }
 
-    // Lines can be anchored to (their center)
+    // Exclude line objects - lines cannot be anchored to other lines
+    if (object instanceof KritzelLine) {
+      return false;
+    }
+
     // All other visible objects can be anchored to
     return object.isVisible;
   }
