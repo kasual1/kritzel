@@ -1095,18 +1095,31 @@ export class KritzelEngine {
               >
                 {data.startAnchorViz && (
                   <g class="anchor-line-start">
-                    <line
-                      x1={data.startAnchorViz.edgeX}
-                      y1={data.startAnchorViz.edgeY}
-                      x2={data.startAnchorViz.centerX}
-                      y2={data.startAnchorViz.centerY}
-                      style={{
-                        stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
-                        strokeWidth: `${data.lineStrokeWidth}`,
-                        strokeDasharray: data.dashArray,
-                        strokeLinecap: 'round',
-                      }}
-                    />
+                    {data.startAnchorViz.pathD ? (
+                      <path
+                        d={data.startAnchorViz.pathD}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                          fill: 'none',
+                        }}
+                      />
+                    ) : (
+                      <line
+                        x1={data.startAnchorViz.edgeX}
+                        y1={data.startAnchorViz.edgeY}
+                        x2={data.startAnchorViz.centerX}
+                        y2={data.startAnchorViz.centerY}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                        }}
+                      />
+                    )}
                     <circle
                       cx={data.startAnchorViz.centerX}
                       cy={data.startAnchorViz.centerY}
@@ -1121,18 +1134,31 @@ export class KritzelEngine {
                 )}
                 {data.endAnchorViz && (
                   <g class="anchor-line-end">
-                    <line
-                      x1={data.endAnchorViz.edgeX}
-                      y1={data.endAnchorViz.edgeY}
-                      x2={data.endAnchorViz.centerX}
-                      y2={data.endAnchorViz.centerY}
-                      style={{
-                        stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
-                        strokeWidth: `${data.lineStrokeWidth}`,
-                        strokeDasharray: data.dashArray,
-                        strokeLinecap: 'round',
-                      }}
-                    />
+                    {data.endAnchorViz.pathD ? (
+                      <path
+                        d={data.endAnchorViz.pathD}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                          fill: 'none',
+                        }}
+                      />
+                    ) : (
+                      <line
+                        x1={data.endAnchorViz.edgeX}
+                        y1={data.endAnchorViz.edgeY}
+                        x2={data.endAnchorViz.centerX}
+                        y2={data.endAnchorViz.centerY}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                        }}
+                      />
+                    )}
                     <circle
                       cx={data.endAnchorViz.centerX}
                       cy={data.endAnchorViz.centerY}
