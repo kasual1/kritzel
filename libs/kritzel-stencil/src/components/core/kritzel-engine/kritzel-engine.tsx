@@ -1180,52 +1180,6 @@ export class KritzelEngine {
             const data = this.core.anchorManager.getSnapIndicatorRenderData();
             if (!data) return null;
 
-            // Calculate the offset edge position if arrow offset is provided
-            let solidLineEndX = data.edgeX;
-            let solidLineEndY = data.edgeY;
-            if (data.arrowOffset && data.edgeX !== undefined && data.edgeY !== undefined) {
-              const dx = data.lineEndpointX - data.edgeX;
-              const dy = data.lineEndpointY - data.edgeY;
-              const length = Math.sqrt(dx * dx + dy * dy);
-              if (length > data.arrowOffset) {
-                solidLineEndX = data.edgeX + (dx / length) * data.arrowOffset;
-                solidLineEndY = data.edgeY + (dy / length) * data.arrowOffset;
-              }
-            }
-
-            // Calculate arrow head points if arrow is present
-            let arrowPoints: string | undefined;
-            if (data.arrowOffset && data.edgeX !== undefined && data.edgeY !== undefined && solidLineEndX !== undefined && solidLineEndY !== undefined) {
-              // Direction from line endpoint to edge (arrow direction)
-              const dx = data.edgeX - data.lineEndpointX;
-              const dy = data.edgeY - data.lineEndpointY;
-              const length = Math.sqrt(dx * dx + dy * dy);
-              if (length > 0) {
-                const ux = dx / length;
-                const uy = dy / length;
-                // Perpendicular vector
-                const px = -uy;
-                const py = ux;
-                // Arrow dimensions - match SVG marker path "M 0 0 L 10 5 L 0 10 z"
-                // The path has width=10, height=10, so ratio is 1:1
-                const arrowLength = data.arrowOffset;
-                const arrowWidth = arrowLength; // 1:1 ratio to match marker
-                // Arrow tip at edge
-                const tipX = data.edgeX;
-                const tipY = data.edgeY;
-                // Arrow base (back of arrow)
-                const baseX = tipX - ux * arrowLength;
-                const baseY = tipY - uy * arrowLength;
-                // Arrow wings
-                const leftX = baseX + px * arrowWidth / 2;
-                const leftY = baseY + py * arrowWidth / 2;
-                const rightX = baseX - px * arrowWidth / 2;
-                const rightY = baseY - py * arrowWidth / 2;
-                
-                arrowPoints = `${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}`;
-              }
-            }
-
             return (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1243,12 +1197,12 @@ export class KritzelEngine {
               >
                 <g>
                   {/* Solid line from other endpoint to edge (offset by arrow size) */}
-                  {solidLineEndX !== undefined && solidLineEndY !== undefined && (
+                  {data.solidLineEndX !== undefined && data.solidLineEndY !== undefined && (
                     <line
                       x1={data.lineEndpointX}
                       y1={data.lineEndpointY}
-                      x2={solidLineEndX}
-                      y2={solidLineEndY}
+                      x2={data.solidLineEndX}
+                      y2={data.solidLineEndY}
                       style={{
                         stroke: data.lineStroke,
                         strokeWidth: data.lineStrokeWidth,
@@ -1257,9 +1211,9 @@ export class KritzelEngine {
                     />
                   )}
                   {/* Arrow head at edge */}
-                  {arrowPoints && (
+                  {data.arrowPoints && (
                     <polygon
-                      points={arrowPoints}
+                      points={data.arrowPoints}
                       style={{
                         fill: data.arrowFill || data.lineStroke,
                       }}

@@ -359,6 +359,55 @@ export class KritzelAnchorManager {
     const dashArray = `${dashLength} ${dashLength}`;
     const lineStroke = snapCandidate.lineStroke || '#000000';
 
+    let solidLineEndX = snapCandidate.edgeX;
+    let solidLineEndY = snapCandidate.edgeY;
+    let arrowPoints: string | undefined;
+
+    if (snapCandidate.arrowOffset && snapCandidate.edgeX !== undefined && snapCandidate.edgeY !== undefined) {
+      const dx = snapCandidate.lineEndpointX - snapCandidate.edgeX;
+      const dy = snapCandidate.lineEndpointY - snapCandidate.edgeY;
+      const length = Math.sqrt(dx * dx + dy * dy);
+
+      if (length > snapCandidate.arrowOffset) {
+        solidLineEndX = snapCandidate.edgeX + (dx / length) * snapCandidate.arrowOffset;
+        solidLineEndY = snapCandidate.edgeY + (dy / length) * snapCandidate.arrowOffset;
+      }
+
+      // Calculate arrow head points
+      // Direction from line endpoint to edge (arrow direction)
+      const arrowDx = snapCandidate.edgeX - snapCandidate.lineEndpointX;
+      const arrowDy = snapCandidate.edgeY - snapCandidate.lineEndpointY;
+      const arrowLengthTotal = Math.sqrt(arrowDx * arrowDx + arrowDy * arrowDy);
+
+      if (arrowLengthTotal > 0) {
+        const ux = arrowDx / arrowLengthTotal;
+        const uy = arrowDy / arrowLengthTotal;
+        // Perpendicular vector
+        const px = -uy;
+        const py = ux;
+
+        // Arrow dimensions
+        const arrowLength = snapCandidate.arrowOffset;
+        const arrowWidth = arrowLength; // 1:1 ratio
+
+        // Arrow tip at edge
+        const tipX = snapCandidate.edgeX;
+        const tipY = snapCandidate.edgeY;
+
+        // Arrow base
+        const baseX = tipX - ux * arrowLength;
+        const baseY = tipY - uy * arrowLength;
+
+        // Arrow wings
+        const leftX = baseX + px * arrowWidth / 2;
+        const leftY = baseY + py * arrowWidth / 2;
+        const rightX = baseX - px * arrowWidth / 2;
+        const rightY = baseY - py * arrowWidth / 2;
+
+        arrowPoints = `${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}`;
+      }
+    }
+
     return {
       indicatorRadius,
       indicatorStrokeWidth,
@@ -374,6 +423,9 @@ export class KritzelAnchorManager {
       arrowOffset: snapCandidate.arrowOffset,
       arrowStyle: snapCandidate.arrowStyle,
       arrowFill: snapCandidate.arrowFill,
+      solidLineEndX,
+      solidLineEndY,
+      arrowPoints,
     };
   }
 
