@@ -148,7 +148,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
 
         // Get the other endpoint's world position for edge intersection calculation
         const otherEndpointWorld = this.lineLocalToWorld(line, this.initialEndX, this.initialEndY);
-        
+
         // Calculate edge intersection point
         const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === snapTarget.objectId);
         let edgeX: number | undefined;
@@ -209,7 +209,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
 
         // Get the other endpoint's world position for edge intersection calculation
         const otherEndpointWorld = this.lineLocalToWorld(line, this.initialStartX, this.initialStartY);
-        
+
         // Calculate edge intersection point
         const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === snapTarget.objectId);
         let edgeX: number | undefined;
@@ -256,7 +256,51 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       const startControlY = this.initialControlY ?? (this.initialStartY + this.initialEndY) / 2;
       const newControlX = startControlX + localDx * 2;
       const newControlY = startControlY + localDy * 2;
-      line.updateControlPoint(newControlX, newControlY);
+
+      // Check distance to line segment for snapping back to straight
+      const x1 = line.startX;
+      const y1 = line.startY;
+      const x2 = line.endX;
+      const y2 = line.endY;
+
+      const A = newControlX - x1;
+      const B = newControlY - y1;
+      const C = x2 - x1;
+      const D = y2 - y1;
+
+      const dot = A * C + B * D;
+      const len_sq = C * C + D * D;
+      let param = -1;
+
+      if (len_sq !== 0) {
+        param = dot / len_sq;
+      }
+
+      let xx, yy;
+
+      if (param < 0) {
+        xx = x1;
+        yy = y1;
+      } else if (param > 1) {
+        xx = x2;
+        yy = y2;
+      } else {
+        xx = x1 + param * C;
+        yy = y1 + param * D;
+      }
+
+      const dx = newControlX - xx;
+      const dy = newControlY - yy;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Threshold for snapping back to straight line
+      const snapToStraightThreshold = 15;
+
+      if (distance < snapToStraightThreshold) {
+        line.updateControlPoint(undefined, undefined);
+      } else {
+        line.updateControlPoint(newControlX, newControlY);
+      }
     }
 
     this._core.rerender();
