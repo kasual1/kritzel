@@ -48,7 +48,7 @@ export class KritzelEditor {
       name: 'line',
       type: 'tool',
       tool: KritzelLineTool,
-      icon: 'slash',
+      icon: 'arrow',
       config: DEFAULT_LINE_TOOL_CONFIG,
     },
     {
