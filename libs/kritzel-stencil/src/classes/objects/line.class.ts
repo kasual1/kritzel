@@ -353,7 +353,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
-  updateControlPoint(newX: number, newY: number): void {
+  updateControlPoint(newX: number | undefined, newY: number | undefined): void {
     this.controlX = newX;
     this.controlY = newY;
 
