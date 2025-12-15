@@ -72,6 +72,8 @@ export interface AnchorVisualization {
   centerX: number;
   /** The center Y coordinate of the anchored object */
   centerY: number;
+  /** Optional SVG path describing the curved dashed segment */
+  pathD?: string;
 }
 
 /**

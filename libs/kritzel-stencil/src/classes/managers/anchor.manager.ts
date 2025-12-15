@@ -6,6 +6,24 @@ import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelClassHelper } from '../../helpers/class.helper';
+import { KritzelPoint } from '../../interfaces/point.interface';
+import { KritzelPolygon } from '../../interfaces/polygon.interface';
+
+type AnchorClipInfo = {
+  localX: number;
+  localY: number;
+  worldX: number;
+  worldY: number;
+  t?: number;
+};
+
+type QuadraticPoint = { x: number; y: number };
+
+type QuadraticSegment = {
+  start: QuadraticPoint;
+  control: QuadraticPoint;
+  end: QuadraticPoint;
+};
 
 /**
  * Manages anchor connections between line endpoints and other objects.
@@ -240,7 +258,7 @@ export class KritzelAnchorManager {
       // Check if point is inside the object's rotated polygon
       const polygon = object.rotatedPolygon;
       const points = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
-      
+
       if (KritzelGeometryHelper.isPointInPolygon({ x: worldX, y: worldY }, points)) {
         // If inside, check if this object is "above" the current best target
         if (object.zIndex > highestZIndex) {
@@ -436,7 +454,7 @@ export class KritzelAnchorManager {
     }
 
     const entries = this._anchorIndex.get(objectId)!;
-    
+
     // Check if entry already exists
     for (const entry of entries) {
       if (entry.lineId === lineId && entry.endpoint === endpoint) {
@@ -493,6 +511,14 @@ export class KritzelAnchorManager {
     return objects.length > 0 ? objects[0] : null;
   }
 
+  private findAnchorTarget(line: KritzelLine, endpoint: 'start' | 'end'): KritzelBaseObject<Element> | null {
+    const anchor = endpoint === 'start' ? line.startAnchor : line.endAnchor;
+    if (!anchor) {
+      return null;
+    }
+    return this._core.store.allNonSelectionObjects.find(obj => obj.id === anchor.objectId) ?? null;
+  }
+
   // ============================================
   // Visualization Helpers
   // ============================================
@@ -505,32 +531,21 @@ export class KritzelAnchorManager {
     const anchor = endpoint === 'start' ? line.startAnchor : line.endAnchor;
     if (!anchor) return null;
 
-    const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === anchor.objectId);
+    const targetObject = this.findAnchorTarget(line, endpoint);
     if (!targetObject) return null;
 
-    // Get the other endpoint in world coordinates
-    const otherEndpoint = endpoint === 'start'
-      ? { x: line.endX, y: line.endY }
-      : { x: line.startX, y: line.startY };
+    const clipInfo = this.computeAnchorClipInfo(line, endpoint, targetObject);
+    if (!clipInfo) return null;
 
-    const otherEndpointWorld = this.lineLocalToWorld(line, otherEndpoint.x, otherEndpoint.y);
     const centerX = targetObject.centerX;
     const centerY = targetObject.centerY;
 
-    // Calculate edge intersection
-    const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
-      otherEndpointWorld,
-      { x: centerX, y: centerY },
-      targetObject.rotatedPolygon
-    );
-
-    if (!edgeIntersection) return null;
-
     return {
-      edgeX: edgeIntersection.x,
-      edgeY: edgeIntersection.y,
+      edgeX: clipInfo.worldX,
+      edgeY: clipInfo.worldY,
       centerX,
       centerY,
+      pathD: this.buildAnchorPath(line, endpoint, clipInfo, targetObject) ?? undefined,
     };
   }
 
@@ -553,82 +568,380 @@ export class KritzelAnchorManager {
       return line.d;
     }
 
-    let startX = line.startX;
-    let startY = line.startY;
-    let endX = line.endX;
-    let endY = line.endY;
-
-    // Clip start point if anchored
-    if (line.startAnchor) {
-      const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === line.startAnchor.objectId);
-      if (targetObject) {
-        const endWorld = this.lineLocalToWorld(line, line.endX, line.endY);
-        const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
-          endWorld,
-          { x: targetObject.centerX, y: targetObject.centerY },
-          targetObject.rotatedPolygon
-        );
-        if (edgeIntersection) {
-          const localEdge = this.lineWorldToLocal(line, edgeIntersection.x, edgeIntersection.y);
-          startX = localEdge.x;
-          startY = localEdge.y;
-
-          // If start arrow is present, offset the start point along the line direction
-          if (line.hasStartArrow) {
-            const arrowOffset = line.getArrowSize('start');
-            const dx = line.endX - startX;
-            const dy = line.endY - startY;
-            const length = Math.sqrt(dx * dx + dy * dy);
-            if (length > arrowOffset) {
-              startX += (dx / length) * arrowOffset;
-              startY += (dy / length) * arrowOffset;
-            }
-          }
-        }
-      }
-    }
-
-    // Clip end point if anchored
-    if (line.endAnchor) {
-      const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === line.endAnchor.objectId);
-      if (targetObject) {
-        const startWorld = this.lineLocalToWorld(line, line.startX, line.startY);
-        const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
-          startWorld,
-          { x: targetObject.centerX, y: targetObject.centerY },
-          targetObject.rotatedPolygon
-        );
-        if (edgeIntersection) {
-          const localEdge = this.lineWorldToLocal(line, edgeIntersection.x, edgeIntersection.y);
-          endX = localEdge.x;
-          endY = localEdge.y;
-
-          // If end arrow is present, offset the end point along the line direction
-          if (line.hasEndArrow) {
-            const arrowOffset = line.getArrowSize('end');
-            const dx = line.startX - endX;
-            const dy = line.startY - endY;
-            const length = Math.sqrt(dx * dx + dy * dy);
-            if (length > arrowOffset) {
-              endX += (dx / length) * arrowOffset;
-              endY += (dy / length) * arrowOffset;
-            }
-          }
-        }
-      }
-    }
+    const startTarget = line.startAnchor ? this.findAnchorTarget(line, 'start') : null;
+    const endTarget = line.endAnchor ? this.findAnchorTarget(line, 'end') : null;
+    const startClip = startTarget ? this.computeAnchorClipInfo(line, 'start', startTarget) : null;
+    const endClip = endTarget ? this.computeAnchorClipInfo(line, 'end', endTarget) : null;
 
     // Apply offset if requested (for selection UI which uses coordinates relative to 0,0)
     const offsetX = offsetByViewBox ? line.x : 0;
     const offsetY = offsetByViewBox ? line.y : 0;
 
-    // Generate the clipped path
+    // Handle curved lines by splitting the quadratic at the clipped parameters
     if (line.controlX !== undefined && line.controlY !== undefined) {
-      // For curved lines, we need to adjust the control point proportionally
-      // This is a simplification - for perfect curves we'd need to split the bezier
-      return `M ${startX - offsetX} ${startY - offsetY} Q ${line.controlX - offsetX} ${line.controlY - offsetY} ${endX - offsetX} ${endY - offsetY}`;
+      let startT = startClip?.t ?? 0;
+      let endT = endClip?.t ?? 1;
+
+
+      // Adjust for start arrow
+      if (startClip && line.hasStartArrow) {
+        const arrowOffset = line.getArrowSize('start');
+        const speed = this.evaluateDerivativeSpeedAtT(line, startT);
+        if (speed > 0) {
+          startT += arrowOffset / speed;
+        }
+      }
+
+      // Adjust for end arrow
+      if (endClip && line.hasEndArrow) {
+        const arrowOffset = line.getArrowSize('end');
+        const speed = this.evaluateDerivativeSpeedAtT(line, endT);
+        if (speed > 0) {
+          endT -= arrowOffset / speed;
+        }
+      }
+
+      // Ensure valid range
+      if (startT < 0) startT = 0;
+      if (endT > 1) endT = 1;
+
+      // Handle overlap or invalid range
+      if (endT <= startT) {
+        // If the arrow adjustment caused them to cross, or they were already crossed/close
+        // We can either effectively hide the line, or just clamp them.
+        // If we clamp them to the midpoint, the line becomes a point.
+        // Let's ensure a minimal gap or just set them equal.
+        const mid = (startT + endT) / 2;
+        startT = mid;
+        endT = mid;
+      }
+
+      const segment = this.extractQuadraticSegment(
+        { x: line.startX, y: line.startY },
+        { x: line.controlX, y: line.controlY },
+        { x: line.endX, y: line.endY },
+        startT,
+        endT
+      );
+
+      return `M ${segment.start.x - offsetX} ${segment.start.y - offsetY} Q ${segment.control.x - offsetX} ${segment.control.y - offsetY} ${segment.end.x - offsetX} ${segment.end.y - offsetY}`;
     }
+
+    // Straight lines fall back to linear interpolation
+    let startX = startClip?.localX ?? line.startX;
+    let startY = startClip?.localY ?? line.startY;
+    let endX = endClip?.localX ?? line.endX;
+    let endY = endClip?.localY ?? line.endY;
+
+    if (startClip && line.hasStartArrow) {
+      const arrowOffset = line.getArrowSize('start');
+      const dx = endX - startX;
+      const dy = endY - startY;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      if (length > arrowOffset) {
+        startX += (dx / length) * arrowOffset;
+        startY += (dy / length) * arrowOffset;
+      }
+    }
+
+    if (endClip && line.hasEndArrow) {
+      const arrowOffset = line.getArrowSize('end');
+      const dx = startX - endX;
+      const dy = startY - endY;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      if (length > arrowOffset) {
+        endX += (dx / length) * arrowOffset;
+        endY += (dy / length) * arrowOffset;
+      }
+    }
+
     return `M ${startX - offsetX} ${startY - offsetY} L ${endX - offsetX} ${endY - offsetY}`;
+  }
+
+  private computeAnchorClipInfo(line: KritzelLine, endpoint: 'start' | 'end', targetObject: KritzelBaseObject<Element>): AnchorClipInfo | null {
+    if (line.controlX !== undefined && line.controlY !== undefined) {
+      return this.computeCurvedClipInfo(line, endpoint, targetObject);
+    }
+    return this.computeStraightClipInfo(line, endpoint, targetObject);
+  }
+
+  private computeStraightClipInfo(line: KritzelLine, endpoint: 'start' | 'end', targetObject: KritzelBaseObject<Element>): AnchorClipInfo | null {
+    const reference = endpoint === 'start'
+      ? this.lineLocalToWorld(line, line.endX, line.endY)
+      : this.lineLocalToWorld(line, line.startX, line.startY);
+
+    const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+      reference,
+      { x: targetObject.centerX, y: targetObject.centerY },
+      targetObject.rotatedPolygon
+    );
+
+    if (!edgeIntersection) {
+      return null;
+    }
+
+    const localEdge = this.lineWorldToLocal(line, edgeIntersection.x, edgeIntersection.y);
+    const totalLength = Math.sqrt(
+      Math.pow(line.endX - line.startX, 2) +
+      Math.pow(line.endY - line.startY, 2)
+    );
+    const distanceFromStart = Math.sqrt(
+      Math.pow(localEdge.x - line.startX, 2) +
+      Math.pow(localEdge.y - line.startY, 2)
+    );
+    const t = totalLength > 0 ? distanceFromStart / totalLength : endpoint === 'start' ? 0 : 1;
+
+    return {
+      localX: localEdge.x,
+      localY: localEdge.y,
+      worldX: edgeIntersection.x,
+      worldY: edgeIntersection.y,
+      t,
+    };
+  }
+
+  private computeCurvedClipInfo(line: KritzelLine, endpoint: 'start' | 'end', targetObject: KritzelBaseObject<Element>): AnchorClipInfo | null {
+    const polygonPoints = this.getPolygonPoints(targetObject.rotatedPolygon);
+    const exitPoint = this.findCurveExitPoint(line, endpoint, polygonPoints);
+    if (exitPoint) {
+      return exitPoint;
+    }
+
+    const reference = endpoint === 'start'
+      ? this.lineLocalToWorld(line, line.endX, line.endY)
+      : this.lineLocalToWorld(line, line.startX, line.startY);
+    const fallbackIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+      reference,
+      { x: targetObject.centerX, y: targetObject.centerY },
+      targetObject.rotatedPolygon
+    );
+
+    if (!fallbackIntersection) {
+      return null;
+    }
+
+    const localEdge = this.lineWorldToLocal(line, fallbackIntersection.x, fallbackIntersection.y);
+    const approxT = this.approximateParameterForWorldPoint(line, fallbackIntersection);
+    return {
+      localX: localEdge.x,
+      localY: localEdge.y,
+      worldX: fallbackIntersection.x,
+      worldY: fallbackIntersection.y,
+      t: approxT,
+    };
+  }
+
+  private findCurveExitPoint(line: KritzelLine, endpoint: 'start' | 'end', polygonPoints: KritzelPoint[]): AnchorClipInfo | null {
+    const steps = 64;
+    const initialT = endpoint === 'start' ? 0 : 1;
+    const initialSample = this.evaluateLineAtT(line, initialT);
+    let prevInside = KritzelGeometryHelper.isPointInPolygon({ x: initialSample.worldX, y: initialSample.worldY }, polygonPoints);
+    let prevT = initialT;
+
+    for (let i = 1; i <= steps; i++) {
+      const t = endpoint === 'start' ? i / steps : 1 - i / steps;
+      const sample = this.evaluateLineAtT(line, t);
+      const inside = KritzelGeometryHelper.isPointInPolygon({ x: sample.worldX, y: sample.worldY }, polygonPoints);
+
+      if (prevInside && !inside) {
+        const refinedT = this.refineCurveExitParameter(line, polygonPoints, prevT, t);
+        const refinedPoint = this.evaluateLineAtT(line, refinedT);
+        return {
+          localX: refinedPoint.localX,
+          localY: refinedPoint.localY,
+          worldX: refinedPoint.worldX,
+          worldY: refinedPoint.worldY,
+          t: refinedT,
+        };
+      }
+
+      prevInside = inside;
+      prevT = t;
+    }
+
+    return null;
+  }
+
+  private refineCurveExitParameter(line: KritzelLine, polygonPoints: KritzelPoint[], insideT: number, outsideT: number): number {
+    let tInside = insideT;
+    let tOutside = outsideT;
+
+    for (let i = 0; i < 8; i++) {
+      const mid = (tInside + tOutside) / 2;
+      const sample = this.evaluateLineAtT(line, mid);
+      const inside = KritzelGeometryHelper.isPointInPolygon({ x: sample.worldX, y: sample.worldY }, polygonPoints);
+      if (inside) {
+        tInside = mid;
+      } else {
+        tOutside = mid;
+      }
+    }
+
+    return (tInside + tOutside) / 2;
+  }
+
+  private approximateParameterForWorldPoint(line: KritzelLine, target: { x: number; y: number }): number {
+    const steps = 80;
+    let bestT = 0;
+    let bestDistance = Infinity;
+
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const sample = this.evaluateLineAtT(line, t);
+      const distance = Math.hypot(sample.worldX - target.x, sample.worldY - target.y);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestT = t;
+      }
+    }
+
+    return bestT;
+  }
+
+  private evaluateLineAtT(
+    line: KritzelLine,
+    t: number
+  ): { t: number; localX: number; localY: number; worldX: number; worldY: number } {
+    const clampedT = Math.max(0, Math.min(1, t));
+    let localX: number;
+    let localY: number;
+
+    if (line.controlX !== undefined && line.controlY !== undefined) {
+      const oneMinusT = 1 - clampedT;
+      localX = oneMinusT * oneMinusT * line.startX + 2 * oneMinusT * clampedT * line.controlX + clampedT * clampedT * line.endX;
+      localY = oneMinusT * oneMinusT * line.startY + 2 * oneMinusT * clampedT * line.controlY + clampedT * clampedT * line.endY;
+    } else {
+      localX = line.startX + (line.endX - line.startX) * clampedT;
+      localY = line.startY + (line.endY - line.startY) * clampedT;
+    }
+
+    const world = this.lineLocalToWorld(line, localX, localY);
+    return { t: clampedT, localX, localY, worldX: world.x, worldY: world.y };
+  }
+
+  private evaluateDerivativeSpeedAtT(line: KritzelLine, t: number): number {
+    const clampedT = Math.max(0, Math.min(1, t));
+
+    if (line.controlX !== undefined && line.controlY !== undefined) {
+      // Quadratic Bezier derivative: B'(t) = 2(1-t)(P1-P0) + 2t(P2-P1)
+      const p0x = line.startX;
+      const p0y = line.startY;
+      const p1x = line.controlX;
+      const p1y = line.controlY;
+      const p2x = line.endX;
+      const p2y = line.endY;
+
+      const dx = 2 * (1 - clampedT) * (p1x - p0x) + 2 * clampedT * (p2x - p1x);
+      const dy = 2 * (1 - clampedT) * (p1y - p0y) + 2 * clampedT * (p2y - p1y);
+
+      return Math.sqrt(dx * dx + dy * dy);
+    } else {
+      // Straight line speed is constant length
+      const dx = line.endX - line.startX;
+      const dy = line.endY - line.startY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+  }
+
+  private extractQuadraticSegment(
+    start: QuadraticPoint,
+    control: QuadraticPoint,
+    end: QuadraticPoint,
+    tStart: number,
+    tEnd: number
+  ): QuadraticSegment {
+    let normalizedStart = Math.max(0, Math.min(1, tStart));
+    let normalizedEnd = Math.max(0, Math.min(1, tEnd));
+
+    if (normalizedEnd < normalizedStart) {
+      const swap = normalizedStart;
+      normalizedStart = normalizedEnd;
+      normalizedEnd = swap;
+    }
+
+    let segment: QuadraticSegment = { start, control, end };
+
+    if (normalizedStart > 0) {
+      const split = this.splitQuadraticSegment(segment, normalizedStart);
+      segment = split.right;
+      const remainingRange = 1 - normalizedStart;
+      normalizedEnd = remainingRange > 0 ? (normalizedEnd - normalizedStart) / remainingRange : 1;
+    }
+
+    if (normalizedEnd < 1) {
+      const split = this.splitQuadraticSegment(segment, normalizedEnd);
+      segment = split.left;
+    }
+
+    return segment;
+  }
+
+  private splitQuadraticSegment(segment: QuadraticSegment, t: number): { left: QuadraticSegment; right: QuadraticSegment } {
+    const clampedT = Math.max(0, Math.min(1, t));
+    const p0 = segment.start;
+    const p1 = segment.control;
+    const p2 = segment.end;
+
+    const p01 = this.lerpPoint(p0, p1, clampedT);
+    const p12 = this.lerpPoint(p1, p2, clampedT);
+    const p012 = this.lerpPoint(p01, p12, clampedT);
+
+    return {
+      left: { start: p0, control: p01, end: p012 },
+      right: { start: p012, control: p12, end: p2 },
+    };
+  }
+
+  private lerpPoint(a: QuadraticPoint, b: QuadraticPoint, t: number): QuadraticPoint {
+    return {
+      x: a.x + (b.x - a.x) * t,
+      y: a.y + (b.y - a.y) * t,
+    };
+  }
+
+  private buildAnchorPath(
+    line: KritzelLine,
+    endpoint: 'start' | 'end',
+    clipInfo: AnchorClipInfo,
+    targetObject: KritzelBaseObject<Element>
+  ): string | null {
+    if (line.controlX === undefined || line.controlY === undefined || clipInfo.t === undefined) {
+      return `M ${clipInfo.worldX} ${clipInfo.worldY} L ${targetObject.centerX} ${targetObject.centerY}`;
+    }
+
+    const startT = endpoint === 'start' ? 0 : clipInfo.t;
+    const endT = endpoint === 'start' ? clipInfo.t : 1;
+
+    if (endT <= startT) {
+      return `M ${clipInfo.worldX} ${clipInfo.worldY} L ${targetObject.centerX} ${targetObject.centerY}`;
+    }
+
+    const segment = this.extractQuadraticSegment(
+      { x: line.startX, y: line.startY },
+      { x: line.controlX, y: line.controlY },
+      { x: line.endX, y: line.endY },
+      startT,
+      endT
+    );
+
+    const reverse = endpoint === 'start';
+    return this.buildWorldQuadraticPath(line, segment, reverse);
+  }
+
+  private buildWorldQuadraticPath(line: KritzelLine, segment: QuadraticSegment, reverse: boolean = false): string {
+    const startPoint = reverse ? segment.end : segment.start;
+    const endPoint = reverse ? segment.start : segment.end;
+    const controlPoint = segment.control;
+
+    const startWorld = this.lineLocalToWorld(line, startPoint.x, startPoint.y);
+    const controlWorld = this.lineLocalToWorld(line, controlPoint.x, controlPoint.y);
+    const endWorld = this.lineLocalToWorld(line, endPoint.x, endPoint.y);
+
+    return `M ${startWorld.x} ${startWorld.y} Q ${controlWorld.x} ${controlWorld.y} ${endWorld.x} ${endWorld.y}`;
+  }
+
+  private getPolygonPoints(polygon: KritzelPolygon): KritzelPoint[] {
+    return [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
   }
 
   /**
