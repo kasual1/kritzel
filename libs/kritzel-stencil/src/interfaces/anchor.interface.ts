@@ -126,5 +126,11 @@ export interface SnapIndicatorRenderData {
   arrowStyle?: 'triangle' | 'open' | 'diamond' | 'circle';
   /** Arrow fill color */
   arrowFill?: string;
+  /** The X coordinate for the end of the solid line part (accounting for arrow offset) */
+  solidLineEndX?: number;
+  /** The Y coordinate for the end of the solid line part (accounting for arrow offset) */
+  solidLineEndY?: number;
+  /** SVG points string for the arrow head at the edge */
+  arrowPoints?: string;
 }
 
