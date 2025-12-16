@@ -1,6 +1,7 @@
 import { KritzelImage } from "../objects/image.class";
 import { KritzelLine } from "../objects/line.class";
 import { KritzelPath } from "../objects/path.class";
+import { KritzelShape } from "../objects/shape.class";
 import { KritzelSelectionGroup } from "../objects/selection-group.class";
 import { KritzelText } from "../objects/text.class";
 import { KritzelBrushTool } from "../tools/brush-tool.class";
@@ -9,6 +10,7 @@ import { KritzelImageTool } from "../tools/image-tool.class";
 import { KritzelLineTool } from "../tools/line-tool.class";
 import { KritzelSelectionTool } from "../tools/selection-tool.class";
 import { KritzelTextTool } from "../tools/text-tool.class";
+import { KritzelShapeTool } from "../tools/shape-tool.class";
 import { KritzelCustomElement } from "../objects/custom-element.class";
 import { KritzelCore } from "./core.class";
 import { KritzelWorkspace } from "../..";
@@ -20,12 +22,12 @@ export class KritzelReviver {
   constructor(core: KritzelCore) {
     this._core = core;
   }
-    
+
   revive<T>(obj: any): T {
     if (obj && typeof obj === 'object') {
       if (obj.__class__) {
         let revivedObj;
-        
+
         switch (obj.__class__) {
           case 'KritzelPath':
             revivedObj = KritzelPath.create(this._core).deserialize(obj);
@@ -35,6 +37,17 @@ export class KritzelReviver {
             break;
           case 'KritzelText':
             revivedObj = KritzelText.create(this._core, obj.fontSize, obj.fontFamily).deserialize(obj);
+            break;
+          case 'KritzelShape':
+            revivedObj = KritzelShape.create(this._core, {
+              shapeType: obj.shapeType,
+              fillColor: obj.fillColor,
+              strokeColor: obj.strokeColor,
+              strokeWidth: obj.strokeWidth,
+              fontSize: obj.fontSize,
+              fontFamily: obj.fontFamily,
+              fontColor: obj.fontColor,
+            }).deserialize(obj);
             break;
           case 'KritzelImage':
             revivedObj = KritzelImage.create(this._core).deserialize(obj);
@@ -65,6 +78,9 @@ export class KritzelReviver {
             break;
           case 'KritzelLineTool':
             revivedObj = new KritzelLineTool(this._core);
+            break;
+          case 'KritzelShapeTool':
+            revivedObj = new KritzelShapeTool(this._core);
             break;
 
           default:
