@@ -20,7 +20,7 @@
   padding: 8px 4px;
   border: none;
   background: none;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   color: #333333;
   -webkit-tap-highlight-color: transparent;
   border-radius: var(--kritzel-utility-panel-button-border-radius, 8px);

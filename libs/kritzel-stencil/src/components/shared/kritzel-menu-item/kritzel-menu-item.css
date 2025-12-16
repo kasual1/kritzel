@@ -13,7 +13,6 @@
   font-size: var(--kritzel-menu-item-font-size, 14px);
   color: var(--kritzel-menu-item-color, #333333);
   border-radius: var(--kritzel-menu-item-border-radius, 12px);
-  cursor: default;
 }
 
 :host(:hover) .menu-item-overlay,
@@ -125,7 +124,7 @@ kritzel-icon {
   padding: 4px;
   border-radius: 8px;
   border: none;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   display: flex;
   align-items: center;
   justify-content: center;

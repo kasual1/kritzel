@@ -10,6 +10,7 @@
 | Property                 | Attribute   | Description | Type                | Default              |
 | ------------------------ | ----------- | ----------- | ------------------- | -------------------- |
 | `activeTool`             | --          |             | `KritzelTool`       | `undefined`          |
+| `cursorTarget`           | --          |             | `HTMLElement`       | `undefined`          |
 | `globalContextMenuItems` | --          |             | `ContextMenuItem[]` | `undefined`          |
 | `objectContextMenuItems` | --          |             | `ContextMenuItem[]` | `undefined`          |
 | `scaleMax`               | `scale-max` |             | `number`            | `ABSOLUTE_SCALE_MAX` |

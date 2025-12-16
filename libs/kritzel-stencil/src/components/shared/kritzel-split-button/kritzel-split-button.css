@@ -27,7 +27,7 @@ button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   text-align: center;
   display: flex;
   align-items: center;

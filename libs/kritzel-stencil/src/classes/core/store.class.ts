@@ -3,6 +3,7 @@ import { KritzelEngineState } from '../../interfaces/engine-state.interface';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelText } from '../objects/text.class';
 import { KritzelPath } from '../objects/path.class';
+import { KritzelLine } from '../objects/line.class';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../..';
@@ -51,6 +52,11 @@ export class KritzelStore {
     return drawingPaths.length > 0 ? (drawingPaths[0] as KritzelPath) : null;
   }
 
+  get currentLine(): KritzelLine | null {
+    const drawingLines = this._state.objects.filter(o => o instanceof KritzelLine && (o as KritzelLine).isCompleted === false);
+    return drawingLines.length > 0 ? (drawingLines[0] as KritzelLine) : null;
+  }
+
   get offsetX() {
     return this._state.host.getBoundingClientRect().left;
   }
@@ -61,6 +67,10 @@ export class KritzelStore {
 
   get isDisabled() {
     return this._state.isEnabled === false || this._state.isReady === false || this._state.activeWorkspace === null;
+  }
+
+  get isPointerDown() {
+    return this._state.pointers.size > 0;
   }
 
   constructor(state: KritzelEngineState) {

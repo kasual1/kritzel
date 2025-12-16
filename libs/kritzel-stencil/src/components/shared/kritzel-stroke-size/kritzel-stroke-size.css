@@ -13,7 +13,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  cursor: pointer;
+  cursor: var(--kritzel-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
 }

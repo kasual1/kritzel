@@ -64,4 +64,55 @@ export class KritzelGeometryHelper {
 	
 		return t >= 0 && t <= 1 && u >= 0 && u <= 1;
 	  }
+
+	  /**
+	   * Finds the intersection point between a line segment and a line segment.
+	   * Returns the intersection point or null if no intersection.
+	   */
+	  static getLineIntersectionPoint(p1a: KritzelPoint, p1b: KritzelPoint, p2a: KritzelPoint, p2b: KritzelPoint): KritzelPoint | null {
+		const det = (p1b.x - p1a.x) * (p2b.y - p2a.y) - (p1b.y - p1a.y) * (p2b.x - p2a.x);
+		if (det === 0) {
+		  return null; // Lines are parallel
+		}
+	
+		const t = ((p2a.x - p1a.x) * (p2b.y - p2a.y) - (p2a.y - p1a.y) * (p2b.x - p2a.x)) / det;
+		const u = -((p1a.x - p2a.x) * (p1b.y - p1a.y) - (p1a.y - p2a.y) * (p1b.x - p1a.x)) / det;
+	
+		if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+		  return {
+			x: p1a.x + t * (p1b.x - p1a.x),
+			y: p1a.y + t * (p1b.y - p1a.y)
+		  };
+		}
+		return null;
+	  }
+
+	  /**
+	   * Finds the closest intersection point between a line segment (from lineStart to lineEnd)
+	   * and a polygon. Returns the intersection point closest to lineStart, or null if no intersection.
+	   */
+	  static getLinePolygonIntersection(lineStart: KritzelPoint, lineEnd: KritzelPoint, polygon: KritzelPolygon): KritzelPoint | null {
+		const points = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
+		let closestIntersection: KritzelPoint | null = null;
+		let closestDistance = Infinity;
+
+		for (let i = 0; i < points.length; i++) {
+		  const edgeStart = points[i];
+		  const edgeEnd = points[(i + 1) % points.length];
+		  
+		  const intersection = this.getLineIntersectionPoint(lineStart, lineEnd, edgeStart, edgeEnd);
+		  if (intersection) {
+			const distance = Math.sqrt(
+			  Math.pow(intersection.x - lineStart.x, 2) + 
+			  Math.pow(intersection.y - lineStart.y, 2)
+			);
+			if (distance < closestDistance) {
+			  closestDistance = distance;
+			  closestIntersection = intersection;
+			}
+		  }
+		}
+
+		return closestIntersection;
+	  }
 }
