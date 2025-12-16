@@ -84,21 +84,43 @@
   background: none;
   cursor: var(--kritzel-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
-  border-radius: var(--kritzel-controls-control-border-radius, 12px) 0 0 var(--kritzel-controls-control-border-radius, 12px);
+  border-radius: var(--kritzel-controls-control-border-radius, 12px);
   color: inherit;
+}
+
+/* When selected, main button only has left-rounded corners (dropdown appears on right) */
+.kritzel-control-split.selected .kritzel-control-main {
+  border-radius: var(--kritzel-controls-control-border-radius, 12px) 0 0 var(--kritzel-controls-control-border-radius, 12px);
 }
 
 .kritzel-control-split .kritzel-control-dropdown {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 4px 4px 4px 2px;
+  align-self: stretch;
   border: none;
   background: none;
   cursor: var(--kritzel-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
   border-radius: 0 var(--kritzel-controls-control-border-radius, 12px) var(--kritzel-controls-control-border-radius, 12px) 0;
   color: inherit;
+  
+  /* Hidden state - collapsed with no visibility */
+  width: 0;
+  padding: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  
+  /* Smooth transition */
+  transition: width 0.15s ease-out, padding 0.15s ease-out, opacity 0.15s ease-out;
+}
+
+.kritzel-control-split .kritzel-control-dropdown.visible {
+  width: auto;
+  padding: 0 6px;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .kritzel-control-split .kritzel-control-main:focus,

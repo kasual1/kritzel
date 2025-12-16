@@ -188,7 +188,9 @@ export class KritzelControls {
   }
 
   render() {
-    const hasNoConfig = this.activeControl?.config === undefined || this.activeControl?.config === null;
+    const hasConfigUI = this.activeControl?.tool instanceof KritzelBrushTool || 
+                        this.activeControl?.tool instanceof KritzelTextTool;
+    const hasNoConfig = !hasConfigUI;
 
     return (
       <Host
@@ -235,10 +237,14 @@ export class KritzelControls {
                       <kritzel-icon name={selectedSubOption?.icon || control.icon}></kritzel-icon>
                     </button>
                     <button
-                      class="kritzel-control-dropdown"
+                      class={{
+                        'kritzel-control-dropdown': true,
+                        'visible': isActive,
+                      }}
                       onClick={(e) => this.toggleSubMenu(e, control)}
                       aria-label="Select shape type"
                       aria-expanded={isSubMenuOpen ? 'true' : 'false'}
+                      tabIndex={isActive ? 0 : -1}
                     >
                       <kritzel-icon name="chevron-down" size={12}></kritzel-icon>
                     </button>
