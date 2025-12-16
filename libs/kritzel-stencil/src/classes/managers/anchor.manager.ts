@@ -629,8 +629,13 @@ export class KritzelAnchorManager {
    * @param offsetByViewBox If true, subtracts line.x and line.y from coordinates (for selection UI)
    */
   computeClippedLinePath(line: KritzelLine, offsetByViewBox: boolean = false): string {
-    // If no anchors, return original path (with or without offset)
-    if (!line.startAnchor && !line.endAnchor) {
+    // Check for snap candidate first - this applies during drag operations even without anchors
+    const snapCandidate = this.getSnapCandidate();
+    const selectionGroup = this._core.store.selectionGroup;
+    const hasActiveSnapCandidate = snapCandidate && selectionGroup && selectionGroup.objects.length === 1 && selectionGroup.objects[0].id === line.id;
+
+    // If no anchors and no active snap candidate, return original path (with or without offset)
+    if (!line.startAnchor && !line.endAnchor && !hasActiveSnapCandidate) {
       if (offsetByViewBox) {
         if (line.controlX !== undefined && line.controlY !== undefined) {
           return `M ${line.startX - line.x} ${line.startY - line.y} Q ${line.controlX - line.x} ${line.controlY - line.y} ${line.endX - line.x} ${line.endY - line.y}`;
@@ -646,9 +651,7 @@ export class KritzelAnchorManager {
     let endClip = endTarget ? this.computeAnchorClipInfo(line, 'end', endTarget) : null;
 
     // Apply snap candidate if present and matches this line
-    const snapCandidate = this.getSnapCandidate();
-    const selectionGroup = this._core.store.selectionGroup;
-    if (snapCandidate && selectionGroup && selectionGroup.objects.length === 1 && selectionGroup.objects[0].id === line.id) {
+    if (hasActiveSnapCandidate) {
       if (snapCandidate.edgeX !== undefined && snapCandidate.edgeY !== undefined) {
         const localEdge = this.lineWorldToLocal(line, snapCandidate.edgeX, snapCandidate.edgeY);
         const clipInfo: AnchorClipInfo = {
