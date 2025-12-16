@@ -66,6 +66,110 @@
   background-color: var(--kritzel-controls-divider-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
+/* Split-button control styles */
+.kritzel-control-split {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--kritzel-controls-control-border-radius, 12px);
+  color: var(--kritzel-controls-control-color, #000000);
+}
+
+.kritzel-control-split .kritzel-control-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--kritzel-controls-control-padding, 8px);
+  border: none;
+  background: none;
+  cursor: var(--kritzel-pointer-cursor, pointer);
+  -webkit-tap-highlight-color: transparent;
+  border-radius: var(--kritzel-controls-control-border-radius, 12px) 0 0 var(--kritzel-controls-control-border-radius, 12px);
+  color: inherit;
+}
+
+.kritzel-control-split .kritzel-control-dropdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 4px 4px 2px;
+  border: none;
+  background: none;
+  cursor: var(--kritzel-pointer-cursor, pointer);
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 0 var(--kritzel-controls-control-border-radius, 12px) var(--kritzel-controls-control-border-radius, 12px) 0;
+  color: inherit;
+}
+
+.kritzel-control-split .kritzel-control-main:focus,
+.kritzel-control-split .kritzel-control-main:hover,
+.kritzel-control-split .kritzel-control-dropdown:focus,
+.kritzel-control-split .kritzel-control-dropdown:hover {
+  background-color: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.kritzel-control-split .kritzel-control-main:active,
+.kritzel-control-split .kritzel-control-dropdown:active {
+  background-color: var(--kritzel-controls-control-active-background-color, hsl(0, 0%, 0%, 8.6%));
+}
+
+.kritzel-control-split.selected {
+  background-color: var(--kritzel-controls-control-selected-background-color, #007AFF) !important;
+  color: var(--kritzel-controls-control-selected-color, #ffffff) !important;
+}
+
+.kritzel-control-split.selected .kritzel-control-main:hover,
+.kritzel-control-split.selected .kritzel-control-dropdown:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Submenu styles */
+.kritzel-submenu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  background: var(--kritzel-controls-background-color, #ffffff);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ebebeb;
+  z-index: 10001;
+  min-width: 140px;
+}
+
+.kritzel-submenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  cursor: var(--kritzel-pointer-cursor, pointer);
+  border-radius: 8px;
+  color: var(--kritzel-controls-control-color, #000000);
+  font-size: 14px;
+  text-align: left;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kritzel-submenu-item:hover {
+  background-color: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.kritzel-submenu-item.active {
+  background-color: var(--kritzel-controls-control-selected-background-color, #007AFF);
+  color: var(--kritzel-controls-control-selected-color, #ffffff);
+}
+
+.kritzel-submenu-item.active:hover {
+  background-color: var(--kritzel-controls-control-selected-background-color, #007AFF);
+}
+
+
 .kritzel-config-container {
   position: relative;
   display: flex;
