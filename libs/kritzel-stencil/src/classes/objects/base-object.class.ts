@@ -139,11 +139,11 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   get centerX(): number {
-    return this.translateX + this.totalWidth / 2;
+    return this.translateX + this.totalWidth / 2 / this.scale;
   }
 
   get centerY(): number {
-    return this.translateY + this.totalHeight / 2;
+    return this.translateY + this.totalHeight / 2 / this.scale;
   }
 
   constructor() {
@@ -241,6 +241,9 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.translateY = y;
 
     this._core.store.state.objects.update(this);
+
+    // Update any lines that are anchored to this object (after position is updated)
+    this._core.anchorManager.updateAnchorsForObject(this.id);
   }
 
   rotate(value: number): void {

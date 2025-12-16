@@ -5,13 +5,19 @@ import { KritzelWorkspace } from "../classes/core/workspace.class";
 import { KritzelHandleType } from "../enums/handle-type.enum";
 import { ContextMenuItem } from "./context-menu-item.interface";
 import { KritzelDebugInfo } from "./debug-info.interface";
+import { LineHandleType } from "../classes/handlers/line-handle.handler";
+import { SnapCandidate } from "./anchor.interface";
 
 export interface KritzelEngineState {
   activeWorkspace: KritzelWorkspace;
   activeTool: KritzelBaseTool;
   copiedObjects?: KritzelBaseObject<any>[];
+  /** Maps copied object IDs to their original source object IDs (for anchor remapping during paste) */
+  copiedObjectIdMapping?: Map<string, string>;
   objects: KritzelObjectMap<KritzelBaseObject<Element>>;
+  snapCandidate?: SnapCandidate | null;
   resizeHandleType: KritzelHandleType;
+  lineHandleType: LineHandleType;
   hasViewportChanged: boolean;
   hasObjectsChanged: boolean;
   isReady: boolean;
@@ -25,6 +31,8 @@ export interface KritzelEngineState {
   isRotating: boolean;
   isRotationHandleHovered: boolean;
   isRotationHandleSelected: boolean;
+  isLineHandleSelected: boolean;
+  isLineHandleDragging: boolean;
   isDragging: boolean;
   isDrawing: boolean;
   isErasing: boolean;
