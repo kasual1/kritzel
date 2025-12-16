@@ -104,4 +104,78 @@ describe('KritzelGeometryHelper', () => {
         expect(KritzelGeometryHelper.doPolygonsIntersect(poly1, poly2)).toBe(true);
     });
   });
+
+  describe('getLineIntersectionPoint', () => {
+    it('should return intersection point for crossing lines', () => {
+      const p1a = { x: 0, y: 0 };
+      const p1b = { x: 10, y: 10 };
+      const p2a = { x: 0, y: 10 };
+      const p2b = { x: 10, y: 0 };
+      const result = KritzelGeometryHelper.getLineIntersectionPoint(p1a, p1b, p2a, p2b);
+      expect(result).not.toBeNull();
+      expect(result?.x).toBeCloseTo(5);
+      expect(result?.y).toBeCloseTo(5);
+    });
+
+    it('should return null for non-intersecting lines', () => {
+      const p1a = { x: 0, y: 0 };
+      const p1b = { x: 1, y: 1 };
+      const p2a = { x: 2, y: 2 };
+      const p2b = { x: 3, y: 3 };
+      expect(KritzelGeometryHelper.getLineIntersectionPoint(p1a, p1b, p2a, p2b)).toBeNull();
+    });
+
+    it('should return null for parallel lines', () => {
+      const p1a = { x: 0, y: 0 };
+      const p1b = { x: 10, y: 0 };
+      const p2a = { x: 0, y: 5 };
+      const p2b = { x: 10, y: 5 };
+      expect(KritzelGeometryHelper.getLineIntersectionPoint(p1a, p1b, p2a, p2b)).toBeNull();
+    });
+  });
+
+  describe('getLinePolygonIntersection', () => {
+    const square: KritzelPolygon = {
+      topLeft: { x: 0, y: 0 },
+      topRight: { x: 10, y: 0 },
+      bottomRight: { x: 10, y: 10 },
+      bottomLeft: { x: 0, y: 10 },
+    };
+
+    it('should return intersection point when line crosses polygon', () => {
+      const lineStart = { x: -5, y: 5 };
+      const lineEnd = { x: 5, y: 5 };
+      const result = KritzelGeometryHelper.getLinePolygonIntersection(lineStart, lineEnd, square);
+      expect(result).not.toBeNull();
+      expect(result?.x).toBeCloseTo(0);
+      expect(result?.y).toBeCloseTo(5);
+    });
+
+    it('should return closest intersection when line crosses multiple edges', () => {
+      const lineStart = { x: -5, y: 5 };
+      const lineEnd = { x: 15, y: 5 };
+      const result = KritzelGeometryHelper.getLinePolygonIntersection(lineStart, lineEnd, square);
+      expect(result).not.toBeNull();
+      // Should return the intersection closest to lineStart (left edge at x=0)
+      expect(result?.x).toBeCloseTo(0);
+      expect(result?.y).toBeCloseTo(5);
+    });
+
+    it('should return null when line does not intersect polygon', () => {
+      const lineStart = { x: -5, y: -5 };
+      const lineEnd = { x: -2, y: -2 };
+      const result = KritzelGeometryHelper.getLinePolygonIntersection(lineStart, lineEnd, square);
+      expect(result).toBeNull();
+    });
+
+    it('should find intersection from inside polygon to center', () => {
+      // Line from outside going to center
+      const lineStart = { x: -5, y: 5 };
+      const lineEnd = { x: 5, y: 5 }; // center of square
+      const result = KritzelGeometryHelper.getLinePolygonIntersection(lineStart, lineEnd, square);
+      expect(result).not.toBeNull();
+      expect(result?.x).toBeCloseTo(0);
+      expect(result?.y).toBeCloseTo(5);
+    });
+  });
 });

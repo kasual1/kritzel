@@ -5,18 +5,23 @@ import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelLine } from '../objects/line.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from './workspace.class';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { KritzelAppStateMap } from '../structures/app-state-map.structure';
+import { KritzelAnchorManager } from '../managers/anchor.manager';
+import { KritzelCursorManager } from '../managers/cursor.manager';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
   private readonly _store: KritzelStore;
   private _syncConfig?: KritzelSyncConfig;
   private readonly _appStateMap: KritzelAppStateMap;
+  private readonly _anchorManager: KritzelAnchorManager;
+  private readonly _cursorManager: KritzelCursorManager;
 
   get engine(): KritzelEngine {
     return this._kritzelEngine;
@@ -30,10 +35,20 @@ export class KritzelCore {
     return this._appStateMap;
   }
 
+  get anchorManager(): KritzelAnchorManager {
+    return this._anchorManager;
+  }
+
+  get cursorManager(): KritzelCursorManager {
+    return this._cursorManager;
+  }
+
   constructor(kritzelEngine: KritzelEngine) {
     this._kritzelEngine = kritzelEngine;
     this._store = new KritzelStore(DEFAULT_ENGINE_CONFIG);
     this._appStateMap = new KritzelAppStateMap();
+    this._anchorManager = new KritzelAnchorManager(this);
+    this._cursorManager = new KritzelCursorManager(this);
   }
 
   setSyncConfig(config?: KritzelSyncConfig): void {
@@ -117,6 +132,9 @@ export class KritzelCore {
     await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
     this._store.state.objects = objectsMap;
 
+    // Rebuild anchor index after loading objects
+    this._anchorManager.rebuildIndex();
+
     this.engine.emitObjectsChange();
 
     this.rerender();
@@ -192,6 +210,15 @@ export class KritzelCore {
   }
 
   removeObject(object: KritzelBaseObject<any>): void {
+    // Handle anchor cleanup
+    if (object instanceof KritzelLine) {
+      // If removing a line, clean up its anchor index entries
+      this._anchorManager.handleLineDeleted(object.id);
+    } else {
+      // If removing a non-line object, detach any lines anchored to it
+      this._anchorManager.handleObjectDeleted(object.id);
+    }
+
     object.isMounted = false;
     this._store.state.objects.remove(o => o.id === object.id);
   }
@@ -262,8 +289,19 @@ export class KritzelCore {
   copy() {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
-      // Copy each object and store them in an array
-      this._store.state.copiedObjects = selectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => obj.copy() as KritzelBaseObject<any>);
+      // Copy each object and store them in an array, also track the ID mapping
+      const idMapping = new Map<string, string>();
+      const copiedObjects = selectionGroup.objects
+        .sort((a, b) => a.zIndex - b.zIndex)
+        .map(obj => {
+          const copiedObj = obj.copy() as KritzelBaseObject<any>;
+          // Map: newId -> originalId
+          idMapping.set(copiedObj.id, obj.id);
+          return copiedObj;
+        });
+      
+      this._store.state.copiedObjects = copiedObjects;
+      this._store.state.copiedObjectIdMapping = idMapping;
     }
   }
 
@@ -274,6 +312,7 @@ export class KritzelCore {
     }
 
     const activeWorkspace = this._store.state.activeWorkspace;
+    const originalIdMapping = this._store.state.copiedObjectIdMapping;
 
     // Check if we're pasting from a different workspace
     const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
@@ -311,6 +350,15 @@ export class KritzelCore {
     // Create a new selection group for the pasted objects
     const selectionGroup = KritzelSelectionGroup.create(this);
 
+    // Build a reverse mapping: originalId -> newCopiedObjectId
+    // This is used to remap anchor references from original IDs to the copied object IDs
+    const originalToNewIdMap = new Map<string, string>();
+    if (originalIdMapping) {
+      originalIdMapping.forEach((originalId, copiedId) => {
+        originalToNewIdMap.set(originalId, copiedId);
+      });
+    }
+
     // First add all copied objects to the objectsMap with updated positions
     copiedObjects.forEach((obj, i) => {
       // Update workspace if pasting to a different workspace
@@ -330,6 +378,32 @@ export class KritzelCore {
       // Add to selection group
       selectionGroup.addOrRemove(obj);
     });
+
+    // Update line anchors to point to the newly pasted objects
+    // Only remap if the anchor target was also part of the copied selection
+    copiedObjects.forEach(obj => {
+      if (obj instanceof KritzelLine) {
+        let updated = false;
+
+        if (obj.startAnchor && originalToNewIdMap.has(obj.startAnchor.objectId)) {
+          obj.startAnchor = { objectId: originalToNewIdMap.get(obj.startAnchor.objectId)! };
+          updated = true;
+        }
+
+        if (obj.endAnchor && originalToNewIdMap.has(obj.endAnchor.objectId)) {
+          obj.endAnchor = { objectId: originalToNewIdMap.get(obj.endAnchor.objectId)! };
+          updated = true;
+        }
+
+        // If anchors were updated, rebuild the anchor index and persist the change
+        if (updated) {
+          this._store.state.objects.update(obj);
+        }
+      }
+    });
+
+    // Rebuild anchor index after all anchor updates
+    this._anchorManager.rebuildIndex();
 
     // Mark selection group as selected
     selectionGroup.isSelected = true;
@@ -360,7 +434,18 @@ export class KritzelCore {
     // Update copiedObjects to the newly created objects for potential future pastes
     const newSelectionGroup = this._store.selectionGroup;
     if (newSelectionGroup) {
-      this._store.state.copiedObjects = newSelectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => obj.copy() as KritzelBaseObject<any>);
+      // Create new copies and track the ID mapping for future pastes
+      const newIdMapping = new Map<string, string>();
+      const newCopiedObjects = newSelectionGroup.objects
+        .sort((a, b) => a.zIndex - b.zIndex)
+        .map(obj => {
+          const copiedObj = obj.copy() as KritzelBaseObject<any>;
+          newIdMapping.set(copiedObj.id, obj.id);
+          return copiedObj;
+        });
+      
+      this._store.state.copiedObjects = newCopiedObjects;
+      this._store.state.copiedObjectIdMapping = newIdMapping;
     }
 
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
@@ -491,6 +576,9 @@ export class KritzelCore {
     this._store.state.isSelecting = false;
     this._store.state.isResizeHandleSelected = false;
     this._store.state.isRotationHandleSelected = false;
+    this._store.state.isLineHandleSelected = false;
+    this._store.state.isLineHandleDragging = false;
+    this._store.state.lineHandleType = null;
 
     this.rerender();
   }
@@ -553,6 +641,28 @@ export class KritzelCore {
     return [];
   }
 
+  /**
+   * Get all elements at a pointer position that match a given selector.
+   * Uses elementsFromPoint to find overlapped elements.
+   */
+  getElementsAtPoint(event: PointerEvent, selector: string): Element[] {
+    const shadowRoot = this._store.state.host?.shadowRoot;
+    if (!shadowRoot) return [];
+
+    const elementsAtPoint = shadowRoot.elementsFromPoint(event.clientX, event.clientY);
+    if (!elementsAtPoint || elementsAtPoint.length === 0) return [];
+
+    return elementsAtPoint.filter(el => el.matches(selector));
+  }
+
+  /**
+   * Check if any element at the pointer position matches the given selector.
+   * Useful for detecting hover states on overlapped elements.
+   */
+  isPointerOverElement(event: PointerEvent, selector: string): boolean {
+    return this.getElementsAtPoint(event, selector).length > 0;
+  }
+
   getCanvasPoint(event: PointerEvent): { x: number; y: number } {
     if (!this._store.state.host) {
       return { x: 0, y: 0 };
@@ -576,5 +686,55 @@ export class KritzelCore {
     this.resetActiveText();
     this.clearSelection();
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+  }
+
+  displaySelectionGroupUI(object: KritzelBaseObject<any>): boolean {
+    if (!object.isSelected) {
+      return false;
+    }
+
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup) {
+      // During selection phase (no group yet), hide UI for KritzelLine objects
+      return !(object instanceof KritzelLine);
+    }
+
+    // Show UI if selection contains more than one object
+    if (selectionGroup.objects.length > 1) {
+      return true;
+    }
+
+    // Hide UI if selection contains a single KritzelLine
+    if (selectionGroup.objects.length === 1) {
+      const selectedObject = selectionGroup.objects[0];
+      return !(selectedObject instanceof KritzelLine);
+    }
+
+    return true;
+  }
+
+  displaySelectionLineUI(object: KritzelBaseObject<any>): boolean {
+    // Only show line UI on KritzelLine objects, not on selection groups
+    if (!(object instanceof KritzelLine)) {
+      return false;
+    }
+
+    // During selection phase (no group yet), show line UI if line is selected
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup) {
+      return object.isSelected;
+    }
+
+    if (!selectionGroup.isSelected) {
+      return false;
+    }
+
+    // Show UI only if selection contains exactly one KritzelLine and it's this object
+    if (selectionGroup.objects.length === 1) {
+      const selectedObject = selectionGroup.objects[0];
+      return selectedObject instanceof KritzelLine && selectedObject.id === object.id;
+    }
+
+    return false;
   }
 }

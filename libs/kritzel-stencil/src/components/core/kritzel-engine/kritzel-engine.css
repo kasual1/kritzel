@@ -46,20 +46,6 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   overflow: visible;
 }
 
-.resize-handle-overlay.top-left,
-.resize-handle-overlay.bottom-right {
-  cursor: nwse-resize;
-}
-
-.resize-handle-overlay.top-right,
-.resize-handle-overlay.bottom-left {
-  cursor: nesw-resize;
-}
-
-.rotation-handle-overlay {
-  cursor: grab;
-}
-
 .PlaygroundEditorTheme__quote {
   margin: 0;
   margin-left: 20px;
