@@ -3,6 +3,7 @@ import { KritzelEngineState } from '../../interfaces/engine-state.interface';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelText } from '../objects/text.class';
 import { KritzelPath } from '../objects/path.class';
+import { KritzelLine } from '../objects/line.class';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../..';
@@ -49,6 +50,11 @@ export class KritzelStore {
   get currentPath(): KritzelPath | null {
     const drawingPaths = this._state.objects.filter(o => o instanceof KritzelPath && (o as KritzelPath).isCompleted === false);
     return drawingPaths.length > 0 ? (drawingPaths[0] as KritzelPath) : null;
+  }
+
+  get currentLine(): KritzelLine | null {
+    const drawingLines = this._state.objects.filter(o => o instanceof KritzelLine && (o as KritzelLine).isCompleted === false);
+    return drawingLines.length > 0 ? (drawingLines[0] as KritzelLine) : null;
   }
 
   get offsetX() {

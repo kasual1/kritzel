@@ -1,10 +1,12 @@
 import { KritzelImage } from "../objects/image.class";
+import { KritzelLine } from "../objects/line.class";
 import { KritzelPath } from "../objects/path.class";
 import { KritzelSelectionGroup } from "../objects/selection-group.class";
 import { KritzelText } from "../objects/text.class";
 import { KritzelBrushTool } from "../tools/brush-tool.class";
 import { KritzelEraserTool } from "../tools/eraser-tool.class";
 import { KritzelImageTool } from "../tools/image-tool.class";
+import { KritzelLineTool } from "../tools/line-tool.class";
 import { KritzelSelectionTool } from "../tools/selection-tool.class";
 import { KritzelTextTool } from "../tools/text-tool.class";
 import { KritzelCustomElement } from "../objects/custom-element.class";
@@ -27,6 +29,9 @@ export class KritzelReviver {
         switch (obj.__class__) {
           case 'KritzelPath':
             revivedObj = KritzelPath.create(this._core).deserialize(obj);
+            break;
+          case 'KritzelLine':
+            revivedObj = KritzelLine.create(this._core).deserialize(obj);
             break;
           case 'KritzelText':
             revivedObj = KritzelText.create(this._core, obj.fontSize, obj.fontFamily).deserialize(obj);
@@ -57,6 +62,9 @@ export class KritzelReviver {
             break;
           case 'KritzelTextTool':
             revivedObj = new KritzelTextTool(this._core);
+            break;
+          case 'KritzelLineTool':
+            revivedObj = new KritzelLineTool(this._core);
             break;
 
           default:

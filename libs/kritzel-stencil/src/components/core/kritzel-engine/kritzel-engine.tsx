@@ -2,6 +2,7 @@ import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventE
 import { KritzelTool } from '../../../interfaces/tool.interface';
 import { KritzelViewport } from '../../../classes/core/viewport.class';
 import { KritzelPath } from '../../../classes/objects/path.class';
+import { KritzelLine } from '../../../classes/objects/line.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelImage } from '../../../classes/objects/image.class';
 import { KritzelText } from '../../../classes/objects/text.class';
@@ -11,7 +12,7 @@ import { KritzelKeyHandler } from '../../../classes/handlers/key.handler';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
-import { KritzelBrushToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
+import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
@@ -27,7 +28,6 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { throttle } from 'lodash';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
-import { KritzelCursorHelper } from '../../../helpers/cursor.helper';
 
 @Component({
   tag: 'kritzel-engine',
@@ -77,12 +77,7 @@ export class KritzelEngine {
   @Prop() cursorTarget?: HTMLElement;
   @Watch('cursorTarget')
   onCursorTargetChange(newValue: HTMLElement | undefined) {
-    // Reset cursor on old target
-    if (this.cursorTargetElement) {
-      this.cursorTargetElement.style.cursor = '';
-    }
-    // Set new target (defaults to document.body)
-    this.cursorTargetElement = newValue || document.body;
+    this.core.cursorManager.setTargetElement(newValue || document.body);
   }
 
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
@@ -148,6 +143,9 @@ export class KritzelEngine {
       this.throttledPointerMoveMulti(ev);
     }
 
+    // Update cursor for handle hover states using elementsFromPoint
+    this.core.cursorManager.updateHoverState(ev);
+
     this.viewport.handlePointerMove(ev);
     this.core.store.state?.activeTool?.handlePointerMove(ev);
   }
@@ -163,7 +161,7 @@ export class KritzelEngine {
 
     // Reset cursor to default when all pointers are released
     if (this.core.store.state.pointers.size === 0) {
-      this.core.store.state.cursor = { icon: 'default', iconActive: 'default' };
+      this.core.cursorManager.resetToDefault();
     }
 
     this.viewport.handlePointerUp(ev);
@@ -181,7 +179,7 @@ export class KritzelEngine {
 
     // Reset cursor to default when all pointers are released
     if (this.core.store.state.pointers.size === 0) {
-      this.core.store.state.cursor = { icon: 'default', iconActive: 'default' };
+      this.core.cursorManager.resetToDefault();
     }
 
     this.viewport.handlePointerUp(ev);
@@ -237,7 +235,7 @@ export class KritzelEngine {
   }
 
   @Method()
-  async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig): Promise<KritzelBaseTool> {
+  async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig): Promise<KritzelBaseTool> {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return null;
@@ -446,7 +444,6 @@ export class KritzelEngine {
   contextMenuHandler: KritzelContextMenuHandler;
   keyHandler: KritzelKeyHandler;
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
-  cursorTargetElement: HTMLElement | null = null;
 
   get isSelecting() {
     return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
@@ -463,13 +460,7 @@ export class KritzelEngine {
   disconnectedCallback() {
     this.throttledWheel.cancel();
     this.throttledPointerMoveMulti.cancel();
-    
-    // Reset cursor on target element
-    if (this.cursorTargetElement) {
-      this.cursorTargetElement.style.cursor = '';
-      this.cursorTargetElement.style.removeProperty('--kritzel-pointer-cursor');
-      this.cursorTargetElement = null;
-    }
+    this.core.cursorManager.cleanup();
   }
 
   componentWillLoad() {
@@ -482,11 +473,9 @@ export class KritzelEngine {
     this.keyHandler = new KritzelKeyHandler(this.core);
     this.viewport = new KritzelViewport(this.core, this.host);
 
-    // Set cursor target element (use prop value or default to document.body)
-    this.cursorTargetElement = this.cursorTarget || document.body;
-    
-    // Set the pointer cursor CSS variable for child components to use
-    this.cursorTargetElement.style.setProperty('--kritzel-pointer-cursor', KritzelCursorHelper.getPointerCursor());
+    // Initialize cursor manager with target element and shadow root
+    this.core.cursorManager.setTargetElement(this.cursorTarget || document.body);
+    this.core.cursorManager.setShadowRoot(this.host.shadowRoot);
 
     // Set sync configuration if provided
     if (this.syncConfig) {
@@ -541,25 +530,6 @@ export class KritzelEngine {
     this.core.rerender();
   }
 
-  private updateCursor(): void {
-    const state = this.core.store.state;
-    
-    const isPointerDown = this.core.store.isPointerDown;
-
-    const icon = state.cursor?.icon;
-    const iconActive = state.cursor?.iconActive ?? icon;
-    const rotation = state.cursor?.rotation;
-
-    const cursor = KritzelCursorHelper.getCursor({
-      iconName: isPointerDown ? iconActive : icon,
-      rotation: rotation,
-    });
-
-    if (this.cursorTargetElement) {
-      this.cursorTargetElement.style.cursor = cursor;
-    }
-  }
-
   render() {
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
@@ -577,7 +547,7 @@ export class KritzelEngine {
     };
     const visibleObjects = this.core.store.state.objects.query(viewportBounds);
 
-    this.updateCursor();
+    this.core.cursorManager.applyCursor();
 
     return (
       <Host>
@@ -627,7 +597,6 @@ export class KritzelEngine {
                 style={{
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
-                  zIndex: object.zIndex.toString(),
                   position: 'absolute',
                   pointerEvents: this.core.store.state.isScaling ? 'none' : 'auto',
                 }}
@@ -637,6 +606,7 @@ export class KritzelEngine {
                   id={object.id}
                   class="object"
                   style={{
+                  zIndex: object.zIndex.toString(),
                     height: object?.totalHeight.toString(),
                     width: object?.totalWidth.toString(),
                     left: '0',
@@ -648,6 +618,72 @@ export class KritzelEngine {
                     pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                   }}
                 >
+                  {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
+                    <svg
+                      ref={el => object.mount(el)}
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ overflow: 'visible' }}
+                      viewBox={object?.viewBox}
+                    >
+                      <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'} />
+                    </svg>
+                  )}
+
+                  {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
+                    <svg
+                      ref={el => object.mount(el)}
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ overflow: 'visible' }}
+                      viewBox={object?.viewBox}
+                    >
+                      <defs>
+                        {object.hasStartArrow && (
+                          <marker
+                            id={object.startMarkerId}
+                            markerWidth={object.getArrowSize('start')}
+                            markerHeight={object.getArrowSize('start')}
+                            refX={0}
+                            refY={object.getArrowSize('start') / 2}
+                            orient="auto-start-reverse"
+                            markerUnits="userSpaceOnUse"
+                          >
+                            <path
+                              d={object.getArrowPath(object.arrows?.start?.style)}
+                              fill={object.getArrowFill('start')}
+                              transform={`scale(${object.getArrowSize('start') / 10})`}
+                            />
+                          </marker>
+                        )}
+                        {object.hasEndArrow && (
+                          <marker
+                            id={object.endMarkerId}
+                            markerWidth={object.getArrowSize('end')}
+                            markerHeight={object.getArrowSize('end')}
+                            refX={0}
+                            refY={object.getArrowSize('end') / 2}
+                            orient="auto"
+                            markerUnits="userSpaceOnUse"
+                          >
+                            <path
+                              d={object.getArrowPath(object.arrows?.end?.style)}
+                              fill={object.getArrowFill('end')}
+                              transform={`scale(${object.getArrowSize('end') / 10})`}
+                            />
+                          </marker>
+                        )}
+                      </defs>
+                      <path 
+                        d={this.core.anchorManager.computeClippedLinePath(object)} 
+                        fill="none" 
+                        stroke={object?.stroke} 
+                        stroke-width={object?.strokeWidth} 
+                        stroke-linecap="round"
+                        marker-start={object.hasStartArrow ? `url(#${object.startMarkerId})` : undefined}
+                        marker-end={object.hasEndArrow ? `url(#${object.endMarkerId})` : undefined}
+                      />
+                    </svg>
+                  )}
+
                   <foreignObject
                     x="0"
                     y="0"
@@ -662,24 +698,9 @@ export class KritzelEngine {
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
                       overflow: 'visible',
+                      display: KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') || KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath')  ? 'none' : 'block'
                     }}
                   >
-                    {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
-                      <svg
-                        ref={el => object.mount(el)}
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{
-                          height: object?.height.toString(),
-                          width: object?.width.toString(),
-                          position: 'absolute',
-                          overflow: 'visible',
-                        }}
-                        viewBox={object?.viewBox}
-                      >
-                        <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'} />
-                      </svg>
-                    )}
-
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <img
                         ref={el => object.mount(el)}
@@ -698,6 +719,7 @@ export class KritzelEngine {
 
                     {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
                       <div
+                        id="text-object"
                         ref={el => object.mount(el)}
                         onPointerDown={e => object.handlePointerDown(e)}
                         onPointerMove={e => object.handlePointerMove(e)}
@@ -730,7 +752,7 @@ export class KritzelEngine {
                       ></div>
                     )}
 
-                    {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && (
+                    {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && !this.core.displaySelectionLineUI(object) && (
                       <div
                         ref={el => object.mount(el)}
                         style={{
@@ -764,6 +786,7 @@ export class KritzelEngine {
                           <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
                           <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
                           <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
+                          <div style={{ whiteSpace: 'nowrap' }}>rotationDegrees: {object.rotationDegrees}</div>
                         </div>
                       </foreignObject>
                     </g>
@@ -773,6 +796,7 @@ export class KritzelEngine {
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   style={{
+                    zIndex: (object.zIndex + 1).toString(),
                     height: object?.totalHeight.toString(),
                     width: object?.totalWidth.toString(),
                     left: '0',
@@ -784,187 +808,431 @@ export class KritzelEngine {
                     pointerEvents: 'none',
                   }}
                 >
-                  {object.isSelected && (
-                    <g class="selection-borders" style={{ pointerEvents: 'none' }}>
-                      <line
-                        x1="0"
-                        y1="0"
-                        x2={object.totalWidth}
-                        y2="0"
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                          strokeLinecap: 'square',
-                        }}
-                      />
-                      <line
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2={object.totalHeight}
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                          strokeLinecap: 'square',
-                        }}
-                      />
-                      <line
-                        x1="0"
-                        y1={object.totalHeight}
-                        x2={object.totalWidth}
-                        y2={object.totalHeight}
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                          strokeLinecap: 'square',
-                        }}
-                      />
-                      <line
-                        x1={object.totalWidth}
-                        y1="0"
-                        x2={object.totalWidth}
-                        y2={object.totalHeight}
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                          strokeLinecap: 'square',
-                        }}
-                      />
+                  {this.core.displaySelectionGroupUI(object) && (
+                    <g class="selection-group-ui" style={{ pointerEvents: 'none' }}>
+                      <g class="selection-group-borders">
+                        <line
+                          x1="0"
+                          y1="0"
+                          x2={object.totalWidth}
+                          y2="0"
+                          style={{
+                            stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                            strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            strokeLinecap: 'square',
+                          }}
+                        />
+                        <line
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2={object.totalHeight}
+                          style={{
+                            stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                            strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            strokeLinecap: 'square',
+                          }}
+                        />
+                        <line
+                          x1="0"
+                          y1={object.totalHeight}
+                          x2={object.totalWidth}
+                          y2={object.totalHeight}
+                          style={{
+                            stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                            strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            strokeLinecap: 'square',
+                          }}
+                        />
+                        <line
+                          x1={object.totalWidth}
+                          y1="0"
+                          x2={object.totalWidth}
+                          y2={object.totalHeight}
+                          style={{
+                            stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                            strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            strokeLinecap: 'square',
+                          }}
+                        />
+                      </g>
+
+                      {!this.isSelecting && (
+                        <g class="selection-group-handles" style={{ pointerEvents: 'auto' }}>
+                          <circle
+                            class="resize-handle top-left"
+                            cx="0"
+                            cy="0"
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="resize-handle-overlay top-left"
+                            cx="0"
+                            cy="0"
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                          />
+
+                          <circle
+                            class="resize-handle top-right"
+                            cx={object.totalWidth}
+                            cy="0"
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="resize-handle-overlay top-right"
+                            cx={object.totalWidth}
+                            cy="0"
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                          />
+
+                          <circle
+                            class="resize-handle bottom-left"
+                            cx="0"
+                            cy={object.totalHeight}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="resize-handle-overlay bottom-left"
+                            cx="0"
+                            cy={object.totalHeight}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                          />
+
+                          <circle
+                            class="resize-handle bottom-right"
+                            cx={object.totalWidth}
+                            cy={object.totalHeight}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="resize-handle-overlay bottom-right"
+                            cx={object.totalWidth}
+                            cy={object.totalHeight}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                          />
+
+                          <line
+                            x1={object.totalWidth / 2}
+                            y1="0"
+                            x2={object.totalWidth / 2}
+                            y2={-((15 * object.scale) / this.core.store.state?.scale)}
+                            style={{
+                              stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                              strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            }}
+                          />
+                          <circle
+                            class="rotation-handle"
+                            cx={object.totalWidth / 2}
+                            cy={-((15 * object.scale) / this.core.store.state?.scale)}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="rotation-handle-overlay"
+                            cx={object.totalWidth / 2}
+                            cy={-((15 * object.scale) / this.core.store.state?.scale)}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                        </g>
+                      )}
                     </g>
                   )}
 
-                  {object.isSelected && !this.isSelecting && (
-                    <g class="selection-handles" style={{ pointerEvents: 'auto' }}>
-                      <circle
-                        class="resize-handle top-left"
-                        cx="0"
-                        cy="0"
-                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'var(--kritzel-selection-handle-color, #000000)',
-                          paintOrder: 'fill',
-                        }}
-                      />
-                      <circle
-                        class="resize-handle-overlay top-left"
-                        cx="0"
-                        cy="0"
-                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'transparent',
-                          paintOrder: 'fill',
-                        }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
-                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
-                      />
+                  {this.core.displaySelectionLineUI(object) && KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
+                    <g class="selection-line-ui" style={{ pointerEvents: 'none' }}>
+                      <g class="selection-line-borders">
+                        <path
+                          class="selection-line-border"
+                          d={this.core.anchorManager.computeClippedLinePath(object, true)}
+                          style={{
+                            stroke: 'var(--kritzel-selection-border-color, #007AFF)',
+                            strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
+                            strokeLinecap: 'round',
+                            fill: 'none',
+                          }}
+                        />
+                      </g>
 
-                      <circle
-                        class="resize-handle top-right"
-                        cx={object.totalWidth}
-                        cy="0"
-                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'var(--kritzel-selection-handle-color, #000000)',
-                          paintOrder: 'fill',
-                        }}
-                      />
-                      <circle
-                        class="resize-handle-overlay top-right"
-                        cx={object.totalWidth}
-                        cy="0"
-                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'transparent',
-                          paintOrder: 'fill',
-                        }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
-                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
-                      />
+                      {!this.isSelecting && (
+                        <g class="selection-line-handles" style={{ pointerEvents: 'auto' }}>
+                          <circle
+                            class="selection-line-handle start"
+                            cx={object.startX - object.x}
+                            cy={object.startY - object.y}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="selection-line-handle-overlay start"
+                            cx={object.startX - object.x}
+                            cy={object.startY - object.y}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                          />
 
-                      <circle
-                        class="resize-handle bottom-left"
-                        cx="0"
-                        cy={object.totalHeight}
-                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'var(--kritzel-selection-handle-color, #000000)',
-                          paintOrder: 'fill',
-                        }}
-                      />
-                      <circle
-                        class="resize-handle-overlay bottom-left"
-                        cx="0"
-                        cy={object.totalHeight}
-                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'transparent',
-                          paintOrder: 'fill',
-                        }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees + 45 })}
-                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
-                      />
+                          <circle
+                            class="selection-line-handle center"
+                            cx={object.controlX !== undefined ? (object.startX + 2 * object.controlX + object.endX) / 4 - object.x : (object.startX - object.x + object.endX - object.x) / 2}
+                            cy={object.controlY !== undefined ? (object.startY + 2 * object.controlY + object.endY) / 4 - object.y : (object.startY - object.y + object.endY - object.y) / 2}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="selection-line-handle-overlay center"
+                            cx={object.controlX !== undefined ? (object.startX + 2 * object.controlX + object.endX) / 4 - object.x : (object.startX - object.x + object.endX - object.x) / 2}
+                            cy={object.controlY !== undefined ? (object.startY + 2 * object.controlY + object.endY) / 4 - object.y : (object.startY - object.y + object.endY - object.y) / 2}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                          />
 
-                      <circle
-                        class="resize-handle bottom-right"
-                        cx={object.totalWidth}
-                        cy={object.totalHeight}
-                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'var(--kritzel-selection-handle-color, #000000)',
-                          paintOrder: 'fill',
-                        }}
-                      />
-                      <circle
-                        class="resize-handle-overlay bottom-right"
-                        cx={object.totalWidth}
-                        cy={object.totalHeight}
-                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'transparent',
-                          paintOrder: 'fill',
-                        }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'move-vertical', rotation: object.rotationDegrees - 45 })}
-                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
-                      />
-
-                      <line
-                        x1={object.totalWidth / 2}
-                        y1="0"
-                        x2={object.totalWidth / 2}
-                        y2={-((15 * object.scale) / this.core.store.state?.scale)}
-                        style={{
-                          stroke: 'var(--kritzel-selection-border-color, #007AFF)',
-                          strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                        }}
-                      />
-                      <circle
-                        class="rotation-handle"
-                        cx={object.totalWidth / 2}
-                        cy={-((15 * object.scale) / this.core.store.state?.scale)}
-                        r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'var(--kritzel-selection-handle-color, #000000)',
-                          paintOrder: 'fill',
-                        }}
-                      />
-                      <circle
-                        class="rotation-handle-overlay"
-                        cx={object.totalWidth / 2}
-                        cy={-((15 * object.scale) / this.core.store.state?.scale)}
-                        r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                        style={{
-                          fill: 'transparent',
-                          paintOrder: 'fill',
-                        }}
-                        onPointerEnter={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' })}
-                        onPointerLeave={() => !this.core.store.isPointerDown && (this.core.store.state.cursor = { icon: 'default', iconActive: 'default' })}
-                      />
+                          <circle
+                            class="selection-line-handle end"
+                            cx={object.endX - object.x}
+                            cy={object.endY - object.y}
+                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                          <circle
+                            class="selection-line-handle-overlay end"
+                            cx={object.endX - object.x}
+                            cy={object.endY - object.y}
+                            r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
+                            style={{
+                              fill: 'transparent',
+                              paintOrder: 'fill',
+                            }}
+                          />
+                        </g>
+                      )}
                     </g>
                   )}
                 </svg>
               </div>
             );
           })}
+
+          {/* Anchor lines for selected line objects - show dashed lines from edge to center */}
+          {(() => {
+            const data = this.core.anchorManager.getAnchorLinesRenderData();
+            if (!data) return null;
+
+            return (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="anchor-lines"
+                style={{
+                  position: 'absolute',
+                  left: '0',
+                  top: '0',
+                  width: '1px',
+                  height: '1px',
+                  pointerEvents: 'none',
+                  zIndex: '9998',
+                  overflow: 'visible',
+                }}
+              >
+                {data.startAnchorViz && (
+                  <g class="anchor-line-start">
+                    {data.startAnchorViz.pathD ? (
+                      <path
+                        d={data.startAnchorViz.pathD}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                          fill: 'none',
+                        }}
+                      />
+                    ) : (
+                      <line
+                        x1={data.startAnchorViz.edgeX}
+                        y1={data.startAnchorViz.edgeY}
+                        x2={data.startAnchorViz.centerX}
+                        y2={data.startAnchorViz.centerY}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                        }}
+                      />
+                    )}
+                    <circle
+                      cx={data.startAnchorViz.centerX}
+                      cy={data.startAnchorViz.centerY}
+                      r={data.indicatorRadius}
+                      style={{
+                        fill: 'var(--kritzel-snap-indicator-fill, rgba(0, 0, 0))',
+                        stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                        strokeWidth: data.indicatorStrokeWidth,
+                      }}
+                    />
+                  </g>
+                )}
+                {data.endAnchorViz && (
+                  <g class="anchor-line-end">
+                    {data.endAnchorViz.pathD ? (
+                      <path
+                        d={data.endAnchorViz.pathD}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                          fill: 'none',
+                        }}
+                      />
+                    ) : (
+                      <line
+                        x1={data.endAnchorViz.edgeX}
+                        y1={data.endAnchorViz.edgeY}
+                        x2={data.endAnchorViz.centerX}
+                        y2={data.endAnchorViz.centerY}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                        }}
+                      />
+                    )}
+                    <circle
+                      cx={data.endAnchorViz.centerX}
+                      cy={data.endAnchorViz.centerY}
+                      r={data.indicatorRadius}
+                      style={{
+                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                        stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                        strokeWidth: data.indicatorStrokeWidth,
+                      }}
+                    />
+                  </g>
+                )}
+              </svg>
+            );
+          })()}
+
+          {/* Snap indicator for line anchoring */}
+          {(() => {
+            const data = this.core.anchorManager.getSnapIndicatorRenderData();
+            if (!data) return null;
+
+            return (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="snap-indicator"
+                style={{
+                  position: 'absolute',
+                  left: '0',
+                  top: '0',
+                  width: '1px',
+                  height: '1px',
+                  pointerEvents: 'none',
+                  zIndex: '9999',
+                  overflow: 'visible',
+                }}
+              >
+                <g>
+                  {/* Dashed line from edge to center */}
+                  {/* Dashed line from edge to center */}
+                  {data.snapLinePath ? (
+                    <path
+                      d={data.snapLinePath}
+                      fill="none"
+                      style={{
+                        stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                        strokeWidth: data.lineStrokeWidth,
+                        strokeDasharray: data.dashArray,
+                        strokeLinecap: 'round',
+                      }}
+                    />
+                  ) : (
+                    data.edgeX !== undefined && data.edgeY !== undefined && (
+                      <line
+                        x1={data.edgeX}
+                        y1={data.edgeY}
+                        x2={data.centerX}
+                        y2={data.centerY}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          strokeWidth: data.lineStrokeWidth,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                        }}
+                      />
+                    )
+                  )}
+                  {/* Center indicator circle */}
+                  <circle
+                    cx={data.centerX}
+                    cy={data.centerY}
+                    r={data.indicatorRadius}
+                    style={{
+                      fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                      stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                      strokeWidth: data.indicatorStrokeWidth,
+                    }}
+                  />
+                </g>
+              </svg>
+            );
+          })()}
         </div>
 
         {this.core.store.state.isContextMenuVisible && (
