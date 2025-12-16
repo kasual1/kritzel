@@ -315,8 +315,7 @@ export class KritzelAnchorManager {
 
     const line = selectedObject as KritzelLine;
 
-    // Don't render if we're currently dragging (snap indicator handles that)
-    if (this.getSnapCandidate()) return null;
+
 
     const startAnchorViz = this.computeAnchorVisualization(line, 'start');
     const endAnchorViz = this.computeAnchorVisualization(line, 'end');
@@ -407,7 +406,6 @@ export class KritzelAnchorManager {
         arrowPoints = `${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}`;
       }
     }
-
     return {
       indicatorRadius,
       indicatorStrokeWidth,
@@ -426,6 +424,28 @@ export class KritzelAnchorManager {
       solidLineEndX,
       solidLineEndY,
       arrowPoints,
+      snapLinePath: (() => {
+        if (
+          snapCandidate.controlX !== undefined &&
+          snapCandidate.controlY !== undefined &&
+          snapCandidate.t !== undefined
+        ) {
+          const startT = snapCandidate.endpoint === 'start' ? 1 - snapCandidate.t : snapCandidate.t;
+
+          // Ensure meaningful range
+          if (startT >= 1) return undefined;
+
+          const segment = this.extractQuadraticSegment(
+            { x: snapCandidate.lineEndpointX, y: snapCandidate.lineEndpointY },
+            { x: snapCandidate.controlX, y: snapCandidate.controlY },
+            { x: snapCandidate.centerX, y: snapCandidate.centerY },
+            startT,
+            1
+          );
+          return `M ${segment.start.x} ${segment.start.y} Q ${segment.control.x} ${segment.control.y} ${segment.end.x} ${segment.end.y}`;
+        }
+        return undefined;
+      })(),
     };
   }
 
@@ -622,8 +642,30 @@ export class KritzelAnchorManager {
 
     const startTarget = line.startAnchor ? this.findAnchorTarget(line, 'start') : null;
     const endTarget = line.endAnchor ? this.findAnchorTarget(line, 'end') : null;
-    const startClip = startTarget ? this.computeAnchorClipInfo(line, 'start', startTarget) : null;
-    const endClip = endTarget ? this.computeAnchorClipInfo(line, 'end', endTarget) : null;
+    let startClip = startTarget ? this.computeAnchorClipInfo(line, 'start', startTarget) : null;
+    let endClip = endTarget ? this.computeAnchorClipInfo(line, 'end', endTarget) : null;
+
+    // Apply snap candidate if present and matches this line
+    const snapCandidate = this.getSnapCandidate();
+    const selectionGroup = this._core.store.selectionGroup;
+    if (snapCandidate && selectionGroup && selectionGroup.objects.length === 1 && selectionGroup.objects[0].id === line.id) {
+      if (snapCandidate.edgeX !== undefined && snapCandidate.edgeY !== undefined) {
+        const localEdge = this.lineWorldToLocal(line, snapCandidate.edgeX, snapCandidate.edgeY);
+        const clipInfo: AnchorClipInfo = {
+          worldX: snapCandidate.edgeX,
+          worldY: snapCandidate.edgeY,
+          localX: localEdge.x,
+          localY: localEdge.y,
+          t: snapCandidate.t
+        };
+
+        if (snapCandidate.endpoint === 'start') {
+          startClip = clipInfo;
+        } else {
+          endClip = clipInfo;
+        }
+      }
+    }
 
     // Apply offset if requested (for selection UI which uses coordinates relative to 0,0)
     const offsetX = offsetByViewBox ? line.x : 0;
@@ -710,7 +752,7 @@ export class KritzelAnchorManager {
     return `M ${startX - offsetX} ${startY - offsetY} L ${endX - offsetX} ${endY - offsetY}`;
   }
 
-  private computeAnchorClipInfo(line: KritzelLine, endpoint: 'start' | 'end', targetObject: KritzelBaseObject<Element>): AnchorClipInfo | null {
+  public computeAnchorClipInfo(line: KritzelLine, endpoint: 'start' | 'end', targetObject: KritzelBaseObject<Element>): AnchorClipInfo | null {
     if (line.controlX !== undefined && line.controlY !== undefined) {
       return this.computeCurvedClipInfo(line, endpoint, targetObject);
     }

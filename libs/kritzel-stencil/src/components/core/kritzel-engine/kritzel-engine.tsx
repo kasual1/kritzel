@@ -633,14 +633,7 @@ export class KritzelEngine {
                     <svg
                       ref={el => object.mount(el)}
                       xmlns="http://www.w3.org/2000/svg"
-                      style={{ 
-                        overflow: 'visible',
-                        // Hide line when it's being snapped to an anchor target
-                        visibility: this.core.anchorManager.getSnapCandidate() && 
-                          this.core.store.selectionGroup?.objects[0]?.id === object.id 
-                          ? 'hidden' 
-                          : 'visible'
-                      }}
+                      style={{ overflow: 'visible' }}
                       viewBox={object?.viewBox}
                     >
                       <defs>
@@ -1196,36 +1189,12 @@ export class KritzelEngine {
                 }}
               >
                 <g>
-                  {/* Solid line from other endpoint to edge (offset by arrow size) */}
-                  {data.solidLineEndX !== undefined && data.solidLineEndY !== undefined && (
-                    <line
-                      x1={data.lineEndpointX}
-                      y1={data.lineEndpointY}
-                      x2={data.solidLineEndX}
-                      y2={data.solidLineEndY}
-                      style={{
-                        stroke: data.lineStroke,
-                        strokeWidth: data.lineStrokeWidth,
-                        strokeLinecap: 'round',
-                      }}
-                    />
-                  )}
-                  {/* Arrow head at edge */}
-                  {data.arrowPoints && (
-                    <polygon
-                      points={data.arrowPoints}
-                      style={{
-                        fill: data.arrowFill || data.lineStroke,
-                      }}
-                    />
-                  )}
                   {/* Dashed line from edge to center */}
-                  {data.edgeX !== undefined && data.edgeY !== undefined && (
-                    <line
-                      x1={data.edgeX}
-                      y1={data.edgeY}
-                      x2={data.centerX}
-                      y2={data.centerY}
+                  {/* Dashed line from edge to center */}
+                  {data.snapLinePath ? (
+                    <path
+                      d={data.snapLinePath}
+                      fill="none"
                       style={{
                         stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
                         strokeWidth: data.lineStrokeWidth,
@@ -1233,6 +1202,21 @@ export class KritzelEngine {
                         strokeLinecap: 'round',
                       }}
                     />
+                  ) : (
+                    data.edgeX !== undefined && data.edgeY !== undefined && (
+                      <line
+                        x1={data.edgeX}
+                        y1={data.edgeY}
+                        x2={data.centerX}
+                        y2={data.centerY}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          strokeWidth: data.lineStrokeWidth,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                        }}
+                      />
+                    )
                   )}
                   {/* Center indicator circle */}
                   <circle

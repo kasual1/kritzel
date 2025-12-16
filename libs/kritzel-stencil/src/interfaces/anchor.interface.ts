@@ -58,6 +58,12 @@ export interface SnapCandidate {
   arrowStyle?: 'triangle' | 'open' | 'diamond' | 'circle';
   /** Arrow fill color */
   arrowFill?: string;
+  /** The X coordinate of the control point (world coords), if any */
+  controlX?: number;
+  /** The Y coordinate of the control point (world coords), if any */
+  controlY?: number;
+  /** The t parameter on the curve where the edge intersection occurs (0-1) */
+  t?: number;
 }
 
 /**
@@ -132,5 +138,7 @@ export interface SnapIndicatorRenderData {
   solidLineEndY?: number;
   /** SVG points string for the arrow head at the edge */
   arrowPoints?: string;
+  /** SVG path d string for the dashed line part (if curved) */
+  snapLinePath?: string;
 }
 

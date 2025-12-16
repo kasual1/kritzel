@@ -1,5 +1,5 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
+
 import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseHandler } from './base.handler';
@@ -149,20 +149,25 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
         // Get the other endpoint's world position for edge intersection calculation
         const otherEndpointWorld = this.lineLocalToWorld(line, this.initialEndX, this.initialEndY);
 
-        // Calculate edge intersection point
+        // Calculate edge intersection point using AnchorManager to support curves
         const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === snapTarget.objectId);
         let edgeX: number | undefined;
         let edgeY: number | undefined;
+        let t: number | undefined;
+
         if (targetObject) {
-          const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
-            { x: otherEndpointWorld.x, y: otherEndpointWorld.y },
-            { x: snapTarget.centerX, y: snapTarget.centerY },
-            targetObject.rotatedPolygon
-          );
-          if (edgeIntersection) {
-            edgeX = edgeIntersection.x;
-            edgeY = edgeIntersection.y;
+          const clipInfo = this._core.anchorManager.computeAnchorClipInfo(line, 'start', targetObject);
+          if (clipInfo) {
+            edgeX = clipInfo.worldX;
+            edgeY = clipInfo.worldY;
+            t = clipInfo.t;
           }
+        }
+
+        // Calculate control point in world coordinates if it exists
+        let controlWorld = undefined;
+        if (line.controlX !== undefined && line.controlY !== undefined) {
+          controlWorld = this.lineLocalToWorld(line, line.controlX, line.controlY);
         }
 
         // Update snap indicator
@@ -173,6 +178,9 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
           centerY: snapTarget.centerY,
           lineEndpointX: otherEndpointWorld.x,
           lineEndpointY: otherEndpointWorld.y,
+          controlX: controlWorld?.x,
+          controlY: controlWorld?.y,
+          t,
           edgeX,
           edgeY,
           lineStroke: line.stroke,
@@ -210,20 +218,25 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
         // Get the other endpoint's world position for edge intersection calculation
         const otherEndpointWorld = this.lineLocalToWorld(line, this.initialStartX, this.initialStartY);
 
-        // Calculate edge intersection point
+        // Calculate edge intersection point using AnchorManager to support curves
         const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === snapTarget.objectId);
         let edgeX: number | undefined;
         let edgeY: number | undefined;
+        let t: number | undefined;
+
         if (targetObject) {
-          const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
-            { x: otherEndpointWorld.x, y: otherEndpointWorld.y },
-            { x: snapTarget.centerX, y: snapTarget.centerY },
-            targetObject.rotatedPolygon
-          );
-          if (edgeIntersection) {
-            edgeX = edgeIntersection.x;
-            edgeY = edgeIntersection.y;
+          const clipInfo = this._core.anchorManager.computeAnchorClipInfo(line, 'end', targetObject);
+          if (clipInfo) {
+            edgeX = clipInfo.worldX;
+            edgeY = clipInfo.worldY;
+            t = clipInfo.t;
           }
+        }
+
+        // Calculate control point in world coordinates if it exists
+        let controlWorld = undefined;
+        if (line.controlX !== undefined && line.controlY !== undefined) {
+          controlWorld = this.lineLocalToWorld(line, line.controlX, line.controlY);
         }
 
         // Update snap indicator
@@ -234,6 +247,9 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
           centerY: snapTarget.centerY,
           lineEndpointX: otherEndpointWorld.x,
           lineEndpointY: otherEndpointWorld.y,
+          controlX: controlWorld?.x,
+          controlY: controlWorld?.y,
+          t,
           edgeX,
           edgeY,
           lineStroke: line.stroke,
