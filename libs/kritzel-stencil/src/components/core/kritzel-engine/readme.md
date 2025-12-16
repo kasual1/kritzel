@@ -288,17 +288,17 @@ Type: `Promise<void>`
 
 
 
-### `registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig) => Promise<KritzelBaseTool>`
+### `registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig) => Promise<KritzelBaseTool>`
 
 
 
 #### Parameters
 
-| Name         | Type                                              | Description |
-| ------------ | ------------------------------------------------- | ----------- |
-| `toolName`   | `string`                                          |             |
-| `toolClass`  | `any`                                             |             |
-| `toolConfig` | `KritzelTextToolConfig \| KritzelBrushToolConfig` |             |
+| Name         | Type                                                                       | Description |
+| ------------ | -------------------------------------------------------------------------- | ----------- |
+| `toolName`   | `string`                                                                   |             |
+| `toolClass`  | `any`                                                                      |             |
+| `toolConfig` | `KritzelTextToolConfig \| KritzelBrushToolConfig \| KritzelLineToolConfig` |             |
 
 #### Returns
 
