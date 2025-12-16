@@ -1,6 +1,7 @@
 import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
 import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
+import { ShapeType } from '../../../enums/shape-type.enum';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
@@ -70,8 +71,13 @@ export class KritzelEditor {
       name: 'shape',
       type: 'tool',
       tool: KritzelShapeTool,
-      icon: 'shapes',
+      icon: 'shape-rectangle',
       config: DEFAULT_SHAPE_CONFIG,
+      subOptions: [
+        { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },
+        { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },
+        { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },
+      ],
     },
     {
       name: 'image',
