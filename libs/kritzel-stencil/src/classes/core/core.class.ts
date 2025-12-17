@@ -117,6 +117,12 @@ export class KritzelCore {
       this._store.state.objects.destroy();
     }
 
+    // Create new ObjectMap with its own Y.Doc for this workspace
+    const objectsMap = new KritzelObjectMap();
+    // Assign immediately so the UI shows an empty state while loading,
+    // instead of showing the old workspace's objects with the new workspace's viewport
+    this._store.state.objects = objectsMap;
+
     // Set active workspace
     this._store.state.activeWorkspace = activeWorkspace;
     this._store.state.workspaces = this.loadWorkspacesFromAppState();
@@ -127,10 +133,7 @@ export class KritzelCore {
     this._store.state.translateY = viewport.translateY ?? 0;
     this._store.state.scale = viewport.scale ?? 1;
 
-    // Create new ObjectMap with its own Y.Doc for this workspace
-    const objectsMap = new KritzelObjectMap();
     await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
-    this._store.state.objects = objectsMap;
 
     // Rebuild anchor index after loading objects
     this._anchorManager.rebuildIndex();
@@ -299,7 +302,7 @@ export class KritzelCore {
           idMapping.set(copiedObj.id, obj.id);
           return copiedObj;
         });
-      
+
       this._store.state.copiedObjects = copiedObjects;
       this._store.state.copiedObjectIdMapping = idMapping;
     }
@@ -443,7 +446,7 @@ export class KritzelCore {
           newIdMapping.set(copiedObj.id, obj.id);
           return copiedObj;
         });
-      
+
       this._store.state.copiedObjects = newCopiedObjects;
       this._store.state.copiedObjectIdMapping = newIdMapping;
     }
@@ -451,7 +454,7 @@ export class KritzelCore {
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
 
     this.engine.emitObjectsChange();
-    
+
     this.rerender();
   }
 
@@ -690,6 +693,20 @@ export class KritzelCore {
   }
 
   beforeWorkspaceChange() {
+    // Cancel any pending debounced viewport updates to prevent them from
+    // saving the old workspace's viewport to the new workspace
+    this._kritzelEngine.viewport?.cancelPendingUpdates();
+
+    // Immediately save the current workspace's viewport before switching
+    const currentWorkspace = this._store.state.activeWorkspace;
+    if (currentWorkspace) {
+      this.updateWorkspaceViewport(
+        this._store.state.translateX,
+        this._store.state.translateY,
+        this._store.state.scale
+      );
+    }
+
     this.resetActiveText();
     this.clearSelection();
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
