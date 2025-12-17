@@ -60,11 +60,6 @@
 
 }
 
-.kritzel-divider {
-  width: var(--kritzel-controls-divider-width, 1px);
-  height: var(--kritzel-controls-divider-height, 24px);
-  background-color: var(--kritzel-controls-divider-background-color, hsl(0, 0%, 0%, 4.3%));
-}
 
 /* Split-button control styles */
 .kritzel-control-split {
@@ -217,10 +212,6 @@
   pointer-events: auto;
 }
 
-/* Divider inside config container gets margin for spacing */
-.kritzel-config-container .kritzel-divider {
-  margin-right: var(--kritzel-controls-gap, 8px);
-}
 
 .kritzel-config {
   display: flex;

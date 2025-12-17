@@ -86,10 +86,6 @@ export class KritzelEditor {
       icon: 'image',
     },
     {
-      name: 'divider',
-      type: 'divider',
-    },
-    {
       name: 'config',
       type: 'config',
     },
