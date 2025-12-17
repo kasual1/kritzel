@@ -380,6 +380,8 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * For ellipse: returns a many-sided polygon approximation
    * For triangle: returns the 3 corners
    * For rectangle: returns null (uses default rotatedPolygon)
+   * 
+   * Includes padding for half the stroke width so arrow heads don't overlap the stroke.
    */
   getClipPolygon(): KritzelPoint[] | null {
     // Calculate world-space center and dimensions
@@ -388,14 +390,18 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     const centerX = this.translateX + worldWidth / 2;
     const centerY = this.translateY + worldHeight / 2;
 
+    // Add padding for stroke width so arrows don't overlap the stroke
+    const strokePadding = (this.strokeWidth / this.scale) / 2;
+
     switch (this.shapeType) {
       case ShapeType.Ellipse:
         // Return a 32-segment polygon approximation of the ellipse
+        // Add stroke padding to radii
         return KritzelGeometryHelper.getEllipsePolygonApproximation(
           centerX,
           centerY,
-          worldWidth / 2,
-          worldHeight / 2,
+          worldWidth / 2 + strokePadding,
+          worldHeight / 2 + strokePadding,
           32,
           this.rotation
         );
@@ -403,6 +409,19 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       case ShapeType.Triangle:
         // Return the 3 corners of the triangle in world coordinates
         // Triangle: top-center, bottom-right, bottom-left
+        // Expand each vertex outward from center by strokePadding
+        const expandVertex = (vx: number, vy: number) => {
+          const dx = vx - centerX;
+          const dy = vy - centerY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist === 0) return { x: vx, y: vy };
+          const scale = (dist + strokePadding) / dist;
+          return {
+            x: centerX + dx * scale,
+            y: centerY + dy * scale
+          };
+        };
+
         const topX = this.translateX + worldWidth / 2;
         const topY = this.translateY;
         const bottomLeftX = this.translateX;
@@ -410,30 +429,30 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
         const bottomRightX = this.translateX + worldWidth;
         const bottomRightY = this.translateY + worldHeight;
 
+        const expandedTop = expandVertex(topX, topY);
+        const expandedBottomRight = expandVertex(bottomRightX, bottomRightY);
+        const expandedBottomLeft = expandVertex(bottomLeftX, bottomLeftY);
+
         // Apply rotation around center if rotated
         if (this.rotation !== 0) {
           const cos = Math.cos(this.rotation);
           const sin = Math.sin(this.rotation);
-          const rotate = (px: number, py: number) => {
-            const dx = px - centerX;
-            const dy = py - centerY;
+          const rotate = (p: KritzelPoint) => {
+            const dx = p.x - centerX;
+            const dy = p.y - centerY;
             return {
               x: centerX + dx * cos - dy * sin,
               y: centerY + dx * sin + dy * cos
             };
           };
           return [
-            rotate(topX, topY),
-            rotate(bottomRightX, bottomRightY),
-            rotate(bottomLeftX, bottomLeftY)
+            rotate(expandedTop),
+            rotate(expandedBottomRight),
+            rotate(expandedBottomLeft)
           ];
         }
 
-        return [
-          { x: topX, y: topY },
-          { x: bottomRightX, y: bottomRightY },
-          { x: bottomLeftX, y: bottomLeftY }
-        ];
+        return [expandedTop, expandedBottomRight, expandedBottomLeft];
 
       case ShapeType.Rectangle:
       default:
