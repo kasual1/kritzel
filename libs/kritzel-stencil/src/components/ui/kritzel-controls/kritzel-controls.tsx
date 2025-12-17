@@ -284,10 +284,6 @@ export class KritzelControls {
               );
             }
 
-            if (control.type === 'divider') {
-              return null; // Divider is now part of config container
-            }
-
             if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
                 <div 
@@ -297,7 +293,6 @@ export class KritzelControls {
                   }}
                   key={control.name}
                 >
-                  <div class="kritzel-divider"></div>
                   <kritzel-tooltip
                     ref={el => (this.tooltipRef = el)}
                     isVisible={this.isTooltipVisible}
