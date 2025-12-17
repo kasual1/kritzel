@@ -201,15 +201,17 @@
   opacity: 0;
   overflow: hidden;
   pointer-events: none;
+  margin-left: calc(-1 * var(--kritzel-controls-gap, 8px));
   
   /* Smooth transition */
-  transition: width 0.2s ease-out, opacity 0.2s ease-out;
+  transition: width 0.2s ease-out, opacity 0.2s ease-out, margin-left 0.2s ease-out;
 }
 
 .kritzel-config-container.visible {
   width: 40px;
   opacity: 1;
   pointer-events: auto;
+  margin-left: 0;
 }
 
 
