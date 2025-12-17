@@ -764,7 +764,7 @@ export class KritzelEngine {
                             overflow: 'visible',
                             pointerEvents: 'none',
                           }}
-                          viewBox={`0 0 ${object.width} ${object.height}`}
+                          viewBox={object.viewBox}
                           preserveAspectRatio="none"
                         >
                           <path
@@ -772,7 +772,6 @@ export class KritzelEngine {
                             fill={object.fillColor}
                             stroke={object.strokeColor}
                             stroke-width={object.strokeWidth}
-                            vector-effect="non-scaling-stroke"
                           />
                         </svg>
                         <div

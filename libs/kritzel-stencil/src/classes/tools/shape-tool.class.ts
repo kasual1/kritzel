@@ -149,17 +149,25 @@ export class KritzelShapeTool extends KritzelBaseTool {
     this.finishDrawing();
   }
 
+  /**
+   * Start drawing a shape. Following the same pattern as LineTool/BrushTool:
+   * - Store screen coordinates for startX, startY
+   * - Set translateX/Y to -viewportTranslateX/Y (viewport offset)
+   * - Set x, y to the actual screen position
+   * - Let updateDimensions() convert to world coordinates
+   */
   private startDrawing(clientX: number, clientY: number): void {
+    // Store screen coordinates (relative to host element)
     this.startX = clientX - this._core.store.offsetX;
     this.startY = clientY - this._core.store.offsetY;
     this.isDrawing = true;
 
-    const translateX = (this.startX - this._core.store.state.translateX) / this._core.store.state.scale;
-    const translateY = (this.startY - this._core.store.state.translateY) / this._core.store.state.scale;
-
+    // Create shape using screen coordinates, following Path/Line pattern
     this.currentShape = KritzelShape.create(this._core, {
-      translateX,
-      translateY,
+      x: this.startX,
+      y: this.startY,
+      translateX: -this._core.store.state.translateX,
+      translateY: -this._core.store.state.translateY,
       width: 1,
       height: 1,
       shapeType: this.shapeType,
@@ -175,6 +183,12 @@ export class KritzelShapeTool extends KritzelBaseTool {
     this._core.rerender();
   }
 
+  /**
+   * Update shape size during drawing. Following the same pattern as LineTool:
+   * - Use screen coordinates directly
+   * - The shape's x, y, width, height are all in screen space
+   * - updateDimensions() handles conversion to world coordinates
+   */
   private updateShapeSize(clientX: number, clientY: number): void {
     if (!this.currentShape) {
       return;
@@ -183,20 +197,23 @@ export class KritzelShapeTool extends KritzelBaseTool {
     const currentX = clientX - this._core.store.offsetX;
     const currentY = clientY - this._core.store.offsetY;
 
-    const startXCanvas = (this.startX - this._core.store.state.translateX) / this._core.store.state.scale;
-    const startYCanvas = (this.startY - this._core.store.state.translateY) / this._core.store.state.scale;
-    const currentXCanvas = (currentX - this._core.store.state.translateX) / this._core.store.state.scale;
-    const currentYCanvas = (currentY - this._core.store.state.translateY) / this._core.store.state.scale;
+    // Calculate bounding box in screen coordinates
+    const minX = Math.min(this.startX, currentX);
+    const minY = Math.min(this.startY, currentY);
+    const width = Math.abs(currentX - this.startX);
+    const height = Math.abs(currentY - this.startY);
 
-    const minX = Math.min(startXCanvas, currentXCanvas);
-    const minY = Math.min(startYCanvas, currentYCanvas);
-    const width = Math.abs(currentXCanvas - startXCanvas);
-    const height = Math.abs(currentYCanvas - startYCanvas);
-
-    this.currentShape.translateX = minX;
-    this.currentShape.translateY = minY;
+    // Update shape with screen coordinates
+    this.currentShape.x = minX;
+    this.currentShape.y = minY;
     this.currentShape.width = Math.max(1, width);
     this.currentShape.height = Math.max(1, height);
+
+    // Recalculate world-space translateX/Y
+    // Reset translateX/Y to initial value before updateDimensions
+    this.currentShape.translateX = -this._core.store.state.translateX;
+    this.currentShape.translateY = -this._core.store.state.translateY;
+    this.currentShape.updateDimensions();
 
     this._core.store.state.objects.update(this.currentShape);
   }
@@ -207,6 +224,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
     }
 
     // Remove shape if it's too small (likely an accidental click)
+    // Compare in screen space
     if (this.currentShape.width < 10 && this.currentShape.height < 10) {
       const shapeId = this.currentShape.id;
       this._core.store.state.objects.remove(o => o.id === shapeId);
