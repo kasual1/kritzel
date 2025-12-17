@@ -190,7 +190,6 @@ export class KritzelControls {
   render() {
     const hasConfigUI = this.activeControl?.tool instanceof KritzelBrushTool || 
                         this.activeControl?.tool instanceof KritzelTextTool;
-    const hasNoConfig = !hasConfigUI;
 
     return (
       <Host
@@ -286,12 +285,19 @@ export class KritzelControls {
             }
 
             if (control.type === 'divider') {
-              return <div class="kritzel-divider" key={control.name}></div>;
+              return null; // Divider is now part of config container
             }
 
             if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
-                <div class="kritzel-config-container" key={control.name}>
+                <div 
+                  class={{
+                    'kritzel-config-container': true,
+                    'visible': hasConfigUI,
+                  }}
+                  key={control.name}
+                >
+                  <div class="kritzel-divider"></div>
                   <kritzel-tooltip
                     ref={el => (this.tooltipRef = el)}
                     isVisible={this.isTooltipVisible}
@@ -310,7 +316,7 @@ export class KritzelControls {
                   </kritzel-tooltip>
 
                   <div
-                    tabIndex={0}
+                    tabIndex={hasConfigUI ? 0 : -1}
                     class="kritzel-config"
                     onClick={event => this.handleConfigClick?.(event)}
                     onKeyDown={event => {
@@ -319,8 +325,7 @@ export class KritzelControls {
                       }
                     }}
                     style={{
-                      cursor: this.activeControl.config ? 'pointer' : 'default',
-                      pointerEvents: hasNoConfig ? 'none' : 'auto',
+                      cursor: 'pointer',
                     }}
                   >
                     {this.activeControl.tool instanceof KritzelBrushTool && (
@@ -345,8 +350,6 @@ export class KritzelControls {
                         ></kritzel-font>
                       </div>
                     )}
-
-                    {hasNoConfig && <div class="no-config"></div>}
                   </div>
                 </div>
               );

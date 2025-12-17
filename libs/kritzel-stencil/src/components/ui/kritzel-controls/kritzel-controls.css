@@ -197,10 +197,29 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
   height: 40px;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  
+  /* Hidden state - collapsed */
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  
+  /* Smooth transition */
+  transition: width 0.2s ease-out, opacity 0.2s ease-out;
+}
+
+.kritzel-config-container.visible {
+  width: 40px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Divider inside config container gets margin for spacing */
+.kritzel-config-container .kritzel-divider {
+  margin-right: var(--kritzel-controls-gap, 8px);
 }
 
 .kritzel-config {
