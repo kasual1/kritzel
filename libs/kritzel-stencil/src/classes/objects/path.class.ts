@@ -358,4 +358,102 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     return (scaledWidth * scaledHeight) < 500;
   }
+
+  /**
+   * Finds the point where a line from outsidePoint to the path's center
+   * intersects the stroke edge. Returns null if no intersection found.
+   * This is used for arrow clipping at the actual stroke edge.
+   */
+  getClipPoint(outsidePoint: KritzelPoint): KritzelPoint | null {
+    const centerX = this.centerX;
+    const centerY = this.centerY;
+    const halfStroke = this.strokeWidth / this.scale / 2;
+
+    // Ensure adjusted points are computed
+    if (this._adjustedPoints === null) {
+      this._adjustedPoints = this.computeAdjustedPoints();
+    }
+
+    if (this._adjustedPoints.length < 1) {
+      return null;
+    }
+
+    // Sample along the line from outsidePoint to center to find stroke edge
+    const steps = 32;
+    let prevOutside = true;
+
+    for (let i = 1; i <= steps; i++) {
+      const t = i / steps;
+      const sampleX = outsidePoint.x + (centerX - outsidePoint.x) * t;
+      const sampleY = outsidePoint.y + (centerY - outsidePoint.y) * t;
+
+      // Check distance to path stroke
+      let minDistance = Infinity;
+
+      if (this._adjustedPoints.length === 1) {
+        const p = this._adjustedPoints[0];
+        const dx = sampleX - p[0];
+        const dy = sampleY - p[1];
+        minDistance = Math.sqrt(dx * dx + dy * dy);
+      } else {
+        for (let j = 0; j < this._adjustedPoints.length - 1; j++) {
+          const p1 = this._adjustedPoints[j];
+          const p2 = this._adjustedPoints[j + 1];
+          const dist = this.pointToLineSegmentDistance(sampleX, sampleY, p1[0], p1[1], p2[0], p2[1]);
+          if (dist < minDistance) {
+            minDistance = dist;
+          }
+        }
+      }
+
+      const isInside = minDistance <= halfStroke;
+
+      // Found the edge: transition from outside to inside
+      if (prevOutside && isInside) {
+        // Refine the intersection point using binary search
+        let tLow = (i - 1) / steps;
+        let tHigh = t;
+
+        for (let k = 0; k < 8; k++) {
+          const tMid = (tLow + tHigh) / 2;
+          const midX = outsidePoint.x + (centerX - outsidePoint.x) * tMid;
+          const midY = outsidePoint.y + (centerY - outsidePoint.y) * tMid;
+
+          let midDist = Infinity;
+          if (this._adjustedPoints.length === 1) {
+            const p = this._adjustedPoints[0];
+            const dx = midX - p[0];
+            const dy = midY - p[1];
+            midDist = Math.sqrt(dx * dx + dy * dy);
+          } else {
+            for (let j = 0; j < this._adjustedPoints.length - 1; j++) {
+              const p1 = this._adjustedPoints[j];
+              const p2 = this._adjustedPoints[j + 1];
+              const dist = this.pointToLineSegmentDistance(midX, midY, p1[0], p1[1], p2[0], p2[1]);
+              if (dist < midDist) {
+                midDist = dist;
+              }
+            }
+          }
+
+          if (midDist <= halfStroke) {
+            tHigh = tMid;
+          } else {
+            tLow = tMid;
+          }
+        }
+
+        const finalT = (tLow + tHigh) / 2;
+        return {
+          x: outsidePoint.x + (centerX - outsidePoint.x) * finalT,
+          y: outsidePoint.y + (centerY - outsidePoint.y) * finalT,
+        };
+      }
+
+      prevOutside = !isInside;
+    }
+
+    return null;
+  }
 }
+
