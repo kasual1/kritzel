@@ -1,12 +1,12 @@
 import { KritzelBaseObject } from '../..';
 import { KritzelMouseButton } from '../../enums/event-button.enum';
 import { KritzelCore } from './core.class';
-import { debounce } from 'lodash';
+import { debounce, DebouncedFunc } from 'lodash';
 
 export class KritzelViewport {
   private readonly _core: KritzelCore;
-  private readonly _debounceUpdate: () => void;
-  private readonly _debounceEndScaling: () => void;
+  private readonly _debounceUpdate: DebouncedFunc<() => void>;
+  private readonly _debounceEndScaling: DebouncedFunc<() => void>;
 
   initialTouchDistance: number = 0;
   startX: number = 0;
@@ -24,8 +24,8 @@ export class KritzelViewport {
 
     this._debounceUpdate = debounce(() => {
       this._core.updateWorkspaceViewport(
-        this._core.store.state.translateX, 
-        this._core.store.state.translateY, 
+        this._core.store.state.translateX,
+        this._core.store.state.translateY,
         this._core.store.state.scale
       );
     }, 300);
@@ -34,6 +34,15 @@ export class KritzelViewport {
       this._core.store.state.isScaling = false;
       this._core.rerender();
     }, 100);
+  }
+
+  /**
+   * Cancels any pending debounced viewport updates.
+   * Should be called before switching workspaces to prevent the old workspace's
+   * viewport state from being saved to the new workspace.
+   */
+  cancelPendingUpdates(): void {
+    this._debounceUpdate.cancel();
   }
 
   handleResize(): void {
@@ -164,7 +173,7 @@ export class KritzelViewport {
     }
 
     if (event.pointerType === 'touch') {
-      
+
       if (this._core.store.state.pointers.size === 0) {
         this._debounceEndScaling();
       }
