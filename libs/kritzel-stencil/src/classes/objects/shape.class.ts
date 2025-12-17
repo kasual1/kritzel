@@ -24,6 +24,11 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   fontSize: number = 16;
   fontColor: string = '#000000';
 
+  /** Screen-space x coordinate of the shape's top-left corner (like Path.x) */
+  x: number = 0;
+  /** Screen-space y coordinate of the shape's top-left corner (like Path.y) */
+  y: number = 0;
+
   scale: number = 1;
   scaleFactor: number = 1;
 
@@ -41,7 +46,17 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
   uneditedObject: KritzelShape | null = null;
 
+  /**
+   * Returns the viewBox for the shape's SVG, using screen-space coordinates.
+   * This follows the same pattern as KritzelPath.viewBox.
+   */
+  get viewBox(): string {
+    return `${this.x} ${this.y} ${this.width} ${this.height}`;
+  }
+
   constructor(config?: {
+    x?: number;
+    y?: number;
     translateX?: number;
     translateY?: number;
     width?: number;
@@ -60,6 +75,8 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     super();
 
     if (config) {
+      this.x = config.x ?? 0;
+      this.y = config.y ?? 0;
       this.translateX = config.translateX ?? 0;
       this.translateY = config.translateY ?? 0;
       this.width = config.width ?? 100;
@@ -76,9 +93,19 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
+  /**
+   * Creates a new KritzelShape with screen-space coordinates.
+   * Following the same pattern as KritzelPath.create():
+   * - x, y are screen-space coordinates of the shape's top-left corner
+   * - translateX, translateY should be set to -viewportTranslateX, -viewportTranslateY
+   * - width, height are in screen-space
+   * - scale is the viewport scale at creation time
+   */
   static override create(
     core: KritzelCore,
     config?: {
+      x?: number;
+      y?: number;
       translateX?: number;
       translateY?: number;
       width?: number;
@@ -97,6 +124,8 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object._core = core;
     object.id = object.generateId();
     object.workspaceId = core.store.state.activeWorkspace.id;
+    object.x = config?.x ?? 0;
+    object.y = config?.y ?? 0;
     object.translateX = config?.translateX ?? 0;
     object.translateY = config?.translateY ?? 0;
     object.width = config?.width ?? 100;
@@ -114,7 +143,25 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.zIndex = core.store.currentZIndex;
     object.editor = object.createEditor();
 
+    // Compute world-space translateX/Y from screen-space coordinates
+    // This follows the same pattern as KritzelPath.updateDimensions()
+    object.updateDimensions();
+
     return object;
+  }
+
+  /**
+   * Updates the translateX/Y to world coordinates based on screen-space x, y.
+   * This follows the same pattern as KritzelPath.updateDimensions().
+   * 
+   * The formula: translateX = (x + initialTranslateX) / scale
+   * where initialTranslateX was -viewportTranslateX
+   * 
+   * This converts screen-space position to world coordinates.
+   */
+  updateDimensions(): void {
+    this.translateX = (this.x + this.translateX) / this.scale;
+    this.translateY = (this.y + this.translateY) / this.scale;
   }
 
   override mount(element: HTMLDivElement): void {
@@ -327,7 +374,8 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   }
 
   /**
-   * Returns the SVG path or shape element for rendering the shape
+   * Returns the SVG path for rendering the shape.
+   * The path uses screen-space coordinates relative to (x, y).
    */
   getSvgPath(): string {
     const w = this.width;
@@ -335,26 +383,26 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     switch (this.shapeType) {
       case ShapeType.Rectangle:
-        return `M 0 0 L ${w} 0 L ${w} ${h} L 0 ${h} Z`;
+        return `M ${this.x} ${this.y} L ${this.x + w} ${this.y} L ${this.x + w} ${this.y + h} L ${this.x} ${this.y + h} Z`;
 
       case ShapeType.Ellipse:
-        const cx = w / 2;
-        const cy = h / 2;
+        const cx = this.x + w / 2;
+        const cy = this.y + h / 2;
         const rx = w / 2;
         const ry = h / 2;
         return `M ${cx - rx} ${cy} A ${rx} ${ry} 0 1 0 ${cx + rx} ${cy} A ${rx} ${ry} 0 1 0 ${cx - rx} ${cy}`;
 
       case ShapeType.Triangle:
-        const topX = w / 2;
-        const topY = 0;
-        const bottomLeftX = 0;
-        const bottomLeftY = h;
-        const bottomRightX = w;
-        const bottomRightY = h;
+        const topX = this.x + w / 2;
+        const topY = this.y;
+        const bottomLeftX = this.x;
+        const bottomLeftY = this.y + h;
+        const bottomRightX = this.x + w;
+        const bottomRightY = this.y + h;
         return `M ${topX} ${topY} L ${bottomRightX} ${bottomRightY} L ${bottomLeftX} ${bottomLeftY} Z`;
 
       default:
-        return `M 0 0 L ${w} 0 L ${w} ${h} L 0 ${h} Z`;
+        return `M ${this.x} ${this.y} L ${this.x + w} ${this.y} L ${this.x + w} ${this.y + h} L ${this.x} ${this.y + h} Z`;
     }
   }
 }
