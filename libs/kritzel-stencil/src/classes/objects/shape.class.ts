@@ -3,7 +3,9 @@ import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../helpers/devices.helper';
+import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { ShapeType } from '../../enums/shape-type.enum';
+import { KritzelPoint } from '../../interfaces/point.interface';
 import { EditorState, TextSelection } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
@@ -371,6 +373,73 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.setContent(object.content);
     }
     return this as unknown as KritzelShape;
+  }
+
+  /**
+   * Returns the clipping polygon for arrow intersection.
+   * For ellipse: returns a many-sided polygon approximation
+   * For triangle: returns the 3 corners
+   * For rectangle: returns null (uses default rotatedPolygon)
+   */
+  getClipPolygon(): KritzelPoint[] | null {
+    // Calculate world-space center and dimensions
+    const worldWidth = this.totalWidth / this.scale;
+    const worldHeight = this.totalHeight / this.scale;
+    const centerX = this.translateX + worldWidth / 2;
+    const centerY = this.translateY + worldHeight / 2;
+
+    switch (this.shapeType) {
+      case ShapeType.Ellipse:
+        // Return a 32-segment polygon approximation of the ellipse
+        return KritzelGeometryHelper.getEllipsePolygonApproximation(
+          centerX,
+          centerY,
+          worldWidth / 2,
+          worldHeight / 2,
+          32,
+          this.rotation
+        );
+
+      case ShapeType.Triangle:
+        // Return the 3 corners of the triangle in world coordinates
+        // Triangle: top-center, bottom-right, bottom-left
+        const topX = this.translateX + worldWidth / 2;
+        const topY = this.translateY;
+        const bottomLeftX = this.translateX;
+        const bottomLeftY = this.translateY + worldHeight;
+        const bottomRightX = this.translateX + worldWidth;
+        const bottomRightY = this.translateY + worldHeight;
+
+        // Apply rotation around center if rotated
+        if (this.rotation !== 0) {
+          const cos = Math.cos(this.rotation);
+          const sin = Math.sin(this.rotation);
+          const rotate = (px: number, py: number) => {
+            const dx = px - centerX;
+            const dy = py - centerY;
+            return {
+              x: centerX + dx * cos - dy * sin,
+              y: centerY + dx * sin + dy * cos
+            };
+          };
+          return [
+            rotate(topX, topY),
+            rotate(bottomRightX, bottomRightY),
+            rotate(bottomLeftX, bottomLeftY)
+          ];
+        }
+
+        return [
+          { x: topX, y: topY },
+          { x: bottomRightX, y: bottomRightY },
+          { x: bottomLeftX, y: bottomLeftY }
+        ];
+
+      case ShapeType.Rectangle:
+      default:
+        // For rectangles, return null to use the default rotatedPolygon
+        return null;
+    }
   }
 
   /**
