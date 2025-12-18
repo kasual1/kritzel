@@ -111,6 +111,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           });
           updatedLine.id = currentLine.id;
           updatedLine.workspaceId = currentLine.workspaceId;
+          updatedLine.zIndex = currentLine.zIndex;
           updatedLine.isCompleted = false;
 
           this._core.store.state.objects.update(updatedLine);
@@ -141,6 +142,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           });
           updatedLine.id = currentLine.id;
           updatedLine.workspaceId = currentLine.workspaceId;
+          updatedLine.zIndex = currentLine.zIndex;
           updatedLine.isCompleted = false;
 
           this._core.store.state.objects.update(updatedLine);
@@ -161,7 +163,6 @@ export class KritzelLineTool extends KritzelBaseTool {
         const currentLine = this._core.store.currentLine;
         if (currentLine) {
           currentLine.isCompleted = true;
-          currentLine.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objects.update(currentLine);
           this._core.engine.emitObjectsChange();
 
@@ -178,7 +179,6 @@ export class KritzelLineTool extends KritzelBaseTool {
         const currentLine = this._core.store.currentLine;
         if (currentLine) {
           currentLine.isCompleted = true;
-          currentLine.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objects.update(currentLine);
           this._core.engine.emitObjectsChange();
 
