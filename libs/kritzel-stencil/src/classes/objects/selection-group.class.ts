@@ -18,7 +18,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
   // Store only object IDs instead of full objects
   objectIds: string[] = [];
-  
+
   // Store snapshots of object state for transformations (rotation, resize)
   unchangedObjectSnapshots: Map<string, UnchangedObjectSnapshot> = new Map();
   snapshotRotation: number = 0;
@@ -94,7 +94,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       const deltaX = snapshot.translateX - this.translateX;
       const deltaY = snapshot.translateY - this.translateY;
       snapshot.translateX = x + deltaX;
-      snapshot.translateY = x + deltaY;
+      snapshot.translateY = y + deltaY;
     });
 
     this.translateX = x;
