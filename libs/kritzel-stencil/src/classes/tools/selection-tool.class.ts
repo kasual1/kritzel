@@ -162,7 +162,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       if (this._core.store.state.isScaling === true) {
         return;
       }
-      
+
       this.lineHandleHandler.handlePointerUp(event);
       this.rotationHandler.handlePointerUp(event);
       this.resizeHandler.handlePointerUp(event);
@@ -179,6 +179,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const object = this._core.findObjectById(objectElement?.id);
 
     if (!object) {
+      return null;
+    }
+
+    const { x, y } = this._core.getCanvasPoint(event);
+    if (!object.hitTest(x, y)) {
       return null;
     }
 
