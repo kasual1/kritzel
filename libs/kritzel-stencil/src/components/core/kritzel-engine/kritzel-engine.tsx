@@ -546,7 +546,7 @@ export class KritzelEngine {
       height: this.core.store.state.viewportHeight / this.core.store.state.scale,
       depth: 100,
     };
-    const visibleObjects = this.core.store.state.objects.query(viewportBounds);
+    const visibleObjects = this.core.store.state.objects.query(viewportBounds).sort((a, b) => a.zIndex - b.zIndex);
 
     this.core.cursorManager.applyCursor();
 
@@ -607,7 +607,7 @@ export class KritzelEngine {
                   id={object.id}
                   class="object"
                   style={{
-                  zIndex: object.zIndex.toString(),
+                    zIndex: object.zIndex.toString(),
                     height: object?.totalHeight.toString(),
                     width: object?.totalWidth.toString(),
                     left: '0',
@@ -831,21 +831,26 @@ export class KritzelEngine {
                     )}
                   </foreignObject>
 
-                  {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
-                    <g style={{ pointerEvents: 'none' }}>
-                      <foreignObject x={object.totalWidth.toString()} y="0" width="400px" height="160px" style={{ minHeight: '0', minWidth: '0' }}>
-                        <div style={{ width: '100%', height: '100%' }}>
-                          <div style={{ whiteSpace: 'nowrap' }}>Id: {object.id}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>rotationDegrees: {object.rotationDegrees}</div>
-                        </div>
-                      </foreignObject>
-                    </g>
-                  )}
                 </svg>
+                {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
+                  <div
+                    style={{
+                      pointerEvents: 'none',
+                      position: 'absolute',
+                      left: `${object.totalWidth}px`,
+                      top: '0',
+                      zIndex: (object.zIndex + 2).toString(),
+                    }}
+                  >
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>Id: {object.id}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>width: {object.width}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>height: {object.height}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>translateX: {object.translateX}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>translateY: {object.translateY}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>rotationDegrees: {object.rotationDegrees}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
+                  </div>
+                )}
 
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

@@ -13,9 +13,9 @@ export class KritzelBrushTool extends KritzelBaseTool {
   palettes: {
     [brushType: string]: string[];
   } = {
-    pen: ['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#808080', '#C0C0C0', '#800000', '#008000', '#000080', '#808000', '#800080'],
-    highlighter: ['#ffff00', '#ffb347', '#b4ffb4'],
-  };
+      pen: ['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#808080', '#C0C0C0', '#800000', '#008000', '#000080', '#808000', '#800080'],
+      highlighter: ['#ffff00', '#ffb347', '#b4ffb4'],
+    };
 
   constructor(core: KritzelCore) {
     super(core);
@@ -41,7 +41,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           strokeWidth: this.size,
         });
         path.isCompleted = false;
-        
+
         this._core.store.state.objects.insert(path);
       }
     }
@@ -92,6 +92,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           });
           updatedPath.id = currentPath.id;
           updatedPath.workspaceId = currentPath.workspaceId;
+          updatedPath.zIndex = currentPath.zIndex;
           updatedPath.isCompleted = false;
 
           this._core.store.state.objects.update(updatedPath);
@@ -118,6 +119,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           });
           updatedPath.id = currentPath.id;
           updatedPath.workspaceId = currentPath.workspaceId;
+          updatedPath.zIndex = currentPath.zIndex;
           updatedPath.isCompleted = false;
 
           this._core.store.state.objects.update(updatedPath);
@@ -138,7 +140,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
         const currentPath = this._core.store.currentPath;
         if (currentPath) {
           currentPath.isCompleted = true;
-          currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objects.update(currentPath);
           this._core.engine.emitObjectsChange();
         }
@@ -152,7 +153,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
         const currentPath = this._core.store.currentPath;
         if (currentPath) {
           currentPath.isCompleted = true;
-          currentPath.zIndex = this._core.store.currentZIndex;
           this._core.store.state.objects.update(currentPath);
           this._core.engine.emitObjectsChange();
         }
