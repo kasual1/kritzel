@@ -1,6 +1,7 @@
 import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
 import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
+import { ShapeType } from '../../../enums/shape-type.enum';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
@@ -8,10 +9,12 @@ import { KritzelImageTool } from '../../../classes/tools/image-tool.class';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
+import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { DEFAULT_BRUSH_CONFIG } from '../../../configs/default-brush-tool.config';
 import { DEFAULT_LINE_TOOL_CONFIG } from '../../../configs/default-line-tool.config';
 import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
+import { DEFAULT_SHAPE_CONFIG } from '../../../configs/default-shape-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
@@ -65,14 +68,22 @@ export class KritzelEditor {
       config: DEFAULT_TEXT_CONFIG,
     },
     {
+      name: 'shape',
+      type: 'tool',
+      tool: KritzelShapeTool,
+      icon: 'shape-rectangle',
+      config: DEFAULT_SHAPE_CONFIG,
+      subOptions: [
+        { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },
+        { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },
+        { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },
+      ],
+    },
+    {
       name: 'image',
       type: 'tool',
       tool: KritzelImageTool,
       icon: 'image',
-    },
-    {
-      name: 'divider',
-      type: 'divider',
     },
     {
       name: 'config',

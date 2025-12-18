@@ -1,7 +1,7 @@
 import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method } from '@stencil/core';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
-import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
+import { KritzelToolbarControl, KritzelToolbarSubOption } from '../../../interfaces/toolbar-control.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
@@ -27,6 +27,8 @@ export class KritzelControls {
   @State() firstConfig: ToolConfig | null = null;
   @State() isTooltipVisible: boolean = false;
   @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
+  @State() selectedSubOptions: Map<string, KritzelToolbarSubOption> = new Map();
+  @State() openSubMenuControl: KritzelToolbarControl | null = null;
 
   @Listen('click', { target: 'document' })
   handleDocumentClick(event: MouseEvent) {
@@ -37,6 +39,11 @@ export class KritzelControls {
     }
 
     this.isTooltipVisible = false;
+
+    // Close submenu when clicking outside
+    if (!element.closest('.kritzel-control-split') && !element.closest('.kritzel-submenu')) {
+      this.openSubMenuControl = null;
+    }
   }
 
   @Listen('keydown', { target: 'window' })
@@ -44,6 +51,7 @@ export class KritzelControls {
     if (event.key === 'Escape') {
       event.preventDefault();
       this.closeTooltip();
+      this.openSubMenuControl = null;
       this.kritzelEngine?.enable();
     }
   }
@@ -137,8 +145,51 @@ export class KritzelControls {
     this.kritzelEngine?.enable();
   }
 
+  /**
+   * Get the currently selected sub-option for a control.
+   * Returns the first sub-option as default if none is selected.
+   */
+  private getSelectedSubOption(control: KritzelToolbarControl): KritzelToolbarSubOption | undefined {
+    if (!control.subOptions?.length) return undefined;
+    return this.selectedSubOptions.get(control.name) || control.subOptions[0];
+  }
+
+  /**
+   * Toggle the submenu for a split-button control
+   */
+  private toggleSubMenu(event: MouseEvent, control: KritzelToolbarControl) {
+    event.stopPropagation();
+    if (this.openSubMenuControl?.name === control.name) {
+      this.openSubMenuControl = null;
+    } else {
+      this.openSubMenuControl = control;
+    }
+  }
+
+  /**
+   * Select a sub-option and update the tool property
+   */
+  private async selectSubOption(control: KritzelToolbarControl, option: KritzelToolbarSubOption) {
+    // Update the selected sub-options map (create new Map for reactivity)
+    const newMap = new Map(this.selectedSubOptions);
+    newMap.set(control.name, option);
+    this.selectedSubOptions = newMap;
+
+    // Update the tool property if the tool is instantiated
+    if (control.tool && typeof control.tool !== 'function') {
+      (control.tool as any)[option.toolProperty] = option.value;
+    }
+
+    // Close the submenu
+    this.openSubMenuControl = null;
+
+    // Activate this control
+    await this.handleControlClick(control);
+  }
+
   render() {
-    const hasNoConfig = this.activeControl?.config === undefined || this.activeControl?.config === null;
+    const hasConfigUI = this.activeControl?.tool instanceof KritzelBrushTool || 
+                        this.activeControl?.tool instanceof KritzelTextTool;
 
     return (
       <Host
@@ -163,6 +214,62 @@ export class KritzelControls {
         <div class="kritzel-controls">
           {this.controls.map(control => {
             if (control.type === 'tool') {
+              // Check if this control has sub-options (split-button)
+              if (control.subOptions?.length) {
+                const selectedSubOption = this.getSelectedSubOption(control);
+                const isActive = this.activeControl?.name === control.name;
+                const isSubMenuOpen = this.openSubMenuControl?.name === control.name;
+
+                return (
+                  <div
+                    class={{
+                      'kritzel-control-split': true,
+                      'selected': isActive,
+                    }}
+                    key={control.name}
+                  >
+                    <button
+                      class="kritzel-control-main"
+                      onClick={() => this.handleControlClick(control)}
+                      title={selectedSubOption?.label}
+                    >
+                      <kritzel-icon name={selectedSubOption?.icon || control.icon}></kritzel-icon>
+                    </button>
+                    <button
+                      class={{
+                        'kritzel-control-dropdown': true,
+                        'visible': isActive,
+                      }}
+                      onClick={(e) => this.toggleSubMenu(e, control)}
+                      aria-label="Select shape type"
+                      aria-expanded={isSubMenuOpen ? 'true' : 'false'}
+                      tabIndex={isActive ? 0 : -1}
+                    >
+                      <kritzel-icon name="chevron-down" size={12}></kritzel-icon>
+                    </button>
+
+                    {isSubMenuOpen && (
+                      <div class="kritzel-submenu">
+                        {control.subOptions.map(option => (
+                          <button
+                            class={{
+                              'kritzel-submenu-item': true,
+                              'active': option.id === selectedSubOption?.id,
+                            }}
+                            key={option.id}
+                            onClick={() => this.selectSubOption(control, option)}
+                          >
+                            <kritzel-icon name={option.icon} size={20}></kritzel-icon>
+                            <span>{option.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // Regular tool control (no sub-options)
               return (
                 <button
                   class={{
@@ -177,13 +284,15 @@ export class KritzelControls {
               );
             }
 
-            if (control.type === 'divider') {
-              return <div class="kritzel-divider" key={control.name}></div>;
-            }
-
             if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
               return (
-                <div class="kritzel-config-container" key={control.name}>
+                <div 
+                  class={{
+                    'kritzel-config-container': true,
+                    'visible': hasConfigUI,
+                  }}
+                  key={control.name}
+                >
                   <kritzel-tooltip
                     ref={el => (this.tooltipRef = el)}
                     isVisible={this.isTooltipVisible}
@@ -202,7 +311,7 @@ export class KritzelControls {
                   </kritzel-tooltip>
 
                   <div
-                    tabIndex={0}
+                    tabIndex={hasConfigUI ? 0 : -1}
                     class="kritzel-config"
                     onClick={event => this.handleConfigClick?.(event)}
                     onKeyDown={event => {
@@ -211,8 +320,7 @@ export class KritzelControls {
                       }
                     }}
                     style={{
-                      cursor: this.activeControl.config ? 'pointer' : 'default',
-                      pointerEvents: hasNoConfig ? 'none' : 'auto',
+                      cursor: 'pointer',
                     }}
                   >
                     {this.activeControl.tool instanceof KritzelBrushTool && (
@@ -237,8 +345,6 @@ export class KritzelControls {
                         ></kritzel-font>
                       </div>
                     )}
-
-                    {hasNoConfig && <div class="no-config"></div>}
                   </div>
                 </div>
               );
