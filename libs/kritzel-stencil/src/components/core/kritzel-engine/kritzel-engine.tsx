@@ -676,6 +676,13 @@ export class KritzelEngine {
                       <path 
                         d={this.core.anchorManager.computeClippedLinePath(object)} 
                         fill="none" 
+                        stroke="transparent" 
+                        stroke-width={Math.max(object?.strokeWidth || 0, 10)} 
+                        stroke-linecap="round"
+                      />
+                      <path 
+                        d={this.core.anchorManager.computeClippedLinePath(object)} 
+                        fill="none" 
                         stroke={object?.stroke} 
                         stroke-width={object?.strokeWidth} 
                         stroke-linecap="round"

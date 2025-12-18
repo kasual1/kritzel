@@ -393,4 +393,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const groupCenterY = this.translateY + this.totalHeight / this.scale / 2;
     return objCenterY - groupCenterY;
   }
+
+  override hitTest(x: number, y: number): boolean {
+    return this.objects.some(obj => obj.hitTest(x, y));
+  }
 }

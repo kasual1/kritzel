@@ -166,7 +166,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   }
 
   override hitTest(x: number, y: number): boolean {
-    const halfStroke = this.strokeWidth / this.scale / 2;
+    const strokeWidth = Math.max(this.strokeWidth, 10);
+    const halfStroke = strokeWidth / this.scale / 2;
 
     if (this._adjustedPoints === null) {
       this._adjustedPoints = this.computeAdjustedPoints();
@@ -175,7 +176,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     // For curved lines, use distance to the Bezier curve
     if (this.controlX !== undefined && this.controlY !== undefined) {
       const distance = this.pointToBezierDistance(x, y);
-      return distance <= halfStroke + 2;
+      return distance <= halfStroke;
     }
 
     // For straight lines, use distance to line segment
@@ -183,7 +184,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     const p2 = this._adjustedPoints[1];
 
     const distance = this.pointToLineSegmentDistance(x, y, p1[0], p1[1], p2[0], p2[1]);
-    return distance <= halfStroke + 2; // Add a small tolerance for easier selection
+    return distance <= halfStroke;
   }
 
   override hitTestPolygon(polygon: KritzelPolygon): boolean {
