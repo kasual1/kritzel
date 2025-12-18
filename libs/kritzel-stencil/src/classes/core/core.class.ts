@@ -91,6 +91,10 @@ export class KritzelCore {
     // Find most recently updated workspace or use provided/fallback
     const mostRecentWorkspace = workspaces.length > 0 ? [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0] : null;
 
+    // Check localStorage for last active workspace
+    const lastActiveWorkspaceId = localStorage.getItem('kritzel-active-workspace-id');
+    const lastActiveWorkspace = lastActiveWorkspaceId ? workspaces.find(w => w.id === lastActiveWorkspaceId) : null;
+
     let activeWorkspace: KritzelWorkspace;
 
     if (workspace) {
@@ -102,6 +106,9 @@ export class KritzelCore {
         activeWorkspace._core = this;
         this.saveWorkspaceToAppState(activeWorkspace);
       }
+    } else if (lastActiveWorkspace) {
+      // Use last active workspace from localStorage
+      activeWorkspace = lastActiveWorkspace;
     } else if (mostRecentWorkspace) {
       // Use most recent workspace
       activeWorkspace = mostRecentWorkspace;
@@ -111,6 +118,9 @@ export class KritzelCore {
       activeWorkspace._core = this;
       this.saveWorkspaceToAppState(activeWorkspace);
     }
+
+    // Save active workspace ID to localStorage
+    localStorage.setItem('kritzel-active-workspace-id', activeWorkspace.id);
 
     // Destroy old ObjectMap if switching workspaces
     if (this._store.state.objects && this._store.state.objects.isReady) {
