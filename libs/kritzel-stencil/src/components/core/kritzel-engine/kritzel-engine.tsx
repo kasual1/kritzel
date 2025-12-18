@@ -608,13 +608,13 @@ export class KritzelEngine {
                   class="object"
                   style={{
                     zIndex: object.zIndex.toString(),
-                    height: object?.totalHeight.toString(),
-                    width: object?.totalWidth.toString(),
+                    height: object?.totalHeight + 'px',
+                    width: object?.totalWidth + 'px',
                     left: '0',
                     top: '0',
                     position: 'absolute',
-                    transform: `rotate(${object.rotationDegrees}deg)`,
-                    transformOrigin: `${object.totalWidth / 2}px ${object.totalHeight / 2}px`,
+                    transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
+                    transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                     opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                     pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                   }}
