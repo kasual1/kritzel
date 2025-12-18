@@ -6,13 +6,14 @@ import { KritzelLine } from '../../../classes/objects/line.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelImage } from '../../../classes/objects/image.class';
 import { KritzelText } from '../../../classes/objects/text.class';
+import { KritzelShape } from '../../../classes/objects/shape.class';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelKeyHandler } from '../../../classes/handlers/key.handler';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
-import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
+import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
@@ -235,7 +236,7 @@ export class KritzelEngine {
   }
 
   @Method()
-  async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig): Promise<KritzelBaseTool> {
+  async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): Promise<KritzelBaseTool> {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return null;
@@ -545,7 +546,7 @@ export class KritzelEngine {
       height: this.core.store.state.viewportHeight / this.core.store.state.scale,
       depth: 100,
     };
-    const visibleObjects = this.core.store.state.objects.query(viewportBounds);
+    const visibleObjects = this.core.store.state.objects.query(viewportBounds).sort((a, b) => a.zIndex - b.zIndex);
 
     this.core.cursorManager.applyCursor();
 
@@ -606,7 +607,7 @@ export class KritzelEngine {
                   id={object.id}
                   class="object"
                   style={{
-                  zIndex: object.zIndex.toString(),
+                    zIndex: object.zIndex.toString(),
                     height: object?.totalHeight.toString(),
                     width: object?.totalWidth.toString(),
                     left: '0',
@@ -739,6 +740,59 @@ export class KritzelEngine {
                       ></div>
                     )}
 
+                    {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') && (
+                      <div
+                        ref={el => object.mount(el)}
+                        onPointerDown={e => object.handlePointerDown(e)}
+                        onPointerMove={e => object.handlePointerMove(e)}
+                        onPointerUp={e => object.handlePointerUp(e)}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          position: 'relative',
+                          overflow: 'visible',
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            width: '100%',
+                            height: '100%',
+                            overflow: 'visible',
+                            pointerEvents: 'none',
+                          }}
+                          viewBox={object.viewBox}
+                          preserveAspectRatio="none"
+                        >
+                          <path
+                            d={object.getSvgPath()}
+                            fill={object.fillColor}
+                            stroke={object.strokeColor}
+                            stroke-width={object.strokeWidth}
+                          />
+                        </svg>
+                        <div
+                          ref={el => object.mountTextEditor(el)}
+                          style={{
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            overflow: 'hidden',
+                            pointerEvents: object.isEditing ? 'auto' : 'none',
+                          }}
+                        ></div>
+                      </div>
+                    )}
+
                     {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
                       <div
                         ref={el => object.mount(el)}
@@ -777,21 +831,26 @@ export class KritzelEngine {
                     )}
                   </foreignObject>
 
-                  {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
-                    <g style={{ pointerEvents: 'none' }}>
-                      <foreignObject x={object.totalWidth.toString()} y="0" width="400px" height="160px" style={{ minHeight: '0', minWidth: '0' }}>
-                        <div style={{ width: '100%', height: '100%' }}>
-                          <div style={{ whiteSpace: 'nowrap' }}>Id: {object.id}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>width: {object.width}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>height: {object.height}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>translateX: {object.translateX}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>translateY: {object.translateY}</div>
-                          <div style={{ whiteSpace: 'nowrap' }}>rotationDegrees: {object.rotationDegrees}</div>
-                        </div>
-                      </foreignObject>
-                    </g>
-                  )}
                 </svg>
+                {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
+                  <div
+                    style={{
+                      pointerEvents: 'none',
+                      position: 'absolute',
+                      left: `${object.totalWidth}px`,
+                      top: '0',
+                      zIndex: (object.zIndex + 2).toString(),
+                    }}
+                  >
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>Id: {object.id}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>width: {object.width}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>height: {object.height}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>translateX: {object.translateX}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>translateY: {object.translateY}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>rotationDegrees: {object.rotationDegrees}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
+                  </div>
+                )}
 
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

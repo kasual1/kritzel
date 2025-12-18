@@ -4,6 +4,8 @@ import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelShape } from '../objects/shape.class';
+import { KritzelPath } from '../objects/path.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelPoint } from '../../interfaces/point.interface';
@@ -767,11 +769,47 @@ export class KritzelAnchorManager {
       ? this.lineLocalToWorld(line, line.endX, line.endY)
       : this.lineLocalToWorld(line, line.startX, line.startY);
 
-    const edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
-      reference,
-      { x: targetObject.centerX, y: targetObject.centerY },
-      targetObject.rotatedPolygon
-    );
+    // Check for path object (uses stroke edge detection)
+    const pathClipPoint = this.getPathClipPoint(targetObject, reference);
+    if (pathClipPoint) {
+      const localEdge = this.lineWorldToLocal(line, pathClipPoint.x, pathClipPoint.y);
+      const totalLength = Math.sqrt(
+        Math.pow(line.endX - line.startX, 2) +
+        Math.pow(line.endY - line.startY, 2)
+      );
+      const distanceFromStart = Math.sqrt(
+        Math.pow(localEdge.x - line.startX, 2) +
+        Math.pow(localEdge.y - line.startY, 2)
+      );
+      const t = totalLength > 0 ? distanceFromStart / totalLength : endpoint === 'start' ? 0 : 1;
+      return {
+        localX: localEdge.x,
+        localY: localEdge.y,
+        worldX: pathClipPoint.x,
+        worldY: pathClipPoint.y,
+        t,
+      };
+    }
+
+    // Check for custom clip polygon (ellipse, triangle shapes)
+    const customClipPolygon = this.getClipPolygonForObject(targetObject);
+
+    let edgeIntersection: KritzelPoint | null;
+    if (customClipPolygon) {
+      // Use custom polygon for non-rectangular shapes
+      edgeIntersection = KritzelGeometryHelper.getLinePointsArrayIntersection(
+        reference,
+        { x: targetObject.centerX, y: targetObject.centerY },
+        customClipPolygon
+      );
+    } else {
+      // Fall back to bounding box for rectangles and other objects
+      edgeIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+        reference,
+        { x: targetObject.centerX, y: targetObject.centerY },
+        targetObject.rotatedPolygon
+      );
+    }
 
     if (!edgeIntersection) {
       return null;
@@ -798,7 +836,17 @@ export class KritzelAnchorManager {
   }
 
   private computeCurvedClipInfo(line: KritzelLine, endpoint: 'start' | 'end', targetObject: KritzelBaseObject<Element>): AnchorClipInfo | null {
-    const polygonPoints = this.getPolygonPoints(targetObject.rotatedPolygon);
+    // Check for path object (uses stroke edge detection via sampling)
+    if (KritzelClassHelper.isInstanceOf<KritzelPath>(targetObject, 'KritzelPath')) {
+      // For curved lines to paths, sample along the curve to find stroke edge
+      const path = targetObject as KritzelPath;
+      return this.findCurveExitPointForPath(line, endpoint, path);
+    }
+
+    // Check for custom clip polygon (ellipse, triangle shapes)
+    const customClipPolygon = this.getClipPolygonForObject(targetObject);
+    const polygonPoints = customClipPolygon ?? this.getPolygonPoints(targetObject.rotatedPolygon);
+
     const exitPoint = this.findCurveExitPoint(line, endpoint, polygonPoints);
     if (exitPoint) {
       return exitPoint;
@@ -807,11 +855,21 @@ export class KritzelAnchorManager {
     const reference = endpoint === 'start'
       ? this.lineLocalToWorld(line, line.endX, line.endY)
       : this.lineLocalToWorld(line, line.startX, line.startY);
-    const fallbackIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
-      reference,
-      { x: targetObject.centerX, y: targetObject.centerY },
-      targetObject.rotatedPolygon
-    );
+
+    let fallbackIntersection: KritzelPoint | null;
+    if (customClipPolygon) {
+      fallbackIntersection = KritzelGeometryHelper.getLinePointsArrayIntersection(
+        reference,
+        { x: targetObject.centerX, y: targetObject.centerY },
+        customClipPolygon
+      );
+    } else {
+      fallbackIntersection = KritzelGeometryHelper.getLinePolygonIntersection(
+        reference,
+        { x: targetObject.centerX, y: targetObject.centerY },
+        targetObject.rotatedPolygon
+      );
+    }
 
     if (!fallbackIntersection) {
       return null;
@@ -858,6 +916,150 @@ export class KritzelAnchorManager {
 
     return null;
   }
+
+  /**
+   * Finds the exit point for a curved line going to a Path object.
+   * Uses distance-to-stroke sampling instead of polygon containment.
+   */
+  private findCurveExitPointForPath(line: KritzelLine, endpoint: 'start' | 'end', path: KritzelPath): AnchorClipInfo | null {
+    const steps = 64;
+    const initialT = endpoint === 'start' ? 0 : 1;
+    const halfStroke = path.strokeWidth / path.scale / 2;
+
+    // Ensure path has computed points
+    const pathPoints = this.getPathAdjustedPoints(path);
+    if (pathPoints.length < 1) {
+      return null;
+    }
+
+    // Check if starting point is inside the stroke
+    const initialSample = this.evaluateLineAtT(line, initialT);
+    let prevInside = this.isPointInPathStroke(initialSample.worldX, initialSample.worldY, pathPoints, halfStroke);
+    let prevT = initialT;
+
+    for (let i = 1; i <= steps; i++) {
+      const t = endpoint === 'start' ? i / steps : 1 - i / steps;
+      const sample = this.evaluateLineAtT(line, t);
+      const inside = this.isPointInPathStroke(sample.worldX, sample.worldY, pathPoints, halfStroke);
+
+      if (prevInside && !inside) {
+        // Refine using binary search
+        const refinedT = this.refineCurveExitParameterForPath(line, pathPoints, halfStroke, prevT, t);
+        const refinedPoint = this.evaluateLineAtT(line, refinedT);
+        return {
+          localX: refinedPoint.localX,
+          localY: refinedPoint.localY,
+          worldX: refinedPoint.worldX,
+          worldY: refinedPoint.worldY,
+          t: refinedT,
+        };
+      }
+
+      prevInside = inside;
+      prevT = t;
+    }
+
+    return null;
+  }
+
+  private refineCurveExitParameterForPath(
+    line: KritzelLine,
+    pathPoints: number[][],
+    halfStroke: number,
+    insideT: number,
+    outsideT: number
+  ): number {
+    let tInside = insideT;
+    let tOutside = outsideT;
+
+    for (let i = 0; i < 8; i++) {
+      const mid = (tInside + tOutside) / 2;
+      const sample = this.evaluateLineAtT(line, mid);
+      const inside = this.isPointInPathStroke(sample.worldX, sample.worldY, pathPoints, halfStroke);
+      if (inside) {
+        tInside = mid;
+      } else {
+        tOutside = mid;
+      }
+    }
+
+    return (tInside + tOutside) / 2;
+  }
+
+  private getPathAdjustedPoints(path: KritzelPath): number[][] {
+    // Access the path's adjusted points through its internal computation
+    // We'll need to manually compute them since they're private
+    return this.computePathAdjustedPoints(path);
+  }
+
+  private computePathAdjustedPoints(path: KritzelPath): number[][] {
+    if (!path.points?.length) {
+      return [];
+    }
+
+    const angle = path.rotation;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    const xs = path.points.map(p => p[0]);
+    const ys = path.points.map(p => p[1]);
+    const pivot = {
+      x: (Math.min(...xs) + Math.max(...xs)) / 2,
+      y: (Math.min(...ys) + Math.max(...ys)) / 2,
+    };
+
+    const { x: cx, y: cy } = pivot;
+
+    const rotatedPoints = path.points.map(([x, y]) => {
+      const dx = x - cx;
+      const dy = y - cy;
+      return [cx + dx * cos - dy * sin, cy + dx * sin + dy * cos];
+    });
+
+    return rotatedPoints.map(([px, py]) => [
+      Math.abs(px - path.x) / path.scale + path.translateX,
+      Math.abs(py - path.y) / path.scale + path.translateY,
+    ]);
+  }
+
+  private isPointInPathStroke(x: number, y: number, pathPoints: number[][], halfStroke: number): boolean {
+    if (pathPoints.length === 1) {
+      const p = pathPoints[0];
+      const dx = x - p[0];
+      const dy = y - p[1];
+      return Math.sqrt(dx * dx + dy * dy) <= halfStroke;
+    }
+
+    for (let i = 0; i < pathPoints.length - 1; i++) {
+      const p1 = pathPoints[i];
+      const p2 = pathPoints[i + 1];
+      const dist = this.pointToSegmentDistance(x, y, p1[0], p1[1], p2[0], p2[1]);
+      if (dist <= halfStroke) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private pointToSegmentDistance(px: number, py: number, x1: number, y1: number, x2: number, y2: number): number {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const lengthSquared = dx * dx + dy * dy;
+
+    if (lengthSquared === 0) {
+      return Math.sqrt((px - x1) * (px - x1) + (py - y1) * (py - y1));
+    }
+
+    let t = ((px - x1) * dx + (py - y1) * dy) / lengthSquared;
+    t = Math.max(0, Math.min(1, t));
+
+    const nearestX = x1 + t * dx;
+    const nearestY = y1 + t * dy;
+
+    return Math.sqrt((px - nearestX) * (px - nearestX) + (py - nearestY) * (py - nearestY));
+  }
+
+
 
   private refineCurveExitParameter(line: KritzelLine, polygonPoints: KritzelPoint[], insideT: number, outsideT: number): number {
     let tInside = insideT;
@@ -1039,6 +1241,32 @@ export class KritzelAnchorManager {
 
   private getPolygonPoints(polygon: KritzelPolygon): KritzelPoint[] {
     return [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
+  }
+
+  /**
+   * Gets the custom clip polygon for an object if it has one.
+   * Returns null for objects that should use the default rotatedPolygon.
+   */
+  private getClipPolygonForObject(object: KritzelBaseObject<Element>): KritzelPoint[] | null {
+    // Check if the object is a KritzelShape with a custom clip polygon
+    if (KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape')) {
+      const shape = object as KritzelShape;
+      return shape.getClipPolygon();
+    }
+    // Path objects use getPathClipPoint instead of polygon
+    return null;
+  }
+
+  /**
+   * Gets the clip point for a Path object (stroke edge intersection).
+   * Returns null if the object is not a Path or no intersection found.
+   */
+  private getPathClipPoint(object: KritzelBaseObject<Element>, outsidePoint: KritzelPoint): KritzelPoint | null {
+    if (KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath')) {
+      const path = object as KritzelPath;
+      return path.getClipPoint(outsidePoint);
+    }
+    return null;
   }
 
   /**
