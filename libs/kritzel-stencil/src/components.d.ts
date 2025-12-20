@@ -338,6 +338,10 @@ export namespace Components {
           * @default 24
          */
         "offsetY": number;
+        /**
+          * @default true
+         */
+        "showArrow": boolean;
     }
     interface KritzelUtilityPanel {
         /**
@@ -1121,6 +1125,10 @@ declare namespace LocalJSX {
          */
         "offsetY"?: number;
         "onTooltipClosed"?: (event: KritzelTooltipCustomEvent<void>) => void;
+        /**
+          * @default true
+         */
+        "showArrow"?: boolean;
     }
     interface KritzelUtilityPanel {
         "onDelete"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;

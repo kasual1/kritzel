@@ -13,6 +13,7 @@ export class KritzelTooltip {
   @Prop() anchorElement: HTMLElement;
   @Prop() arrowSize: number = 8;
   @Prop() offsetY: number = 24;
+  @Prop() showArrow: boolean = true;
 
   @Event() tooltipClosed: EventEmitter<void>;
 
@@ -107,34 +108,36 @@ export class KritzelTooltip {
       >
         <div class="tooltip-content" onClick={event => event.stopPropagation()}>
           <slot></slot>
-          <div
-            class="tooltip-arrow-wrapper"
-            style={{
-              position: 'fixed',
-              left: this.arrowOffset,
-              bottom: `-${this.arrowSize * 2}px`,
-            }}
-          >
+          {this.showArrow && (
             <div
-              class="tooltip-arrow"
+              class="tooltip-arrow-wrapper"
               style={{
-              borderLeft: `${this.arrowSize}px solid transparent`,
-              borderRight: `${this.arrowSize}px solid transparent`,
-              borderTop: `${this.arrowSize}px solid var(--kritzel-controls-tooltip-background-color, #ffffff)`,
-              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))',
+                position: 'fixed',
+                left: this.arrowOffset,
+                bottom: `-${this.arrowSize * 2}px`,
               }}
-            ></div>
-            <div
-              class="tooltip-arrow-rect"
-              style={{
-              position: 'relative',
-              width: `${this.arrowSize * 2}px`,
-              height: `${this.arrowSize}px`,
-              backgroundColor: 'var(--kritzel-controls-tooltip-background-color, #ffffff)',
-              bottom: `${this.arrowSize * 2}px`,
-              }}
-            ></div>
-          </div>
+            >
+              <div
+                class="tooltip-arrow"
+                style={{
+                borderLeft: `${this.arrowSize}px solid transparent`,
+                borderRight: `${this.arrowSize}px solid transparent`,
+                borderTop: `${this.arrowSize}px solid var(--kritzel-controls-tooltip-background-color, #ffffff)`,
+                filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))',
+                }}
+              ></div>
+              <div
+                class="tooltip-arrow-rect"
+                style={{
+                position: 'relative',
+                width: `${this.arrowSize * 2}px`,
+                height: `${this.arrowSize}px`,
+                backgroundColor: 'var(--kritzel-controls-tooltip-background-color, #ffffff)',
+                bottom: `${this.arrowSize * 2}px`,
+                }}
+              ></div>
+            </div>
+          )}
         </div>
       </Host>
     );

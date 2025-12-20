@@ -39,11 +39,6 @@ export class KritzelControls {
     }
 
     this.isTooltipVisible = false;
-
-    // Close submenu when clicking outside
-    if (!element.closest('.kritzel-control-split') && !element.closest('.kritzel-submenu')) {
-      this.openSubMenuControl = null;
-    }
   }
 
   @Listen('keydown', { target: 'window' })
@@ -220,13 +215,14 @@ export class KritzelControls {
                 const isActive = this.activeControl?.name === control.name;
                 const isSubMenuOpen = this.openSubMenuControl?.name === control.name;
 
-                return (
+              return (
                   <div
                     class={{
                       'kritzel-control-split': true,
                       'selected': isActive,
                     }}
                     key={control.name}
+                    ref={el => { if (el) (control as any)._anchorRef = el; }}
                   >
                     <button
                       class="kritzel-control-main"
@@ -248,8 +244,13 @@ export class KritzelControls {
                       <kritzel-icon name="chevron-down" size={12}></kritzel-icon>
                     </button>
 
-                    {isSubMenuOpen && (
-                      <div class="kritzel-submenu">
+                    <kritzel-tooltip
+                      isVisible={isSubMenuOpen}
+                      anchorElement={(control as any)._anchorRef}
+                      showArrow={false}
+                      onTooltipClosed={() => { this.openSubMenuControl = null; }}
+                    >
+                      <div class="kritzel-submenu-content">
                         {control.subOptions.map(option => (
                           <button
                             class={{
@@ -264,7 +265,7 @@ export class KritzelControls {
                           </button>
                         ))}
                       </div>
-                    )}
+                    </kritzel-tooltip>
                   </div>
                 );
               }
