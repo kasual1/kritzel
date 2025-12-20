@@ -13,6 +13,7 @@
 | `arrowSize`     | `arrow-size` |             | `number`      | `8`         |
 | `isVisible`     | `is-visible` |             | `boolean`     | `false`     |
 | `offsetY`       | `offset-y`   |             | `number`      | `24`        |
+| `showArrow`     | `show-arrow` |             | `boolean`     | `true`      |
 
 
 ## Events
