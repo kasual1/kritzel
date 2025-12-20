@@ -1,4 +1,5 @@
 import { KritzelCore } from '../core/core.class';
+import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelBaseObject } from './base-object.class';
 
 interface UnchangedObjectSnapshot {
@@ -395,6 +396,12 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override hitTest(x: number, y: number): boolean {
+    const polygon = this.rotatedPolygon;
+    const polyPoints = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
+    if (KritzelGeometryHelper.isPointInPolygon({ x, y }, polyPoints)) {
+      return true;
+    }
+
     return this.objects.some(obj => obj.hitTest(x, y));
   }
 }
