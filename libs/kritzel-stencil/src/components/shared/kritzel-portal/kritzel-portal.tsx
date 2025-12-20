@@ -163,11 +163,32 @@ export class KritzelPortal {
     const refRect = this.anchor.getBoundingClientRect();
     const portalRect = this.portal.getBoundingClientRect();
     const offset = this.offsetY ?? this.defaultOffset;
+    const padding = 8; // Minimum padding from viewport edges
 
     let top = refRect.bottom + offset;
+    const spaceBelow = window.innerHeight - refRect.bottom - offset - padding;
+    const spaceAbove = refRect.top - offset - padding;
 
-    if (top + portalRect.height > window.innerHeight) {
+    // Reset max-height CSS custom property  
+    this.host.style.removeProperty('--kritzel-portal-max-height');
+
+    if (portalRect.height <= spaceBelow) {
+      // Fits below the anchor
+      top = refRect.bottom + offset;
+    } else if (portalRect.height <= spaceAbove) {
+      // Fits above the anchor
       top = refRect.top - portalRect.height - offset;
+    } else {
+      // Doesn't fit above or below - constrain the height
+      if (spaceBelow >= spaceAbove) {
+        // More space below, keep it below with constrained height
+        top = refRect.bottom + offset;
+        this.host.style.setProperty('--kritzel-portal-max-height', `${spaceBelow}px`);
+      } else {
+        // More space above, position above with constrained height
+        top = padding;
+        this.host.style.setProperty('--kritzel-portal-max-height', `${spaceAbove}px`);
+      }
     }
 
     return Math.round(top + window.scrollY);

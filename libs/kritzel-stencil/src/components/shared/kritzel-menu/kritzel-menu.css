@@ -13,7 +13,8 @@
   overflow-y: auto;
   scrollbar-color: #ebebeb transparent;
   scrollbar-width: thin;
-  max-height: 300px;
+  max-height: var(--kritzel-portal-max-height, 300px);
+  box-sizing: border-box;
 }
 
 
