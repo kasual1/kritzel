@@ -1,8 +1,6 @@
 import { Component, Host, Prop, h, Element, State, Listen, Method, Event, EventEmitter } from '@stencil/core';
 import { KritzelHTMLHelper } from '../../../helpers/html.helper';
 
-const MOBILE_BREAKPOINT = 768;
-
 @Component({
   tag: 'kritzel-tooltip',
   styleUrl: 'kritzel-tooltip.css',
@@ -19,8 +17,8 @@ export class KritzelTooltip {
   @Event() tooltipClosed: EventEmitter<void>;
 
   @State() positionX: number = 0;
+  @State() positionY: number = 0;
   @State() arrowOffset: string = '0px';
-  @State() isMobileView: boolean = window.innerWidth < MOBILE_BREAKPOINT;
 
   @Listen('click', { target: 'document' })
   handleOutsideClick(event: MouseEvent) {
@@ -33,7 +31,6 @@ export class KritzelTooltip {
 
   @Listen('resize', { target: 'window' })
   handleWindowResize() {
-    this.isMobileView = window.innerWidth < MOBILE_BREAKPOINT;
     this.calculateAdjustedPosition();
   }
 
@@ -50,7 +47,6 @@ export class KritzelTooltip {
   }
 
   componentWillLoad() {
-    this.isMobileView = window.innerWidth < MOBILE_BREAKPOINT;
     this.calculateAdjustedPosition();
   }
 
@@ -71,15 +67,29 @@ export class KritzelTooltip {
     if (this.isVisible && this.anchorElement) {
       const anchorRect = this.anchorElement.getBoundingClientRect();
       const tooltipContent = this.host.shadowRoot?.querySelector('.tooltip-content') as HTMLElement;
-
-      if (!this.isMobileView) {
-        this.positionX = anchorRect.left + anchorRect.width / 2;
-        this.arrowOffset = `calc(${50}% - ${this.arrowSize}px)`; 
-      } else {
-        const tooltipRect = tooltipContent.getBoundingClientRect();
-        this.positionX = anchorRect.left + anchorRect.width / 2 - tooltipRect.width / 2;
-        this.arrowOffset = `${anchorRect.left + anchorRect.width / 2 - tooltipRect.left - this.arrowSize}px`;
-      }
+      const tooltipRect = tooltipContent?.getBoundingClientRect();
+      const tooltipWidth = tooltipRect?.width || 0;
+      
+      const viewportPadding = 12; // Minimum distance from viewport edges
+      const anchorCenterX = anchorRect.left + anchorRect.width / 2;
+      
+      // Step 1: Try to center the tooltip above the anchor
+      let idealLeft = anchorCenterX - tooltipWidth / 2;
+      
+      // Step 2: Clamp to viewport bounds
+      const minLeft = viewportPadding;
+      const maxLeft = window.innerWidth - tooltipWidth - viewportPadding;
+      
+      // Apply clamping - adjust if tooltip would overflow
+      this.positionX = Math.max(minLeft, Math.min(idealLeft, maxLeft));
+      
+      // Step 3: Calculate bottom position (distance from viewport bottom to top of anchor + offset)
+      this.positionY = window.innerHeight - anchorRect.top + this.offsetY;
+      
+      // Step 4: Calculate arrow offset to point to the center of the anchor element
+      // Arrow should point to anchorCenterX, relative to where tooltip is positioned
+      const arrowPositionInTooltip = anchorCenterX - this.positionX - this.arrowSize;
+      this.arrowOffset = `${arrowPositionInTooltip}px`;
     }
   }
 
@@ -91,8 +101,8 @@ export class KritzelTooltip {
           zIndex: '9999',
           transition: 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out',
           visibility: this.isVisible ? 'visible' : 'hidden',
-          left: !this.isMobileView ? `${this.positionX}px` : '50%',
-          marginBottom: `${this.offsetY + this.arrowSize}px`,
+          left: `${this.positionX}px`,
+          bottom: `${this.positionY}px`,
         }}
       >
         <div class="tooltip-content" onClick={event => event.stopPropagation()}>
