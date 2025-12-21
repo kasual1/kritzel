@@ -132,6 +132,15 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     /**
+     * Finalizes the group after children have been positioned (e.g., after paste).
+     * Refreshes the bounding box and captures child snapshots.
+     */
+    finalize(): void {
+        this.refreshBoundingBox();
+        this.captureChildSnapshots();
+    }
+
+    /**
      * Recalculates the group's bounding box based on its children.
      */
     refreshBoundingBox(): void {
@@ -394,19 +403,27 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     override copy(): KritzelGroup {
         const copiedGroup = KritzelGroup.create(this._core);
 
-        // Deep copy all children and add to the new group
+        // Deep copy all children but DON'T add to store yet
+        // Store the copied children temporarily for paste() to handle
+        const copiedChildren: KritzelBaseObject<any>[] = [];
+
         this.children
             .sort((a, b) => a.zIndex - b.zIndex)
             .forEach(child => {
                 const copiedChild = child.copy() as KritzelBaseObject<any>;
-                this._core.store.state.objects.insert(copiedChild);
+                copiedChildren.push(copiedChild);
                 copiedGroup.childIds.push(copiedChild.id);
             });
 
+        // Store copied children on the group for paste() to access
+        (copiedGroup as any)._pendingChildren = copiedChildren;
+
         // Copy group properties
         copiedGroup.rotation = this.rotation;
-        copiedGroup.refreshBoundingBox();
-        copiedGroup.captureChildSnapshots();
+        copiedGroup.translateX = this.translateX;
+        copiedGroup.translateY = this.translateY;
+        copiedGroup.width = this.width;
+        copiedGroup.height = this.height;
 
         return copiedGroup;
     }

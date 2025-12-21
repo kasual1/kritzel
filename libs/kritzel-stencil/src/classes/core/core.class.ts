@@ -223,9 +223,9 @@ export class KritzelCore {
     this._store.state.objects.insert(object);
   }
 
-  removeObject(object: KritzelBaseObject<any>): void {
-    // Handle KritzelGroup: recursively delete all children first
-    if (object instanceof KritzelGroup) {
+  removeObject(object: KritzelBaseObject<any>, preserveChildren: boolean = false): void {
+    // Handle KritzelGroup: recursively delete all children first (unless preserveChildren is true)
+    if (object instanceof KritzelGroup && !preserveChildren) {
       // Get children before removing the group
       const children = [...object.children];
       children.forEach(child => {
@@ -394,6 +394,34 @@ export class KritzelCore {
 
       // Update z-index
       obj.zIndex = this._store.currentZIndex + i;
+
+      // Handle KritzelGroup: also add pending children with offset
+      if (obj instanceof KritzelGroup) {
+        const pendingChildren = (obj as any)._pendingChildren as KritzelBaseObject<any>[] | undefined;
+        if (pendingChildren) {
+          pendingChildren.forEach((child, childIndex) => {
+            // Update workspace
+            if (child.workspaceId !== activeWorkspace.id) {
+              child.workspaceId = activeWorkspace.id;
+            }
+
+            // Update position with offset
+            child.updatePosition(child.translateX + offsetX, child.translateY + offsetY);
+
+            // Update z-index
+            child.zIndex = this._store.currentZIndex + i + childIndex;
+
+            // Add child to store
+            this.addObject(child);
+          });
+
+          // Clear pending children
+          delete (obj as any)._pendingChildren;
+
+          // Finalize the group's bounding box and snapshots
+          obj.finalize();
+        }
+      }
 
       // Add to objectsMap
       this.addObject(obj);
@@ -587,8 +615,8 @@ export class KritzelCore {
       const children = group.ungroup();
       allChildren.push(...children);
 
-      // Remove the group from the store
-      this.removeObject(group);
+      // Remove the group from the store (but keep children)
+      this.removeObject(group, true);
     });
 
     // Create a new selection group with all the ungrouped children and non-group objects
