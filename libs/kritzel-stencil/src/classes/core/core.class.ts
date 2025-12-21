@@ -224,6 +224,15 @@ export class KritzelCore {
   }
 
   removeObject(object: KritzelBaseObject<any>): void {
+    // Handle KritzelGroup: recursively delete all children first
+    if (object instanceof KritzelGroup) {
+      // Get children before removing the group
+      const children = [...object.children];
+      children.forEach(child => {
+        this.removeObject(child);
+      });
+    }
+
     // Handle anchor cleanup
     if (object instanceof KritzelLine) {
       // If removing a line, clean up its anchor index entries
