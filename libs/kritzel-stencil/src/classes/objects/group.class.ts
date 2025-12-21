@@ -30,6 +30,12 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     private unchangedChildSnapshots: Map<string, ChildSnapshot> = new Map();
     private snapshotRotation: number = 0;
 
+    private snapshotTranslateX: number = 0;
+    private snapshotTranslateY: number = 0;
+    private snapshotTotalWidth: number = 0;
+    private snapshotTotalHeight: number = 0;
+    private snapshotScale: number = 1;
+
     /**
      * Retrieves the actual child objects from the store by their IDs.
      */
@@ -217,6 +223,12 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         this.unchangedChildSnapshots.clear();
         this.snapshotRotation = this.rotation;
 
+        this.snapshotTranslateX = this.translateX;
+        this.snapshotTranslateY = this.translateY;
+        this.snapshotTotalWidth = this.totalWidth;
+        this.snapshotTotalHeight = this.totalHeight;
+        this.snapshotScale = this.scale || 1;
+
         this.children.forEach(child => {
             this.unchangedChildSnapshots.set(child.id, {
                 id: child.id,
@@ -372,13 +384,15 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
     private getOffsetXToCenterFromSnapshot(snapshot: ChildSnapshot): number {
         const childCenterX = snapshot.translateX + snapshot.totalWidth / snapshot.scale / 2;
-        const groupCenterX = this.translateX + this.totalWidth / this.scale / 2;
+        const groupScale = this.snapshotScale || this.scale || 1;
+        const groupCenterX = this.snapshotTranslateX + this.snapshotTotalWidth / groupScale / 2;
         return childCenterX - groupCenterX;
     }
 
     private getOffsetYToCenterFromSnapshot(snapshot: ChildSnapshot): number {
         const childCenterY = snapshot.translateY + snapshot.totalHeight / snapshot.scale / 2;
-        const groupCenterY = this.translateY + this.totalHeight / this.scale / 2;
+        const groupScale = this.snapshotScale || this.scale || 1;
+        const groupCenterY = this.snapshotTranslateY + this.snapshotTotalHeight / groupScale / 2;
         return childCenterY - groupCenterY;
     }
 
