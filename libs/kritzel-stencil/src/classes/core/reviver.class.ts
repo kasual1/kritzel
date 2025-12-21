@@ -3,6 +3,7 @@ import { KritzelLine } from "../objects/line.class";
 import { KritzelPath } from "../objects/path.class";
 import { KritzelShape } from "../objects/shape.class";
 import { KritzelSelectionGroup } from "../objects/selection-group.class";
+import { KritzelGroup } from "../objects/group.class";
 import { KritzelText } from "../objects/text.class";
 import { KritzelBrushTool } from "../tools/brush-tool.class";
 import { KritzelEraserTool } from "../tools/eraser-tool.class";
@@ -57,6 +58,9 @@ export class KritzelReviver {
             break;
           case 'KritzelSelectionGroup':
             revivedObj = KritzelSelectionGroup.create(this._core).deserialize(obj);
+            break;
+          case 'KritzelGroup':
+            revivedObj = KritzelGroup.create(this._core).deserialize(obj);
             break;
           case 'KritzelWorkspace':
             revivedObj = KritzelWorkspace.create(this._core, obj).deserialize(obj);
