@@ -5,6 +5,7 @@ import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
@@ -222,7 +223,16 @@ export class KritzelCore {
     this._store.state.objects.insert(object);
   }
 
-  removeObject(object: KritzelBaseObject<any>): void {
+  removeObject(object: KritzelBaseObject<any>, preserveChildren: boolean = false): void {
+    // Handle KritzelGroup: recursively delete all children first (unless preserveChildren is true)
+    if (object instanceof KritzelGroup && !preserveChildren) {
+      // Get children before removing the group
+      const children = [...object.children];
+      children.forEach(child => {
+        this.removeObject(child);
+      });
+    }
+
     // Handle anchor cleanup
     if (object instanceof KritzelLine) {
       // If removing a line, clean up its anchor index entries
@@ -385,6 +395,34 @@ export class KritzelCore {
       // Update z-index
       obj.zIndex = this._store.currentZIndex + i;
 
+      // Handle KritzelGroup: also add pending children with offset
+      if (obj instanceof KritzelGroup) {
+        const pendingChildren = (obj as any)._pendingChildren as KritzelBaseObject<any>[] | undefined;
+        if (pendingChildren) {
+          pendingChildren.forEach((child, childIndex) => {
+            // Update workspace
+            if (child.workspaceId !== activeWorkspace.id) {
+              child.workspaceId = activeWorkspace.id;
+            }
+
+            // Update position with offset
+            child.updatePosition(child.translateX + offsetX, child.translateY + offsetY);
+
+            // Update z-index
+            child.zIndex = this._store.currentZIndex + i + childIndex;
+
+            // Add child to store
+            this.addObject(child);
+          });
+
+          // Clear pending children
+          delete (obj as any)._pendingChildren;
+
+          // Finalize the group's bounding box and snapshots
+          obj.finalize();
+        }
+      }
+
       // Add to objectsMap
       this.addObject(obj);
 
@@ -521,6 +559,77 @@ export class KritzelCore {
       this.updateObject(obj, { zIndex: min });
     });
 
+    this.rerender();
+  }
+
+  /**
+   * Groups the currently selected objects into a KritzelGroup.
+   * Requires at least 2 objects to be selected.
+   */
+  group(): void {
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup || selectionGroup.objects.length < 2) {
+      return;
+    }
+
+    // Create a group from the selected objects
+    const group = KritzelGroup.createFromObjects(this, selectionGroup.objects);
+
+    // Add the group to the object store
+    this.addObject(group);
+
+    // Remove the selection group and create a new one with just the group
+    this.removeSelectionGroup();
+
+    const newSelectionGroup = KritzelSelectionGroup.create(this);
+    newSelectionGroup.addOrRemove(group);
+    newSelectionGroup.isSelected = true;
+    newSelectionGroup.rotation = group.rotation;
+    this.addSelectionGroup(newSelectionGroup);
+
+    this.engine.emitObjectsChange();
+    this.rerender();
+  }
+
+  /**
+   * Ungroups any KritzelGroup objects in the current selection.
+   * Children are extracted and become top-level objects.
+   */
+  ungroup(): void {
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup) {
+      return;
+    }
+
+    const groups = selectionGroup.objects.filter(obj => obj instanceof KritzelGroup) as KritzelGroup[];
+    if (groups.length === 0) {
+      return;
+    }
+
+    // Collect all children from all groups
+    const allChildren: KritzelBaseObject<any>[] = [];
+    const nonGroupObjects = selectionGroup.objects.filter(obj => !(obj instanceof KritzelGroup));
+
+    groups.forEach(group => {
+      // Get children before removing the group
+      const children = group.ungroup();
+      allChildren.push(...children);
+
+      // Remove the group from the store (but keep children)
+      this.removeObject(group, true);
+    });
+
+    // Create a new selection group with all the ungrouped children and non-group objects
+    this.removeSelectionGroup();
+
+    const newSelectionGroup = KritzelSelectionGroup.create(this);
+    [...allChildren, ...nonGroupObjects].forEach(child => {
+      newSelectionGroup.addOrRemove(child);
+    });
+    newSelectionGroup.isSelected = true;
+    this.addSelectionGroup(newSelectionGroup);
+
+    this.engine.emitObjectsChange();
     this.rerender();
   }
 

@@ -20,12 +20,22 @@ export class KritzelEventHelper {
     onSuccess: (event: PointerEvent) => void,
     onCancel?: () => void
   ): () => void {
-    const longPressTimeout = 400;
-    const moveThreshold = 10;
+    if (event.pointerType !== 'touch') {
+      onCancel?.();
+      return () => { };
+    }
 
     const startX = event.clientX;
     const startY = event.clientY;
     const target = event.target as HTMLElement;
+
+    if (!target) {
+      onCancel?.();
+      return () => { };
+    }
+
+    const longPressTimeout = 400;
+    const moveThreshold = 10;
 
     const timer = setTimeout(() => {
       removeListeners();
