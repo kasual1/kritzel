@@ -14,6 +14,7 @@ export * from './classes/objects/text.class';
 export * from './classes/objects/path.class';
 export * from './classes/objects/image.class';
 export * from './classes/objects/line.class';
+export * from './classes/objects/group.class';
 
 export * from './classes/tools/brush-tool.class';
 export * from './classes/tools/line-tool.class';

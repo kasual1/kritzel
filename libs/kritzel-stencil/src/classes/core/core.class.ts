@@ -5,6 +5,7 @@ import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
@@ -521,6 +522,77 @@ export class KritzelCore {
       this.updateObject(obj, { zIndex: min });
     });
 
+    this.rerender();
+  }
+
+  /**
+   * Groups the currently selected objects into a KritzelGroup.
+   * Requires at least 2 objects to be selected.
+   */
+  group(): void {
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup || selectionGroup.objects.length < 2) {
+      return;
+    }
+
+    // Create a group from the selected objects
+    const group = KritzelGroup.createFromObjects(this, selectionGroup.objects);
+
+    // Add the group to the object store
+    this.addObject(group);
+
+    // Remove the selection group and create a new one with just the group
+    this.removeSelectionGroup();
+
+    const newSelectionGroup = KritzelSelectionGroup.create(this);
+    newSelectionGroup.addOrRemove(group);
+    newSelectionGroup.isSelected = true;
+    newSelectionGroup.rotation = group.rotation;
+    this.addSelectionGroup(newSelectionGroup);
+
+    this.engine.emitObjectsChange();
+    this.rerender();
+  }
+
+  /**
+   * Ungroups any KritzelGroup objects in the current selection.
+   * Children are extracted and become top-level objects.
+   */
+  ungroup(): void {
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup) {
+      return;
+    }
+
+    const groups = selectionGroup.objects.filter(obj => obj instanceof KritzelGroup) as KritzelGroup[];
+    if (groups.length === 0) {
+      return;
+    }
+
+    // Collect all children from all groups
+    const allChildren: KritzelBaseObject<any>[] = [];
+    const nonGroupObjects = selectionGroup.objects.filter(obj => !(obj instanceof KritzelGroup));
+
+    groups.forEach(group => {
+      // Get children before removing the group
+      const children = group.ungroup();
+      allChildren.push(...children);
+
+      // Remove the group from the store
+      this.removeObject(group);
+    });
+
+    // Create a new selection group with all the ungrouped children and non-group objects
+    this.removeSelectionGroup();
+
+    const newSelectionGroup = KritzelSelectionGroup.create(this);
+    [...allChildren, ...nonGroupObjects].forEach(child => {
+      newSelectionGroup.addOrRemove(child);
+    });
+    newSelectionGroup.isSelected = true;
+    this.addSelectionGroup(newSelectionGroup);
+
+    this.engine.emitObjectsChange();
     this.rerender();
   }
 
