@@ -396,9 +396,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override hitTest(x: number, y: number): boolean {
-    const containsOnlyLines = this.objects.every(obj => obj.__class__ === 'KritzelLine');
-    if (containsOnlyLines) {
-      return this.objects.some(obj => obj.hitTest(x, y));
+    const isSingleLine = this.objects.length === 1 && this.objects[0].__class__ === 'KritzelLine';
+    if (isSingleLine) {
+      return this.objects[0].hitTest(x, y);
     }
 
     const polygon = this.rotatedPolygon;
