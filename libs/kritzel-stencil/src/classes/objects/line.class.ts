@@ -166,7 +166,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   }
 
   override hitTest(x: number, y: number): boolean {
-    const strokeWidth = Math.max(this.strokeWidth, 10);
+    const minHitThreshold = 20;
+    const strokeWidth = Math.max(this.strokeWidth, minHitThreshold);
     const halfStroke = strokeWidth / this.scale / 2;
 
     if (this._adjustedPoints === null) {
