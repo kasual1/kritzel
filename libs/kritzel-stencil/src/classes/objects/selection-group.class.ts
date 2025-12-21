@@ -396,6 +396,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override hitTest(x: number, y: number): boolean {
+    const containsOnlyLines = this.objects.every(obj => obj.__class__ === 'KritzelLine');
+    if (containsOnlyLines) {
+      return this.objects.some(obj => obj.hitTest(x, y));
+    }
+
     const polygon = this.rotatedPolygon;
     const polyPoints = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
     if (KritzelGeometryHelper.isPointInPolygon({ x, y }, polyPoints)) {
