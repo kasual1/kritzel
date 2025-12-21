@@ -1,6 +1,7 @@
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelGroup } from '../objects/group.class';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelCore } from '../core/core.class';
@@ -175,7 +176,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     selectionBox.translateX = this.startX;
     selectionBox.translateY = this.startY;
 
-    this._core.store.state.isSelecting  = true;
+    this._core.store.state.isSelecting = true;
 
     this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
     this._core.store.state.objects.insert(selectionBox);
@@ -287,12 +288,16 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       return;
     }
 
-    object.isSelected = false;
+    // Resolve child objects to their parent groups
+    const parentGroup = KritzelGroup.findParentGroup(this._core, object.id);
+    const objectToSelect = parentGroup || object;
+
+    objectToSelect.isSelected = false;
 
     const selectionGroup = KritzelSelectionGroup.create(this._core);
-    selectionGroup.addOrRemove(object);
+    selectionGroup.addOrRemove(objectToSelect);
     selectionGroup.isSelected = true;
-    selectionGroup.rotation = object.rotation;
+    selectionGroup.rotation = objectToSelect.rotation;
 
     this._core.addSelectionGroup(selectionGroup);
     this._core.rerender();
@@ -305,10 +310,27 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       return;
     }
 
+    // Resolve child objects to their parent groups to avoid double-move
+    const resolvedObjects = new Map<string, KritzelBaseObject<any>>();
+
+    selectedObjects.forEach(obj => {
+      // Check if this object is a child of a KritzelGroup
+      const parentGroup = KritzelGroup.findParentGroup(this._core, obj.id);
+
+      if (parentGroup) {
+        // Add the parent group instead of the child
+        resolvedObjects.set(parentGroup.id, parentGroup);
+      } else {
+        // Not a child of any group, add the object itself
+        resolvedObjects.set(obj.id, obj);
+      }
+
+      obj.isSelected = false;
+    });
+
     const selectionGroup = KritzelSelectionGroup.create(this._core);
-    selectedObjects.forEach(o => {
+    resolvedObjects.forEach(o => {
       selectionGroup.addOrRemove(o);
-      o.isSelected = false;
     });
 
     selectionGroup.isSelected = true;
