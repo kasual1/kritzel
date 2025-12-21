@@ -42,6 +42,10 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     { key: '-', ctrl: true, condition: c => !!c.store.selectionGroup, action: c => c.sendBackward() },
     { key: '*', shift: true, condition: c => !!c.store.selectionGroup, action: c => c.bringToFront() },
     { key: '_', shift: true, condition: c => !!c.store.selectionGroup, action: c => c.sendToBack() },
+
+    // Grouping
+    { key: 'g', ctrl: true, condition: c => !!c.store.selectionGroup && c.store.selectionGroup.objects.length >= 2, action: c => c.group() },
+    { key: 'G', ctrl: true, shift: true, condition: c => !!c.store.selectionGroup, action: c => c.ungroup() },
   ];
 
   constructor(core: KritzelCore) {
@@ -63,7 +67,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     if (shortcut) {
       event.preventDefault();
       shortcut.action(this._core);
-    } 
+    }
   }
 
   handleKeyUp(event: KeyboardEvent): void {

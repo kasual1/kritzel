@@ -112,6 +112,21 @@ export class KritzelEditor {
     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },
     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },
     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },
+    {
+      label: 'Group',
+      icon: 'group',
+      disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
+      action: () => this.engineRef.group(),
+    },
+    {
+      label: 'Ungroup',
+      icon: 'ungroup',
+      disabled: async () => {
+        const selectedObjects = await this.engineRef.getSelectedObjects();
+        return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');
+      },
+      action: () => this.engineRef.ungroup(),
+    },
   ];
 
   @Prop() customSvgIcons: Record<string, string> = {};

@@ -309,6 +309,16 @@ export class KritzelEngine {
   }
 
   @Method()
+  async group() {
+    this.core.group();
+  }
+
+  @Method()
+  async ungroup() {
+    this.core.ungroup();
+  }
+
+  @Method()
   async undo() {
     this.core.undo();
   }

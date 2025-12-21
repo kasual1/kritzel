@@ -158,7 +158,7 @@ export namespace Components {
          */
         "isUtilityPanelVisible": boolean;
         /**
-          * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },   ]
+          * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },     {       label: 'Group',       icon: 'group',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       action: () => this.engineRef.group(),     },     {       label: 'Ungroup',       icon: 'ungroup',       disabled: async () => {         const selectedObjects = await this.engineRef.getSelectedObjects();         return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');       },       action: () => this.engineRef.ungroup(),     },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
@@ -197,6 +197,7 @@ export namespace Components {
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
         "globalContextMenuItems": ContextMenuItem[];
+        "group": () => Promise<void>;
         "hideContextMenu": () => Promise<void>;
         "objectContextMenuItems": ContextMenuItem[];
         "paste": (x: number, y: number) => Promise<void>;
@@ -217,6 +218,7 @@ export namespace Components {
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
         "syncConfig"?: KritzelSyncConfig;
         "undo": () => Promise<void>;
+        "ungroup": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "workspace"?: KritzelWorkspace;
@@ -951,7 +953,7 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         /**
-          * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },   ]
+          * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },     {       label: 'Group',       icon: 'group',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       action: () => this.engineRef.group(),     },     {       label: 'Ungroup',       icon: 'ungroup',       disabled: async () => {         const selectedObjects = await this.engineRef.getSelectedObjects();         return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');       },       action: () => this.engineRef.ungroup(),     },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
