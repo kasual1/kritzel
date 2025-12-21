@@ -12,7 +12,6 @@ import { KritzelPolygon } from '../../interfaces/polygon.interface';
  * Key features:
  * - Supports nested groups (groups can contain other groups)
  * - Clicking any child selects the entire group
- * - Double-click to enter "edit mode" and select individual children
  * - Can be ungrouped to restore children to top-level objects
  */
 export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
@@ -82,6 +81,23 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         group.captureChildSnapshots();
 
         return group;
+    }
+
+    /**
+     * Finds the parent KritzelGroup that contains the given object as a child.
+     * Returns null if the object is not a child of any group.
+     */
+    static findParentGroup(core: KritzelCore, objectId: string): KritzelGroup | null {
+        const allGroups = core.store.state.objects
+            .filter(obj => obj.__class__ === 'KritzelGroup') as KritzelGroup[];
+
+        for (const group of allGroups) {
+            if (group.childIds.includes(objectId)) {
+                return group;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -369,19 +385,6 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     override hitTestPolygon(polygon: KritzelPolygon): boolean {
         // Check if polygon intersects with any child
         return this.children.some(child => child.hitTestPolygon(polygon));
-    }
-
-    /**
-     * Finds the deepest child at the given point (for edit mode).
-     * Returns null if no child is hit.
-     */
-    findChildAtPoint(x: number, y: number): KritzelBaseObject<any> | null {
-        for (const child of this.children) {
-            if (child.hitTest(x, y)) {
-                return child;
-            }
-        }
-        return null;
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
