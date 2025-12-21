@@ -1,6 +1,7 @@
 import { KritzelCore } from '../core/core.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelBaseObject } from './base-object.class';
+import { KritzelGroup } from './group.class';
 
 interface UnchangedObjectSnapshot {
   id: string;
@@ -66,6 +67,23 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     this.captureUnchangedSnapshots();
     this.refreshObjectDimensions();
+  }
+
+  /**
+   * Prepares the selection group and its children for a transform interaction (rotate/resize).
+   * Ensures snapshot state is aligned with the current visual state.
+   */
+  beginTransform(): void {
+    // Keep the selection group's bounding box current before snapshotting.
+    this.refreshObjectDimensions();
+    this.captureUnchangedSnapshots();
+
+    // Groups need their own child snapshots aligned with the current transform.
+    this.objects.forEach(obj => {
+      if (obj instanceof KritzelGroup) {
+        obj.finalize();
+      }
+    });
   }
 
   deselectAllChildren() {
