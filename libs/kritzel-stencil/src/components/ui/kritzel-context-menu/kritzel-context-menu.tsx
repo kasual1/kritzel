@@ -7,6 +7,8 @@ interface ProcessedMenuItem {
   isDisabled: boolean;
 }
 
+const VIEWPORT_PADDING = 8;
+
 @Component({
   tag: 'kritzel-context-menu',
   styleUrl: 'kritzel-context-menu.css',
@@ -27,6 +29,7 @@ export class KritzelContextMenu {
   @Event() close: EventEmitter<void>;
 
   @State() private processedItems: ProcessedMenuItem[] = [];
+  @State() private adjustedPosition: { left?: string; top?: string; right?: string; bottom?: string } = {};
 
   @Listen('pointerdown', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
@@ -38,6 +41,52 @@ export class KritzelContextMenu {
 
   componentWillLoad() {
     this.updateMenuItems();
+  }
+
+  componentDidLoad() {
+    this.adjustPositionToViewport();
+  }
+
+  componentDidUpdate() {
+    this.adjustPositionToViewport();
+  }
+
+  private adjustPositionToViewport() {
+    const rect = this.host.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    const currentLeft = parseFloat(this.host.style.left) || 0;
+    const currentTop = parseFloat(this.host.style.top) || 0;
+
+    let newLeft = currentLeft;
+    let newTop = currentTop;
+
+    // Check if menu extends beyond right edge
+    if (rect.right > viewportWidth - VIEWPORT_PADDING) {
+      newLeft = viewportWidth - rect.width - VIEWPORT_PADDING;
+    }
+
+    // Check if menu extends beyond bottom edge
+    if (rect.bottom > viewportHeight - VIEWPORT_PADDING) {
+      newTop = viewportHeight - rect.height - VIEWPORT_PADDING;
+    }
+
+    // Ensure menu doesn't go beyond left edge
+    if (newLeft < VIEWPORT_PADDING) {
+      newLeft = VIEWPORT_PADDING;
+    }
+
+    // Ensure menu doesn't go beyond top edge
+    if (newTop < VIEWPORT_PADDING) {
+      newTop = VIEWPORT_PADDING;
+    }
+
+    // Only update if position changed to avoid infinite loops
+    if (newLeft !== currentLeft || newTop !== currentTop) {
+      this.host.style.left = `${newLeft}px`;
+      this.host.style.top = `${newTop}px`;
+    }
   }
 
   private handleItemClick(item: ContextMenuItem, isDisabled: boolean) {
