@@ -251,6 +251,16 @@ Type: `Promise<KritzelWorkspace[]>`
 
 
 
+### `group() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `hideContextMenu() => Promise<void>`
 
 
@@ -381,6 +391,16 @@ Type: `Promise<void>`
 
 
 ### `undo() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `ungroup() => Promise<void>`
 
 
 
