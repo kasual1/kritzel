@@ -1321,7 +1321,7 @@ export class KritzelEngine {
               position: 'fixed',
               left: `${this.core.store.state.contextMenuX}px`,
               top: `${this.core.store.state.contextMenuY}px`,
-              zIndex: '10000',
+              zIndex: '10002',
             }}
             onActionSelected={event => {
               event.detail.action(
