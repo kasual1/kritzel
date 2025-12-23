@@ -29,7 +29,6 @@ export class KritzelContextMenu {
   @Event() close: EventEmitter<void>;
 
   @State() private processedItems: ProcessedMenuItem[] = [];
-  @State() private adjustedPosition: { left?: string; top?: string; right?: string; bottom?: string } = {};
 
   @Listen('pointerdown', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
