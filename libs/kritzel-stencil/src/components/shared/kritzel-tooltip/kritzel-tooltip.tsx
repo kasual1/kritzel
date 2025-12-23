@@ -11,15 +11,12 @@ export class KritzelTooltip {
 
   @Prop() isVisible: boolean = false;
   @Prop() anchorElement: HTMLElement;
-  @Prop() arrowSize: number = 8;
   @Prop() offsetY: number = 24;
-  @Prop() showArrow: boolean = true;
 
   @Event() tooltipClosed: EventEmitter<void>;
 
   @State() positionX: number = 0;
   @State() positionY: number = 0;
-  @State() arrowOffset: string = '0px';
 
   @Listen('click', { target: 'document' })
   handleOutsideClick(event: MouseEvent) {
@@ -86,11 +83,6 @@ export class KritzelTooltip {
       
       // Step 3: Calculate bottom position (distance from viewport bottom to top of anchor + offset)
       this.positionY = window.innerHeight - anchorRect.top + this.offsetY;
-      
-      // Step 4: Calculate arrow offset to point to the center of the anchor element
-      // Arrow should point to anchorCenterX, relative to where tooltip is positioned
-      const arrowPositionInTooltip = anchorCenterX - this.positionX - this.arrowSize;
-      this.arrowOffset = `${arrowPositionInTooltip}px`;
     }
   }
 
@@ -108,36 +100,6 @@ export class KritzelTooltip {
       >
         <div class="tooltip-content" onClick={event => event.stopPropagation()}>
           <slot></slot>
-          {this.showArrow && (
-            <div
-              class="tooltip-arrow-wrapper"
-              style={{
-                position: 'fixed',
-                left: this.arrowOffset,
-                bottom: `-${this.arrowSize * 2}px`,
-              }}
-            >
-              <div
-                class="tooltip-arrow"
-                style={{
-                borderLeft: `${this.arrowSize}px solid transparent`,
-                borderRight: `${this.arrowSize}px solid transparent`,
-                borderTop: `${this.arrowSize}px solid var(--kritzel-controls-tooltip-background-color, #ffffff)`,
-                filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))',
-                }}
-              ></div>
-              <div
-                class="tooltip-arrow-rect"
-                style={{
-                position: 'relative',
-                width: `${this.arrowSize * 2}px`,
-                height: `${this.arrowSize}px`,
-                backgroundColor: 'var(--kritzel-controls-tooltip-background-color, #ffffff)',
-                bottom: `${this.arrowSize * 2}px`,
-                }}
-              ></div>
-            </div>
-          )}
         </div>
       </Host>
     );

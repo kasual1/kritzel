@@ -327,10 +327,6 @@ export namespace Components {
     }
     interface KritzelTooltip {
         "anchorElement": HTMLElement;
-        /**
-          * @default 8
-         */
-        "arrowSize": number;
         "focusContent": () => Promise<void>;
         /**
           * @default false
@@ -340,10 +336,6 @@ export namespace Components {
           * @default 24
          */
         "offsetY": number;
-        /**
-          * @default true
-         */
-        "showArrow": boolean;
     }
     interface KritzelUtilityPanel {
         /**
@@ -1115,10 +1107,6 @@ declare namespace LocalJSX {
     interface KritzelTooltip {
         "anchorElement"?: HTMLElement;
         /**
-          * @default 8
-         */
-        "arrowSize"?: number;
-        /**
           * @default false
          */
         "isVisible"?: boolean;
@@ -1127,10 +1115,6 @@ declare namespace LocalJSX {
          */
         "offsetY"?: number;
         "onTooltipClosed"?: (event: KritzelTooltipCustomEvent<void>) => void;
-        /**
-          * @default true
-         */
-        "showArrow"?: boolean;
     }
     interface KritzelUtilityPanel {
         "onDelete"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;

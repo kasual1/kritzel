@@ -247,7 +247,6 @@ export class KritzelControls {
                     <kritzel-tooltip
                       isVisible={isSubMenuOpen}
                       anchorElement={(control as any)._anchorRef}
-                      showArrow={false}
                       onTooltipClosed={() => { this.openSubMenuControl = null; }}
                     >
                       <div class="kritzel-submenu-content">
