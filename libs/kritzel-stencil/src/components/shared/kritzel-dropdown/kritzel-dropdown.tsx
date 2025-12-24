@@ -62,6 +62,8 @@ export class KritzelDropdown {
   @Listen('keydown', { target: 'document' })
   handleDocumentKeydown(event: KeyboardEvent) {
     if (this.isOpen && event.key === 'Escape') {
+      event.stopPropagation();
+      event.preventDefault();
       this.closeMenu();
       this.triggerElement?.focus();
     }
@@ -166,10 +168,12 @@ export class KritzelDropdown {
       case 'ArrowDown':
         event.preventDefault();
         this.focusedIndex = Math.min(this.focusedIndex + 1, this.options.length - 1);
+        this.scrollFocusedOptionIntoView();
         break;
       case 'ArrowUp':
         event.preventDefault();
         this.focusedIndex = Math.max(this.focusedIndex - 1, 0);
+        this.scrollFocusedOptionIntoView();
         break;
       case 'Enter':
       case ' ':
@@ -181,15 +185,30 @@ export class KritzelDropdown {
       case 'Home':
         event.preventDefault();
         this.focusedIndex = 0;
+        this.scrollFocusedOptionIntoView();
         break;
       case 'End':
         event.preventDefault();
         this.focusedIndex = this.options.length - 1;
+        this.scrollFocusedOptionIntoView();
         break;
       case 'Tab':
         this.closeMenu();
         break;
     }
+  };
+
+  private scrollFocusedOptionIntoView = () => {
+    if (!this.menuElement || this.focusedIndex < 0) {
+      return;
+    }
+    // Use requestAnimationFrame to ensure the DOM has updated with the new focused class
+    requestAnimationFrame(() => {
+      const focusedOption = this.menuElement?.querySelector('.dropdown-option.is-focused') as HTMLElement;
+      if (focusedOption) {
+        focusedOption.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    });
   };
 
   private handleOptionMouseEnter = (index: number) => {

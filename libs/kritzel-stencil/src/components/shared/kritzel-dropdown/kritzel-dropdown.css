@@ -48,7 +48,6 @@
   outline-offset: -2px;
 }
 
-/* Adjust border-radius when prefix/suffix are present */
 .dropdown-trigger.has-suffix-border {
   border-right: 1px solid #333333;
   border-top-right-radius: 0;
