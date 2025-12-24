@@ -1195,7 +1195,7 @@ export class KritzelEngine {
                       r={data.indicatorRadius}
                       style={{
                         fill: 'var(--kritzel-snap-indicator-fill, rgba(0, 0, 0))',
-                        stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                        stroke: 'var(--kritzel-snap-indicator-stroke, #007bff)',
                         strokeWidth: data.indicatorStrokeWidth,
                       }}
                     />
@@ -1234,7 +1234,7 @@ export class KritzelEngine {
                       r={data.indicatorRadius}
                       style={{
                         fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
-                        stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                        stroke: 'var(--kritzel-snap-indicator-stroke, #007bff)',
                         strokeWidth: data.indicatorStrokeWidth,
                       }}
                     />
@@ -1301,7 +1301,7 @@ export class KritzelEngine {
                     r={data.indicatorRadius}
                     style={{
                       fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
-                      stroke: 'var(--kritzel-snap-indicator-stroke, #3b82f6)',
+                      stroke: 'var(--kritzel-snap-indicator-stroke, #007bff)',
                       strokeWidth: data.indicatorStrokeWidth,
                     }}
                   />
