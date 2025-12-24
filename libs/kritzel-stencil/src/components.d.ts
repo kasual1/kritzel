@@ -123,7 +123,7 @@ export namespace Components {
         /**
           * @default {}
          */
-        "selectStyles"?: any;
+        "selectStyles"?: Record<string, string>;
         "value": string;
         "width"?: string;
     }
@@ -919,7 +919,7 @@ declare namespace LocalJSX {
         /**
           * @default {}
          */
-        "selectStyles"?: any;
+        "selectStyles"?: Record<string, string>;
         "value"?: string;
         "width"?: string;
     }
