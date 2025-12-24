@@ -144,6 +144,7 @@
 .kritzel-submenu-content {
   display: flex;
   flex-direction: column;
+  gap: var(--kritzel-submenu-gap, 4px);
   min-width: 140px;
 }
 
@@ -176,7 +177,6 @@
   background-color: var(--kritzel-controls-control-selected-background-color, #007AFF);
 }
 
-
 .kritzel-config-container {
   position: relative;
   display: flex;
@@ -203,7 +203,6 @@
   pointer-events: auto;
   margin-left: 0;
 }
-
 
 .kritzel-config {
   display: flex;
