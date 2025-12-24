@@ -56,8 +56,6 @@ export class KritzelFontFamily {
           onValueChanged={this.handleDropdownValueChange}
           selectStyles={{ fontFamily: this.selectedFontFamily }}
         >
-          <button class="font-style-button" slot="suffix">B</button>
-          <button class="font-style-button italic-text" slot="suffix">I</button>
         </kritzel-dropdown>
       </Host>
     );
