@@ -79,4 +79,6 @@ body,
   --kritzel-snap-indicator-stroke: var(--kritzel-primary-color);
 
   --kritzel-dropdown-accent-color: var(--kritzel-primary-color);
+  --kritzel-dropdown-selected-bg: rgb(8, 126, 164, 0.1);
+
 }
