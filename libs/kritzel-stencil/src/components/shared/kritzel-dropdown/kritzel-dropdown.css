@@ -44,8 +44,7 @@
 }
 
 .dropdown-trigger:focus-visible {
-  outline: 2px solid var(--kritzel-controls-focus-color, #0066cc);
-  outline-offset: -2px;
+  outline: revert;
 }
 
 .dropdown-trigger.has-suffix-border {
