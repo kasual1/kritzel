@@ -18,6 +18,13 @@ export class KritzelColorPalette {
     this.colorChange.emit(color);
   }
 
+  private handleKeyDown(event: KeyboardEvent, color: string) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.handleColorClick(color);
+    }
+  }
+
   private calculateHeight(): string {
     const colorsPerRow = 6;
     const rowHeight = 32;
@@ -49,6 +56,7 @@ export class KritzelColorPalette {
                 'selected': this.selectedColor === color,
               }}
               onClick={() => this.handleColorClick(color)}
+              onKeyDown={event => this.handleKeyDown(event, color)}
             >
               <kritzel-color value={color}></kritzel-color>
             </div>
