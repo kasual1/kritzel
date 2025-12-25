@@ -7,12 +7,12 @@
 
 ## Properties
 
-| Property       | Attribute       | Description | Type               | Default     |
-| -------------- | --------------- | ----------- | ------------------ | ----------- |
-| `options`      | --              |             | `DropdownOption[]` | `[]`        |
-| `selectStyles` | `select-styles` |             | `any`              | `{}`        |
-| `value`        | `value`         |             | `string`           | `undefined` |
-| `width`        | `width`         |             | `string`           | `undefined` |
+| Property       | Attribute | Description | Type               | Default     |
+| -------------- | --------- | ----------- | ------------------ | ----------- |
+| `options`      | --        |             | `DropdownOption[]` | `[]`        |
+| `selectStyles` | --        |             | `string`           | `{}`        |
+| `value`        | `value`   |             | `string`           | `undefined` |
+| `width`        | `width`   |             | `string`           | `undefined` |
 
 
 ## Events

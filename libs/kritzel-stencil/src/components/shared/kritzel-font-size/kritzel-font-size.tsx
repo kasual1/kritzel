@@ -18,16 +18,25 @@ export class KritzelFontSize {
     this.sizeChange.emit(size);
   }
 
+  private handleKeyDown(event: KeyboardEvent, size: number) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.handleSizeClick(size);
+    }
+  }
+
   render() {
     return (
       <Host>
         {this.sizes.map(size => (
           <div
+            tabIndex={0}
             class={{
               'size-container': true,
               'selected': this.selectedSize === size,
             }}
             onClick={() => this.handleSizeClick(size)}
+            onKeyDown={event => this.handleKeyDown(event, size)}
           >
             <kritzel-font fontFamily={this.fontFamily} size={size}></kritzel-font>
           </div>

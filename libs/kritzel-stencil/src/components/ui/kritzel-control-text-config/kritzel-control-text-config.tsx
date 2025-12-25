@@ -46,7 +46,7 @@ export class KritzelControlTextConfig {
         >
           <kritzel-font-family selectedFontFamily={this.tool.fontFamily} onFontFamilyChange={event => this.handleFamilyChange(event)}></kritzel-font-family>
 
-          <button class="expand-toggle" onClick={() => this.handleToggleExpand()} title={this.isExpanded ? 'Collapse' : 'Expand'}>
+          <button class="expand-toggle" onClick={() => this.handleToggleExpand()} title={this.isExpanded ? 'Collapse' : 'Expand'} tabindex="0">
             <kritzel-icon name={this.isExpanded ? 'chevron-up' : 'chevron-down'}></kritzel-icon>
           </button>
         </div>
