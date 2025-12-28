@@ -33,6 +33,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   isCompleted: boolean = false;
 
   private _adjustedPoints?: number[][] = null;
+  private _clipInfo: { start?: { x: number; y: number; t?: number }; end?: { x: number; y: number; t?: number } } | null = null;
 
   get d(): string {
     if (this.controlX !== undefined && this.controlY !== undefined) {
@@ -124,6 +125,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.translateY = y;
 
     this._adjustedPoints = null;
+    this._clipInfo = null;
 
     this._core.store.state.objects.update(this);
 
@@ -141,6 +143,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   override rotate(value: number): void {
     this.rotation = value;
     this._adjustedPoints = null;
+    this._clipInfo = null;
 
     this._core.store.state.objects.update(this);
   }
@@ -161,6 +164,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     }
 
     this._adjustedPoints = null;
+    this._clipInfo = null;
 
     this._core.store.state.objects.update(this);
   }
@@ -176,13 +180,17 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
 
     // For curved lines, use distance to the Bezier curve
     if (this.controlX !== undefined && this.controlY !== undefined) {
-      const distance = this.pointToBezierDistance(x, y);
+      const clip = this.getClipInfo();
+      const startT = clip.start?.t ?? 0;
+      const endT = clip.end?.t ?? 1;
+      const distance = this.pointToBezierDistance(x, y, startT, endT);
       return distance <= halfStroke;
     }
 
     // For straight lines, use distance to line segment
-    const p1 = this._adjustedPoints[0];
-    const p2 = this._adjustedPoints[1];
+    const clip = this.getClipInfo();
+    const p1 = clip.start ? [clip.start.x, clip.start.y] : this._adjustedPoints[0];
+    const p2 = clip.end ? [clip.end.x, clip.end.y] : this._adjustedPoints[1];
 
     const distance = this.pointToLineSegmentDistance(x, y, p1[0], p1[1], p2[0], p2[1]);
     return distance <= halfStroke;
@@ -195,6 +203,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
       this._adjustedPoints = this.computeAdjustedPoints();
     }
 
+    const clip = this.getClipInfo();
+
     const polyPoints: KritzelPoint[] = [
       { x: polygon.bottomLeft.x, y: polygon.bottomLeft.y },
       { x: polygon.bottomRight.x, y: polygon.bottomRight.y },
@@ -203,7 +213,13 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     ];
 
     // Check if any endpoint is inside the polygon
-    for (const [px, py] of this._adjustedPoints) {
+    // Use clipped endpoints
+    const p1 = clip.start ? [clip.start.x, clip.start.y] : this._adjustedPoints[0];
+    const p2 = clip.end ? [clip.end.x, clip.end.y] : this._adjustedPoints[1];
+
+    const endpoints = [p1, p2];
+
+    for (const [px, py] of endpoints) {
       if (KritzelGeometryHelper.isPointInPolygon({ x: px, y: py }, polyPoints)) {
         return true;
       }
@@ -222,9 +238,13 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
       const p2 = this._adjustedPoints[1];
       const controlAdjusted = this.computeAdjustedControlPoint();
 
+      const startT = clip.start?.t ?? 0;
+      const endT = clip.end?.t ?? 1;
+
       const samples = 20;
-      for (let i = 1; i < samples; i++) {
-        const t = i / samples;
+      for (let i = 0; i <= samples; i++) {
+        const fraction = i / samples;
+        const t = startT + fraction * (endT - startT);
         const oneMinusT = 1 - t;
 
         const bx = oneMinusT * oneMinusT * p0[0] + 2 * oneMinusT * t * controlAdjusted[0] + t * t * p2[0];
@@ -249,22 +269,22 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     }
 
     // For straight lines, check if line intersects any polygon edge
-    const p1 = { x: this._adjustedPoints[0][0], y: this._adjustedPoints[0][1] };
-    const p2 = { x: this._adjustedPoints[1][0], y: this._adjustedPoints[1][1] };
+    const checkP1 = { x: p1[0], y: p1[1] };
+    const checkP2 = { x: p2[0], y: p2[1] };
 
     for (let j = 0; j < polyPoints.length; j++) {
       const q1 = polyPoints[j];
       const q2 = polyPoints[(j + 1) % polyPoints.length];
 
-      if (KritzelGeometryHelper.intersectLines(p1, p2, q1, q2)) {
+      if (KritzelGeometryHelper.intersectLines(checkP1, checkP2, q1, q2)) {
         return true;
       }
 
       // Check distance from polygon edges to line segment
-      const d1 = this.pointToLineSegmentDistance(q1.x, q1.y, p1.x, p1.y, p2.x, p2.y);
-      const d2 = this.pointToLineSegmentDistance(q2.x, q2.y, p1.x, p1.y, p2.x, p2.y);
-      const d3 = this.pointToLineSegmentDistance(p1.x, p1.y, q1.x, q1.y, q2.x, q2.y);
-      const d4 = this.pointToLineSegmentDistance(p2.x, p2.y, q1.x, q1.y, q2.x, q2.y);
+      const d1 = this.pointToLineSegmentDistance(q1.x, q1.y, checkP1.x, checkP1.y, checkP2.x, checkP2.y);
+      const d2 = this.pointToLineSegmentDistance(q2.x, q2.y, checkP1.x, checkP1.y, checkP2.x, checkP2.y);
+      const d3 = this.pointToLineSegmentDistance(checkP1.x, checkP1.y, q1.x, q1.y, q2.x, q2.y);
+      const d4 = this.pointToLineSegmentDistance(checkP2.x, checkP2.y, q1.x, q1.y, q2.x, q2.y);
 
       const minD = Math.min(d1, d2, d3, d4);
       if (minD <= halfStroke) {
@@ -279,6 +299,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.translateX = x;
     this.translateY = y;
     this._adjustedPoints = null;
+    this._clipInfo = null;
     this._core.store.state.objects.update(this);
   }
 
@@ -351,6 +372,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
 
     // Clear cached adjusted points
     this._adjustedPoints = null;
+    this._clipInfo = null;
 
     this._core.store.state.objects.update(this);
   }
@@ -409,6 +431,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
 
     // Clear cached adjusted points
     this._adjustedPoints = null;
+    this._clipInfo = null;
 
     this._core.store.state.objects.update(this);
   }
@@ -476,7 +499,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
    * Calculates the minimum distance from a point to a quadratic Bezier curve.
    * Uses sampling along the curve to find the closest point.
    */
-  private pointToBezierDistance(x: number, y: number): number {
+  private pointToBezierDistance(x: number, y: number, startT: number = 0, endT: number = 1): number {
     if (this._adjustedPoints === null) {
       this._adjustedPoints = this.computeAdjustedPoints();
     }
@@ -491,7 +514,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     const samples = 20; // Number of samples along the curve
 
     for (let i = 0; i <= samples; i++) {
-      const t = i / samples;
+      const fraction = i / samples;
+      const t = startT + fraction * (endT - startT);
       const oneMinusT = 1 - t;
 
       // Quadratic Bezier: B(t) = (1-t)²P₀ + 2(1-t)tP₁ + t²P₂
@@ -508,6 +532,38 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     }
 
     return minDistance;
+  }
+
+  private getClipInfo() {
+    if (this._clipInfo) return this._clipInfo;
+
+    const startAnchor = this.startAnchor;
+    const endAnchor = this.endAnchor;
+
+    const result: { start?: { x: number; y: number; t?: number }; end?: { x: number; y: number; t?: number } } = {};
+
+    if (startAnchor) {
+      const target = this._core.anchorManager.findAnchorTarget(this, 'start');
+      if (target) {
+        const clip = this._core.anchorManager.computeAnchorClipInfo(this, 'start', target);
+        if (clip) {
+          result.start = { x: clip.worldX, y: clip.worldY, t: clip.t };
+        }
+      }
+    }
+
+    if (endAnchor) {
+      const target = this._core.anchorManager.findAnchorTarget(this, 'end');
+      if (target) {
+        const clip = this._core.anchorManager.computeAnchorClipInfo(this, 'end', target);
+        if (clip) {
+          result.end = { x: clip.worldX, y: clip.worldY, t: clip.t };
+        }
+      }
+    }
+
+    this._clipInfo = result;
+    return result;
   }
 
   /**
