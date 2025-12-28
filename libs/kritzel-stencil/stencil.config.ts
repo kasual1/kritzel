@@ -60,7 +60,8 @@ export const config: Config = {
     browserHeadless: 'shell',
     transform: { '^.+\\.(ts|tsx)$': 'ts-jest' },
     setupFiles: ['<rootDir>/jest.setup.ts'],
-    testPathIgnorePatterns: ['/node_modules/']
+    testPathIgnorePatterns: ['/node_modules/'],
+    testRegex: ['(/__tests__/.*|(\\.|/)(spec))\\.(tsx?|ts?)$'],
   },
   extras: {
     enableImportInjection: true,

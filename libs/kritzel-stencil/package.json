@@ -42,7 +42,6 @@
     "build": "stencil build",
     "start": "stencil build --dev --watch --serve",
     "test": "stencil test --spec",
-    "test.watch": "stencil test --spec --watchAll",
     "test.end-to-end": "stencil test --e2e",
     "test.end-to-end.browser": "stencil test --e2e --no-headless -- --max-workers=1",
     "generate": "stencil generate",
