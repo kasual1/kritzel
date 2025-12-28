@@ -223,6 +223,13 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       return;
     }
 
+    // Only disconnect lines if the selection group contains ONLY lines.
+    // If moving lines with other objects (e.g. shapes they might be anchored to), prevent auto-disconnect.
+    const onlyLines = selectionGroup.objects.every(obj => obj instanceof KritzelLine);
+    if (!onlyLines) {
+      return;
+    }
+
     // Find and disconnect anchors from all anchored lines in the selection
     for (const obj of selectionGroup.objects) {
       // Skip if already disconnected in this drag session
