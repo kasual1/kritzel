@@ -585,7 +585,7 @@ export class KritzelAnchorManager {
     return objects.length > 0 ? objects[0] : null;
   }
 
-  private findAnchorTarget(line: KritzelLine, endpoint: 'start' | 'end'): KritzelBaseObject<Element> | null {
+  public findAnchorTarget(line: KritzelLine, endpoint: 'start' | 'end'): KritzelBaseObject<Element> | null {
     const anchor = endpoint === 'start' ? line.startAnchor : line.endAnchor;
     if (!anchor) {
       return null;
