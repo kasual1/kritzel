@@ -42,6 +42,16 @@ jobs:
         run: |
           npm run build
 
+      # --- Run Unit Tests ---
+      - name: Run unit tests
+        run: |
+          npm run test
+
+      # --- Run E2E Tests ---
+      - name: Run e2e tests
+        run: |
+          npm run e2e
+
       # --- Build Angular Application ---
       - name: Install Angular app dependencies
         run: |
