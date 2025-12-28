@@ -255,6 +255,19 @@
   opacity: 1;
   pointer-events: auto;
   margin-left: 0;
+  overflow: visible;
+}
+
+/* Left gradient on config container */
+.config-gradient-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -16px;
+  width: 16px;
+  background: linear-gradient(to right, transparent, var(--kritzel-controls-background-color, #ffffff));
+  pointer-events: none;
+  z-index: 1;
 }
 
 .kritzel-config {
