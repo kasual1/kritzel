@@ -334,6 +334,9 @@ export class KritzelControls {
               }}
               key={configControl.name}
             >
+              {/* Left gradient on config control */}
+              <div class="config-gradient-left"></div>
+              
               <kritzel-tooltip
                 ref={el => (this.tooltipRef = el)}
                 isVisible={this.isTooltipVisible}
