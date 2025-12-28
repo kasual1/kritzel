@@ -36,7 +36,7 @@ function HomepageHeader() {
           Coming soon!
         </p>
 
-        {/* <div
+        <div
           style={{
             fontSize: "1rem",
             marginBottom: "3.5rem",
@@ -70,7 +70,7 @@ function HomepageHeader() {
               <ArrowRight style={{ width: "24px", height: "24px" }} />
             </span>
           </Link>
-        </div> */}
+        </div> 
       </div>
     </header>
   );
