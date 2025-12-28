@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   user-select: none;
+  max-width: calc(100vw - 28px);
 }
 
 :host(.mobile) {
@@ -23,6 +24,57 @@
   border: var(--kritzel-controls-border, 1px solid #ebebeb);
   z-index: 10000;
   position: relative;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.kritzel-tools-scroll {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--kritzel-controls-gap, 8px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1 1 auto;
+  min-width: 0;
+  
+  /* Hide scrollbar for all browsers */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.kritzel-tools-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scroll indicator gradients */
+.scroll-indicator-left,
+.scroll-indicator-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  z-index: 1;
+}
+
+.scroll-indicator-left {
+  left: 0;
+  background: linear-gradient(to right, var(--kritzel-controls-background-color, #ffffff), transparent);
+  border-radius: var(--kritzel-controls-border-radius, 16px) 0 0 var(--kritzel-controls-border-radius, 16px);
+}
+
+.scroll-indicator-right {
+  right: 0;
+  background: linear-gradient(to left, var(--kritzel-controls-background-color, #ffffff), transparent);
+  border-radius: 0 var(--kritzel-controls-border-radius, 16px) var(--kritzel-controls-border-radius, 16px) 0;
+}
+
+.scroll-indicator-left.visible,
+.scroll-indicator-right.visible {
+  opacity: 1;
 }
 
 .kritzel-control {
@@ -185,6 +237,7 @@
   height: 40px;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
   
   /* Hidden state - collapsed */
   width: 0;
