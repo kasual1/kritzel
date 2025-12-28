@@ -56,7 +56,12 @@ export const config: Config = {
       excludeComponents: INTERNAL_COMPONENTS,
     }),
   ],
-  testing: { browserHeadless: 'shell', transform: { '^.+\\.(ts|tsx)$': 'ts-jest' }, setupFiles: ['<rootDir>/jest.setup.ts'] },
+  testing: {
+    browserHeadless: 'shell',
+    transform: { '^.+\\.(ts|tsx)$': 'ts-jest' },
+    setupFiles: ['<rootDir>/jest.setup.ts'],
+    testPathIgnorePatterns: ['/node_modules/']
+  },
   extras: {
     enableImportInjection: true,
   },
