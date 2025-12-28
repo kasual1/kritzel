@@ -24,6 +24,7 @@
     "bump-major": "node ./scripts/bump-major.js",
     "test": "npm run test -w libs/kritzel-stencil",
     "e2e": "npm run test.end-to-end -w libs/kritzel-stencil",
+    "e2e:browser": "npm run test.end-to-end.browser -w libs/kritzel-stencil",
     "build": "npm run build --workspaces --if-present",
     "publish": "npm run release --workspaces --if-present",
     "start": "npm run start -w libs/kritzel-stencil",
