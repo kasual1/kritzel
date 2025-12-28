@@ -49,7 +49,7 @@ function HomepageHeader() {
         >
           Kritzel is under active development and not recommended for production use.
         </div>
-        <Heading as="h1" className={clsx("hero__title", styles.heroTitle)}>
+        {/* <Heading as="h1" className={clsx("hero__title", styles.heroTitle)}>
           Infinite Canvas,
           <br />
           unbound creativity.
@@ -70,7 +70,7 @@ function HomepageHeader() {
               <ArrowRight style={{ width: "24px", height: "24px" }} />
             </span>
           </Link>
-        </div> 
+        </div>  */}
       </div>
     </header>
   );
