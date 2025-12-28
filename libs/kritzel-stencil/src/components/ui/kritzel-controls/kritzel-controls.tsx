@@ -29,6 +29,8 @@ export class KritzelControls {
   @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
   @State() selectedSubOptions: Map<string, KritzelToolbarSubOption> = new Map();
   @State() openSubMenuControl: KritzelToolbarControl | null = null;
+  @State() canScrollLeft: boolean = false;
+  @State() canScrollRight: boolean = false;
 
   @Listen('click', { target: 'document' })
   handleDocumentClick(event: MouseEvent) {
@@ -63,6 +65,7 @@ export class KritzelControls {
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
   tooltipRef: HTMLKritzelTooltipElement | null = null;
+  toolsScrollRef: HTMLDivElement | null = null;
 
   get activeToolAsTextTool() {
     return this.activeControl?.tool as KritzelTextTool;
@@ -77,6 +80,24 @@ export class KritzelControls {
     await this.initializeTools();
     this.isControlsReady.emit();
   }
+
+  componentDidLoad() {
+    this.updateScrollIndicators();
+  }
+
+  private updateScrollIndicators() {
+    if (!this.toolsScrollRef) return;
+    
+    const { scrollLeft, scrollWidth, clientWidth } = this.toolsScrollRef;
+    const threshold = 2; // Small threshold to account for rounding
+    
+    this.canScrollLeft = scrollLeft > threshold;
+    this.canScrollRight = scrollLeft + clientWidth < scrollWidth - threshold;
+  }
+
+  private handleToolsScroll = () => {
+    this.updateScrollIndicators();
+  };
 
   private async initializeEngine() {
     await customElements.whenDefined('kritzel-engine');
@@ -186,6 +207,10 @@ export class KritzelControls {
     const hasConfigUI = this.activeControl?.tool instanceof KritzelBrushTool || 
                         this.activeControl?.tool instanceof KritzelTextTool;
 
+    // Separate tool controls from config control
+    const toolControls = this.controls.filter(c => c.type === 'tool');
+    const configControl = this.controls.find(c => c.type === 'config' && c.name === this.firstConfig?.name);
+
     return (
       <Host
         class={{
@@ -207,15 +232,27 @@ export class KritzelControls {
         )}
 
         <div class="kritzel-controls">
-          {this.controls.map(control => {
-            if (control.type === 'tool') {
+          {/* Left scroll indicator gradient */}
+          <div class={{ 'scroll-indicator-left': true, 'visible': this.canScrollLeft }}></div>
+          
+          {/* Scrollable tool controls container */}
+          <div 
+            class="kritzel-tools-scroll"
+            ref={el => {
+              this.toolsScrollRef = el;
+              // Update indicators when ref is set
+              if (el) this.updateScrollIndicators();
+            }}
+            onScroll={this.handleToolsScroll}
+          >
+            {toolControls.map(control => {
               // Check if this control has sub-options (split-button)
               if (control.subOptions?.length) {
                 const selectedSubOption = this.getSelectedSubOption(control);
                 const isActive = this.activeControl?.name === control.name;
                 const isSubMenuOpen = this.openSubMenuControl?.name === control.name;
 
-              return (
+                return (
                   <div
                     class={{
                       'kritzel-control-split': true,
@@ -282,74 +319,76 @@ export class KritzelControls {
                   <kritzel-icon name={control.icon}></kritzel-icon>
                 </button>
               );
-            }
+            })}
+          </div>
+          
+          {/* Right scroll indicator gradient */}
+          <div class={{ 'scroll-indicator-right': true, 'visible': this.canScrollRight }}></div>
 
-            if (control.type === 'config' && control.name === this.firstConfig?.name && this.activeControl) {
-              return (
-                <div 
-                  class={{
-                    'kritzel-config-container': true,
-                    'visible': hasConfigUI,
-                  }}
-                  key={control.name}
-                >
-                  <kritzel-tooltip
-                    ref={el => (this.tooltipRef = el)}
-                    isVisible={this.isTooltipVisible}
-                    anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}
-                    onTooltipClosed={() => this.handleTooltipClosed()}
-                  >
-                    <div style={{ width: '294px', height: '100%' }}>
-                      {this.activeControl.name === 'brush' && (
-                        <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
-                      )}
+          {/* Config control stays outside the scroll area */}
+          {configControl && this.activeControl && (
+            <div 
+              class={{
+                'kritzel-config-container': true,
+                'visible': hasConfigUI,
+              }}
+              key={configControl.name}
+            >
+              <kritzel-tooltip
+                ref={el => (this.tooltipRef = el)}
+                isVisible={this.isTooltipVisible}
+                anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}
+                onTooltipClosed={() => this.handleTooltipClosed()}
+              >
+                <div style={{ width: '294px', height: '100%' }}>
+                  {this.activeControl.name === 'brush' && (
+                    <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
+                  )}
 
-                      {this.activeControl.name === 'text' && (
-                        <kritzel-control-text-config tool={this.activeToolAsTextTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-text-config>
-                      )}
-                    </div>
-                  </kritzel-tooltip>
-
-                  <div
-                    tabIndex={hasConfigUI ? 0 : -1}
-                    class="kritzel-config"
-                    onClick={event => this.handleConfigClick?.(event)}
-                    onKeyDown={event => {
-                      if (event.key === 'Enter') {
-                        this.handleConfigClick?.(event as any);
-                      }
-                    }}
-                    style={{
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {this.activeControl.tool instanceof KritzelBrushTool && (
-                      <div class="color-container">
-                        <kritzel-color
-                          value={this.activeToolAsBrushTool?.color}
-                          size={this.activeToolAsBrushTool?.size}
-                          style={{
-                            borderRadius: '50%',
-                            border: 'none',
-                          }}
-                        ></kritzel-color>
-                      </div>
-                    )}
-
-                    {this.activeControl.tool instanceof KritzelTextTool && (
-                      <div class="font-container">
-                        <kritzel-font
-                          fontFamily={this.activeToolAsTextTool?.fontFamily}
-                          size={this.activeToolAsTextTool?.fontSize}
-                          color={this.activeToolAsTextTool?.fontColor}
-                        ></kritzel-font>
-                      </div>
-                    )}
-                  </div>
+                  {this.activeControl.name === 'text' && (
+                    <kritzel-control-text-config tool={this.activeToolAsTextTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-text-config>
+                  )}
                 </div>
-              );
-            }
-          })}
+              </kritzel-tooltip>
+
+              <div
+                tabIndex={hasConfigUI ? 0 : -1}
+                class="kritzel-config"
+                onClick={event => this.handleConfigClick?.(event)}
+                onKeyDown={event => {
+                  if (event.key === 'Enter') {
+                    this.handleConfigClick?.(event as any);
+                  }
+                }}
+                style={{
+                  cursor: 'pointer',
+                }}
+              >
+                {this.activeControl.tool instanceof KritzelBrushTool && (
+                  <div class="color-container">
+                    <kritzel-color
+                      value={this.activeToolAsBrushTool?.color}
+                      size={this.activeToolAsBrushTool?.size}
+                      style={{
+                        borderRadius: '50%',
+                        border: 'none',
+                      }}
+                    ></kritzel-color>
+                  </div>
+                )}
+
+                {this.activeControl.tool instanceof KritzelTextTool && (
+                  <div class="font-container">
+                    <kritzel-font
+                      fontFamily={this.activeToolAsTextTool?.fontFamily}
+                      size={this.activeToolAsTextTool?.fontSize}
+                      color={this.activeToolAsTextTool?.fontColor}
+                    ></kritzel-font>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </Host>
     );
