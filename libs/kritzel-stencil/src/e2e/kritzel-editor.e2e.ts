@@ -167,6 +167,72 @@ describe('kritzel-editor', () => {
 
       expect(utilityPanel).toBeNull();
     });
+
+    it('should show utility panel when isUtilityPanelVisible changes from false to true', async () => {
+      element.setProperty('isUtilityPanelVisible', false);
+      await page.waitForChanges();
+
+      const controls = await page.find('kritzel-editor >>> kritzel-controls');
+      let utilityPanel = await controls.find('pierce/kritzel-utility-panel');
+      expect(utilityPanel).toBeNull();
+
+      element.setProperty('isUtilityPanelVisible', true);
+      await page.waitForChanges();
+
+      utilityPanel = await controls.find('pierce/kritzel-utility-panel');
+      expect(utilityPanel).not.toBeNull();
+    });
+
+    it('should toggle utility panel visibility multiple times', async () => {
+      const controls = await page.find('kritzel-editor >>> kritzel-controls');
+
+      // Initially visible
+      let utilityPanel = await controls.find('pierce/kritzel-utility-panel');
+      expect(utilityPanel).not.toBeNull();
+
+      // Hide
+      element.setProperty('isUtilityPanelVisible', false);
+      await page.waitForChanges();
+      utilityPanel = await controls.find('pierce/kritzel-utility-panel');
+      expect(utilityPanel).toBeNull();
+
+      // Show again
+      element.setProperty('isUtilityPanelVisible', true);
+      await page.waitForChanges();
+      utilityPanel = await controls.find('pierce/kritzel-utility-panel');
+      expect(utilityPanel).not.toBeNull();
+
+      // Hide again
+      element.setProperty('isUtilityPanelVisible', false);
+      await page.waitForChanges();
+      utilityPanel = await controls.find('pierce/kritzel-utility-panel');
+      expect(utilityPanel).toBeNull();
+    });
+
+    it('should render utility buttons in utility panel', async () => {
+      const controls = await page.find('kritzel-editor >>> kritzel-controls');
+      const utilityPanel = await controls.find('pierce/kritzel-utility-panel');
+      const utilityButtons = await utilityPanel.findAll('pierce/.utility-button');
+
+      // Utility panel should have 3 buttons: undo, redo, delete
+      expect(utilityButtons.length).toBe(3);
+    });
+
+    it('should have undo and redo buttons disabled by default', async () => {
+      const controls = await page.find('kritzel-editor >>> kritzel-controls');
+      const utilityPanel = await controls.find('pierce/kritzel-utility-panel');
+      const utilityButtons = await utilityPanel.findAll('pierce/.utility-button');
+
+      // First button is undo, second is redo - both should be disabled by default
+      const undoButton = utilityButtons[0];
+      const redoButton = utilityButtons[1];
+
+      const undoDisabled = await undoButton.getProperty('disabled');
+      const redoDisabled = await redoButton.getProperty('disabled');
+
+      expect(undoDisabled).toBe(true);
+      expect(redoDisabled).toBe(true);
+    });
   });
 
   describe('tool selection', () => {

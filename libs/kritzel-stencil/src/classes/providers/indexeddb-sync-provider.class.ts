@@ -22,7 +22,6 @@ export class IndexedDBSyncProvider implements ISyncProvider {
   constructor(docName: string, doc: Y.Doc, options?: IndexedDBOptions) {
     const dbName = options?.name || docName;
     this.provider = new IndexeddbPersistence(dbName, doc);
-    console.info(`IndexedDB Persistence initialized: ${dbName}`);
   }
 
   async connect(): Promise<void> {
