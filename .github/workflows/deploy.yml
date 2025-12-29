@@ -4,7 +4,8 @@ on:
     branches:
       - main
 jobs:
-  build:
+  # --- Build Stencil Library (required by tests and Angular) ---
+  build-stencil:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -15,7 +16,33 @@ jobs:
         with:
           node-version: "22.14.0"
 
-      # --- Build Docusaurus Documentation ---
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Kritzel Stencil components
+        run: npm run build
+
+      - name: Upload Stencil dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: stencil-dist
+          path: |
+            libs/kritzel-stencil/dist
+            libs/kritzel-stencil/loader
+            libs/kritzel-angular/projects/lib/src/lib
+
+  # --- Build Docusaurus (runs in parallel with build-stencil) ---
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+
       - name: Install Docusaurus dependencies
         run: |
           cd website
@@ -28,31 +55,84 @@ jobs:
         env:
           Docusaurus_BASE_URL: /${{ github.event.repository.name }}/
 
-      - name: Copy Docusaurus build to _site root
-        run: |
-          mkdir -p _site
-          cp -r website/build/. _site/
+      - name: Upload docs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-build
+          path: website/build
 
-      # --- Build Kritzel Stencil + Output ---
-      - name: Install Stencil dependencies
-        run: |
-          npm install
+  # --- Run Unit Tests (after Stencil build) ---
+  test-unit:
+    runs-on: ubuntu-latest
+    needs: build-stencil
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Build Kritzel Stencil components
-        run: |
-          npm run build
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
 
-      # --- Run Unit Tests ---
+      - name: Download Stencil dist
+        uses: actions/download-artifact@v4
+        with:
+          name: stencil-dist
+          path: libs
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Run unit tests
-        run: |
-          npm run test
+        run: npm run test
 
-      # --- Run E2E Tests ---
+  # --- Run E2E Tests (after Stencil build, parallel with unit tests) ---
+  test-e2e:
+    runs-on: ubuntu-latest
+    needs: build-stencil
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+
+      - name: Download Stencil dist
+        uses: actions/download-artifact@v4
+        with:
+          name: stencil-dist
+          path: libs
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Run e2e tests
-        run: |
-          npm run e2e
+        run: npm run e2e
 
-      # --- Build Angular Application ---
+  # --- Build Angular Application (after Stencil build) ---
+  build-angular:
+    runs-on: ubuntu-latest
+    needs: build-stencil
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+
+      - name: Download Stencil dist
+        uses: actions/download-artifact@v4
+        with:
+          name: stencil-dist
+          path: libs
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Install Angular app dependencies
         run: |
           cd demos/angular
@@ -63,20 +143,13 @@ jobs:
           cd demos/angular
           npm run build-app -- --base-href=/${{ github.event.repository.name }}/demo/
 
-      - name: Copy Angular build to _site/demo
-        run: |
-          mkdir -p _site/demo
-          cp -r demos/angular/dist/angular/browser/* _site/demo/
-
-      # --- Setup Pages ---
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload Angular artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: "_site"
+          name: angular-build
+          path: demos/angular/dist/angular/browser
 
+  # --- Assemble and Deploy ---
   deploy:
     permissions:
       contents: read
@@ -86,8 +159,28 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build-docs, build-angular, test-unit, test-e2e]
     steps:
+      - name: Download docs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-build
+          path: _site
+
+      - name: Download Angular artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: angular-build
+          path: _site/demo
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "_site"
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
