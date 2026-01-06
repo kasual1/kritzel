@@ -4,7 +4,7 @@ on:
     branches:
       - main
 jobs:
-  # --- Build Stencil Library (required by tests and Angular) ---
+  # --- Build Stencil Library ---
   build-stencil:
     runs-on: ubuntu-latest
     steps:
@@ -20,16 +20,19 @@ jobs:
         run: npm install
 
       - name: Build Kritzel Stencil components
-        run: npm run build
+        run: npm run build -w libs/kritzel-stencil
 
-      - name: Upload Stencil dist
+      - name: Build Kritzel Angular library
+        run: npm run build -w libs/kritzel-angular
+
+      - name: Upload Stencil and Angular dist
         uses: actions/upload-artifact@v4
         with:
           name: stencil-dist
           path: |
             libs/kritzel-stencil/dist
             libs/kritzel-stencil/loader
-            libs/kritzel-angular/projects/lib/src/lib
+            libs/kritzel-angular/dist/lib
 
   # --- Build Docusaurus (runs in parallel with build-stencil) ---
   build-docs:
