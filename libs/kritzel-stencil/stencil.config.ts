@@ -61,7 +61,7 @@ export const config: Config = {
     transform: { '^.+\\.(ts|tsx)$': 'ts-jest' },
     setupFiles: ['<rootDir>/jest.setup.ts'],
     testPathIgnorePatterns: ['/node_modules/'],
-    testRegex: ['(/__tests__/.*|(\\.|/)(spec))\\.(tsx?|ts?)$'],
+    testRegex: ['(/__tests__/.*|(\\.|/)(spec|e2e))\\.(tsx?|ts?)$'],
   },
   extras: {
     enableImportInjection: true,
