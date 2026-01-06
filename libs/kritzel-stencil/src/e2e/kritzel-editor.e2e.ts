@@ -182,4 +182,176 @@ describe('kritzel-editor screenshot tests', () => {
       expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
     });
   });
+
+  describe('toolbar configuration', () => {
+    it('should match screenshot with only selection tool configured', async () => {
+      const page = await newE2EPage();
+      await page.setContent(HTML_TEMPLATE);
+      await page.waitForChanges();
+
+      const editor = await page.find('kritzel-editor');
+      await editor.callMethod('componentOnReady');
+
+      await page.$eval('kritzel-editor', (el: HTMLElement & { controls: unknown[] }) => {
+        el.controls = [{ name: 'selection', type: 'tool', isDefault: true, icon: 'cursor' }];
+      });
+      await page.waitForChanges();
+
+      const screenshot = await page.compareScreenshot('toolbar with selection only');
+      expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+    });
+
+    it('should match screenshot with selection and brush tools configured', async () => {
+      const page = await newE2EPage();
+      await page.setContent(HTML_TEMPLATE);
+      await page.waitForChanges();
+
+      const editor = await page.find('kritzel-editor');
+      await editor.callMethod('componentOnReady');
+
+      await page.$eval('kritzel-editor', (el: HTMLElement & { controls: unknown[] }) => {
+        el.controls = [
+          { name: 'selection', type: 'tool', isDefault: true, icon: 'cursor' },
+          { name: 'brush', type: 'tool', icon: 'pen' },
+        ];
+      });
+      await page.waitForChanges();
+
+      const screenshot = await page.compareScreenshot('toolbar with selection and brush');
+      expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+    });
+
+    it('should match screenshot with selection, brush and line tools configured', async () => {
+      const page = await newE2EPage();
+      await page.setContent(HTML_TEMPLATE);
+      await page.waitForChanges();
+
+      const editor = await page.find('kritzel-editor');
+      await editor.callMethod('componentOnReady');
+
+      await page.$eval('kritzel-editor', (el: HTMLElement & { controls: unknown[] }) => {
+        el.controls = [
+          { name: 'selection', type: 'tool', isDefault: true, icon: 'cursor' },
+          { name: 'brush', type: 'tool', icon: 'pen' },
+          { name: 'line', type: 'tool', icon: 'arrow' },
+        ];
+      });
+      await page.waitForChanges();
+
+      const screenshot = await page.compareScreenshot('toolbar with selection brush and line');
+      expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+    });
+
+    it('should match screenshot with selection, brush, line and eraser tools configured', async () => {
+      const page = await newE2EPage();
+      await page.setContent(HTML_TEMPLATE);
+      await page.waitForChanges();
+
+      const editor = await page.find('kritzel-editor');
+      await editor.callMethod('componentOnReady');
+
+      await page.$eval('kritzel-editor', (el: HTMLElement & { controls: unknown[] }) => {
+        el.controls = [
+          { name: 'selection', type: 'tool', isDefault: true, icon: 'cursor' },
+          { name: 'brush', type: 'tool', icon: 'pen' },
+          { name: 'line', type: 'tool', icon: 'arrow' },
+          { name: 'eraser', type: 'tool', icon: 'eraser' },
+        ];
+      });
+      await page.waitForChanges();
+
+      const screenshot = await page.compareScreenshot('toolbar with selection brush line and eraser');
+      expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+    });
+
+    it('should match screenshot with selection, brush, line, eraser and text tools configured', async () => {
+      const page = await newE2EPage();
+      await page.setContent(HTML_TEMPLATE);
+      await page.waitForChanges();
+
+      const editor = await page.find('kritzel-editor');
+      await editor.callMethod('componentOnReady');
+
+      await page.$eval('kritzel-editor', (el: HTMLElement & { controls: unknown[] }) => {
+        el.controls = [
+          { name: 'selection', type: 'tool', isDefault: true, icon: 'cursor' },
+          { name: 'brush', type: 'tool', icon: 'pen' },
+          { name: 'line', type: 'tool', icon: 'arrow' },
+          { name: 'eraser', type: 'tool', icon: 'eraser' },
+          { name: 'text', type: 'tool', icon: 'type' },
+        ];
+      });
+      await page.waitForChanges();
+
+      const screenshot = await page.compareScreenshot('toolbar with selection brush line eraser and text');
+      expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+    });
+
+    it('should match screenshot with selection, brush, line, eraser, text and shape tools configured', async () => {
+      const page = await newE2EPage();
+      await page.setContent(HTML_TEMPLATE);
+      await page.waitForChanges();
+
+      const editor = await page.find('kritzel-editor');
+      await editor.callMethod('componentOnReady');
+
+      await page.$eval('kritzel-editor', (el: HTMLElement & { controls: unknown[] }) => {
+        el.controls = [
+          { name: 'selection', type: 'tool', isDefault: true, icon: 'cursor' },
+          { name: 'brush', type: 'tool', icon: 'pen' },
+          { name: 'line', type: 'tool', icon: 'arrow' },
+          { name: 'eraser', type: 'tool', icon: 'eraser' },
+          { name: 'text', type: 'tool', icon: 'type' },
+          {
+            name: 'shape',
+            type: 'tool',
+            icon: 'shape-rectangle',
+            subOptions: [
+              { name: 'rectangle', icon: 'shape-rectangle' },
+              { name: 'ellipse', icon: 'shape-ellipse' },
+              { name: 'triangle', icon: 'shape-triangle' },
+            ],
+          },
+        ];
+      });
+      await page.waitForChanges();
+
+      const screenshot = await page.compareScreenshot('toolbar with selection brush line eraser text and shape');
+      expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+    });
+
+    it('should match screenshot with all tools configured', async () => {
+      const page = await newE2EPage();
+      await page.setContent(HTML_TEMPLATE);
+      await page.waitForChanges();
+
+      const editor = await page.find('kritzel-editor');
+      await editor.callMethod('componentOnReady');
+
+      await page.$eval('kritzel-editor', (el: HTMLElement & { controls: unknown[] }) => {
+        el.controls = [
+          { name: 'selection', type: 'tool', isDefault: true, icon: 'cursor' },
+          { name: 'brush', type: 'tool', icon: 'pen' },
+          { name: 'line', type: 'tool', icon: 'arrow' },
+          { name: 'eraser', type: 'tool', icon: 'eraser' },
+          { name: 'text', type: 'tool', icon: 'type' },
+          {
+            name: 'shape',
+            type: 'tool',
+            icon: 'shape-rectangle',
+            subOptions: [
+              { name: 'rectangle', icon: 'shape-rectangle' },
+              { name: 'ellipse', icon: 'shape-ellipse' },
+              { name: 'triangle', icon: 'shape-triangle' },
+            ],
+          },
+          { name: 'image', type: 'tool', icon: 'image' },
+        ];
+      });
+      await page.waitForChanges();
+
+      const screenshot = await page.compareScreenshot('toolbar with all tools configured');
+      expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+    });
+  });
 });
