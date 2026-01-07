@@ -6,11 +6,22 @@ import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-t
 import type { JSX } from '../../kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelControlLineConfig } from '../../kritzel-stencil/dist/components/kritzel-control-line-config.js';
+import { defineCustomElement as defineKritzelControlShapeConfig } from '../../kritzel-stencil/dist/components/kritzel-control-shape-config.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelLineEndings } from '../../kritzel-stencil/dist/components/kritzel-line-endings.js';
+import { defineCustomElement as defineKritzelShapeFill } from '../../kritzel-stencil/dist/components/kritzel-shape-fill.js';
 
 
 export const KritzelControlLineConfig: StencilVueComponent<JSX.KritzelControlLineConfig> = /*@__PURE__*/ defineContainer<JSX.KritzelControlLineConfig>('kritzel-control-line-config', defineKritzelControlLineConfig, [
+  'tool',
+  'isExpanded',
+  'toolChange'
+], [
+  'toolChange'
+]);
+
+
+export const KritzelControlShapeConfig: StencilVueComponent<JSX.KritzelControlShapeConfig> = /*@__PURE__*/ defineContainer<JSX.KritzelControlShapeConfig>('kritzel-control-shape-config', defineKritzelControlShapeConfig, [
   'tool',
   'isExpanded',
   'toolChange'
@@ -43,6 +54,14 @@ export const KritzelLineEndings: StencilVueComponent<JSX.KritzelLineEndings> = /
   'styles',
   'value',
   'strokeColor',
+  'valueChange'
+], [
+  'valueChange'
+]);
+
+
+export const KritzelShapeFill: StencilVueComponent<JSX.KritzelShapeFill> = /*@__PURE__*/ defineContainer<JSX.KritzelShapeFill>('kritzel-shape-fill', defineKritzelShapeFill, [
+  'value',
   'valueChange'
 ], [
   'valueChange'
