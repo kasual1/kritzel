@@ -15,6 +15,7 @@ import { KritzelControlLineConfig as KritzelControlLineConfigElement, defineCust
 import { KritzelControlShapeConfig as KritzelControlShapeConfigElement, defineCustomElement as defineKritzelControlShapeConfig } from "../../../../kritzel-stencil/dist/components/kritzel-control-shape-config.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelLineEndings as KritzelLineEndingsElement, defineCustomElement as defineKritzelLineEndings } from "../../../../kritzel-stencil/dist/components/kritzel-line-endings.js";
+import { KritzelOpacitySlider as KritzelOpacitySliderElement, defineCustomElement as defineKritzelOpacitySlider } from "../../../../kritzel-stencil/dist/components/kritzel-opacity-slider.js";
 import { KritzelShapeFill as KritzelShapeFillElement, defineCustomElement as defineKritzelShapeFill } from "../../../../kritzel-stencil/dist/components/kritzel-shape-fill.js";
 
 export type KritzelControlLineConfigEvents = { onToolChange: EventName<KritzelControlLineConfigCustomEvent<KritzelLineTool>> };
@@ -67,6 +68,17 @@ export const KritzelLineEndings: StencilReactComponent<KritzelLineEndingsElement
     react: React,
     events: { onValueChange: 'valueChange' } as KritzelLineEndingsEvents,
     defineCustomElement: defineKritzelLineEndings
+});
+
+export type KritzelOpacitySliderEvents = { onValueChange: EventName<CustomEvent<number>> };
+
+export const KritzelOpacitySlider: StencilReactComponent<KritzelOpacitySliderElement, KritzelOpacitySliderEvents> = /*@__PURE__*/ createComponent<KritzelOpacitySliderElement, KritzelOpacitySliderEvents>({
+    tagName: 'kritzel-opacity-slider',
+    elementClass: KritzelOpacitySliderElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: { onValueChange: 'valueChange' } as KritzelOpacitySliderEvents,
+    defineCustomElement: defineKritzelOpacitySlider
 });
 
 export type KritzelShapeFillEvents = { onValueChange: EventName<KritzelShapeFillCustomEvent<ShapeFillType>> };

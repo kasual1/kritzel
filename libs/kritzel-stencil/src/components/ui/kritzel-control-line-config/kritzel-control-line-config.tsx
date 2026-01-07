@@ -43,6 +43,11 @@ export class KritzelControlLineConfig {
     this.toolChange.emit(this.tool);
   }
 
+  handleOpacityChange(event: CustomEvent<number>) {
+    this.tool.opacity = event.detail;
+    this.toolChange.emit(this.tool);
+  }
+
   render() {
     return (
       <Host>
@@ -85,6 +90,12 @@ export class KritzelControlLineConfig {
           strokeColor={this.tool.color}
           onValueChange={event => this.handleArrowsChange(event)}
         ></kritzel-line-endings>
+
+        <kritzel-opacity-slider
+          value={this.tool.opacity}
+          previewColor={this.tool.color}
+          onValueChange={event => this.handleOpacityChange(event)}
+        ></kritzel-opacity-slider>
       </Host>
     );
   }

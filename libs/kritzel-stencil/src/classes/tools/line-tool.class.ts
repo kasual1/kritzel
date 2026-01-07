@@ -11,6 +11,8 @@ export class KritzelLineTool extends KritzelBaseTool {
 
   size: number = 4;
 
+  opacity: number = 1;
+
   palette: string[] = [
     '#000000',
     '#ff5252',

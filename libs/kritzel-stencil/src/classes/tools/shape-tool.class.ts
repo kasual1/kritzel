@@ -10,6 +10,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
   fillColor: string = 'transparent';
   strokeColor: string = '#000000';
   strokeWidth: number = 4;
+  opacity: number = 1;
   fontFamily: string = 'Arial';
   fontSize: number = 16;
   fontColor: string = '#000000';

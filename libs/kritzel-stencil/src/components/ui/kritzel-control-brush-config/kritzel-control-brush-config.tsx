@@ -43,6 +43,11 @@ export class KritzelControlBrushConfig {
     this.toolChange.emit(this.tool);
   }
 
+  handleOpacityChange(event: CustomEvent<number>) {
+    this.tool.opacity = event.detail;
+    this.toolChange.emit(this.tool);
+  }
+
   render() {
     return (
       <Host>
@@ -75,6 +80,12 @@ export class KritzelControlBrushConfig {
         </div>
 
         <kritzel-stroke-size selectedSize={this.tool.size} onSizeChange={event => this.handleSizeChange(event)}></kritzel-stroke-size>
+
+        <kritzel-opacity-slider
+          value={this.tool.opacity}
+          previewColor={this.tool.color}
+          onValueChange={event => this.handleOpacityChange(event)}
+        ></kritzel-opacity-slider>
       </Host>
     );
   }

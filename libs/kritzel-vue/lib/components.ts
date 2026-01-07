@@ -9,6 +9,7 @@ import { defineCustomElement as defineKritzelControlLineConfig } from '../../kri
 import { defineCustomElement as defineKritzelControlShapeConfig } from '../../kritzel-stencil/dist/components/kritzel-control-shape-config.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelLineEndings } from '../../kritzel-stencil/dist/components/kritzel-line-endings.js';
+import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelShapeFill } from '../../kritzel-stencil/dist/components/kritzel-shape-fill.js';
 
 
@@ -54,6 +55,18 @@ export const KritzelLineEndings: StencilVueComponent<JSX.KritzelLineEndings> = /
   'styles',
   'value',
   'strokeColor',
+  'valueChange'
+], [
+  'valueChange'
+]);
+
+
+export const KritzelOpacitySlider: StencilVueComponent<JSX.KritzelOpacitySlider> = /*@__PURE__*/ defineContainer<JSX.KritzelOpacitySlider>('kritzel-opacity-slider', defineKritzelOpacitySlider, [
+  'value',
+  'min',
+  'max',
+  'step',
+  'previewColor',
   'valueChange'
 ], [
   'valueChange'

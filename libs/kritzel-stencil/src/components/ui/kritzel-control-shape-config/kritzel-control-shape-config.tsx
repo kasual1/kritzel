@@ -47,6 +47,11 @@ export class KritzelControlShapeConfig {
     return this.tool.fillColor === 'transparent' ? 'transparent' : 'filled';
   }
 
+  handleOpacityChange(event: CustomEvent<number>) {
+    this.tool.opacity = event.detail;
+    this.toolChange.emit(this.tool);
+  }
+
   render() {
     return (
       <Host>
@@ -88,6 +93,12 @@ export class KritzelControlShapeConfig {
           value={this.getFillValue()}
           onValueChange={event => this.handleFillChange(event)}
         ></kritzel-shape-fill>
+
+        <kritzel-opacity-slider
+          value={this.tool.opacity}
+          previewColor={this.tool.strokeColor}
+          onValueChange={event => this.handleOpacityChange(event)}
+        ></kritzel-opacity-slider>
       </Host>
     );
   }
