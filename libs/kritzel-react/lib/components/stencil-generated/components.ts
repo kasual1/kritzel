@@ -10,35 +10,11 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type KritzelBaseObject, type KritzelControlLineConfigCustomEvent, type KritzelControlShapeConfigCustomEvent, type KritzelEditorCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelLineTool, type KritzelShapeFillCustomEvent, type KritzelShapeTool, type KritzelUndoState, type LineArrowConfig, type ShapeFillType } from "../../../../kritzel-stencil";
-import { KritzelControlLineConfig as KritzelControlLineConfigElement, defineCustomElement as defineKritzelControlLineConfig } from "../../../../kritzel-stencil/dist/components/kritzel-control-line-config.js";
-import { KritzelControlShapeConfig as KritzelControlShapeConfigElement, defineCustomElement as defineKritzelControlShapeConfig } from "../../../../kritzel-stencil/dist/components/kritzel-control-shape-config.js";
+import { type KritzelBaseObject, type KritzelEditorCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelUndoState, type LineArrowConfig, type ShapeFillType } from "../../../../kritzel-stencil";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelLineEndings as KritzelLineEndingsElement, defineCustomElement as defineKritzelLineEndings } from "../../../../kritzel-stencil/dist/components/kritzel-line-endings.js";
 import { KritzelOpacitySlider as KritzelOpacitySliderElement, defineCustomElement as defineKritzelOpacitySlider } from "../../../../kritzel-stencil/dist/components/kritzel-opacity-slider.js";
 import { KritzelShapeFill as KritzelShapeFillElement, defineCustomElement as defineKritzelShapeFill } from "../../../../kritzel-stencil/dist/components/kritzel-shape-fill.js";
-
-export type KritzelControlLineConfigEvents = { onToolChange: EventName<KritzelControlLineConfigCustomEvent<KritzelLineTool>> };
-
-export const KritzelControlLineConfig: StencilReactComponent<KritzelControlLineConfigElement, KritzelControlLineConfigEvents> = /*@__PURE__*/ createComponent<KritzelControlLineConfigElement, KritzelControlLineConfigEvents>({
-    tagName: 'kritzel-control-line-config',
-    elementClass: KritzelControlLineConfigElement,
-    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
-    react: React,
-    events: { onToolChange: 'toolChange' } as KritzelControlLineConfigEvents,
-    defineCustomElement: defineKritzelControlLineConfig
-});
-
-export type KritzelControlShapeConfigEvents = { onToolChange: EventName<KritzelControlShapeConfigCustomEvent<KritzelShapeTool>> };
-
-export const KritzelControlShapeConfig: StencilReactComponent<KritzelControlShapeConfigElement, KritzelControlShapeConfigEvents> = /*@__PURE__*/ createComponent<KritzelControlShapeConfigElement, KritzelControlShapeConfigEvents>({
-    tagName: 'kritzel-control-shape-config',
-    elementClass: KritzelControlShapeConfigElement,
-    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
-    react: React,
-    events: { onToolChange: 'toolChange' } as KritzelControlShapeConfigEvents,
-    defineCustomElement: defineKritzelControlShapeConfig
-});
 
 export type KritzelEditorEvents = {
     onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>>,
