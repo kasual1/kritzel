@@ -355,23 +355,11 @@ export class KritzelControls {
                 anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}
                 onTooltipClosed={() => this.handleTooltipClosed()}
               >
-                <div style={{ width: '294px', height: '100%' }}>
-                  {this.activeControl.name === 'brush' && (
-                    <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
-                  )}
-
-                  {this.activeControl.name === 'text' && (
-                    <kritzel-control-text-config tool={this.activeToolAsTextTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-text-config>
-                  )}
-
-                  {this.activeControl.name === 'line' && (
-                    <kritzel-control-line-config tool={this.activeToolAsLineTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-line-config>
-                  )}
-
-                  {this.activeControl.name === 'shape' && (
-                    <kritzel-control-shape-config tool={this.activeToolAsShapeTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-shape-config>
-                  )}
-                </div>
+                <kritzel-tool-config 
+                  tool={this.activeControl.tool as any} 
+                  onToolChange={event => this.handleToolChange?.(event)}
+                  style={{ width: '100%', height: '100%' }}
+                ></kritzel-tool-config>
               </kritzel-tooltip>
 
               <div
