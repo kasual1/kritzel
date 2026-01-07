@@ -2,5 +2,7 @@
 import * as d from './proxy';
 
 export const DIRECTIVES = [
-  d.KritzelEditor
+  d.KritzelControlLineConfig,
+  d.KritzelEditor,
+  d.KritzelLineEndings
 ];

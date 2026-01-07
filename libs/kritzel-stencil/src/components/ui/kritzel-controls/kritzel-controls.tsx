@@ -1,5 +1,6 @@
 import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method } from '@stencil/core';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
+import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { KritzelToolbarControl, KritzelToolbarSubOption } from '../../../interfaces/toolbar-control.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
@@ -73,6 +74,10 @@ export class KritzelControls {
 
   get activeToolAsBrushTool() {
     return this.activeControl?.tool as KritzelBrushTool;
+  }
+
+  get activeToolAsLineTool() {
+    return this.activeControl?.tool as KritzelLineTool;
   }
 
   async componentWillLoad() {
@@ -205,7 +210,8 @@ export class KritzelControls {
 
   render() {
     const hasConfigUI = this.activeControl?.tool instanceof KritzelBrushTool || 
-                        this.activeControl?.tool instanceof KritzelTextTool;
+                        this.activeControl?.tool instanceof KritzelTextTool ||
+                        this.activeControl?.tool instanceof KritzelLineTool;
 
     // Separate tool controls from config control
     const toolControls = this.controls.filter(c => c.type === 'tool');
@@ -351,6 +357,10 @@ export class KritzelControls {
                   {this.activeControl.name === 'text' && (
                     <kritzel-control-text-config tool={this.activeToolAsTextTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-text-config>
                   )}
+
+                  {this.activeControl.name === 'line' && (
+                    <kritzel-control-line-config tool={this.activeToolAsLineTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-line-config>
+                  )}
                 </div>
               </kritzel-tooltip>
 
@@ -387,6 +397,19 @@ export class KritzelControls {
                       size={this.activeToolAsTextTool?.fontSize}
                       color={this.activeToolAsTextTool?.fontColor}
                     ></kritzel-font>
+                  </div>
+                )}
+
+                {this.activeControl.tool instanceof KritzelLineTool && (
+                  <div class="color-container">
+                    <kritzel-color
+                      value={this.activeToolAsLineTool?.color}
+                      size={this.activeToolAsLineTool?.size}
+                      style={{
+                        borderRadius: '50%',
+                        border: 'none',
+                      }}
+                    ></kritzel-color>
                   </div>
                 )}
               </div>

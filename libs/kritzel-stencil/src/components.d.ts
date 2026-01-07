@@ -9,6 +9,7 @@ import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritze
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushTool } from "./classes/tools/brush-tool.class";
+import { KritzelLineTool } from "./classes/tools/line-tool.class";
 import { KritzelTextTool } from "./classes/tools/text-tool.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
@@ -21,11 +22,14 @@ import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
+import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
+import { LineArrowConfig } from "./interfaces/arrow-head.interface";
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushTool } from "./classes/tools/brush-tool.class";
+export { KritzelLineTool } from "./classes/tools/line-tool.class";
 export { KritzelTextTool } from "./classes/tools/text-tool.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
@@ -38,6 +42,8 @@ export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
+export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
+export { LineArrowConfig } from "./interfaces/arrow-head.interface";
 export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export namespace Components {
     interface KritzelBrushStyle {
@@ -85,6 +91,13 @@ export namespace Components {
          */
         "isExpanded": boolean;
         "tool": KritzelBrushTool;
+    }
+    interface KritzelControlLineConfig {
+        /**
+          * @default false
+         */
+        "isExpanded": boolean;
+        "tool": KritzelLineTool;
     }
     interface KritzelControlTextConfig {
         /**
@@ -266,6 +279,22 @@ export namespace Components {
          */
         "size": number;
     }
+    interface KritzelLineEndings {
+        /**
+          * Stroke color used for rendering the preview
+          * @default '#000000'
+         */
+        "strokeColor": string;
+        /**
+          * Available ending styles
+          * @default ['none', 'triangle']
+         */
+        "styles": LineEndingType[];
+        /**
+          * Current line arrow configuration
+         */
+        "value": LineArrowConfig | undefined;
+    }
     interface KritzelMenu {
         "items": IKritzelMenuItem[];
         /**
@@ -367,6 +396,10 @@ export interface KritzelControlBrushConfigCustomEvent<T> extends CustomEvent<T> 
     detail: T;
     target: HTMLKritzelControlBrushConfigElement;
 }
+export interface KritzelControlLineConfigCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelControlLineConfigElement;
+}
 export interface KritzelControlTextConfigCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelControlTextConfigElement;
@@ -394,6 +427,10 @@ export interface KritzelFontFamilyCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelFontSizeElement;
+}
+export interface KritzelLineEndingsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelLineEndingsElement;
 }
 export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -502,6 +539,23 @@ declare global {
     var HTMLKritzelControlBrushConfigElement: {
         prototype: HTMLKritzelControlBrushConfigElement;
         new (): HTMLKritzelControlBrushConfigElement;
+    };
+    interface HTMLKritzelControlLineConfigElementEventMap {
+        "toolChange": KritzelLineTool;
+    }
+    interface HTMLKritzelControlLineConfigElement extends Components.KritzelControlLineConfig, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelControlLineConfigElementEventMap>(type: K, listener: (this: HTMLKritzelControlLineConfigElement, ev: KritzelControlLineConfigCustomEvent<HTMLKritzelControlLineConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelControlLineConfigElementEventMap>(type: K, listener: (this: HTMLKritzelControlLineConfigElement, ev: KritzelControlLineConfigCustomEvent<HTMLKritzelControlLineConfigElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelControlLineConfigElement: {
+        prototype: HTMLKritzelControlLineConfigElement;
+        new (): HTMLKritzelControlLineConfigElement;
     };
     interface HTMLKritzelControlTextConfigElementEventMap {
         "toolChange": KritzelTextTool;
@@ -646,6 +700,23 @@ declare global {
     var HTMLKritzelIconElement: {
         prototype: HTMLKritzelIconElement;
         new (): HTMLKritzelIconElement;
+    };
+    interface HTMLKritzelLineEndingsElementEventMap {
+        "valueChange": LineArrowConfig;
+    }
+    interface HTMLKritzelLineEndingsElement extends Components.KritzelLineEndings, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelLineEndingsElementEventMap>(type: K, listener: (this: HTMLKritzelLineEndingsElement, ev: KritzelLineEndingsCustomEvent<HTMLKritzelLineEndingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelLineEndingsElementEventMap>(type: K, listener: (this: HTMLKritzelLineEndingsElement, ev: KritzelLineEndingsCustomEvent<HTMLKritzelLineEndingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelLineEndingsElement: {
+        prototype: HTMLKritzelLineEndingsElement;
+        new (): HTMLKritzelLineEndingsElement;
     };
     interface HTMLKritzelMenuElementEventMap {
         "itemSelect": IKritzelMenuItemSelectEvent;
@@ -808,6 +879,7 @@ declare global {
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
         "kritzel-control-brush-config": HTMLKritzelControlBrushConfigElement;
+        "kritzel-control-line-config": HTMLKritzelControlLineConfigElement;
         "kritzel-control-text-config": HTMLKritzelControlTextConfigElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
@@ -818,6 +890,7 @@ declare global {
         "kritzel-font-family": HTMLKritzelFontFamilyElement;
         "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
+        "kritzel-line-endings": HTMLKritzelLineEndingsElement;
         "kritzel-menu": HTMLKritzelMenuElement;
         "kritzel-menu-item": HTMLKritzelMenuItemElement;
         "kritzel-portal": HTMLKritzelPortalElement;
@@ -879,6 +952,14 @@ declare namespace LocalJSX {
         "isExpanded"?: boolean;
         "onToolChange"?: (event: KritzelControlBrushConfigCustomEvent<KritzelBrushTool>) => void;
         "tool"?: KritzelBrushTool;
+    }
+    interface KritzelControlLineConfig {
+        /**
+          * @default false
+         */
+        "isExpanded"?: boolean;
+        "onToolChange"?: (event: KritzelControlLineConfigCustomEvent<KritzelLineTool>) => void;
+        "tool"?: KritzelLineTool;
     }
     interface KritzelControlTextConfig {
         /**
@@ -1028,6 +1109,23 @@ declare namespace LocalJSX {
          */
         "size"?: number;
     }
+    interface KritzelLineEndings {
+        "onValueChange"?: (event: KritzelLineEndingsCustomEvent<LineArrowConfig>) => void;
+        /**
+          * Stroke color used for rendering the preview
+          * @default '#000000'
+         */
+        "strokeColor"?: string;
+        /**
+          * Available ending styles
+          * @default ['none', 'triangle']
+         */
+        "styles"?: LineEndingType[];
+        /**
+          * Current line arrow configuration
+         */
+        "value"?: LineArrowConfig | undefined;
+    }
     interface KritzelMenu {
         "items"?: IKritzelMenuItem[];
         "onClose"?: (event: KritzelMenuCustomEvent<void>) => void;
@@ -1140,6 +1238,7 @@ declare namespace LocalJSX {
         "kritzel-color-palette": KritzelColorPalette;
         "kritzel-context-menu": KritzelContextMenu;
         "kritzel-control-brush-config": KritzelControlBrushConfig;
+        "kritzel-control-line-config": KritzelControlLineConfig;
         "kritzel-control-text-config": KritzelControlTextConfig;
         "kritzel-controls": KritzelControls;
         "kritzel-cursor-trail": KritzelCursorTrail;
@@ -1150,6 +1249,7 @@ declare namespace LocalJSX {
         "kritzel-font-family": KritzelFontFamily;
         "kritzel-font-size": KritzelFontSize;
         "kritzel-icon": KritzelIcon;
+        "kritzel-line-endings": KritzelLineEndings;
         "kritzel-menu": KritzelMenu;
         "kritzel-menu-item": KritzelMenuItem;
         "kritzel-portal": KritzelPortal;
@@ -1169,6 +1269,7 @@ declare module "@stencil/core" {
             "kritzel-color-palette": LocalJSX.KritzelColorPalette & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
             "kritzel-context-menu": LocalJSX.KritzelContextMenu & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
             "kritzel-control-brush-config": LocalJSX.KritzelControlBrushConfig & JSXBase.HTMLAttributes<HTMLKritzelControlBrushConfigElement>;
+            "kritzel-control-line-config": LocalJSX.KritzelControlLineConfig & JSXBase.HTMLAttributes<HTMLKritzelControlLineConfigElement>;
             "kritzel-control-text-config": LocalJSX.KritzelControlTextConfig & JSXBase.HTMLAttributes<HTMLKritzelControlTextConfigElement>;
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
@@ -1179,6 +1280,7 @@ declare module "@stencil/core" {
             "kritzel-font-family": LocalJSX.KritzelFontFamily & JSXBase.HTMLAttributes<HTMLKritzelFontFamilyElement>;
             "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
+            "kritzel-line-endings": LocalJSX.KritzelLineEndings & JSXBase.HTMLAttributes<HTMLKritzelLineEndingsElement>;
             "kritzel-menu": LocalJSX.KritzelMenu & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
             "kritzel-menu-item": LocalJSX.KritzelMenuItem & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
             "kritzel-portal": LocalJSX.KritzelPortal & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;

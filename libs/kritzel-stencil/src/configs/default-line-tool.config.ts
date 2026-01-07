@@ -26,8 +26,8 @@ export const DEFAULT_LINE_TOOL_CONFIG: KritzelLineToolConfig = {
     '#f8bbd0',
     '#ffccbc',
     '#f0f4c3',
-    '#b3e5fc',
-    '#e1bee7',
+    '#9fa8da',
+    '#d1c4e9',
   ],
   arrows: {
     end: { enabled: true, style: 'triangle' },
