@@ -25,3 +25,10 @@
 .expand-toggle:active {
   transform: scale(0.95);
 }
+
+.divider {
+  height: 1px;
+  background-color: var(--kritzel-divider-color, #e0e0e0);
+  margin: 4px 0;
+  width: 100%;
+}

@@ -147,7 +147,10 @@ export class KritzelToolConfig {
     if (!this.config) return null;
 
     const shouldShowExpandButton = this.palette.length > 6 || this.config.type === 'text';
-    const controls = this.config.controls.map(control => this.renderControl(control));
+    
+    // Separate size control from other controls
+    const sizeControl = this.config.controls.find(c => c.type === 'stroke-size' || c.type === 'font-size');
+    const otherControls = this.config.controls.filter(c => c.type !== 'stroke-size' && c.type !== 'font-size');
 
     return (
       <Host>
@@ -168,33 +171,28 @@ export class KritzelToolConfig {
               flex: '1',
             }}
           >
-            {this.config.showColorPaletteFirst && (
-              <kritzel-color-palette
-                colors={this.palette}
-                selectedColor={(this.tool as any)[this.config.colorProperty]}
-                isExpanded={this.isExpanded}
-                isOpaque={true}
-                onColorChange={this.handleColorChange}
-              ></kritzel-color-palette>
-            )}
+            {/* General controls */}
+            <kritzel-color-palette
+              colors={this.palette}
+              selectedColor={(this.tool as any)[this.config.colorProperty]}
+              isExpanded={this.isExpanded}
+              isOpaque={true}
+              onColorChange={this.handleColorChange}
+            ></kritzel-color-palette>
 
-            {controls}
-
-            {!this.config.showColorPaletteFirst && (
-              <kritzel-color-palette
-                colors={this.palette}
-                selectedColor={(this.tool as any)[this.config.colorProperty]}
-                isExpanded={this.isExpanded}
-                isOpaque={true}
-                onColorChange={this.handleColorChange}
-              ></kritzel-color-palette>
-            )}
+            {sizeControl && this.renderControl(sizeControl)}
 
             <kritzel-opacity-slider
               value={(this.tool as any)[this.config.opacityProperty]}
               previewColor={(this.tool as any)[this.config.colorProperty]}
               onValueChange={this.handleOpacityChange}
             ></kritzel-opacity-slider>
+
+            {/* Divider between general and tool-specific controls */}
+            {otherControls.length > 0 && <div class="divider"></div>}
+
+            {/* Tool-specific controls */}
+            {otherControls.map(control => this.renderControl(control))}
           </div>
 
           {/* Right column: expand button */}
