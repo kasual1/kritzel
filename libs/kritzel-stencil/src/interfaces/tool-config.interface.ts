@@ -18,7 +18,6 @@ export interface ToolConfigDefinition {
   sizeProperty: string;
   opacityProperty: string;
   paletteSource: 'palette' | 'palettes' | 'custom';
-  showColorPaletteFirst?: boolean;
   controls: ToolConfigControl[];
 }
 
@@ -32,7 +31,6 @@ export function getToolConfig(tool: ConfigurableTool): ToolConfigDefinition {
       sizeProperty: 'size',
       opacityProperty: 'opacity',
       paletteSource: 'palettes',
-      showColorPaletteFirst: true,
       controls: [
         { type: 'stroke-size', propertyName: 'size' },
       ],
@@ -46,7 +44,6 @@ export function getToolConfig(tool: ConfigurableTool): ToolConfigDefinition {
       sizeProperty: 'size',
       opacityProperty: 'opacity',
       paletteSource: 'palette',
-      showColorPaletteFirst: true,
       controls: [
         { type: 'stroke-size', propertyName: 'size' },
         { type: 'line-endings', propertyName: 'arrows', additionalProps: {} },
@@ -61,7 +58,6 @@ export function getToolConfig(tool: ConfigurableTool): ToolConfigDefinition {
       sizeProperty: 'strokeWidth',
       opacityProperty: 'opacity',
       paletteSource: 'palette',
-      showColorPaletteFirst: true,
       controls: [
         { type: 'stroke-size', propertyName: 'strokeWidth' },
         { type: 'shape-fill', propertyName: 'fillColor', additionalProps: {} },
@@ -76,10 +72,9 @@ export function getToolConfig(tool: ConfigurableTool): ToolConfigDefinition {
       sizeProperty: 'fontSize',
       opacityProperty: 'opacity',
       paletteSource: 'palette',
-      showColorPaletteFirst: false,
       controls: [
-        { type: 'font-family', propertyName: 'fontFamily' },
         { type: 'font-size', propertyName: 'fontSize', additionalProps: {} },
+        { type: 'font-family', propertyName: 'fontFamily' },
       ],
     };
   }
