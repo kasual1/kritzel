@@ -31,6 +31,11 @@ export class KritzelControlTextConfig {
     this.toolChange.emit(this.tool);
   }
 
+  handleOpacityChange(event: CustomEvent<number>) {
+    this.tool.opacity = event.detail;
+    this.toolChange.emit(this.tool);
+  }
+
   render() {
     return (
       <Host>
@@ -59,6 +64,12 @@ export class KritzelControlTextConfig {
         ></kritzel-color-palette>
 
         <kritzel-font-size selectedSize={this.tool.fontSize} fontFamily={this.tool.fontFamily} onSizeChange={event => this.handleSizeChange(event)}></kritzel-font-size>
+
+        <kritzel-opacity-slider
+          value={this.tool.opacity}
+          previewColor={this.tool.fontColor}
+          onValueChange={event => this.handleOpacityChange(event)}
+        ></kritzel-opacity-slider>
       </Host>
     );
   }

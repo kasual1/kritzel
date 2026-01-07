@@ -8,6 +8,7 @@ export class KritzelTextTool extends KritzelBaseTool {
   fontFamily: string = 'Arial';
   fontSize: number = 16;
   fontColor: string = '#000000';
+  opacity: number = 1;
 
   palette: string[] = [
     '#000000',

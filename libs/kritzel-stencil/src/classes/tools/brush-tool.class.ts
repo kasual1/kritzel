@@ -10,6 +10,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
   size: number = 6;
 
+  opacity: number = 1;
+
   palettes: {
     [brushType: string]: string[];
   } = {
