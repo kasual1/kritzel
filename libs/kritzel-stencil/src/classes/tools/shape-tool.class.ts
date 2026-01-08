@@ -175,6 +175,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
       fillColor: this.fillColor,
       strokeColor: this.strokeColor,
       strokeWidth: this.strokeWidth,
+      opacity: this.opacity,
       fontSize: this.fontSize,
       fontFamily: this.fontFamily,
       fontColor: this.fontColor,
