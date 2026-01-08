@@ -79,7 +79,6 @@ export function getToolConfig(tool: ConfigurableTool): ToolConfigDefinition {
     };
   }
 
-  // Fallback - should never reach here
-  console.error(`Unknown tool type:`, tool);
-  throw new Error(`Unknown tool type`);
+  // Tool is not configurable (e.g., selection, eraser, image)
+  return null;
 }

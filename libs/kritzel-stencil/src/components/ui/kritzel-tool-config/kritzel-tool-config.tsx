@@ -14,7 +14,9 @@ export class KritzelToolConfig {
   @Watch('tool')
   handleToolChange(newTool: ConfigurableTool) {
     this.config = getToolConfig(newTool);
-    this.updatePalette();
+    if (this.config) {
+      this.updatePalette();
+    }
   }
 
   @Prop({ mutable: true }) isExpanded: boolean = false;
@@ -26,10 +28,14 @@ export class KritzelToolConfig {
 
   componentWillLoad() {
     this.config = getToolConfig(this.tool);
-    this.updatePalette();
+    if (this.config) {
+      this.updatePalette();
+    }
   }
 
   private updatePalette() {
+    if (!this.config) return;
+    
     if (this.config.paletteSource === 'palettes') {
       // Brush tool has palettes[type]
       const brushTool = this.tool as KritzelBrushTool;
@@ -167,7 +173,7 @@ export class KritzelToolConfig {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '8px',
+              gap: '12px',
               flex: '1',
             }}
           >

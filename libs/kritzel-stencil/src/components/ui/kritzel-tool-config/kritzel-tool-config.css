@@ -18,6 +18,10 @@
 }
 
 .expand-toggle:focus {
+  outline: none;
+}
+
+.expand-toggle:focus-visible {
   outline: 2px solid var(--kritzel-focus-color, #007acc);
   outline-offset: 2px;
 }
