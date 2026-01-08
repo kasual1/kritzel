@@ -23,6 +23,12 @@ export interface ToolConfigDefinition {
 
 export type ConfigurableTool = KritzelBrushTool | KritzelLineTool | KritzelShapeTool | KritzelTextTool;
 
+export interface ToolDisplayValues {
+  color: string;
+  size: number;
+  fontFamily?: string;
+}
+
 export function getToolConfig(tool: ConfigurableTool): ToolConfigDefinition {
   if (tool instanceof KritzelBrushTool) {
     return {
