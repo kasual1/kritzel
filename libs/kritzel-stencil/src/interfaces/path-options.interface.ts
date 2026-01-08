@@ -6,4 +6,5 @@ export interface KritzelPathOptions {
   stroke?: string;
   strokeWidth?: number;
   fill?: string;
+  opacity?: number;
 }

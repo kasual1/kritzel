@@ -74,6 +74,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           scale: this._core.store.state.scale,
           stroke: this.color,
           strokeWidth: this.size,
+          opacity: this.opacity,
           arrows: this.arrows,
         });
         line.isCompleted = false;
@@ -103,6 +104,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           scale: this._core.store.state.scale,
           stroke: this.color,
           strokeWidth: this.size,
+          opacity: this.opacity,
           arrows: this.arrows,
         });
         line.isCompleted = false;
@@ -134,6 +136,7 @@ export class KritzelLineTool extends KritzelBaseTool {
             scale: this._core.store.state.scale,
             stroke: this.color,
             strokeWidth: this.size,
+            opacity: this.opacity,
             arrows: this.arrows,
           });
           updatedLine.id = currentLine.id;
@@ -165,6 +168,7 @@ export class KritzelLineTool extends KritzelBaseTool {
             scale: this._core.store.state.scale,
             stroke: this.color,
             strokeWidth: this.size,
+            opacity: this.opacity,
             arrows: this.arrows,
           });
           updatedLine.id = currentLine.id;
