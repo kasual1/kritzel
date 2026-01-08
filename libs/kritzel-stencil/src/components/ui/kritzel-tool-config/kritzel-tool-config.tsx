@@ -1,8 +1,10 @@
 import { Component, Host, Prop, h, Event, EventEmitter, State, Watch } from '@stencil/core';
-import { ConfigurableTool, getToolConfig, ToolConfigDefinition } from '../../../interfaces/tool-config.interface';
+import { ConfigurableTool, getToolConfig, ToolConfigDefinition, ToolDisplayValues } from '../../../interfaces/tool-config.interface';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
+import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { ShapeFillType } from '../../shared/kritzel-shape-fill/kritzel-shape-fill';
 import { LineArrowConfig } from '../../../interfaces/arrow-head.interface';
+import { KritzelColorHelper } from '../../../helpers/color.helper';
 
 @Component({
   tag: 'kritzel-tool-config',
@@ -16,21 +18,45 @@ export class KritzelToolConfig {
     this.config = getToolConfig(newTool);
     if (this.config) {
       this.updatePalette();
+      this.currentOpacity = (newTool as any)[this.config.opacityProperty] ?? 1;
     }
   }
 
   @Prop({ mutable: true }) isExpanded: boolean = false;
 
   @Event() toolChange: EventEmitter<ConfigurableTool>;
+  @Event() displayValuesChange: EventEmitter<ToolDisplayValues>;
 
   @State() config: ToolConfigDefinition;
   @State() palette: string[] = [];
+  @State() currentOpacity: number = 1;
 
   componentWillLoad() {
     this.config = getToolConfig(this.tool);
     if (this.config) {
       this.updatePalette();
+      this.currentOpacity = (this.tool as any)[this.config.opacityProperty] ?? 1;
+      this.emitDisplayValues();
     }
+  }
+
+  private emitDisplayValues() {
+    if (!this.config) return;
+
+    const color = (this.tool as any)[this.config.colorProperty];
+    const opacity = this.currentOpacity;
+    const size = (this.tool as any)[this.config.sizeProperty];
+
+    const displayValues: ToolDisplayValues = {
+      color: KritzelColorHelper.applyOpacity(color, opacity),
+      size,
+    };
+
+    if (this.tool instanceof KritzelTextTool) {
+      displayValues.fontFamily = this.tool.fontFamily;
+    }
+
+    this.displayValuesChange.emit(displayValues);
   }
 
   private updatePalette() {
@@ -52,16 +78,20 @@ export class KritzelToolConfig {
 
   private handleColorChange = (event: CustomEvent<string>) => {
     (this.tool as any)[this.config.colorProperty] = event.detail;
+    this.emitDisplayValues();
     this.toolChange.emit(this.tool);
   };
 
   private handleSizeChange = (event: CustomEvent<number>) => {
     (this.tool as any)[this.config.sizeProperty] = event.detail;
+    this.emitDisplayValues();
     this.toolChange.emit(this.tool);
   };
 
   private handleOpacityChange = (event: CustomEvent<number>) => {
     (this.tool as any)[this.config.opacityProperty] = event.detail;
+    this.currentOpacity = event.detail;
+    this.emitDisplayValues();
     this.toolChange.emit(this.tool);
   };
 
@@ -76,8 +106,13 @@ export class KritzelToolConfig {
       brushTool.type = value;
       this.palette = brushTool.palettes[value];
       brushTool.color = this.palette[0];
+      this.emitDisplayValues();
     } else {
       (this.tool as any)[propertyName] = value;
+      // Emit display values for font family changes
+      if (propertyName === 'fontFamily') {
+        this.emitDisplayValues();
+      }
     }
     this.toolChange.emit(this.tool);
   };
@@ -183,6 +218,7 @@ export class KritzelToolConfig {
               selectedColor={(this.tool as any)[this.config.colorProperty]}
               isExpanded={this.isExpanded}
               isOpaque={true}
+              opacity={this.currentOpacity}
               onColorChange={this.handleColorChange}
             ></kritzel-color-palette>
 

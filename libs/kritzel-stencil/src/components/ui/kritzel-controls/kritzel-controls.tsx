@@ -7,6 +7,8 @@ import { KritzelToolbarControl, KritzelToolbarSubOption } from '../../../interfa
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
+import { ToolDisplayValues, getToolConfig } from '../../../interfaces/tool-config.interface';
+import { KritzelColorHelper } from '../../../helpers/color.helper';
 
 type ToolConfig = Record<string, any>;
 
@@ -33,6 +35,7 @@ export class KritzelControls {
   @State() openSubMenuControl: KritzelToolbarControl | null = null;
   @State() canScrollLeft: boolean = false;
   @State() canScrollRight: boolean = false;
+  @State() displayValues: ToolDisplayValues | null = null;
 
   @Listen('click', { target: 'document' })
   handleDocumentClick(event: MouseEvent) {
@@ -58,6 +61,9 @@ export class KritzelControls {
   @Listen('activeToolChange', { target: 'document' })
   async handleActiveToolChange(event: CustomEvent) {
     this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
+    if (this.activeControl?.tool) {
+      this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
+    }
   }
 
   @Method()
@@ -83,6 +89,31 @@ export class KritzelControls {
 
   get activeToolAsShapeTool() {
     return this.activeControl?.tool as KritzelShapeTool;
+  }
+
+  private handleDisplayValuesChange = (event: CustomEvent<ToolDisplayValues>) => {
+    this.displayValues = event.detail;
+  };
+
+  private updateDisplayValues(tool: KritzelBaseTool) {
+    const config = getToolConfig(tool as any);
+    if (!config) {
+      this.displayValues = null;
+      return;
+    }
+
+    const color = (tool as any)[config.colorProperty];
+    const opacity = (tool as any)[config.opacityProperty] ?? 1;
+    const size = (tool as any)[config.sizeProperty];
+
+    this.displayValues = {
+      color: KritzelColorHelper.applyOpacity(color, opacity),
+      size,
+    };
+
+    if (tool instanceof KritzelTextTool) {
+      this.displayValues.fontFamily = tool.fontFamily;
+    }
   }
 
   async componentWillLoad() {
@@ -127,6 +158,7 @@ export class KritzelControls {
       if (c.type === 'tool' && c.isDefault && c.tool) {
         await this.kritzelEngine.changeActiveTool(c.tool as KritzelBaseTool);
         this.activeControl = c;
+        this.updateDisplayValues(c.tool as KritzelBaseTool);
       }
 
       if (c.type === 'config') {
@@ -143,6 +175,7 @@ export class KritzelControls {
     this.activeControl = control;
 
     if (this.activeControl.type === 'tool') {
+      this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
       await this.kritzelEngine.changeActiveTool(this.activeControl.tool as KritzelBaseTool);
     }
   }
@@ -358,6 +391,7 @@ export class KritzelControls {
                 <kritzel-tool-config 
                   tool={this.activeControl.tool as any} 
                   onToolChange={event => this.handleToolChange?.(event)}
+                  onDisplayValuesChange={this.handleDisplayValuesChange}
                   style={{ width: '100%', height: '100%' }}
                 ></kritzel-tool-config>
               </kritzel-tooltip>
@@ -375,11 +409,11 @@ export class KritzelControls {
                   cursor: 'pointer',
                 }}
               >
-                {this.activeControl.tool instanceof KritzelBrushTool && (
+                {this.activeControl.tool instanceof KritzelBrushTool && this.displayValues && (
                   <div class="color-container">
                     <kritzel-color
-                      value={this.activeToolAsBrushTool?.color}
-                      size={this.activeToolAsBrushTool?.size}
+                      value={this.displayValues.color}
+                      size={this.displayValues.size}
                       style={{
                         borderRadius: '50%',
                         border: 'none',
@@ -388,21 +422,21 @@ export class KritzelControls {
                   </div>
                 )}
 
-                {this.activeControl.tool instanceof KritzelTextTool && (
+                {this.activeControl.tool instanceof KritzelTextTool && this.displayValues && (
                   <div class="font-container">
                     <kritzel-font
-                      fontFamily={this.activeToolAsTextTool?.fontFamily}
-                      size={this.activeToolAsTextTool?.fontSize}
-                      color={this.activeToolAsTextTool?.fontColor}
+                      fontFamily={this.displayValues.fontFamily}
+                      size={this.displayValues.size}
+                      color={this.displayValues.color}
                     ></kritzel-font>
                   </div>
                 )}
 
-                {this.activeControl.tool instanceof KritzelLineTool && (
+                {this.activeControl.tool instanceof KritzelLineTool && this.displayValues && (
                   <div class="color-container">
                     <kritzel-color
-                      value={this.activeToolAsLineTool?.color}
-                      size={this.activeToolAsLineTool?.size}
+                      value={this.displayValues.color}
+                      size={this.displayValues.size}
                       style={{
                         borderRadius: '50%',
                         border: 'none',
@@ -411,11 +445,11 @@ export class KritzelControls {
                   </div>
                 )}
 
-                {this.activeControl.tool instanceof KritzelShapeTool && (
+                {this.activeControl.tool instanceof KritzelShapeTool && this.displayValues && (
                   <div class="color-container">
                     <kritzel-color
-                      value={this.activeToolAsShapeTool?.strokeColor}
-                      size={this.activeToolAsShapeTool?.strokeWidth}
+                      value={this.displayValues.color}
+                      size={this.displayValues.size}
                       style={{
                         borderRadius: '50%',
                         border: 'none',

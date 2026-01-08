@@ -23,7 +23,7 @@ import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
-import { ConfigurableTool } from "./interfaces/tool-config.interface";
+import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
@@ -42,7 +42,7 @@ export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
 export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
-export { ConfigurableTool } from "./interfaces/tool-config.interface";
+export { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export namespace Components {
     interface KritzelBrushStyle {
         /**
@@ -74,6 +74,10 @@ export namespace Components {
           * @default false
          */
         "isOpaque": boolean;
+        /**
+          * @default 1
+         */
+        "opacity": number;
         /**
           * @default null
          */
@@ -822,6 +826,7 @@ declare global {
     };
     interface HTMLKritzelToolConfigElementEventMap {
         "toolChange": ConfigurableTool;
+        "displayValuesChange": ToolDisplayValues;
     }
     interface HTMLKritzelToolConfigElement extends Components.KritzelToolConfig, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelToolConfigElementEventMap>(type: K, listener: (this: HTMLKritzelToolConfigElement, ev: KritzelToolConfigCustomEvent<HTMLKritzelToolConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -952,6 +957,10 @@ declare namespace LocalJSX {
          */
         "isOpaque"?: boolean;
         "onColorChange"?: (event: KritzelColorPaletteCustomEvent<string>) => void;
+        /**
+          * @default 1
+         */
+        "opacity"?: number;
         /**
           * @default null
          */
@@ -1237,6 +1246,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "isExpanded"?: boolean;
+        "onDisplayValuesChange"?: (event: KritzelToolConfigCustomEvent<ToolDisplayValues>) => void;
         "onToolChange"?: (event: KritzelToolConfigCustomEvent<ConfigurableTool>) => void;
         "tool"?: ConfigurableTool;
     }
