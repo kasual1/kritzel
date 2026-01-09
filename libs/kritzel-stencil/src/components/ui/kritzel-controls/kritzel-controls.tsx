@@ -79,7 +79,7 @@ export class KritzelControls {
     }
   }
 
-  @Listen('selectionChange', { target: 'document' })
+  @Listen('objectsSelectionChange', { target: 'document' })
   handleSelectionChange() {
     if (this.activeControl?.tool instanceof KritzelSelectionTool) {
       this.updateDisplayValues(this.activeControl.tool);
@@ -112,7 +112,16 @@ export class KritzelControls {
   }
 
   private handleDisplayValuesChange = (event: CustomEvent<ToolDisplayValues>) => {
-    this.displayValues = event.detail;
+    const newVal = event.detail;
+    if (
+      this.displayValues &&
+      this.displayValues.color === newVal.color &&
+      this.displayValues.size === newVal.size &&
+      this.displayValues.fontFamily === newVal.fontFamily
+    ) {
+      return;
+    }
+    this.displayValues = newVal;
   };
 
   private updateDisplayValues(tool: KritzelBaseTool) {
@@ -126,14 +135,26 @@ export class KritzelControls {
     const opacity = (tool as any)[config.opacityProperty] ?? 1;
     const size = (tool as any)[config.sizeProperty];
 
-    this.displayValues = {
+    const displayValues: ToolDisplayValues = {
       color: KritzelColorHelper.applyOpacity(color, opacity),
       size,
     };
 
     if (tool instanceof KritzelTextTool) {
-      this.displayValues.fontFamily = tool.fontFamily;
+      displayValues.fontFamily = tool.fontFamily;
     }
+
+    // Check for equality implementation to prevent unnecessary re-renders
+    if (
+      this.displayValues &&
+      this.displayValues.color === displayValues.color &&
+      this.displayValues.size === displayValues.size &&
+      this.displayValues.fontFamily === displayValues.fontFamily
+    ) {
+      return;
+    }
+
+    this.displayValues = displayValues;
   }
 
   async componentWillLoad() {
