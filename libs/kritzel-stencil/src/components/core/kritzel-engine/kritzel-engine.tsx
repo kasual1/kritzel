@@ -83,7 +83,7 @@ export class KritzelEngine {
 
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
   @Event() activeToolChange: EventEmitter<KritzelBaseTool>;
-  @Event() selectionChange: EventEmitter<void>;
+  @Event() objectsSelectionChange: EventEmitter<void>;
   @Event() workspacesChange: EventEmitter<KritzelWorkspace[]>;
   @Event() longpress: EventEmitter<PointerEvent>;
   @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
@@ -93,7 +93,7 @@ export class KritzelEngine {
 
   @Method()
   async triggerSelectionChange() {
-    this.selectionChange.emit();
+    this.objectsSelectionChange.emit();
   }
 
   private throttledWheel = throttle((ev: WheelEvent) => {

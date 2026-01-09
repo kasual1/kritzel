@@ -58,7 +58,7 @@ export class KritzelToolConfig {
   @State() currentOpacity: number = 1;
   @State() private updateTrigger: number = 0;
 
-  @Listen('selectionChange', { target: 'document' })
+  @Listen('objectsSelectionChange', { target: 'document' })
   handleSelectionChange() {
     if (this.tool instanceof KritzelSelectionTool) {
       this.config = getToolConfig(this.tool);

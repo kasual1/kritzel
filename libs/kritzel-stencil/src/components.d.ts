@@ -608,7 +608,7 @@ declare global {
     interface HTMLKritzelEngineElementEventMap {
         "isEngineReady": KritzelEngineState;
         "activeToolChange": KritzelBaseTool;
-        "selectionChange": void;
+        "objectsSelectionChange": void;
         "workspacesChange": KritzelWorkspace[];
         "longpress": PointerEvent;
         "objectsChange": KritzelBaseObject[];
@@ -1056,7 +1056,7 @@ declare namespace LocalJSX {
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
         "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
         "onObjectsChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject[]>) => void;
-        "onSelectionChange"?: (event: KritzelEngineCustomEvent<void>) => void;
+        "onObjectsSelectionChange"?: (event: KritzelEngineCustomEvent<void>) => void;
         "onUndoStateChange"?: (event: KritzelEngineCustomEvent<KritzelUndoState>) => void;
         "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
         /**
