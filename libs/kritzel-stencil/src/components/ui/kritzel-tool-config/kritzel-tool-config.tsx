@@ -1,7 +1,8 @@
-import { Component, Host, Prop, h, Event, EventEmitter, State, Watch } from '@stencil/core';
+import { Component, Host, Prop, h, Event, EventEmitter, State, Watch, Listen } from '@stencil/core';
 import { ConfigurableTool, getToolConfig, ToolConfigDefinition, ToolDisplayValues } from '../../../interfaces/tool-config.interface';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
+import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { ShapeFillType } from '../../shared/kritzel-shape-fill/kritzel-shape-fill';
 import { LineArrowConfig } from '../../../interfaces/arrow-head.interface';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
@@ -14,11 +15,36 @@ import { KritzelColorHelper } from '../../../helpers/color.helper';
 export class KritzelToolConfig {
   @Prop({ mutable: true }) tool: ConfigurableTool;
   @Watch('tool')
-  handleToolChange(newTool: ConfigurableTool) {
-    this.config = getToolConfig(newTool);
+  handleToolChange(newTool: ConfigurableTool, oldTool: ConfigurableTool) {
+    const newConfig = getToolConfig(newTool);
+    
+    // Maintain settings when switching between shape tools
+    if (oldTool && newTool && newConfig?.type === 'shape') {
+      const oldConfig = getToolConfig(oldTool);
+      if (oldConfig?.type === 'shape') {
+        // Copy properties that should persist
+        const propsToCopy = [
+          newConfig.colorProperty,   // strokeColor
+          newConfig.sizeProperty,    // strokeWidth
+          newConfig.opacityProperty, // opacity
+          'fillColor'                // shape specific
+        ];
+
+        propsToCopy.forEach(prop => {
+          if (prop && (oldTool as any)[prop] !== undefined) {
+            (newTool as any)[prop] = (oldTool as any)[prop];
+          }
+        });
+      }
+    }
+
+    this.config = newConfig;
     if (this.config) {
       this.updatePalette();
       this.currentOpacity = (newTool as any)[this.config.opacityProperty] ?? 1;
+      
+      // Emit the values since they might have been updated from the old tool
+      this.emitDisplayValues();
     }
   }
 
@@ -30,6 +56,19 @@ export class KritzelToolConfig {
   @State() config: ToolConfigDefinition;
   @State() palette: string[] = [];
   @State() currentOpacity: number = 1;
+  @State() private updateTrigger: number = 0;
+
+  @Listen('selectionChange', { target: 'document' })
+  handleSelectionChange() {
+    if (this.tool instanceof KritzelSelectionTool) {
+      this.config = getToolConfig(this.tool);
+      if (this.config) {
+        this.updatePalette();
+        this.currentOpacity = (this.tool as any)[this.config.opacityProperty] ?? 1;
+        this.emitDisplayValues();
+      }
+    }
+  }
 
   componentWillLoad() {
     this.config = getToolConfig(this.tool);
@@ -78,14 +117,25 @@ export class KritzelToolConfig {
 
   private handleColorChange = (event: CustomEvent<string>) => {
     (this.tool as any)[this.config.colorProperty] = event.detail;
+
+    // Special handling for shape fill: when color (stroke) changes, update fill color if it's currently filled
+    if (this.config.type === 'shape' || this.config.type === 'selection') {
+      const tool = this.tool as any;
+      if (tool.fillColor !== 'transparent') {
+        tool.fillColor = event.detail;
+      }
+    }
+
     this.emitDisplayValues();
     this.toolChange.emit(this.tool);
+    this.updateTrigger++;
   };
 
   private handleSizeChange = (event: CustomEvent<number>) => {
     (this.tool as any)[this.config.sizeProperty] = event.detail;
     this.emitDisplayValues();
     this.toolChange.emit(this.tool);
+    this.updateTrigger++;
   };
 
   private handleOpacityChange = (event: CustomEvent<number>) => {
@@ -97,8 +147,8 @@ export class KritzelToolConfig {
 
   private handlePropertyChange = (propertyName: string, value: any) => {
     // Special handling for shape fill
-    if (this.config.type === 'shape' && propertyName === 'fillColor') {
-      (this.tool as any).fillColor = value === 'filled' ? (this.tool as any).strokeColor : 'transparent';
+    if ((this.config.type === 'shape' || this.config.type === 'selection') && propertyName === 'fillColor') {
+      (this.tool as any).fillColor = value === 'filled' ? (this.tool as any)[this.config.colorProperty] : 'transparent';
     }
     // Special handling for brush type change
     else if (this.config.type === 'brush' && propertyName === 'type') {
@@ -115,6 +165,7 @@ export class KritzelToolConfig {
       }
     }
     this.toolChange.emit(this.tool);
+    this.updateTrigger++;
   };
 
   private getShapeFillValue(): ShapeFillType {

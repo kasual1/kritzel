@@ -2,8 +2,9 @@ import { KritzelBrushTool } from '../classes/tools/brush-tool.class';
 import { KritzelLineTool } from '../classes/tools/line-tool.class';
 import { KritzelShapeTool } from '../classes/tools/shape-tool.class';
 import { KritzelTextTool } from '../classes/tools/text-tool.class';
+import { KritzelSelectionTool } from '../classes/tools/selection-tool.class';
 
-export type ToolConfigType = 'brush' | 'line' | 'shape' | 'text';
+export type ToolConfigType = 'brush' | 'line' | 'shape' | 'text' | 'selection';
 
 export interface ToolConfigControl {
   type: 'stroke-size' | 'font-size' | 'line-endings' | 'shape-fill' | 'font-family';
@@ -21,7 +22,7 @@ export interface ToolConfigDefinition {
   controls: ToolConfigControl[];
 }
 
-export type ConfigurableTool = KritzelBrushTool | KritzelLineTool | KritzelShapeTool | KritzelTextTool;
+export type ConfigurableTool = KritzelBrushTool | KritzelLineTool | KritzelShapeTool | KritzelTextTool | KritzelSelectionTool;
 
 export interface ToolDisplayValues {
   color: string;
@@ -30,6 +31,10 @@ export interface ToolDisplayValues {
 }
 
 export function getToolConfig(tool: ConfigurableTool): ToolConfigDefinition {
+  if (tool instanceof KritzelSelectionTool) {
+    return tool.getToolConfig();
+  }
+
   if (tool instanceof KritzelBrushTool) {
     return {
       type: 'brush',

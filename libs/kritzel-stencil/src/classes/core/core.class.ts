@@ -260,12 +260,14 @@ export class KritzelCore {
     this.removeSelectionGroup();
     this.removeSelectionBox();
     this._store.state.objects.insert(selectionGroup);
+    this._kritzelEngine.triggerSelectionChange();
   }
 
   removeSelectionGroup(): void {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
       this._store.state.objects.remove(object => object.id === selectionGroup.id);
+      this._kritzelEngine.triggerSelectionChange();
     }
   }
 

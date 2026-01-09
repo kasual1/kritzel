@@ -3,6 +3,7 @@ import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
 import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
+import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelToolbarControl, KritzelToolbarSubOption } from '../../../interfaces/toolbar-control.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
@@ -39,9 +40,21 @@ export class KritzelControls {
 
   @Listen('click', { target: 'document' })
   handleDocumentClick(event: MouseEvent) {
-    const element = event.target as HTMLElement;
+    if (!this.kritzelEngine) {
+      return;
+    }
 
-    if (!this.kritzelEngine || element.closest('.kritzel-tooltip')) {
+    // Use composedPath to check if click is inside tooltip (works across shadow DOM boundaries)
+    const path = event.composedPath();
+    const isInsideTooltip = path.some(el => {
+      const element = el as HTMLElement;
+      if (element.tagName) {
+        return element.tagName.toLowerCase() === 'kritzel-tooltip' || element.classList?.contains('kritzel-tooltip');
+      }
+      return false;
+    });
+
+    if (isInsideTooltip) {
       return;
     }
 
@@ -63,6 +76,13 @@ export class KritzelControls {
     this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
     if (this.activeControl?.tool) {
       this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
+    }
+  }
+
+  @Listen('selectionChange', { target: 'document' })
+  handleSelectionChange() {
+    if (this.activeControl?.tool instanceof KritzelSelectionTool) {
+      this.updateDisplayValues(this.activeControl.tool);
     }
   }
 
@@ -250,7 +270,8 @@ export class KritzelControls {
     const hasConfigUI = this.activeControl?.tool instanceof KritzelBrushTool || 
                         this.activeControl?.tool instanceof KritzelTextTool ||
                         this.activeControl?.tool instanceof KritzelLineTool ||
-                        this.activeControl?.tool instanceof KritzelShapeTool;
+                        this.activeControl?.tool instanceof KritzelShapeTool ||
+                        (this.activeControl?.tool instanceof KritzelSelectionTool && this.activeControl.tool.hasSelection());
 
     // Separate tool controls from config control
     const toolControls = this.controls.filter(c => c.type === 'tool');
@@ -446,6 +467,19 @@ export class KritzelControls {
                 )}
 
                 {this.activeControl.tool instanceof KritzelShapeTool && this.displayValues && (
+                  <div class="color-container">
+                    <kritzel-color
+                      value={this.displayValues.color}
+                      size={this.displayValues.size}
+                      style={{
+                        borderRadius: '50%',
+                        border: 'none',
+                      }}
+                    ></kritzel-color>
+                  </div>
+                )}
+
+                {this.activeControl.tool instanceof KritzelSelectionTool && this.displayValues && (
                   <div class="color-container">
                     <kritzel-color
                       value={this.displayValues.color}

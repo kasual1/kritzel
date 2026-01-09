@@ -211,6 +211,7 @@ export namespace Components {
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
         "syncConfig"?: KritzelSyncConfig;
+        "triggerSelectionChange": () => Promise<void>;
         "undo": () => Promise<void>;
         "ungroup": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
@@ -607,6 +608,7 @@ declare global {
     interface HTMLKritzelEngineElementEventMap {
         "isEngineReady": KritzelEngineState;
         "activeToolChange": KritzelBaseTool;
+        "selectionChange": void;
         "workspacesChange": KritzelWorkspace[];
         "longpress": PointerEvent;
         "objectsChange": KritzelBaseObject[];
@@ -1054,6 +1056,7 @@ declare namespace LocalJSX {
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
         "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
         "onObjectsChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject[]>) => void;
+        "onSelectionChange"?: (event: KritzelEngineCustomEvent<void>) => void;
         "onUndoStateChange"?: (event: KritzelEngineCustomEvent<KritzelUndoState>) => void;
         "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
         /**
