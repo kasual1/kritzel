@@ -21,7 +21,6 @@ export class KritzelTooltip {
   @Listen('click', { target: 'document' })
   handleOutsideClick(event: MouseEvent) {
     if (!this.isVisible) return;
-    const target = event.target as HTMLElement;
     
     // Check if click is inside the tooltip host or any of its shadow DOM content
     const path = event.composedPath();
