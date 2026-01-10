@@ -1,4 +1,5 @@
 import { Component, Host, h, Prop, EventEmitter, Event } from '@stencil/core';
+import { KritzelColorHelper } from '../../../helpers/color.helper';
 
 @Component({
   tag: 'kritzel-color-palette',
@@ -10,6 +11,7 @@ export class KritzelColorPalette {
   @Prop({ mutable: true }) selectedColor: string | null = null;
   @Prop() isExpanded: boolean = false;
   @Prop() isOpaque: boolean = false;
+  @Prop() opacity: number = 1;
 
   @Event() colorChange: EventEmitter<string>;
 
@@ -58,7 +60,7 @@ export class KritzelColorPalette {
               onClick={() => this.handleColorClick(color)}
               onKeyDown={event => this.handleKeyDown(event, color)}
             >
-              <kritzel-color value={color}></kritzel-color>
+              <kritzel-color value={KritzelColorHelper.applyOpacity(color, this.opacity)}></kritzel-color>
             </div>
           ))}
         </div>

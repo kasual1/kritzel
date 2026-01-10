@@ -8,6 +8,7 @@ export class KritzelTextTool extends KritzelBaseTool {
   fontFamily: string = 'Arial';
   fontSize: number = 16;
   fontColor: string = '#000000';
+  opacity: number = 1;
 
   palette: string[] = [
     '#000000',
@@ -69,6 +70,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       const text = KritzelText.create(this._core, this.fontSize, this.fontFamily);
 
       text.fontColor = this.fontColor;
+      text.opacity = this.opacity;
       text.translateX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
       text.translateY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
       text.zIndex = this._core.store.currentZIndex;
@@ -115,6 +117,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       const text = KritzelText.create(this._core, this.fontSize, this.fontFamily);
 
       text.fontColor = this.fontColor;
+      text.opacity = this.opacity;
       text.translateX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
       text.translateY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
       text.zIndex = this._core.store.currentZIndex;
