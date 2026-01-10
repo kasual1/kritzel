@@ -79,23 +79,23 @@ describe('KritzelKeyboardHelper', () => {
   describe('disableInteractiveWidget', () => {
     it('should remove interactive-widget from the meta tag content', () => {
       viewportMeta = document.createElement('meta');
-      viewportMeta.name = 'viewport';
-      viewportMeta.content = 'width=device-width, interactive-widget=resizes-content, initial-scale=1.0';
+      viewportMeta.setAttribute('name', 'viewport');
+      viewportMeta.setAttribute('content', 'width=device-width, interactive-widget=resizes-content, initial-scale=1.0');
       document.head.appendChild(viewportMeta);
 
       KritzelKeyboardHelper.disableInteractiveWidget();
-      expect(viewportMeta.content).not.toContain('interactive-widget=resizes-content');
-      expect(viewportMeta.content).toBe('width=device-width, initial-scale=1.0');
+      expect(viewportMeta.getAttribute('content')).not.toContain('interactive-widget=resizes-content');
+      expect(viewportMeta.getAttribute('content')).toBe('width=device-width, initial-scale=1.0');
     });
 
     it('should handle various spacings and positions of the property', () => {
       viewportMeta = document.createElement('meta');
-      viewportMeta.name = 'viewport';
-      viewportMeta.content = 'interactive-widget=resizes-content, width=device-width';
+      viewportMeta.setAttribute('name', 'viewport');
+      viewportMeta.setAttribute('content', 'interactive-widget=resizes-content, width=device-width');
       document.head.appendChild(viewportMeta);
 
       KritzelKeyboardHelper.disableInteractiveWidget();
-      expect(viewportMeta.content).toBe('width=device-width');
+      expect(viewportMeta.getAttribute('content')).toBe('width=device-width');
     });
 
     it('should do nothing if the property does not exist', () => {
@@ -111,12 +111,12 @@ describe('KritzelKeyboardHelper', () => {
 
     it('should handle the property being the only content', () => {
       viewportMeta = document.createElement('meta');
-      viewportMeta.name = 'viewport';
-      viewportMeta.content = 'interactive-widget=resizes-content';
+      viewportMeta.setAttribute('name', 'viewport');
+      viewportMeta.setAttribute('content', 'interactive-widget=resizes-content');
       document.head.appendChild(viewportMeta);
 
       KritzelKeyboardHelper.disableInteractiveWidget();
-      expect(viewportMeta.content).toBe('');
+      expect(viewportMeta.getAttribute('content')).toBe('');
     });
   });
 });
