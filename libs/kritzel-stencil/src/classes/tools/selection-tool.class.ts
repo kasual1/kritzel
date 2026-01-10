@@ -15,6 +15,7 @@ import { KritzelLine } from '../objects/line.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelText } from '../objects/text.class';
 import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-config.interface';
+import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
   selectionHandler: KritzelSelectionHandler;
@@ -24,11 +25,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   rotationHandler: KritzelRotationHandler;
   lineHandleHandler: KritzelLineHandleHandler;
 
-  palette: string[] = [
-    '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF',
-    '#FFFF00', '#FF00FF', '#00FFFF', '#808080', '#C0C0C0',
-    '#800000', '#008000', '#000080', '#800080',
-  ];
+  palette: string[] = [...DEFAULT_COLOR_PALETTE];
 
   /** Returns true if there are objects in the selection group */
   hasSelection(): boolean {
