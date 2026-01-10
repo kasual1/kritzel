@@ -1,9 +1,18 @@
 :host {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 8px;
+  gap: 0;
+  padding: 0;
+  width: 100%;
   box-sizing: border-box;
+}
+
+.size-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(6, 32px);
+  gap: 8px;
+  justify-items: center;
 }
 
 .size-container {

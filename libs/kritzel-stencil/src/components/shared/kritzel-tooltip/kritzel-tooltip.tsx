@@ -20,9 +20,13 @@ export class KritzelTooltip {
 
   @Listen('click', { target: 'document' })
   handleOutsideClick(event: MouseEvent) {
-    if( !this.isVisible ) return;
-    const target = event.target as HTMLElement;
-    if (!this.host.contains(target)) {
+    if (!this.isVisible) return;
+    
+    // Check if click is inside the tooltip host or any of its shadow DOM content
+    const path = event.composedPath();
+    const isInsideTooltip = path.some(el => el === this.host);
+    
+    if (!isInsideTooltip) {
       this.tooltipClosed.emit();
     }
   }
@@ -98,7 +102,12 @@ export class KritzelTooltip {
           bottom: `${this.positionY}px`,
         }}
       >
-        <div class="tooltip-content" onClick={event => event.stopPropagation()}>
+        <div
+          class="tooltip-content"
+          onClick={event => event.stopPropagation()}
+          onPointerDown={event => event.stopPropagation()}
+          onMouseDown={event => event.stopPropagation()}
+        >
           <slot></slot>
         </div>
       </Host>

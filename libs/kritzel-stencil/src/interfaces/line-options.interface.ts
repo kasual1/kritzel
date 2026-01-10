@@ -13,6 +13,7 @@ export interface KritzelLineOptions {
   scale?: number;
   stroke?: string;
   strokeWidth?: number;
+  opacity?: number;
   /** Anchor connection for the start point */
   startAnchor?: LineAnchor;
   /** Anchor connection for the end point */

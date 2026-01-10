@@ -19,18 +19,20 @@ export class KritzelStrokeSize {
   render() {
     return (
       <Host>
-        {this.sizes.map(size => (
-          <div
-            tabIndex={0}
-            class={{
-              'size-container': true,
-              'selected': this.selectedSize === size,
-            }}
-            onClick={() => this.handleSizeClick(size)}
-          >
-            <kritzel-color value='#000000' size={size}></kritzel-color>
-          </div>
-        ))}
+        <div class="size-grid">
+          {this.sizes.map(size => (
+            <div
+              tabIndex={0}
+              class={{
+                'size-container': true,
+                'selected': this.selectedSize === size,
+              }}
+              onClick={() => this.handleSizeClick(size)}
+            >
+              <kritzel-color value='#000000' size={size}></kritzel-color>
+            </div>
+          ))}
+        </div>
       </Host>
     );
   }

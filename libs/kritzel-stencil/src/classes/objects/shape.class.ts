@@ -116,6 +116,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       fillColor?: string;
       strokeColor?: string;
       strokeWidth?: number;
+      opacity?: number;
       fontSize?: number;
       fontFamily?: string;
       fontColor?: string;
@@ -136,6 +137,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.fillColor = config?.fillColor ?? 'transparent';
     object.strokeColor = config?.strokeColor ?? '#000000';
     object.strokeWidth = config?.strokeWidth ?? 4;
+    object.opacity = config?.opacity ?? 1;
     object.fontSize = config?.fontSize ?? 16;
     object.fontFamily = config?.fontFamily ?? 'Arial';
     object.fontColor = config?.fontColor ?? '#000000';
