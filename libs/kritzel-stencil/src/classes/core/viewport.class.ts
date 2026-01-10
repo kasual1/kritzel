@@ -8,6 +8,12 @@ export class KritzelViewport {
   private readonly _debounceUpdate: DebouncedFunc<() => void>;
   private readonly _debounceEndScaling: DebouncedFunc<() => void>;
 
+  private _velocityX: number = 0;
+  private _velocityY: number = 0;
+  private _panRafId: number | null = null;
+  private readonly _friction: number = 0.92;
+  private readonly _minVelocity: number = 0.5;
+
   initialTouchDistance: number = 0;
   startX: number = 0;
   startY: number = 0;
@@ -247,14 +253,51 @@ export class KritzelViewport {
   }
 
   private handlePan(event: WheelEvent): void {
+    // Normalize delta for trackpad vs mouse wheel
+    // WheelEvent.deltaMode: 0=pixels, 1=lines, 2=pages
+    let deltaX = event.deltaX;
+    let deltaY = event.deltaY;
+
+    if (event.deltaMode === 1) {
+      deltaX *= 16;
+      deltaY *= 16;
+    } else if (event.deltaMode === 2) {
+      deltaX *= window.innerWidth;
+      deltaY *= window.innerHeight;
+    }
+
     const panSpeed = 0.8;
 
-    this._core.store.state.translateX = this._core.store.state.translateX - event.deltaX * panSpeed;
-    this._core.store.state.translateY = this._core.store.state.translateY - event.deltaY * panSpeed;
+    // Add to velocity for momentum effect
+    this._velocityX = -deltaX * panSpeed;
+    this._velocityY = -deltaY * panSpeed;
 
+    // Start animation loop if not already running
+    if (this._panRafId === null) {
+      this._animatePan();
+    }
+  }
+
+  private _animatePan(): void {
+    // Apply current velocity
+    this._core.store.state.translateX += this._velocityX;
+    this._core.store.state.translateY += this._velocityY;
     this._core.store.state.hasViewportChanged = true;
-
     this._core.rerender();
-    this._debounceUpdate();
+
+    // Apply friction to slow down
+    this._velocityX *= this._friction;
+    this._velocityY *= this._friction;
+
+    // Continue animation if velocity is still significant
+    if (Math.abs(this._velocityX) > this._minVelocity || Math.abs(this._velocityY) > this._minVelocity) {
+      this._panRafId = requestAnimationFrame(() => this._animatePan());
+    } else {
+      // Stop animation and finalize
+      this._velocityX = 0;
+      this._velocityY = 0;
+      this._panRafId = null;
+      this._debounceUpdate();
+    }
   }
 }
