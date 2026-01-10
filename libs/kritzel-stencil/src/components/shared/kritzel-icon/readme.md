@@ -20,11 +20,10 @@
 
  - [kritzel-brush-style](../kritzel-brush-style)
  - [kritzel-context-menu](../../ui/kritzel-context-menu)
- - [kritzel-control-brush-config](../../ui/kritzel-control-brush-config)
- - [kritzel-control-text-config](../../ui/kritzel-control-text-config)
  - [kritzel-controls](../../ui/kritzel-controls)
  - [kritzel-menu-item](../kritzel-menu-item)
  - [kritzel-split-button](../kritzel-split-button)
+ - [kritzel-tool-config](../../ui/kritzel-tool-config)
  - [kritzel-utility-panel](../../ui/kritzel-utility-panel)
 
 ### Graph
@@ -32,11 +31,10 @@
 graph TD;
   kritzel-brush-style --> kritzel-icon
   kritzel-context-menu --> kritzel-icon
-  kritzel-control-brush-config --> kritzel-icon
-  kritzel-control-text-config --> kritzel-icon
   kritzel-controls --> kritzel-icon
   kritzel-menu-item --> kritzel-icon
   kritzel-split-button --> kritzel-icon
+  kritzel-tool-config --> kritzel-icon
   kritzel-utility-panel --> kritzel-icon
   style kritzel-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```

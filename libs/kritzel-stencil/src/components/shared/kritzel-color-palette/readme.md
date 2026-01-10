@@ -12,6 +12,7 @@
 | `colors`        | --               |             | `string[]` | `[]`    |
 | `isExpanded`    | `is-expanded`    |             | `boolean`  | `false` |
 | `isOpaque`      | `is-opaque`      |             | `boolean`  | `false` |
+| `opacity`       | `opacity`        |             | `number`   | `1`     |
 | `selectedColor` | `selected-color` |             | `string`   | `null`  |
 
 
@@ -26,8 +27,7 @@
 
 ### Used by
 
- - [kritzel-control-brush-config](../../ui/kritzel-control-brush-config)
- - [kritzel-control-text-config](../../ui/kritzel-control-text-config)
+ - [kritzel-tool-config](../../ui/kritzel-tool-config)
 
 ### Depends on
 
@@ -37,8 +37,7 @@
 ```mermaid
 graph TD;
   kritzel-color-palette --> kritzel-color
-  kritzel-control-brush-config --> kritzel-color-palette
-  kritzel-control-text-config --> kritzel-color-palette
+  kritzel-tool-config --> kritzel-color-palette
   style kritzel-color-palette fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
