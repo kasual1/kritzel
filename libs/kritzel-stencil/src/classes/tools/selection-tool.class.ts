@@ -16,6 +16,7 @@ import { KritzelShape } from '../objects/shape.class';
 import { KritzelText } from '../objects/text.class';
 import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-config.interface';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
+import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
   selectionHandler: KritzelSelectionHandler;
@@ -147,6 +148,22 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this._core.rerender();
   }
 
+  get arrows(): LineArrowConfig {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    for (const obj of objects) {
+      if (obj instanceof KritzelLine) return obj.arrows;
+    }
+    return { start: { enabled: false }, end: { enabled: false } };
+  }
+
+  set arrows(value: LineArrowConfig) {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    objects.forEach(obj => {
+      if (obj instanceof KritzelLine) this._core.updateObject(obj, { arrows: value });
+    });
+    this._core.rerender();
+  }
+
   /** Returns the tool config for selected objects, or null if no selection */
   getToolConfig(): ToolConfigDefinition | null {
     if (!this.hasSelection()) return null;
@@ -156,6 +173,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     const hasShape = objects.some(o => o instanceof KritzelShape);
     const hasText = objects.some(o => o instanceof KritzelText);
+    const hasLine = objects.some(o => o instanceof KritzelLine);
     const hasStroke = objects.some(
       o => o instanceof KritzelPath || o instanceof KritzelLine || o instanceof KritzelShape
     );
@@ -168,6 +186,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     } else {
       if (hasStroke) controls.push({ type: 'stroke-size', propertyName: 'size' });
       if (hasText) controls.push({ type: 'font-family', propertyName: 'fontFamily' });
+    }
+
+    if (hasLine) {
+      controls.push({ type: 'line-endings', propertyName: 'arrows' });
     }
 
     if (hasShape) {

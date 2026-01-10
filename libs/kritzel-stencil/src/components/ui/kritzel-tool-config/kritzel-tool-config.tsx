@@ -287,11 +287,11 @@ export class KritzelToolConfig {
               onValueChange={this.handleOpacityChange}
             ></kritzel-opacity-slider>
 
-            {/* Divider between general and tool-specific controls */}
-            {otherControls.length > 0 && <div class="divider"></div>}
-
-            {/* Tool-specific controls */}
-            {otherControls.map(control => this.renderControl(control))}
+            {/* Tool-specific controls with dividers */}
+            {otherControls.map((control) => [
+              <div class="divider"></div>,
+              this.renderControl(control),
+            ])}
           </div>
 
           {/* Right column: expand button */}
