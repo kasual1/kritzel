@@ -25,7 +25,7 @@
 
 ### Used by
 
- - [kritzel-control-text-config](../../ui/kritzel-control-text-config)
+ - [kritzel-tool-config](../../ui/kritzel-tool-config)
 
 ### Depends on
 
@@ -35,7 +35,7 @@
 ```mermaid
 graph TD;
   kritzel-font-size --> kritzel-font
-  kritzel-control-text-config --> kritzel-font-size
+  kritzel-tool-config --> kritzel-font-size
   style kritzel-font-size fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

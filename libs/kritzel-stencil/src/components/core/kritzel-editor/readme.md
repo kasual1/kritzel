@@ -256,22 +256,22 @@ graph TD;
   kritzel-controls --> kritzel-utility-panel
   kritzel-controls --> kritzel-icon
   kritzel-controls --> kritzel-tooltip
-  kritzel-controls --> kritzel-control-brush-config
-  kritzel-controls --> kritzel-control-text-config
-  kritzel-controls --> kritzel-color
+  kritzel-controls --> kritzel-tool-config
   kritzel-controls --> kritzel-font
+  kritzel-controls --> kritzel-color
   kritzel-utility-panel --> kritzel-icon
-  kritzel-control-brush-config --> kritzel-color-palette
-  kritzel-control-brush-config --> kritzel-icon
-  kritzel-control-brush-config --> kritzel-stroke-size
-  kritzel-color-palette --> kritzel-color
+  kritzel-tool-config --> kritzel-stroke-size
+  kritzel-tool-config --> kritzel-font-size
+  kritzel-tool-config --> kritzel-line-endings
+  kritzel-tool-config --> kritzel-shape-fill
+  kritzel-tool-config --> kritzel-font-family
+  kritzel-tool-config --> kritzel-color-palette
+  kritzel-tool-config --> kritzel-opacity-slider
+  kritzel-tool-config --> kritzel-icon
   kritzel-stroke-size --> kritzel-color
-  kritzel-control-text-config --> kritzel-font-family
-  kritzel-control-text-config --> kritzel-icon
-  kritzel-control-text-config --> kritzel-color-palette
-  kritzel-control-text-config --> kritzel-font-size
-  kritzel-font-family --> kritzel-dropdown
   kritzel-font-size --> kritzel-font
+  kritzel-font-family --> kritzel-dropdown
+  kritzel-color-palette --> kritzel-color
   style kritzel-editor fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

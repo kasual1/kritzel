@@ -24,7 +24,7 @@
 
 ### Used by
 
- - [kritzel-control-brush-config](../../ui/kritzel-control-brush-config)
+ - [kritzel-tool-config](../../ui/kritzel-tool-config)
 
 ### Depends on
 
@@ -34,7 +34,7 @@
 ```mermaid
 graph TD;
   kritzel-stroke-size --> kritzel-color
-  kritzel-control-brush-config --> kritzel-stroke-size
+  kritzel-tool-config --> kritzel-stroke-size
   style kritzel-stroke-size fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -21,14 +21,15 @@
 
 ## Events
 
-| Event              | Description | Type                                                          |
-| ------------------ | ----------- | ------------------------------------------------------------- |
-| `activeToolChange` |             | `CustomEvent<KritzelBaseTool>`                                |
-| `isEngineReady`    |             | `CustomEvent<KritzelEngineState>`                             |
-| `longpress`        |             | `CustomEvent<PointerEvent>`                                   |
-| `objectsChange`    |             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `undoStateChange`  |             | `CustomEvent<KritzelUndoState>`                               |
-| `workspacesChange` |             | `CustomEvent<KritzelWorkspace[]>`                             |
+| Event                    | Description | Type                                                          |
+| ------------------------ | ----------- | ------------------------------------------------------------- |
+| `activeToolChange`       |             | `CustomEvent<KritzelBaseTool>`                                |
+| `isEngineReady`          |             | `CustomEvent<KritzelEngineState>`                             |
+| `longpress`              |             | `CustomEvent<PointerEvent>`                                   |
+| `objectsChange`          |             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsSelectionChange` |             | `CustomEvent<void>`                                           |
+| `undoStateChange`        |             | `CustomEvent<KritzelUndoState>`                               |
+| `workspacesChange`       |             | `CustomEvent<KritzelWorkspace[]>`                             |
 
 
 ## Methods
@@ -383,6 +384,16 @@ Type: `Promise<void>`
 | Name     | Type                     | Description |
 | -------- | ------------------------ | ----------- |
 | `object` | `KritzelBaseObject<any>` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `triggerSelectionChange() => Promise<void>`
+
+
 
 #### Returns
 
