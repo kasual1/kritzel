@@ -7,6 +7,9 @@ import { ProxyCmp } from './angular-component-lib/utils';
 import type { Components } from 'kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
+import { defineCustomElement as defineKritzelLineEndings } from 'kritzel-stencil/dist/components/kritzel-line-endings.js';
+import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
+import { defineCustomElement as defineKritzelShapeFill } from 'kritzel-stencil/dist/components/kritzel-shape-fill.js';
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
   inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig'],
@@ -42,6 +45,94 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   objectsChange: EventEmitter<CustomEvent<IKritzelEditorKritzelBaseObject[]>>;
 
   undoStateChange: EventEmitter<CustomEvent<IKritzelEditorKritzelUndoState>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelLineEndings,
+  inputs: ['strokeColor', 'styles', 'value']
+})
+@Component({
+  selector: 'kritzel-line-endings',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['strokeColor', 'styles', 'value'],
+  outputs: ['valueChange'],
+})
+export class KritzelLineEndings {
+  protected el: HTMLKritzelLineEndingsElement;
+  @Output() valueChange = new EventEmitter<CustomEvent<IKritzelLineEndingsLineArrowConfig>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { LineArrowConfig as IKritzelLineEndingsLineArrowConfig } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelLineEndings extends Components.KritzelLineEndings {
+
+  valueChange: EventEmitter<CustomEvent<IKritzelLineEndingsLineArrowConfig>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelOpacitySlider,
+  inputs: ['max', 'min', 'previewColor', 'step', 'value']
+})
+@Component({
+  selector: 'kritzel-opacity-slider',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['max', 'min', 'previewColor', 'step', 'value'],
+  outputs: ['valueChange'],
+})
+export class KritzelOpacitySlider {
+  protected el: HTMLKritzelOpacitySliderElement;
+  @Output() valueChange = new EventEmitter<CustomEvent<number>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelOpacitySlider extends Components.KritzelOpacitySlider {
+
+  valueChange: EventEmitter<CustomEvent<number>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelShapeFill,
+  inputs: ['value']
+})
+@Component({
+  selector: 'kritzel-shape-fill',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['value'],
+  outputs: ['valueChange'],
+})
+export class KritzelShapeFill {
+  protected el: HTMLKritzelShapeFillElement;
+  @Output() valueChange = new EventEmitter<CustomEvent<IKritzelShapeFillShapeFillType>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { ShapeFillType as IKritzelShapeFillShapeFillType } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelShapeFill extends Components.KritzelShapeFill {
+
+  valueChange: EventEmitter<CustomEvent<IKritzelShapeFillShapeFillType>>;
 }
 
 

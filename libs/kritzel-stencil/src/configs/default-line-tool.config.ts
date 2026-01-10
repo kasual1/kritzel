@@ -1,34 +1,10 @@
 import { KritzelLineToolConfig } from '../interfaces/toolbar-control.interface';
+import { DEFAULT_COLOR_PALETTE } from '../constants/color-palette.constants';
 
 export const DEFAULT_LINE_TOOL_CONFIG: KritzelLineToolConfig = {
   color: '#000000',
   size: 4,
-  palette: [
-    '#000000',
-    '#ff5252',
-    '#ffbc00',
-    '#00c853',
-    '#0000FF',
-    '#d500f9',
-    '#fafafa',
-    '#a52714',
-    '#ee8100',
-    '#558b2f',
-    '#01579b',
-    '#8e24aa',
-    '#90a4ae',
-    '#ff4081',
-    '#ff6e40',
-    '#aeea00',
-    '#304ffe',
-    '#7c4dff',
-    '#cfd8dc',
-    '#f8bbd0',
-    '#ffccbc',
-    '#f0f4c3',
-    '#b3e5fc',
-    '#e1bee7',
-  ],
+  palette: [...DEFAULT_COLOR_PALETTE],
   arrows: {
     end: { enabled: true, style: 'triangle' },
   },

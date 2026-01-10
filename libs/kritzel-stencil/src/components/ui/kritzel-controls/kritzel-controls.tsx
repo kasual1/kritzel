@@ -1,10 +1,16 @@
 import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method } from '@stencil/core';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
+import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
+import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
+import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelToolbarControl, KritzelToolbarSubOption } from '../../../interfaces/toolbar-control.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
+import { ToolDisplayValues } from '../../../interfaces/tool-config.interface';
+import { KritzelToolConfigHelper } from '../../../helpers/tool-config.helper';
+import { KritzelColorHelper } from '../../../helpers/color.helper';
 
 type ToolConfig = Record<string, any>;
 
@@ -31,12 +37,25 @@ export class KritzelControls {
   @State() openSubMenuControl: KritzelToolbarControl | null = null;
   @State() canScrollLeft: boolean = false;
   @State() canScrollRight: boolean = false;
+  @State() displayValues: ToolDisplayValues | null = null;
 
   @Listen('click', { target: 'document' })
   handleDocumentClick(event: MouseEvent) {
-    const element = event.target as HTMLElement;
+    if (!this.kritzelEngine) {
+      return;
+    }
 
-    if (!this.kritzelEngine || element.closest('.kritzel-tooltip')) {
+    // Use composedPath to check if click is inside tooltip (works across shadow DOM boundaries)
+    const path = event.composedPath();
+    const isInsideTooltip = path.some(el => {
+      const element = el as HTMLElement;
+      if (element.tagName) {
+        return element.tagName.toLowerCase() === 'kritzel-tooltip' || element.classList?.contains('kritzel-tooltip');
+      }
+      return false;
+    });
+
+    if (isInsideTooltip) {
       return;
     }
 
@@ -56,6 +75,16 @@ export class KritzelControls {
   @Listen('activeToolChange', { target: 'document' })
   async handleActiveToolChange(event: CustomEvent) {
     this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
+    if (this.activeControl?.tool) {
+      this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
+    }
+  }
+
+  @Listen('objectsSelectionChange', { target: 'document' })
+  handleSelectionChange() {
+    if (this.activeControl?.tool instanceof KritzelSelectionTool) {
+      this.updateDisplayValues(this.activeControl.tool);
+    }
   }
 
   @Method()
@@ -73,6 +102,60 @@ export class KritzelControls {
 
   get activeToolAsBrushTool() {
     return this.activeControl?.tool as KritzelBrushTool;
+  }
+
+  get activeToolAsLineTool() {
+    return this.activeControl?.tool as KritzelLineTool;
+  }
+
+  get activeToolAsShapeTool() {
+    return this.activeControl?.tool as KritzelShapeTool;
+  }
+
+  private handleDisplayValuesChange = (event: CustomEvent<ToolDisplayValues>) => {
+    const newVal = event.detail;
+    if (
+      this.displayValues &&
+      this.displayValues.color === newVal.color &&
+      this.displayValues.size === newVal.size &&
+      this.displayValues.fontFamily === newVal.fontFamily
+    ) {
+      return;
+    }
+    this.displayValues = newVal;
+  };
+
+  private updateDisplayValues(tool: KritzelBaseTool) {
+    const config = KritzelToolConfigHelper.getToolConfig(tool as any);
+    if (!config) {
+      this.displayValues = null;
+      return;
+    }
+
+    const color = (tool as any)[config.colorProperty];
+    const opacity = (tool as any)[config.opacityProperty] ?? 1;
+    const size = (tool as any)[config.sizeProperty];
+
+    const displayValues: ToolDisplayValues = {
+      color: KritzelColorHelper.applyOpacity(color, opacity),
+      size,
+    };
+
+    if (tool instanceof KritzelTextTool) {
+      displayValues.fontFamily = tool.fontFamily;
+    }
+
+    // Check for equality implementation to prevent unnecessary re-renders
+    if (
+      this.displayValues &&
+      this.displayValues.color === displayValues.color &&
+      this.displayValues.size === displayValues.size &&
+      this.displayValues.fontFamily === displayValues.fontFamily
+    ) {
+      return;
+    }
+
+    this.displayValues = displayValues;
   }
 
   async componentWillLoad() {
@@ -117,6 +200,7 @@ export class KritzelControls {
       if (c.type === 'tool' && c.isDefault && c.tool) {
         await this.kritzelEngine.changeActiveTool(c.tool as KritzelBaseTool);
         this.activeControl = c;
+        this.updateDisplayValues(c.tool as KritzelBaseTool);
       }
 
       if (c.type === 'config') {
@@ -133,6 +217,7 @@ export class KritzelControls {
     this.activeControl = control;
 
     if (this.activeControl.type === 'tool') {
+      this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
       await this.kritzelEngine.changeActiveTool(this.activeControl.tool as KritzelBaseTool);
     }
   }
@@ -205,7 +290,10 @@ export class KritzelControls {
 
   render() {
     const hasConfigUI = this.activeControl?.tool instanceof KritzelBrushTool || 
-                        this.activeControl?.tool instanceof KritzelTextTool;
+                        this.activeControl?.tool instanceof KritzelTextTool ||
+                        this.activeControl?.tool instanceof KritzelLineTool ||
+                        this.activeControl?.tool instanceof KritzelShapeTool ||
+                        (this.activeControl?.tool instanceof KritzelSelectionTool && this.activeControl.tool.hasSelection());
 
     // Separate tool controls from config control
     const toolControls = this.controls.filter(c => c.type === 'tool');
@@ -343,15 +431,12 @@ export class KritzelControls {
                 anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}
                 onTooltipClosed={() => this.handleTooltipClosed()}
               >
-                <div style={{ width: '294px', height: '100%' }}>
-                  {this.activeControl.name === 'brush' && (
-                    <kritzel-control-brush-config tool={this.activeToolAsBrushTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-brush-config>
-                  )}
-
-                  {this.activeControl.name === 'text' && (
-                    <kritzel-control-text-config tool={this.activeToolAsTextTool} onToolChange={event => this.handleToolChange?.(event)}></kritzel-control-text-config>
-                  )}
-                </div>
+                <kritzel-tool-config 
+                  tool={this.activeControl.tool as any} 
+                  onToolChange={event => this.handleToolChange?.(event)}
+                  onDisplayValuesChange={this.handleDisplayValuesChange}
+                  style={{ width: '100%', height: '100%' }}
+                ></kritzel-tool-config>
               </kritzel-tooltip>
 
               <div
@@ -367,26 +452,24 @@ export class KritzelControls {
                   cursor: 'pointer',
                 }}
               >
-                {this.activeControl.tool instanceof KritzelBrushTool && (
+                {this.activeControl.tool instanceof KritzelTextTool && this.displayValues ? (
+                  <div class="font-container">
+                    <kritzel-font
+                      fontFamily={this.displayValues.fontFamily}
+                      size={this.displayValues.size}
+                      color={this.displayValues.color}
+                    ></kritzel-font>
+                  </div>
+                ) : this.displayValues && (
                   <div class="color-container">
                     <kritzel-color
-                      value={this.activeToolAsBrushTool?.color}
-                      size={this.activeToolAsBrushTool?.size}
+                      value={this.displayValues.color}
+                      size={this.displayValues.size}
                       style={{
                         borderRadius: '50%',
                         border: 'none',
                       }}
                     ></kritzel-color>
-                  </div>
-                )}
-
-                {this.activeControl.tool instanceof KritzelTextTool && (
-                  <div class="font-container">
-                    <kritzel-font
-                      fontFamily={this.activeToolAsTextTool?.fontFamily}
-                      size={this.activeToolAsTextTool?.fontSize}
-                      color={this.activeToolAsTextTool?.fontColor}
-                    ></kritzel-font>
                   </div>
                 )}
               </div>
