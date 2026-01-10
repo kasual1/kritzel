@@ -110,14 +110,16 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
+    element.style.fontFamily = this.fontFamily;
+    element.style.fontSize = `${this.fontSize}pt`;
+    element.style.color = this.fontColor;
+
     if (this.isMounted && this.elementRef === element && this.editor.dom.parentElement === element) {
+      requestAnimationFrame(() => this.adjustSizeOnInput());
       return;
     }
 
     this.elementRef = element;
-    this.elementRef.style.fontFamily = this.fontFamily;
-    this.elementRef.style.fontSize = `${this.fontSize}pt`;
-    this.elementRef.style.color = this.fontColor;
     this.elementRef.style.whiteSpace = 'pre-wrap';
     this.elementRef.style.wordWrap = 'break-word';
     this.elementRef.innerHTML = '';

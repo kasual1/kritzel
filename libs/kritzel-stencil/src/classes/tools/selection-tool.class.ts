@@ -5,10 +5,17 @@ import { KritzelResizeHandler } from '../handlers/resize.handler';
 import { KritzelRotationHandler } from '../handlers/rotation.handler';
 import { KritzelSelectionHandler } from '../handlers/selection.handler';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelGroup } from '../objects/group.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelHoverHandler } from '../handlers/hover.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelLineHandleHandler, LineHandleType } from '../handlers/line-handle.handler';
+import { KritzelPath } from '../objects/path.class';
+import { KritzelLine } from '../objects/line.class';
+import { KritzelShape } from '../objects/shape.class';
+import { KritzelText } from '../objects/text.class';
+import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-config.interface';
+import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
   selectionHandler: KritzelSelectionHandler;
@@ -17,6 +24,165 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   resizeHandler: KritzelResizeHandler;
   rotationHandler: KritzelRotationHandler;
   lineHandleHandler: KritzelLineHandleHandler;
+
+  palette: string[] = [...DEFAULT_COLOR_PALETTE];
+
+  /** Returns true if there are objects in the selection group */
+  hasSelection(): boolean {
+    return !!this._core.store.selectionGroup && this._core.store.selectionGroup.objects.length > 0;
+  }
+
+  /** Returns the selected objects or empty array */
+  getSelectedObjects(): any[] {
+    return this._core.store.selectionGroup?.objects ?? [];
+  }
+
+  private flattenObjects(objects: any[]): any[] {
+    let result: any[] = [];
+    for (const obj of objects) {
+      if (obj instanceof KritzelGroup) {
+        result = result.concat(this.flattenObjects(obj.children));
+      } else {
+        result.push(obj);
+      }
+    }
+    return result;
+  }
+
+  get color(): string {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    if (objects.length === 0) return '#000000';
+    for (const obj of objects) {
+      if (obj instanceof KritzelPath) return obj.fill;
+      if (obj instanceof KritzelLine) return obj.stroke;
+      if (obj instanceof KritzelText) return obj.fontColor;
+      if (obj instanceof KritzelShape) return obj.strokeColor;
+    }
+    return '#000000';
+  }
+
+  set color(value: string) {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    objects.forEach(obj => {
+      if (obj instanceof KritzelPath) this._core.updateObject(obj, { fill: value });
+      if (obj instanceof KritzelLine) this._core.updateObject(obj, { stroke: value });
+      if (obj instanceof KritzelText) this._core.updateObject(obj, { fontColor: value });
+      if (obj instanceof KritzelShape) this._core.updateObject(obj, { strokeColor: value });
+    });
+    this._core.rerender();
+  }
+
+  get opacity(): number {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    if (objects.length === 0) return 1;
+    return objects[0].opacity;
+  }
+
+  set opacity(value: number) {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    objects.forEach(obj => this._core.updateObject(obj, { opacity: value }));
+    this._core.rerender();
+  }
+
+  get size(): number {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    if (objects.length === 0) return 1;
+    for (const obj of objects) {
+      if (obj instanceof KritzelPath) return obj.strokeWidth;
+      if (obj instanceof KritzelLine) return obj.strokeWidth;
+      if (obj instanceof KritzelText) return obj.fontSize;
+      if (obj instanceof KritzelShape) return obj.strokeWidth;
+    }
+    return 1;
+  }
+
+  set size(value: number) {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    objects.forEach(obj => {
+      if (obj instanceof KritzelPath) this._core.updateObject(obj, { strokeWidth: value });
+      if (obj instanceof KritzelLine) this._core.updateObject(obj, { strokeWidth: value });
+      if (obj instanceof KritzelText) this._core.updateObject(obj, { fontSize: value });
+      if (obj instanceof KritzelShape) this._core.updateObject(obj, { strokeWidth: value });
+    });
+    this._core.rerender();
+  }
+
+  get fillColor(): string {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    for (const obj of objects) {
+      if (obj instanceof KritzelShape) return obj.fillColor;
+    }
+    return 'transparent';
+  }
+
+  set fillColor(value: string) {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    objects.forEach(obj => {
+      if (obj instanceof KritzelShape) {
+        this._core.updateObject(obj, { fillColor: value });
+        // When switching to fill mode, also update stroke color to match
+        if (value !== 'transparent') {
+          this._core.updateObject(obj, { strokeColor: value });
+        }
+      }
+    });
+    this._core.rerender();
+  }
+
+  get fontFamily(): string {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    for (const obj of objects) {
+      if (obj instanceof KritzelText) return obj.fontFamily;
+      if (obj instanceof KritzelShape) return obj.fontFamily;
+    }
+    return 'Arial';
+  }
+
+  set fontFamily(value: string) {
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    objects.forEach(obj => {
+      if (obj instanceof KritzelText) this._core.updateObject(obj, { fontFamily: value });
+      if (obj instanceof KritzelShape) this._core.updateObject(obj, { fontFamily: value });
+    });
+    this._core.rerender();
+  }
+
+  /** Returns the tool config for selected objects, or null if no selection */
+  getToolConfig(): ToolConfigDefinition | null {
+    if (!this.hasSelection()) return null;
+
+    const objects = this.flattenObjects(this.getSelectedObjects());
+    const controls: ToolConfigControl[] = [];
+
+    const hasShape = objects.some(o => o instanceof KritzelShape);
+    const hasText = objects.some(o => o instanceof KritzelText);
+    const hasStroke = objects.some(
+      o => o instanceof KritzelPath || o instanceof KritzelLine || o instanceof KritzelShape
+    );
+
+    if (hasText && !hasStroke) {
+      controls.push({ type: 'font-size', propertyName: 'size' });
+      controls.push({ type: 'font-family', propertyName: 'fontFamily' });
+    } else if (hasStroke && !hasText) {
+      controls.push({ type: 'stroke-size', propertyName: 'size' });
+    } else {
+      if (hasStroke) controls.push({ type: 'stroke-size', propertyName: 'size' });
+      if (hasText) controls.push({ type: 'font-family', propertyName: 'fontFamily' });
+    }
+
+    if (hasShape) {
+      controls.push({ type: 'shape-fill', propertyName: 'fillColor' });
+    }
+
+    return {
+      type: 'selection',
+      colorProperty: 'color',
+      sizeProperty: 'size',
+      opacityProperty: 'opacity',
+      paletteSource: 'palette',
+      controls,
+    };
+  }
 
   constructor(core: KritzelCore) {
     super(core);

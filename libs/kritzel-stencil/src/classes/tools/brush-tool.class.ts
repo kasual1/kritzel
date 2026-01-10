@@ -10,6 +10,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
   size: number = 6;
 
+  opacity: number = 1;
+
   palettes: {
     [brushType: string]: string[];
   } = {
@@ -41,6 +43,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           scale: this._core.store.state.scale,
           fill: this.color,
           strokeWidth: this.size,
+          opacity: this.opacity,
         });
         path.isCompleted = false;
 
@@ -65,6 +68,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           scale: this._core.store.state.scale,
           fill: this.color,
           strokeWidth: this.size,
+          opacity: this.opacity,
         });
         path.isCompleted = false;
 
@@ -95,6 +99,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
             scale: this._core.store.state.scale,
             fill: this.color,
             strokeWidth: this.size,
+            opacity: this.opacity,
           });
           updatedPath.id = currentPath.id;
           updatedPath.workspaceId = currentPath.workspaceId;
@@ -125,6 +130,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
               scale: this._core.store.state.scale,
               fill: this.color,
               strokeWidth: this.size,
+              opacity: this.opacity,
             });
             updatedPath.id = currentPath.id;
             updatedPath.workspaceId = currentPath.workspaceId;
