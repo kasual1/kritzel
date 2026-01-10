@@ -1,5 +1,6 @@
 import { Component, Host, Prop, h, Event, EventEmitter, State, Watch, Listen } from '@stencil/core';
-import { ConfigurableTool, getToolConfig, ToolConfigDefinition, ToolDisplayValues } from '../../../interfaces/tool-config.interface';
+import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '../../../interfaces/tool-config.interface';
+import { KritzelToolConfigHelper } from '../../../helpers/tool-config.helper';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
@@ -16,11 +17,11 @@ export class KritzelToolConfig {
   @Prop({ mutable: true }) tool: ConfigurableTool;
   @Watch('tool')
   handleToolChange(newTool: ConfigurableTool, oldTool: ConfigurableTool) {
-    const newConfig = getToolConfig(newTool);
+    const newConfig = KritzelToolConfigHelper.getToolConfig(newTool);
     
     // Maintain settings when switching between shape tools
     if (oldTool && newTool && newConfig?.type === 'shape') {
-      const oldConfig = getToolConfig(oldTool);
+      const oldConfig = KritzelToolConfigHelper.getToolConfig(oldTool);
       if (oldConfig?.type === 'shape') {
         // Copy properties that should persist
         const propsToCopy = [
@@ -61,7 +62,7 @@ export class KritzelToolConfig {
   @Listen('objectsSelectionChange', { target: 'document' })
   handleSelectionChange() {
     if (this.tool instanceof KritzelSelectionTool) {
-      this.config = getToolConfig(this.tool);
+      this.config = KritzelToolConfigHelper.getToolConfig(this.tool);
       if (this.config) {
         this.updatePalette();
         this.currentOpacity = (this.tool as any)[this.config.opacityProperty] ?? 1;
@@ -71,7 +72,7 @@ export class KritzelToolConfig {
   }
 
   componentWillLoad() {
-    this.config = getToolConfig(this.tool);
+    this.config = KritzelToolConfigHelper.getToolConfig(this.tool);
     if (this.config) {
       this.updatePalette();
       this.currentOpacity = (this.tool as any)[this.config.opacityProperty] ?? 1;

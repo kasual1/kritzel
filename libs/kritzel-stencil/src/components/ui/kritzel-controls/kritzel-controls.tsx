@@ -8,7 +8,8 @@ import { KritzelToolbarControl, KritzelToolbarSubOption } from '../../../interfa
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
-import { ToolDisplayValues, getToolConfig } from '../../../interfaces/tool-config.interface';
+import { ToolDisplayValues } from '../../../interfaces/tool-config.interface';
+import { KritzelToolConfigHelper } from '../../../helpers/tool-config.helper';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
 
 type ToolConfig = Record<string, any>;
@@ -125,7 +126,7 @@ export class KritzelControls {
   };
 
   private updateDisplayValues(tool: KritzelBaseTool) {
-    const config = getToolConfig(tool as any);
+    const config = KritzelToolConfigHelper.getToolConfig(tool as any);
     if (!config) {
       this.displayValues = null;
       return;
@@ -451,20 +452,7 @@ export class KritzelControls {
                   cursor: 'pointer',
                 }}
               >
-                {this.activeControl.tool instanceof KritzelBrushTool && this.displayValues && (
-                  <div class="color-container">
-                    <kritzel-color
-                      value={this.displayValues.color}
-                      size={this.displayValues.size}
-                      style={{
-                        borderRadius: '50%',
-                        border: 'none',
-                      }}
-                    ></kritzel-color>
-                  </div>
-                )}
-
-                {this.activeControl.tool instanceof KritzelTextTool && this.displayValues && (
+                {this.activeControl.tool instanceof KritzelTextTool && this.displayValues ? (
                   <div class="font-container">
                     <kritzel-font
                       fontFamily={this.displayValues.fontFamily}
@@ -472,35 +460,7 @@ export class KritzelControls {
                       color={this.displayValues.color}
                     ></kritzel-font>
                   </div>
-                )}
-
-                {this.activeControl.tool instanceof KritzelLineTool && this.displayValues && (
-                  <div class="color-container">
-                    <kritzel-color
-                      value={this.displayValues.color}
-                      size={this.displayValues.size}
-                      style={{
-                        borderRadius: '50%',
-                        border: 'none',
-                      }}
-                    ></kritzel-color>
-                  </div>
-                )}
-
-                {this.activeControl.tool instanceof KritzelShapeTool && this.displayValues && (
-                  <div class="color-container">
-                    <kritzel-color
-                      value={this.displayValues.color}
-                      size={this.displayValues.size}
-                      style={{
-                        borderRadius: '50%',
-                        border: 'none',
-                      }}
-                    ></kritzel-color>
-                  </div>
-                )}
-
-                {this.activeControl.tool instanceof KritzelSelectionTool && this.displayValues && (
+                ) : this.displayValues && (
                   <div class="color-container">
                     <kritzel-color
                       value={this.displayValues.color}
