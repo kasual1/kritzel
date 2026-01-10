@@ -118,7 +118,13 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   set fillColor(value: string) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (obj instanceof KritzelShape) this._core.updateObject(obj, { fillColor: value });
+      if (obj instanceof KritzelShape) {
+        this._core.updateObject(obj, { fillColor: value });
+        // When switching to fill mode, also update stroke color to match
+        if (value !== 'transparent') {
+          this._core.updateObject(obj, { strokeColor: value });
+        }
+      }
     });
     this._core.rerender();
   }
