@@ -411,7 +411,7 @@ export class KritzelControls {
           </div>
           
           {/* Right scroll indicator gradient */}
-          <div class={{ 'scroll-indicator-right': true, 'visible': this.canScrollRight }}></div>
+          <div class={{ 'scroll-indicator-right': true, 'visible': this.canScrollRight && !(configControl && this.activeControl && hasConfigUI) }}></div>
 
           {/* Config control stays outside the scroll area */}
           {configControl && this.activeControl && (
