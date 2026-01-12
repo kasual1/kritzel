@@ -127,6 +127,7 @@ jobs:
             libs/kritzel-stencil/screenshot/compare.html
             libs/kritzel-stencil/screenshot/images/
             libs/kritzel-stencil/screenshot/builds/
+            libs/kritzel-stencil/screenshot/screenshot-diff.js
             node_modules/@stencil/core/screenshot/compare/
 
   # --- Build Angular Application (after Stencil build) ---
