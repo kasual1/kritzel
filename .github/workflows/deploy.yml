@@ -114,6 +114,16 @@ jobs:
       - name: Run e2e tests
         run: npm run e2e
 
+      - name: Upload screenshot comparison results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-comparison
+          path: |
+            libs/kritzel-stencil/screenshot/compare.html
+            libs/kritzel-stencil/screenshot/images/
+            libs/kritzel-stencil/screenshot/builds/
+
   # --- Build Angular Application (after Stencil build) ---
   build-angular:
     runs-on: ubuntu-latest
