@@ -1,6 +1,7 @@
 import { KritzelBaseObject } from '../..';
 import { KritzelMouseButton } from '../../enums/event-button.enum';
 import { KritzelCore } from './core.class';
+import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { debounce, DebouncedFunc } from 'lodash';
 
 export class KritzelViewport {
@@ -72,6 +73,17 @@ export class KritzelViewport {
         if (currentPath) {
           this._core.store.state.objects.remove(obj => obj.id === currentPath.id);
         }
+
+        // Clear selection box when scaling starts to prevent it from remaining on screen
+        if (this._core.store.state.isSelecting) {
+          this._core.store.state.isSelecting = false;
+          this._core.store.state.objects.remove(obj => obj instanceof KritzelSelectionBox);
+          // Clear selection preview state from objects
+          this._core.store.allNonSelectionObjects.forEach(object => {
+            object.isSelected = false;
+          });
+        }
+
         this._core.store.state.isScaling = true;
 
         const firstTouchX = activePointers[0].clientX - this._core.store.offsetX;
