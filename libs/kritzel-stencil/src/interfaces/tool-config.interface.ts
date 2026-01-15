@@ -18,7 +18,7 @@ export interface ToolConfigDefinition {
   colorProperty: string;
   sizeProperty: string;
   opacityProperty: string;
-  paletteSource: 'palette' | 'palettes' | 'custom';
+  paletteSource: 'palette' | 'none';
   controls: ToolConfigControl[];
 }
 
