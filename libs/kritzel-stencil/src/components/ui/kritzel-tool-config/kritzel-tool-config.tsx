@@ -1,7 +1,6 @@
 import { Component, Host, Prop, h, Event, EventEmitter, State, Watch, Listen } from '@stencil/core';
 import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '../../../interfaces/tool-config.interface';
 import { KritzelToolConfigHelper } from '../../../helpers/tool-config.helper';
-import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { ShapeFillType } from '../../shared/kritzel-shape-fill/kritzel-shape-fill';
@@ -102,12 +101,9 @@ export class KritzelToolConfig {
   private updatePalette() {
     if (!this.config) return;
     
-    if (this.config.paletteSource === 'palettes') {
-      // Brush tool has palettes[type]
-      const brushTool = this.tool as KritzelBrushTool;
-      this.palette = brushTool.palettes[brushTool.type] || [];
-    } else if (this.config.paletteSource === 'palette') {
-      // Line, Shape, Text tools have palette
+    if (this.config.paletteSource === 'none') {
+      this.palette = [];
+    } else {
       this.palette = (this.tool as any).palette || [];
     }
   }
@@ -155,14 +151,6 @@ export class KritzelToolConfig {
       if (value === 'filled') {
         (this.tool as any)[this.config.colorProperty] = newFillColor;
       }
-    }
-    // Special handling for brush type change
-    else if (this.config.type === 'brush' && propertyName === 'type') {
-      const brushTool = this.tool as KritzelBrushTool;
-      brushTool.type = value;
-      this.palette = brushTool.palettes[value];
-      brushTool.color = this.palette[0];
-      this.emitDisplayValues();
     } else {
       (this.tool as any)[propertyName] = value;
       // Emit display values for font family changes
@@ -245,6 +233,7 @@ export class KritzelToolConfig {
     if (!this.config) return null;
 
     const shouldShowExpandButton = this.palette.length > 6 || this.config.type === 'text';
+    const shouldShowColorPalette = this.palette.length > 0;
     
     // Separate size control from other controls
     const sizeControl = this.config.controls.find(c => c.type === 'stroke-size' || c.type === 'font-size');
@@ -269,15 +258,17 @@ export class KritzelToolConfig {
               flex: '1',
             }}
           >
-            {/* General controls */}
-            <kritzel-color-palette
-              colors={this.palette}
-              selectedColor={(this.tool as any)[this.config.colorProperty]}
-              isExpanded={this.isExpanded}
-              isOpaque={true}
-              opacity={this.currentOpacity}
-              onColorChange={this.handleColorChange}
-            ></kritzel-color-palette>
+            {/* Color palette - only show when colors are available */}
+            {shouldShowColorPalette && (
+              <kritzel-color-palette
+                colors={this.palette}
+                selectedColor={(this.tool as any)[this.config.colorProperty]}
+                isExpanded={this.isExpanded}
+                isOpaque={true}
+                opacity={this.currentOpacity}
+                onColorChange={this.handleColorChange}
+              ></kritzel-color-palette>
+            )}
 
             {sizeControl && this.renderControl(sizeControl)}
 

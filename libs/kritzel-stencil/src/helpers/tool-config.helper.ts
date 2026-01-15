@@ -17,7 +17,7 @@ export class KritzelToolConfigHelper {
         colorProperty: 'color',
         sizeProperty: 'size',
         opacityProperty: 'opacity',
-        paletteSource: 'palettes',
+        paletteSource: 'palette',
         controls: [
           { type: 'stroke-size', propertyName: 'size' },
         ],

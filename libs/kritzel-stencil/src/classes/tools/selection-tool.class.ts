@@ -14,6 +14,7 @@ import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelText } from '../objects/text.class';
+import { KritzelImage } from '../objects/image.class';
 import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-config.interface';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
@@ -174,9 +175,22 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const hasShape = objects.some(o => o instanceof KritzelShape);
     const hasText = objects.some(o => o instanceof KritzelText);
     const hasLine = objects.some(o => o instanceof KritzelLine);
+    const hasImage = objects.some(o => o instanceof KritzelImage);
     const hasStroke = objects.some(
       o => o instanceof KritzelPath || o instanceof KritzelLine || o instanceof KritzelShape
     );
+
+    // If only images are selected, return config with opacity only (no palette, no controls)
+    if (hasImage && !hasShape && !hasText && !hasLine && !hasStroke) {
+      return {
+        type: 'selection',
+        colorProperty: 'color',
+        sizeProperty: 'size',
+        opacityProperty: 'opacity',
+        paletteSource: 'none',
+        controls: [],
+      };
+    }
 
     if (hasText && !hasStroke) {
       controls.push({ type: 'font-size', propertyName: 'size' });
