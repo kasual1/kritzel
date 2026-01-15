@@ -2,22 +2,16 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelCore } from '../core/core.class';
+import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 export class KritzelBrushTool extends KritzelBaseTool {
-  type: 'pen' | 'highlighter' = 'pen';
-
   color: string = '#000000';
 
   size: number = 6;
 
   opacity: number = 1;
 
-  palettes: {
-    [brushType: string]: string[];
-  } = {
-      pen: ['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#808080', '#C0C0C0', '#800000', '#008000', '#000080', '#800080'],
-      highlighter: ['#ffff00', '#ffb347', '#b4ffb4'],
-    };
+  palette: string[] = [...DEFAULT_COLOR_PALETTE];
 
   private _currentPathId: string | null = null;
 
