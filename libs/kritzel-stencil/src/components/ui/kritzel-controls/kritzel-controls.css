@@ -268,6 +268,12 @@
   background: linear-gradient(to right, transparent, var(--kritzel-controls-background-color, #ffffff));
   pointer-events: none;
   z-index: 1;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+
+.config-gradient-left.visible {
+  opacity: 1;
 }
 
 .kritzel-config {

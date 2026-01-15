@@ -37,6 +37,7 @@ export class KritzelControls {
   @State() openSubMenuControl: KritzelToolbarControl | null = null;
   @State() canScrollLeft: boolean = false;
   @State() canScrollRight: boolean = false;
+  @State() needsScrolling: boolean = false;
   @State() displayValues: ToolDisplayValues | null = null;
 
   @Listen('click', { target: 'document' })
@@ -176,6 +177,7 @@ export class KritzelControls {
     
     this.canScrollLeft = scrollLeft > threshold;
     this.canScrollRight = scrollLeft + clientWidth < scrollWidth - threshold;
+    this.needsScrolling = scrollWidth > clientWidth;
   }
 
   private handleToolsScroll = () => {
@@ -423,7 +425,7 @@ export class KritzelControls {
               key={configControl.name}
             >
               {/* Left gradient on config control */}
-              <div class="config-gradient-left"></div>
+              <div class={{ 'config-gradient-left': true, 'visible': this.needsScrolling }}></div>
               
               <kritzel-tooltip
                 ref={el => (this.tooltipRef = el)}
