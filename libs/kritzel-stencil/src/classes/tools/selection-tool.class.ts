@@ -107,6 +107,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       if (obj instanceof KritzelShape) this._core.updateObject(obj, { strokeWidth: value });
     });
     this._core.rerender();
+    this.refreshSelectionGroupDimensions();
   }
 
   get fillColor(): string {
@@ -147,6 +148,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       if (obj instanceof KritzelShape) this._core.updateObject(obj, { fontFamily: value });
     });
     this._core.rerender();
+    this.refreshSelectionGroupDimensions();
   }
 
   get arrows(): LineArrowConfig {
@@ -163,6 +165,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       if (obj instanceof KritzelLine) this._core.updateObject(obj, { arrows: value });
     });
     this._core.rerender();
+    this.refreshSelectionGroupDimensions();
   }
 
   /** Returns the tool config for selected objects, or null if no selection */
@@ -218,6 +221,22 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       paletteSource: 'palette',
       controls,
     };
+  }
+
+  /**
+   * Refreshes the selection group's dimensions after object properties that affect size have changed.
+   * Uses requestAnimationFrame to ensure the DOM has been updated before measuring.
+   */
+  private refreshSelectionGroupDimensions(): void {
+    const selectionGroup = this._core.store.selectionGroup;
+    if (selectionGroup) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          selectionGroup.refreshObjectDimensions();
+          this._core.rerender();
+        });
+      });
+    }
   }
 
   constructor(core: KritzelCore) {
