@@ -466,6 +466,9 @@ export class KritzelEngine {
   keyHandler: KritzelKeyHandler;
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
 
+  private _lastHadSelectionGroup: boolean = false;
+
+
   get isSelecting() {
     return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
   }
@@ -525,9 +528,15 @@ export class KritzelEngine {
   emitObjectsChange() {
     const objects = this.core.store.allObjects as KritzelBaseObject<HTMLElement | SVGElement>[];
     const undoState = this.core.store.state.objects.undoState;
+    const hasSelectionGroup = this.core.store.selectionGroup !== null;
 
     this.objectsChange.emit(objects);
     this.undoStateChange.emit(undoState);
+
+    if (this._lastHadSelectionGroup !== hasSelectionGroup) {
+      this._lastHadSelectionGroup = hasSelectionGroup;
+      this.objectsSelectionChange.emit();
+    }
   }
 
   private _registerStateChangeListeners() {
