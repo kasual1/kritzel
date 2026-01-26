@@ -5,6 +5,7 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  overscroll-behavior-x: none;
 }
 
 :root {
@@ -43,7 +44,9 @@ body {
   --kritzel-controls-control-padding: 8px;
   --kritzel-controls-control-hover-background-color: hsl(0, 0%, 0%, 4.3%);
   --kritzel-controls-control-active-background-color: hsl(0, 0%, 0%, 8.6%);
-  --kritzel-controls-control-selected-background-color: var(--kritzel-primary-color);
+  --kritzel-controls-control-selected-background-color: var(
+    --kritzel-primary-color
+  );
   --kritzel-controls-control-selected-color: #ffffff;
   --kritzel-controls-divider-width: 1px;
   --kritzel-controls-divider-height: 24px;
