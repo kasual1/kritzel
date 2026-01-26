@@ -110,7 +110,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handleWheel(ev);
   }
 
-  @Listen('pointerdown', { passive: true })
+  @Listen('pointerdown', { passive: false })
   handlePointerDown(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
@@ -132,7 +132,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerMove(ev);
   }, 16);
 
-  @Listen('pointermove', { passive: true })
+  @Listen('pointermove', { passive: false })
   handlePointerMove(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
@@ -153,7 +153,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerMove(ev);
   }
 
-  @Listen('pointerup', { passive: true })
+  @Listen('pointerup', { passive: false })
   handlePointerUp(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
@@ -171,7 +171,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerUp(ev);
   }
 
-  @Listen('pointercancel', { passive: true })
+  @Listen('pointercancel', { passive: false })
   handlePointerCancel(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
