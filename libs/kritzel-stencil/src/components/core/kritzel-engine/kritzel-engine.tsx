@@ -96,12 +96,7 @@ export class KritzelEngine {
     this.objectsSelectionChange.emit();
   }
 
-  private throttledWheel = throttle((ev: WheelEvent) => {
-    this.viewport.handleWheel(ev);
-    this.core.store.state?.activeTool?.handleWheel(ev);
-  }, 16);
-
-  @Listen('wheel', { passive: false })
+  @Listen('wheel', { passive: true })
   handleWheel(ev) {
     if (this.core.store.isDisabled) {
       return;
@@ -111,10 +106,11 @@ export class KritzelEngine {
       this.hideContextMenu();
     }
 
-    this.throttledWheel(ev);
+    this.viewport.handleWheel(ev);
+    this.core.store.state?.activeTool?.handleWheel(ev);
   }
 
-  @Listen('pointerdown', { passive: false })
+  @Listen('pointerdown', { passive: true })
   handlePointerDown(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
@@ -136,7 +132,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerMove(ev);
   }, 16);
 
-  @Listen('pointermove', { passive: false })
+  @Listen('pointermove', { passive: true })
   handlePointerMove(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
@@ -157,7 +153,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerMove(ev);
   }
 
-  @Listen('pointerup', { passive: false })
+  @Listen('pointerup', { passive: true })
   handlePointerUp(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
@@ -175,7 +171,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerUp(ev);
   }
 
-  @Listen('pointercancel', { passive: false })
+  @Listen('pointercancel', { passive: true })
   handlePointerCancel(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
       return;
@@ -193,7 +189,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerUp(ev);
   }
 
-  @Listen('longpress', { passive: false })
+  @Listen('longpress', { passive: true })
   handleLongPress(ev: CustomEvent<PointerEvent>) {
     this.contextMenuHandler.handleContextMenu(ev.detail);
   }
@@ -482,7 +478,6 @@ export class KritzelEngine {
   }
 
   disconnectedCallback() {
-    this.throttledWheel.cancel();
     this.throttledPointerMoveMulti.cancel();
     this.core.cursorManager.cleanup();
   }

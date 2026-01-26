@@ -193,7 +193,6 @@ export class KritzelViewport {
   }
 
   handleWheel(event: WheelEvent): void {
-    event.preventDefault();
 
     if (event.ctrlKey === true && Math.abs(event.deltaY) > 0 && Math.abs(event.deltaX) === 0) {
       this.handleZoom(event);
