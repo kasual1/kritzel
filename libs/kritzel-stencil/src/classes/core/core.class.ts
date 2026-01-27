@@ -154,6 +154,22 @@ export class KritzelCore {
     this.rerender();
   }
 
+  getObjectsInViewport(): KritzelBaseObject<any>[] {
+    const viewportBounds = {
+      x: -this._store.state.translateX / this._store.state.scale,
+      y: -this._store.state.translateY / this._store.state.scale,
+      z: this._store.state.scale,
+      width: this._store.state.viewportWidth / this._store.state.scale,
+      height: this._store.state.viewportHeight / this._store.state.scale,
+      depth: 100,
+    };
+
+    return this._store.state.objects
+      .query(viewportBounds)
+      .filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox))
+      .sort((a, b) => a.zIndex - b.zIndex);
+  }
+
   rerender() {
     if (this._kritzelEngine) {
       this._kritzelEngine.forceUpdate++;

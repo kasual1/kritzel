@@ -11,10 +11,22 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 import { type KritzelBaseObject, type KritzelEditorCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelUndoState, type LineArrowConfig, type ShapeFillType } from "../../../../kritzel-stencil";
+import { KritzelBackToContent as KritzelBackToContentElement, defineCustomElement as defineKritzelBackToContent } from "../../../../kritzel-stencil/dist/components/kritzel-back-to-content.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelLineEndings as KritzelLineEndingsElement, defineCustomElement as defineKritzelLineEndings } from "../../../../kritzel-stencil/dist/components/kritzel-line-endings.js";
 import { KritzelOpacitySlider as KritzelOpacitySliderElement, defineCustomElement as defineKritzelOpacitySlider } from "../../../../kritzel-stencil/dist/components/kritzel-opacity-slider.js";
 import { KritzelShapeFill as KritzelShapeFillElement, defineCustomElement as defineKritzelShapeFill } from "../../../../kritzel-stencil/dist/components/kritzel-shape-fill.js";
+
+export type KritzelBackToContentEvents = { onBackToContent: EventName<CustomEvent<void>> };
+
+export const KritzelBackToContent: StencilReactComponent<KritzelBackToContentElement, KritzelBackToContentEvents> = /*@__PURE__*/ createComponent<KritzelBackToContentElement, KritzelBackToContentEvents>({
+    tagName: 'kritzel-back-to-content',
+    elementClass: KritzelBackToContentElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: { onBackToContent: 'backToContent' } as KritzelBackToContentEvents,
+    defineCustomElement: defineKritzelBackToContent
+});
 
 export type KritzelEditorEvents = {
     onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>>,

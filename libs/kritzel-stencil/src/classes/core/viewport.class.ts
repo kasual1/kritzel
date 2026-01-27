@@ -8,6 +8,7 @@ export class KritzelViewport {
   private readonly _core: KritzelCore;
   private readonly _debounceUpdate: DebouncedFunc<() => void>;
   private readonly _debounceEndScaling: DebouncedFunc<() => void>;
+  private _animationFrameId: number | null = null;
 
   initialTouchDistance: number = 0;
   startX: number = 0;
@@ -54,6 +55,9 @@ export class KritzelViewport {
   }
 
   handlePointerDown(event: PointerEvent): void {
+    // Cancel any ongoing viewport animation when user starts interacting
+    this.cancelViewportAnimation();
+
     if (event.pointerType === 'mouse') {
       const adjustedClientX = event.clientX - this._core.store.offsetX;
       const adjustedClientY = event.clientY - this._core.store.offsetY;
@@ -123,6 +127,7 @@ export class KritzelViewport {
 
         this._core.rerender();
         this._debounceUpdate();
+        this._core.engine.emitObjectsInViewportChange();
       }
     }
 
@@ -172,6 +177,7 @@ export class KritzelViewport {
 
         this._core.rerender();
         this._debounceUpdate();
+        this._core.engine.emitObjectsInViewportChange();
       }
     }
   }
@@ -193,6 +199,8 @@ export class KritzelViewport {
   }
 
   handleWheel(event: WheelEvent): void {
+    // Cancel any ongoing viewport animation when user scrolls
+    this.cancelViewportAnimation();
 
     if (event.ctrlKey === true && Math.abs(event.deltaY) > 0 && Math.abs(event.deltaX) === 0) {
       this.handleZoom(event);
@@ -216,6 +224,7 @@ export class KritzelViewport {
 
     this._core.rerender();
     this._debounceUpdate();
+    this._core.engine.emitObjectsInViewportChange();
   }
 
   centerFitInViewport(object: KritzelBaseObject): void {
@@ -255,6 +264,7 @@ export class KritzelViewport {
     this._core.rerender();
     this._debounceUpdate();
     this._debounceEndScaling();
+    this._core.engine.emitObjectsInViewportChange();
   }
 
   private handlePan(event: WheelEvent): void {
@@ -267,5 +277,126 @@ export class KritzelViewport {
 
     this._core.rerender();
     this._debounceUpdate();
+    this._core.engine.emitObjectsInViewportChange();
+  }
+
+  /**
+   * Cancels any ongoing viewport animation.
+   * Called when user interacts with the canvas during animation.
+   */
+  cancelViewportAnimation(): void {
+    if (this._animationFrameId !== null) {
+      cancelAnimationFrame(this._animationFrameId);
+      this._animationFrameId = null;
+    }
+  }
+
+  /**
+   * Animates the viewport to the specified position and scale.
+   * @param targetTranslateX - Target X translation
+   * @param targetTranslateY - Target Y translation
+   * @param targetScale - Target scale
+   * @param duration - Animation duration in milliseconds (default 150)
+   */
+  animateViewportTo(targetTranslateX: number, targetTranslateY: number, targetScale: number, duration = 150): void {
+    // Cancel any existing animation
+    this.cancelViewportAnimation();
+
+    const startTranslateX = this._core.store.state.translateX;
+    const startTranslateY = this._core.store.state.translateY;
+    const startScale = this._core.store.state.scale;
+    const startTime = performance.now();
+
+    const animate = (currentTime: number): void => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // easeOutCubic easing function
+      const eased = 1 - Math.pow(1 - progress, 3);
+
+      this._core.store.state.translateX = startTranslateX + (targetTranslateX - startTranslateX) * eased;
+      this._core.store.state.translateY = startTranslateY + (targetTranslateY - startTranslateY) * eased;
+      this._core.store.state.scale = startScale + (targetScale - startScale) * eased;
+      this._core.store.state.hasViewportChanged = true;
+      this._core.rerender();
+
+      if (progress < 1) {
+        this._animationFrameId = requestAnimationFrame(animate);
+      } else {
+        this._animationFrameId = null;
+        this._debounceUpdate();
+        this._core.engine.emitObjectsInViewportChange();
+      }
+    };
+
+    this._animationFrameId = requestAnimationFrame(animate);
+  }
+
+  /**
+   * Centers and fits the nearest content objects in the viewport.
+   * Finds up to maxObjects closest objects to the current viewport center
+   * and animates the viewport to show them.
+   * @param maxObjects - Maximum number of objects to consider (default 20)
+   * @returns true if content was found and viewport is animating, false if no content exists
+   */
+  centerFitNearestContent(maxObjects = 20): boolean {
+    const allObjects = this._core.store.allNonSelectionObjects;
+
+    if (allObjects.length === 0) {
+      return false;
+    }
+
+    // Calculate current viewport center in canvas coordinates
+    const viewportCenterX = -this._core.store.state.translateX / this._core.store.state.scale + this._core.store.state.viewportWidth / 2 / this._core.store.state.scale;
+    const viewportCenterY = -this._core.store.state.translateY / this._core.store.state.scale + this._core.store.state.viewportHeight / 2 / this._core.store.state.scale;
+
+    // Sort objects by distance from viewport center (using object center)
+    const objectsWithDistance = allObjects.map(obj => {
+      const bounds = obj.rotatedBoundingBox;
+      const objectCenterX = bounds.x + bounds.width / 2;
+      const objectCenterY = bounds.y + bounds.height / 2;
+      const distance = Math.sqrt(
+        Math.pow(objectCenterX - viewportCenterX, 2) + Math.pow(objectCenterY - viewportCenterY, 2)
+      );
+      return { obj, distance };
+    });
+
+    objectsWithDistance.sort((a, b) => a.distance - b.distance);
+
+    // Take up to maxObjects closest objects
+    const nearestObjects = objectsWithDistance.slice(0, maxObjects).map(item => item.obj);
+
+    // Calculate combined bounds of nearest objects
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    for (const obj of nearestObjects) {
+      const bounds = obj.rotatedBoundingBox;
+      minX = Math.min(minX, bounds.x);
+      minY = Math.min(minY, bounds.y);
+      maxX = Math.max(maxX, bounds.x + bounds.width);
+      maxY = Math.max(maxY, bounds.y + bounds.height);
+    }
+
+    const contentWidth = maxX - minX;
+    const contentHeight = maxY - minY;
+    const contentCenterX = minX + contentWidth / 2;
+    const contentCenterY = minY + contentHeight / 2;
+
+    // Calculate scale to fit with 10% padding
+    const scaleX = this._core.store.state.viewportWidth / (contentWidth * 1.1);
+    const scaleY = this._core.store.state.viewportHeight / (contentHeight * 1.1);
+    const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
+    const clampedScale = Math.max(newScale, this._core.store.state.scaleMin);
+
+    // Calculate target translation to center content
+    const targetTranslateX = this._core.store.state.viewportWidth / 2 - contentCenterX * clampedScale;
+    const targetTranslateY = this._core.store.state.viewportHeight / 2 - contentCenterY * clampedScale;
+
+    // Animate to the target position
+    this.animateViewportTo(targetTranslateX, targetTranslateY, clampedScale);
+
+    return true;
   }
 }

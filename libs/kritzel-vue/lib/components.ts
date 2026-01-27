@@ -5,10 +5,20 @@ import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-t
 
 import type { JSX } from '../../kritzel-stencil/dist/components';
 
+import { defineCustomElement as defineKritzelBackToContent } from '../../kritzel-stencil/dist/components/kritzel-back-to-content.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelLineEndings } from '../../kritzel-stencil/dist/components/kritzel-line-endings.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelShapeFill } from '../../kritzel-stencil/dist/components/kritzel-shape-fill.js';
+
+
+export const KritzelBackToContent: StencilVueComponent<JSX.KritzelBackToContent> = /*@__PURE__*/ defineContainer<JSX.KritzelBackToContent>('kritzel-back-to-content', defineKritzelBackToContent, [
+  'visible',
+  'text',
+  'backToContent'
+], [
+  'backToContent'
+]);
 
 
 export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__*/ defineContainer<JSX.KritzelEditor>('kritzel-editor', defineKritzelEditor, [

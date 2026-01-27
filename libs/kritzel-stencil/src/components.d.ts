@@ -18,6 +18,7 @@ import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
+import { Element } from "@stencil/core";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
@@ -37,6 +38,7 @@ export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
+export { Element } from "@stencil/core";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
@@ -44,6 +46,18 @@ export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleCh
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 export { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export namespace Components {
+    interface KritzelBackToContent {
+        /**
+          * The text to display on the button
+          * @default 'Back to content'
+         */
+        "text": string;
+        /**
+          * Whether the button is visible
+          * @default false
+         */
+        "visible": boolean;
+    }
     interface KritzelBrushStyle {
         /**
           * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
@@ -123,6 +137,7 @@ export namespace Components {
     }
     interface KritzelEditor {
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "backToContent": () => Promise<boolean>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "clearSelection": () => Promise<void>;
         /**
@@ -173,6 +188,7 @@ export namespace Components {
     interface KritzelEngine {
         "activeTool": KritzelTool;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "backToContent": () => Promise<boolean>;
         "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
@@ -403,6 +419,10 @@ export namespace Components {
         "workspaces": KritzelWorkspace[];
     }
 }
+export interface KritzelBackToContentCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelBackToContentElement;
+}
 export interface KritzelBrushStyleCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelBrushStyleElement;
@@ -488,6 +508,23 @@ export interface KritzelWorkspaceManagerCustomEvent<T> extends CustomEvent<T> {
     target: HTMLKritzelWorkspaceManagerElement;
 }
 declare global {
+    interface HTMLKritzelBackToContentElementEventMap {
+        "backToContent": void;
+    }
+    interface HTMLKritzelBackToContentElement extends Components.KritzelBackToContent, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelBackToContentElementEventMap>(type: K, listener: (this: HTMLKritzelBackToContentElement, ev: KritzelBackToContentCustomEvent<HTMLKritzelBackToContentElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelBackToContentElementEventMap>(type: K, listener: (this: HTMLKritzelBackToContentElement, ev: KritzelBackToContentCustomEvent<HTMLKritzelBackToContentElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelBackToContentElement: {
+        prototype: HTMLKritzelBackToContentElement;
+        new (): HTMLKritzelBackToContentElement;
+    };
     interface HTMLKritzelBrushStyleElementEventMap {
         "typeChange": 'pen' | 'highlighter';
     }
@@ -613,6 +650,7 @@ declare global {
         "longpress": PointerEvent;
         "objectsChange": KritzelBaseObject[];
         "undoStateChange": KritzelUndoState;
+        "objectsInViewportChange": KritzelBaseObject<Element>[];
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -899,6 +937,7 @@ declare global {
         new (): HTMLKritzelWorkspaceManagerElement;
     };
     interface HTMLElementTagNameMap {
+        "kritzel-back-to-content": HTMLKritzelBackToContentElement;
         "kritzel-brush-style": HTMLKritzelBrushStyleElement;
         "kritzel-color": HTMLKritzelColorElement;
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
@@ -927,6 +966,22 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface KritzelBackToContent {
+        /**
+          * Emitted when the button is clicked
+         */
+        "onBackToContent"?: (event: KritzelBackToContentCustomEvent<void>) => void;
+        /**
+          * The text to display on the button
+          * @default 'Back to content'
+         */
+        "text"?: string;
+        /**
+          * Whether the button is visible
+          * @default false
+         */
+        "visible"?: boolean;
+    }
     interface KritzelBrushStyle {
         /**
           * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
@@ -1056,6 +1111,7 @@ declare namespace LocalJSX {
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
         "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
         "onObjectsChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject[]>) => void;
+        "onObjectsInViewportChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject<Element>[]>) => void;
         "onObjectsSelectionChange"?: (event: KritzelEngineCustomEvent<void>) => void;
         "onUndoStateChange"?: (event: KritzelEngineCustomEvent<KritzelUndoState>) => void;
         "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
@@ -1284,6 +1340,7 @@ declare namespace LocalJSX {
         "workspaces"?: KritzelWorkspace[];
     }
     interface IntrinsicElements {
+        "kritzel-back-to-content": KritzelBackToContent;
         "kritzel-brush-style": KritzelBrushStyle;
         "kritzel-color": KritzelColor;
         "kritzel-color-palette": KritzelColorPalette;
@@ -1315,6 +1372,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "kritzel-back-to-content": LocalJSX.KritzelBackToContent & JSXBase.HTMLAttributes<HTMLKritzelBackToContentElement>;
             "kritzel-brush-style": LocalJSX.KritzelBrushStyle & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
             "kritzel-color": LocalJSX.KritzelColor & JSXBase.HTMLAttributes<HTMLKritzelColorElement>;
             "kritzel-color-palette": LocalJSX.KritzelColorPalette & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
