@@ -368,7 +368,7 @@ export namespace Components {
         "iconSize": number;
         /**
           * The menu items to display in the dropdown
-          * @default []
+          * @default [     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'share',       label: 'Share',       icon: 'share',     },   ]
          */
         "items": IKritzelMenuItem[];
         /**
@@ -412,6 +412,8 @@ export namespace Components {
         "autoFocus": boolean;
         "offsetX": number;
         "offsetY": number;
+    }
+    interface KritzelSettings {
     }
     interface KritzelShapeFill {
         /**
@@ -917,6 +919,12 @@ declare global {
         prototype: HTMLKritzelPortalElement;
         new (): HTMLKritzelPortalElement;
     };
+    interface HTMLKritzelSettingsElement extends Components.KritzelSettings, HTMLStencilElement {
+    }
+    var HTMLKritzelSettingsElement: {
+        prototype: HTMLKritzelSettingsElement;
+        new (): HTMLKritzelSettingsElement;
+    };
     interface HTMLKritzelShapeFillElementEventMap {
         "valueChange": ShapeFillType;
     }
@@ -1069,6 +1077,7 @@ declare global {
         "kritzel-more-menu": HTMLKritzelMoreMenuElement;
         "kritzel-opacity-slider": HTMLKritzelOpacitySliderElement;
         "kritzel-portal": HTMLKritzelPortalElement;
+        "kritzel-settings": HTMLKritzelSettingsElement;
         "kritzel-shape-fill": HTMLKritzelShapeFillElement;
         "kritzel-split-button": HTMLKritzelSplitButtonElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
@@ -1388,7 +1397,7 @@ declare namespace LocalJSX {
         "iconSize"?: number;
         /**
           * The menu items to display in the dropdown
-          * @default []
+          * @default [     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'share',       label: 'Share',       icon: 'share',     },   ]
          */
         "items"?: IKritzelMenuItem[];
         /**
@@ -1438,6 +1447,8 @@ declare namespace LocalJSX {
         "offsetX"?: number;
         "offsetY"?: number;
         "onClose"?: (event: KritzelPortalCustomEvent<void>) => void;
+    }
+    interface KritzelSettings {
     }
     interface KritzelShapeFill {
         "onValueChange"?: (event: KritzelShapeFillCustomEvent<ShapeFillType>) => void;
@@ -1549,6 +1560,7 @@ declare namespace LocalJSX {
         "kritzel-more-menu": KritzelMoreMenu;
         "kritzel-opacity-slider": KritzelOpacitySlider;
         "kritzel-portal": KritzelPortal;
+        "kritzel-settings": KritzelSettings;
         "kritzel-shape-fill": KritzelShapeFill;
         "kritzel-split-button": KritzelSplitButton;
         "kritzel-stroke-size": KritzelStrokeSize;
@@ -1583,6 +1595,7 @@ declare module "@stencil/core" {
             "kritzel-more-menu": LocalJSX.KritzelMoreMenu & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
             "kritzel-opacity-slider": LocalJSX.KritzelOpacitySlider & JSXBase.HTMLAttributes<HTMLKritzelOpacitySliderElement>;
             "kritzel-portal": LocalJSX.KritzelPortal & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
+            "kritzel-settings": LocalJSX.KritzelSettings & JSXBase.HTMLAttributes<HTMLKritzelSettingsElement>;
             "kritzel-shape-fill": LocalJSX.KritzelShapeFill & JSXBase.HTMLAttributes<HTMLKritzelShapeFillElement>;
             "kritzel-split-button": LocalJSX.KritzelSplitButton & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;

@@ -12,6 +12,7 @@ import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist
 import { defineCustomElement as defineKritzelLineEndings } from 'kritzel-stencil/dist/components/kritzel-line-endings.js';
 import { defineCustomElement as defineKritzelMoreMenu } from 'kritzel-stencil/dist/components/kritzel-more-menu.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
+import { defineCustomElement as defineKritzelSettings } from 'kritzel-stencil/dist/components/kritzel-settings.js';
 import { defineCustomElement as defineKritzelShapeFill } from 'kritzel-stencil/dist/components/kritzel-shape-fill.js';
 @ProxyCmp({
   defineCustomElementFn: defineKritzelBackToContent,
@@ -207,6 +208,28 @@ export declare interface KritzelOpacitySlider extends Components.KritzelOpacityS
 
   valueChange: EventEmitter<CustomEvent<number>>;
 }
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelSettings
+})
+@Component({
+  selector: 'kritzel-settings',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: [],
+})
+export class KritzelSettings {
+  protected el: HTMLKritzelSettingsElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelSettings extends Components.KritzelSettings {}
 
 
 @ProxyCmp({

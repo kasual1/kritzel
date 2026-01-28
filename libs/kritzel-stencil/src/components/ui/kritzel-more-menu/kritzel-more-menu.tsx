@@ -12,7 +12,18 @@ export class KritzelMoreMenu {
   /**
    * The menu items to display in the dropdown
    */
-  @Prop() items: IKritzelMenuItem[] = [];
+  @Prop() items: IKritzelMenuItem[] = [
+    {
+      id: 'export',
+      label: 'Export',
+      icon: 'download',
+    },
+    {
+      id: 'share',
+      label: 'Share',
+      icon: 'share',
+    },
+  ];
 
   /**
    * The icon to display on the button
