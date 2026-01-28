@@ -10,8 +10,9 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type KritzelBaseObject, type KritzelEditorCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelUndoState, type LineArrowConfig, type ShapeFillType } from "../../../../kritzel-stencil";
+import { type IKritzelDialogCloseEvent, type KritzelBaseObject, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelUndoState, type LineArrowConfig, type ShapeFillType } from "../../../../kritzel-stencil";
 import { KritzelBackToContent as KritzelBackToContentElement, defineCustomElement as defineKritzelBackToContent } from "../../../../kritzel-stencil/dist/components/kritzel-back-to-content.js";
+import { KritzelDialog as KritzelDialogElement, defineCustomElement as defineKritzelDialog } from "../../../../kritzel-stencil/dist/components/kritzel-dialog.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelLineEndings as KritzelLineEndingsElement, defineCustomElement as defineKritzelLineEndings } from "../../../../kritzel-stencil/dist/components/kritzel-line-endings.js";
 import { KritzelOpacitySlider as KritzelOpacitySliderElement, defineCustomElement as defineKritzelOpacitySlider } from "../../../../kritzel-stencil/dist/components/kritzel-opacity-slider.js";
@@ -26,6 +27,23 @@ export const KritzelBackToContent: StencilReactComponent<KritzelBackToContentEle
     react: React,
     events: { onBackToContent: 'backToContent' } as KritzelBackToContentEvents,
     defineCustomElement: defineKritzelBackToContent
+});
+
+export type KritzelDialogEvents = {
+    onDialogOpen: EventName<CustomEvent<void>>,
+    onDialogClose: EventName<KritzelDialogCustomEvent<IKritzelDialogCloseEvent>>
+};
+
+export const KritzelDialog: StencilReactComponent<KritzelDialogElement, KritzelDialogEvents> = /*@__PURE__*/ createComponent<KritzelDialogElement, KritzelDialogEvents>({
+    tagName: 'kritzel-dialog',
+    elementClass: KritzelDialogElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onDialogOpen: 'dialogOpen',
+        onDialogClose: 'dialogClose'
+    } as KritzelDialogEvents,
+    defineCustomElement: defineKritzelDialog
 });
 
 export type KritzelEditorEvents = {
