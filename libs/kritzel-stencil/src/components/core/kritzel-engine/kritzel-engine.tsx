@@ -82,7 +82,7 @@ export class KritzelEngine {
   }
 
   /** When true, objects are drawn at a fixed visual size regardless of zoom level */
-  @Prop() lockDrawingScale: boolean = false;
+  @Prop() lockDrawingScale: boolean = true;
   @Watch('lockDrawingScale')
   onLockDrawingScaleChange(newValue: boolean) {
     this.core.store.state.lockDrawingScale = newValue;

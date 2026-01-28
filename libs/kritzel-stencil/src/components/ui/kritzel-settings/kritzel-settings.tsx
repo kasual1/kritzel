@@ -5,6 +5,7 @@ import { IKritzelSettings } from '../../../interfaces/settings.interface';
 const SETTINGS_STORAGE_KEY = 'kritzel-settings';
 const DEFAULT_SCALE_MIN = 0.0001;
 const DEFAULT_SCALE_MAX = 1000;
+const DEFAULT_LOCK_DRAWING_SCALE = true;
 
 const SETTINGS_CATEGORIES: IKritzelMasterDetailItem[] = [
   { id: 'general', label: 'General', icon: 'settings' },
@@ -21,6 +22,7 @@ export class KritzelSettings {
   @State() selectedCategoryId: string = SETTINGS_CATEGORIES[0].id;
   @State() scaleMin: number = DEFAULT_SCALE_MIN;
   @State() scaleMax: number = DEFAULT_SCALE_MAX;
+  @State() lockDrawingScale: boolean = DEFAULT_LOCK_DRAWING_SCALE;
 
   /** Emitted when settings change */
   @Event() settingsChange: EventEmitter<IKritzelSettings>;
@@ -40,6 +42,9 @@ export class KritzelSettings {
         if (typeof parsed.scaleMax === 'number') {
           this.scaleMax = parsed.scaleMax;
         }
+        if (typeof parsed.lockDrawingScale === 'boolean') {
+          this.lockDrawingScale = parsed.lockDrawingScale;
+        }
       } catch {
         // Invalid JSON, use defaults
       }
@@ -50,6 +55,7 @@ export class KritzelSettings {
     const settings: IKritzelSettings = {
       scaleMin: this.scaleMin,
       scaleMax: this.scaleMax,
+      lockDrawingScale: this.lockDrawingScale,
     };
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
     this.settingsChange.emit(settings);
@@ -62,6 +68,11 @@ export class KritzelSettings {
 
   private handleScaleMaxChange = (event: CustomEvent<number>): void => {
     this.scaleMax = event.detail;
+    this.saveSettings();
+  };
+
+  private handleLockDrawingScaleChange = (event: CustomEvent<boolean>): void => {
+    this.lockDrawingScale = event.detail;
     this.saveSettings();
   };
 
@@ -84,22 +95,43 @@ export class KritzelSettings {
           <div class="settings-content">
             <h3>General Settings</h3>
             <div class="settings-group">
-              <kritzel-numeric-input
-                label="Minimum Zoom Level"
-                value={this.scaleMin}
-                min={0.0001}
-                max={1}
-                step={0.0001}
-                onValueChange={this.handleScaleMinChange}
-              />
-              <kritzel-numeric-input
-                label="Maximum Zoom Level"
-                value={this.scaleMax}
-                min={1}
-                max={1000}
-                step={1}
-                onValueChange={this.handleScaleMaxChange}
-              />
+              <div class="settings-item">
+                <label class="settings-label">Minimum Zoom Level</label>
+                <p class="settings-description">
+                  Sets the minimum zoom level. Lower values allow zooming out further to see more of the canvas.
+                </p>
+                <kritzel-numeric-input
+                  value={this.scaleMin}
+                  min={0.0001}
+                  max={1}
+                  step={0.0001}
+                  onValueChange={this.handleScaleMinChange}
+                />
+              </div>
+              <div class="settings-item">
+                <label class="settings-label">Maximum Zoom Level</label>
+                <p class="settings-description">
+                  Sets the maximum zoom level. Higher values allow zooming in closer for detailed work.
+                </p>
+                <kritzel-numeric-input
+                  value={this.scaleMax}
+                  min={1}
+                  max={1000}
+                  step={1}
+                  onValueChange={this.handleScaleMaxChange}
+                />
+              </div>
+              <div class="settings-item">
+                <label class="settings-label">Lock Drawing Scale</label>
+                <p class="settings-description">
+                  When enabled, drawn objects maintain a fixed visual size regardless of the current zoom level.
+                </p>
+                <kritzel-slide-toggle
+                  checked={this.lockDrawingScale}
+                  label="Lock Drawing Scale"
+                  onCheckedChange={this.handleLockDrawingScaleChange}
+                />
+              </div>
             </div>
           </div>
         );

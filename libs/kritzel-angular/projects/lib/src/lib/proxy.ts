@@ -16,6 +16,7 @@ import { defineCustomElement as defineKritzelNumericInput } from 'kritzel-stenci
 import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelSettings } from 'kritzel-stencil/dist/components/kritzel-settings.js';
 import { defineCustomElement as defineKritzelShapeFill } from 'kritzel-stencil/dist/components/kritzel-shape-fill.js';
+import { defineCustomElement as defineKritzelSlideToggle } from 'kritzel-stencil/dist/components/kritzel-slide-toggle.js';
 @ProxyCmp({
   defineCustomElementFn: defineKritzelBackToContent,
   inputs: ['text', 'visible']
@@ -86,7 +87,7 @@ export declare interface KritzelDialog extends Components.KritzelDialog {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
-  inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig'],
+  inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig'],
   methods: ['getObjectById', 'addObject', 'updateObject', 'removeObject', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'backToContent', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace']
 })
 @Component({
@@ -94,7 +95,7 @@ export declare interface KritzelDialog extends Components.KritzelDialog {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig'],
+  inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig'],
   outputs: ['isReady', 'objectsChange', 'undoStateChange'],
 })
 export class KritzelEditor {
@@ -332,6 +333,36 @@ import type { ShapeFillType as IKritzelShapeFillShapeFillType } from 'kritzel-st
 export declare interface KritzelShapeFill extends Components.KritzelShapeFill {
 
   valueChange: EventEmitter<CustomEvent<IKritzelShapeFillShapeFillType>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelSlideToggle,
+  inputs: ['checked', 'disabled', 'label']
+})
+@Component({
+  selector: 'kritzel-slide-toggle',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['checked', 'disabled', 'label'],
+  outputs: ['checkedChange'],
+})
+export class KritzelSlideToggle {
+  protected el: HTMLKritzelSlideToggleElement;
+  @Output() checkedChange = new EventEmitter<CustomEvent<boolean>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelSlideToggle extends Components.KritzelSlideToggle {
+  /**
+   * Emitted when the toggle state changes
+   */
+  checkedChange: EventEmitter<CustomEvent<boolean>>;
 }
 
 

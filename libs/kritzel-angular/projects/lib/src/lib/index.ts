@@ -11,5 +11,6 @@ export const DIRECTIVES = [
   d.KritzelNumericInput,
   d.KritzelOpacitySlider,
   d.KritzelSettings,
-  d.KritzelShapeFill
+  d.KritzelShapeFill,
+  d.KritzelSlideToggle
 ];

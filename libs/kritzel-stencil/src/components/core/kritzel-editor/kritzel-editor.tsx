@@ -33,6 +33,7 @@ export class KritzelEditor {
 
   @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
   @Prop({ mutable: true }) scaleMin: number = ABSOLUTE_SCALE_MIN;
+  @Prop({ mutable: true }) lockDrawingScale: boolean = true;
   @Prop() controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
@@ -280,6 +281,9 @@ export class KritzelEditor {
         if (typeof parsed.scaleMax === 'number') {
           this.scaleMax = parsed.scaleMax;
         }
+        if (typeof parsed.lockDrawingScale === 'boolean') {
+          this.lockDrawingScale = parsed.lockDrawingScale;
+        }
       } catch {
         // Invalid JSON, use prop defaults
       }
@@ -326,6 +330,7 @@ export class KritzelEditor {
   handleSettingsChange(event: CustomEvent<IKritzelSettings>) {
     this.scaleMin = event.detail.scaleMin;
     this.scaleMax = event.detail.scaleMax;
+    this.lockDrawingScale = event.detail.lockDrawingScale;
   }
 
   private registerCustomSvgIcons() {
@@ -385,6 +390,7 @@ export class KritzelEditor {
           workspace={this.activeWorkspace}
           syncConfig={this.syncConfig}
           scaleMax={this.scaleMax}
+          lockDrawingScale={this.lockDrawingScale}
           scaleMin={this.scaleMin}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
