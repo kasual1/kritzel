@@ -6,14 +6,45 @@ import { ProxyCmp } from './angular-component-lib/utils';
 
 import type { Components } from 'kritzel-stencil/dist/components';
 
+import { defineCustomElement as defineKritzelBackToContent } from 'kritzel-stencil/dist/components/kritzel-back-to-content.js';
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelLineEndings } from 'kritzel-stencil/dist/components/kritzel-line-endings.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelShapeFill } from 'kritzel-stencil/dist/components/kritzel-shape-fill.js';
 @ProxyCmp({
+  defineCustomElementFn: defineKritzelBackToContent,
+  inputs: ['text', 'visible']
+})
+@Component({
+  selector: 'kritzel-back-to-content',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['text', 'visible'],
+  outputs: ['backToContent'],
+})
+export class KritzelBackToContent {
+  protected el: HTMLKritzelBackToContentElement;
+  @Output() backToContent = new EventEmitter<CustomEvent<void>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelBackToContent extends Components.KritzelBackToContent {
+  /**
+   * Emitted when the button is clicked
+   */
+  backToContent: EventEmitter<CustomEvent<void>>;
+}
+
+
+@ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
   inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig'],
-  methods: ['getObjectById', 'addObject', 'updateObject', 'removeObject', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace']
+  methods: ['getObjectById', 'addObject', 'updateObject', 'removeObject', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'backToContent', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace']
 })
 @Component({
   selector: 'kritzel-editor',

@@ -145,6 +145,7 @@ export class KritzelEditor {
   @State() activeWorkspace: KritzelWorkspace;
   @State() isVirtualKeyboardOpen: boolean = false;
   @State() undoState: KritzelUndoState = null;
+  @State() isBackToContentButtonVisible: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -223,6 +224,11 @@ export class KritzelEditor {
   }
 
   @Method()
+  async backToContent(): Promise<boolean> {
+    return this.engineRef.backToContent();
+  }
+
+  @Method()
   async createWorkspace(name: string, viewport?: { translateX: number; translateY: number; scale: number }): Promise<KritzelWorkspace | null> {
     const workspace = new KritzelWorkspace(`workspace-${Date.now()}`, name, viewport);
     return this.engineRef.createWorkspace(workspace);
@@ -290,6 +296,11 @@ export class KritzelEditor {
     this.undoState = event.detail;
   }
 
+  handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
+    const hasVisibleObjects = event.detail.length > 0;
+    this.isBackToContentButtonVisible = !hasVisibleObjects;
+  }
+
   private registerCustomSvgIcons() {
     for (const [name, svg] of Object.entries(this.customSvgIcons)) {
       KritzelIconRegistry.register(name, svg);
@@ -354,7 +365,13 @@ export class KritzelEditor {
           onWorkspacesChange={event => this.handleWorkspacesChange(event)}
           onObjectsChange={event => this.handleObjectsChange(event)}
           onUndoStateChange={event => this.handleUndoStateChange(event)}
+          onObjectsInViewportChange={event => this.handleObjectsInViewportChange(event)}
         ></kritzel-engine>
+
+        <kritzel-back-to-content
+          visible={this.isBackToContentButtonVisible}
+          onBackToContent={() => this.backToContent()}
+        ></kritzel-back-to-content>
 
         <kritzel-controls
           class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}

@@ -25,6 +25,22 @@ export class KritzelStore {
     return this._state.objects.allObjects();
   }
 
+  get objectsInViewport(): KritzelBaseObject<Element>[]  {
+     const viewportBounds = {
+      x: -this._state.translateX / this._state.scale,
+      y: -this._state.translateY / this._state.scale,
+      z: this._state.scale,
+      width: this._state.viewportWidth / this._state.scale,
+      height: this._state.viewportHeight / this._state.scale,
+      depth: 100,
+    };
+
+    return this._state.objects
+      .query(viewportBounds)
+      .filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox))
+      .sort((a, b) => a.zIndex - b.zIndex);
+  }
+
   get allNonSelectionObjects(): KritzelBaseObject<Element>[]  {
     return this._state.objects.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
   }
