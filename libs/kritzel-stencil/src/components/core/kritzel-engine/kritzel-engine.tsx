@@ -88,6 +88,7 @@ export class KritzelEngine {
   @Event() longpress: EventEmitter<PointerEvent>;
   @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
   @Event() undoStateChange: EventEmitter<KritzelUndoState>;
+  @Event() objectsInViewportChange: EventEmitter<KritzelBaseObject<Element>[]>;
 
   @State() forceUpdate: number = 0;
 
@@ -423,6 +424,11 @@ export class KritzelEngine {
   }
 
   @Method()
+  async backToContent(): Promise<boolean> {
+    return this.viewport.centerFitNearestContent(20);
+  }
+
+  @Method()
   async getCopiedObjects(): Promise<KritzelBaseObject[]> {
     return this.core.store.state.copiedObjects || [];
   }
@@ -532,6 +538,11 @@ export class KritzelEngine {
       this._lastHadSelectionGroup = hasSelectionGroup;
       this.objectsSelectionChange.emit();
     }
+  }
+
+  emitObjectsInViewportChange() {
+    const objects = this.core.store.objectsInViewport;
+    this.objectsInViewportChange.emit(objects);
   }
 
   private _registerStateChangeListeners() {
