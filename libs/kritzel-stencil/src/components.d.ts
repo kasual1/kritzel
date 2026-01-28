@@ -217,6 +217,10 @@ export namespace Components {
          */
         "isUtilityPanelVisible": boolean;
         /**
+          * @default true
+         */
+        "lockDrawingScale": boolean;
+        /**
           * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },     {       label: 'Group',       icon: 'group',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       action: () => this.engineRef.group(),     },     {       label: 'Ungroup',       icon: 'ungroup',       disabled: async () => {         const selectedObjects = await this.engineRef.getSelectedObjects();         return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');       },       action: () => this.engineRef.ungroup(),     },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
@@ -261,7 +265,7 @@ export namespace Components {
         "hideContextMenu": () => Promise<void>;
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
-          * @default false
+          * @default true
          */
         "lockDrawingScale": boolean;
         "objectContextMenuItems": ContextMenuItem[];
@@ -469,6 +473,22 @@ export namespace Components {
          */
         "value": ShapeFillType;
     }
+    interface KritzelSlideToggle {
+        /**
+          * Whether the toggle is checked/on
+          * @default false
+         */
+        "checked": boolean;
+        /**
+          * Whether the toggle is disabled
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Label text for accessibility (screen readers)
+         */
+        "label"?: string;
+    }
     interface KritzelSplitButton {
         /**
           * @default 'plus'
@@ -619,6 +639,10 @@ export interface KritzelSettingsCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelShapeFillCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelShapeFillElement;
+}
+export interface KritzelSlideToggleCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelSlideToggleElement;
 }
 export interface KritzelSplitButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1046,6 +1070,23 @@ declare global {
         prototype: HTMLKritzelShapeFillElement;
         new (): HTMLKritzelShapeFillElement;
     };
+    interface HTMLKritzelSlideToggleElementEventMap {
+        "checkedChange": boolean;
+    }
+    interface HTMLKritzelSlideToggleElement extends Components.KritzelSlideToggle, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelSlideToggleElementEventMap>(type: K, listener: (this: HTMLKritzelSlideToggleElement, ev: KritzelSlideToggleCustomEvent<HTMLKritzelSlideToggleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelSlideToggleElementEventMap>(type: K, listener: (this: HTMLKritzelSlideToggleElement, ev: KritzelSlideToggleCustomEvent<HTMLKritzelSlideToggleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelSlideToggleElement: {
+        prototype: HTMLKritzelSlideToggleElement;
+        new (): HTMLKritzelSlideToggleElement;
+    };
     interface HTMLKritzelSplitButtonElementEventMap {
         "mainButtonClick": void;
         "itemSelect": IKritzelMenuItemSelectEvent;
@@ -1185,6 +1226,7 @@ declare global {
         "kritzel-portal": HTMLKritzelPortalElement;
         "kritzel-settings": HTMLKritzelSettingsElement;
         "kritzel-shape-fill": HTMLKritzelShapeFillElement;
+        "kritzel-slide-toggle": HTMLKritzelSlideToggleElement;
         "kritzel-split-button": HTMLKritzelSplitButtonElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
         "kritzel-tool-config": HTMLKritzelToolConfigElement;
@@ -1363,6 +1405,10 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         /**
+          * @default true
+         */
+        "lockDrawingScale"?: boolean;
+        /**
           * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },     {       label: 'Group',       icon: 'group',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       action: () => this.engineRef.group(),     },     {       label: 'Ungroup',       icon: 'ungroup',       disabled: async () => {         const selectedObjects = await this.engineRef.getSelectedObjects();         return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');       },       action: () => this.engineRef.ungroup(),     },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
@@ -1385,7 +1431,7 @@ declare namespace LocalJSX {
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
-          * @default false
+          * @default true
          */
         "lockDrawingScale"?: boolean;
         "objectContextMenuItems"?: ContextMenuItem[];
@@ -1619,6 +1665,26 @@ declare namespace LocalJSX {
          */
         "value"?: ShapeFillType;
     }
+    interface KritzelSlideToggle {
+        /**
+          * Whether the toggle is checked/on
+          * @default false
+         */
+        "checked"?: boolean;
+        /**
+          * Whether the toggle is disabled
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Label text for accessibility (screen readers)
+         */
+        "label"?: string;
+        /**
+          * Emitted when the toggle state changes
+         */
+        "onCheckedChange"?: (event: KritzelSlideToggleCustomEvent<boolean>) => void;
+    }
     interface KritzelSplitButton {
         /**
           * @default 'plus'
@@ -1725,6 +1791,7 @@ declare namespace LocalJSX {
         "kritzel-portal": KritzelPortal;
         "kritzel-settings": KritzelSettings;
         "kritzel-shape-fill": KritzelShapeFill;
+        "kritzel-slide-toggle": KritzelSlideToggle;
         "kritzel-split-button": KritzelSplitButton;
         "kritzel-stroke-size": KritzelStrokeSize;
         "kritzel-tool-config": KritzelToolConfig;
@@ -1762,6 +1829,7 @@ declare module "@stencil/core" {
             "kritzel-portal": LocalJSX.KritzelPortal & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
             "kritzel-settings": LocalJSX.KritzelSettings & JSXBase.HTMLAttributes<HTMLKritzelSettingsElement>;
             "kritzel-shape-fill": LocalJSX.KritzelShapeFill & JSXBase.HTMLAttributes<HTMLKritzelShapeFillElement>;
+            "kritzel-slide-toggle": LocalJSX.KritzelSlideToggle & JSXBase.HTMLAttributes<HTMLKritzelSlideToggleElement>;
             "kritzel-split-button": LocalJSX.KritzelSplitButton & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
             "kritzel-tool-config": LocalJSX.KritzelToolConfig & JSXBase.HTMLAttributes<HTMLKritzelToolConfigElement>;

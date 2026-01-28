@@ -15,6 +15,7 @@ import { defineCustomElement as defineKritzelNumericInput } from '../../kritzel-
 import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelSettings } from '../../kritzel-stencil/dist/components/kritzel-settings.js';
 import { defineCustomElement as defineKritzelShapeFill } from '../../kritzel-stencil/dist/components/kritzel-shape-fill.js';
+import { defineCustomElement as defineKritzelSlideToggle } from '../../kritzel-stencil/dist/components/kritzel-slide-toggle.js';
 
 
 export const KritzelBackToContent: StencilVueComponent<JSX.KritzelBackToContent> = /*@__PURE__*/ defineContainer<JSX.KritzelBackToContent>('kritzel-back-to-content', defineKritzelBackToContent, [
@@ -46,6 +47,7 @@ export const KritzelDialog: StencilVueComponent<JSX.KritzelDialog> = /*@__PURE__
 export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__*/ defineContainer<JSX.KritzelEditor>('kritzel-editor', defineKritzelEditor, [
   'scaleMax',
   'scaleMin',
+  'lockDrawingScale',
   'controls',
   'globalContextMenuItems',
   'objectContextMenuItems',
@@ -129,5 +131,15 @@ export const KritzelShapeFill: StencilVueComponent<JSX.KritzelShapeFill> = /*@__
   'valueChange'
 ], [
   'valueChange'
+]);
+
+
+export const KritzelSlideToggle: StencilVueComponent<JSX.KritzelSlideToggle> = /*@__PURE__*/ defineContainer<JSX.KritzelSlideToggle>('kritzel-slide-toggle', defineKritzelSlideToggle, [
+  'checked',
+  'disabled',
+  'label',
+  'checkedChange'
+], [
+  'checkedChange'
 ]);
 

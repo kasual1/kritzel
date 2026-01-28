@@ -21,6 +21,7 @@ import { KritzelNumericInput as KritzelNumericInputElement, defineCustomElement 
 import { KritzelOpacitySlider as KritzelOpacitySliderElement, defineCustomElement as defineKritzelOpacitySlider } from "../../../../kritzel-stencil/dist/components/kritzel-opacity-slider.js";
 import { KritzelSettings as KritzelSettingsElement, defineCustomElement as defineKritzelSettings } from "../../../../kritzel-stencil/dist/components/kritzel-settings.js";
 import { KritzelShapeFill as KritzelShapeFillElement, defineCustomElement as defineKritzelShapeFill } from "../../../../kritzel-stencil/dist/components/kritzel-shape-fill.js";
+import { KritzelSlideToggle as KritzelSlideToggleElement, defineCustomElement as defineKritzelSlideToggle } from "../../../../kritzel-stencil/dist/components/kritzel-slide-toggle.js";
 
 export type KritzelBackToContentEvents = { onBackToContent: EventName<CustomEvent<void>> };
 
@@ -144,4 +145,15 @@ export const KritzelShapeFill: StencilReactComponent<KritzelShapeFillElement, Kr
     react: React,
     events: { onValueChange: 'valueChange' } as KritzelShapeFillEvents,
     defineCustomElement: defineKritzelShapeFill
+});
+
+export type KritzelSlideToggleEvents = { onCheckedChange: EventName<CustomEvent<boolean>> };
+
+export const KritzelSlideToggle: StencilReactComponent<KritzelSlideToggleElement, KritzelSlideToggleEvents> = /*@__PURE__*/ createComponent<KritzelSlideToggleElement, KritzelSlideToggleEvents>({
+    tagName: 'kritzel-slide-toggle',
+    elementClass: KritzelSlideToggleElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: { onCheckedChange: 'checkedChange' } as KritzelSlideToggleEvents,
+    defineCustomElement: defineKritzelSlideToggle
 });
