@@ -11,6 +11,7 @@ import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelCore } from "./classes/core/core.class";
+import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelUndoState as KritzelUndoState1 } from ".";
@@ -31,6 +32,7 @@ export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelCore } from "./classes/core/core.class";
+export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelUndoState as KritzelUndoState1 } from ".";
@@ -122,6 +124,50 @@ export namespace Components {
     }
     interface KritzelCursorTrail {
         "core": KritzelCore;
+    }
+    interface KritzelDialog {
+        /**
+          * Whether to auto-focus the first focusable element when opened
+          * @default true
+         */
+        "autoFocus": boolean;
+        /**
+          * Whether to show the close button in the header
+          * @default true
+         */
+        "closable": boolean;
+        "close": (reason?: KritzelDialogCloseReason) => Promise<void>;
+        /**
+          * Whether clicking the backdrop closes the dialog
+          * @default true
+         */
+        "closeOnBackdrop": boolean;
+        /**
+          * Whether pressing Escape closes the dialog
+          * @default true
+         */
+        "closeOnEscape": boolean;
+        /**
+          * Optional title displayed in the header
+         */
+        "dialogTitle"?: string;
+        "focusFirstElement": () => Promise<void>;
+        /**
+          * Whether the dialog is open
+          * @default false
+         */
+        "isOpen": boolean;
+        "open": () => Promise<void>;
+        /**
+          * Size of the dialog
+          * @default 'medium'
+         */
+        "size": 'small' | 'medium' | 'large';
+        /**
+          * Whether to trap focus within the dialog
+          * @default true
+         */
+        "trapFocus": boolean;
     }
     interface KritzelDropdown {
         /**
@@ -439,6 +485,10 @@ export interface KritzelControlsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelControlsElement;
 }
+export interface KritzelDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelDialogElement;
+}
 export interface KritzelDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelDropdownElement;
@@ -605,6 +655,24 @@ declare global {
     var HTMLKritzelCursorTrailElement: {
         prototype: HTMLKritzelCursorTrailElement;
         new (): HTMLKritzelCursorTrailElement;
+    };
+    interface HTMLKritzelDialogElementEventMap {
+        "dialogOpen": void;
+        "dialogClose": IKritzelDialogCloseEvent;
+    }
+    interface HTMLKritzelDialogElement extends Components.KritzelDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelDialogElementEventMap>(type: K, listener: (this: HTMLKritzelDialogElement, ev: KritzelDialogCustomEvent<HTMLKritzelDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelDialogElementEventMap>(type: K, listener: (this: HTMLKritzelDialogElement, ev: KritzelDialogCustomEvent<HTMLKritzelDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelDialogElement: {
+        prototype: HTMLKritzelDialogElement;
+        new (): HTMLKritzelDialogElement;
     };
     interface HTMLKritzelDropdownElementEventMap {
         "valueChanged": string;
@@ -944,6 +1012,7 @@ declare global {
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
+        "kritzel-dialog": HTMLKritzelDialogElement;
         "kritzel-dropdown": HTMLKritzelDropdownElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
@@ -1050,6 +1119,55 @@ declare namespace LocalJSX {
     }
     interface KritzelCursorTrail {
         "core"?: KritzelCore;
+    }
+    interface KritzelDialog {
+        /**
+          * Whether to auto-focus the first focusable element when opened
+          * @default true
+         */
+        "autoFocus"?: boolean;
+        /**
+          * Whether to show the close button in the header
+          * @default true
+         */
+        "closable"?: boolean;
+        /**
+          * Whether clicking the backdrop closes the dialog
+          * @default true
+         */
+        "closeOnBackdrop"?: boolean;
+        /**
+          * Whether pressing Escape closes the dialog
+          * @default true
+         */
+        "closeOnEscape"?: boolean;
+        /**
+          * Optional title displayed in the header
+         */
+        "dialogTitle"?: string;
+        /**
+          * Whether the dialog is open
+          * @default false
+         */
+        "isOpen"?: boolean;
+        /**
+          * Emitted when the dialog closes
+         */
+        "onDialogClose"?: (event: KritzelDialogCustomEvent<IKritzelDialogCloseEvent>) => void;
+        /**
+          * Emitted when the dialog opens
+         */
+        "onDialogOpen"?: (event: KritzelDialogCustomEvent<void>) => void;
+        /**
+          * Size of the dialog
+          * @default 'medium'
+         */
+        "size"?: 'small' | 'medium' | 'large';
+        /**
+          * Whether to trap focus within the dialog
+          * @default true
+         */
+        "trapFocus"?: boolean;
     }
     interface KritzelDropdown {
         "onValueChanged"?: (event: KritzelDropdownCustomEvent<string>) => void;
@@ -1347,6 +1465,7 @@ declare namespace LocalJSX {
         "kritzel-context-menu": KritzelContextMenu;
         "kritzel-controls": KritzelControls;
         "kritzel-cursor-trail": KritzelCursorTrail;
+        "kritzel-dialog": KritzelDialog;
         "kritzel-dropdown": KritzelDropdown;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
@@ -1379,6 +1498,7 @@ declare module "@stencil/core" {
             "kritzel-context-menu": LocalJSX.KritzelContextMenu & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
+            "kritzel-dialog": LocalJSX.KritzelDialog & JSXBase.HTMLAttributes<HTMLKritzelDialogElement>;
             "kritzel-dropdown": LocalJSX.KritzelDropdown & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;

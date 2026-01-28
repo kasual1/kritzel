@@ -1,5 +1,6 @@
 import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
 import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
+import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { ShapeType } from '../../../enums/shape-type.enum';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
@@ -146,6 +147,8 @@ export class KritzelEditor {
   @State() isVirtualKeyboardOpen: boolean = false;
   @State() undoState: KritzelUndoState = null;
   @State() isBackToContentButtonVisible: boolean = false;
+  @State() isDemoDialogOpen: boolean = false;
+  @State() ellipsisMenuAnchor: HTMLElement = null;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -257,6 +260,51 @@ export class KritzelEditor {
   engineRef!: HTMLKritzelEngineElement;
   controlsRef!: HTMLKritzelControlsElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
+  ellipsisButtonRef!: HTMLButtonElement;
+
+  get ellipsisMenuItems(): IKritzelMenuItem[] {
+    return [
+      {
+        id: 'export',
+        label: 'Export',
+        action: () => this.handleExport(),
+      },
+      {
+        id: 'share',
+        label: 'Share',
+        action: () => this.handleShare(),
+      },
+    ];
+  }
+
+  private toggleEllipsisMenu = (event: MouseEvent) => {
+    event.stopPropagation();
+    if (this.ellipsisMenuAnchor) {
+      this.closeEllipsisMenu();
+    } else {
+      this.ellipsisMenuAnchor = this.ellipsisButtonRef;
+    }
+  };
+
+  private closeEllipsisMenu = () => {
+    this.ellipsisMenuAnchor = null;
+  };
+
+  private handleEllipsisMenuItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => {
+    const { item } = event.detail;
+    if (item.action) {
+      item.action(item, null);
+    }
+    this.closeEllipsisMenu();
+  };
+
+  private handleExport() {
+    // TODO: Implement export functionality
+  }
+
+  private handleShare() {
+    // TODO: Implement share functionality
+  }
 
   componentDidLoad() {
     this.registerCustomSvgIcons();
@@ -382,6 +430,73 @@ export class KritzelEditor {
           undoState={this.undoState}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
+
+        <div class="top-right-buttons">
+          <button
+            class="top-right-button"
+            onClick={() => (this.isDemoDialogOpen = true)}
+          >
+            <kritzel-icon name="settings" size={24}></kritzel-icon>
+          </button>
+          
+          <button
+            ref={el => (this.ellipsisButtonRef = el)}
+            class="top-right-button"
+            onClick={this.toggleEllipsisMenu}
+          >
+            <kritzel-icon name="ellipsis-vertical" size={24}></kritzel-icon>
+          </button>
+
+          <kritzel-portal anchor={this.ellipsisMenuAnchor} offsetY={4} onClose={this.closeEllipsisMenu}>
+            <kritzel-menu
+              items={this.ellipsisMenuItems}
+              onItemSelect={this.handleEllipsisMenuItemSelect}
+            ></kritzel-menu>
+          </kritzel-portal>
+        </div>
+
+        <kritzel-dialog
+          isOpen={this.isDemoDialogOpen}
+          dialogTitle="Demo Dialog"
+          size="medium"
+          onDialogClose={() => (this.isDemoDialogOpen = false)}
+        >
+          <p style={{ margin: '0 0 16px 0' }}>This is a demo dialog to showcase the new kritzel-dialog component.</p>
+          <p style={{ margin: '0' }}>You can add any content here using slots. The dialog supports:</p>
+          <ul style={{ margin: '16px 0', paddingLeft: '20px' }}>
+            <li>Focus trapping</li>
+            <li>Escape key to close</li>
+            <li>Backdrop click to close</li>
+            <li>Custom header, body, and footer slots</li>
+          </ul>
+          <div slot="footer">
+            <button
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: '1px solid #ebebeb',
+                background: '#fff',
+                cursor: 'pointer',
+              }}
+              onClick={() => (this.isDemoDialogOpen = false)}
+            >
+              Cancel
+            </button>
+            <button
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                background: '#0066cc',
+                color: '#fff',
+                cursor: 'pointer',
+              }}
+              onClick={() => (this.isDemoDialogOpen = false)}
+            >
+              Confirm
+            </button>
+          </div>
+        </kritzel-dialog>
       </Host>
     );
   }

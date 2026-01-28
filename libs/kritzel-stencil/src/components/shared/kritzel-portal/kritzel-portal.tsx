@@ -14,10 +14,14 @@ export class KritzelPortal {
   anchorChanged(newValue: HTMLElement) {
     if (newValue) {
       this.openPortal();
-      this.calculatePosition();
-      if (this.autoFocus) {
-        this.focusFirstElement();
-      }
+      // Use requestAnimationFrame to wait for the browser to paint the portal content
+      // so that getBoundingClientRect returns accurate dimensions
+      requestAnimationFrame(() => {
+        this.calculatePosition();
+        if (this.autoFocus) {
+          this.focusFirstElement();
+        }
+      });
     } else {
       this.closePortal();
     }
@@ -149,8 +153,23 @@ export class KritzelPortal {
     const portalRect = this.portal.getBoundingClientRect();
 
     const offset = this.offsetX ?? this.defaultOffset;
-    let left = refRect.left + offset;
+    
+    // Determine alignment based on anchor position
+    // If anchor center is past the viewport midpoint, align to end (right edge of anchor)
+    const anchorCenter = refRect.left + refRect.width / 2;
+    const viewportMidpoint = window.innerWidth / 2;
+    const shouldAlignEnd = anchorCenter > viewportMidpoint;
 
+    let left: number;
+    if (shouldAlignEnd) {
+      // Align portal's right edge to anchor's right edge
+      left = refRect.right - portalRect.width - offset;
+    } else {
+      // Align portal's left edge to anchor's left edge
+      left = refRect.left + offset;
+    }
+
+    // Clamp to viewport bounds
     const maxLeft = window.innerWidth - portalRect.width - this.minLeft;
     if (left < this.minLeft) left = this.minLeft;
     if (left > maxLeft) left = maxLeft;
@@ -201,6 +220,7 @@ export class KritzelPortal {
     this.portal.style.position = 'absolute';
     this.portal.style.top = '0px';
     this.portal.style.left = '0px';
+    this.portal.style.visibility = 'hidden';
     this.portal.appendChild(this.host);
     document.body.append(this.portal);
   }
@@ -218,6 +238,7 @@ export class KritzelPortal {
     const left = this.calculateLeft();
     this.portal.style.top = `${top}px`;
     this.portal.style.left = `${left}px`;
+    this.portal.style.visibility = 'visible';
   }
 
   render() {
