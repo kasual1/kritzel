@@ -92,11 +92,6 @@ export class KritzelSettings {
           >
             {this.renderCategoryContent()}
           </kritzel-master-detail>
-          <div slot="footer">
-            <button class="footer-button cancel-button" onClick={this.closeDialog}>
-              Close
-            </button>
-          </div>
         </kritzel-dialog>
       </Host>
     );
