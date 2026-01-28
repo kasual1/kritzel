@@ -48,14 +48,17 @@
 /* Size variants */
 .dialog-content.size-small {
   width: var(--kritzel-dialog-width-small, 320px);
+  height: var(--kritzel-dialog-height-small, auto);
 }
 
 .dialog-content.size-medium {
   width: var(--kritzel-dialog-width-medium, 480px);
+  height: var(--kritzel-dialog-height-medium, auto);
 }
 
 .dialog-content.size-large {
   width: var(--kritzel-dialog-width-large, 640px);
+  height: var(--kritzel-dialog-height-large, auto);
 }
 
 .dialog-header {

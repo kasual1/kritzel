@@ -4,6 +4,8 @@
 
 kritzel-dialog {
   --kritzel-dialog-body-padding: 0;
+  --kritzel-dialog-width-large: 800px;
+  --kritzel-dialog-height-large: 500px;
 }
 
 .settings-button {
