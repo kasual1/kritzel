@@ -17,6 +17,7 @@ import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKri
 import { KritzelLineEndings as KritzelLineEndingsElement, defineCustomElement as defineKritzelLineEndings } from "../../../../kritzel-stencil/dist/components/kritzel-line-endings.js";
 import { KritzelMoreMenu as KritzelMoreMenuElement, defineCustomElement as defineKritzelMoreMenu } from "../../../../kritzel-stencil/dist/components/kritzel-more-menu.js";
 import { KritzelOpacitySlider as KritzelOpacitySliderElement, defineCustomElement as defineKritzelOpacitySlider } from "../../../../kritzel-stencil/dist/components/kritzel-opacity-slider.js";
+import { KritzelSettings as KritzelSettingsElement, defineCustomElement as defineKritzelSettings } from "../../../../kritzel-stencil/dist/components/kritzel-settings.js";
 import { KritzelShapeFill as KritzelShapeFillElement, defineCustomElement as defineKritzelShapeFill } from "../../../../kritzel-stencil/dist/components/kritzel-shape-fill.js";
 
 export type KritzelBackToContentEvents = { onBackToContent: EventName<CustomEvent<void>> };
@@ -97,6 +98,17 @@ export const KritzelOpacitySlider: StencilReactComponent<KritzelOpacitySliderEle
     react: React,
     events: { onValueChange: 'valueChange' } as KritzelOpacitySliderEvents,
     defineCustomElement: defineKritzelOpacitySlider
+});
+
+export type KritzelSettingsEvents = NonNullable<unknown>;
+
+export const KritzelSettings: StencilReactComponent<KritzelSettingsElement, KritzelSettingsEvents> = /*@__PURE__*/ createComponent<KritzelSettingsElement, KritzelSettingsEvents>({
+    tagName: 'kritzel-settings',
+    elementClass: KritzelSettingsElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as KritzelSettingsEvents,
+    defineCustomElement: defineKritzelSettings
 });
 
 export type KritzelShapeFillEvents = { onValueChange: EventName<KritzelShapeFillCustomEvent<ShapeFillType>> };
