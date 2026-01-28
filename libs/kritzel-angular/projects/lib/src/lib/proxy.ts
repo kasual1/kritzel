@@ -7,8 +7,10 @@ import { ProxyCmp } from './angular-component-lib/utils';
 import type { Components } from 'kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelBackToContent } from 'kritzel-stencil/dist/components/kritzel-back-to-content.js';
+import { defineCustomElement as defineKritzelDialog } from 'kritzel-stencil/dist/components/kritzel-dialog.js';
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelLineEndings } from 'kritzel-stencil/dist/components/kritzel-line-endings.js';
+import { defineCustomElement as defineKritzelMoreMenu } from 'kritzel-stencil/dist/components/kritzel-more-menu.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelShapeFill } from 'kritzel-stencil/dist/components/kritzel-shape-fill.js';
 @ProxyCmp({
@@ -38,6 +40,44 @@ export declare interface KritzelBackToContent extends Components.KritzelBackToCo
    * Emitted when the button is clicked
    */
   backToContent: EventEmitter<CustomEvent<void>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelDialog,
+  inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'dialogTitle', 'isOpen', 'size', 'trapFocus'],
+  methods: ['open', 'close', 'focusFirstElement']
+})
+@Component({
+  selector: 'kritzel-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'dialogTitle', 'isOpen', 'size', 'trapFocus'],
+  outputs: ['dialogOpen', 'dialogClose'],
+})
+export class KritzelDialog {
+  protected el: HTMLKritzelDialogElement;
+  @Output() dialogOpen = new EventEmitter<CustomEvent<void>>();
+  @Output() dialogClose = new EventEmitter<CustomEvent<[object Object]>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { IKritzelDialogCloseEvent as IKritzelDialogIKritzelDialogCloseEvent } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelDialog extends Components.KritzelDialog {
+  /**
+   * Emitted when the dialog opens
+   */
+  dialogOpen: EventEmitter<CustomEvent<void>>;
+  /**
+   * Emitted when the dialog closes
+   */
+  dialogClose: EventEmitter<CustomEvent<[object Object]>>;
 }
 
 
@@ -106,6 +146,38 @@ import type { LineArrowConfig as IKritzelLineEndingsLineArrowConfig } from 'krit
 export declare interface KritzelLineEndings extends Components.KritzelLineEndings {
 
   valueChange: EventEmitter<CustomEvent<IKritzelLineEndingsLineArrowConfig>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelMoreMenu,
+  inputs: ['icon', 'iconSize', 'items', 'offsetY']
+})
+@Component({
+  selector: 'kritzel-more-menu',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['icon', 'iconSize', 'items', 'offsetY'],
+  outputs: ['itemSelect'],
+})
+export class KritzelMoreMenu {
+  protected el: HTMLKritzelMoreMenuElement;
+  @Output() itemSelect = new EventEmitter<CustomEvent<{ item: IKritzelMoreMenuIKritzelMenuItem; parent: IKritzelMoreMenuIKritzelMenuItem }>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { IKritzelMenuItem as IKritzelMoreMenuIKritzelMenuItem } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelMoreMenu extends Components.KritzelMoreMenu {
+  /**
+   * Emitted when a menu item is selected
+   */
+  itemSelect: EventEmitter<CustomEvent<{ item: IKritzelMoreMenuIKritzelMenuItem; parent: IKritzelMoreMenuIKritzelMenuItem }>>;
 }
 
 

@@ -355,6 +355,28 @@ export namespace Components {
          */
         "parent": IKritzelMenuItem;
     }
+    interface KritzelMoreMenu {
+        /**
+          * The icon to display on the button
+          * @default 'ellipsis-vertical'
+         */
+        "icon": string;
+        /**
+          * The size of the icon
+          * @default 24
+         */
+        "iconSize": number;
+        /**
+          * The menu items to display in the dropdown
+          * @default []
+         */
+        "items": IKritzelMenuItem[];
+        /**
+          * Offset Y for the portal positioning
+          * @default 4
+         */
+        "offsetY": number;
+    }
     interface KritzelOpacitySlider {
         /**
           * Maximum opacity value
@@ -520,6 +542,10 @@ export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelMenuItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelMenuItemElement;
+}
+export interface KritzelMoreMenuCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelMoreMenuElement;
 }
 export interface KritzelOpacitySliderCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -840,6 +866,23 @@ declare global {
         prototype: HTMLKritzelMenuItemElement;
         new (): HTMLKritzelMenuItemElement;
     };
+    interface HTMLKritzelMoreMenuElementEventMap {
+        "itemSelect": { item: IKritzelMenuItem; parent: IKritzelMenuItem };
+    }
+    interface HTMLKritzelMoreMenuElement extends Components.KritzelMoreMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelMoreMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMoreMenuElement, ev: KritzelMoreMenuCustomEvent<HTMLKritzelMoreMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelMoreMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMoreMenuElement, ev: KritzelMoreMenuCustomEvent<HTMLKritzelMoreMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelMoreMenuElement: {
+        prototype: HTMLKritzelMoreMenuElement;
+        new (): HTMLKritzelMoreMenuElement;
+    };
     interface HTMLKritzelOpacitySliderElementEventMap {
         "valueChange": number;
     }
@@ -1023,6 +1066,7 @@ declare global {
         "kritzel-line-endings": HTMLKritzelLineEndingsElement;
         "kritzel-menu": HTMLKritzelMenuElement;
         "kritzel-menu-item": HTMLKritzelMenuItemElement;
+        "kritzel-more-menu": HTMLKritzelMoreMenuElement;
         "kritzel-opacity-slider": HTMLKritzelOpacitySliderElement;
         "kritzel-portal": HTMLKritzelPortalElement;
         "kritzel-shape-fill": HTMLKritzelShapeFillElement;
@@ -1331,6 +1375,32 @@ declare namespace LocalJSX {
          */
         "parent"?: IKritzelMenuItem;
     }
+    interface KritzelMoreMenu {
+        /**
+          * The icon to display on the button
+          * @default 'ellipsis-vertical'
+         */
+        "icon"?: string;
+        /**
+          * The size of the icon
+          * @default 24
+         */
+        "iconSize"?: number;
+        /**
+          * The menu items to display in the dropdown
+          * @default []
+         */
+        "items"?: IKritzelMenuItem[];
+        /**
+          * Offset Y for the portal positioning
+          * @default 4
+         */
+        "offsetY"?: number;
+        /**
+          * Emitted when a menu item is selected
+         */
+        "onItemSelect"?: (event: KritzelMoreMenuCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => void;
+    }
     interface KritzelOpacitySlider {
         /**
           * Maximum opacity value
@@ -1476,6 +1546,7 @@ declare namespace LocalJSX {
         "kritzel-line-endings": KritzelLineEndings;
         "kritzel-menu": KritzelMenu;
         "kritzel-menu-item": KritzelMenuItem;
+        "kritzel-more-menu": KritzelMoreMenu;
         "kritzel-opacity-slider": KritzelOpacitySlider;
         "kritzel-portal": KritzelPortal;
         "kritzel-shape-fill": KritzelShapeFill;
@@ -1509,6 +1580,7 @@ declare module "@stencil/core" {
             "kritzel-line-endings": LocalJSX.KritzelLineEndings & JSXBase.HTMLAttributes<HTMLKritzelLineEndingsElement>;
             "kritzel-menu": LocalJSX.KritzelMenu & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
             "kritzel-menu-item": LocalJSX.KritzelMenuItem & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
+            "kritzel-more-menu": LocalJSX.KritzelMoreMenu & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
             "kritzel-opacity-slider": LocalJSX.KritzelOpacitySlider & JSXBase.HTMLAttributes<HTMLKritzelOpacitySliderElement>;
             "kritzel-portal": LocalJSX.KritzelPortal & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
             "kritzel-shape-fill": LocalJSX.KritzelShapeFill & JSXBase.HTMLAttributes<HTMLKritzelShapeFillElement>;

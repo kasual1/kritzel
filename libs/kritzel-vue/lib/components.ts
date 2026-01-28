@@ -6,8 +6,10 @@ import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-t
 import type { JSX } from '../../kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelBackToContent } from '../../kritzel-stencil/dist/components/kritzel-back-to-content.js';
+import { defineCustomElement as defineKritzelDialog } from '../../kritzel-stencil/dist/components/kritzel-dialog.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelLineEndings } from '../../kritzel-stencil/dist/components/kritzel-line-endings.js';
+import { defineCustomElement as defineKritzelMoreMenu } from '../../kritzel-stencil/dist/components/kritzel-more-menu.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelShapeFill } from '../../kritzel-stencil/dist/components/kritzel-shape-fill.js';
 
@@ -18,6 +20,23 @@ export const KritzelBackToContent: StencilVueComponent<JSX.KritzelBackToContent>
   'backToContent'
 ], [
   'backToContent'
+]);
+
+
+export const KritzelDialog: StencilVueComponent<JSX.KritzelDialog> = /*@__PURE__*/ defineContainer<JSX.KritzelDialog>('kritzel-dialog', defineKritzelDialog, [
+  'isOpen',
+  'dialogTitle',
+  'closable',
+  'closeOnBackdrop',
+  'closeOnEscape',
+  'autoFocus',
+  'trapFocus',
+  'size',
+  'dialogOpen',
+  'dialogClose'
+], [
+  'dialogOpen',
+  'dialogClose'
 ]);
 
 
@@ -48,6 +67,17 @@ export const KritzelLineEndings: StencilVueComponent<JSX.KritzelLineEndings> = /
   'valueChange'
 ], [
   'valueChange'
+]);
+
+
+export const KritzelMoreMenu: StencilVueComponent<JSX.KritzelMoreMenu> = /*@__PURE__*/ defineContainer<JSX.KritzelMoreMenu>('kritzel-more-menu', defineKritzelMoreMenu, [
+  'items',
+  'icon',
+  'iconSize',
+  'offsetY',
+  'itemSelect'
+], [
+  'itemSelect'
 ]);
 
 

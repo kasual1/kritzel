@@ -1,6 +1,5 @@
 import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
 import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
-import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { ShapeType } from '../../../enums/shape-type.enum';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
@@ -148,7 +147,6 @@ export class KritzelEditor {
   @State() undoState: KritzelUndoState = null;
   @State() isBackToContentButtonVisible: boolean = false;
   @State() isDemoDialogOpen: boolean = false;
-  @State() ellipsisMenuAnchor: HTMLElement = null;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -260,43 +258,23 @@ export class KritzelEditor {
   engineRef!: HTMLKritzelEngineElement;
   controlsRef!: HTMLKritzelControlsElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
-  ellipsisButtonRef!: HTMLButtonElement;
 
-  get ellipsisMenuItems(): IKritzelMenuItem[] {
+  get moreMenuItems() {
     return [
       {
         id: 'export',
         label: 'Export',
+        icon: 'download',
         action: () => this.handleExport(),
       },
       {
         id: 'share',
         label: 'Share',
+        icon: 'share',
         action: () => this.handleShare(),
       },
     ];
   }
-
-  private toggleEllipsisMenu = (event: MouseEvent) => {
-    event.stopPropagation();
-    if (this.ellipsisMenuAnchor) {
-      this.closeEllipsisMenu();
-    } else {
-      this.ellipsisMenuAnchor = this.ellipsisButtonRef;
-    }
-  };
-
-  private closeEllipsisMenu = () => {
-    this.ellipsisMenuAnchor = null;
-  };
-
-  private handleEllipsisMenuItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => {
-    const { item } = event.detail;
-    if (item.action) {
-      item.action(item, null);
-    }
-    this.closeEllipsisMenu();
-  };
 
   private handleExport() {
     // TODO: Implement export functionality
@@ -439,20 +417,7 @@ export class KritzelEditor {
             <kritzel-icon name="settings" size={24}></kritzel-icon>
           </button>
           
-          <button
-            ref={el => (this.ellipsisButtonRef = el)}
-            class="top-right-button"
-            onClick={this.toggleEllipsisMenu}
-          >
-            <kritzel-icon name="ellipsis-vertical" size={24}></kritzel-icon>
-          </button>
-
-          <kritzel-portal anchor={this.ellipsisMenuAnchor} offsetY={4} onClose={this.closeEllipsisMenu}>
-            <kritzel-menu
-              items={this.ellipsisMenuItems}
-              onItemSelect={this.handleEllipsisMenuItemSelect}
-            ></kritzel-menu>
-          </kritzel-portal>
+          <kritzel-more-menu items={this.moreMenuItems}></kritzel-more-menu>
         </div>
 
         <kritzel-dialog
