@@ -10,6 +10,7 @@ import { defineCustomElement as defineKritzelBackToContent } from 'kritzel-stenc
 import { defineCustomElement as defineKritzelDialog } from 'kritzel-stencil/dist/components/kritzel-dialog.js';
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelLineEndings } from 'kritzel-stencil/dist/components/kritzel-line-endings.js';
+import { defineCustomElement as defineKritzelMasterDetail } from 'kritzel-stencil/dist/components/kritzel-master-detail.js';
 import { defineCustomElement as defineKritzelMoreMenu } from 'kritzel-stencil/dist/components/kritzel-more-menu.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelSettings } from 'kritzel-stencil/dist/components/kritzel-settings.js';
@@ -147,6 +148,38 @@ import type { LineArrowConfig as IKritzelLineEndingsLineArrowConfig } from 'krit
 export declare interface KritzelLineEndings extends Components.KritzelLineEndings {
 
   valueChange: EventEmitter<CustomEvent<IKritzelLineEndingsLineArrowConfig>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelMasterDetail,
+  inputs: ['items', 'selectedItemId']
+})
+@Component({
+  selector: 'kritzel-master-detail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['items', 'selectedItemId'],
+  outputs: ['itemSelect'],
+})
+export class KritzelMasterDetail {
+  protected el: HTMLKritzelMasterDetailElement;
+  @Output() itemSelect = new EventEmitter<CustomEvent<[object Object]>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { IKritzelMasterDetailSelectEvent as IKritzelMasterDetailIKritzelMasterDetailSelectEvent } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelMasterDetail extends Components.KritzelMasterDetail {
+  /**
+   * Emitted when an item is selected
+   */
+  itemSelect: EventEmitter<CustomEvent<[object Object]>>;
 }
 
 

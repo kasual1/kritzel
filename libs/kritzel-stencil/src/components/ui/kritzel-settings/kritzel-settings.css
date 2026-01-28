@@ -2,6 +2,10 @@
   display: inline-flex;
 }
 
+kritzel-dialog {
+  --kritzel-dialog-body-padding: 0;
+}
+
 .settings-button {
   display: flex;
   align-items: center;
@@ -43,12 +47,21 @@
   background: #f5f5f5;
 }
 
-.confirm-button {
-  border: none;
-  background: #0066cc;
-  color: #fff;
+/* Settings Content */
+.settings-content {
+  padding: 0;
 }
 
-.confirm-button:hover {
-  background: #0052a3;
+.settings-content h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--kritzel-settings-content-heading-color, #333333);
+}
+
+.settings-content p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--kritzel-settings-content-text-color, #666666);
+  line-height: 1.5;
 }
