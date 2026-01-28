@@ -9,6 +9,7 @@ import { defineCustomElement as defineKritzelBackToContent } from '../../kritzel
 import { defineCustomElement as defineKritzelDialog } from '../../kritzel-stencil/dist/components/kritzel-dialog.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelLineEndings } from '../../kritzel-stencil/dist/components/kritzel-line-endings.js';
+import { defineCustomElement as defineKritzelMasterDetail } from '../../kritzel-stencil/dist/components/kritzel-master-detail.js';
 import { defineCustomElement as defineKritzelMoreMenu } from '../../kritzel-stencil/dist/components/kritzel-more-menu.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelSettings } from '../../kritzel-stencil/dist/components/kritzel-settings.js';
@@ -68,6 +69,15 @@ export const KritzelLineEndings: StencilVueComponent<JSX.KritzelLineEndings> = /
   'valueChange'
 ], [
   'valueChange'
+]);
+
+
+export const KritzelMasterDetail: StencilVueComponent<JSX.KritzelMasterDetail> = /*@__PURE__*/ defineContainer<JSX.KritzelMasterDetail>('kritzel-master-detail', defineKritzelMasterDetail, [
+  'items',
+  'selectedItemId',
+  'itemSelect'
+], [
+  'itemSelect'
 ]);
 
 

@@ -23,6 +23,7 @@ import { Element } from "@stencil/core";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
+import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
@@ -44,6 +45,7 @@ export { Element } from "@stencil/core";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
+export { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 export { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
@@ -339,6 +341,17 @@ export namespace Components {
          */
         "value": LineArrowConfig | undefined;
     }
+    interface KritzelMasterDetail {
+        /**
+          * Array of menu items to display in the master (left) panel
+          * @default []
+         */
+        "items": IKritzelMasterDetailItem[];
+        /**
+          * ID of the currently selected item
+         */
+        "selectedItemId": string;
+    }
     interface KritzelMenu {
         "items": IKritzelMenuItem[];
         /**
@@ -536,6 +549,10 @@ export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelLineEndingsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelLineEndingsElement;
+}
+export interface KritzelMasterDetailCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelMasterDetailElement;
 }
 export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -825,6 +842,23 @@ declare global {
         prototype: HTMLKritzelLineEndingsElement;
         new (): HTMLKritzelLineEndingsElement;
     };
+    interface HTMLKritzelMasterDetailElementEventMap {
+        "itemSelect": IKritzelMasterDetailSelectEvent;
+    }
+    interface HTMLKritzelMasterDetailElement extends Components.KritzelMasterDetail, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelMasterDetailElementEventMap>(type: K, listener: (this: HTMLKritzelMasterDetailElement, ev: KritzelMasterDetailCustomEvent<HTMLKritzelMasterDetailElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelMasterDetailElementEventMap>(type: K, listener: (this: HTMLKritzelMasterDetailElement, ev: KritzelMasterDetailCustomEvent<HTMLKritzelMasterDetailElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelMasterDetailElement: {
+        prototype: HTMLKritzelMasterDetailElement;
+        new (): HTMLKritzelMasterDetailElement;
+    };
     interface HTMLKritzelMenuElementEventMap {
         "itemSelect": IKritzelMenuItemSelectEvent;
         "itemSave": IKritzelMenuItem;
@@ -1072,6 +1106,7 @@ declare global {
         "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
         "kritzel-line-endings": HTMLKritzelLineEndingsElement;
+        "kritzel-master-detail": HTMLKritzelMasterDetailElement;
         "kritzel-menu": HTMLKritzelMenuElement;
         "kritzel-menu-item": HTMLKritzelMenuItemElement;
         "kritzel-more-menu": HTMLKritzelMoreMenuElement;
@@ -1359,6 +1394,21 @@ declare namespace LocalJSX {
          */
         "value"?: LineArrowConfig | undefined;
     }
+    interface KritzelMasterDetail {
+        /**
+          * Array of menu items to display in the master (left) panel
+          * @default []
+         */
+        "items"?: IKritzelMasterDetailItem[];
+        /**
+          * Emitted when an item is selected
+         */
+        "onItemSelect"?: (event: KritzelMasterDetailCustomEvent<IKritzelMasterDetailSelectEvent>) => void;
+        /**
+          * ID of the currently selected item
+         */
+        "selectedItemId"?: string;
+    }
     interface KritzelMenu {
         "items"?: IKritzelMenuItem[];
         "onClose"?: (event: KritzelMenuCustomEvent<void>) => void;
@@ -1555,6 +1605,7 @@ declare namespace LocalJSX {
         "kritzel-font-size": KritzelFontSize;
         "kritzel-icon": KritzelIcon;
         "kritzel-line-endings": KritzelLineEndings;
+        "kritzel-master-detail": KritzelMasterDetail;
         "kritzel-menu": KritzelMenu;
         "kritzel-menu-item": KritzelMenuItem;
         "kritzel-more-menu": KritzelMoreMenu;
@@ -1590,6 +1641,7 @@ declare module "@stencil/core" {
             "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
             "kritzel-line-endings": LocalJSX.KritzelLineEndings & JSXBase.HTMLAttributes<HTMLKritzelLineEndingsElement>;
+            "kritzel-master-detail": LocalJSX.KritzelMasterDetail & JSXBase.HTMLAttributes<HTMLKritzelMasterDetailElement>;
             "kritzel-menu": LocalJSX.KritzelMenu & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
             "kritzel-menu-item": LocalJSX.KritzelMenuItem & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
             "kritzel-more-menu": LocalJSX.KritzelMoreMenu & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
