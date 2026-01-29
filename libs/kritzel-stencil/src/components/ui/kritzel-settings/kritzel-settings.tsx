@@ -8,9 +8,6 @@ const DEFAULT_SCALE_MAX = 1000;
 
 const SETTINGS_CATEGORIES: IKritzelMasterDetailItem[] = [
   { id: 'general', label: 'General', icon: 'settings' },
-  { id: 'appearance', label: 'Appearance', icon: 'palette' },
-  { id: 'shortcuts', label: 'Shortcuts', icon: 'command' },
-  { id: 'export', label: 'Export', icon: 'download' },
   { id: 'about', label: 'About', icon: 'info' },
 ];
 
@@ -104,27 +101,6 @@ export class KritzelSettings {
                 onValueChange={this.handleScaleMaxChange}
               />
             </div>
-          </div>
-        );
-      case 'appearance':
-        return (
-          <div class="settings-content">
-            <h3>Appearance</h3>
-            <p>Customize the look and feel of the application.</p>
-          </div>
-        );
-      case 'shortcuts':
-        return (
-          <div class="settings-content">
-            <h3>Keyboard Shortcuts</h3>
-            <p>View and customize keyboard shortcuts.</p>
-          </div>
-        );
-      case 'export':
-        return (
-          <div class="settings-content">
-            <h3>Export Settings</h3>
-            <p>Configure export options and formats.</p>
           </div>
         );
       case 'about':
