@@ -27,14 +27,17 @@ export class KritzelBrushTool extends KritzelBaseTool {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         this._core.store.state.isDrawing = true;
-        const x = event.clientX - this._core.store.offsetX;
-        const y = event.clientY - this._core.store.offsetY;
+        const viewportScale = this._core.store.state.scale;
+        const lockScale = this._core.store.state.lockDrawingScale;
+        const divider = lockScale ? viewportScale : 1;
+        const x = (event.clientX - this._core.store.offsetX) / divider;
+        const y = (event.clientY - this._core.store.offsetY) / divider;
 
         const path = KritzelPath.create(this._core, {
           points: [[x, y]],
-          translateX: -this._core.store.state.translateX,
-          translateY: -this._core.store.state.translateY,
-          scale: this._core.store.state.scale,
+          translateX: -this._core.store.state.translateX / divider,
+          translateY: -this._core.store.state.translateY / divider,
+          scale: lockScale ? 1 : viewportScale,
           fill: this.color,
           strokeWidth: this.size,
           opacity: this.opacity,
@@ -50,16 +53,19 @@ export class KritzelBrushTool extends KritzelBaseTool {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 1) {
-        const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
-        const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
+        const viewportScale = this._core.store.state.scale;
+        const lockScale = this._core.store.state.lockDrawingScale;
+        const divider = lockScale ? viewportScale : 1;
+        const x = Math.round((activePointers[0].clientX - this._core.store.offsetX) / divider);
+        const y = Math.round((activePointers[0].clientY - this._core.store.offsetY) / divider);
 
         this._core.store.state.isDrawing = true;
 
         const path = KritzelPath.create(this._core, {
           points: [[x, y]],
-          translateX: -this._core.store.state.translateX,
-          translateY: -this._core.store.state.translateY,
-          scale: this._core.store.state.scale,
+          translateX: -this._core.store.state.translateX / divider,
+          translateY: -this._core.store.state.translateY / divider,
+          scale: lockScale ? 1 : viewportScale,
           fill: this.color,
           strokeWidth: this.size,
           opacity: this.opacity,
@@ -83,14 +89,17 @@ export class KritzelBrushTool extends KritzelBaseTool {
         const currentPath = matchingObjects.length > 0 ? (matchingObjects[0] as KritzelPath) : null;
 
         if (currentPath) {
-          const x = event.clientX - this._core.store.offsetX;
-          const y = event.clientY - this._core.store.offsetY;
+          const viewportScale = this._core.store.state.scale;
+          const lockScale = this._core.store.state.lockDrawingScale;
+          const divider = lockScale ? viewportScale : 1;
+          const x = (event.clientX - this._core.store.offsetX) / divider;
+          const y = (event.clientY - this._core.store.offsetY) / divider;
 
           const updatedPath = KritzelPath.create(this._core, {
             points: [...currentPath.points, [x, y]],
-            translateX: -this._core.store.state.translateX,
-            translateY: -this._core.store.state.translateY,
-            scale: this._core.store.state.scale,
+            translateX: -this._core.store.state.translateX / divider,
+            translateY: -this._core.store.state.translateY / divider,
+            scale: lockScale ? 1 : viewportScale,
             fill: this.color,
             strokeWidth: this.size,
             opacity: this.opacity,
@@ -114,14 +123,17 @@ export class KritzelBrushTool extends KritzelBaseTool {
           const currentPath = matchingObjects.length > 0 ? (matchingObjects[0] as KritzelPath) : null;
 
           if (currentPath) {
-            const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
-            const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
+            const viewportScale = this._core.store.state.scale;
+            const lockScale = this._core.store.state.lockDrawingScale;
+            const divider = lockScale ? viewportScale : 1;
+            const x = Math.round((activePointers[0].clientX - this._core.store.offsetX) / divider);
+            const y = Math.round((activePointers[0].clientY - this._core.store.offsetY) / divider);
 
             const updatedPath = KritzelPath.create(this._core, {
               points: [...currentPath.points, [x, y]],
-              translateX: -this._core.store.state.translateX,
-              translateY: -this._core.store.state.translateY,
-              scale: this._core.store.state.scale,
+              translateX: -this._core.store.state.translateX / divider,
+              translateY: -this._core.store.state.translateY / divider,
+              scale: lockScale ? 1 : viewportScale,
               fill: this.color,
               strokeWidth: this.size,
               opacity: this.opacity,

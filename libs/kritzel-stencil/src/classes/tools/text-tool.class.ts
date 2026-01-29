@@ -67,12 +67,15 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       const clientX = event.clientX - this._core.store.offsetX;
       const clientY = event.clientY - this._core.store.offsetY;
-      const text = KritzelText.create(this._core, this.fontSize, this.fontFamily);
+      const viewportScale = this._core.store.state.scale;
+      const lockScale = this._core.store.state.lockDrawingScale;
+      const divider = lockScale ? viewportScale : 1;
+      const text = KritzelText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
 
       text.fontColor = this.fontColor;
       text.opacity = this.opacity;
-      text.translateX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
-      text.translateY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
+      text.translateX = (clientX - this._core.store.state.translateX) / divider;
+      text.translateY = (clientY - this._core.store.state.translateY) / divider;
       text.zIndex = this._core.store.currentZIndex;
 
       this._core.store.state.objects.insert(text);
@@ -114,12 +117,15 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       const clientX = Math.round(activePointers[0].clientX - this._core.store.offsetX);
       const clientY = Math.round(activePointers[0].clientY - this._core.store.offsetY);
-      const text = KritzelText.create(this._core, this.fontSize, this.fontFamily);
+      const viewportScale = this._core.store.state.scale;
+      const lockScale = this._core.store.state.lockDrawingScale;
+      const divider = lockScale ? viewportScale : 1;
+      const text = KritzelText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
 
       text.fontColor = this.fontColor;
       text.opacity = this.opacity;
-      text.translateX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
-      text.translateY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
+      text.translateX = (clientX - this._core.store.state.translateX) / divider;
+      text.translateY = (clientY - this._core.store.state.translateY) / divider;
       text.zIndex = this._core.store.currentZIndex;
 
       this._core.store.state.objects.insert(text);

@@ -60,5 +60,6 @@ export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   cursor: {
     icon: 'default',
     iconActive: 'default'
-  }
+  },
+  lockDrawingScale: true
 };

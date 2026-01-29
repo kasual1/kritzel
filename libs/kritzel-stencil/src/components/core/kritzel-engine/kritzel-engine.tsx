@@ -81,6 +81,13 @@ export class KritzelEngine {
     this.core.cursorManager.setTargetElement(newValue || document.body);
   }
 
+  /** When true, objects are drawn at a fixed visual size regardless of zoom level */
+  @Prop() lockDrawingScale: boolean = false;
+  @Watch('lockDrawingScale')
+  onLockDrawingScaleChange(newValue: boolean) {
+    this.core.store.state.lockDrawingScale = newValue;
+  }
+
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
   @Event() activeToolChange: EventEmitter<KritzelBaseTool>;
   @Event() objectsSelectionChange: EventEmitter<void>;
@@ -491,6 +498,7 @@ export class KritzelEngine {
   componentWillLoad() {
     this.validateScaleMax(this.scaleMax);
     this.validateScaleMin(this.scaleMin);
+    this.core.store.state.lockDrawingScale = this.lockDrawingScale;
   }
 
   async componentDidLoad() {
