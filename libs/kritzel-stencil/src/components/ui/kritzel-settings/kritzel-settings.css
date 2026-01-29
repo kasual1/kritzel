@@ -67,3 +67,9 @@ kritzel-dialog {
   color: var(--kritzel-settings-content-text-color, #666666);
   line-height: 1.5;
 }
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

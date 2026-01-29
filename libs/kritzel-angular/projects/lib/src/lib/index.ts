@@ -8,6 +8,7 @@ export const DIRECTIVES = [
   d.KritzelLineEndings,
   d.KritzelMasterDetail,
   d.KritzelMoreMenu,
+  d.KritzelNumericInput,
   d.KritzelOpacitySlider,
   d.KritzelSettings,
   d.KritzelShapeFill
