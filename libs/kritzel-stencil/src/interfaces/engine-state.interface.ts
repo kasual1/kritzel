@@ -68,5 +68,7 @@ export interface KritzelEngineState {
     icon: string;
     iconActive?: string;
     rotation?: number;
-  }
+  },
+  /** When true, objects are drawn at a fixed visual size regardless of zoom level */
+  lockDrawingScale: boolean;
 }

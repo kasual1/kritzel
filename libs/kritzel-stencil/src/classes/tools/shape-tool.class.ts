@@ -159,16 +159,19 @@ export class KritzelShapeTool extends KritzelBaseTool {
    */
   private startDrawing(clientX: number, clientY: number): void {
     // Store screen coordinates (relative to host element)
-    this.startX = clientX - this._core.store.offsetX;
-    this.startY = clientY - this._core.store.offsetY;
+    const viewportScale = this._core.store.state.scale;
+    const lockScale = this._core.store.state.lockDrawingScale;
+    const divider = lockScale ? viewportScale : 1;
+    this.startX = (clientX - this._core.store.offsetX) / divider;
+    this.startY = (clientY - this._core.store.offsetY) / divider;
     this.isDrawing = true;
 
     // Create shape using screen coordinates, following Path/Line pattern
     this.currentShape = KritzelShape.create(this._core, {
       x: this.startX,
       y: this.startY,
-      translateX: -this._core.store.state.translateX,
-      translateY: -this._core.store.state.translateY,
+      translateX: -this._core.store.state.translateX / divider,
+      translateY: -this._core.store.state.translateY / divider,
       width: 1,
       height: 1,
       shapeType: this.shapeType,
@@ -179,6 +182,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
       fontSize: this.fontSize,
       fontFamily: this.fontFamily,
       fontColor: this.fontColor,
+      scale: lockScale ? 1 : viewportScale,
     });
 
     this._core.store.state.objects.insert(this.currentShape);
@@ -196,8 +200,11 @@ export class KritzelShapeTool extends KritzelBaseTool {
       return;
     }
 
-    const currentX = clientX - this._core.store.offsetX;
-    const currentY = clientY - this._core.store.offsetY;
+    const viewportScale = this._core.store.state.scale;
+    const lockScale = this._core.store.state.lockDrawingScale;
+    const divider = lockScale ? viewportScale : 1;
+    const currentX = (clientX - this._core.store.offsetX) / divider;
+    const currentY = (clientY - this._core.store.offsetY) / divider;
 
     // Calculate bounding box in screen coordinates
     const minX = Math.min(this.startX, currentX);
@@ -213,8 +220,8 @@ export class KritzelShapeTool extends KritzelBaseTool {
 
     // Recalculate world-space translateX/Y
     // Reset translateX/Y to initial value before updateDimensions
-    this.currentShape.translateX = -this._core.store.state.translateX;
-    this.currentShape.translateY = -this._core.store.state.translateY;
+    this.currentShape.translateX = -this._core.store.state.translateX / divider;
+    this.currentShape.translateY = -this._core.store.state.translateY / divider;
     this.currentShape.updateDimensions();
 
     this._core.store.state.objects.update(this.currentShape);

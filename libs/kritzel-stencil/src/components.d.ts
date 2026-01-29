@@ -259,6 +259,11 @@ export namespace Components {
         "globalContextMenuItems": ContextMenuItem[];
         "group": () => Promise<void>;
         "hideContextMenu": () => Promise<void>;
+        /**
+          * When true, objects are drawn at a fixed visual size regardless of zoom level
+          * @default false
+         */
+        "lockDrawingScale": boolean;
         "objectContextMenuItems": ContextMenuItem[];
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
@@ -1378,6 +1383,11 @@ declare namespace LocalJSX {
         "activeTool"?: KritzelTool;
         "cursorTarget"?: HTMLElement;
         "globalContextMenuItems"?: ContextMenuItem[];
+        /**
+          * When true, objects are drawn at a fixed visual size regardless of zoom level
+          * @default false
+         */
+        "lockDrawingScale"?: boolean;
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;

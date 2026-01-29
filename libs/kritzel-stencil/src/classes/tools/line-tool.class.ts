@@ -58,8 +58,11 @@ export class KritzelLineTool extends KritzelBaseTool {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         this._core.store.state.isDrawing = true;
-        const x = event.clientX - this._core.store.offsetX;
-        const y = event.clientY - this._core.store.offsetY;
+        const viewportScale = this._core.store.state.scale;
+        const lockScale = this._core.store.state.lockDrawingScale;
+        const divider = lockScale ? viewportScale : 1;
+        const x = (event.clientX - this._core.store.offsetX) / divider;
+        const y = (event.clientY - this._core.store.offsetY) / divider;
 
         this._startX = x;
         this._startY = y;
@@ -69,9 +72,9 @@ export class KritzelLineTool extends KritzelBaseTool {
           startY: y,
           endX: x,
           endY: y,
-          translateX: -this._core.store.state.translateX,
-          translateY: -this._core.store.state.translateY,
-          scale: this._core.store.state.scale,
+          translateX: -this._core.store.state.translateX / divider,
+          translateY: -this._core.store.state.translateY / divider,
+          scale: lockScale ? 1 : viewportScale,
           stroke: this.color,
           strokeWidth: this.size,
           opacity: this.opacity,
@@ -87,8 +90,11 @@ export class KritzelLineTool extends KritzelBaseTool {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 1) {
-        const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
-        const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
+        const viewportScale = this._core.store.state.scale;
+        const lockScale = this._core.store.state.lockDrawingScale;
+        const divider = lockScale ? viewportScale : 1;
+        const x = Math.round((activePointers[0].clientX - this._core.store.offsetX) / divider);
+        const y = Math.round((activePointers[0].clientY - this._core.store.offsetY) / divider);
 
         this._core.store.state.isDrawing = true;
         this._startX = x;
@@ -99,9 +105,9 @@ export class KritzelLineTool extends KritzelBaseTool {
           startY: y,
           endX: x,
           endY: y,
-          translateX: -this._core.store.state.translateX,
-          translateY: -this._core.store.state.translateY,
-          scale: this._core.store.state.scale,
+          translateX: -this._core.store.state.translateX / divider,
+          translateY: -this._core.store.state.translateY / divider,
+          scale: lockScale ? 1 : viewportScale,
           stroke: this.color,
           strokeWidth: this.size,
           opacity: this.opacity,
@@ -123,17 +129,20 @@ export class KritzelLineTool extends KritzelBaseTool {
       if (this._core.store.state.isDrawing) {
         const currentLine = this._core.store.currentLine;
         if (currentLine) {
-          const x = event.clientX - this._core.store.offsetX;
-          const y = event.clientY - this._core.store.offsetY;
+          const viewportScale = this._core.store.state.scale;
+          const lockScale = this._core.store.state.lockDrawingScale;
+          const divider = lockScale ? viewportScale : 1;
+          const x = (event.clientX - this._core.store.offsetX) / divider;
+          const y = (event.clientY - this._core.store.offsetY) / divider;
 
           const updatedLine = KritzelLine.create(this._core, {
             startX: this._startX,
             startY: this._startY,
             endX: x,
             endY: y,
-            translateX: -this._core.store.state.translateX,
-            translateY: -this._core.store.state.translateY,
-            scale: this._core.store.state.scale,
+            translateX: -this._core.store.state.translateX / divider,
+            translateY: -this._core.store.state.translateY / divider,
+            scale: lockScale ? 1 : viewportScale,
             stroke: this.color,
             strokeWidth: this.size,
             opacity: this.opacity,
@@ -155,17 +164,20 @@ export class KritzelLineTool extends KritzelBaseTool {
       if (activePointers.length === 1) {
         const currentLine = this._core.store.currentLine;
         if (currentLine) {
-          const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
-          const y = Math.round(activePointers[0].clientY - this._core.store.offsetY);
+          const viewportScale = this._core.store.state.scale;
+          const lockScale = this._core.store.state.lockDrawingScale;
+          const divider = lockScale ? viewportScale : 1;
+          const x = Math.round((activePointers[0].clientX - this._core.store.offsetX) / divider);
+          const y = Math.round((activePointers[0].clientY - this._core.store.offsetY) / divider);
 
           const updatedLine = KritzelLine.create(this._core, {
             startX: this._startX,
             startY: this._startY,
             endX: x,
             endY: y,
-            translateX: -this._core.store.state.translateX,
-            translateY: -this._core.store.state.translateY,
-            scale: this._core.store.state.scale,
+            translateX: -this._core.store.state.translateX / divider,
+            translateY: -this._core.store.state.translateY / divider,
+            scale: lockScale ? 1 : viewportScale,
             stroke: this.color,
             strokeWidth: this.size,
             opacity: this.opacity,

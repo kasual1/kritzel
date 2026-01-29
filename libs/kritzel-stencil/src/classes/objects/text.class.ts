@@ -82,7 +82,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
-  static override create(core: KritzelCore, fontSize?: number, fontFamily?: string): KritzelText {
+  static override create(core: KritzelCore, fontSize?: number, fontFamily?: string, scale?: number): KritzelText {
     const object = new KritzelText();
 
     object._core = core;
@@ -98,7 +98,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.initialWidth = object.width;
     object.initialHeight = object.height;
     object.scaleFactor = 1;
-    object.scale = object._core.store.state.scale;
+    object.scale = scale ?? object._core.store.state.scale;
     object.zIndex = core.store.currentZIndex;
     object.editor = object.createEditor();
 
