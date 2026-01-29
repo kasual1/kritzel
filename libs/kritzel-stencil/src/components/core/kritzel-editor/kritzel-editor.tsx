@@ -17,6 +17,7 @@ import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { DEFAULT_SHAPE_CONFIG } from '../../../configs/default-shape-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
+import { IKritzelSettings } from '../../../interfaces/settings.interface';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
@@ -30,8 +31,8 @@ import { KritzelUndoState } from '../../..';
 export class KritzelEditor {
   @Element() host!: HTMLElement;
 
-  @Prop() scaleMax: number = ABSOLUTE_SCALE_MAX;
-  @Prop() scaleMin: number = ABSOLUTE_SCALE_MIN;
+  @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
+  @Prop({ mutable: true }) scaleMin: number = ABSOLUTE_SCALE_MIN;
   @Prop() controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
@@ -258,10 +259,31 @@ export class KritzelEditor {
   controlsRef!: HTMLKritzelControlsElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
 
+  componentWillLoad() {
+    this.loadSettingsFromStorage();
+  }
+
   componentDidLoad() {
     this.registerCustomSvgIcons();
     this.listenForMobileKeyboard();
     this.setOsSpecificCssVariables();
+  }
+
+  private loadSettingsFromStorage(): void {
+    const stored = localStorage.getItem('kritzel-settings');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as Partial<IKritzelSettings>;
+        if (typeof parsed.scaleMin === 'number') {
+          this.scaleMin = parsed.scaleMin;
+        }
+        if (typeof parsed.scaleMax === 'number') {
+          this.scaleMax = parsed.scaleMax;
+        }
+      } catch {
+        // Invalid JSON, use prop defaults
+      }
+    }
   }
 
   async checkIsReady() {
@@ -299,6 +321,11 @@ export class KritzelEditor {
   handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
     const hasVisibleObjects = event.detail.length > 0;
     this.isBackToContentButtonVisible = !hasVisibleObjects;
+  }
+
+  handleSettingsChange(event: CustomEvent<IKritzelSettings>) {
+    this.scaleMin = event.detail.scaleMin;
+    this.scaleMax = event.detail.scaleMax;
   }
 
   private registerCustomSvgIcons() {
@@ -384,7 +411,9 @@ export class KritzelEditor {
         ></kritzel-controls>
 
         <div class="top-right-buttons">
-          <kritzel-settings></kritzel-settings>
+          <kritzel-settings
+            onSettingsChange={event => this.handleSettingsChange(event)}
+          ></kritzel-settings>
           
           <kritzel-more-menu></kritzel-more-menu>
         </div>
