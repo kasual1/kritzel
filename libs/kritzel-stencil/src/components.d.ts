@@ -25,6 +25,7 @@ import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
+import { IKritzelSettings } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
@@ -47,6 +48,7 @@ export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
 export { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
+export { IKritzelSettings } from "./interfaces/settings.interface";
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 export { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export namespace Components {
@@ -390,6 +392,33 @@ export namespace Components {
          */
         "offsetY": number;
     }
+    interface KritzelNumericInput {
+        /**
+          * Label text displayed above the input
+          * @default ''
+         */
+        "label": string;
+        /**
+          * Maximum allowed value
+          * @default Number.MAX_SAFE_INTEGER
+         */
+        "max": number;
+        /**
+          * Minimum allowed value
+          * @default Number.MIN_SAFE_INTEGER
+         */
+        "min": number;
+        /**
+          * Step increment for the input
+          * @default 1
+         */
+        "step": number;
+        /**
+          * Current numeric value
+          * @default 0
+         */
+        "value": number;
+    }
     interface KritzelOpacitySlider {
         /**
           * Maximum opacity value
@@ -566,6 +595,10 @@ export interface KritzelMoreMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelMoreMenuElement;
 }
+export interface KritzelNumericInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelNumericInputElement;
+}
 export interface KritzelOpacitySliderCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelOpacitySliderElement;
@@ -573,6 +606,10 @@ export interface KritzelOpacitySliderCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelPortalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelPortalElement;
+}
+export interface KritzelSettingsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelSettingsElement;
 }
 export interface KritzelShapeFillCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -919,6 +956,23 @@ declare global {
         prototype: HTMLKritzelMoreMenuElement;
         new (): HTMLKritzelMoreMenuElement;
     };
+    interface HTMLKritzelNumericInputElementEventMap {
+        "valueChange": number;
+    }
+    interface HTMLKritzelNumericInputElement extends Components.KritzelNumericInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelNumericInputElementEventMap>(type: K, listener: (this: HTMLKritzelNumericInputElement, ev: KritzelNumericInputCustomEvent<HTMLKritzelNumericInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelNumericInputElementEventMap>(type: K, listener: (this: HTMLKritzelNumericInputElement, ev: KritzelNumericInputCustomEvent<HTMLKritzelNumericInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelNumericInputElement: {
+        prototype: HTMLKritzelNumericInputElement;
+        new (): HTMLKritzelNumericInputElement;
+    };
     interface HTMLKritzelOpacitySliderElementEventMap {
         "valueChange": number;
     }
@@ -953,7 +1007,18 @@ declare global {
         prototype: HTMLKritzelPortalElement;
         new (): HTMLKritzelPortalElement;
     };
+    interface HTMLKritzelSettingsElementEventMap {
+        "settingsChange": IKritzelSettings;
+    }
     interface HTMLKritzelSettingsElement extends Components.KritzelSettings, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelSettingsElementEventMap>(type: K, listener: (this: HTMLKritzelSettingsElement, ev: KritzelSettingsCustomEvent<HTMLKritzelSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelSettingsElementEventMap>(type: K, listener: (this: HTMLKritzelSettingsElement, ev: KritzelSettingsCustomEvent<HTMLKritzelSettingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelSettingsElement: {
         prototype: HTMLKritzelSettingsElement;
@@ -1110,6 +1175,7 @@ declare global {
         "kritzel-menu": HTMLKritzelMenuElement;
         "kritzel-menu-item": HTMLKritzelMenuItemElement;
         "kritzel-more-menu": HTMLKritzelMoreMenuElement;
+        "kritzel-numeric-input": HTMLKritzelNumericInputElement;
         "kritzel-opacity-slider": HTMLKritzelOpacitySliderElement;
         "kritzel-portal": HTMLKritzelPortalElement;
         "kritzel-settings": HTMLKritzelSettingsElement;
@@ -1460,6 +1526,37 @@ declare namespace LocalJSX {
          */
         "onItemSelect"?: (event: KritzelMoreMenuCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => void;
     }
+    interface KritzelNumericInput {
+        /**
+          * Label text displayed above the input
+          * @default ''
+         */
+        "label"?: string;
+        /**
+          * Maximum allowed value
+          * @default Number.MAX_SAFE_INTEGER
+         */
+        "max"?: number;
+        /**
+          * Minimum allowed value
+          * @default Number.MIN_SAFE_INTEGER
+         */
+        "min"?: number;
+        /**
+          * Emitted when the value changes (after normalization)
+         */
+        "onValueChange"?: (event: KritzelNumericInputCustomEvent<number>) => void;
+        /**
+          * Step increment for the input
+          * @default 1
+         */
+        "step"?: number;
+        /**
+          * Current numeric value
+          * @default 0
+         */
+        "value"?: number;
+    }
     interface KritzelOpacitySlider {
         /**
           * Maximum opacity value
@@ -1499,6 +1596,10 @@ declare namespace LocalJSX {
         "onClose"?: (event: KritzelPortalCustomEvent<void>) => void;
     }
     interface KritzelSettings {
+        /**
+          * Emitted when settings change
+         */
+        "onSettingsChange"?: (event: KritzelSettingsCustomEvent<IKritzelSettings>) => void;
     }
     interface KritzelShapeFill {
         "onValueChange"?: (event: KritzelShapeFillCustomEvent<ShapeFillType>) => void;
@@ -1609,6 +1710,7 @@ declare namespace LocalJSX {
         "kritzel-menu": KritzelMenu;
         "kritzel-menu-item": KritzelMenuItem;
         "kritzel-more-menu": KritzelMoreMenu;
+        "kritzel-numeric-input": KritzelNumericInput;
         "kritzel-opacity-slider": KritzelOpacitySlider;
         "kritzel-portal": KritzelPortal;
         "kritzel-settings": KritzelSettings;
@@ -1645,6 +1747,7 @@ declare module "@stencil/core" {
             "kritzel-menu": LocalJSX.KritzelMenu & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
             "kritzel-menu-item": LocalJSX.KritzelMenuItem & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
             "kritzel-more-menu": LocalJSX.KritzelMoreMenu & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
+            "kritzel-numeric-input": LocalJSX.KritzelNumericInput & JSXBase.HTMLAttributes<HTMLKritzelNumericInputElement>;
             "kritzel-opacity-slider": LocalJSX.KritzelOpacitySlider & JSXBase.HTMLAttributes<HTMLKritzelOpacitySliderElement>;
             "kritzel-portal": LocalJSX.KritzelPortal & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
             "kritzel-settings": LocalJSX.KritzelSettings & JSXBase.HTMLAttributes<HTMLKritzelSettingsElement>;

@@ -11,6 +11,7 @@ import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stenci
 import { defineCustomElement as defineKritzelLineEndings } from '../../kritzel-stencil/dist/components/kritzel-line-endings.js';
 import { defineCustomElement as defineKritzelMasterDetail } from '../../kritzel-stencil/dist/components/kritzel-master-detail.js';
 import { defineCustomElement as defineKritzelMoreMenu } from '../../kritzel-stencil/dist/components/kritzel-more-menu.js';
+import { defineCustomElement as defineKritzelNumericInput } from '../../kritzel-stencil/dist/components/kritzel-numeric-input.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelSettings } from '../../kritzel-stencil/dist/components/kritzel-settings.js';
 import { defineCustomElement as defineKritzelShapeFill } from '../../kritzel-stencil/dist/components/kritzel-shape-fill.js';
@@ -92,6 +93,18 @@ export const KritzelMoreMenu: StencilVueComponent<JSX.KritzelMoreMenu> = /*@__PU
 ]);
 
 
+export const KritzelNumericInput: StencilVueComponent<JSX.KritzelNumericInput> = /*@__PURE__*/ defineContainer<JSX.KritzelNumericInput>('kritzel-numeric-input', defineKritzelNumericInput, [
+  'value',
+  'min',
+  'max',
+  'step',
+  'label',
+  'valueChange'
+], [
+  'valueChange'
+]);
+
+
 export const KritzelOpacitySlider: StencilVueComponent<JSX.KritzelOpacitySlider> = /*@__PURE__*/ defineContainer<JSX.KritzelOpacitySlider>('kritzel-opacity-slider', defineKritzelOpacitySlider, [
   'value',
   'min',
@@ -104,7 +117,11 @@ export const KritzelOpacitySlider: StencilVueComponent<JSX.KritzelOpacitySlider>
 ]);
 
 
-export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PURE__*/ defineContainer<JSX.KritzelSettings>('kritzel-settings', defineKritzelSettings);
+export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PURE__*/ defineContainer<JSX.KritzelSettings>('kritzel-settings', defineKritzelSettings, [
+  'settingsChange'
+], [
+  'settingsChange'
+]);
 
 
 export const KritzelShapeFill: StencilVueComponent<JSX.KritzelShapeFill> = /*@__PURE__*/ defineContainer<JSX.KritzelShapeFill>('kritzel-shape-fill', defineKritzelShapeFill, [

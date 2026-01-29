@@ -12,6 +12,7 @@ import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist
 import { defineCustomElement as defineKritzelLineEndings } from 'kritzel-stencil/dist/components/kritzel-line-endings.js';
 import { defineCustomElement as defineKritzelMasterDetail } from 'kritzel-stencil/dist/components/kritzel-master-detail.js';
 import { defineCustomElement as defineKritzelMoreMenu } from 'kritzel-stencil/dist/components/kritzel-more-menu.js';
+import { defineCustomElement as defineKritzelNumericInput } from 'kritzel-stencil/dist/components/kritzel-numeric-input.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelSettings } from 'kritzel-stencil/dist/components/kritzel-settings.js';
 import { defineCustomElement as defineKritzelShapeFill } from 'kritzel-stencil/dist/components/kritzel-shape-fill.js';
@@ -216,6 +217,36 @@ export declare interface KritzelMoreMenu extends Components.KritzelMoreMenu {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineKritzelNumericInput,
+  inputs: ['label', 'max', 'min', 'step', 'value']
+})
+@Component({
+  selector: 'kritzel-numeric-input',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['label', 'max', 'min', 'step', 'value'],
+  outputs: ['valueChange'],
+})
+export class KritzelNumericInput {
+  protected el: HTMLKritzelNumericInputElement;
+  @Output() valueChange = new EventEmitter<CustomEvent<number>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelNumericInput extends Components.KritzelNumericInput {
+  /**
+   * Emitted when the value changes (after normalization)
+   */
+  valueChange: EventEmitter<CustomEvent<number>>;
+}
+
+
+@ProxyCmp({
   defineCustomElementFn: defineKritzelOpacitySlider,
   inputs: ['max', 'min', 'previewColor', 'step', 'value']
 })
@@ -252,9 +283,11 @@ export declare interface KritzelOpacitySlider extends Components.KritzelOpacityS
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: [],
+  outputs: ['settingsChange'],
 })
 export class KritzelSettings {
   protected el: HTMLKritzelSettingsElement;
+  @Output() settingsChange = new EventEmitter<CustomEvent<[object Object]>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -262,7 +295,14 @@ export class KritzelSettings {
 }
 
 
-export declare interface KritzelSettings extends Components.KritzelSettings {}
+import type { IKritzelSettings as IKritzelSettingsIKritzelSettings } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelSettings extends Components.KritzelSettings {
+  /**
+   * Emitted when settings change
+   */
+  settingsChange: EventEmitter<CustomEvent<[object Object]>>;
+}
 
 
 @ProxyCmp({
