@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, Event, EventEmitter, State } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter, State, Watch } from '@stencil/core';
 
 @Component({
   tag: 'kritzel-numeric-input',
@@ -26,11 +26,12 @@ export class KritzelNumericInput {
 
   @State() private inputValue: string = '';
 
-  componentWillLoad(): void {
-    this.inputValue = String(this.value);
+  @Watch('value')
+  onValueChange(newValue: number): void {
+    this.inputValue = String(newValue);
   }
 
-  componentWillUpdate(): void {
+  componentWillLoad(): void {
     this.inputValue = String(this.value);
   }
 

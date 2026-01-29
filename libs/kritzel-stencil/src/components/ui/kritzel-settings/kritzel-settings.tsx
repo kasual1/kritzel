@@ -59,18 +59,12 @@ export class KritzelSettings {
   }
 
   private handleScaleMinChange = (event: CustomEvent<number>): void => {
-    let newValue = event.detail;
-    // Ensure scaleMin < scaleMax
-    newValue = Math.min(newValue, this.scaleMax - 0.0001);
-    this.scaleMin = newValue;
+    this.scaleMin = event.detail;
     this.saveSettings();
   };
 
   private handleScaleMaxChange = (event: CustomEvent<number>): void => {
-    let newValue = event.detail;
-    // Ensure scaleMax > scaleMin
-    newValue = Math.max(newValue, this.scaleMin + 0.0001);
-    this.scaleMax = newValue;
+    this.scaleMax = event.detail;
     this.saveSettings();
   };
 
