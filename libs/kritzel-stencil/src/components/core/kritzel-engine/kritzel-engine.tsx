@@ -81,6 +81,13 @@ export class KritzelEngine {
     this.core.cursorManager.setTargetElement(newValue || document.body);
   }
 
+  /** When true, objects are drawn at a fixed visual size regardless of zoom level */
+  @Prop() lockDrawingScale: boolean = true;
+  @Watch('lockDrawingScale')
+  onLockDrawingScaleChange(newValue: boolean) {
+    this.core.store.state.lockDrawingScale = newValue;
+  }
+
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
   @Event() activeToolChange: EventEmitter<KritzelBaseTool>;
   @Event() objectsSelectionChange: EventEmitter<void>;
@@ -88,6 +95,7 @@ export class KritzelEngine {
   @Event() longpress: EventEmitter<PointerEvent>;
   @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
   @Event() undoStateChange: EventEmitter<KritzelUndoState>;
+  @Event() objectsInViewportChange: EventEmitter<KritzelBaseObject<Element>[]>;
 
   @State() forceUpdate: number = 0;
 
@@ -423,6 +431,11 @@ export class KritzelEngine {
   }
 
   @Method()
+  async backToContent(): Promise<boolean> {
+    return this.viewport.centerFitNearestContent(20);
+  }
+
+  @Method()
   async getCopiedObjects(): Promise<KritzelBaseObject[]> {
     return this.core.store.state.copiedObjects || [];
   }
@@ -485,6 +498,7 @@ export class KritzelEngine {
   componentWillLoad() {
     this.validateScaleMax(this.scaleMax);
     this.validateScaleMin(this.scaleMin);
+    this.core.store.state.lockDrawingScale = this.lockDrawingScale;
   }
 
   async componentDidLoad() {
@@ -532,6 +546,11 @@ export class KritzelEngine {
       this._lastHadSelectionGroup = hasSelectionGroup;
       this.objectsSelectionChange.emit();
     }
+  }
+
+  emitObjectsInViewportChange() {
+    const objects = this.core.store.objectsInViewport;
+    this.objectsInViewportChange.emit(objects);
   }
 
   private _registerStateChangeListeners() {

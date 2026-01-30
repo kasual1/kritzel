@@ -120,6 +120,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       fontSize?: number;
       fontFamily?: string;
       fontColor?: string;
+      scale?: number;
     }
   ): KritzelShape {
     const object = new KritzelShape();
@@ -143,7 +144,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.fontColor = config?.fontColor ?? '#000000';
     object.backgroundColor = 'transparent';
     object.scaleFactor = 1;
-    object.scale = core.store.state.scale;
+    object.scale = config?.scale ?? core.store.state.scale;
     object.zIndex = core.store.currentZIndex;
     object.editor = object.createEditor();
 
