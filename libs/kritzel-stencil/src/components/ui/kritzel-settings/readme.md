@@ -24,3 +24,42 @@ A settings button component that opens a settings dialog when clicked.
 | `--kritzel-settings-button-active-background-color`| `#ebebeb`                   | Button active background color         |
 
 <!-- Auto Generated Below -->
+
+
+## Events
+
+| Event            | Description                  | Type                            |
+| ---------------- | ---------------------------- | ------------------------------- |
+| `settingsChange` | Emitted when settings change | `CustomEvent<IKritzelSettings>` |
+
+
+## Dependencies
+
+### Used by
+
+ - [kritzel-editor](../../core/kritzel-editor)
+
+### Depends on
+
+- [kritzel-numeric-input](../../shared/kritzel-numeric-input)
+- [kritzel-slide-toggle](../../shared/kritzel-slide-toggle)
+- [kritzel-icon](../../shared/kritzel-icon)
+- [kritzel-dialog](../../shared/kritzel-dialog)
+- [kritzel-master-detail](../../shared/kritzel-master-detail)
+
+### Graph
+```mermaid
+graph TD;
+  kritzel-settings --> kritzel-numeric-input
+  kritzel-settings --> kritzel-slide-toggle
+  kritzel-settings --> kritzel-icon
+  kritzel-settings --> kritzel-dialog
+  kritzel-settings --> kritzel-master-detail
+  kritzel-master-detail --> kritzel-icon
+  kritzel-editor --> kritzel-settings
+  style kritzel-settings fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

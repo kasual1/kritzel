@@ -27,12 +27,14 @@
 ### Used by
 
  - [kritzel-menu-item](../kritzel-menu-item)
+ - [kritzel-more-menu](../../ui/kritzel-more-menu)
  - [kritzel-split-button](../kritzel-split-button)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-menu-item --> kritzel-portal
+  kritzel-more-menu --> kritzel-portal
   kritzel-split-button --> kritzel-portal
   style kritzel-portal fill:#f9f,stroke:#333,stroke-width:4px
 ```

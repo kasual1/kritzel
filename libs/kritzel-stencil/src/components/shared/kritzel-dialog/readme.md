@@ -38,3 +38,83 @@ A generic, reusable dialog component for displaying modal content to the user.
 ```
 
 <!-- Auto Generated Below -->
+
+
+## Properties
+
+| Property             | Attribute              | Description                                                   | Type                                             | Default     |
+| -------------------- | ---------------------- | ------------------------------------------------------------- | ------------------------------------------------ | ----------- |
+| `autoFocus`          | `auto-focus`           | Whether to auto-focus the first focusable element when opened | `boolean`                                        | `true`      |
+| `closable`           | `closable`             | Whether to show the close button in the header                | `boolean`                                        | `true`      |
+| `closeOnBackdrop`    | `close-on-backdrop`    | Whether clicking the backdrop closes the dialog               | `boolean`                                        | `true`      |
+| `closeOnEscape`      | `close-on-escape`      | Whether pressing Escape closes the dialog                     | `boolean`                                        | `true`      |
+| `dialogTitle`        | `dialog-title`         | Optional title displayed in the header                        | `string`                                         | `undefined` |
+| `fullscreenOnMobile` | `fullscreen-on-mobile` | Whether to automatically go fullscreen on mobile viewports    | `boolean`                                        | `true`      |
+| `isOpen`             | `is-open`              | Whether the dialog is open                                    | `boolean`                                        | `false`     |
+| `size`               | `size`                 | Size of the dialog                                            | `"fullscreen" \| "large" \| "medium" \| "small"` | `'medium'`  |
+| `trapFocus`          | `trap-focus`           | Whether to trap focus within the dialog                       | `boolean`                                        | `true`      |
+
+
+## Events
+
+| Event         | Description                    | Type                                    |
+| ------------- | ------------------------------ | --------------------------------------- |
+| `dialogClose` | Emitted when the dialog closes | `CustomEvent<IKritzelDialogCloseEvent>` |
+| `dialogOpen`  | Emitted when the dialog opens  | `CustomEvent<void>`                     |
+
+
+## Methods
+
+### `close(reason?: KritzelDialogCloseReason) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name     | Type                                                         | Description |
+| -------- | ------------------------------------------------------------ | ----------- |
+| `reason` | `"backdrop" \| "escape" \| "close-button" \| "programmatic"` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `focusFirstElement() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `open() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
+## Dependencies
+
+### Used by
+
+ - [kritzel-settings](../../ui/kritzel-settings)
+
+### Graph
+```mermaid
+graph TD;
+  kritzel-settings --> kritzel-dialog
+  style kritzel-dialog fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*
