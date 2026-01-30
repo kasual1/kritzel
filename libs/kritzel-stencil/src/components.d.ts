@@ -11,6 +11,7 @@ import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelCore } from "./classes/core/core.class";
+import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelUndoState as KritzelUndoState1 } from ".";
@@ -18,10 +19,13 @@ import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
+import { Element } from "@stencil/core";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
+import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
+import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
@@ -30,6 +34,7 @@ export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelCore } from "./classes/core/core.class";
+export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelUndoState as KritzelUndoState1 } from ".";
@@ -37,13 +42,28 @@ export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
+export { Element } from "@stencil/core";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
+export { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
+export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 export { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export namespace Components {
+    interface KritzelBackToContent {
+        /**
+          * The text to display on the button
+          * @default 'Back to content'
+         */
+        "text": string;
+        /**
+          * Whether the button is visible
+          * @default false
+         */
+        "visible": boolean;
+    }
     interface KritzelBrushStyle {
         /**
           * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
@@ -109,6 +129,55 @@ export namespace Components {
     interface KritzelCursorTrail {
         "core": KritzelCore;
     }
+    interface KritzelDialog {
+        /**
+          * Whether to auto-focus the first focusable element when opened
+          * @default true
+         */
+        "autoFocus": boolean;
+        /**
+          * Whether to show the close button in the header
+          * @default true
+         */
+        "closable": boolean;
+        "close": (reason?: KritzelDialogCloseReason) => Promise<void>;
+        /**
+          * Whether clicking the backdrop closes the dialog
+          * @default true
+         */
+        "closeOnBackdrop": boolean;
+        /**
+          * Whether pressing Escape closes the dialog
+          * @default true
+         */
+        "closeOnEscape": boolean;
+        /**
+          * Optional title displayed in the header
+         */
+        "dialogTitle"?: string;
+        "focusFirstElement": () => Promise<void>;
+        /**
+          * Whether to automatically go fullscreen on mobile viewports
+          * @default true
+         */
+        "fullscreenOnMobile": boolean;
+        /**
+          * Whether the dialog is open
+          * @default false
+         */
+        "isOpen": boolean;
+        "open": () => Promise<void>;
+        /**
+          * Size of the dialog
+          * @default 'medium'
+         */
+        "size": 'small' | 'medium' | 'large' | 'fullscreen';
+        /**
+          * Whether to trap focus within the dialog
+          * @default true
+         */
+        "trapFocus": boolean;
+    }
     interface KritzelDropdown {
         /**
           * @default []
@@ -123,6 +192,7 @@ export namespace Components {
     }
     interface KritzelEditor {
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "backToContent": () => Promise<boolean>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "clearSelection": () => Promise<void>;
         /**
@@ -152,6 +222,10 @@ export namespace Components {
          */
         "isUtilityPanelVisible": boolean;
         /**
+          * @default true
+         */
+        "lockDrawingScale": boolean;
+        /**
           * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },     {       label: 'Group',       icon: 'group',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       action: () => this.engineRef.group(),     },     {       label: 'Ungroup',       icon: 'ungroup',       disabled: async () => {         const selectedObjects = await this.engineRef.getSelectedObjects();         return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');       },       action: () => this.engineRef.ungroup(),     },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
@@ -173,6 +247,7 @@ export namespace Components {
     interface KritzelEngine {
         "activeTool": KritzelTool;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "backToContent": () => Promise<boolean>;
         "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
@@ -193,6 +268,11 @@ export namespace Components {
         "globalContextMenuItems": ContextMenuItem[];
         "group": () => Promise<void>;
         "hideContextMenu": () => Promise<void>;
+        /**
+          * When true, objects are drawn at a fixed visual size regardless of zoom level
+          * @default true
+         */
+        "lockDrawingScale": boolean;
         "objectContextMenuItems": ContextMenuItem[];
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
@@ -277,6 +357,17 @@ export namespace Components {
          */
         "value": LineArrowConfig | undefined;
     }
+    interface KritzelMasterDetail {
+        /**
+          * Array of menu items to display in the master (left) panel
+          * @default []
+         */
+        "items": IKritzelMasterDetailItem[];
+        /**
+          * ID of the currently selected item
+         */
+        "selectedItemId": string;
+    }
     interface KritzelMenu {
         "items": IKritzelMenuItem[];
         /**
@@ -292,6 +383,55 @@ export namespace Components {
           * @default null
          */
         "parent": IKritzelMenuItem;
+    }
+    interface KritzelMoreMenu {
+        /**
+          * The icon to display on the button
+          * @default 'ellipsis-vertical'
+         */
+        "icon": string;
+        /**
+          * The size of the icon
+          * @default 24
+         */
+        "iconSize": number;
+        /**
+          * The menu items to display in the dropdown
+          * @default [     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'share',       label: 'Share',       icon: 'share',     },   ]
+         */
+        "items": IKritzelMenuItem[];
+        /**
+          * Offset Y for the portal positioning
+          * @default 4
+         */
+        "offsetY": number;
+    }
+    interface KritzelNumericInput {
+        /**
+          * Label text displayed above the input
+          * @default ''
+         */
+        "label": string;
+        /**
+          * Maximum allowed value
+          * @default Number.MAX_SAFE_INTEGER
+         */
+        "max": number;
+        /**
+          * Minimum allowed value
+          * @default Number.MIN_SAFE_INTEGER
+         */
+        "min": number;
+        /**
+          * Step increment for the input
+          * @default 1
+         */
+        "step": number;
+        /**
+          * Current numeric value
+          * @default 0
+         */
+        "value": number;
     }
     interface KritzelOpacitySlider {
         /**
@@ -329,12 +469,30 @@ export namespace Components {
         "offsetX": number;
         "offsetY": number;
     }
+    interface KritzelSettings {
+    }
     interface KritzelShapeFill {
         /**
           * Current fill type
           * @default 'transparent'
          */
         "value": ShapeFillType;
+    }
+    interface KritzelSlideToggle {
+        /**
+          * Whether the toggle is checked/on
+          * @default false
+         */
+        "checked": boolean;
+        /**
+          * Whether the toggle is disabled
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Label text for accessibility (screen readers)
+         */
+        "label"?: string;
     }
     interface KritzelSplitButton {
         /**
@@ -403,6 +561,10 @@ export namespace Components {
         "workspaces": KritzelWorkspace[];
     }
 }
+export interface KritzelBackToContentCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelBackToContentElement;
+}
 export interface KritzelBrushStyleCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelBrushStyleElement;
@@ -418,6 +580,10 @@ export interface KritzelContextMenuCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelControlsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelControlsElement;
+}
+export interface KritzelDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelDialogElement;
 }
 export interface KritzelDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -443,6 +609,10 @@ export interface KritzelLineEndingsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelLineEndingsElement;
 }
+export interface KritzelMasterDetailCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelMasterDetailElement;
+}
 export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelMenuElement;
@@ -450,6 +620,14 @@ export interface KritzelMenuCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelMenuItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelMenuItemElement;
+}
+export interface KritzelMoreMenuCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelMoreMenuElement;
+}
+export interface KritzelNumericInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelNumericInputElement;
 }
 export interface KritzelOpacitySliderCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -459,9 +637,17 @@ export interface KritzelPortalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelPortalElement;
 }
+export interface KritzelSettingsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelSettingsElement;
+}
 export interface KritzelShapeFillCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelShapeFillElement;
+}
+export interface KritzelSlideToggleCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelSlideToggleElement;
 }
 export interface KritzelSplitButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -488,6 +674,23 @@ export interface KritzelWorkspaceManagerCustomEvent<T> extends CustomEvent<T> {
     target: HTMLKritzelWorkspaceManagerElement;
 }
 declare global {
+    interface HTMLKritzelBackToContentElementEventMap {
+        "backToContent": void;
+    }
+    interface HTMLKritzelBackToContentElement extends Components.KritzelBackToContent, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelBackToContentElementEventMap>(type: K, listener: (this: HTMLKritzelBackToContentElement, ev: KritzelBackToContentCustomEvent<HTMLKritzelBackToContentElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelBackToContentElementEventMap>(type: K, listener: (this: HTMLKritzelBackToContentElement, ev: KritzelBackToContentCustomEvent<HTMLKritzelBackToContentElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelBackToContentElement: {
+        prototype: HTMLKritzelBackToContentElement;
+        new (): HTMLKritzelBackToContentElement;
+    };
     interface HTMLKritzelBrushStyleElementEventMap {
         "typeChange": 'pen' | 'highlighter';
     }
@@ -569,6 +772,24 @@ declare global {
         prototype: HTMLKritzelCursorTrailElement;
         new (): HTMLKritzelCursorTrailElement;
     };
+    interface HTMLKritzelDialogElementEventMap {
+        "dialogOpen": void;
+        "dialogClose": IKritzelDialogCloseEvent;
+    }
+    interface HTMLKritzelDialogElement extends Components.KritzelDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelDialogElementEventMap>(type: K, listener: (this: HTMLKritzelDialogElement, ev: KritzelDialogCustomEvent<HTMLKritzelDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelDialogElementEventMap>(type: K, listener: (this: HTMLKritzelDialogElement, ev: KritzelDialogCustomEvent<HTMLKritzelDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelDialogElement: {
+        prototype: HTMLKritzelDialogElement;
+        new (): HTMLKritzelDialogElement;
+    };
     interface HTMLKritzelDropdownElementEventMap {
         "valueChanged": string;
     }
@@ -613,6 +834,7 @@ declare global {
         "longpress": PointerEvent;
         "objectsChange": KritzelBaseObject[];
         "undoStateChange": KritzelUndoState;
+        "objectsInViewportChange": KritzelBaseObject<Element>[];
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -691,6 +913,23 @@ declare global {
         prototype: HTMLKritzelLineEndingsElement;
         new (): HTMLKritzelLineEndingsElement;
     };
+    interface HTMLKritzelMasterDetailElementEventMap {
+        "itemSelect": IKritzelMasterDetailSelectEvent;
+    }
+    interface HTMLKritzelMasterDetailElement extends Components.KritzelMasterDetail, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelMasterDetailElementEventMap>(type: K, listener: (this: HTMLKritzelMasterDetailElement, ev: KritzelMasterDetailCustomEvent<HTMLKritzelMasterDetailElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelMasterDetailElementEventMap>(type: K, listener: (this: HTMLKritzelMasterDetailElement, ev: KritzelMasterDetailCustomEvent<HTMLKritzelMasterDetailElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelMasterDetailElement: {
+        prototype: HTMLKritzelMasterDetailElement;
+        new (): HTMLKritzelMasterDetailElement;
+    };
     interface HTMLKritzelMenuElementEventMap {
         "itemSelect": IKritzelMenuItemSelectEvent;
         "itemSave": IKritzelMenuItem;
@@ -734,6 +973,40 @@ declare global {
         prototype: HTMLKritzelMenuItemElement;
         new (): HTMLKritzelMenuItemElement;
     };
+    interface HTMLKritzelMoreMenuElementEventMap {
+        "itemSelect": { item: IKritzelMenuItem; parent: IKritzelMenuItem };
+    }
+    interface HTMLKritzelMoreMenuElement extends Components.KritzelMoreMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelMoreMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMoreMenuElement, ev: KritzelMoreMenuCustomEvent<HTMLKritzelMoreMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelMoreMenuElementEventMap>(type: K, listener: (this: HTMLKritzelMoreMenuElement, ev: KritzelMoreMenuCustomEvent<HTMLKritzelMoreMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelMoreMenuElement: {
+        prototype: HTMLKritzelMoreMenuElement;
+        new (): HTMLKritzelMoreMenuElement;
+    };
+    interface HTMLKritzelNumericInputElementEventMap {
+        "valueChange": number;
+    }
+    interface HTMLKritzelNumericInputElement extends Components.KritzelNumericInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelNumericInputElementEventMap>(type: K, listener: (this: HTMLKritzelNumericInputElement, ev: KritzelNumericInputCustomEvent<HTMLKritzelNumericInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelNumericInputElementEventMap>(type: K, listener: (this: HTMLKritzelNumericInputElement, ev: KritzelNumericInputCustomEvent<HTMLKritzelNumericInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelNumericInputElement: {
+        prototype: HTMLKritzelNumericInputElement;
+        new (): HTMLKritzelNumericInputElement;
+    };
     interface HTMLKritzelOpacitySliderElementEventMap {
         "valueChange": number;
     }
@@ -768,6 +1041,23 @@ declare global {
         prototype: HTMLKritzelPortalElement;
         new (): HTMLKritzelPortalElement;
     };
+    interface HTMLKritzelSettingsElementEventMap {
+        "settingsChange": KritzelSettingsConfig;
+    }
+    interface HTMLKritzelSettingsElement extends Components.KritzelSettings, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelSettingsElementEventMap>(type: K, listener: (this: HTMLKritzelSettingsElement, ev: KritzelSettingsCustomEvent<HTMLKritzelSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelSettingsElementEventMap>(type: K, listener: (this: HTMLKritzelSettingsElement, ev: KritzelSettingsCustomEvent<HTMLKritzelSettingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelSettingsElement: {
+        prototype: HTMLKritzelSettingsElement;
+        new (): HTMLKritzelSettingsElement;
+    };
     interface HTMLKritzelShapeFillElementEventMap {
         "valueChange": ShapeFillType;
     }
@@ -784,6 +1074,23 @@ declare global {
     var HTMLKritzelShapeFillElement: {
         prototype: HTMLKritzelShapeFillElement;
         new (): HTMLKritzelShapeFillElement;
+    };
+    interface HTMLKritzelSlideToggleElementEventMap {
+        "checkedChange": boolean;
+    }
+    interface HTMLKritzelSlideToggleElement extends Components.KritzelSlideToggle, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelSlideToggleElementEventMap>(type: K, listener: (this: HTMLKritzelSlideToggleElement, ev: KritzelSlideToggleCustomEvent<HTMLKritzelSlideToggleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelSlideToggleElementEventMap>(type: K, listener: (this: HTMLKritzelSlideToggleElement, ev: KritzelSlideToggleCustomEvent<HTMLKritzelSlideToggleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelSlideToggleElement: {
+        prototype: HTMLKritzelSlideToggleElement;
+        new (): HTMLKritzelSlideToggleElement;
     };
     interface HTMLKritzelSplitButtonElementEventMap {
         "mainButtonClick": void;
@@ -899,12 +1206,14 @@ declare global {
         new (): HTMLKritzelWorkspaceManagerElement;
     };
     interface HTMLElementTagNameMap {
+        "kritzel-back-to-content": HTMLKritzelBackToContentElement;
         "kritzel-brush-style": HTMLKritzelBrushStyleElement;
         "kritzel-color": HTMLKritzelColorElement;
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
+        "kritzel-dialog": HTMLKritzelDialogElement;
         "kritzel-dropdown": HTMLKritzelDropdownElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
@@ -913,11 +1222,16 @@ declare global {
         "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
         "kritzel-line-endings": HTMLKritzelLineEndingsElement;
+        "kritzel-master-detail": HTMLKritzelMasterDetailElement;
         "kritzel-menu": HTMLKritzelMenuElement;
         "kritzel-menu-item": HTMLKritzelMenuItemElement;
+        "kritzel-more-menu": HTMLKritzelMoreMenuElement;
+        "kritzel-numeric-input": HTMLKritzelNumericInputElement;
         "kritzel-opacity-slider": HTMLKritzelOpacitySliderElement;
         "kritzel-portal": HTMLKritzelPortalElement;
+        "kritzel-settings": HTMLKritzelSettingsElement;
         "kritzel-shape-fill": HTMLKritzelShapeFillElement;
+        "kritzel-slide-toggle": HTMLKritzelSlideToggleElement;
         "kritzel-split-button": HTMLKritzelSplitButtonElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
         "kritzel-tool-config": HTMLKritzelToolConfigElement;
@@ -927,6 +1241,22 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface KritzelBackToContent {
+        /**
+          * Emitted when the button is clicked
+         */
+        "onBackToContent"?: (event: KritzelBackToContentCustomEvent<void>) => void;
+        /**
+          * The text to display on the button
+          * @default 'Back to content'
+         */
+        "text"?: string;
+        /**
+          * Whether the button is visible
+          * @default false
+         */
+        "visible"?: boolean;
+    }
     interface KritzelBrushStyle {
         /**
           * @default [     { value: 'pen', label: 'Pen' },     { value: 'highlighter', label: 'Highlighter' },   ]
@@ -996,6 +1326,60 @@ declare namespace LocalJSX {
     interface KritzelCursorTrail {
         "core"?: KritzelCore;
     }
+    interface KritzelDialog {
+        /**
+          * Whether to auto-focus the first focusable element when opened
+          * @default true
+         */
+        "autoFocus"?: boolean;
+        /**
+          * Whether to show the close button in the header
+          * @default true
+         */
+        "closable"?: boolean;
+        /**
+          * Whether clicking the backdrop closes the dialog
+          * @default true
+         */
+        "closeOnBackdrop"?: boolean;
+        /**
+          * Whether pressing Escape closes the dialog
+          * @default true
+         */
+        "closeOnEscape"?: boolean;
+        /**
+          * Optional title displayed in the header
+         */
+        "dialogTitle"?: string;
+        /**
+          * Whether to automatically go fullscreen on mobile viewports
+          * @default true
+         */
+        "fullscreenOnMobile"?: boolean;
+        /**
+          * Whether the dialog is open
+          * @default false
+         */
+        "isOpen"?: boolean;
+        /**
+          * Emitted when the dialog closes
+         */
+        "onDialogClose"?: (event: KritzelDialogCustomEvent<IKritzelDialogCloseEvent>) => void;
+        /**
+          * Emitted when the dialog opens
+         */
+        "onDialogOpen"?: (event: KritzelDialogCustomEvent<void>) => void;
+        /**
+          * Size of the dialog
+          * @default 'medium'
+         */
+        "size"?: 'small' | 'medium' | 'large' | 'fullscreen';
+        /**
+          * Whether to trap focus within the dialog
+          * @default true
+         */
+        "trapFocus"?: boolean;
+    }
     interface KritzelDropdown {
         "onValueChanged"?: (event: KritzelDropdownCustomEvent<string>) => void;
         /**
@@ -1031,6 +1415,10 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         /**
+          * @default true
+         */
+        "lockDrawingScale"?: boolean;
+        /**
           * @default [     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },     {       label: 'Group',       icon: 'group',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       action: () => this.engineRef.group(),     },     {       label: 'Ungroup',       icon: 'ungroup',       disabled: async () => {         const selectedObjects = await this.engineRef.getSelectedObjects();         return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');       },       action: () => this.engineRef.ungroup(),     },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
@@ -1051,11 +1439,17 @@ declare namespace LocalJSX {
         "activeTool"?: KritzelTool;
         "cursorTarget"?: HTMLElement;
         "globalContextMenuItems"?: ContextMenuItem[];
+        /**
+          * When true, objects are drawn at a fixed visual size regardless of zoom level
+          * @default true
+         */
+        "lockDrawingScale"?: boolean;
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
         "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
         "onObjectsChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject[]>) => void;
+        "onObjectsInViewportChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject<Element>[]>) => void;
         "onObjectsSelectionChange"?: (event: KritzelEngineCustomEvent<void>) => void;
         "onUndoStateChange"?: (event: KritzelEngineCustomEvent<KritzelUndoState>) => void;
         "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
@@ -1132,6 +1526,21 @@ declare namespace LocalJSX {
          */
         "value"?: LineArrowConfig | undefined;
     }
+    interface KritzelMasterDetail {
+        /**
+          * Array of menu items to display in the master (left) panel
+          * @default []
+         */
+        "items"?: IKritzelMasterDetailItem[];
+        /**
+          * Emitted when an item is selected
+         */
+        "onItemSelect"?: (event: KritzelMasterDetailCustomEvent<IKritzelMasterDetailSelectEvent>) => void;
+        /**
+          * ID of the currently selected item
+         */
+        "selectedItemId"?: string;
+    }
     interface KritzelMenu {
         "items"?: IKritzelMenuItem[];
         "onClose"?: (event: KritzelMenuCustomEvent<void>) => void;
@@ -1156,6 +1565,63 @@ declare namespace LocalJSX {
           * @default null
          */
         "parent"?: IKritzelMenuItem;
+    }
+    interface KritzelMoreMenu {
+        /**
+          * The icon to display on the button
+          * @default 'ellipsis-vertical'
+         */
+        "icon"?: string;
+        /**
+          * The size of the icon
+          * @default 24
+         */
+        "iconSize"?: number;
+        /**
+          * The menu items to display in the dropdown
+          * @default [     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'share',       label: 'Share',       icon: 'share',     },   ]
+         */
+        "items"?: IKritzelMenuItem[];
+        /**
+          * Offset Y for the portal positioning
+          * @default 4
+         */
+        "offsetY"?: number;
+        /**
+          * Emitted when a menu item is selected
+         */
+        "onItemSelect"?: (event: KritzelMoreMenuCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => void;
+    }
+    interface KritzelNumericInput {
+        /**
+          * Label text displayed above the input
+          * @default ''
+         */
+        "label"?: string;
+        /**
+          * Maximum allowed value
+          * @default Number.MAX_SAFE_INTEGER
+         */
+        "max"?: number;
+        /**
+          * Minimum allowed value
+          * @default Number.MIN_SAFE_INTEGER
+         */
+        "min"?: number;
+        /**
+          * Emitted when the value changes (after normalization)
+         */
+        "onValueChange"?: (event: KritzelNumericInputCustomEvent<number>) => void;
+        /**
+          * Step increment for the input
+          * @default 1
+         */
+        "step"?: number;
+        /**
+          * Current numeric value
+          * @default 0
+         */
+        "value"?: number;
     }
     interface KritzelOpacitySlider {
         /**
@@ -1195,6 +1661,12 @@ declare namespace LocalJSX {
         "offsetY"?: number;
         "onClose"?: (event: KritzelPortalCustomEvent<void>) => void;
     }
+    interface KritzelSettings {
+        /**
+          * Emitted when settings change
+         */
+        "onSettingsChange"?: (event: KritzelSettingsCustomEvent<KritzelSettingsConfig>) => void;
+    }
     interface KritzelShapeFill {
         "onValueChange"?: (event: KritzelShapeFillCustomEvent<ShapeFillType>) => void;
         /**
@@ -1202,6 +1674,26 @@ declare namespace LocalJSX {
           * @default 'transparent'
          */
         "value"?: ShapeFillType;
+    }
+    interface KritzelSlideToggle {
+        /**
+          * Whether the toggle is checked/on
+          * @default false
+         */
+        "checked"?: boolean;
+        /**
+          * Whether the toggle is disabled
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Label text for accessibility (screen readers)
+         */
+        "label"?: string;
+        /**
+          * Emitted when the toggle state changes
+         */
+        "onCheckedChange"?: (event: KritzelSlideToggleCustomEvent<boolean>) => void;
     }
     interface KritzelSplitButton {
         /**
@@ -1284,12 +1776,14 @@ declare namespace LocalJSX {
         "workspaces"?: KritzelWorkspace[];
     }
     interface IntrinsicElements {
+        "kritzel-back-to-content": KritzelBackToContent;
         "kritzel-brush-style": KritzelBrushStyle;
         "kritzel-color": KritzelColor;
         "kritzel-color-palette": KritzelColorPalette;
         "kritzel-context-menu": KritzelContextMenu;
         "kritzel-controls": KritzelControls;
         "kritzel-cursor-trail": KritzelCursorTrail;
+        "kritzel-dialog": KritzelDialog;
         "kritzel-dropdown": KritzelDropdown;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
@@ -1298,11 +1792,16 @@ declare namespace LocalJSX {
         "kritzel-font-size": KritzelFontSize;
         "kritzel-icon": KritzelIcon;
         "kritzel-line-endings": KritzelLineEndings;
+        "kritzel-master-detail": KritzelMasterDetail;
         "kritzel-menu": KritzelMenu;
         "kritzel-menu-item": KritzelMenuItem;
+        "kritzel-more-menu": KritzelMoreMenu;
+        "kritzel-numeric-input": KritzelNumericInput;
         "kritzel-opacity-slider": KritzelOpacitySlider;
         "kritzel-portal": KritzelPortal;
+        "kritzel-settings": KritzelSettings;
         "kritzel-shape-fill": KritzelShapeFill;
+        "kritzel-slide-toggle": KritzelSlideToggle;
         "kritzel-split-button": KritzelSplitButton;
         "kritzel-stroke-size": KritzelStrokeSize;
         "kritzel-tool-config": KritzelToolConfig;
@@ -1315,12 +1814,14 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "kritzel-back-to-content": LocalJSX.KritzelBackToContent & JSXBase.HTMLAttributes<HTMLKritzelBackToContentElement>;
             "kritzel-brush-style": LocalJSX.KritzelBrushStyle & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
             "kritzel-color": LocalJSX.KritzelColor & JSXBase.HTMLAttributes<HTMLKritzelColorElement>;
             "kritzel-color-palette": LocalJSX.KritzelColorPalette & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
             "kritzel-context-menu": LocalJSX.KritzelContextMenu & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
             "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
+            "kritzel-dialog": LocalJSX.KritzelDialog & JSXBase.HTMLAttributes<HTMLKritzelDialogElement>;
             "kritzel-dropdown": LocalJSX.KritzelDropdown & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
@@ -1329,11 +1830,16 @@ declare module "@stencil/core" {
             "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
             "kritzel-line-endings": LocalJSX.KritzelLineEndings & JSXBase.HTMLAttributes<HTMLKritzelLineEndingsElement>;
+            "kritzel-master-detail": LocalJSX.KritzelMasterDetail & JSXBase.HTMLAttributes<HTMLKritzelMasterDetailElement>;
             "kritzel-menu": LocalJSX.KritzelMenu & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
             "kritzel-menu-item": LocalJSX.KritzelMenuItem & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
+            "kritzel-more-menu": LocalJSX.KritzelMoreMenu & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
+            "kritzel-numeric-input": LocalJSX.KritzelNumericInput & JSXBase.HTMLAttributes<HTMLKritzelNumericInputElement>;
             "kritzel-opacity-slider": LocalJSX.KritzelOpacitySlider & JSXBase.HTMLAttributes<HTMLKritzelOpacitySliderElement>;
             "kritzel-portal": LocalJSX.KritzelPortal & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
+            "kritzel-settings": LocalJSX.KritzelSettings & JSXBase.HTMLAttributes<HTMLKritzelSettingsElement>;
             "kritzel-shape-fill": LocalJSX.KritzelShapeFill & JSXBase.HTMLAttributes<HTMLKritzelShapeFillElement>;
+            "kritzel-slide-toggle": LocalJSX.KritzelSlideToggle & JSXBase.HTMLAttributes<HTMLKritzelSlideToggleElement>;
             "kritzel-split-button": LocalJSX.KritzelSplitButton & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
             "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
             "kritzel-tool-config": LocalJSX.KritzelToolConfig & JSXBase.HTMLAttributes<HTMLKritzelToolConfigElement>;

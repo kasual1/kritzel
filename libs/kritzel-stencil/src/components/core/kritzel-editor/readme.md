@@ -14,6 +14,7 @@
 | `globalContextMenuItems` | --                         |             | `ContextMenuItem[]`       | `[     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },   ]`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `isControlsVisible`      | `is-controls-visible`      |             | `boolean`                 | `true`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `isUtilityPanelVisible`  | `is-utility-panel-visible` |             | `boolean`                 | `true`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `lockDrawingScale`       | `lock-drawing-scale`       |             | `boolean`                 | `true`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `objectContextMenuItems` | --                         |             | `ContextMenuItem[]`       | `[     { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },     { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },     { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },     {       label: 'Group',       icon: 'group',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       action: () => this.engineRef.group(),     },     {       label: 'Ungroup',       icon: 'ungroup',       disabled: async () => {         const selectedObjects = await this.engineRef.getSelectedObjects();         return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');       },       action: () => this.engineRef.ungroup(),     },   ]`                                                                                                                                                                                                                                                                                                                                                      |
 | `scaleMax`               | `scale-max`                |             | `number`                  | `ABSOLUTE_SCALE_MAX`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `scaleMin`               | `scale-min`                |             | `number`                  | `ABSOLUTE_SCALE_MIN`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -44,6 +45,16 @@
 #### Returns
 
 Type: `Promise<T>`
+
+
+
+### `backToContent() => Promise<boolean>`
+
+
+
+#### Returns
+
+Type: `Promise<boolean>`
 
 
 
@@ -234,14 +245,20 @@ Type: `Promise<void>`
 
 - [kritzel-workspace-manager](../../ui/kritzel-workspace-manager)
 - [kritzel-engine](../kritzel-engine)
+- [kritzel-back-to-content](../../ui/kritzel-back-to-content)
 - [kritzel-controls](../../ui/kritzel-controls)
+- [kritzel-settings](../../ui/kritzel-settings)
+- [kritzel-more-menu](../../ui/kritzel-more-menu)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-editor --> kritzel-workspace-manager
   kritzel-editor --> kritzel-engine
+  kritzel-editor --> kritzel-back-to-content
   kritzel-editor --> kritzel-controls
+  kritzel-editor --> kritzel-settings
+  kritzel-editor --> kritzel-more-menu
   kritzel-workspace-manager --> kritzel-split-button
   kritzel-split-button --> kritzel-icon
   kritzel-split-button --> kritzel-portal
@@ -253,6 +270,7 @@ graph TD;
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-cursor-trail
   kritzel-context-menu --> kritzel-icon
+  kritzel-back-to-content --> kritzel-icon
   kritzel-controls --> kritzel-utility-panel
   kritzel-controls --> kritzel-icon
   kritzel-controls --> kritzel-tooltip
@@ -272,6 +290,15 @@ graph TD;
   kritzel-font-size --> kritzel-font
   kritzel-font-family --> kritzel-dropdown
   kritzel-color-palette --> kritzel-color
+  kritzel-settings --> kritzel-numeric-input
+  kritzel-settings --> kritzel-slide-toggle
+  kritzel-settings --> kritzel-icon
+  kritzel-settings --> kritzel-dialog
+  kritzel-settings --> kritzel-master-detail
+  kritzel-master-detail --> kritzel-icon
+  kritzel-more-menu --> kritzel-icon
+  kritzel-more-menu --> kritzel-portal
+  kritzel-more-menu --> kritzel-menu
   style kritzel-editor fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -32,3 +32,36 @@ kritzel-controls {
 kritzel-controls.keyboard-open {
   transform: var(--kritzel-editor-controls-transform, translateY(300%));
 }
+
+.top-right-buttons {
+  position: absolute;
+  top: var(--kritzel-editor-top-right-buttons-top, 14px);
+  right: var(--kritzel-editor-top-right-buttons-right, 14px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-right-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border: var(--kritzel-split-button-border, 1px solid #ebebeb);
+  border-radius: var(--kritzel-split-button-border-radius, 12px);
+  background-color: var(--kritzel-split-button-background-color, #ffffff);
+  cursor: var(--kritzel-pointer-cursor, pointer);
+  box-shadow: var(--kritzel-split-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  transition: background-color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.top-right-button:hover {
+  background-color: #f5f5f5;
+}
+
+.top-right-button:active {
+  background-color: #ebebeb;
+}

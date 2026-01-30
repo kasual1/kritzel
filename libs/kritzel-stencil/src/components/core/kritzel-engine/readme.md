@@ -7,29 +7,31 @@
 
 ## Properties
 
-| Property                 | Attribute   | Description | Type                | Default              |
-| ------------------------ | ----------- | ----------- | ------------------- | -------------------- |
-| `activeTool`             | --          |             | `KritzelTool`       | `undefined`          |
-| `cursorTarget`           | --          |             | `HTMLElement`       | `undefined`          |
-| `globalContextMenuItems` | --          |             | `ContextMenuItem[]` | `undefined`          |
-| `objectContextMenuItems` | --          |             | `ContextMenuItem[]` | `undefined`          |
-| `scaleMax`               | `scale-max` |             | `number`            | `ABSOLUTE_SCALE_MAX` |
-| `scaleMin`               | `scale-min` |             | `number`            | `ABSOLUTE_SCALE_MIN` |
-| `syncConfig`             | --          |             | `KritzelSyncConfig` | `undefined`          |
-| `workspace`              | --          |             | `KritzelWorkspace`  | `undefined`          |
+| Property                 | Attribute            | Description                                                                  | Type                | Default              |
+| ------------------------ | -------------------- | ---------------------------------------------------------------------------- | ------------------- | -------------------- |
+| `activeTool`             | --                   |                                                                              | `KritzelTool`       | `undefined`          |
+| `cursorTarget`           | --                   |                                                                              | `HTMLElement`       | `undefined`          |
+| `globalContextMenuItems` | --                   |                                                                              | `ContextMenuItem[]` | `undefined`          |
+| `lockDrawingScale`       | `lock-drawing-scale` | When true, objects are drawn at a fixed visual size regardless of zoom level | `boolean`           | `true`               |
+| `objectContextMenuItems` | --                   |                                                                              | `ContextMenuItem[]` | `undefined`          |
+| `scaleMax`               | `scale-max`          |                                                                              | `number`            | `ABSOLUTE_SCALE_MAX` |
+| `scaleMin`               | `scale-min`          |                                                                              | `number`            | `ABSOLUTE_SCALE_MIN` |
+| `syncConfig`             | --                   |                                                                              | `KritzelSyncConfig` | `undefined`          |
+| `workspace`              | --                   |                                                                              | `KritzelWorkspace`  | `undefined`          |
 
 
 ## Events
 
-| Event                    | Description | Type                                                          |
-| ------------------------ | ----------- | ------------------------------------------------------------- |
-| `activeToolChange`       |             | `CustomEvent<KritzelBaseTool>`                                |
-| `isEngineReady`          |             | `CustomEvent<KritzelEngineState>`                             |
-| `longpress`              |             | `CustomEvent<PointerEvent>`                                   |
-| `objectsChange`          |             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsSelectionChange` |             | `CustomEvent<void>`                                           |
-| `undoStateChange`        |             | `CustomEvent<KritzelUndoState>`                               |
-| `workspacesChange`       |             | `CustomEvent<KritzelWorkspace[]>`                             |
+| Event                     | Description | Type                                                          |
+| ------------------------- | ----------- | ------------------------------------------------------------- |
+| `activeToolChange`        |             | `CustomEvent<KritzelBaseTool>`                                |
+| `isEngineReady`           |             | `CustomEvent<KritzelEngineState>`                             |
+| `longpress`               |             | `CustomEvent<PointerEvent>`                                   |
+| `objectsChange`           |             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsInViewportChange` |             | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
+| `objectsSelectionChange`  |             | `CustomEvent<void>`                                           |
+| `undoStateChange`         |             | `CustomEvent<KritzelUndoState>`                               |
+| `workspacesChange`        |             | `CustomEvent<KritzelWorkspace[]>`                             |
 
 
 ## Methods
@@ -47,6 +49,16 @@
 #### Returns
 
 Type: `Promise<T>`
+
+
+
+### `backToContent() => Promise<boolean>`
+
+
+
+#### Returns
+
+Type: `Promise<boolean>`
 
 
 

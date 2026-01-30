@@ -17,6 +17,7 @@ import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { DEFAULT_SHAPE_CONFIG } from '../../../configs/default-shape-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
+import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
@@ -30,8 +31,9 @@ import { KritzelUndoState } from '../../..';
 export class KritzelEditor {
   @Element() host!: HTMLElement;
 
-  @Prop() scaleMax: number = ABSOLUTE_SCALE_MAX;
-  @Prop() scaleMin: number = ABSOLUTE_SCALE_MIN;
+  @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
+  @Prop({ mutable: true }) scaleMin: number = ABSOLUTE_SCALE_MIN;
+  @Prop({ mutable: true }) lockDrawingScale: boolean = true;
   @Prop() controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
@@ -145,6 +147,7 @@ export class KritzelEditor {
   @State() activeWorkspace: KritzelWorkspace;
   @State() isVirtualKeyboardOpen: boolean = false;
   @State() undoState: KritzelUndoState = null;
+  @State() isBackToContentButtonVisible: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -223,6 +226,11 @@ export class KritzelEditor {
   }
 
   @Method()
+  async backToContent(): Promise<boolean> {
+    return this.engineRef.backToContent();
+  }
+
+  @Method()
   async createWorkspace(name: string, viewport?: { translateX: number; translateY: number; scale: number }): Promise<KritzelWorkspace | null> {
     const workspace = new KritzelWorkspace(`workspace-${Date.now()}`, name, viewport);
     return this.engineRef.createWorkspace(workspace);
@@ -252,10 +260,34 @@ export class KritzelEditor {
   controlsRef!: HTMLKritzelControlsElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
 
+  componentWillLoad() {
+    this.loadSettingsFromStorage();
+  }
+
   componentDidLoad() {
     this.registerCustomSvgIcons();
     this.listenForMobileKeyboard();
     this.setOsSpecificCssVariables();
+  }
+
+  private loadSettingsFromStorage(): void {
+    const stored = localStorage.getItem('kritzel-settings');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as Partial<KritzelSettingsConfig>;
+        if (typeof parsed.scaleMin === 'number') {
+          this.scaleMin = parsed.scaleMin;
+        }
+        if (typeof parsed.scaleMax === 'number') {
+          this.scaleMax = parsed.scaleMax;
+        }
+        if (typeof parsed.lockDrawingScale === 'boolean') {
+          this.lockDrawingScale = parsed.lockDrawingScale;
+        }
+      } catch {
+        // Invalid JSON, use prop defaults
+      }
+    }
   }
 
   async checkIsReady() {
@@ -288,6 +320,17 @@ export class KritzelEditor {
   handleUndoStateChange(event: CustomEvent<KritzelUndoState>) {
     this.undoStateChange.emit(event.detail);
     this.undoState = event.detail;
+  }
+
+  handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
+    const hasVisibleObjects = event.detail.length > 0;
+    this.isBackToContentButtonVisible = !hasVisibleObjects;
+  }
+
+  handleSettingsChange(event: CustomEvent<KritzelSettingsConfig>) {
+    this.scaleMin = event.detail.scaleMin;
+    this.scaleMax = event.detail.scaleMax;
+    this.lockDrawingScale = event.detail.lockDrawingScale;
   }
 
   private registerCustomSvgIcons() {
@@ -347,6 +390,7 @@ export class KritzelEditor {
           workspace={this.activeWorkspace}
           syncConfig={this.syncConfig}
           scaleMax={this.scaleMax}
+          lockDrawingScale={this.lockDrawingScale}
           scaleMin={this.scaleMin}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
@@ -354,7 +398,13 @@ export class KritzelEditor {
           onWorkspacesChange={event => this.handleWorkspacesChange(event)}
           onObjectsChange={event => this.handleObjectsChange(event)}
           onUndoStateChange={event => this.handleUndoStateChange(event)}
+          onObjectsInViewportChange={event => this.handleObjectsInViewportChange(event)}
         ></kritzel-engine>
+
+        <kritzel-back-to-content
+          visible={this.isBackToContentButtonVisible}
+          onBackToContent={() => this.backToContent()}
+        ></kritzel-back-to-content>
 
         <kritzel-controls
           class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
@@ -365,6 +415,14 @@ export class KritzelEditor {
           undoState={this.undoState}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
+
+        <div class="top-right-buttons">
+          <kritzel-settings
+            onSettingsChange={event => this.handleSettingsChange(event)}
+          ></kritzel-settings>
+          
+          <kritzel-more-menu></kritzel-more-menu>
+        </div>
       </Host>
     );
   }

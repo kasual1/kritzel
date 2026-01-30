@@ -1,0 +1,102 @@
+:host {
+  display: inline-flex;
+}
+
+kritzel-dialog {
+  --kritzel-dialog-body-padding: 0;
+  --kritzel-dialog-width-large: 800px;
+  --kritzel-dialog-height-large: 500px;
+}
+
+.settings-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--kritzel-settings-button-width, 50px);
+  height: var(--kritzel-settings-button-height, 50px);
+  padding: 0;
+  border: var(--kritzel-settings-button-border, 1px solid #ebebeb);
+  border-radius: var(--kritzel-settings-button-border-radius, 12px);
+  background-color: var(--kritzel-settings-button-background-color, #ffffff);
+  cursor: var(--kritzel-pointer-cursor, pointer);
+  box-shadow: var(--kritzel-settings-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  transition: background-color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.settings-button:hover {
+  background-color: var(--kritzel-settings-button-hover-background-color, #f5f5f5);
+}
+
+.settings-button:active {
+  background-color: var(--kritzel-settings-button-active-background-color, #ebebeb);
+}
+
+.footer-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cancel-button {
+  border: 1px solid #ebebeb;
+  background: #fff;
+  color: inherit;
+}
+
+.cancel-button:hover {
+  background: #f5f5f5;
+}
+
+/* Settings Content */
+.settings-content {
+  padding: 0;
+}
+
+.settings-content h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--kritzel-settings-content-heading-color, #333333);
+}
+
+.settings-content p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--kritzel-settings-content-text-color, #666666);
+  line-height: 1.5;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.settings-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--kritzel-settings-label-color, #333333);
+  margin: 0;
+}
+
+.settings-description {
+  font-size: 12px;
+  color: var(--kritzel-settings-description-color, #888888);
+  margin: 0;
+  line-height: 1.4;
+}
