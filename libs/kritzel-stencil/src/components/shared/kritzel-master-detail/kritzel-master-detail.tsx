@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, Host, h, Prop, State } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Host, h, Prop, State, Watch } from '@stencil/core';
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '../../../interfaces/master-detail.interface';
 
 @Component({
@@ -19,8 +19,16 @@ export class KritzelMasterDetail {
   @Event() itemSelect: EventEmitter<IKritzelMasterDetailSelectEvent>;
 
   @State() focusedIndex: number = -1;
+  @State() showMobileDetail: boolean = false;
 
   private tabRefs: HTMLButtonElement[] = [];
+
+  @Watch('selectedItemId')
+  watchSelectedItemId(newValue: string, oldValue: string) {
+    if (newValue !== oldValue) {
+      this.showMobileDetail = true;
+    }
+  }
 
   componentWillRender() {
     this.tabRefs = [];
@@ -29,6 +37,11 @@ export class KritzelMasterDetail {
   private handleItemClick = (item: IKritzelMasterDetailItem) => {
     if (item.disabled) return;
     this.itemSelect.emit({ item });
+    this.showMobileDetail = true;
+  };
+
+  private handleBackClick = () => {
+    this.showMobileDetail = false;
   };
 
   private handleKeyDown = (event: KeyboardEvent, item: IKritzelMasterDetailItem, index: number) => {
@@ -110,7 +123,10 @@ export class KritzelMasterDetail {
 
     return (
       <Host>
-        <div class="master-detail-container">
+        <div class={{
+          'master-detail-container': true,
+          'is-mobile-detail-visible': this.showMobileDetail,
+        }}>
           <nav
             class="master-menu"
             role="tablist"
@@ -143,6 +159,11 @@ export class KritzelMasterDetail {
                   <kritzel-icon name={item.icon} size={20} class="menu-item-icon"></kritzel-icon>
                 )}
                 <span class="menu-item-label">{item.label}</span>
+                <span class="menu-item-chevron" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                </span>
               </button>
             ))}
           </nav>
@@ -154,6 +175,10 @@ export class KritzelMasterDetail {
             aria-labelledby={selectedTabId}
             tabIndex={0}
           >
+            <button class="mobile-back-button" onClick={this.handleBackClick} aria-label="Back to menu">
+              <kritzel-icon name="chevron-left" size={20} class="mobile-back-icon"></kritzel-icon>
+              Back
+            </button>
             <slot></slot>
           </div>
         </div>
