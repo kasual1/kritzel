@@ -157,6 +157,11 @@ export namespace Components {
         "dialogTitle"?: string;
         "focusFirstElement": () => Promise<void>;
         /**
+          * Whether to automatically go fullscreen on mobile viewports
+          * @default true
+         */
+        "fullscreenOnMobile": boolean;
+        /**
           * Whether the dialog is open
           * @default false
          */
@@ -166,7 +171,7 @@ export namespace Components {
           * Size of the dialog
           * @default 'medium'
          */
-        "size": 'small' | 'medium' | 'large';
+        "size": 'small' | 'medium' | 'large' | 'fullscreen';
         /**
           * Whether to trap focus within the dialog
           * @default true
@@ -1347,6 +1352,11 @@ declare namespace LocalJSX {
          */
         "dialogTitle"?: string;
         /**
+          * Whether to automatically go fullscreen on mobile viewports
+          * @default true
+         */
+        "fullscreenOnMobile"?: boolean;
+        /**
           * Whether the dialog is open
           * @default false
          */
@@ -1363,7 +1373,7 @@ declare namespace LocalJSX {
           * Size of the dialog
           * @default 'medium'
          */
-        "size"?: 'small' | 'medium' | 'large';
+        "size"?: 'small' | 'medium' | 'large' | 'fullscreen';
         /**
           * Whether to trap focus within the dialog
           * @default true

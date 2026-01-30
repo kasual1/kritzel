@@ -36,6 +36,7 @@ export const KritzelDialog: StencilVueComponent<JSX.KritzelDialog> = /*@__PURE__
   'autoFocus',
   'trapFocus',
   'size',
+  'fullscreenOnMobile',
   'dialogOpen',
   'dialogClose'
 ], [

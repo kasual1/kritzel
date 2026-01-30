@@ -49,7 +49,7 @@ export declare interface KritzelBackToContent extends Components.KritzelBackToCo
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelDialog,
-  inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'dialogTitle', 'isOpen', 'size', 'trapFocus'],
+  inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'dialogTitle', 'fullscreenOnMobile', 'isOpen', 'size', 'trapFocus'],
   methods: ['open', 'close', 'focusFirstElement']
 })
 @Component({
@@ -57,7 +57,7 @@ export declare interface KritzelBackToContent extends Components.KritzelBackToCo
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'dialogTitle', 'isOpen', 'size', 'trapFocus'],
+  inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'dialogTitle', 'fullscreenOnMobile', 'isOpen', 'size', 'trapFocus'],
   outputs: ['dialogOpen', 'dialogClose'],
 })
 export class KritzelDialog {

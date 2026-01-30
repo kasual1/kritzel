@@ -61,6 +61,25 @@
   height: var(--kritzel-dialog-height-large, auto);
 }
 
+.dialog-content.size-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  border-radius: 0;
+}
+
+/* Responsive: auto fullscreen on mobile when enabled */
+@media (max-width: 576px) {
+  .dialog-content.fullscreen-on-mobile {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
+
 .dialog-header {
   display: flex;
   align-items: center;
