@@ -32,7 +32,10 @@ export class KritzelDialog {
   @Prop() trapFocus: boolean = true;
 
   /** Size of the dialog */
-  @Prop() size: 'small' | 'medium' | 'large' = 'medium';
+  @Prop() size: 'small' | 'medium' | 'large' | 'fullscreen' = 'medium';
+
+  /** Whether to automatically go fullscreen on mobile viewports */
+  @Prop() fullscreenOnMobile: boolean = true;
 
   @State() isAnimating: boolean = false;
 
@@ -280,6 +283,7 @@ export class KritzelDialog {
               'dialog-content': true,
               'is-animating': this.isAnimating,
               [`size-${this.size}`]: true,
+              'fullscreen-on-mobile': this.fullscreenOnMobile,
             }}
             role="dialog"
             aria-modal="true"

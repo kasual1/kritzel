@@ -1,6 +1,7 @@
 import { Component, Host, h, State, Event, EventEmitter } from '@stencil/core';
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '../../../interfaces/master-detail.interface';
 import { IKritzelSettings } from '../../../interfaces/settings.interface';
+import { KRITZEL_VERSION } from '../../../constants/version';
 
 const SETTINGS_STORAGE_KEY = 'kritzel-settings';
 const DEFAULT_SCALE_MIN = 0.0001;
@@ -140,6 +141,7 @@ export class KritzelSettings {
           <div class="settings-content">
             <h3>About</h3>
             <p>Kritzel - A drawing application</p>
+            <p class="version-info">Version {KRITZEL_VERSION}</p>
           </div>
         );
       default:
