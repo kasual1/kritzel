@@ -97,9 +97,13 @@
 /* Detail Panel (Right Panel) */
 .detail-panel {
   flex: 1;
+  min-height: 0;
   padding: var(--kritzel-master-detail-detail-padding, 16px);
   background-color: var(--kritzel-master-detail-detail-background-color, #ffffff);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: #ebebeb transparent;
+  scrollbar-width: thin;
 }
 
 .detail-panel:focus {
@@ -109,4 +113,81 @@
 .detail-panel:focus-visible {
   outline: var(--kritzel-master-detail-detail-focus-outline, 2px solid #0066cc);
   outline-offset: var(--kritzel-master-detail-detail-focus-outline-offset, -2px);
+}
+
+/* Mobile Back Button */
+.mobile-back-button {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0 0 16px 0;
+  cursor: pointer;
+  color: var(--kritzel-master-detail-back-button-color, #333333);
+  font-weight: 500;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.mobile-back-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Mobile Chevron */
+.menu-item-chevron {
+  display: none;
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--kritzel-master-detail-menu-item-chevron-color, #999999);
+}
+
+.menu-item-chevron svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+/* Mobile specific styles */
+@media (max-width: 768px) {
+  .master-menu {
+    width: 100%;
+    border-right: none;
+  }
+
+  .detail-panel {
+    display: none;
+    width: 100%;
+  }
+
+  /* When detail is active on mobile */
+  .master-detail-container.is-mobile-detail-visible .master-menu {
+    display: none;
+  }
+
+  .master-detail-container.is-mobile-detail-visible .detail-panel {
+    display: block;
+  }
+
+  .mobile-back-button {
+    display: flex;
+  }
+
+  /* Override selected styles for mobile */
+  .menu-item.is-selected {
+    background-color: transparent;
+    color: var(--kritzel-master-detail-menu-item-color, #333333);
+    font-weight: var(--kritzel-master-detail-menu-item-font-weight, 400);
+  }
+
+  .menu-item.is-selected:hover {
+    background-color: var(--kritzel-master-detail-menu-item-hover-background-color, #ebebeb);
+  }
+
+  .menu-item-chevron {
+    display: flex;
+    align-items: center;
+  }
 }
