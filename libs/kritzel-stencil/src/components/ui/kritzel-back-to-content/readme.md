@@ -32,3 +32,41 @@ A button component that appears when the user has panned away from all visible c
 | `--kritzel-pointer-cursor` | `pointer` | Cursor style |
 
 <!-- Auto Generated Below -->
+
+
+## Properties
+
+| Property  | Attribute | Description                       | Type      | Default             |
+| --------- | --------- | --------------------------------- | --------- | ------------------- |
+| `text`    | `text`    | The text to display on the button | `string`  | `'Back to content'` |
+| `visible` | `visible` | Whether the button is visible     | `boolean` | `false`             |
+
+
+## Events
+
+| Event           | Description                        | Type                |
+| --------------- | ---------------------------------- | ------------------- |
+| `backToContent` | Emitted when the button is clicked | `CustomEvent<void>` |
+
+
+## Dependencies
+
+### Used by
+
+ - [kritzel-editor](../../core/kritzel-editor)
+
+### Depends on
+
+- [kritzel-icon](../../shared/kritzel-icon)
+
+### Graph
+```mermaid
+graph TD;
+  kritzel-back-to-content --> kritzel-icon
+  kritzel-editor --> kritzel-back-to-content
+  style kritzel-back-to-content fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

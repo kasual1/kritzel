@@ -31,3 +31,37 @@ A slide toggle (switch) component for toggling between on/off states.
 | `--kritzel-slide-toggle-transition-duration` | Duration of the toggle animation | `0.2s` |
 
 <!-- Auto Generated Below -->
+
+
+## Properties
+
+| Property   | Attribute  | Description                                   | Type      | Default     |
+| ---------- | ---------- | --------------------------------------------- | --------- | ----------- |
+| `checked`  | `checked`  | Whether the toggle is checked/on              | `boolean` | `false`     |
+| `disabled` | `disabled` | Whether the toggle is disabled                | `boolean` | `false`     |
+| `label`    | `label`    | Label text for accessibility (screen readers) | `string`  | `undefined` |
+
+
+## Events
+
+| Event           | Description                           | Type                   |
+| --------------- | ------------------------------------- | ---------------------- |
+| `checkedChange` | Emitted when the toggle state changes | `CustomEvent<boolean>` |
+
+
+## Dependencies
+
+### Used by
+
+ - [kritzel-settings](../../ui/kritzel-settings)
+
+### Graph
+```mermaid
+graph TD;
+  kritzel-settings --> kritzel-slide-toggle
+  style kritzel-slide-toggle fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

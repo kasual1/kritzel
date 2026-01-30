@@ -37,3 +37,51 @@ A button component that displays a dropdown menu when clicked. Commonly used for
 | `--kritzel-more-menu-button-active-background-color` | `#ebebeb`               | Button active background color         |
 
 <!-- Auto Generated Below -->
+
+
+## Properties
+
+| Property   | Attribute   | Description                               | Type                      | Default                                                                                                                                                            |
+| ---------- | ----------- | ----------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `icon`     | `icon`      | The icon to display on the button         | `string`                  | `'ellipsis-vertical'`                                                                                                                                              |
+| `iconSize` | `icon-size` | The size of the icon                      | `number`                  | `24`                                                                                                                                                               |
+| `items`    | --          | The menu items to display in the dropdown | `IKritzelMenuItem<any>[]` | `[     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'share',       label: 'Share',       icon: 'share',     },   ]` |
+| `offsetY`  | `offset-y`  | Offset Y for the portal positioning       | `number`                  | `4`                                                                                                                                                                |
+
+
+## Events
+
+| Event        | Description                          | Type                                                                           |
+| ------------ | ------------------------------------ | ------------------------------------------------------------------------------ |
+| `itemSelect` | Emitted when a menu item is selected | `CustomEvent<{ item: IKritzelMenuItem<any>; parent: IKritzelMenuItem<any>; }>` |
+
+
+## Dependencies
+
+### Used by
+
+ - [kritzel-editor](../../core/kritzel-editor)
+
+### Depends on
+
+- [kritzel-icon](../../shared/kritzel-icon)
+- [kritzel-portal](../../shared/kritzel-portal)
+- [kritzel-menu](../../shared/kritzel-menu)
+
+### Graph
+```mermaid
+graph TD;
+  kritzel-more-menu --> kritzel-icon
+  kritzel-more-menu --> kritzel-portal
+  kritzel-more-menu --> kritzel-menu
+  kritzel-menu --> kritzel-menu-item
+  kritzel-menu-item --> kritzel-icon
+  kritzel-menu-item --> kritzel-portal
+  kritzel-menu-item --> kritzel-menu
+  kritzel-editor --> kritzel-more-menu
+  style kritzel-more-menu fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*
