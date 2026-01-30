@@ -28,9 +28,9 @@ A settings button component that opens a settings dialog when clicked.
 
 ## Events
 
-| Event            | Description                  | Type                            |
-| ---------------- | ---------------------------- | ------------------------------- |
-| `settingsChange` | Emitted when settings change | `CustomEvent<IKritzelSettings>` |
+| Event            | Description                  | Type                                 |
+| ---------------- | ---------------------------- | ------------------------------------ |
+| `settingsChange` | Emitted when settings change | `CustomEvent<KritzelSettingsConfig>` |
 
 
 ## Dependencies

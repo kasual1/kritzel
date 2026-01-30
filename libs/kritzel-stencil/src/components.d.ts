@@ -25,7 +25,7 @@ import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
-import { IKritzelSettings } from "./interfaces/settings.interface";
+import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
@@ -48,7 +48,7 @@ export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
 export { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
-export { IKritzelSettings } from "./interfaces/settings.interface";
+export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 export { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export namespace Components {
@@ -1042,7 +1042,7 @@ declare global {
         new (): HTMLKritzelPortalElement;
     };
     interface HTMLKritzelSettingsElementEventMap {
-        "settingsChange": IKritzelSettings;
+        "settingsChange": KritzelSettingsConfig;
     }
     interface HTMLKritzelSettingsElement extends Components.KritzelSettings, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelSettingsElementEventMap>(type: K, listener: (this: HTMLKritzelSettingsElement, ev: KritzelSettingsCustomEvent<HTMLKritzelSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1665,7 +1665,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when settings change
          */
-        "onSettingsChange"?: (event: KritzelSettingsCustomEvent<IKritzelSettings>) => void;
+        "onSettingsChange"?: (event: KritzelSettingsCustomEvent<KritzelSettingsConfig>) => void;
     }
     interface KritzelShapeFill {
         "onValueChange"?: (event: KritzelShapeFillCustomEvent<ShapeFillType>) => void;
