@@ -1,6 +1,6 @@
 import { Component, Host, h, State, Event, EventEmitter } from '@stencil/core';
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '../../../interfaces/master-detail.interface';
-import { IKritzelSettings } from '../../../interfaces/settings.interface';
+import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
 import { KRITZEL_VERSION } from '../../../constants/version';
 
 const SETTINGS_STORAGE_KEY = 'kritzel-settings';
@@ -26,7 +26,7 @@ export class KritzelSettings {
   @State() lockDrawingScale: boolean = DEFAULT_LOCK_DRAWING_SCALE;
 
   /** Emitted when settings change */
-  @Event() settingsChange: EventEmitter<IKritzelSettings>;
+  @Event() settingsChange: EventEmitter<KritzelSettingsConfig>;
 
   componentWillLoad(): void {
     this.loadSettings();
@@ -36,7 +36,7 @@ export class KritzelSettings {
     const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (stored) {
       try {
-        const parsed = JSON.parse(stored) as Partial<IKritzelSettings>;
+        const parsed = JSON.parse(stored) as Partial<KritzelSettingsConfig>;
         if (typeof parsed.scaleMin === 'number') {
           this.scaleMin = parsed.scaleMin;
         }
@@ -53,7 +53,7 @@ export class KritzelSettings {
   }
 
   private saveSettings(): void {
-    const settings: IKritzelSettings = {
+    const settings: KritzelSettingsConfig = {
       scaleMin: this.scaleMin,
       scaleMax: this.scaleMax,
       lockDrawingScale: this.lockDrawingScale,

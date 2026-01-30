@@ -63,7 +63,7 @@ export declare interface KritzelBackToContent extends Components.KritzelBackToCo
 export class KritzelDialog {
   protected el: HTMLKritzelDialogElement;
   @Output() dialogOpen = new EventEmitter<CustomEvent<void>>();
-  @Output() dialogClose = new EventEmitter<CustomEvent<[object Object]>>();
+  @Output() dialogClose = new EventEmitter<CustomEvent<IKritzelDialogIKritzelDialogCloseEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -81,7 +81,7 @@ export declare interface KritzelDialog extends Components.KritzelDialog {
   /**
    * Emitted when the dialog closes
    */
-  dialogClose: EventEmitter<CustomEvent<[object Object]>>;
+  dialogClose: EventEmitter<CustomEvent<IKritzelDialogIKritzelDialogCloseEvent>>;
 }
 
 
@@ -167,7 +167,7 @@ export declare interface KritzelLineEndings extends Components.KritzelLineEnding
 })
 export class KritzelMasterDetail {
   protected el: HTMLKritzelMasterDetailElement;
-  @Output() itemSelect = new EventEmitter<CustomEvent<[object Object]>>();
+  @Output() itemSelect = new EventEmitter<CustomEvent<IKritzelMasterDetailIKritzelMasterDetailSelectEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -181,7 +181,7 @@ export declare interface KritzelMasterDetail extends Components.KritzelMasterDet
   /**
    * Emitted when an item is selected
    */
-  itemSelect: EventEmitter<CustomEvent<[object Object]>>;
+  itemSelect: EventEmitter<CustomEvent<IKritzelMasterDetailIKritzelMasterDetailSelectEvent>>;
 }
 
 
@@ -288,7 +288,7 @@ export declare interface KritzelOpacitySlider extends Components.KritzelOpacityS
 })
 export class KritzelSettings {
   protected el: HTMLKritzelSettingsElement;
-  @Output() settingsChange = new EventEmitter<CustomEvent<[object Object]>>();
+  @Output() settingsChange = new EventEmitter<CustomEvent<IKritzelSettingsKritzelSettingsConfig>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -296,13 +296,13 @@ export class KritzelSettings {
 }
 
 
-import type { IKritzelSettings as IKritzelSettingsIKritzelSettings } from 'kritzel-stencil/dist/components';
+import type { KritzelSettingsConfig as IKritzelSettingsKritzelSettingsConfig } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelSettings extends Components.KritzelSettings {
   /**
    * Emitted when settings change
    */
-  settingsChange: EventEmitter<CustomEvent<[object Object]>>;
+  settingsChange: EventEmitter<CustomEvent<IKritzelSettingsKritzelSettingsConfig>>;
 }
 
 

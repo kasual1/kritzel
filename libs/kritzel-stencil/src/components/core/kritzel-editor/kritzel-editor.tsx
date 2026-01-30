@@ -17,7 +17,7 @@ import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { DEFAULT_SHAPE_CONFIG } from '../../../configs/default-shape-tool.config';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
-import { IKritzelSettings } from '../../../interfaces/settings.interface';
+import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
@@ -274,7 +274,7 @@ export class KritzelEditor {
     const stored = localStorage.getItem('kritzel-settings');
     if (stored) {
       try {
-        const parsed = JSON.parse(stored) as Partial<IKritzelSettings>;
+        const parsed = JSON.parse(stored) as Partial<KritzelSettingsConfig>;
         if (typeof parsed.scaleMin === 'number') {
           this.scaleMin = parsed.scaleMin;
         }
@@ -327,7 +327,7 @@ export class KritzelEditor {
     this.isBackToContentButtonVisible = !hasVisibleObjects;
   }
 
-  handleSettingsChange(event: CustomEvent<IKritzelSettings>) {
+  handleSettingsChange(event: CustomEvent<KritzelSettingsConfig>) {
     this.scaleMin = event.detail.scaleMin;
     this.scaleMax = event.detail.scaleMax;
     this.lockDrawingScale = event.detail.lockDrawingScale;
