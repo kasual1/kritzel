@@ -32,8 +32,10 @@
   pointer-events: auto;
 }
 
-.back-to-content-button:hover {
-  background-color: var(--kritzel-back-to-content-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+@media (hover: hover) {
+  .back-to-content-button:hover {
+    background-color: var(--kritzel-back-to-content-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  }
 }
 
 .back-to-content-button:active {
