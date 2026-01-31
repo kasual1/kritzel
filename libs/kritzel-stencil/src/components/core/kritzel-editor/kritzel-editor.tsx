@@ -336,13 +336,14 @@ export class KritzelEditor {
     this.lockDrawingScale = event.detail.lockDrawingScale;
   }
 
-  handleMoreMenuItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
+  async handleMoreMenuItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
     const { item } = event.detail;
     if (item.id === 'settings') {
       this.settingsRef.open();
     }
     if (item.id === 'export') {
-      this.exportRef.open();
+      const preview = await this.engineRef.getScreenshot('png');
+      this.exportRef.open(preview);
     }
   }
 

@@ -7,12 +7,15 @@ import { Component, Host, h, State, Event, EventEmitter, Method } from '@stencil
 })
 export class KritzelExport {
   @State() isDialogOpen: boolean = false;
+  @State() previewUrl: string;
+  @State() isLoading: boolean = false;
   
   @Event() exportPng: EventEmitter<void>;
   @Event() exportSvg: EventEmitter<void>;
 
   @Method()
-  async open(): Promise<void> {
+  async open(previewUrl?: string): Promise<void> {
+    this.previewUrl = previewUrl;
     this.isDialogOpen = true;
   }
 
@@ -40,26 +43,26 @@ export class KritzelExport {
           onDialogClose={this.closeDialog}
         >
           <div class="export-content">
+            {this.previewUrl && (
+              <div class="preview-container">
+                <img src={this.previewUrl} alt="Viewport Preview" />
+              </div>
+            )}
             <p>Select a format to export the current viewport:</p>
             <div class="export-options">
               <button class="export-button" onClick={this.handleExportPng}>
                 <div class="icon-container">
-                    <kritzel-icon name="image" size={32}></kritzel-icon>
+                    <kritzel-icon name="image" size={24}></kritzel-icon>
                 </div>
-                <span>Export as attributes PNG</span>
+                <span>Export as PNG</span>
               </button>
               <button class="export-button" onClick={this.handleExportSvg}>
                 <div class="icon-container">
-                    <kritzel-icon name="shape-rectangle" size={32}></kritzel-icon>
+                    <kritzel-icon name="shape-rectangle" size={24}></kritzel-icon>
                 </div>
                 <span>Export as SVG</span>
               </button>
             </div>
-          </div>
-          <div slot="footer" class="dialog-footer">
-            <button class="cancel-button" onClick={this.closeDialog}>
-              Cancel
-            </button>
           </div>
         </kritzel-dialog>
       </Host>
