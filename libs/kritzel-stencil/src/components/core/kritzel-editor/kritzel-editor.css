@@ -18,9 +18,7 @@ kritzel-editor{
 }
 
 kritzel-workspace-manager {
-  position: absolute;
-  top: var(--kritzel-editor-workspace-manager-top, 14px);
-  left: var(--kritzel-editor-workspace-manager-left, 14px);
+  /* position: relative; */
 }
 
 kritzel-controls {
@@ -31,6 +29,15 @@ kritzel-controls {
 
 kritzel-controls.keyboard-open {
   transform: var(--kritzel-editor-controls-transform, translateY(300%));
+}
+
+.top-left-buttons {
+  position: absolute;
+  top: var(--kritzel-editor-top-left-buttons-top, 14px);
+  left: var(--kritzel-editor-top-left-buttons-left, 14px);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .top-right-buttons {
