@@ -106,11 +106,13 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [kritzel-export](../../ui/kritzel-export)
  - [kritzel-settings](../../ui/kritzel-settings)
 
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-export --> kritzel-dialog
   kritzel-settings --> kritzel-dialog
   style kritzel-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```

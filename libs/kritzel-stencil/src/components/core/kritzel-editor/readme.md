@@ -248,6 +248,7 @@ Type: `Promise<void>`
 - [kritzel-engine](../kritzel-engine)
 - [kritzel-controls](../../ui/kritzel-controls)
 - [kritzel-settings](../../ui/kritzel-settings)
+- [kritzel-export](../../ui/kritzel-export)
 - [kritzel-more-menu](../../ui/kritzel-more-menu)
 
 ### Graph
@@ -258,6 +259,7 @@ graph TD;
   kritzel-editor --> kritzel-engine
   kritzel-editor --> kritzel-controls
   kritzel-editor --> kritzel-settings
+  kritzel-editor --> kritzel-export
   kritzel-editor --> kritzel-more-menu
   kritzel-workspace-manager --> kritzel-split-button
   kritzel-split-button --> kritzel-icon
@@ -295,6 +297,8 @@ graph TD;
   kritzel-settings --> kritzel-dialog
   kritzel-settings --> kritzel-master-detail
   kritzel-master-detail --> kritzel-icon
+  kritzel-export --> kritzel-dialog
+  kritzel-export --> kritzel-icon
   kritzel-more-menu --> kritzel-icon
   kritzel-more-menu --> kritzel-portal
   kritzel-more-menu --> kritzel-menu
