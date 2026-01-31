@@ -208,6 +208,16 @@ Type: `Promise<void>`
 
 
 
+### `exportViewportAsPng() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `getActiveWorkspace() => Promise<KritzelWorkspace>`
 
 

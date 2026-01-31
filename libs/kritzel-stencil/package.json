@@ -54,6 +54,7 @@
     "@hocuspocus/provider": "^3.4.0",
     "@types/lodash": "^4.17.20",
     "browser-image-compression": "^2.0.2",
+    "html-to-image": "^1.11.11",
     "lib0": "^0.2.98",
     "lodash": "^4.17.21",
     "perfect-freehand": "^1.2.2",

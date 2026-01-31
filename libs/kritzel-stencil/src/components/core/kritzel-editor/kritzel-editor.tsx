@@ -340,6 +340,9 @@ export class KritzelEditor {
     if (item.id === 'settings') {
       this.settingsRef.open();
     }
+    if (item.id === 'export') {
+      this.engineRef.exportViewportAsPng();
+    }
   }
 
   private registerCustomSvgIcons() {

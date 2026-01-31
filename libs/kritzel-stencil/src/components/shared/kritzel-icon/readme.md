@@ -25,7 +25,6 @@
  - [kritzel-master-detail](../kritzel-master-detail)
  - [kritzel-menu-item](../kritzel-menu-item)
  - [kritzel-more-menu](../../ui/kritzel-more-menu)
- - [kritzel-settings](../../ui/kritzel-settings)
  - [kritzel-split-button](../kritzel-split-button)
  - [kritzel-tool-config](../../ui/kritzel-tool-config)
  - [kritzel-utility-panel](../../ui/kritzel-utility-panel)
@@ -40,7 +39,6 @@ graph TD;
   kritzel-master-detail --> kritzel-icon
   kritzel-menu-item --> kritzel-icon
   kritzel-more-menu --> kritzel-icon
-  kritzel-settings --> kritzel-icon
   kritzel-split-button --> kritzel-icon
   kritzel-tool-config --> kritzel-icon
   kritzel-utility-panel --> kritzel-icon
