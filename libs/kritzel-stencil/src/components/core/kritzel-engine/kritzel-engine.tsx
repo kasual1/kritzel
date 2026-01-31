@@ -28,6 +28,7 @@ import { KritzelCore } from '../../../classes/core/core.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { throttle } from 'lodash';
+import { toPng, toSvg } from 'html-to-image';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 
 @Component({
@@ -438,6 +439,68 @@ export class KritzelEngine {
   @Method()
   async getCopiedObjects(): Promise<KritzelBaseObject[]> {
     return this.core.store.state.copiedObjects || [];
+  }
+
+  @Method()
+  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string> {
+    if (!this.host) return null;
+
+    const options = {
+      filter: (node: HTMLElement) => {
+        // Exclude the context menu and debug panel from the screenshot
+        if (node.tagName === 'KRITZEL-CONTEXT-MENU') {
+          return false;
+        }
+        if (node.classList && node.classList.contains('debug-panel')) {
+          return false;
+        }
+        return true;
+      },
+    };
+
+    if (format === 'svg') {
+      return await toSvg(this.host, options);
+    } else {
+      return await toPng(this.host, options);
+    }
+  }
+
+  @Method()
+  async exportViewportAsPng(): Promise<void> {
+    try {
+      const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
+      // timestamp format: YYYY-MM-DDTHH-mm-ss-sssZ, clearing colons/dots for safe filename
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `${activeWorkspaceName}-${timestamp}.png`;
+
+      const dataUrl = await this.getScreenshot('png');
+
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error('Failed to export viewport as PNG:', error);
+    }
+  }
+
+  @Method()
+  async exportViewportAsSvg(): Promise<void> {
+    try {
+      const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
+      // timestamp format: YYYY-MM-DDTHH-mm-ss-sssZ, clearing colons/dots for safe filename
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `${activeWorkspaceName}-${timestamp}.svg`;
+
+      const dataUrl = await this.getScreenshot('svg');
+
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error('Failed to export viewport as SVG:', error);
+    }
   }
 
   @Method()

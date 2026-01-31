@@ -260,6 +260,7 @@ export class KritzelEditor {
   engineRef!: HTMLKritzelEngineElement;
   controlsRef!: HTMLKritzelControlsElement;
   settingsRef!: HTMLKritzelSettingsElement;
+  exportRef!: HTMLKritzelExportElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
 
   componentWillLoad() {
@@ -335,10 +336,14 @@ export class KritzelEditor {
     this.lockDrawingScale = event.detail.lockDrawingScale;
   }
 
-  handleMoreMenuItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
+  async handleMoreMenuItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
     const { item } = event.detail;
     if (item.id === 'settings') {
       this.settingsRef.open();
+    }
+    if (item.id === 'export') {
+      const preview = await this.engineRef.getScreenshot('png');
+      this.exportRef.open(preview);
     }
   }
 
@@ -432,6 +437,12 @@ export class KritzelEditor {
             ref={el => (this.settingsRef = el)}
             onSettingsChange={event => this.handleSettingsChange(event)}
           ></kritzel-settings>
+
+          <kritzel-export
+            ref={el => (this.exportRef = el)}
+            onExportPng={() => this.engineRef.exportViewportAsPng()}
+            onExportSvg={() => this.engineRef.exportViewportAsSvg()}
+          ></kritzel-export>
           
           <kritzel-more-menu
             onItemSelect={event => this.handleMoreMenuItemSelect(event)}

@@ -244,20 +244,22 @@ Type: `Promise<void>`
 ### Depends on
 
 - [kritzel-workspace-manager](../../ui/kritzel-workspace-manager)
-- [kritzel-engine](../kritzel-engine)
 - [kritzel-back-to-content](../../ui/kritzel-back-to-content)
+- [kritzel-engine](../kritzel-engine)
 - [kritzel-controls](../../ui/kritzel-controls)
 - [kritzel-settings](../../ui/kritzel-settings)
+- [kritzel-export](../../ui/kritzel-export)
 - [kritzel-more-menu](../../ui/kritzel-more-menu)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-editor --> kritzel-workspace-manager
-  kritzel-editor --> kritzel-engine
   kritzel-editor --> kritzel-back-to-content
+  kritzel-editor --> kritzel-engine
   kritzel-editor --> kritzel-controls
   kritzel-editor --> kritzel-settings
+  kritzel-editor --> kritzel-export
   kritzel-editor --> kritzel-more-menu
   kritzel-workspace-manager --> kritzel-split-button
   kritzel-split-button --> kritzel-icon
@@ -267,10 +269,10 @@ graph TD;
   kritzel-menu-item --> kritzel-icon
   kritzel-menu-item --> kritzel-portal
   kritzel-menu-item --> kritzel-menu
+  kritzel-back-to-content --> kritzel-icon
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-cursor-trail
   kritzel-context-menu --> kritzel-icon
-  kritzel-back-to-content --> kritzel-icon
   kritzel-controls --> kritzel-utility-panel
   kritzel-controls --> kritzel-icon
   kritzel-controls --> kritzel-tooltip
@@ -292,10 +294,11 @@ graph TD;
   kritzel-color-palette --> kritzel-color
   kritzel-settings --> kritzel-numeric-input
   kritzel-settings --> kritzel-slide-toggle
-  kritzel-settings --> kritzel-icon
   kritzel-settings --> kritzel-dialog
   kritzel-settings --> kritzel-master-detail
   kritzel-master-detail --> kritzel-icon
+  kritzel-export --> kritzel-dialog
+  kritzel-export --> kritzel-icon
   kritzel-more-menu --> kritzel-icon
   kritzel-more-menu --> kritzel-portal
   kritzel-more-menu --> kritzel-menu
