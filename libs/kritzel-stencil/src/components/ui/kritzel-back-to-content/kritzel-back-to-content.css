@@ -1,6 +1,6 @@
 :host {
   position: absolute;
-  top: var(--kritzel-back-to-content-top, 16px);
+  top: var(--kritzel-back-to-content-top, 14px);
   left: 50%;
   transform: translateX(-50%);
   z-index: var(--kritzel-back-to-content-z-index, 1000);
@@ -10,8 +10,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  height: var(--kritzel-back-to-content-height, 50px);
+  box-sizing: border-box;
   gap: var(--kritzel-back-to-content-gap, 6px);
-  padding: var(--kritzel-back-to-content-padding, 10px 16px);
+  padding: var(--kritzel-back-to-content-padding, 0 16px);
   border: var(--kritzel-back-to-content-border, 1px solid #ebebeb);
   border-radius: var(--kritzel-back-to-content-border-radius, 12px);
   background-color: var(--kritzel-back-to-content-background-color, #ffffff);
