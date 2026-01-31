@@ -1,4 +1,4 @@
-import { Component, Host, h, State, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, State, Event, EventEmitter, Method } from '@stencil/core';
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '../../../interfaces/master-detail.interface';
 import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
 import { KRITZEL_VERSION } from '../../../constants/version';
@@ -77,9 +77,10 @@ export class KritzelSettings {
     this.saveSettings();
   };
 
-  private openDialog = (): void => {
+  @Method()
+  async open(): Promise<void> {
     this.isDialogOpen = true;
-  };
+  }
 
   private closeDialog = (): void => {
     this.isDialogOpen = false;
@@ -152,10 +153,6 @@ export class KritzelSettings {
   render() {
     return (
       <Host>
-        <button class="settings-button" onClick={this.openDialog}>
-          <kritzel-icon name="settings" size={24}></kritzel-icon>
-        </button>
-
         <kritzel-dialog
           isOpen={this.isDialogOpen}
           dialogTitle="Settings"

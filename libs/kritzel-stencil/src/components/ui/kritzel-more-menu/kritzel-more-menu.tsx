@@ -23,6 +23,11 @@ export class KritzelMoreMenu {
       label: 'Share',
       icon: 'share',
     },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: 'settings',
+    },
   ];
 
   /**

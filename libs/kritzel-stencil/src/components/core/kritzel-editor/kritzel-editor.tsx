@@ -18,6 +18,7 @@ import { DEFAULT_SHAPE_CONFIG } from '../../../configs/default-shape-tool.config
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
+import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
@@ -258,6 +259,7 @@ export class KritzelEditor {
 
   engineRef!: HTMLKritzelEngineElement;
   controlsRef!: HTMLKritzelControlsElement;
+  settingsRef!: HTMLKritzelSettingsElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
 
   componentWillLoad() {
@@ -333,6 +335,13 @@ export class KritzelEditor {
     this.lockDrawingScale = event.detail.lockDrawingScale;
   }
 
+  handleMoreMenuItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
+    const { item } = event.detail;
+    if (item.id === 'settings') {
+      this.settingsRef.open();
+    }
+  }
+
   private registerCustomSvgIcons() {
     for (const [name, svg] of Object.entries(this.customSvgIcons)) {
       KritzelIconRegistry.register(name, svg);
@@ -351,8 +360,8 @@ export class KritzelEditor {
     switch (os) {
       case 'iOS':
         // iOS specific adjustments
-        this.host.style.setProperty('--kritzel-editor-workspace-manager-top', '14px');
-        this.host.style.setProperty('--kritzel-editor-workspace-manager-left', '14px');
+        this.host.style.setProperty('--kritzel-editor-top-left-buttons-top', '14px');
+        this.host.style.setProperty('--kritzel-editor-top-left-buttons-left', '14px');
         this.host.style.setProperty('--kritzel-editor-controls-bottom', '14px');
         this.host.style.setProperty('--kritzel-editor-controls-transition', 'cubic-bezier(0.25, 0.1, 0.25, 1.0)');
         this.host.style.setProperty('--kritzel-editor-controls-transform', 'translateY(200%)');
@@ -361,15 +370,15 @@ export class KritzelEditor {
 
       case 'Android':
         // Android specific adjustments
-        this.host.style.setProperty('--kritzel-editor-workspace-manager-top', '14px');
-        this.host.style.setProperty('--kritzel-editor-workspace-manager-left', '14px');
+        this.host.style.setProperty('--kritzel-editor-top-left-buttons-top', '14px');
+        this.host.style.setProperty('--kritzel-editor-top-left-buttons-left', '14px');
         this.host.style.setProperty('--kritzel-editor-controls-bottom', '24px');
         break;
 
       default:
         // Default for Windows/Linux
-        this.host.style.setProperty('--kritzel-editor-workspace-manager-top', '14px');
-        this.host.style.setProperty('--kritzel-editor-workspace-manager-left', '14px');
+        this.host.style.setProperty('--kritzel-editor-top-left-buttons-top', '14px');
+        this.host.style.setProperty('--kritzel-editor-top-left-buttons-left', '14px');
         this.host.style.setProperty('--kritzel-editor-controls-bottom', '14px');
         break;
     }
@@ -378,12 +387,19 @@ export class KritzelEditor {
   render() {
     return (
       <Host>
-        <kritzel-workspace-manager
-          workspaces={this.workspaces}
-          activeWorkspace={this.activeWorkspace}
-          onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
-          onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
-        ></kritzel-workspace-manager>
+        <div class="top-left-buttons">
+          <kritzel-workspace-manager
+            workspaces={this.workspaces}
+            activeWorkspace={this.activeWorkspace}
+            onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
+            onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
+          ></kritzel-workspace-manager>
+
+          <kritzel-back-to-content
+            visible={this.isBackToContentButtonVisible}
+            onBackToContent={() => this.backToContent()}
+          ></kritzel-back-to-content>
+        </div>
 
         <kritzel-engine
           ref={el => (this.engineRef = el)}
@@ -401,11 +417,6 @@ export class KritzelEditor {
           onObjectsInViewportChange={event => this.handleObjectsInViewportChange(event)}
         ></kritzel-engine>
 
-        <kritzel-back-to-content
-          visible={this.isBackToContentButtonVisible}
-          onBackToContent={() => this.backToContent()}
-        ></kritzel-back-to-content>
-
         <kritzel-controls
           class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
           style={{ display: this.isControlsVisible ? 'flex' : 'none' }}
@@ -418,10 +429,13 @@ export class KritzelEditor {
 
         <div class="top-right-buttons">
           <kritzel-settings
+            ref={el => (this.settingsRef = el)}
             onSettingsChange={event => this.handleSettingsChange(event)}
           ></kritzel-settings>
           
-          <kritzel-more-menu></kritzel-more-menu>
+          <kritzel-more-menu
+            onItemSelect={event => this.handleMoreMenuItemSelect(event)}
+          ></kritzel-more-menu>
         </div>
       </Host>
     );
