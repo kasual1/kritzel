@@ -397,7 +397,7 @@ export namespace Components {
         "iconSize": number;
         /**
           * The menu items to display in the dropdown
-          * @default [     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'share',       label: 'Share',       icon: 'share',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
+          * @default [     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
          */
         "items": IKritzelMenuItem[];
         /**
@@ -1580,7 +1580,7 @@ declare namespace LocalJSX {
         "iconSize"?: number;
         /**
           * The menu items to display in the dropdown
-          * @default [     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'share',       label: 'Share',       icon: 'share',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
+          * @default [     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
          */
         "items"?: IKritzelMenuItem[];
         /**
