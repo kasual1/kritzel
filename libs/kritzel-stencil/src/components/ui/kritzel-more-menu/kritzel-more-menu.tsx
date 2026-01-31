@@ -19,11 +19,6 @@ export class KritzelMoreMenu {
       icon: 'download',
     },
     {
-      id: 'share',
-      label: 'Share',
-      icon: 'share',
-    },
-    {
       id: 'settings',
       label: 'Settings',
       icon: 'settings',
