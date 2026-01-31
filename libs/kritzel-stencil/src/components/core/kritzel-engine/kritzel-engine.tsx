@@ -442,27 +442,38 @@ export class KritzelEngine {
   }
 
   @Method()
-  async exportViewportAsPng(): Promise<void> {
-    if (!this.host) return;
+  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string> {
+    if (!this.host) return null;
 
+    const options = {
+      filter: (node: HTMLElement) => {
+        // Exclude the context menu and debug panel from the screenshot
+        if (node.tagName === 'KRITZEL-CONTEXT-MENU') {
+          return false;
+        }
+        if (node.classList && node.classList.contains('debug-panel')) {
+          return false;
+        }
+        return true;
+      },
+    };
+
+    if (format === 'svg') {
+      return await toSvg(this.host, options);
+    } else {
+      return await toPng(this.host, options);
+    }
+  }
+
+  @Method()
+  async exportViewportAsPng(): Promise<void> {
     try {
       const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
       // timestamp format: YYYY-MM-DDTHH-mm-ss-sssZ, clearing colons/dots for safe filename
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `${activeWorkspaceName}-${timestamp}.png`;
 
-      const dataUrl = await toPng(this.host, {
-        filter: (node: HTMLElement) => {
-          // Exclude the context menu and debug panel from the screenshot
-          if (node.tagName === 'KRITZEL-CONTEXT-MENU') {
-            return false;
-          }
-          if (node.classList && node.classList.contains('debug-panel')) {
-            return false;
-          }
-          return true;
-        },
-      });
+      const dataUrl = await this.getScreenshot('png');
 
       const link = document.createElement('a');
       link.download = filename;
@@ -475,26 +486,13 @@ export class KritzelEngine {
 
   @Method()
   async exportViewportAsSvg(): Promise<void> {
-    if (!this.host) return;
-
     try {
       const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
       // timestamp format: YYYY-MM-DDTHH-mm-ss-sssZ, clearing colons/dots for safe filename
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `${activeWorkspaceName}-${timestamp}.svg`;
 
-      const dataUrl = await toSvg(this.host, {
-        filter: (node: HTMLElement) => {
-          // Exclude the context menu and debug panel from the screenshot
-          if (node.tagName === 'KRITZEL-CONTEXT-MENU') {
-            return false;
-          }
-          if (node.classList && node.classList.contains('debug-panel')) {
-            return false;
-          }
-          return true;
-        },
-      });
+      const dataUrl = await this.getScreenshot('svg');
 
       const link = document.createElement('a');
       link.download = filename;

@@ -265,6 +265,7 @@ export namespace Components {
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
+        "getScreenshot": (format?: "png" | "svg") => Promise<string>;
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
         "globalContextMenuItems": ContextMenuItem[];
@@ -301,7 +302,7 @@ export namespace Components {
         "workspace"?: KritzelWorkspace;
     }
     interface KritzelExport {
-        "open": () => Promise<void>;
+        "open": (previewUrl?: string) => Promise<void>;
     }
     interface KritzelFont {
         /**
