@@ -46,7 +46,7 @@ export class KritzelWorkspaceManager {
     this.kritzelEngineRef = this.host.parentElement.querySelector('kritzel-engine');
 
     if (!this.kritzelEngineRef) {
-      throw new Error('kritzel-engine not found in parent element.');
+      console.warn('kritzel-engine not found in parent element.');
     }
   }
 
@@ -80,12 +80,12 @@ export class KritzelWorkspaceManager {
   private async save(item: IKritzelMenuItem) {
     if (this.newWorkspace) {
       this.newWorkspace.name = item.label;
-      await this.kritzelEngineRef.createWorkspace(this.newWorkspace);
+      await this.kritzelEngineRef?.createWorkspace(this.newWorkspace);
       this.workspaceChange.emit(this.newWorkspace);
     } else {
       const workspace = item.value;
       workspace.name = item.label;
-      await this.kritzelEngineRef.updateWorkspace(workspace);
+      await this.kritzelEngineRef?.updateWorkspace(workspace);
     }
 
     this.editingItemId = null;
@@ -101,7 +101,7 @@ export class KritzelWorkspaceManager {
     this.openChildMenuItem = null;
     this.childMenuAnchor = null;
 
-    await this.kritzelEngineRef.deleteWorkspace(item.value);
+    await this.kritzelEngineRef?.deleteWorkspace(item.value);
 
     if (item.value.id === this.activeWorkspace?.id) {
       this.activeWorkspace = this.sortedWorkspaces.find(ws => ws.id !== item.value.id) || null;
@@ -122,13 +122,13 @@ export class KritzelWorkspaceManager {
   }
 
   private handleMenuOpen() {
-    this.kritzelEngineRef.disable();
+    this.kritzelEngineRef?.disable();
   }
 
   private handleMenuClose() {
     this.cancel();
     this.closeChildMenu();
-    this.kritzelEngineRef.enable();
+    this.kritzelEngineRef?.enable();
   }
 
   render() {
