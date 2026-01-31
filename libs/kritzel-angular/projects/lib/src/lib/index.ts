@@ -5,6 +5,7 @@ export const DIRECTIVES = [
   d.KritzelBackToContent,
   d.KritzelDialog,
   d.KritzelEditor,
+  d.KritzelExport,
   d.KritzelLineEndings,
   d.KritzelMasterDetail,
   d.KritzelMoreMenu,

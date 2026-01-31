@@ -260,9 +260,12 @@ export namespace Components {
         "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
+        "exportViewportAsPng": () => Promise<void>;
+        "exportViewportAsSvg": () => Promise<void>;
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
+        "getScreenshot": (format?: "png" | "svg") => Promise<string>;
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
         "globalContextMenuItems": ContextMenuItem[];
@@ -297,6 +300,9 @@ export namespace Components {
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "workspace"?: KritzelWorkspace;
+    }
+    interface KritzelExport {
+        "open": (previewUrl?: string) => Promise<void>;
     }
     interface KritzelFont {
         /**
@@ -598,6 +604,10 @@ export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelEngineElement;
 }
+export interface KritzelExportCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelExportElement;
+}
 export interface KritzelFontFamilyCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelFontFamilyElement;
@@ -850,6 +860,24 @@ declare global {
     var HTMLKritzelEngineElement: {
         prototype: HTMLKritzelEngineElement;
         new (): HTMLKritzelEngineElement;
+    };
+    interface HTMLKritzelExportElementEventMap {
+        "exportPng": void;
+        "exportSvg": void;
+    }
+    interface HTMLKritzelExportElement extends Components.KritzelExport, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelExportElementEventMap>(type: K, listener: (this: HTMLKritzelExportElement, ev: KritzelExportCustomEvent<HTMLKritzelExportElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelExportElementEventMap>(type: K, listener: (this: HTMLKritzelExportElement, ev: KritzelExportCustomEvent<HTMLKritzelExportElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelExportElement: {
+        prototype: HTMLKritzelExportElement;
+        new (): HTMLKritzelExportElement;
     };
     interface HTMLKritzelFontElement extends Components.KritzelFont, HTMLStencilElement {
     }
@@ -1218,6 +1246,7 @@ declare global {
         "kritzel-dropdown": HTMLKritzelDropdownElement;
         "kritzel-editor": HTMLKritzelEditorElement;
         "kritzel-engine": HTMLKritzelEngineElement;
+        "kritzel-export": HTMLKritzelExportElement;
         "kritzel-font": HTMLKritzelFontElement;
         "kritzel-font-family": HTMLKritzelFontFamilyElement;
         "kritzel-font-size": HTMLKritzelFontSizeElement;
@@ -1464,6 +1493,10 @@ declare namespace LocalJSX {
         "scaleMin"?: number;
         "syncConfig"?: KritzelSyncConfig;
         "workspace"?: KritzelWorkspace;
+    }
+    interface KritzelExport {
+        "onExportPng"?: (event: KritzelExportCustomEvent<void>) => void;
+        "onExportSvg"?: (event: KritzelExportCustomEvent<void>) => void;
     }
     interface KritzelFont {
         /**
@@ -1788,6 +1821,7 @@ declare namespace LocalJSX {
         "kritzel-dropdown": KritzelDropdown;
         "kritzel-editor": KritzelEditor;
         "kritzel-engine": KritzelEngine;
+        "kritzel-export": KritzelExport;
         "kritzel-font": KritzelFont;
         "kritzel-font-family": KritzelFontFamily;
         "kritzel-font-size": KritzelFontSize;
@@ -1826,6 +1860,7 @@ declare module "@stencil/core" {
             "kritzel-dropdown": LocalJSX.KritzelDropdown & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
             "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
             "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
+            "kritzel-export": LocalJSX.KritzelExport & JSXBase.HTMLAttributes<HTMLKritzelExportElement>;
             "kritzel-font": LocalJSX.KritzelFont & JSXBase.HTMLAttributes<HTMLKritzelFontElement>;
             "kritzel-font-family": LocalJSX.KritzelFontFamily & JSXBase.HTMLAttributes<HTMLKritzelFontFamilyElement>;
             "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
