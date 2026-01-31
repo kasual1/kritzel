@@ -260,6 +260,8 @@ export namespace Components {
         "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "disable": () => Promise<void>;
         "enable": () => Promise<void>;
+        "exportViewportAsPng": () => Promise<void>;
+        "exportViewportAsSvg": () => Promise<void>;
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;

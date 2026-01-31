@@ -33,6 +33,19 @@ A settings button component that opens a settings dialog when clicked.
 | `settingsChange` | Emitted when settings change | `CustomEvent<KritzelSettingsConfig>` |
 
 
+## Methods
+
+### `open() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
 ## Dependencies
 
 ### Used by
@@ -43,7 +56,6 @@ A settings button component that opens a settings dialog when clicked.
 
 - [kritzel-numeric-input](../../shared/kritzel-numeric-input)
 - [kritzel-slide-toggle](../../shared/kritzel-slide-toggle)
-- [kritzel-icon](../../shared/kritzel-icon)
 - [kritzel-dialog](../../shared/kritzel-dialog)
 - [kritzel-master-detail](../../shared/kritzel-master-detail)
 
@@ -52,7 +64,6 @@ A settings button component that opens a settings dialog when clicked.
 graph TD;
   kritzel-settings --> kritzel-numeric-input
   kritzel-settings --> kritzel-slide-toggle
-  kritzel-settings --> kritzel-icon
   kritzel-settings --> kritzel-dialog
   kritzel-settings --> kritzel-master-detail
   kritzel-master-detail --> kritzel-icon
