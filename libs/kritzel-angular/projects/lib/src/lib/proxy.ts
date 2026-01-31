@@ -9,6 +9,7 @@ import type { Components } from 'kritzel-stencil/dist/components';
 import { defineCustomElement as defineKritzelBackToContent } from 'kritzel-stencil/dist/components/kritzel-back-to-content.js';
 import { defineCustomElement as defineKritzelDialog } from 'kritzel-stencil/dist/components/kritzel-dialog.js';
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
+import { defineCustomElement as defineKritzelExport } from 'kritzel-stencil/dist/components/kritzel-export.js';
 import { defineCustomElement as defineKritzelLineEndings } from 'kritzel-stencil/dist/components/kritzel-line-endings.js';
 import { defineCustomElement as defineKritzelMasterDetail } from 'kritzel-stencil/dist/components/kritzel-master-detail.js';
 import { defineCustomElement as defineKritzelMoreMenu } from 'kritzel-stencil/dist/components/kritzel-more-menu.js';
@@ -120,6 +121,37 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   objectsChange: EventEmitter<CustomEvent<IKritzelEditorKritzelBaseObject[]>>;
 
   undoStateChange: EventEmitter<CustomEvent<IKritzelEditorKritzelUndoState>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelExport,
+  methods: ['open']
+})
+@Component({
+  selector: 'kritzel-export',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: [],
+  outputs: ['exportPng', 'exportSvg'],
+})
+export class KritzelExport {
+  protected el: HTMLKritzelExportElement;
+  @Output() exportPng = new EventEmitter<CustomEvent<void>>();
+  @Output() exportSvg = new EventEmitter<CustomEvent<void>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelExport extends Components.KritzelExport {
+
+  exportPng: EventEmitter<CustomEvent<void>>;
+
+  exportSvg: EventEmitter<CustomEvent<void>>;
 }
 
 

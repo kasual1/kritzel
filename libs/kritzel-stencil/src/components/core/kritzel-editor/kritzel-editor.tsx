@@ -260,6 +260,7 @@ export class KritzelEditor {
   engineRef!: HTMLKritzelEngineElement;
   controlsRef!: HTMLKritzelControlsElement;
   settingsRef!: HTMLKritzelSettingsElement;
+  exportRef!: HTMLKritzelExportElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
 
   componentWillLoad() {
@@ -341,7 +342,7 @@ export class KritzelEditor {
       this.settingsRef.open();
     }
     if (item.id === 'export') {
-      this.engineRef.exportViewportAsPng();
+      this.exportRef.open();
     }
   }
 
@@ -435,6 +436,12 @@ export class KritzelEditor {
             ref={el => (this.settingsRef = el)}
             onSettingsChange={event => this.handleSettingsChange(event)}
           ></kritzel-settings>
+
+          <kritzel-export
+            ref={el => (this.exportRef = el)}
+            onExportPng={() => this.engineRef.exportViewportAsPng()}
+            onExportSvg={() => this.engineRef.exportViewportAsSvg()}
+          ></kritzel-export>
           
           <kritzel-more-menu
             onItemSelect={event => this.handleMoreMenuItemSelect(event)}

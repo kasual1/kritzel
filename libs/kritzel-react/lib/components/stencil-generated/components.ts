@@ -10,10 +10,11 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type IKritzelDialogCloseEvent, type IKritzelMasterDetailSelectEvent, type IKritzelMenuItem, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelMoreMenuCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelSlideToggleCustomEvent, type KritzelUndoState, type LineArrowConfig, type ShapeFillType } from "../../../../kritzel-stencil";
+import { type IKritzelDialogCloseEvent, type IKritzelMasterDetailSelectEvent, type IKritzelMenuItem, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelExportCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelMoreMenuCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelSlideToggleCustomEvent, type KritzelUndoState, type LineArrowConfig, type ShapeFillType } from "../../../../kritzel-stencil";
 import { KritzelBackToContent as KritzelBackToContentElement, defineCustomElement as defineKritzelBackToContent } from "../../../../kritzel-stencil/dist/components/kritzel-back-to-content.js";
 import { KritzelDialog as KritzelDialogElement, defineCustomElement as defineKritzelDialog } from "../../../../kritzel-stencil/dist/components/kritzel-dialog.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
+import { KritzelExport as KritzelExportElement, defineCustomElement as defineKritzelExport } from "../../../../kritzel-stencil/dist/components/kritzel-export.js";
 import { KritzelLineEndings as KritzelLineEndingsElement, defineCustomElement as defineKritzelLineEndings } from "../../../../kritzel-stencil/dist/components/kritzel-line-endings.js";
 import { KritzelMasterDetail as KritzelMasterDetailElement, defineCustomElement as defineKritzelMasterDetail } from "../../../../kritzel-stencil/dist/components/kritzel-master-detail.js";
 import { KritzelMoreMenu as KritzelMoreMenuElement, defineCustomElement as defineKritzelMoreMenu } from "../../../../kritzel-stencil/dist/components/kritzel-more-menu.js";
@@ -68,6 +69,23 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
         onUndoStateChange: 'undoStateChange'
     } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
+});
+
+export type KritzelExportEvents = {
+    onExportPng: EventName<KritzelExportCustomEvent<void>>,
+    onExportSvg: EventName<KritzelExportCustomEvent<void>>
+};
+
+export const KritzelExport: StencilReactComponent<KritzelExportElement, KritzelExportEvents> = /*@__PURE__*/ createComponent<KritzelExportElement, KritzelExportEvents>({
+    tagName: 'kritzel-export',
+    elementClass: KritzelExportElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onExportPng: 'exportPng',
+        onExportSvg: 'exportSvg'
+    } as KritzelExportEvents,
+    defineCustomElement: defineKritzelExport
 });
 
 export type KritzelLineEndingsEvents = { onValueChange: EventName<KritzelLineEndingsCustomEvent<LineArrowConfig>> };

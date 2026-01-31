@@ -8,6 +8,7 @@ import type { JSX } from '../../kritzel-stencil/dist/components';
 import { defineCustomElement as defineKritzelBackToContent } from '../../kritzel-stencil/dist/components/kritzel-back-to-content.js';
 import { defineCustomElement as defineKritzelDialog } from '../../kritzel-stencil/dist/components/kritzel-dialog.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
+import { defineCustomElement as defineKritzelExport } from '../../kritzel-stencil/dist/components/kritzel-export.js';
 import { defineCustomElement as defineKritzelLineEndings } from '../../kritzel-stencil/dist/components/kritzel-line-endings.js';
 import { defineCustomElement as defineKritzelMasterDetail } from '../../kritzel-stencil/dist/components/kritzel-master-detail.js';
 import { defineCustomElement as defineKritzelMoreMenu } from '../../kritzel-stencil/dist/components/kritzel-more-menu.js';
@@ -63,6 +64,15 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'isReady',
   'objectsChange',
   'undoStateChange'
+]);
+
+
+export const KritzelExport: StencilVueComponent<JSX.KritzelExport> = /*@__PURE__*/ defineContainer<JSX.KritzelExport>('kritzel-export', defineKritzelExport, [
+  'exportPng',
+  'exportSvg'
+], [
+  'exportPng',
+  'exportSvg'
 ]);
 
 
