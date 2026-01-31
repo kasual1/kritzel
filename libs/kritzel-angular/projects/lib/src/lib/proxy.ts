@@ -276,7 +276,8 @@ export declare interface KritzelOpacitySlider extends Components.KritzelOpacityS
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineKritzelSettings
+  defineCustomElementFn: defineKritzelSettings,
+  methods: ['open']
 })
 @Component({
   selector: 'kritzel-settings',

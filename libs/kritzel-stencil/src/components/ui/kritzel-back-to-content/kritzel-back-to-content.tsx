@@ -33,7 +33,6 @@ export class KritzelBackToContent {
           onClick={this.handleClick}
         >
           <kritzel-icon name="chevrons-left"></kritzel-icon>
-          {this.text}
         </button>
       </Host>
     );

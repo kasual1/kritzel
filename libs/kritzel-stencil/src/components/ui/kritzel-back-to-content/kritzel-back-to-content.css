@@ -1,8 +1,5 @@
 :host {
-  position: absolute;
-  top: var(--kritzel-back-to-content-top, 14px);
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
   z-index: var(--kritzel-back-to-content-z-index, 1000);
 }
 
