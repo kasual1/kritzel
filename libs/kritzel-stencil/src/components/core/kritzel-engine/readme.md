@@ -218,6 +218,16 @@ Type: `Promise<void>`
 
 
 
+### `exportViewportAsSvg() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `getActiveWorkspace() => Promise<KritzelWorkspace>`
 
 
@@ -251,6 +261,22 @@ Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
 #### Returns
 
 Type: `Promise<T>`
+
+
+
+### `getScreenshot(format?: "png" | "svg") => Promise<string>`
+
+
+
+#### Parameters
+
+| Name     | Type             | Description |
+| -------- | ---------------- | ----------- |
+| `format` | `"svg" \| "png"` |             |
+
+#### Returns
+
+Type: `Promise<string>`
 
 
 

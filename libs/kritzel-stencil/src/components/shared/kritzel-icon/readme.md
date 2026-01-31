@@ -22,6 +22,7 @@
  - [kritzel-brush-style](../kritzel-brush-style)
  - [kritzel-context-menu](../../ui/kritzel-context-menu)
  - [kritzel-controls](../../ui/kritzel-controls)
+ - [kritzel-export](../../ui/kritzel-export)
  - [kritzel-master-detail](../kritzel-master-detail)
  - [kritzel-menu-item](../kritzel-menu-item)
  - [kritzel-more-menu](../../ui/kritzel-more-menu)
@@ -36,6 +37,7 @@ graph TD;
   kritzel-brush-style --> kritzel-icon
   kritzel-context-menu --> kritzel-icon
   kritzel-controls --> kritzel-icon
+  kritzel-export --> kritzel-icon
   kritzel-master-detail --> kritzel-icon
   kritzel-menu-item --> kritzel-icon
   kritzel-more-menu --> kritzel-icon
