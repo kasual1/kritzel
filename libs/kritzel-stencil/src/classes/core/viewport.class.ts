@@ -127,7 +127,6 @@ export class KritzelViewport {
 
         this._core.rerender();
         this._debounceUpdate();
-        this._core.engine.emitObjectsInViewportChange();
       }
     }
 
@@ -177,7 +176,6 @@ export class KritzelViewport {
 
         this._core.rerender();
         this._debounceUpdate();
-        this._core.engine.emitObjectsInViewportChange();
       }
     }
   }
@@ -224,7 +222,6 @@ export class KritzelViewport {
 
     this._core.rerender();
     this._debounceUpdate();
-    this._core.engine.emitObjectsInViewportChange();
   }
 
   centerFitInViewport(object: KritzelBaseObject): void {
@@ -264,7 +261,6 @@ export class KritzelViewport {
     this._core.rerender();
     this._debounceUpdate();
     this._debounceEndScaling();
-    this._core.engine.emitObjectsInViewportChange();
   }
 
   private handlePan(event: WheelEvent): void {
@@ -277,7 +273,6 @@ export class KritzelViewport {
 
     this._core.rerender();
     this._debounceUpdate();
-    this._core.engine.emitObjectsInViewportChange();
   }
 
   /**
@@ -324,7 +319,6 @@ export class KritzelViewport {
       } else {
         this._animationFrameId = null;
         this._debounceUpdate();
-        this._core.engine.emitObjectsInViewportChange();
       }
     };
 

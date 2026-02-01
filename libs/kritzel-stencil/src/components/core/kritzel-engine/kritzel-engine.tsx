@@ -611,11 +611,6 @@ export class KritzelEngine {
     }
   }
 
-  emitObjectsInViewportChange() {
-    const objects = this.core.store.objectsInViewport;
-    this.objectsInViewportChange.emit(objects);
-  }
-
   private _registerStateChangeListeners() {
     this.core.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
   }
@@ -655,6 +650,8 @@ export class KritzelEngine {
     const visibleObjects = this.core.store.state.objects.query(viewportBounds).sort((a, b) => a.zIndex - b.zIndex);
 
     this.core.cursorManager.applyCursor();
+
+    this.objectsInViewportChange.emit(visibleObjects);
 
     return (
       <Host>
