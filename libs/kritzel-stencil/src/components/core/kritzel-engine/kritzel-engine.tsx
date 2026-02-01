@@ -247,7 +247,11 @@ export class KritzelEngine {
   }
 
   @Method()
-  async registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): Promise<KritzelBaseTool> {
+  async registerTool(
+    toolName: string,
+    toolClass: any,
+    toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
+  ): Promise<KritzelBaseTool> {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return null;
@@ -445,6 +449,18 @@ export class KritzelEngine {
   async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string> {
     if (!this.host) return null;
 
+    // Save critical state before screenshot to restore after
+    const savedState = {
+      objects: this.core.store.state.objects,
+      activeWorkspace: this.core.store.state.activeWorkspace,
+      workspaces: this.core.store.state.workspaces,
+      activeTool: this.core.store.state.activeTool,
+      isReady: this.core.store.state.isReady,
+      translateX: this.core.store.state.translateX,
+      translateY: this.core.store.state.translateY,
+      scale: this.core.store.state.scale,
+    };
+
     const options = {
       filter: (node: HTMLElement) => {
         // Exclude the context menu and debug panel from the screenshot
@@ -458,11 +474,27 @@ export class KritzelEngine {
       },
     };
 
-    if (format === 'svg') {
-      return await toSvg(this.host, options);
-    } else {
-      return await toPng(this.host, options);
+    let result: string;
+    try {
+      if (format === 'svg') {
+        result = await toSvg(this.host, options);
+      } else {
+        result = await toPng(this.host, options);
+      }
+    } finally {
+      // Restore state after screenshot in case cloning caused any side effects
+      this.core.store.state.objects = savedState.objects;
+      this.core.store.state.activeWorkspace = savedState.activeWorkspace;
+      this.core.store.state.workspaces = savedState.workspaces;
+      this.core.store.state.activeTool = savedState.activeTool;
+      this.core.store.state.isReady = savedState.isReady;
+      this.core.store.state.translateX = savedState.translateX;
+      this.core.store.state.translateY = savedState.translateY;
+      this.core.store.state.scale = savedState.scale;
+      this.core.rerender();
     }
+
+    return result;
   }
 
   @Method()
@@ -539,7 +571,6 @@ export class KritzelEngine {
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
 
   private _lastHadSelectionGroup: boolean = false;
-
 
   get isSelecting() {
     return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
@@ -651,7 +682,7 @@ export class KritzelEngine {
 
     this.core.cursorManager.applyCursor();
 
-    if(this.core.store.totalObjectCount > 0){
+    if (this.core.store.totalObjectCount > 0) {
       this.objectsInViewportChange.emit(visibleObjects);
     }
 
@@ -725,23 +756,13 @@ export class KritzelEngine {
                   }}
                 >
                   {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
-                    <svg
-                      ref={el => object.mount(el)}
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{ overflow: 'visible' }}
-                      viewBox={object?.viewBox}
-                    >
+                    <svg ref={el => object.mount(el)} xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible' }} viewBox={object?.viewBox}>
                       <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'} />
                     </svg>
                   )}
 
                   {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
-                    <svg
-                      ref={el => object.mount(el)}
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{ overflow: 'visible' }}
-                      viewBox={object?.viewBox}
-                    >
+                    <svg ref={el => object.mount(el)} xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible' }} viewBox={object?.viewBox}>
                       <defs>
                         {object.hasStartArrow && (
                           <marker
@@ -770,26 +791,22 @@ export class KritzelEngine {
                             orient="auto"
                             markerUnits="userSpaceOnUse"
                           >
-                            <path
-                              d={object.getArrowPath(object.arrows?.end?.style)}
-                              fill={object.getArrowFill('end')}
-                              transform={`scale(${object.getArrowSize('end') / 10})`}
-                            />
+                            <path d={object.getArrowPath(object.arrows?.end?.style)} fill={object.getArrowFill('end')} transform={`scale(${object.getArrowSize('end') / 10})`} />
                           </marker>
                         )}
                       </defs>
-                      <path 
-                        d={this.core.anchorManager.computeClippedLinePath(object)} 
-                        fill="none" 
-                        stroke="transparent" 
-                        stroke-width={Math.max(object?.strokeWidth || 0, 10)} 
+                      <path
+                        d={this.core.anchorManager.computeClippedLinePath(object)}
+                        fill="none"
+                        stroke="transparent"
+                        stroke-width={Math.max(object?.strokeWidth || 0, 10)}
                         stroke-linecap="round"
                       />
-                      <path 
-                        d={this.core.anchorManager.computeClippedLinePath(object)} 
-                        fill="none" 
-                        stroke={object?.stroke} 
-                        stroke-width={object?.strokeWidth} 
+                      <path
+                        d={this.core.anchorManager.computeClippedLinePath(object)}
+                        fill="none"
+                        stroke={object?.stroke}
+                        stroke-width={object?.strokeWidth}
                         stroke-linecap="round"
                         marker-start={object.hasStartArrow ? `url(#${object.startMarkerId})` : undefined}
                         marker-end={object.hasEndArrow ? `url(#${object.endMarkerId})` : undefined}
@@ -811,7 +828,10 @@ export class KritzelEngine {
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
                       overflow: 'visible',
-                      display: KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') || KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath')  ? 'none' : 'block'
+                      display:
+                        KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') || KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath')
+                          ? 'none'
+                          : 'block',
                     }}
                   >
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
@@ -879,12 +899,7 @@ export class KritzelEngine {
                           viewBox={object.viewBox}
                           preserveAspectRatio="none"
                         >
-                          <path
-                            d={object.getSvgPath()}
-                            fill={object.fillColor}
-                            stroke={object.strokeColor}
-                            stroke-width={object.strokeWidth}
-                          />
+                          <path d={object.getSvgPath()} fill={object.fillColor} stroke={object.strokeColor} stroke-width={object.strokeWidth} />
                         </svg>
                         <div
                           ref={el => object.mountTextEditor(el)}
@@ -942,7 +957,6 @@ export class KritzelEngine {
                       ></div>
                     )}
                   </foreignObject>
-
                 </svg>
                 {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
                   <div
@@ -1189,8 +1203,16 @@ export class KritzelEngine {
 
                           <circle
                             class="selection-line-handle center"
-                            cx={object.controlX !== undefined ? (object.startX + 2 * object.controlX + object.endX) / 4 - object.x : (object.startX - object.x + object.endX - object.x) / 2}
-                            cy={object.controlY !== undefined ? (object.startY + 2 * object.controlY + object.endY) / 4 - object.y : (object.startY - object.y + object.endY - object.y) / 2}
+                            cx={
+                              object.controlX !== undefined
+                                ? (object.startX + 2 * object.controlX + object.endX) / 4 - object.x
+                                : (object.startX - object.x + object.endX - object.x) / 2
+                            }
+                            cy={
+                              object.controlY !== undefined
+                                ? (object.startY + 2 * object.controlY + object.endY) / 4 - object.y
+                                : (object.startY - object.y + object.endY - object.y) / 2
+                            }
                             r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
                             style={{
                               fill: 'var(--kritzel-selection-handle-color, #000000)',
@@ -1199,8 +1221,16 @@ export class KritzelEngine {
                           />
                           <circle
                             class="selection-line-handle-overlay center"
-                            cx={object.controlX !== undefined ? (object.startX + 2 * object.controlX + object.endX) / 4 - object.x : (object.startX - object.x + object.endX - object.x) / 2}
-                            cy={object.controlY !== undefined ? (object.startY + 2 * object.controlY + object.endY) / 4 - object.y : (object.startY - object.y + object.endY - object.y) / 2}
+                            cx={
+                              object.controlX !== undefined
+                                ? (object.startX + 2 * object.controlX + object.endX) / 4 - object.x
+                                : (object.startX - object.x + object.endX - object.x) / 2
+                            }
+                            cy={
+                              object.controlY !== undefined
+                                ? (object.startY + 2 * object.controlY + object.endY) / 4 - object.y
+                                : (object.startY - object.y + object.endY - object.y) / 2
+                            }
                             r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
                             style={{
                               fill: 'transparent',
@@ -1374,7 +1404,8 @@ export class KritzelEngine {
                       }}
                     />
                   ) : (
-                    data.edgeX !== undefined && data.edgeY !== undefined && (
+                    data.edgeX !== undefined &&
+                    data.edgeY !== undefined && (
                       <line
                         x1={data.edgeX}
                         y1={data.edgeY}
