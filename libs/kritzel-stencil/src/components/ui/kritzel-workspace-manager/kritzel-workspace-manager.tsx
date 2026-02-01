@@ -43,10 +43,12 @@ export class KritzelWorkspaceManager {
 
   private async initializeEngine() {
     await customElements.whenDefined('kritzel-engine');
-    this.kritzelEngineRef = this.host.parentElement.querySelector('kritzel-engine');
+    // Search for kritzel-engine in the closest kritzel-editor ancestor
+    const editor = this.host.closest('kritzel-editor');
+    this.kritzelEngineRef = editor?.querySelector('kritzel-engine') ?? null;
 
     if (!this.kritzelEngineRef) {
-      console.warn('kritzel-engine not found in parent element.');
+      console.warn('kritzel-engine not found in kritzel-editor.');
     }
   }
 
