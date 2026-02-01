@@ -21,6 +21,10 @@ export class KritzelStore {
     return Math.max(0, ...this._state.objects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).map(o => o.zIndex)) + 1;
   }
 
+  get totalObjectCount(): number {
+    return this._state.objects.totalCount;
+  }
+
   get allObjects(): KritzelBaseObject<Element>[]  {
     return this._state.objects.allObjects();
   }

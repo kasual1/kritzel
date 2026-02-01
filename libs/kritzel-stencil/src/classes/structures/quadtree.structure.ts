@@ -6,6 +6,12 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
   private capacity: number;
   private objects: T[] = [];
   private children: KritzelQuadtree<T>[] | null = null;
+  private _size: number = 0;
+
+  /** Total number of objects in the quadtree (O(1) access) */
+  get size(): number {
+    return this._size;
+  }
 
   constructor(bounds: KritzelBoundingBox, capacity: number = 16) {
     this.bounds = bounds;
@@ -15,6 +21,7 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
   reset(): void {
     this.objects = [];
     this.children = null;
+    this._size = 0;
   }
 
   insert(object: T): boolean {
@@ -24,6 +31,7 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
 
     if (this.objects.length < this.capacity && this.children === null) {
       this.objects.push(object);
+      this._size++;
       return true;
     }
 
@@ -33,6 +41,7 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
 
     for (const child of this.children!) {
       if (child.insert(object)) {
+        this._size++;
         return true;
       }
     }
@@ -57,17 +66,22 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
     return false;
   }
 
-  remove(predicate: (object: T) => boolean): void {
+  remove(predicate: (object: T) => boolean): number {
+    let removed = 0;
     const index = this.objects.findIndex(o => predicate(o));
     if (index !== -1) {
       this.objects.splice(index, 1);
+      removed++;
     }
 
     if (this.children !== null) {
       for (const child of this.children) {
-        child.remove(predicate);
+        removed += child.remove(predicate);
       }
     }
+
+    this._size -= removed;
+    return removed;
   }
 
   query(range: KritzelBoundingBox): T[] {
