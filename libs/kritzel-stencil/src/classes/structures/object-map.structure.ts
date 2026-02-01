@@ -43,6 +43,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     };
   }
 
+  get totalCount(): number {
+    return this.quadtree.size;
+  }
+
   constructor() {
     this.quadtree = new KritzelQuadtree<T>(
       {

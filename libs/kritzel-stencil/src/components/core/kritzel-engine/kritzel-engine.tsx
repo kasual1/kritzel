@@ -651,7 +651,9 @@ export class KritzelEngine {
 
     this.core.cursorManager.applyCursor();
 
-    this.objectsInViewportChange.emit(visibleObjects);
+    if(this.core.store.totalObjectCount > 0){
+      this.objectsInViewportChange.emit(visibleObjects);
+    }
 
     return (
       <Host>
