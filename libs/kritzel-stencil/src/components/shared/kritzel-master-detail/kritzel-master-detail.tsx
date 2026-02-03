@@ -105,15 +105,9 @@ export class KritzelMasterDetail {
     }
   };
 
-  private getTabIndex(item: IKritzelMasterDetailItem, index: number): number {
+  private getTabIndex(item: IKritzelMasterDetailItem, _index: number): number {
     if (item.disabled) return -1;
-    // If there's a selected item, only that one gets tabindex 0
-    if (this.selectedItemId) {
-      return item.id === this.selectedItemId ? 0 : -1;
-    }
-    // Otherwise, first enabled item gets tabindex 0
-    const firstEnabledIndex = this.items.findIndex(it => !it.disabled);
-    return index === firstEnabledIndex ? 0 : -1;
+    return 0;
   }
 
   render() {
@@ -173,7 +167,6 @@ export class KritzelMasterDetail {
             class="detail-panel"
             role="tabpanel"
             aria-labelledby={selectedTabId}
-            tabIndex={0}
           >
             <button class="mobile-back-button" onClick={this.handleBackClick} aria-label="Back to menu">
               <kritzel-icon name="chevron-left" size={20} class="mobile-back-icon"></kritzel-icon>

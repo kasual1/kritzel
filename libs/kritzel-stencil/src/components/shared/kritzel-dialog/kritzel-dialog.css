@@ -132,15 +132,6 @@
   color: var(--kritzel-dialog-close-button-hover-color, #1a1a1a);
 }
 
-.close-button:focus {
-  outline: none;
-}
-
-.close-button:focus-visible {
-  outline: 2px solid var(--kritzel-dialog-focus-ring-color, #0066cc);
-  outline-offset: 2px;
-}
-
 .close-button:active {
   background-color: var(--kritzel-dialog-close-button-active-background, #ebebeb);
 }
