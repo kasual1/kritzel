@@ -171,12 +171,6 @@ export class KritzelDialog {
     return focusable;
   }
 
-  private isFocusable(el: HTMLElement): boolean {
-    const focusableSelector =
-      'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), details, [tabindex]:not([tabindex="-1"])';
-    return el.matches(focusableSelector);
-  }
-
   private handleTabKey(event: KeyboardEvent) {
     const focusableElements = this.getSlottedFocusableElements();
     const closeButton = this.host.shadowRoot?.querySelector('.close-button') as HTMLElement;
