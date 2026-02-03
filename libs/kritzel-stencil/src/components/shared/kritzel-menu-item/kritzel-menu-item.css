@@ -13,6 +13,11 @@
   font-size: var(--kritzel-menu-item-font-size, 14px);
   color: var(--kritzel-menu-item-color, #333333);
   border-radius: var(--kritzel-menu-item-border-radius, 12px);
+  -webkit-tap-highlight-color: transparent;
+}
+
+:host:focus:not(:focus-visible) {
+  outline: none;
 }
 
 :host(:hover) .menu-item-overlay,
