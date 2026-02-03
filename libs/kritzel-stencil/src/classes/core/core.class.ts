@@ -213,6 +213,7 @@ export class KritzelCore {
   deleteWorkspace(workspace: KritzelWorkspace): void {
     // If deleting the active workspace, need to handle ObjectMap cleanup
     if (this._store.state.activeWorkspace?.id === workspace.id) {
+      this.engine.viewport?.cancelPendingUpdates();
       this._store.state.objects?.destroy();
     }
 
@@ -227,6 +228,12 @@ export class KritzelCore {
   updateWorkspaceViewport(translateX: number, translateY: number, scale: number): void {
     const activeWorkspace = this._store.state.activeWorkspace;
     if (!activeWorkspace) {
+      return;
+    }
+
+    // Check if the workspace is still valid (not deleted)
+    const isValid = this._store.state.workspaces.some(w => w.id === activeWorkspace.id);
+    if (!isValid) {
       return;
     }
 
