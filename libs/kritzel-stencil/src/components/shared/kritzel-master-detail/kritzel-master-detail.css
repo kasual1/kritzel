@@ -70,12 +70,8 @@
 }
 
 .menu-item:focus-visible {
-  outline: var(--kritzel-master-detail-menu-item-focus-outline, 2px solid #0066cc);
-  outline-offset: var(--kritzel-master-detail-menu-item-focus-outline-offset, -2px);
-}
-
-.menu-item.is-selected:focus-visible {
-  outline-color: var(--kritzel-master-detail-menu-item-selected-focus-outline-color, #ffffff);
+  outline: var(--kritzel-master-detail-menu-item-focus-outline, revert);
+  outline-offset: var(--kritzel-master-detail-menu-item-focus-outline-offset, revert);
 }
 
 /* Menu Item Icon */
@@ -111,8 +107,8 @@
 }
 
 .detail-panel:focus-visible {
-  outline: var(--kritzel-master-detail-detail-focus-outline, 2px solid #0066cc);
-  outline-offset: var(--kritzel-master-detail-detail-focus-outline-offset, -2px);
+  outline: var(--kritzel-master-detail-detail-focus-outline, revert);
+  outline-offset: var(--kritzel-master-detail-detail-focus-outline-offset, revert);
 }
 
 /* Mobile Back Button */
