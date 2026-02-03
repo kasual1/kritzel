@@ -162,11 +162,9 @@ export class KritzelDialog {
     slots.forEach(slot => {
       const assigned = slot.assignedElements({ flatten: true }) as HTMLElement[];
       assigned.forEach(el => {
+        // Use KritzelHTMLHelper to find focusable elements including those in nested shadow DOMs
         const elements = KritzelHTMLHelper.getFocusableElements(el);
         focusable.push(...elements);
-        if (this.isFocusable(el)) {
-          focusable.push(el);
-        }
       });
     });
 

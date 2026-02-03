@@ -63,6 +63,11 @@
   color: var(--kritzel-primary-color, #007bff);
 }
 
+.export-button:focus-visible {
+  outline: revert;
+  outline-offset: revert;
+}
+
 .export-button .icon-container {
   display: flex;
   align-items: center;
