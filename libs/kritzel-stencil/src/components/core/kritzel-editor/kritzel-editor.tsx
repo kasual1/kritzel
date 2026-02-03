@@ -326,7 +326,6 @@ export class KritzelEditor {
   }
 
   handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
-    console.log(event.detail.length);
     const hasVisibleObjects = event.detail.length > 0;
     this.isBackToContentButtonVisible = !hasVisibleObjects;
   }
