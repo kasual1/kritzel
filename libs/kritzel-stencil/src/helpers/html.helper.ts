@@ -50,7 +50,8 @@ export class KritzelHTMLHelper {
       const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), details, [tabindex]:not([tabindex="-1"])';
   
       const isVisible = (el: HTMLElement) => {
-        return el.offsetParent !== null;
+        const style = window.getComputedStyle(el);
+        return style.display !== 'none' && style.visibility !== 'hidden';
       };
   
       const find = (element: Element) => {

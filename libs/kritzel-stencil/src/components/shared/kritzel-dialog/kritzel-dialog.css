@@ -136,6 +136,11 @@
   background-color: var(--kritzel-dialog-close-button-active-background, #ebebeb);
 }
 
+.close-button:focus-visible {
+  outline: revert;
+  outline-offset: revert;
+}
+
 .dialog-body {
   padding: var(--kritzel-dialog-body-padding, 20px);
   overflow-y: auto;
