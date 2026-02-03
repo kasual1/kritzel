@@ -16,13 +16,12 @@
   max-height: var(--kritzel-portal-max-height, 300px);
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
-}
-
-:host:focus:not(:focus-visible) {
   outline: none;
 }
 
-
+:host:focus-visible {
+  outline: auto;
+}
 
 .has-open-child-overlay {
   position: absolute;
