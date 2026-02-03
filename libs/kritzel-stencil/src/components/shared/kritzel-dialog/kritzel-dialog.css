@@ -73,6 +73,10 @@
 
 /* Responsive: auto fullscreen on mobile when enabled */
 @media (max-width: 576px) {
+  .backdrop:has(.fullscreen-on-mobile) {
+    background-color: transparent;
+  }
+
   .dialog-content.fullscreen-on-mobile {
     width: 100vw;
     height: 100vh;
