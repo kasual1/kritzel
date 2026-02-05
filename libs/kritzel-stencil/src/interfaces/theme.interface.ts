@@ -10,159 +10,318 @@ export interface KritzelTheme {
   /** Theme identifier */
   name: ThemeName;
 
-  /** Global/shared variables */
-  global: {
-    pointerCursor: string;
-    focusRingColor: string;
-    focusColor: string;
-    iconColor: string;
-    dividerColor: string;
-    selectionBorderColor: string;
+  /** Global variables */
+  global?: {
+    backgroundSecondary?: string;
+    borderColor?: string;
+    dividerColor?: string;
+    focusColor?: string;
+    focusRingColor?: string;
+    pointerCursor?: string;
+    hoverBackground?: string;
+    iconColor?: string;
+    primaryColor?: string;
+    selectionBorderColor?: string;
+    textPrimary?: string;
+    textSecondary?: string;
   };
 
-  /** Canvas/engine variables */
-  engine: {
-    backgroundColor: string;
-  };
-
-  /** Controls/toolbar variables */
-  controls: {
-    gap: string;
-    padding: string;
-    backgroundColor: string;
-    borderRadius: string;
-    boxShadow: string;
-    border: string;
-    controlColor: string;
-    controlBorderRadius: string;
-    controlPadding: string;
-    controlHoverBackgroundColor: string;
-    controlActiveBackgroundColor: string;
-    controlSelectedBackgroundColor: string;
-    controlSelectedColor: string;
-    controlTextColor: string;
-  };
-
-  /** Tooltip variables */
-  tooltip: {
-    backgroundColor: string;
-    color: string;
-    padding: string;
-    borderRadius: string;
-    boxShadow: string;
-  };
-
-  /** Context menu variables */
-  contextMenu: {
-    backgroundColor: string;
-    borderRadius: string;
-    boxShadow: string;
-    border: string;
-    padding: string;
-    itemGap: string;
-    itemPadding: string;
-    itemBorderRadius: string;
-    itemFontSize: string;
-    itemColor: string;
-    itemHoverBackgroundColor: string;
-    itemActiveBackgroundColor: string;
-    itemDisabledColor: string;
-  };
-
-  /** Menu variables */
-  menu: {
-    backgroundColor: string;
-    width: string;
-    padding: string;
-    borderRadius: string;
-    boxShadow: string;
-    border: string;
-    gap: string;
-    itemPadding: string;
-    itemHeight: string;
-    itemMinHeight: string;
-    itemFontSize: string;
-    itemColor: string;
-    itemBorderRadius: string;
-    itemHoverBackgroundColor: string;
-    itemSelectedBackgroundColor: string;
-    itemSelectedColor: string;
-    itemInputSelectionColor: string;
-  };
-
-  /** Slide toggle variables */
-  slideToggle: {
-    width: string;
-    height: string;
-    trackColor: string;
-    trackColorChecked: string;
-    borderRadius: string;
-    transitionDuration: string;
-    thumbSize: string;
-    thumbColor: string;
-  };
-
-  /** Split button variables */
-  splitButton: {
-    padding: string;
-    backgroundColor: string;
-    borderRadius: string;
-    boxShadow: string;
-    border: string;
-    gap: string;
-    hoverBackgroundColor: string;
-    dividerWidth: string;
-    fontSize: string;
-  };
-
-  /** Dropdown variables */
-  dropdown: {
-    color: string;
-    hoverBackgroundColor: string;
-    selectedBackgroundColor: string;
-    accentColor: string;
-  };
-
-  /** Opacity slider variables */
-  opacitySlider: {
-    filledColor: string;
-    emptyColor: string;
-    thumbColor: string;
-    thumbBorderColor: string;
-  };
-
-  /** Stroke size variables */
-  strokeSize: {
-    hoverBackgroundColor: string;
-    selectedBackgroundColor: string;
-  };
-
-  /** Line endings variables */
-  lineEndings: {
-    labelColor: string;
-    optionBackgroundColor: string;
-    hoverBackgroundColor: string;
-    selectedBackgroundColor: string;
-  };
-
-  /** Utility panel variables */
-  utilityPanel: {
-    buttonBorderRadius: string;
+  /** Back to content variables */
+  backToContent?: {
+    activeBackgroundColor?: string;
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    color?: string;
+    fontSize?: string;
+    fontWeight?: string;
+    gap?: string;
+    height?: string;
+    hoverBackgroundColor?: string;
+    padding?: string;
+    zIndex?: string;
   };
 
   /** Color palette variables */
-  colorPalette: {
-    hoverBackgroundColor: string;
-    whiteCircleBorderColor: string;
+  colorPalette?: {
+    circleBorderColor?: string;
+    hoverBackgroundColor?: string;
+    selectedBackgroundColor?: string;
   };
 
-  /** Submenu variables */
-  submenu: {
-    gap: string;
+  /** Context menu variables */
+  contextMenu?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    itemActiveBackgroundColor?: string;
+    itemBorderRadius?: string;
+    itemColor?: string;
+    itemDisabledColor?: string;
+    itemFontSize?: string;
+    itemGap?: string;
+    itemHoverBackgroundColor?: string;
+    itemPadding?: string;
+    padding?: string;
+  };
+
+  /** Controls variables */
+  controls?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    controlActiveBackgroundColor?: string;
+    controlBorderRadius?: string;
+    controlColor?: string;
+    controlHoverBackgroundColor?: string;
+    controlPadding?: string;
+    controlSelectedBackgroundColor?: string;
+    controlSelectedColor?: string;
+    gap?: string;
+    padding?: string;
+    textColor?: string;
+  };
+
+  /** Dialog variables */
+  dialog?: {
+    backdropColor?: string;
+    backgroundColor?: string;
+    bodyPadding?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    closeButtonActiveBackground?: string;
+    closeButtonBackground?: string;
+    closeButtonBorderRadius?: string;
+    closeButtonColor?: string;
+    closeButtonHoverBackground?: string;
+    closeButtonHoverColor?: string;
+    fontFamily?: string;
+    footerBorder?: string;
+    footerGap?: string;
+    footerPadding?: string;
+    headerBorder?: string;
+    headerPadding?: string;
+    heightLarge?: string;
+    heightMedium?: string;
+    heightSmall?: string;
+    maxHeight?: string;
+    maxWidth?: string;
+    titleColor?: string;
+    titleFontSize?: string;
+    titleFontWeight?: string;
+    widthLarge?: string;
+    widthMedium?: string;
+    widthSmall?: string;
+  };
+
+  /** Dropdown variables */
+  dropdown?: {
+    accentColor?: string;
+    hoverBackgroundColor?: string;
+    selectedBackgroundColor?: string;
+    textColor?: string;
+  };
+
+  /** Editor variables */
+  editor?: {
+    controlsBottom?: string;
+    controlsTransform?: string;
+    controlsTransition?: string;
+    controlsTransitionDuration?: string;
+    topLeftButtonsLeft?: string;
+    topLeftButtonsTop?: string;
+    topRightButtonsRight?: string;
+    topRightButtonsTop?: string;
+  };
+
+  /** Engine variables */
+  engine?: {
+    backgroundColor?: string;
+  };
+
+  /** Font size variables */
+  fontSize?: {
+    hoverBackgroundColor?: string;
+    selectedBackgroundColor?: string;
+    textColor?: string;
+  };
+
+  /** Line endings variables */
+  lineEndings?: {
+    hoverBackgroundColor?: string;
+    labelColor?: string;
+    optionBackground?: string;
+    selectedBackgroundColor?: string;
+  };
+
+  /** Master detail variables */
+  masterDetail?: {
+    backButtonColor?: string;
+    backgroundColor?: string;
+    detailBackgroundColor?: string;
+    detailFocusOutline?: string;
+    detailFocusOutlineOffset?: string;
+    detailPadding?: string;
+    gap?: string;
+    menuBackgroundColor?: string;
+    menuBorderRight?: string;
+    menuGap?: string;
+    menuItemActiveBackgroundColor?: string;
+    menuItemBackgroundColor?: string;
+    menuItemBorderRadius?: string;
+    menuItemChevronColor?: string;
+    menuItemColor?: string;
+    menuItemDisabledColor?: string;
+    menuItemFocusOutline?: string;
+    menuItemFocusOutlineOffset?: string;
+    menuItemFontSize?: string;
+    menuItemFontWeight?: string;
+    menuItemGap?: string;
+    menuItemHoverBackgroundColor?: string;
+    menuItemPadding?: string;
+    menuItemSelectedBackgroundColor?: string;
+    menuItemSelectedColor?: string;
+    menuItemSelectedFontWeight?: string;
+    menuItemSelectedHoverBackgroundColor?: string;
+    menuMinWidth?: string;
+    menuPadding?: string;
+    menuWidth?: string;
+    minHeight?: string;
+  };
+
+  /** Menu variables */
+  menu?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    gap?: string;
+    itemBorderRadius?: string;
+    itemButtonHoverBackgroundColor?: string;
+    itemChildOpenBackgroundColor?: string;
+    itemColor?: string;
+    itemEditingBackgroundColor?: string;
+    itemFontSize?: string;
+    itemHeight?: string;
+    itemInputBorder?: string;
+    itemInputHeight?: string;
+    itemInputSelectionColor?: string;
+    itemInputSelectionTextColor?: string;
+    itemMinHeight?: string;
+    itemOverlayBackgroundColor?: string;
+    itemPadding?: string;
+    itemSelectedBackgroundColor?: string;
+    itemSelectedColor?: string;
+    padding?: string;
+    width?: string;
+  };
+
+  /** More menu variables */
+  moreMenu?: {
+    buttonActiveBackgroundColor?: string;
+    buttonBackgroundColor?: string;
+    buttonBorder?: string;
+    buttonBorderRadius?: string;
+    buttonBoxShadow?: string;
+    buttonHeight?: string;
+    buttonHoverBackgroundColor?: string;
+    buttonWidth?: string;
+  };
+
+  /** Numeric input variables */
+  numericInput?: {
+    backgroundColor?: string;
+    borderColor?: string;
+    focusBorderColor?: string;
+    hoverBorderColor?: string;
+    labelColor?: string;
+    spinnerActiveBackground?: string;
+    spinnerBackground?: string;
+    spinnerColor?: string;
+    spinnerHoverBackground?: string;
+    textColor?: string;
+  };
+
+  /** Opacity slider variables */
+  opacitySlider?: {
+    activeColor?: string;
+    thumbBorderColor?: string;
+    thumbColor?: string;
+    trackColor?: string;
   };
 
   /** Portal variables */
-  portal: {
-    maxHeight: string;
+  portal?: {
+    maxHeight?: string;
+  };
+
+  /** Settings variables */
+  settings?: {
+    contentHeadingColor?: string;
+    contentTextColor?: string;
+    descriptionColor?: string;
+    labelColor?: string;
+  };
+
+  /** Shape fill variables */
+  shapeFill?: {
+    hoverBackgroundColor?: string;
+    optionBackground?: string;
+    selectedBackgroundColor?: string;
+  };
+
+  /** Slide toggle variables */
+  slideToggle?: {
+    borderRadius?: string;
+    height?: string;
+    thumbColor?: string;
+    thumbSize?: string;
+    trackCheckedColor?: string;
+    trackColor?: string;
+    transitionDuration?: string;
+    width?: string;
+  };
+
+  /** Split button variables */
+  splitButton?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    dividerBackgroundColor?: string;
+    dividerWidth?: string;
+    fontSize?: string;
+    gap?: string;
+    hoverBackgroundColor?: string;
+    padding?: string;
+  };
+
+  /** Stroke size variables */
+  strokeSize?: {
+    hoverBackgroundColor?: string;
+    selectedBackgroundColor?: string;
+  };
+
+  /** Submenu variables */
+  submenu?: {
+    gap?: string;
+  };
+
+  /** Tooltip variables */
+  tooltip?: {
+    backgroundColor?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    color?: string;
+    padding?: string;
+  };
+
+  /** Utility panel variables */
+  utilityPanel?: {
+    buttonBorderRadius?: string;
   };
 }
