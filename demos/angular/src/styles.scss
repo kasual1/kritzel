@@ -51,11 +51,11 @@ body {
   --kritzel-controls-divider-width: 1px;
   --kritzel-controls-divider-height: 24px;
   --kritzel-controls-divider-background-color: hsl(0, 0%, 0%, 4.3%);
-  --kritzel-controls-tooltip-background-color: #fff;
-  --kritzel-controls-tooltip-color: #000;
-  --kritzel-controls-tooltip-border-radius: 16px;
-  --kritzel-controls-tooltip-padding: 8px;
-  --kritzel-controls-tooltip-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+  --kritzel-tooltip-background-color: #fff;
+  --kritzel-tooltip-color: #000;
+  --kritzel-tooltip-border-radius: 16px;
+  --kritzel-tooltip-padding: 8px;
+  --kritzel-tooltip-box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 
   --kritzel-color-palette-hover-background-color: #ebebeb;
   --kritzel-color-palette-circle-border-color: #dddcdc;
@@ -74,11 +74,11 @@ body {
 
   --kritzel-engine-background-color: #ffffff;
 
-  --kritzel-menu-item-selected-bg: var(--kritzel-primary-color);
+  --kritzel-menu-item-selected-background-color: var(--kritzel-primary-color);
   --kritzel-menu-item-input-selection-color: var(--kritzel-primary-color);
 
   --kritzel-snap-indicator-stroke: var(--kritzel-primary-color);
 
   --kritzel-dropdown-accent-color: var(--kritzel-primary-color);
-  --kritzel-dropdown-selected-bg: rgba(221, 0, 48, 0.1);
+  --kritzel-dropdown-selected-background-color: rgba(221, 0, 48, 0.1);
 }

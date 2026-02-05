@@ -119,7 +119,7 @@
   border-radius: var(--kritzel-dialog-close-button-border-radius, 6px);
   background-color: var(--kritzel-dialog-close-button-background, transparent);
   color: var(--kritzel-dialog-close-button-color, #666666);
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   transition:
     background-color 150ms ease,
     color 150ms ease;

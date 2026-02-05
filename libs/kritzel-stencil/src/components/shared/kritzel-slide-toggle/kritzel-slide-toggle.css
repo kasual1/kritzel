@@ -1,7 +1,7 @@
 :host {
   display: inline-flex;
   align-items: center;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   outline: none;
   z-index: 1;
 }

@@ -7,11 +7,11 @@
   padding: 8px 12px;
   border-radius: 4px;
   width: fit-content;
-  background-color: var(--kritzel-controls-tooltip-background-color, #ffffff);
-  color: var(--kritzel-controls-tooltip-color, #000000);
-  padding: var(--kritzel-controls-tooltip-padding, 12px);
-  border-radius: var(--kritzel-controls-tooltip-border-radius, 16px);
+  background-color: var(--kritzel-tooltip-background-color, #ffffff);
+  color: var(--kritzel-tooltip-color, #000000);
+  padding: var(--kritzel-tooltip-padding, 12px);
+  border-radius: var(--kritzel-tooltip-border-radius, 16px);
   white-space: nowrap;
-  box-shadow: var(--kritzel-controls-tooltip-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
+  box-shadow: var(--kritzel-tooltip-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
 }
 

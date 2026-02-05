@@ -26,7 +26,7 @@
 }
 
 :host(.selected) {
-  background-color: var(--kritzel-menu-item-selected-bg, #007aff);
+  background-color: var(--kritzel-menu-item-selected-background-color, #007aff);
   color: var(--kritzel-menu-item-selected-color, #ffffff);
 }
 
@@ -35,7 +35,7 @@
 }
 
 :host(.selected.editing) {
-  background-color: var(--kritzel-menu-item-selected-bg, #007aff);
+  background-color: var(--kritzel-menu-item-selected-background-color, #007aff);
 }
 
 :host(.selected) .edit-input {
@@ -68,7 +68,7 @@ kritzel-icon {
 }
 
 :host(.child-open.selected) {
-  background-color: var(--kritzel-menu-item-selected-bg, #007aff);
+  background-color: var(--kritzel-menu-item-selected-background-color, #007aff);
 }
 
 .menu-item-overlay {
@@ -129,7 +129,7 @@ kritzel-icon {
   padding: 4px;
   border-radius: 8px;
   border: none;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   display: flex;
   align-items: center;
   justify-content: center;
