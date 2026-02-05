@@ -167,7 +167,7 @@ export const darkTheme: KritzelTheme = {
     itemInputSelectionColor: 'rgba(255, 255, 255, 0.2)',
     itemInputSelectionTextColor: '#ffffff',
     itemMinHeight: '40px',
-    itemOverlayBackgroundColor: 'rgba(0, 0, 0, 0.3)',
+    itemOverlayBackgroundColor: 'hsl(0, 0%, 0%, 20%)',
     itemPadding: '8px',
     itemSelectedBackgroundColor: '#0A84FF',
     itemSelectedColor: '#ffffff',
