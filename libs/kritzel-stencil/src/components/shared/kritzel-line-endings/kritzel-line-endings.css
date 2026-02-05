@@ -32,7 +32,7 @@
   width: 48px;
   height: 32px;
   border-radius: 6px;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
   background: var(--kritzel-line-endings-option-background, #ffffff);

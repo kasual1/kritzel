@@ -31,7 +31,7 @@
     var(--kritzel-opacity-slider-track-color, #e0e0e0) 100%
   );
   outline: none;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
 }
 
 .opacity-slider::-webkit-slider-thumb {
@@ -42,7 +42,7 @@
   border-radius: 50%;
   background: var(--kritzel-opacity-slider-thumb-color, #ffffff);
   border: 2px solid var(--kritzel-opacity-slider-thumb-border-color, #007AFF);
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: transform 0.1s ease;
 }
@@ -57,7 +57,7 @@
   border-radius: 50%;
   background: var(--kritzel-opacity-slider-thumb-color, #ffffff);
   border: 2px solid var(--kritzel-opacity-slider-thumb-border-color, #007AFF);
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: transform 0.1s ease;
 }

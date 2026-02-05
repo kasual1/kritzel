@@ -21,7 +21,7 @@
   text-align: left;
   padding: var(--kritzel-context-menu-item-padding, 8px);
   border-radius: var(--kritzel-context-menu-item-border-radius, 12px);
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   font-size: var(--kritzel-context-menu-item-font-size, 14px);
   color: var(--kritzel-context-menu-item-color, #333333);
   white-space: nowrap;
