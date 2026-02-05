@@ -324,6 +324,10 @@ export interface KritzelTheme {
 
   /** Utility panel variables */
   utilityPanel?: {
+    backgroundColor?: string;
     buttonBorderRadius?: string;
+    buttonColor?: string;
+    buttonHoverBackgroundColor?: string;
+    separatorColor?: string;
   };
 }

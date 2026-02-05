@@ -257,6 +257,10 @@ export const lightTheme: KritzelTheme = {
   },
 
   utilityPanel: {
+    backgroundColor: '#e2e2e2',
     buttonBorderRadius: '8px',
+    buttonColor: '#333333',
+    buttonHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+    separatorColor: 'hsl(0, 0%, 0%, 8%)',
   },
 };
