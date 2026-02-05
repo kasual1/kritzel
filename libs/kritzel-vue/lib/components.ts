@@ -59,11 +59,13 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'syncConfig',
   'isReady',
   'objectsChange',
-  'undoStateChange'
+  'undoStateChange',
+  'themeChange'
 ], [
   'isReady',
   'objectsChange',
-  'undoStateChange'
+  'undoStateChange',
+  'themeChange'
 ]);
 
 

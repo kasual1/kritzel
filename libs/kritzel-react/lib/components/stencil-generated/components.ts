@@ -10,7 +10,7 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type IKritzelDialogCloseEvent, type IKritzelMasterDetailSelectEvent, type IKritzelMenuItem, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelExportCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelMoreMenuCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelSlideToggleCustomEvent, type KritzelUndoState, type LineArrowConfig, type ShapeFillType } from "../../../../kritzel-stencil";
+import { type IKritzelDialogCloseEvent, type IKritzelMasterDetailSelectEvent, type IKritzelMenuItem, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelExportCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelMoreMenuCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelSlideToggleCustomEvent, type KritzelUndoState, type LineArrowConfig, type ShapeFillType, type ThemeName } from "../../../../kritzel-stencil";
 import { KritzelBackToContent as KritzelBackToContentElement, defineCustomElement as defineKritzelBackToContent } from "../../../../kritzel-stencil/dist/components/kritzel-back-to-content.js";
 import { KritzelDialog as KritzelDialogElement, defineCustomElement as defineKritzelDialog } from "../../../../kritzel-stencil/dist/components/kritzel-dialog.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
@@ -55,7 +55,8 @@ export const KritzelDialog: StencilReactComponent<KritzelDialogElement, KritzelD
 export type KritzelEditorEvents = {
     onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>>,
     onObjectsChange: EventName<KritzelEditorCustomEvent<KritzelBaseObject[]>>,
-    onUndoStateChange: EventName<KritzelEditorCustomEvent<KritzelUndoState>>
+    onUndoStateChange: EventName<KritzelEditorCustomEvent<KritzelUndoState>>,
+    onThemeChange: EventName<KritzelEditorCustomEvent<ThemeName>>
 };
 
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents>({
@@ -66,7 +67,8 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     events: {
         onIsReady: 'isReady',
         onObjectsChange: 'objectsChange',
-        onUndoStateChange: 'undoStateChange'
+        onUndoStateChange: 'undoStateChange',
+        onThemeChange: 'themeChange'
     } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
 });
