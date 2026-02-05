@@ -19,7 +19,7 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  color: inherit;
+  color: var(--kritzel-more-menu-button-color, #000000);
 }
 
 .more-menu-button:hover {

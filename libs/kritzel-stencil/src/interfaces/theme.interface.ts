@@ -227,6 +227,7 @@ export interface KritzelTheme {
     buttonBorder?: string;
     buttonBorderRadius?: string;
     buttonBoxShadow?: string;
+    buttonColor?: string;
     buttonHeight?: string;
     buttonHoverBackgroundColor?: string;
     buttonWidth?: string;
@@ -292,6 +293,7 @@ export interface KritzelTheme {
     border?: string;
     borderRadius?: string;
     boxShadow?: string;
+    color?: string;
     dividerBackgroundColor?: string;
     dividerWidth?: string;
     fontSize?: string;

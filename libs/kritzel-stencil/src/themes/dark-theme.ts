@@ -181,6 +181,7 @@ export const darkTheme: KritzelTheme = {
     buttonBorder: '1px solid #3a3a3a',
     buttonBorderRadius: '12px',
     buttonBoxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
+    buttonColor: '#ffffff',
     buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
   },
 
@@ -236,6 +237,7 @@ export const darkTheme: KritzelTheme = {
     backgroundColor: '#2a2a2a',
     border: '1px solid #3a3a3a',
     boxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
+    color: '#ffffff',
     dividerBackgroundColor: '#3a3a3a',
     hoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
   },
