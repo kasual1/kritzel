@@ -1,12 +1,12 @@
 :host {
-   display: flex;
+  display: flex;
   flex-direction: row;
   align-items: center;
   padding: 4px;
   gap: 8px;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
-  background-color: rgb(226, 226, 226);
+  background-color: var(--kritzel-utility-panel-background-color, #e2e2e2);
   width: fit-content;
   user-select: none;
 }
@@ -21,14 +21,15 @@
   border: none;
   background: none;
   cursor: var(--kritzel-global-pointer-cursor, pointer);
-  color: #333333;
+  color: var(--kritzel-utility-panel-button-color, #333333);
+  --kritzel-icon-color: var(--kritzel-utility-panel-button-color, #333333);
   -webkit-tap-highlight-color: transparent;
   border-radius: var(--kritzel-utility-panel-button-border-radius, 8px);
 }
 
 .utility-button:hover,
 .utility-button:focus-visible {
-  background-color: var(--kritzel-controls-control-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: var(--kritzel-utility-panel-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
 .utility-button:disabled {
@@ -40,5 +41,5 @@
 .utility-separator {
   width: 1px;
   height: 16px;
-  background-color: hsl(0, 0%, 0%, 4.3%);
+  background-color: var(--kritzel-utility-panel-separator-color, hsl(0, 0%, 0%, 8%));
 }

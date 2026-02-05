@@ -260,6 +260,10 @@ export const darkTheme: KritzelTheme = {
   },
 
   utilityPanel: {
+    backgroundColor: '#3a3a3a',
     buttonBorderRadius: '8px',
+    buttonColor: '#e0e0e0',
+    buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    separatorColor: 'hsl(0, 0%, 100%, 12%)',
   },
 };
