@@ -95,6 +95,7 @@ export class KritzelPortal {
   private id: string = `portal-${ObjectHelper.generateUUID()}`;
   private defaultOffset = 0;
   private minLeft = 0;
+  private themeObserver: MutationObserver;
 
   private focusFirstElement() {
     requestAnimationFrame(() => {
@@ -249,12 +250,23 @@ export class KritzelPortal {
 
     const themeProvider = this.getThemeProvider();
     if (themeProvider) {
-      for (let i = 0; i < themeProvider.style.length; i++) {
-        const prop = themeProvider.style[i];
-        if (prop.startsWith('--kritzel-')) {
-          this.portal.style.setProperty(prop, themeProvider.style.getPropertyValue(prop));
+      const applyTheme = () => {
+        if (!this.portal) return;
+        for (let i = 0; i < themeProvider.style.length; i++) {
+          const prop = themeProvider.style[i];
+          if (prop.startsWith('--kritzel-')) {
+            this.portal.style.setProperty(prop, themeProvider.style.getPropertyValue(prop));
+          }
         }
-      }
+      };
+
+      applyTheme();
+
+      this.themeObserver = new MutationObserver(() => applyTheme());
+      this.themeObserver.observe(themeProvider, {
+        attributes: true,
+        attributeFilter: ['style'],
+      });
     }
 
     this.portal.appendChild(this.host);
@@ -262,6 +274,8 @@ export class KritzelPortal {
   }
 
   private closePortal() {
+    this.themeObserver?.disconnect();
+    this.themeObserver = null;
     const portal = document.getElementById(this.id);
     if (!portal) return;
     document.body.removeChild(portal);
