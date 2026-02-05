@@ -15,6 +15,7 @@ import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelUndoState as KritzelUndoState1 } from ".";
+import { ThemeName } from "./interfaces/theme.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
@@ -38,6 +39,7 @@ export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelUndoState as KritzelUndoState1 } from ".";
+export { ThemeName } from "./interfaces/theme.interface";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
@@ -294,6 +296,11 @@ export namespace Components {
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
         "syncConfig"?: KritzelSyncConfig;
+        /**
+          * The current theme to apply to the editor
+          * @default 'light'
+         */
+        "theme": ThemeName;
         "triggerSelectionChange": () => Promise<void>;
         "undo": () => Promise<void>;
         "ungroup": () => Promise<void>;
@@ -822,6 +829,7 @@ declare global {
         "isReady": HTMLElement;
         "objectsChange": KritzelBaseObject[];
         "undoStateChange": KritzelUndoState1;
+        "themeChange": ThemeName;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1454,6 +1462,7 @@ declare namespace LocalJSX {
         "objectContextMenuItems"?: ContextMenuItem[];
         "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
         "onObjectsChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
+        "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState1>) => void;
         /**
           * @default ABSOLUTE_SCALE_MAX
@@ -1492,6 +1501,11 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         "syncConfig"?: KritzelSyncConfig;
+        /**
+          * The current theme to apply to the editor
+          * @default 'light'
+         */
+        "theme"?: ThemeName;
         "workspace"?: KritzelWorkspace;
     }
     interface KritzelExport {

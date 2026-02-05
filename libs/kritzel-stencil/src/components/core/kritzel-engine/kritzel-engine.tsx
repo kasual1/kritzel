@@ -30,6 +30,7 @@ import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { throttle } from 'lodash';
 import { toPng, toSvg } from 'html-to-image';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
+import { ThemeName } from '../../../interfaces/theme.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -87,6 +88,13 @@ export class KritzelEngine {
   @Watch('lockDrawingScale')
   onLockDrawingScaleChange(newValue: boolean) {
     this.core.store.state.lockDrawingScale = newValue;
+  }
+
+  /** The current theme to apply to the editor */
+  @Prop() theme: ThemeName = 'light';
+  @Watch('theme')
+  onThemeChange(newValue: ThemeName) {
+    this.core.themeManager.setTheme(newValue);
   }
 
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
@@ -603,6 +611,10 @@ export class KritzelEngine {
     // Initialize cursor manager with target element and shadow root
     this.core.cursorManager.setTargetElement(this.cursorTarget || document.body);
     this.core.cursorManager.setShadowRoot(this.host.shadowRoot);
+
+    // Initialize theme manager with kritzel-editor as target element
+    const editorElement = this.host.closest('kritzel-editor') as HTMLElement;
+    this.core.themeManager.setTargetElement(editorElement || this.host);
 
     // Set sync configuration if provided
     if (this.syncConfig) {
