@@ -173,7 +173,7 @@
 
 /* Scrollbar styling */
 .dropdown-menu {
-  scrollbar-color: #ebebeb transparent;
+  scrollbar-color: var(--kritzel-global-scrollbar-thumb-color, #ebebeb) transparent;
   scrollbar-width: thin;
 }
 
