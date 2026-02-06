@@ -21,6 +21,11 @@ export const lightTheme: KritzelTheme = {
     textSecondary: '#333333',
   },
 
+  checkerboard: {
+    colorDark: '#cccccc',
+    colorLight: '#ffffff',
+  },
+
   backToContent: {
     activeBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
     backgroundColor: '#ffffff',
