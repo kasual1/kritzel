@@ -134,11 +134,12 @@ export class KritzelControls {
     }
 
     const color = (tool as any)[config.colorProperty];
+    const resolvedColor = KritzelColorHelper.resolveThemeColor(color);
     const opacity = (tool as any)[config.opacityProperty] ?? 1;
     const size = (tool as any)[config.sizeProperty];
 
     const displayValues: ToolDisplayValues = {
-      color: KritzelColorHelper.applyOpacity(color, opacity),
+      color: KritzelColorHelper.applyOpacity(resolvedColor, opacity),
       size,
     };
 
