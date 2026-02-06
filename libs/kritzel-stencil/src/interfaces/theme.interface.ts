@@ -43,6 +43,12 @@ export interface KritzelTheme {
     zIndex?: string;
   };
 
+  /** Checkerboard variables (for transparency preview) */
+  checkerboard?: {
+    colorDark?: string;
+    colorLight?: string;
+  };
+
   /** Color palette variables */
   colorPalette?: {
     circleBorderColor?: string;
