@@ -177,6 +177,11 @@ export class KritzelEditor {
     }
   }
 
+  @Watch('currentTheme')
+  onCurrentThemeChange() {
+    setTimeout(() => this.setOsSpecificCssVariables(), 0);
+  }
+
   @Listen('dblclick', { passive: false })
   onTouchStart(event: MouseEvent) {
     if (event.cancelable) {
