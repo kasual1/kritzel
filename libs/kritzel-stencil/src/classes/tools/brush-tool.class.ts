@@ -2,16 +2,16 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelCore } from '../core/core.class';
-import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
+import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 
 export class KritzelBrushTool extends KritzelBaseTool {
-  color: string = '#000000';
+  color: ThemeAwareColor = DEFAULT_COLOR_PALETTE[0];
 
   size: number = 6;
 
   opacity: number = 1;
 
-  palette: string[] = [...DEFAULT_COLOR_PALETTE];
+  palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
 
   private _currentPathId: string | null = null;
 

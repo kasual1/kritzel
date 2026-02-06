@@ -6,6 +6,8 @@ import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelCore } from '../core/core.class';
 import { LineAnchor } from '../../interfaces/anchor.interface';
 import { ArrowHeadStyle, LineArrowConfig } from '../../interfaces/arrow-head.interface';
+import { ThemeAwareColor } from '../../constants/color-palette.constants';
+import { KritzelColorHelper } from '../../helpers/color.helper';
 
 export class KritzelLine extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelLine';
@@ -16,7 +18,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   endY: number;
   controlX?: number;
   controlY?: number;
-  stroke: string;
+  stroke: string | ThemeAwareColor;
   strokeWidth: number;
   scale: number = 1;
   options: KritzelLineOptions | undefined;
@@ -59,7 +61,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.translateY = config?.translateY ?? 0;
     this.scale = config?.scale ?? 1;
     this.strokeWidth = config?.strokeWidth ?? 4;
-    this.stroke = config?.stroke ?? '#000000';
+    this.stroke = config?.stroke ?? { light: '#000000', dark: '#ffffff' };
     this.startAnchor = config?.startAnchor;
     this.endAnchor = config?.endAnchor;
     this.arrows = config?.arrows;
@@ -83,7 +85,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     object.translateY = options?.translateY ?? 0;
     object.scale = options?.scale ?? 1;
     object.strokeWidth = options?.strokeWidth ?? 4;
-    object.stroke = options?.stroke ?? '#000000';
+    object.stroke = options?.stroke ?? { light: '#000000', dark: '#ffffff' };
     object.opacity = options?.opacity ?? 1;
     object.startAnchor = options?.startAnchor;
     object.endAnchor = options?.endAnchor;
@@ -747,7 +749,8 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   /** Get the arrow fill color for start or end, defaulting to stroke color */
   getArrowFill(end: 'start' | 'end'): string {
     const config = end === 'start' ? this.arrows?.start : this.arrows?.end;
-    return config?.fill ?? this.stroke;
+    const color = config?.fill ?? this.stroke;
+    return KritzelColorHelper.resolveThemeColor(color);
   }
 
   /**

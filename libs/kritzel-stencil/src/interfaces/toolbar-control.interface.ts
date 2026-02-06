@@ -1,5 +1,6 @@
 import { KritzelBaseTool } from '../classes/tools/base-tool.class';
 import { ShapeType } from '../enums/shape-type.enum';
+import { ThemeAwareColor } from '../constants/color-palette.constants';
 
 export interface KritzelToolbarSubOption {
   id: string;
@@ -20,25 +21,25 @@ export interface KritzelToolbarControl {
 }
 
 export interface KritzelTextToolConfig {
-  color: string;
+  color: ThemeAwareColor;
   size: number;
   fontFamily: string;
-  palette: string[];
+  palette: ThemeAwareColor[];
 }
 
 export interface KritzelBrushToolConfig {
   type: 'pen' | 'highlighter';
-  color: string;
+  color: ThemeAwareColor;
   size: number;
   palettes: {
-    [brushType: string]: string[];
+    [brushType: string]: ThemeAwareColor[];
   }
 }
 
 export interface KritzelLineToolConfig {
-  color: string;
+  color: ThemeAwareColor;
   size: number;
-  palette: string[];
+  palette: ThemeAwareColor[];
   arrows?: {
     start?: { enabled: boolean; style?: 'triangle' | 'open' | 'diamond' | 'circle' };
     end?: { enabled: boolean; style?: 'triangle' | 'open' | 'diamond' | 'circle' };
@@ -47,11 +48,11 @@ export interface KritzelLineToolConfig {
 
 export interface KritzelShapeToolConfig {
   shapeType: ShapeType;
-  fillColor: string;
-  strokeColor: string;
+  fillColor: ThemeAwareColor;
+  strokeColor: ThemeAwareColor;
   strokeWidth: number;
-  fontColor: string;
+  fontColor: ThemeAwareColor;
   fontSize: number;
   fontFamily: string;
-  palette: string[];
+  palette: ThemeAwareColor[];
 }

@@ -6,6 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
+import { ThemeAwareColor } from "./constants/color-palette.constants";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
@@ -30,6 +31,7 @@ import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
+export { ThemeAwareColor } from "./constants/color-palette.constants";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
@@ -87,7 +89,7 @@ export namespace Components {
         /**
           * @default []
          */
-        "colors": string[];
+        "colors": ThemeAwareColor[];
         /**
           * @default false
          */
@@ -103,7 +105,7 @@ export namespace Components {
         /**
           * @default null
          */
-        "selectedColor": string | null;
+        "selectedColor": ThemeAwareColor | null;
     }
     interface KritzelContextMenu {
         "items": ContextMenuItem[];
@@ -733,7 +735,7 @@ declare global {
         new (): HTMLKritzelColorElement;
     };
     interface HTMLKritzelColorPaletteElementEventMap {
-        "colorChange": string;
+        "colorChange": ThemeAwareColor;
     }
     interface HTMLKritzelColorPaletteElement extends Components.KritzelColorPalette, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelColorPaletteElementEventMap>(type: K, listener: (this: HTMLKritzelColorPaletteElement, ev: KritzelColorPaletteCustomEvent<HTMLKritzelColorPaletteElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1317,7 +1319,7 @@ declare namespace LocalJSX {
         /**
           * @default []
          */
-        "colors"?: string[];
+        "colors"?: ThemeAwareColor[];
         /**
           * @default false
          */
@@ -1326,7 +1328,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "isOpaque"?: boolean;
-        "onColorChange"?: (event: KritzelColorPaletteCustomEvent<string>) => void;
+        "onColorChange"?: (event: KritzelColorPaletteCustomEvent<ThemeAwareColor>) => void;
         /**
           * @default 1
          */
@@ -1334,7 +1336,7 @@ declare namespace LocalJSX {
         /**
           * @default null
          */
-        "selectedColor"?: string | null;
+        "selectedColor"?: ThemeAwareColor | null;
     }
     interface KritzelContextMenu {
         "items"?: ContextMenuItem[];

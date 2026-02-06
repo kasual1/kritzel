@@ -10,12 +10,15 @@ import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
+import { ThemeAwareColor } from '../../constants/color-palette.constants';
+import { KritzelColorHelper } from '../../helpers/color.helper';
+
 export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
   fontFamily: string = 'Arial';
   fontSize: number = 8;
-  fontColor: string = '#000000';
+  fontColor: string | ThemeAwareColor = { light: '#000000', dark: '#ffffff' };
   initialWidth: number = 1;
   initialHeight: number = 1;
 
@@ -58,7 +61,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     translateY?: number;
     fontSize?: number;
     fontFamily?: string;
-    fontColor?: string;
+    fontColor?: string | ThemeAwareColor;
     height?: number;
     width?: number;
     scale?: number;
@@ -74,7 +77,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       this.translateY = config.translateY || 0;
       this.fontSize = config.fontSize || 8;
       this.fontFamily = config.fontFamily || 'Arial';
-      this.fontColor = config.fontColor || '#000000';
+      this.fontColor = config.fontColor || { light: '#000000', dark: '#ffffff' };
       this.width = this.initialWidth / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
       this.height = (this.fontSize * 1.2) / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
       this.scale = config.scale || 1;
@@ -112,7 +115,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     element.style.fontFamily = this.fontFamily;
     element.style.fontSize = `${this.fontSize}pt`;
-    element.style.color = this.fontColor;
+    element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
 
     if (this.isMounted && this.elementRef === element && this.editor.dom.parentElement === element) {
       requestAnimationFrame(() => this.adjustSizeOnInput());
