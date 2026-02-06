@@ -113,11 +113,12 @@ kritzel-icon {
   border-radius: 0;
   border: none;
   border-bottom: 1px solid var(--kritzel-menu-item-input-border, #ccc);
-  font-size: var(--kritzel-context-menu-item-font-size, 14px);
+  font-size: var(--kritzel-menu-item-font-size, 14px);
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
   outline: none;
+  color: inherit;
 }
 
 .edit-input::selection {
