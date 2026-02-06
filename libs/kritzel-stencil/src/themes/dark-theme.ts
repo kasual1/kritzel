@@ -196,6 +196,7 @@ export const darkTheme: KritzelTheme = {
     borderColor: '#3a3a3a',
     focusBorderColor: '#0A84FF',
     hoverBorderColor: '#4a4a4a',
+    inputBackground: '#1a1a1a',
     labelColor: '#999999',
     spinnerActiveBackground: 'hsl(0, 0%, 100%, 12%)',
     spinnerBackground: 'transparent',

@@ -193,6 +193,7 @@ export const lightTheme: KritzelTheme = {
     borderColor: '#ebebeb',
     focusBorderColor: '#007AFF',
     hoverBorderColor: '#ccc',
+    inputBackground: '#ffffff',
     labelColor: '#666666',
     spinnerActiveBackground: 'hsl(0, 0%, 0%, 8.6%)',
     spinnerBackground: 'transparent',
