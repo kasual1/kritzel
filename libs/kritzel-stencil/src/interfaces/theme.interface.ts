@@ -246,6 +246,7 @@ export interface KritzelTheme {
     borderColor?: string;
     focusBorderColor?: string;
     hoverBorderColor?: string;
+    inputBackground?: string;
     labelColor?: string;
     spinnerActiveBackground?: string;
     spinnerBackground?: string;
