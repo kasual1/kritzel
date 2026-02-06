@@ -6,6 +6,7 @@ import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.clas
 import { ShapeFillType } from '../../shared/kritzel-shape-fill/kritzel-shape-fill';
 import { LineArrowConfig } from '../../../interfaces/arrow-head.interface';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
+import { ThemeAwareColor } from '../../../constants/color-palette.constants';
 
 @Component({
   tag: 'kritzel-tool-config',
@@ -54,7 +55,7 @@ export class KritzelToolConfig {
   @Event() displayValuesChange: EventEmitter<ToolDisplayValues>;
 
   @State() config: ToolConfigDefinition;
-  @State() palette: string[] = [];
+  @State() palette: ThemeAwareColor[] = [];
   @State() currentOpacity: number = 1;
   @State() private updateTrigger: number = 0;
 
@@ -83,11 +84,12 @@ export class KritzelToolConfig {
     if (!this.config) return;
 
     const color = (this.tool as any)[this.config.colorProperty];
+    const resolvedColor = KritzelColorHelper.resolveThemeColor(color);
     const opacity = this.currentOpacity;
     const size = (this.tool as any)[this.config.sizeProperty];
 
     const displayValues: ToolDisplayValues = {
-      color: KritzelColorHelper.applyOpacity(color, opacity),
+      color: KritzelColorHelper.applyOpacity(resolvedColor, opacity),
       size,
     };
 
@@ -112,13 +114,15 @@ export class KritzelToolConfig {
     this.isExpanded = !this.isExpanded;
   };
 
-  private handleColorChange = (event: CustomEvent<string>) => {
+  private handleColorChange = (event: CustomEvent<ThemeAwareColor>) => {
     (this.tool as any)[this.config.colorProperty] = event.detail;
 
     // Special handling for shape fill: when color (stroke) changes, update fill color if it's currently filled
     if (this.config.type === 'shape' || this.config.type === 'selection') {
       const tool = this.tool as any;
-      if (tool.fillColor !== 'transparent') {
+      const isTransparent = typeof tool.fillColor === 'string' ? tool.fillColor === 'transparent' : 
+        (tool.fillColor.light === 'transparent' && tool.fillColor.dark === 'transparent');
+      if (!isTransparent) {
         tool.fillColor = event.detail;
       }
     }

@@ -71,6 +71,15 @@ export class KritzelThemeManager {
   }
 
   /**
+   * Gets the current theme (alias for getStoredTheme for convenience).
+   * Can be called statically without a manager instance.
+   * @returns The current theme name
+   */
+  static getCurrentTheme(): ThemeName {
+    return KritzelThemeManager.getStoredTheme();
+  }
+
+  /**
    * Saves the theme name to localStorage.
    */
   saveTheme(themeName: ThemeName): void {

@@ -28,9 +28,11 @@ import { KritzelCore } from '../../../classes/core/core.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { throttle } from 'lodash';
+import { KritzelColorHelper } from '../../../helpers/color.helper';
 import { toPng, toSvg } from 'html-to-image';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 import { ThemeName } from '../../../interfaces/theme.interface';
+import { KritzelThemeManager } from '../../../classes/managers/theme.manager';
 
 @Component({
   tag: 'kritzel-engine',
@@ -676,6 +678,7 @@ export class KritzelEngine {
   }
 
   render() {
+    const currentTheme = KritzelThemeManager.getCurrentTheme();
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
@@ -769,7 +772,7 @@ export class KritzelEngine {
                 >
                   {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
                     <svg ref={el => object.mount(el)} xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible' }} viewBox={object?.viewBox}>
-                      <path d={object?.d} fill={object.fill} stroke={object?.stroke} shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'} />
+                      <path d={object?.d} fill={KritzelColorHelper.resolveThemeColor(object.fill, currentTheme)} stroke={KritzelColorHelper.resolveThemeColor(object?.stroke, currentTheme)} shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'} />
                     </svg>
                   )}
 
@@ -817,7 +820,7 @@ export class KritzelEngine {
                       <path
                         d={this.core.anchorManager.computeClippedLinePath(object)}
                         fill="none"
-                        stroke={object?.stroke}
+                        stroke={KritzelColorHelper.resolveThemeColor(object?.stroke, currentTheme)}
                         stroke-width={object?.strokeWidth}
                         stroke-linecap="round"
                         marker-start={object.hasStartArrow ? `url(#${object.startMarkerId})` : undefined}
@@ -834,8 +837,8 @@ export class KritzelEngine {
                     style={{
                       minHeight: '0',
                       minWidth: '0',
-                      backgroundColor: object.backgroundColor,
-                      borderColor: object.borderColor,
+                      backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                      borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
@@ -877,7 +880,7 @@ export class KritzelEngine {
                           width: 'max-content',
                           transformOrigin: 'top left',
                           transform: `scale(${object.scaleFactor})`,
-                          backgroundColor: object.backgroundColor,
+                          backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
                           overflow: 'visible',
                           textRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'optimizeSpeed' : 'auto',
                         }}
@@ -911,7 +914,7 @@ export class KritzelEngine {
                           viewBox={object.viewBox}
                           preserveAspectRatio="none"
                         >
-                          <path d={object.getSvgPath()} fill={object.fillColor} stroke={object.strokeColor} stroke-width={object.strokeWidth} />
+                          <path d={object.getSvgPath()} fill={KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme)} stroke={KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme)} stroke-width={object.strokeWidth} />
                         </svg>
                         <div
                           ref={el => object.mountTextEditor(el)}
@@ -961,10 +964,10 @@ export class KritzelEngine {
                         style={{
                           width: '100%',
                           height: '100%',
-                          backgroundColor: KritzelDevicesHelper.isFirefox() ? object.backgroundColor : 'transparent',
+                          backgroundColor: KritzelDevicesHelper.isFirefox() ? KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme) : 'transparent',
                           borderWidth: KritzelDevicesHelper.isFirefox() ? object.borderWidth + 'px' : '0',
                           borderStyle: KritzelDevicesHelper.isFirefox() ? 'solid' : 'none',
-                          borderColor: KritzelDevicesHelper.isFirefox() ? object.borderColor : 'transparent',
+                          borderColor: KritzelDevicesHelper.isFirefox() ? KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme) : 'transparent',
                         }}
                       ></div>
                     )}

@@ -1,4 +1,27 @@
+import { ThemeAwareColor, ThemeMode, resolveColor } from '../constants/color-palette.constants';
+import { KritzelThemeManager } from '../classes/managers/theme.manager';
+
 export class KritzelColorHelper {
+  /**
+   * Resolves a color value based on the current theme.
+   * Handles both simple string colors and theme-aware color objects.
+   * @param color - The color to resolve (string or ThemeAwareColor)
+   * @param theme - Optional theme to use. If not provided, uses current theme from ThemeManager
+   * @returns The resolved hex color string, or empty string if color is undefined
+   */
+  static resolveThemeColor(color: string | ThemeAwareColor | undefined, theme?: ThemeMode): string {
+    if (!color) {
+      return '';
+    }
+    
+    if (typeof color === 'string') {
+      return color;
+    }
+    
+    const currentTheme = theme ?? KritzelThemeManager.getCurrentTheme();
+    return resolveColor(color, currentTheme);
+  }
+
   /**
    * Applies opacity to a hex color and returns an rgba string.
    * @param hexColor - The hex color string (e.g., '#ff0000' or '#f00')

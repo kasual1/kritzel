@@ -6,16 +6,17 @@ import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelCore } from '../core/core.class';
+import { ThemeAwareColor } from '../../constants/color-palette.constants';
 
 export class KritzelPath extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelPath';
 
   points: number[][];
   d: string;
-  stroke: string = 'none';
+  stroke: string | ThemeAwareColor = 'none';
   strokeWidth: number;
   lineSlack: number = 0.5;
-  fill: string;
+  fill: string | ThemeAwareColor;
   x: number = 0;
   y: number = 0;
   height: number = 0;
@@ -33,7 +34,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
-  constructor(config?: { points: number[][]; translateX?: number; translateY?: number; scale?: number; strokeWidth?: number; fill?: string; lineSlack?: number }) {
+  constructor(config?: { points: number[][]; translateX?: number; translateY?: number; scale?: number; strokeWidth?: number; fill?: ThemeAwareColor; lineSlack?: number }) {
     super();
     this.options = config;
     this.points = config?.points ?? [];
@@ -41,7 +42,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateY = config?.translateY ?? 0;
     this.scale = config?.scale ?? 1;
     this.strokeWidth = config?.strokeWidth ?? 8;
-    this.fill = config?.fill ?? '#000000';
+    this.fill = config?.fill ?? { light: '#000000', dark: '#ffffff' };
     this.d = this.generateSvgPath();
     this.updateDimensions();
   }
@@ -58,7 +59,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     object.translateY = options?.translateY ?? 0;
     object.scale = options?.scale ?? 1;
     object.strokeWidth = options?.strokeWidth ?? 8;
-    object.fill = options?.fill ?? '#000000';
+    object.fill = options?.fill ?? { light: '#000000', dark: '#ffffff' };
     object.opacity = options?.opacity ?? 1;
     object.zIndex = core.store.currentZIndex;
     object.d = object.generateSvgPath();

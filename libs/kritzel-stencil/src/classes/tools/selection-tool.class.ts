@@ -16,7 +16,7 @@ import { KritzelShape } from '../objects/shape.class';
 import { KritzelText } from '../objects/text.class';
 import { KritzelImage } from '../objects/image.class';
 import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-config.interface';
-import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
+import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
 
 export class KritzelSelectionTool extends KritzelBaseTool {
@@ -27,7 +27,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   rotationHandler: KritzelRotationHandler;
   lineHandleHandler: KritzelLineHandleHandler;
 
-  palette: string[] = [...DEFAULT_COLOR_PALETTE];
+  palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
 
   /** Returns true if there are objects in the selection group */
   hasSelection(): boolean {
@@ -51,19 +51,19 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return result;
   }
 
-  get color(): string {
+  get color(): string | ThemeAwareColor {
     const objects = this.flattenObjects(this.getSelectedObjects());
-    if (objects.length === 0) return '#000000';
+    if (objects.length === 0) return DEFAULT_COLOR_PALETTE[0];
     for (const obj of objects) {
       if (obj instanceof KritzelPath) return obj.fill;
       if (obj instanceof KritzelLine) return obj.stroke;
       if (obj instanceof KritzelText) return obj.fontColor;
       if (obj instanceof KritzelShape) return obj.strokeColor;
     }
-    return '#000000';
+    return DEFAULT_COLOR_PALETTE[0];
   }
 
-  set color(value: string) {
+  set color(value: string | ThemeAwareColor) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
       if (obj instanceof KritzelPath) this._core.updateObject(obj, { fill: value });
@@ -110,21 +110,23 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.refreshSelectionGroupDimensions();
   }
 
-  get fillColor(): string {
+  get fillColor(): string | ThemeAwareColor {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
       if (obj instanceof KritzelShape) return obj.fillColor;
     }
-    return 'transparent';
+    return { light: 'transparent', dark: 'transparent' };
   }
 
-  set fillColor(value: string) {
+  set fillColor(value: string | ThemeAwareColor) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
       if (obj instanceof KritzelShape) {
         this._core.updateObject(obj, { fillColor: value });
         // When switching to fill mode, also update stroke color to match
-        if (value !== 'transparent') {
+        const isTransparent = typeof value === 'string' ? value === 'transparent' : 
+          (value.light === 'transparent' && value.dark === 'transparent');
+        if (!isTransparent) {
           this._core.updateObject(obj, { strokeColor: value });
         }
       }

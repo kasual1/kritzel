@@ -1,6 +1,7 @@
 import { KritzelBaseObject } from '../classes/objects/base-object.class';
 import { KritzelBoundingBox } from './bounding-box.interface';
 import { KritzelPolygon } from './polygon.interface';
+import { ThemeAwareColor } from '../constants/color-palette.constants';
 
 export interface KritzelObject<T = Element> {
   _elementRef: T;
@@ -13,8 +14,8 @@ export interface KritzelObject<T = Element> {
   translateY: number;
   height: number;
   width: number;
-  backgroundColor: string;
-  borderColor: string;
+  backgroundColor?: string | ThemeAwareColor;
+  borderColor?: string | ThemeAwareColor;
   borderWidth: number;
   opacity: number;
   scale: number;
