@@ -98,7 +98,7 @@
   background-color: var(--kritzel-master-detail-detail-background-color, #ffffff);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  scrollbar-color: #ebebeb transparent;
+  scrollbar-color: var(--kritzel-global-scrollbar-thumb-color, #ebebeb) transparent;
   scrollbar-width: thin;
 }
 

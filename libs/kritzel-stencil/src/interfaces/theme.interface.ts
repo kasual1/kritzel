@@ -21,6 +21,7 @@ export interface KritzelTheme {
     hoverBackground?: string;
     iconColor?: string;
     primaryColor?: string;
+    scrollbarThumbColor?: string;
     selectionBorderColor?: string;
     textPrimary?: string;
     textSecondary?: string;

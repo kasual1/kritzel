@@ -145,7 +145,7 @@
   padding: var(--kritzel-dialog-body-padding, 20px);
   overflow-y: auto;
   flex: 1;
-  scrollbar-color: #ebebeb transparent;
+  scrollbar-color: var(--kritzel-global-scrollbar-thumb-color, #ebebeb) transparent;
   scrollbar-width: thin;
 }
 

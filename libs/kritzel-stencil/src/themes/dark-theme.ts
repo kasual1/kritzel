@@ -16,6 +16,7 @@ export const darkTheme: KritzelTheme = {
     hoverBackground: 'hsl(0, 0%, 100%, 8%)',
     iconColor: 'currentColor',
     primaryColor: '#0A84FF',
+    scrollbarThumbColor: '#555555',
     selectionBorderColor: '#4da3ff',
     textPrimary: '#ffffff',
     textSecondary: '#e0e0e0',
