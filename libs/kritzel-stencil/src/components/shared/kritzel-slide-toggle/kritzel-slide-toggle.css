@@ -4,6 +4,7 @@
   cursor: var(--kritzel-global-pointer-cursor, pointer);
   outline: none;
   z-index: 1;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :host(:focus-visible) .toggle-track {
