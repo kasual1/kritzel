@@ -54,16 +54,16 @@ Type: `Promise<void>`
 
 ### Depends on
 
-- [kritzel-numeric-input](../../shared/kritzel-numeric-input)
 - [kritzel-slide-toggle](../../shared/kritzel-slide-toggle)
+- [kritzel-numeric-input](../../shared/kritzel-numeric-input)
 - [kritzel-dialog](../../shared/kritzel-dialog)
 - [kritzel-master-detail](../../shared/kritzel-master-detail)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-settings --> kritzel-numeric-input
   kritzel-settings --> kritzel-slide-toggle
+  kritzel-settings --> kritzel-numeric-input
   kritzel-settings --> kritzel-dialog
   kritzel-settings --> kritzel-master-detail
   kritzel-master-detail --> kritzel-icon
