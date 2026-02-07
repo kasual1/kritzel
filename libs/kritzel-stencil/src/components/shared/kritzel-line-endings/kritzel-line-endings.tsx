@@ -1,6 +1,5 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 import { ArrowHeadStyle, LineArrowConfig } from '../../../interfaces/arrow-head.interface';
-import { ThemeMode } from '../../../constants/color-palette.constants';
 
 export type LineEndingType = 'none' | ArrowHeadStyle;
 
@@ -20,9 +19,6 @@ export class KritzelLineEndings {
 
   /** Current line arrow configuration */
   @Prop({ mutable: true }) value: LineArrowConfig | undefined;
-
-  /** Current theme */
-  @Prop() theme: ThemeMode;
 
   @Event() valueChange: EventEmitter<LineArrowConfig>;
 
@@ -74,7 +70,7 @@ export class KritzelLineEndings {
   }
 
   private renderEndingIcon(type: LineEndingType, isStart: boolean) {
-    const color = this.theme === 'dark' ? '#ffffff' : '#000000';
+    const color = 'var(--kritzel-global-text-primary)';
     if (type === 'none') {
       return (
         <svg viewBox="0 0 24 12" class="ending-icon">

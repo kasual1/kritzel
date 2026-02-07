@@ -186,7 +186,6 @@ export class KritzelToolConfig {
           <kritzel-stroke-size
             key={control.type}
             selectedSize={value}
-            theme={this.theme}
             onSizeChange={this.handleSizeChange}
           ></kritzel-stroke-size>
         );
@@ -197,7 +196,6 @@ export class KritzelToolConfig {
             key={control.type}
             selectedSize={value}
             fontFamily={(this.tool as any).fontFamily}
-            theme={this.theme}
             onSizeChange={this.handleSizeChange}
           ></kritzel-font-size>
         );
@@ -207,7 +205,6 @@ export class KritzelToolConfig {
           <kritzel-line-endings
             key={control.type}
             value={value}
-            theme={this.theme}
             onValueChange={(event: CustomEvent<LineArrowConfig>) =>
               this.handlePropertyChange(control.propertyName, event.detail)
             }
@@ -219,7 +216,6 @@ export class KritzelToolConfig {
           <kritzel-shape-fill
             key={control.type}
             value={this.getShapeFillValue()}
-            theme={this.theme}
             onValueChange={(event: CustomEvent<ShapeFillType>) =>
               this.handlePropertyChange(control.propertyName, event.detail)
             }

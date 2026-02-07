@@ -81,7 +81,6 @@ export const KritzelExport: StencilVueComponent<JSX.KritzelExport> = /*@__PURE__
 export const KritzelLineEndings: StencilVueComponent<JSX.KritzelLineEndings> = /*@__PURE__*/ defineContainer<JSX.KritzelLineEndings>('kritzel-line-endings', defineKritzelLineEndings, [
   'styles',
   'value',
-  'theme',
   'valueChange'
 ], [
   'valueChange'
@@ -141,7 +140,6 @@ export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PU
 
 export const KritzelShapeFill: StencilVueComponent<JSX.KritzelShapeFill> = /*@__PURE__*/ defineContainer<JSX.KritzelShapeFill>('kritzel-shape-fill', defineKritzelShapeFill, [
   'value',
-  'theme',
   'valueChange'
 ], [
   'valueChange'

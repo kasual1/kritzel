@@ -161,14 +161,14 @@ export declare interface KritzelExport extends Components.KritzelExport {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelLineEndings,
-  inputs: ['styles', 'theme', 'value']
+  inputs: ['styles', 'value']
 })
 @Component({
   selector: 'kritzel-line-endings',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['styles', 'theme', 'value'],
+  inputs: ['styles', 'value'],
   outputs: ['valueChange'],
 })
 export class KritzelLineEndings {
@@ -345,14 +345,14 @@ export declare interface KritzelSettings extends Components.KritzelSettings {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelShapeFill,
-  inputs: ['theme', 'value']
+  inputs: ['value']
 })
 @Component({
   selector: 'kritzel-shape-fill',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['theme', 'value'],
+  inputs: ['value'],
   outputs: ['valueChange'],
 })
 export class KritzelShapeFill {
