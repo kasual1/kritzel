@@ -1,5 +1,4 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
-import { ThemeMode } from '../../../constants/color-palette.constants';
 
 export type ShapeFillType = 'transparent' | 'filled';
 
@@ -12,9 +11,6 @@ export class KritzelShapeFill {
   /** Current fill type */
   @Prop({ mutable: true }) value: ShapeFillType = 'transparent';
 
-  /** Current theme */
-  @Prop() theme: ThemeMode;
-
   @Event() valueChange: EventEmitter<ShapeFillType>;
 
   private handleFillChange(type: ShapeFillType) {
@@ -23,7 +19,7 @@ export class KritzelShapeFill {
   }
 
   private renderFillIcon(type: ShapeFillType) {
-    const strokeColor = this.theme === 'dark' ? '#ffffff' : '#000000';
+    const strokeColor = 'var(--kritzel-global-text-primary)';
 
     if (type === 'transparent') {
       return (

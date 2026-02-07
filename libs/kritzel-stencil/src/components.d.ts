@@ -350,7 +350,6 @@ export namespace Components {
           * @default [8, 10, 12, 16, 20, 24]
          */
         "sizes": number[];
-        "theme": ThemeMode;
     }
     interface KritzelIcon {
         "label"?: string;
@@ -366,10 +365,6 @@ export namespace Components {
           * @default ['none', 'triangle']
          */
         "styles": LineEndingType[];
-        /**
-          * Current theme
-         */
-        "theme": ThemeMode;
         /**
           * Current line arrow configuration
          */
@@ -492,10 +487,6 @@ export namespace Components {
     }
     interface KritzelShapeFill {
         /**
-          * Current theme
-         */
-        "theme": ThemeMode;
-        /**
           * Current fill type
           * @default 'transparent'
          */
@@ -550,7 +541,6 @@ export namespace Components {
           * @default [4, 6, 8, 12, 16, 24]
          */
         "sizes": number[];
-        "theme": ThemeMode;
     }
     interface KritzelToolConfig {
         /**
@@ -1562,7 +1552,6 @@ declare namespace LocalJSX {
           * @default [8, 10, 12, 16, 20, 24]
          */
         "sizes"?: number[];
-        "theme"?: ThemeMode;
     }
     interface KritzelIcon {
         "label"?: string;
@@ -1579,10 +1568,6 @@ declare namespace LocalJSX {
           * @default ['none', 'triangle']
          */
         "styles"?: LineEndingType[];
-        /**
-          * Current theme
-         */
-        "theme"?: ThemeMode;
         /**
           * Current line arrow configuration
          */
@@ -1732,10 +1717,6 @@ declare namespace LocalJSX {
     interface KritzelShapeFill {
         "onValueChange"?: (event: KritzelShapeFillCustomEvent<ShapeFillType>) => void;
         /**
-          * Current theme
-         */
-        "theme"?: ThemeMode;
-        /**
           * Current fill type
           * @default 'transparent'
          */
@@ -1801,7 +1782,6 @@ declare namespace LocalJSX {
           * @default [4, 6, 8, 12, 16, 24]
          */
         "sizes"?: number[];
-        "theme"?: ThemeMode;
     }
     interface KritzelToolConfig {
         /**
