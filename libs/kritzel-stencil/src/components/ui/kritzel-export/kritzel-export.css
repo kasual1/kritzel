@@ -52,6 +52,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   color: var(--kritzel-global-text-primary, #333);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .export-button:hover {
