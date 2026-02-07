@@ -1217,9 +1217,11 @@ export class KritzelEngine {
                             class="selection-line-handle start"
                             cx={object.startX - object.x}
                             cy={object.startY - object.y}
-                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                             style={{
                               fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              stroke: 'var(--kritzel-selection-handle-stroke-color, #007AFF)',
+                              strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                               paintOrder: 'fill',
                             }}
                           />
@@ -1246,9 +1248,11 @@ export class KritzelEngine {
                                 ? (object.startY + 2 * object.controlY + object.endY) / 4 - object.y
                                 : (object.startY - object.y + object.endY - object.y) / 2
                             }
-                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                             style={{
                               fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              stroke: 'var(--kritzel-selection-handle-stroke-color, #007AFF)',
+                              strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                               paintOrder: 'fill',
                             }}
                           />
@@ -1275,9 +1279,11 @@ export class KritzelEngine {
                             class="selection-line-handle end"
                             cx={object.endX - object.x}
                             cy={object.endY - object.y}
-                            r={`${(baseHandleSize * object.scale) / this.core.store.state?.scale}`}
+                            r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                             style={{
                               fill: 'var(--kritzel-selection-handle-color, #000000)',
+                              stroke: 'var(--kritzel-selection-handle-stroke-color, #007AFF)',
+                              strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                               paintOrder: 'fill',
                             }}
                           />
