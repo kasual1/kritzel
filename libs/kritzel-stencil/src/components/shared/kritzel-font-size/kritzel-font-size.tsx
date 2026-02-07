@@ -1,4 +1,5 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
+import { ThemeMode } from '../../../constants/color-palette.constants';
 
 @Component({
   tag: 'kritzel-font-size',
@@ -8,8 +9,8 @@ import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
 export class KritzelFontSize {
   @Prop() sizes: number[] = [8, 10, 12, 16, 20, 24];
   @Prop({ mutable: true }) selectedSize: number | null = null;
-
   @Prop() fontFamily: string = 'Arial';
+  @Prop() theme: ThemeMode;
 
   @Event() sizeChange: EventEmitter<number>;
 
@@ -26,6 +27,7 @@ export class KritzelFontSize {
   }
 
   render() {
+    const color = this.theme === 'dark' ? '#ffffff' : '#000000';
     return (
       <Host>
         {this.sizes.map(size => (
@@ -38,7 +40,7 @@ export class KritzelFontSize {
             onClick={() => this.handleSizeClick(size)}
             onKeyDown={event => this.handleKeyDown(event, size)}
           >
-            <kritzel-font fontFamily={this.fontFamily} size={size}></kritzel-font>
+            <kritzel-font fontFamily={this.fontFamily} size={size} color={color}></kritzel-font>
           </div>
         ))}
       </Host>
