@@ -18,7 +18,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   fontFamily: string = 'Arial';
   fontSize: number = 8;
-  fontColor: string | ThemeAwareColor = { light: '#000000', dark: '#ffffff' };
+  fontColor: ThemeAwareColor = { light: '#000000', dark: '#ffffff' };
   initialWidth: number = 1;
   initialHeight: number = 1;
 
@@ -61,7 +61,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     translateY?: number;
     fontSize?: number;
     fontFamily?: string;
-    fontColor?: string | ThemeAwareColor;
+    fontColor?: ThemeAwareColor;
     height?: number;
     width?: number;
     scale?: number;
@@ -97,7 +97,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.translateY = 0;
     object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
     object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
-    object.backgroundColor = 'transparent';
+    object.backgroundColor = { light: 'transparent', dark: 'transparent' };
     object.initialWidth = object.width;
     object.initialHeight = object.height;
     object.scaleFactor = 1;

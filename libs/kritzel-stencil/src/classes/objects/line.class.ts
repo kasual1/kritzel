@@ -18,7 +18,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   endY: number;
   controlX?: number;
   controlY?: number;
-  stroke: string | ThemeAwareColor;
+  stroke: ThemeAwareColor;
   strokeWidth: number;
   scale: number = 1;
   options: KritzelLineOptions | undefined;

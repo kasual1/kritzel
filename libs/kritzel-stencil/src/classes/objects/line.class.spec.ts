@@ -63,7 +63,7 @@ describe('KritzelLine', () => {
       endX: 100,
       endY: 100,
       strokeWidth: 4,
-      stroke: '#000000',
+      stroke: { light: '#000000', dark: '#ffffff' },
     });
   });
 
@@ -95,7 +95,7 @@ describe('KritzelLine', () => {
         endX: 110,
         endY: 120,
         strokeWidth: 8,
-        stroke: '#ff0000',
+        stroke: { light: '#ff0000', dark: '#ff0000' },
         scale: 2,
         translateX: 50,
         translateY: 60,
@@ -106,7 +106,7 @@ describe('KritzelLine', () => {
       expect(configuredLine.endX).toBe(110);
       expect(configuredLine.endY).toBe(120);
       expect(configuredLine.strokeWidth).toBe(8);
-      expect(configuredLine.stroke).toBe('#ff0000');
+      expect(configuredLine.stroke).toEqual({ light: '#ff0000', dark: '#ff0000' });
       expect(configuredLine.scale).toBe(2);
     });
 
@@ -119,7 +119,7 @@ describe('KritzelLine', () => {
         controlX: 50,
         controlY: -50,
         strokeWidth: 4,
-        stroke: '#000000',
+        stroke: { light: '#000000', dark: '#ffffff' },
       });
 
       expect(curvedLine.controlX).toBe(50);
@@ -139,7 +139,7 @@ describe('KritzelLine', () => {
         endX: 100,
         endY: 100,
         strokeWidth: 4,
-        stroke: '#000000',
+        stroke: { light: '#000000', dark: '#ffffff' },
         arrows: {
           start: { enabled: true, style: 'triangle' },
           end: { enabled: true, style: 'diamond' },
@@ -614,10 +614,10 @@ describe('KritzelLine', () => {
           startY: 0,
           endX: 100,
           endY: 100,
-          stroke: '#000000',
+          stroke: { light: '#000000', dark: '#ffffff' },
           arrows: {
-            start: { enabled: true, fill: '#ff0000' },
-            end: { enabled: true, fill: '#00ff00' },
+            start: { enabled: true, fill: { light: '#ff0000', dark: '#ff0000' } },
+            end: { enabled: true, fill: { light: '#00ff00', dark: '#00ff00' } },
           },
         });
 

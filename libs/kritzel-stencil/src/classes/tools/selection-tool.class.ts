@@ -51,7 +51,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return result;
   }
 
-  get color(): string | ThemeAwareColor {
+  get color(): ThemeAwareColor {
     const objects = this.flattenObjects(this.getSelectedObjects());
     if (objects.length === 0) return DEFAULT_COLOR_PALETTE[0];
     for (const obj of objects) {
@@ -63,7 +63,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return DEFAULT_COLOR_PALETTE[0];
   }
 
-  set color(value: string | ThemeAwareColor) {
+  set color(value: ThemeAwareColor) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
       if (obj instanceof KritzelPath) this._core.updateObject(obj, { fill: value });
@@ -110,7 +110,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.refreshSelectionGroupDimensions();
   }
 
-  get fillColor(): string | ThemeAwareColor {
+  get fillColor(): ThemeAwareColor {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
       if (obj instanceof KritzelShape) return obj.fillColor;
@@ -118,7 +118,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return { light: 'transparent', dark: 'transparent' };
   }
 
-  set fillColor(value: string | ThemeAwareColor) {
+  set fillColor(value: ThemeAwareColor) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
       if (obj instanceof KritzelShape) {

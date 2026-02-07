@@ -12,7 +12,7 @@ export interface KritzelLineOptions {
   translateX?: number;
   translateY?: number;
   scale?: number;
-  stroke?: string | ThemeAwareColor;
+  stroke?: ThemeAwareColor;
   strokeWidth?: number;
   opacity?: number;
   /** Anchor connection for the start point */

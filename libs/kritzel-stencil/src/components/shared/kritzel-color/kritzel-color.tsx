@@ -7,7 +7,7 @@ import { KritzelColorHelper } from '../../../helpers/color.helper';
   styleUrl: 'kritzel-color.css',
   shadow: true,
 })
-export class KritzelColor {
+export class KritzelColorComponent {
   @Prop() value: string | ThemeAwareColor;
   @Prop() theme: ThemeMode;
   @Prop() size: number = 24;
