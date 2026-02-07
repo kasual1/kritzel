@@ -6,7 +6,7 @@ import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.clas
 import { ShapeFillType } from '../../shared/kritzel-shape-fill/kritzel-shape-fill';
 import { LineArrowConfig } from '../../../interfaces/arrow-head.interface';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
-import { ThemeAwareColor } from '../../../constants/color-palette.constants';
+import { ThemeAwareColor, ThemeMode } from '../../../constants/color-palette.constants';
 
 @Component({
   tag: 'kritzel-tool-config',
@@ -50,6 +50,12 @@ export class KritzelToolConfig {
   }
 
   @Prop({ mutable: true }) isExpanded: boolean = false;
+  @Prop() theme: ThemeMode;
+
+  @Watch('theme')
+  onThemeChange() {
+    this.emitDisplayValues();
+  }
 
   @Event() toolChange: EventEmitter<ConfigurableTool>;
   @Event() displayValuesChange: EventEmitter<ToolDisplayValues>;
@@ -84,7 +90,7 @@ export class KritzelToolConfig {
     if (!this.config) return;
 
     const color = (this.tool as any)[this.config.colorProperty];
-    const resolvedColor = KritzelColorHelper.resolveThemeColor(color);
+    const resolvedColor = KritzelColorHelper.resolveThemeColor(color, this.theme);
     const opacity = this.currentOpacity;
     const size = (this.tool as any)[this.config.sizeProperty];
 
@@ -180,6 +186,8 @@ export class KritzelToolConfig {
           <kritzel-stroke-size
             key={control.type}
             selectedSize={value}
+            color={(this.tool as any)[this.config.colorProperty]}
+            theme={this.theme}
             onSizeChange={this.handleSizeChange}
           ></kritzel-stroke-size>
         );
@@ -270,6 +278,7 @@ export class KritzelToolConfig {
                 isExpanded={this.isExpanded}
                 isOpaque={true}
                 opacity={this.currentOpacity}
+                theme={this.theme}
                 onColorChange={this.handleColorChange}
               ></kritzel-color-palette>
             )}

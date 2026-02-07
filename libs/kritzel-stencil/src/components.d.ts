@@ -6,7 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
-import { ThemeAwareColor } from "./constants/color-palette.constants";
+import { ThemeAwareColor, ThemeMode } from "./constants/color-palette.constants";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
@@ -31,7 +31,7 @@ import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
-export { ThemeAwareColor } from "./constants/color-palette.constants";
+export { ThemeAwareColor, ThemeMode } from "./constants/color-palette.constants";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
@@ -83,7 +83,8 @@ export namespace Components {
           * @default 24
          */
         "size": number;
-        "value": string;
+        "theme": ThemeMode;
+        "value": string | ThemeAwareColor;
     }
     interface KritzelColorPalette {
         /**
@@ -106,6 +107,7 @@ export namespace Components {
           * @default null
          */
         "selectedColor": ThemeAwareColor | null;
+        "theme": ThemeMode;
     }
     interface KritzelContextMenu {
         "items": ContextMenuItem[];
@@ -125,6 +127,7 @@ export namespace Components {
           * @default true
          */
         "isUtilityPanelVisible": boolean;
+        "theme": ThemeMode;
         /**
           * @default null
          */
@@ -536,6 +539,10 @@ export namespace Components {
     }
     interface KritzelStrokeSize {
         /**
+          * @default { light: '#000000', dark: '#ffffff' }
+         */
+        "color": ThemeAwareColor | string;
+        /**
           * @default null
          */
         "selectedSize": number | null;
@@ -543,12 +550,14 @@ export namespace Components {
           * @default [4, 6, 8, 12, 16, 24]
          */
         "sizes": number[];
+        "theme": ThemeMode;
     }
     interface KritzelToolConfig {
         /**
           * @default false
          */
         "isExpanded": boolean;
+        "theme": ThemeMode;
         "tool": ConfigurableTool;
     }
     interface KritzelTooltip {
@@ -1313,7 +1322,8 @@ declare namespace LocalJSX {
           * @default 24
          */
         "size"?: number;
-        "value"?: string;
+        "theme"?: ThemeMode;
+        "value"?: string | ThemeAwareColor;
     }
     interface KritzelColorPalette {
         /**
@@ -1337,6 +1347,7 @@ declare namespace LocalJSX {
           * @default null
          */
         "selectedColor"?: ThemeAwareColor | null;
+        "theme"?: ThemeMode;
     }
     interface KritzelContextMenu {
         "items"?: ContextMenuItem[];
@@ -1358,6 +1369,7 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         "onIsControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
+        "theme"?: ThemeMode;
         /**
           * @default null
          */
@@ -1776,6 +1788,10 @@ declare namespace LocalJSX {
         "onMenuOpen"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
     }
     interface KritzelStrokeSize {
+        /**
+          * @default { light: '#000000', dark: '#ffffff' }
+         */
+        "color"?: ThemeAwareColor | string;
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
         /**
           * @default null
@@ -1785,6 +1801,7 @@ declare namespace LocalJSX {
           * @default [4, 6, 8, 12, 16, 24]
          */
         "sizes"?: number[];
+        "theme"?: ThemeMode;
     }
     interface KritzelToolConfig {
         /**
@@ -1793,6 +1810,7 @@ declare namespace LocalJSX {
         "isExpanded"?: boolean;
         "onDisplayValuesChange"?: (event: KritzelToolConfigCustomEvent<ToolDisplayValues>) => void;
         "onToolChange"?: (event: KritzelToolConfigCustomEvent<ConfigurableTool>) => void;
+        "theme"?: ThemeMode;
         "tool"?: ConfigurableTool;
     }
     interface KritzelTooltip {

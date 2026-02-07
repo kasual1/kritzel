@@ -443,6 +443,7 @@ export class KritzelEditor {
           controls={this.controls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}
           undoState={this.undoState}
+          theme={this.currentTheme}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
 
