@@ -58,7 +58,6 @@ export class KritzelColorPalette {
           }}
         >
           {displayedColors.map(color => {
-            const resolvedColor = KritzelColorHelper.resolveThemeColor(color, this.theme);
             return (
               <div
                 tabIndex={0}
@@ -69,7 +68,7 @@ export class KritzelColorPalette {
                 onClick={() => this.handleColorClick(color)}
                 onKeyDown={event => this.handleKeyDown(event, color)}
               >
-                <kritzel-color value={KritzelColorHelper.applyOpacity(resolvedColor, this.opacity)} theme={this.theme}></kritzel-color>
+                <kritzel-color value={KritzelColorHelper.applyOpacity(color, this.opacity, this.theme)} theme={this.theme}></kritzel-color>
               </div>
             );
           })}
