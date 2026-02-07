@@ -63,7 +63,7 @@ describe('KritzelLine', () => {
       endX: 100,
       endY: 100,
       strokeWidth: 4,
-      stroke: '#000000',
+      stroke: { light: '#000000', dark: '#ffffff' },
     });
   });
 
@@ -80,7 +80,7 @@ describe('KritzelLine', () => {
       expect(defaultLine.endX).toBe(0);
       expect(defaultLine.endY).toBe(0);
       expect(defaultLine.strokeWidth).toBe(4);
-      expect(defaultLine.stroke).toBe('#000000');
+      expect(defaultLine.stroke).toEqual({ light: '#000000', dark: '#ffffff' });
       expect(defaultLine.scale).toBe(1);
       // Note: translateX/Y are adjusted by updateDimensions() which accounts for bounding box
       expect(defaultLine.translateX).toBeDefined();
@@ -95,7 +95,7 @@ describe('KritzelLine', () => {
         endX: 110,
         endY: 120,
         strokeWidth: 8,
-        stroke: '#ff0000',
+        stroke: { light: '#ff0000', dark: '#ff0000' },
         scale: 2,
         translateX: 50,
         translateY: 60,
@@ -106,7 +106,7 @@ describe('KritzelLine', () => {
       expect(configuredLine.endX).toBe(110);
       expect(configuredLine.endY).toBe(120);
       expect(configuredLine.strokeWidth).toBe(8);
-      expect(configuredLine.stroke).toBe('#ff0000');
+      expect(configuredLine.stroke).toEqual({ light: '#ff0000', dark: '#ff0000' });
       expect(configuredLine.scale).toBe(2);
     });
 
@@ -119,7 +119,7 @@ describe('KritzelLine', () => {
         controlX: 50,
         controlY: -50,
         strokeWidth: 4,
-        stroke: '#000000',
+        stroke: { light: '#000000', dark: '#ffffff' },
       });
 
       expect(curvedLine.controlX).toBe(50);
@@ -139,7 +139,7 @@ describe('KritzelLine', () => {
         endX: 100,
         endY: 100,
         strokeWidth: 4,
-        stroke: '#000000',
+        stroke: { light: '#000000', dark: '#ffffff' },
         arrows: {
           start: { enabled: true, style: 'triangle' },
           end: { enabled: true, style: 'diamond' },
@@ -184,7 +184,7 @@ describe('KritzelLine', () => {
       expect(createdLine.endX).toBe(0);
       expect(createdLine.endY).toBe(0);
       expect(createdLine.strokeWidth).toBe(4);
-      expect(createdLine.stroke).toBe('#000000');
+      expect(createdLine.stroke).toEqual({ light: '#000000', dark: '#ffffff' });
     });
   });
 
@@ -604,8 +604,8 @@ describe('KritzelLine', () => {
 
     describe('getArrowFill', () => {
       it('should return stroke color by default', () => {
-        expect(line.getArrowFill('start')).toBe(line.stroke);
-        expect(line.getArrowFill('end')).toBe(line.stroke);
+        expect(line.getArrowFill('start')).toBe('#000000');
+        expect(line.getArrowFill('end')).toBe('#000000');
       });
 
       it('should return custom fill when configured', () => {
@@ -614,10 +614,10 @@ describe('KritzelLine', () => {
           startY: 0,
           endX: 100,
           endY: 100,
-          stroke: '#000000',
+          stroke: { light: '#000000', dark: '#ffffff' },
           arrows: {
-            start: { enabled: true, fill: '#ff0000' },
-            end: { enabled: true, fill: '#00ff00' },
+            start: { enabled: true, fill: { light: '#ff0000', dark: '#ff0000' } },
+            end: { enabled: true, fill: { light: '#00ff00', dark: '#00ff00' } },
           },
         });
 

@@ -95,6 +95,7 @@ export class KritzelPortal {
   private id: string = `portal-${ObjectHelper.generateUUID()}`;
   private defaultOffset = 0;
   private minLeft = 0;
+  private themeObserver: MutationObserver;
 
   private focusFirstElement() {
     requestAnimationFrame(() => {
@@ -213,6 +214,31 @@ export class KritzelPortal {
     return Math.round(top + window.scrollY);
   }
 
+  private getThemeProvider(): HTMLElement | null {
+    if (!this.anchor) return null;
+
+    let current: HTMLElement | null = this.anchor;
+    while (current) {
+      const provider = current.closest('kritzel-editor');
+      if (provider instanceof HTMLElement) {
+        return provider;
+      }
+
+      const portalProvider = current.closest('[id^="portal-"]');
+      if (portalProvider instanceof HTMLElement) {
+        return portalProvider;
+      }
+
+      const root = current.getRootNode();
+      if (root instanceof ShadowRoot) {
+        current = root.host as HTMLElement;
+      } else {
+        return null;
+      }
+    }
+    return null;
+  }
+
   private openPortal() {
     this.portal = document.createElement('div');
     this.portal.setAttribute('id', this.id);
@@ -221,11 +247,35 @@ export class KritzelPortal {
     this.portal.style.top = '0px';
     this.portal.style.left = '0px';
     this.portal.style.visibility = 'hidden';
+
+    const themeProvider = this.getThemeProvider();
+    if (themeProvider) {
+      const applyTheme = () => {
+        if (!this.portal) return;
+        for (let i = 0; i < themeProvider.style.length; i++) {
+          const prop = themeProvider.style[i];
+          if (prop.startsWith('--kritzel-')) {
+            this.portal.style.setProperty(prop, themeProvider.style.getPropertyValue(prop));
+          }
+        }
+      };
+
+      applyTheme();
+
+      this.themeObserver = new MutationObserver(() => applyTheme());
+      this.themeObserver.observe(themeProvider, {
+        attributes: true,
+        attributeFilter: ['style'],
+      });
+    }
+
     this.portal.appendChild(this.host);
     document.body.append(this.portal);
   }
 
   private closePortal() {
+    this.themeObserver?.disconnect();
+    this.themeObserver = null;
     const portal = document.getElementById(this.id);
     if (!portal) return;
     document.body.removeChild(portal);

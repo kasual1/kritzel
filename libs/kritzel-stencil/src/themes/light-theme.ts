@@ -1,0 +1,262 @@
+import { KritzelTheme } from '../interfaces/theme.interface';
+
+/**
+ * Light theme preset - the default theme
+ */
+export const lightTheme: KritzelTheme = {
+  name: 'light',
+
+  global: {
+    borderColor: '#ebebeb',
+    dividerColor: '#e0e0e0',
+    focusColor: '#007acc',
+    focusRingColor: 'rgba(0, 122, 255, 0.3)',
+    pointerCursor: 'pointer',
+    hoverBackground: 'hsl(0, 0%, 0%, 4.3%)',
+    iconColor: 'currentColor',
+    scrollbarThumbColor: '#ebebeb',
+    textPrimary: '#000000',
+    textSecondary: '#333333',
+  },
+
+  selection: {
+    borderColor: '#007AFF',
+    handleColor: '#ffffff',
+  },
+
+  checkerboard: {
+    colorDark: '#cccccc',
+    colorLight: '#ffffff',
+  },
+
+  backToContent: {
+    activeBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
+    backgroundColor: '#ffffff',
+    border: '1px solid #ebebeb',
+    boxShadow: '0 0 3px rgba(0, 0, 0, 0.08)',
+    color: '#000000',
+    hoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+  },
+
+  colorPalette: {
+    circleBorderColor: '#dddcdc',
+    hoverBackgroundColor: '#ebebeb',
+    selectedBackgroundColor: '#ebebeb',
+  },
+
+  contextMenu: {
+    backgroundColor: '#ffffff',
+    border: '1px solid #ebebeb',
+    borderRadius: '12px',
+    boxShadow: '0 1px 6px rgba(0, 0, 0, 0.12)',
+    itemActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
+    itemBorderRadius: '12px',
+    itemColor: '#333333',
+    itemDisabledColor: '#aaaaaa',
+    itemFontSize: '14px',
+    itemGap: '8px',
+    itemHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+    itemPadding: '8px',
+    padding: '4px',
+  },
+
+  controls: {
+    backgroundColor: '#ffffff',
+    border: '1px solid #ebebeb',
+    boxShadow: '0 0 3px rgba(0, 0, 0, 0.08)',
+    controlActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
+    controlColor: '#000000',
+    controlHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+    controlSelectedBackgroundColor: '#007AFF',
+    controlSelectedColor: '#ffffff',
+  },
+
+  dialog: {
+    backdropColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: '#ffffff',
+    border: '1px solid #ebebeb',
+    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.15)',
+    closeButtonActiveBackground: 'hsl(0, 0%, 0%, 8.6%)',
+    closeButtonBackground: 'transparent',
+    closeButtonColor: '#333333',
+    closeButtonHoverBackground: 'hsl(0, 0%, 0%, 4.3%)',
+    closeButtonHoverColor: '#000000',
+    fontFamily: 'inherit',
+    footerBorder: '1px solid #ebebeb',
+    headerBorder: '1px solid #ebebeb',
+    titleColor: '#000000',
+  },
+
+  dropdown: {
+    accentColor: '#007bff',
+    hoverBackgroundColor: '#f0f0f0',
+    selectedBackgroundColor: '#007bff1a',
+    textColor: '#333333',
+  },
+
+  editor: {
+    controlsBottom: '16px',
+    controlsTransform: 'translateX(-50%)',
+    controlsTransition: 'opacity 0.2s ease',
+    controlsTransitionDuration: '0.2s',
+    topLeftButtonsLeft: '16px',
+    topLeftButtonsTop: '16px',
+    topRightButtonsRight: '16px',
+    topRightButtonsTop: '16px',
+  },
+
+  engine: {
+    backgroundColor: '#ffffff',
+  },
+
+  fontSize: {
+    hoverBackgroundColor: '#ebebeb',
+    selectedBackgroundColor: '#ebebeb',
+    textColor: '#333333',
+  },
+
+  lineEndings: {
+    hoverBackgroundColor: '#ebebeb',
+    labelColor: '#666666',
+    optionBackground: '#ffffff',
+    selectedBackgroundColor: '#ebebeb',
+  },
+
+  masterDetail: {
+    backButtonColor: '#333333',
+    backgroundColor: '#ffffff',
+    detailBackgroundColor: '#ffffff',
+    detailFocusOutline: '2px solid #007AFF',
+    menuBackgroundColor: '#ffffff',
+    menuBorderRight: '1px solid #ebebeb',
+    menuItemActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
+    menuItemBackgroundColor: 'transparent',
+    menuItemChevronColor: '#aaaaaa',
+    menuItemColor: '#333333',
+    menuItemDisabledColor: '#aaaaaa',
+    menuItemFocusOutline: '2px solid #007AFF',
+    menuItemHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+    menuItemSelectedBackgroundColor: '#007AFF',
+    menuItemSelectedColor: '#ffffff',
+    menuItemSelectedHoverBackgroundColor: '#007AFF',
+  },
+
+  menu: {
+    backgroundColor: '#ffffff',
+    border: '1px solid #ebebeb',
+    borderRadius: '12px',
+    boxShadow: '0 0 3px rgba(0, 0, 0, 0.08)',
+    gap: '4px',
+    itemBorderRadius: '12px',
+    itemButtonHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+    itemChildOpenBackgroundColor: 'hsl(0, 0%, 0%, 3%)',
+    itemColor: '#333333',
+    itemEditingBackgroundColor: '#f0f0f0',
+    itemFontSize: '14px',
+    itemHeight: '40px',
+    itemInputBorder: '1px solid #ccc',
+    itemInputHeight: '32px',
+    itemInputSelectionColor: 'rgba(255, 255, 255, 0.16)',
+    itemInputSelectionTextColor: '#000000',
+    itemMinHeight: '40px',
+    itemOverlayBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+    itemPadding: '8px',
+    itemSelectedBackgroundColor: '#007aff',
+    itemSelectedColor: '#ffffff',
+    padding: '8px',
+    width: '200px',
+  },
+
+  moreMenu: {
+    buttonActiveBackgroundColor: '#e9e9e9',
+    buttonBackgroundColor: '#ffffff',
+    buttonBorder: '1px solid #ebebeb',
+    buttonBorderRadius: '12px',
+    buttonBoxShadow: '0 0 3px rgba(0, 0, 0, 0.08)',
+    buttonColor: '#000000',
+    buttonHoverBackgroundColor: '#f5f5f5',
+  },
+
+  numericInput: {
+    borderColor: '#ebebeb',
+    focusBorderColor: '#007AFF',
+    hoverBorderColor: '#ccc',
+    inputBackground: '#ffffff',
+    labelColor: '#666666',
+    spinnerActiveBackground: 'hsl(0, 0%, 0%, 8.6%)',
+    spinnerBackground: 'transparent',
+    spinnerColor: '#333333',
+    spinnerHoverBackground: 'hsl(0, 0%, 0%, 4.3%)',
+    textColor: '#333333',
+  },
+
+  opacitySlider: {
+    activeColor: '#007AFF',
+    thumbBorderColor: '#007AFF',
+    thumbColor: '#ffffff',
+    trackColor: '#e0e0e0',
+  },
+
+  portal: {
+    maxHeight: '300px',
+  },
+
+  settings: {
+    contentHeadingColor: '#000000',
+    contentTextColor: '#333333',
+    descriptionColor: '#666666',
+    labelColor: '#333333',
+  },
+
+  shapeFill: {
+    hoverBackgroundColor: '#ebebeb',
+    optionBackground: '#ffffff',
+    selectedBackgroundColor: '#ebebeb',
+  },
+
+  slideToggle: {
+    borderRadius: '11px',
+    height: '22px',
+    thumbColor: '#fff',
+    thumbSize: '18px',
+    trackCheckedColor: '#007AFF',
+    trackColor: '#ccc',
+    transitionDuration: '0.2s',
+    width: '40px',
+  },
+
+  splitButton: {
+    backgroundColor: '#ffffff',
+    border: '1px solid #ebebeb',
+    boxShadow: '0 0 3px rgba(0, 0, 0, 0.08)',
+    color: '#000000',
+    dividerBackgroundColor: '#ebebeb',
+    hoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+  },
+
+  strokeSize: {
+    hoverBackgroundColor: '#ebebeb',
+    selectedBackgroundColor: '#ebebeb',
+  },
+
+  submenu: {
+    gap: '4px',
+  },
+
+  tooltip: {
+    backgroundColor: '#ffffff',
+    border: '1px solid #ebebeb',
+    borderRadius: '16px',
+    boxShadow: '0 1px 6px rgba(0, 0, 0, 0.12)',
+    color: '#000000',
+    padding: '12px',
+  },
+
+  utilityPanel: {
+    backgroundColor: '#e2e2e2',
+    buttonBorderRadius: '8px',
+    buttonColor: '#333333',
+    buttonHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+    separatorColor: 'hsl(0, 0%, 0%, 8%)',
+  },
+};

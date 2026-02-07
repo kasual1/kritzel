@@ -1,5 +1,6 @@
 import { Component, Host, h, Prop, EventEmitter, Event } from '@stencil/core';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
+import { ThemeAwareColor, ThemeMode } from '../../../constants/color-palette.constants';
 
 @Component({
   tag: 'kritzel-color-palette',
@@ -7,20 +8,21 @@ import { KritzelColorHelper } from '../../../helpers/color.helper';
   shadow: true,
 })
 export class KritzelColorPalette {
-  @Prop() colors: string[] = [];
-  @Prop({ mutable: true }) selectedColor: string | null = null;
+  @Prop() colors: ThemeAwareColor[] = [];
+  @Prop({ mutable: true }) selectedColor: ThemeAwareColor | null = null;
   @Prop() isExpanded: boolean = false;
   @Prop() isOpaque: boolean = false;
   @Prop() opacity: number = 1;
+  @Prop() theme: ThemeMode;
 
-  @Event() colorChange: EventEmitter<string>;
+  @Event() colorChange: EventEmitter<ThemeAwareColor>;
 
-  private handleColorClick(color: string) {
+  private handleColorClick(color: ThemeAwareColor) {
     this.selectedColor = color;
     this.colorChange.emit(color);
   }
 
-  private handleKeyDown(event: KeyboardEvent, color: string) {
+  private handleKeyDown(event: KeyboardEvent, color: ThemeAwareColor) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.handleColorClick(color);
@@ -33,6 +35,11 @@ export class KritzelColorPalette {
     const gap = 8;
     const rowCount = Math.ceil(this.colors.length / colorsPerRow);
     return `${rowCount * rowHeight + (rowCount - 1) * gap}px`;
+  }
+
+  private areColorsEqual(color1: ThemeAwareColor | null, color2: ThemeAwareColor): boolean {
+    if (!color1) return false;
+    return color1.light === color2.light && color1.dark === color2.dark;
   }
 
   render() {
@@ -50,19 +57,21 @@ export class KritzelColorPalette {
             height: expandedHeight,
           }}
         >
-          {displayedColors.map(color => (
-            <div
-              tabIndex={0}
-              class={{
-                'color-container': true,
-                'selected': this.selectedColor === color,
-              }}
-              onClick={() => this.handleColorClick(color)}
-              onKeyDown={event => this.handleKeyDown(event, color)}
-            >
-              <kritzel-color value={KritzelColorHelper.applyOpacity(color, this.opacity)}></kritzel-color>
-            </div>
-          ))}
+          {displayedColors.map(color => {
+            return (
+              <div
+                tabIndex={0}
+                class={{
+                  'color-container': true,
+                  'selected': this.areColorsEqual(this.selectedColor, color),
+                }}
+                onClick={() => this.handleColorClick(color)}
+                onKeyDown={event => this.handleKeyDown(event, color)}
+              >
+                <kritzel-color value={KritzelColorHelper.applyOpacity(color, this.opacity, this.theme)} theme={this.theme}></kritzel-color>
+              </div>
+            );
+          })}
         </div>
       </Host>
     );

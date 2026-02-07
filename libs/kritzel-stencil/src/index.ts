@@ -46,5 +46,7 @@ export * from './configs/default-brush-tool.config';
 export * from './configs/default-text-tool.config';
 export * from './configs/default-line-tool.config';
 
-
-
+export * from './interfaces/theme.interface';
+export * from './themes/light-theme';
+export * from './themes/dark-theme';
+export * from './classes/managers/theme.manager';

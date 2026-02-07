@@ -1,6 +1,7 @@
 import { KritzelPath } from './path.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
+import { ThemeAwareColor } from '../../components';
 
 describe('KritzelPath', () => {
   let path: KritzelPath;
@@ -42,7 +43,7 @@ describe('KritzelPath', () => {
       translateY: 20,
       scale: 1,
       strokeWidth: 8,
-      fill: '#ff0000',
+      fill: { light: '#ff0000', dark: '#ff0000' },
     });
     path._core = mockCore;
   });
@@ -55,18 +56,19 @@ describe('KritzelPath', () => {
       // Note: translateX/Y become Infinity when points array is empty due to Math.min/max on empty array
       expect(defaultPath.scale).toBe(1);
       expect(defaultPath.strokeWidth).toBe(8);
-      expect(defaultPath.fill).toBe('#000000');
+      expect(defaultPath.fill).toEqual({ light: '#000000', dark: '#ffffff' });
       expect(defaultPath.__class__).toBe('KritzelPath');
     });
 
     it('should create a path with provided config values', () => {
+      const themeAwareColor: ThemeAwareColor = { light: '#00ff00', dark: '#00ff00' };
       const configuredPath = new KritzelPath({
         points: [[10, 10], [20, 20]],
         translateX: 100,
         translateY: 200,
         scale: 2,
         strokeWidth: 16,
-        fill: '#00ff00',
+        fill: themeAwareColor,
         lineSlack: 1.0,
       });
 
@@ -74,7 +76,7 @@ describe('KritzelPath', () => {
       expect(configuredPath.translateX).not.toBe(0); // Updated by updateDimensions
       expect(configuredPath.scale).toBe(2);
       expect(configuredPath.strokeWidth).toBe(16);
-      expect(configuredPath.fill).toBe('#00ff00');
+      expect(configuredPath.fill).toEqual(themeAwareColor);
     });
 
     it('should generate an SVG path string', () => {
@@ -83,7 +85,7 @@ describe('KritzelPath', () => {
     });
 
     it('should set default property values', () => {
-      expect(path.stroke).toBe('none');
+      expect(path.stroke).toEqual({ light: 'none', dark: 'none' });
       expect(path.lineSlack).toBe(0.5);
       expect(path.isVisible).toBe(true);
       expect(path.isDebugInfoVisible).toBe(true);
@@ -93,15 +95,16 @@ describe('KritzelPath', () => {
 
   describe('static create', () => {
     it('should create a path with core reference and workspace id', () => {
+      const themeAwareColor: ThemeAwareColor = { light: '#0000ff', dark: '#0000ff' };
       const createdPath = KritzelPath.create(mockCore, {
         points: [[0, 0], [10, 10]],
-        fill: '#0000ff',
+        fill: themeAwareColor,
       });
 
       expect(createdPath._core).toBe(mockCore);
       expect(createdPath.workspaceId).toBe('workspace-1');
       expect(createdPath.zIndex).toBe(1);
-      expect(createdPath.fill).toBe('#0000ff');
+      expect(createdPath.fill).toEqual(themeAwareColor);
     });
 
     it('should use default options when not provided', () => {
@@ -111,7 +114,7 @@ describe('KritzelPath', () => {
       // Note: translateX/Y become Infinity when points array is empty due to Math.min/max on empty array
       expect(createdPath.scale).toBe(1);
       expect(createdPath.strokeWidth).toBe(8);
-      expect(createdPath.fill).toBe('#000000');
+      expect(createdPath.fill).toEqual({ light: '#000000', dark: '#ffffff' });
     });
 
     it('should generate a unique id', () => {

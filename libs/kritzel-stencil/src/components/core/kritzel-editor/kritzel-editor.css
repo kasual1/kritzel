@@ -59,7 +59,7 @@ kritzel-controls.keyboard-open {
   border: var(--kritzel-split-button-border, 1px solid #ebebeb);
   border-radius: var(--kritzel-split-button-border-radius, 12px);
   background-color: var(--kritzel-split-button-background-color, #ffffff);
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   box-shadow: var(--kritzel-split-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
   transition: background-color 150ms ease;
   -webkit-tap-highlight-color: transparent;

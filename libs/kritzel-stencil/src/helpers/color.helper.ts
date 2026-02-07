@@ -1,12 +1,33 @@
+import { ThemeAwareColor, ThemeMode, resolveColor } from '../constants/color-palette.constants';
+import { KritzelThemeManager } from '../classes/managers/theme.manager';
+
 export class KritzelColorHelper {
   /**
-   * Applies opacity to a hex color and returns an rgba string.
-   * @param hexColor - The hex color string (e.g., '#ff0000' or '#f00')
-   * @param opacity - The opacity value between 0 and 1
-   * @returns The color as an rgba string, or the original hex if opacity is 1
+   * Resolves a color value based on the current theme.
+   * Handles both simple string colors and theme-aware color objects.
+   * @param color - The color to resolve (string or ThemeAwareColor)
+   * @param theme - Optional theme to use. If not provided, uses current theme from ThemeManager
+   * @returns The resolved hex color string, or empty string if color is undefined
    */
-  static applyOpacity(hexColor: string, opacity: number): string {
-    if (opacity >= 1) return hexColor;
+  static resolveThemeColor(color: ThemeAwareColor | undefined, theme?: ThemeMode): string {
+    if (!color) {
+      return '';
+    }
+    
+    const currentTheme = theme ?? KritzelThemeManager.getStoredTheme();
+    return resolveColor(color, currentTheme);
+  }
+
+  /**
+   * Applies opacity to a theme-aware color and returns an rgba string.
+   * @param color - The theme-aware color object
+   * @param opacity - The opacity value between 0 and 1
+   * @param theme - Optional theme to use. If not provided, uses current theme from ThemeManager
+   * @returns The color as an rgba string, or the resolved hex if opacity is 1
+   */
+  static applyOpacity(color: ThemeAwareColor, opacity: number, theme?: ThemeMode): string {
+    const hexColor = this.resolveThemeColor(color, theme);
+    if (!hexColor || opacity >= 1) return hexColor;
 
     const sanitizedHex = hexColor.startsWith('#') ? hexColor.slice(1) : hexColor;
     let r: number, g: number, b: number;

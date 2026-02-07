@@ -6,6 +6,7 @@ import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.clas
 import { ShapeFillType } from '../../shared/kritzel-shape-fill/kritzel-shape-fill';
 import { LineArrowConfig } from '../../../interfaces/arrow-head.interface';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
+import { ThemeAwareColor, ThemeMode } from '../../../constants/color-palette.constants';
 
 @Component({
   tag: 'kritzel-tool-config',
@@ -49,12 +50,18 @@ export class KritzelToolConfig {
   }
 
   @Prop({ mutable: true }) isExpanded: boolean = false;
+  @Prop() theme: ThemeMode;
+
+  @Watch('theme')
+  onThemeChange() {
+    this.emitDisplayValues();
+  }
 
   @Event() toolChange: EventEmitter<ConfigurableTool>;
   @Event() displayValuesChange: EventEmitter<ToolDisplayValues>;
 
   @State() config: ToolConfigDefinition;
-  @State() palette: string[] = [];
+  @State() palette: ThemeAwareColor[] = [];
   @State() currentOpacity: number = 1;
   @State() private updateTrigger: number = 0;
 
@@ -87,7 +94,7 @@ export class KritzelToolConfig {
     const size = (this.tool as any)[this.config.sizeProperty];
 
     const displayValues: ToolDisplayValues = {
-      color: KritzelColorHelper.applyOpacity(color, opacity),
+      color: KritzelColorHelper.applyOpacity(color, opacity, this.theme),
       size,
     };
 
@@ -112,13 +119,15 @@ export class KritzelToolConfig {
     this.isExpanded = !this.isExpanded;
   };
 
-  private handleColorChange = (event: CustomEvent<string>) => {
+  private handleColorChange = (event: CustomEvent<ThemeAwareColor>) => {
     (this.tool as any)[this.config.colorProperty] = event.detail;
 
     // Special handling for shape fill: when color (stroke) changes, update fill color if it's currently filled
     if (this.config.type === 'shape' || this.config.type === 'selection') {
       const tool = this.tool as any;
-      if (tool.fillColor !== 'transparent') {
+      const isTransparent = typeof tool.fillColor === 'string' ? tool.fillColor === 'transparent' : 
+        (tool.fillColor.light === 'transparent' && tool.fillColor.dark === 'transparent');
+      if (!isTransparent) {
         tool.fillColor = event.detail;
       }
     }
@@ -195,7 +204,6 @@ export class KritzelToolConfig {
           <kritzel-line-endings
             key={control.type}
             value={value}
-            strokeColor={(this.tool as any)[this.config.colorProperty]}
             onValueChange={(event: CustomEvent<LineArrowConfig>) =>
               this.handlePropertyChange(control.propertyName, event.detail)
             }
@@ -266,6 +274,7 @@ export class KritzelToolConfig {
                 isExpanded={this.isExpanded}
                 isOpaque={true}
                 opacity={this.currentOpacity}
+                theme={this.theme}
                 onColorChange={this.handleColorChange}
               ></kritzel-color-palette>
             )}

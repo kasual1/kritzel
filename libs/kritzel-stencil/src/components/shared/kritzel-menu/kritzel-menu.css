@@ -11,7 +11,7 @@
   z-index: 2;
   gap: var(--kritzel-menu-gap, 4px);
   overflow-y: auto;
-  scrollbar-color: #ebebeb transparent;
+  scrollbar-color: var(--kritzel-global-scrollbar-thumb-color, #ebebeb) transparent;
   scrollbar-width: thin;
   max-height: var(--kritzel-portal-max-height, 300px);
   box-sizing: border-box;

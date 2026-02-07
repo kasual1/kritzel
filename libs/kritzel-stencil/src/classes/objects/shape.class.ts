@@ -13,18 +13,20 @@ import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
+import { ThemeAwareColor } from '../../constants/color-palette.constants';
+import { KritzelColorHelper } from '../../helpers/color.helper';
 
 export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelShape';
 
   shapeType: ShapeType = ShapeType.Rectangle;
-  fillColor: string = 'transparent';
-  strokeColor: string = '#000000';
+  fillColor: ThemeAwareColor = { light: 'transparent', dark: 'transparent' };
+  strokeColor: ThemeAwareColor = { light: '#000000', dark: '#ffffff' };
   strokeWidth: number = 4;
 
   fontFamily: string = 'Arial';
   fontSize: number = 16;
-  fontColor: string = '#000000';
+  fontColor: ThemeAwareColor = { light: '#000000', dark: '#ffffff' };
 
   /** Screen-space x coordinate of the shape's top-left corner (like Path.x) */
   x: number = 0;
@@ -64,12 +66,12 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     width?: number;
     height?: number;
     shapeType?: ShapeType;
-    fillColor?: string;
-    strokeColor?: string;
+    fillColor?: ThemeAwareColor;
+    strokeColor?: ThemeAwareColor;
     strokeWidth?: number;
     fontSize?: number;
     fontFamily?: string;
-    fontColor?: string;
+    fontColor?: ThemeAwareColor;
     scale?: number;
     scaleX?: number;
     scaleY?: number;
@@ -84,12 +86,12 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.width = config.width ?? 100;
       this.height = config.height ?? 100;
       this.shapeType = config.shapeType ?? ShapeType.Rectangle;
-      this.fillColor = config.fillColor ?? 'transparent';
-      this.strokeColor = config.strokeColor ?? '#000000';
+      this.fillColor = config.fillColor ?? { light: 'transparent', dark: 'transparent' };
+      this.strokeColor = config.strokeColor ?? { light: '#000000', dark: '#ffffff' };
       this.strokeWidth = config.strokeWidth ?? 4;
       this.fontSize = config.fontSize ?? 16;
       this.fontFamily = config.fontFamily ?? 'Arial';
-      this.fontColor = config.fontColor ?? '#000000';
+      this.fontColor = config.fontColor ?? { light: '#000000', dark: '#ffffff' };
       this.scale = config.scale ?? 1;
       this.scaleFactor = config.scaleX ?? 1;
     }
@@ -113,13 +115,13 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       width?: number;
       height?: number;
       shapeType?: ShapeType;
-      fillColor?: string;
-      strokeColor?: string;
+      fillColor?: ThemeAwareColor;
+      strokeColor?: ThemeAwareColor;
       strokeWidth?: number;
       opacity?: number;
       fontSize?: number;
       fontFamily?: string;
-      fontColor?: string;
+      fontColor?: ThemeAwareColor;
       scale?: number;
     }
   ): KritzelShape {
@@ -135,14 +137,14 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.width = config?.width ?? 100;
     object.height = config?.height ?? 100;
     object.shapeType = config?.shapeType ?? ShapeType.Rectangle;
-    object.fillColor = config?.fillColor ?? 'transparent';
-    object.strokeColor = config?.strokeColor ?? '#000000';
+    object.fillColor = config?.fillColor ?? { light: 'transparent', dark: 'transparent' };
+    object.strokeColor = config?.strokeColor ?? { light: '#000000', dark: '#ffffff' };
     object.strokeWidth = config?.strokeWidth ?? 4;
     object.opacity = config?.opacity ?? 1;
     object.fontSize = config?.fontSize ?? 16;
     object.fontFamily = config?.fontFamily ?? 'Arial';
-    object.fontColor = config?.fontColor ?? '#000000';
-    object.backgroundColor = 'transparent';
+    object.fontColor = config?.fontColor ?? { light: '#000000', dark: '#ffffff' };
+    object.backgroundColor = { light: 'transparent', dark: 'transparent' };
     object.scaleFactor = 1;
     object.scale = config?.scale ?? core.store.state.scale;
     object.zIndex = core.store.currentZIndex;
@@ -193,7 +195,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     element.style.fontFamily = this.fontFamily;
     element.style.fontSize = `${this.fontSize}pt`;
-    element.style.color = this.fontColor;
+    element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
     element.style.whiteSpace = 'pre-wrap';
     element.style.wordWrap = 'break-word';
     element.innerHTML = '';

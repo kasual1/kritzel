@@ -6,6 +6,7 @@ import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelCore } from '../core/core.class';
 import { KritzelClonable } from '../../interfaces/clonable.interface';
+import { ThemeAwareColor } from '../../constants/color-palette.constants';
 
 export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable, KritzelClonable<KritzelBaseObject<T>> {
   __class__: string = 'KritzelBaseObject';
@@ -21,8 +22,8 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   translateY: number;
   height: number;
   width: number;
-  backgroundColor: string;
-  borderColor: string;
+  backgroundColor?: ThemeAwareColor;
+  borderColor?: ThemeAwareColor;
   borderWidth: number = 0;
   opacity: number = 1;
   padding: number = 0;

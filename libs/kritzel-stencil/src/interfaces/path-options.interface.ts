@@ -1,10 +1,12 @@
+import { ThemeAwareColor } from '../constants/color-palette.constants';
+
 export interface KritzelPathOptions {
   points: number[][];
   translateX?: number;
   translateY?: number;
   scale?: number;
-  stroke?: string;
+  stroke?: ThemeAwareColor;
   strokeWidth?: number;
-  fill?: string;
+  fill?: ThemeAwareColor;
   opacity?: number;
 }

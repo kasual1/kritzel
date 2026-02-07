@@ -88,7 +88,7 @@
   padding: var(--kritzel-controls-control-padding, 8px);
   border: none;
   background: none;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
   font-weight: bold;
 }
@@ -131,7 +131,7 @@
   padding: var(--kritzel-controls-control-padding, 8px);
   border: none;
   background: none;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
   border-radius: var(--kritzel-controls-control-border-radius, 12px);
   color: inherit;
@@ -149,7 +149,7 @@
   align-self: stretch;
   border: none;
   background: none;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
   border-radius: 0 var(--kritzel-controls-control-border-radius, 12px) var(--kritzel-controls-control-border-radius, 12px) 0;
   color: inherit;
@@ -209,7 +209,7 @@
   padding: 10px 12px;
   border: none;
   background: none;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   border-radius: 8px;
   color: var(--kritzel-controls-control-color, #000000);
   font-size: 14px;
@@ -282,7 +282,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   border-radius: 50%;
 }
 
@@ -293,7 +293,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
   background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
@@ -306,7 +306,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   border: 2px solid transparent;
   box-sizing: border-box;
   background-color: var(--kritzel-color-palette-hover-background-color, #ebebeb);
