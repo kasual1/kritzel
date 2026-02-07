@@ -14,7 +14,6 @@ export const darkTheme: KritzelTheme = {
     pointerCursor: 'pointer',
     hoverBackground: 'hsl(0, 0%, 100%, 8%)',
     iconColor: 'currentColor',
-    primaryColor: '#0A84FF',
     scrollbarThumbColor: '#555555',
     textPrimary: '#ffffff',
     textSecondary: '#e0e0e0',

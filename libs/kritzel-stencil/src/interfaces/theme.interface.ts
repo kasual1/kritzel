@@ -20,7 +20,6 @@ export interface KritzelTheme {
     borderColor?: string;
     hoverBackground?: string;
     pointerCursor?: string;
-    primaryColor?: string;
     scrollbarThumbColor?: string;
     textPrimary?: string;
     textSecondary?: string;
@@ -275,6 +274,7 @@ export interface KritzelTheme {
     borderWidth?: string;
     handleColor?: string;
     handleSize?: string;
+    handleStrokeColor?: string;
   };
 
   /** Settings variables */
