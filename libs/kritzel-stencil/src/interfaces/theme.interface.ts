@@ -333,6 +333,7 @@ export interface KritzelTheme {
   /** Tooltip variables */
   tooltip?: {
     backgroundColor?: string;
+    border?: string;
     borderRadius?: string;
     boxShadow?: string;
     color?: string;

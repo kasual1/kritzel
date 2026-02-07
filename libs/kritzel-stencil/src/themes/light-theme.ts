@@ -246,6 +246,7 @@ export const lightTheme: KritzelTheme = {
 
   tooltip: {
     backgroundColor: '#ffffff',
+    border: '1px solid #ebebeb',
     borderRadius: '16px',
     boxShadow: '0 1px 6px rgba(0, 0, 0, 0.12)',
     color: '#000000',
