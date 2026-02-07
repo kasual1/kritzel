@@ -12,19 +12,22 @@ export interface KritzelTheme {
 
   /** Global variables */
   global?: {
-    backgroundSecondary?: string;
-    borderColor?: string;
+    cursorTrailColor?: string;
+    cursorTrailOpacity?: string;
     dividerColor?: string;
     focusColor?: string;
     focusRingColor?: string;
-    pointerCursor?: string;
+    borderColor?: string;
     hoverBackground?: string;
-    iconColor?: string;
+    pointerCursor?: string;
     primaryColor?: string;
     scrollbarThumbColor?: string;
-    selectionBorderColor?: string;
     textPrimary?: string;
     textSecondary?: string;
+    iconColor?: string;
+    snapIndicatorFill?: string;
+    snapIndicatorStroke?: string;
+    snapLineStroke?: string;
   };
 
   /** Back to content variables */
@@ -44,7 +47,7 @@ export interface KritzelTheme {
     zIndex?: string;
   };
 
-  /** Checkerboard variables (for transparency preview) */
+  /** Checkerboard variables */
   checkerboard?: {
     colorDark?: string;
     colorLight?: string;
@@ -89,7 +92,6 @@ export interface KritzelTheme {
     controlSelectedColor?: string;
     gap?: string;
     padding?: string;
-    textColor?: string;
   };
 
   /** Dialog variables */
@@ -242,7 +244,6 @@ export interface KritzelTheme {
 
   /** Numeric input variables */
   numericInput?: {
-    backgroundColor?: string;
     borderColor?: string;
     focusBorderColor?: string;
     hoverBorderColor?: string;
@@ -266,6 +267,14 @@ export interface KritzelTheme {
   /** Portal variables */
   portal?: {
     maxHeight?: string;
+  };
+
+  /** Selection variables */
+  selection?: {
+    borderColor?: string;
+    borderWidth?: string;
+    handleColor?: string;
+    handleSize?: string;
   };
 
   /** Settings variables */

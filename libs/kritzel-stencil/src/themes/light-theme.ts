@@ -7,7 +7,6 @@ export const lightTheme: KritzelTheme = {
   name: 'light',
 
   global: {
-    backgroundSecondary: '#f5f5f5',
     borderColor: '#ebebeb',
     dividerColor: '#e0e0e0',
     focusColor: '#007acc',
@@ -17,9 +16,13 @@ export const lightTheme: KritzelTheme = {
     iconColor: 'currentColor',
     primaryColor: '#007AFF',
     scrollbarThumbColor: '#ebebeb',
-    selectionBorderColor: '#007AFF',
     textPrimary: '#000000',
     textSecondary: '#333333',
+  },
+
+  selection: {
+    borderColor: '#007AFF',
+    handleColor: '#ffffff',
   },
 
   checkerboard: {
@@ -67,7 +70,6 @@ export const lightTheme: KritzelTheme = {
     controlHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
     controlSelectedBackgroundColor: '#007AFF',
     controlSelectedColor: '#ffffff',
-    textColor: '#333333',
   },
 
   dialog: {
@@ -177,7 +179,6 @@ export const lightTheme: KritzelTheme = {
   },
 
   numericInput: {
-    backgroundColor: '#ffffff',
     borderColor: '#ebebeb',
     focusBorderColor: '#007AFF',
     hoverBorderColor: '#ccc',
