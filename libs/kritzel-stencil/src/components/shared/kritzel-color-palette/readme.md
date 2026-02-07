@@ -7,20 +7,21 @@
 
 ## Properties
 
-| Property        | Attribute        | Description | Type       | Default |
-| --------------- | ---------------- | ----------- | ---------- | ------- |
-| `colors`        | --               |             | `string[]` | `[]`    |
-| `isExpanded`    | `is-expanded`    |             | `boolean`  | `false` |
-| `isOpaque`      | `is-opaque`      |             | `boolean`  | `false` |
-| `opacity`       | `opacity`        |             | `number`   | `1`     |
-| `selectedColor` | `selected-color` |             | `string`   | `null`  |
+| Property        | Attribute     | Description | Type                | Default     |
+| --------------- | ------------- | ----------- | ------------------- | ----------- |
+| `colors`        | --            |             | `ThemeAwareColor[]` | `[]`        |
+| `isExpanded`    | `is-expanded` |             | `boolean`           | `false`     |
+| `isOpaque`      | `is-opaque`   |             | `boolean`           | `false`     |
+| `opacity`       | `opacity`     |             | `number`            | `1`         |
+| `selectedColor` | --            |             | `ThemeAwareColor`   | `null`      |
+| `theme`         | `theme`       |             | `"dark" \| "light"` | `undefined` |
 
 
 ## Events
 
-| Event         | Description | Type                  |
-| ------------- | ----------- | --------------------- |
-| `colorChange` |             | `CustomEvent<string>` |
+| Event         | Description | Type                           |
+| ------------- | ----------- | ------------------------------ |
+| `colorChange` |             | `CustomEvent<ThemeAwareColor>` |
 
 
 ## Dependencies

@@ -7,11 +7,10 @@ A component for selecting line ending styles (arrows) for both the start and end
 
 ## Properties
 
-| Property      | Attribute      | Description                                 | Type               | Default                |
-| ------------- | -------------- | ------------------------------------------- | ------------------ | ---------------------- |
-| `strokeColor` | `stroke-color` | Stroke color used for rendering the preview | `string`           | `'#000000'`            |
-| `styles`      | --             | Available ending styles                     | `LineEndingType[]` | `['none', 'triangle']` |
-| `value`       | --             | Current line arrow configuration            | `LineArrowConfig`  | `undefined`            |
+| Property | Attribute | Description                      | Type               | Default                |
+| -------- | --------- | -------------------------------- | ------------------ | ---------------------- |
+| `styles` | --        | Available ending styles          | `LineEndingType[]` | `['none', 'triangle']` |
+| `value`  | --        | Current line arrow configuration | `LineArrowConfig`  | `undefined`            |
 
 
 ## Events
