@@ -56,7 +56,7 @@ describe('KritzelPath', () => {
       // Note: translateX/Y become Infinity when points array is empty due to Math.min/max on empty array
       expect(defaultPath.scale).toBe(1);
       expect(defaultPath.strokeWidth).toBe(8);
-      expect(defaultPath.fill).toBe('#000000');
+      expect(defaultPath.fill).toEqual({ light: '#000000', dark: '#ffffff' });
       expect(defaultPath.__class__).toBe('KritzelPath');
     });
 
@@ -85,7 +85,7 @@ describe('KritzelPath', () => {
     });
 
     it('should set default property values', () => {
-      expect(path.stroke).toBe('none');
+      expect(path.stroke).toEqual({ light: 'none', dark: 'none' });
       expect(path.lineSlack).toBe(0.5);
       expect(path.isVisible).toBe(true);
       expect(path.isDebugInfoVisible).toBe(true);
@@ -114,7 +114,7 @@ describe('KritzelPath', () => {
       // Note: translateX/Y become Infinity when points array is empty due to Math.min/max on empty array
       expect(createdPath.scale).toBe(1);
       expect(createdPath.strokeWidth).toBe(8);
-      expect(createdPath.fill).toBe('#000000');
+      expect(createdPath.fill).toEqual({ light: '#000000', dark: '#ffffff' });
     });
 
     it('should generate a unique id', () => {
