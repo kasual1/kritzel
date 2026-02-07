@@ -678,7 +678,7 @@ export class KritzelEngine {
   }
 
   render() {
-    const currentTheme = KritzelThemeManager.getCurrentTheme();
+    const currentTheme = KritzelThemeManager.getStoredTheme();
     const computedStyle = window.getComputedStyle(this.host);
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
