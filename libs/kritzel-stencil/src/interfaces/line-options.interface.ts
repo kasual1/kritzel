@@ -1,5 +1,6 @@
 import { LineAnchor } from './anchor.interface';
 import { LineArrowConfig } from './arrow-head.interface';
+import { ThemeAwareColor } from '../constants/color-palette.constants';
 
 export interface KritzelLineOptions {
   startX: number;
@@ -11,7 +12,7 @@ export interface KritzelLineOptions {
   translateX?: number;
   translateY?: number;
   scale?: number;
-  stroke?: string;
+  stroke?: ThemeAwareColor;
   strokeWidth?: number;
   opacity?: number;
   /** Anchor connection for the start point */

@@ -6,6 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
+import { ThemeAwareColor, ThemeMode } from "./constants/color-palette.constants";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
@@ -15,6 +16,7 @@ import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelUndoState as KritzelUndoState1 } from ".";
+import { ThemeName } from "./interfaces/theme.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
@@ -29,6 +31,7 @@ import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
+export { ThemeAwareColor, ThemeMode } from "./constants/color-palette.constants";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
@@ -38,6 +41,7 @@ export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelUndoState as KritzelUndoState1 } from ".";
+export { ThemeName } from "./interfaces/theme.interface";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
@@ -79,13 +83,14 @@ export namespace Components {
           * @default 24
          */
         "size": number;
-        "value": string;
+        "theme": ThemeMode;
+        "value": string | ThemeAwareColor;
     }
     interface KritzelColorPalette {
         /**
           * @default []
          */
-        "colors": string[];
+        "colors": ThemeAwareColor[];
         /**
           * @default false
          */
@@ -101,7 +106,8 @@ export namespace Components {
         /**
           * @default null
          */
-        "selectedColor": string | null;
+        "selectedColor": ThemeAwareColor | null;
+        "theme": ThemeMode;
     }
     interface KritzelContextMenu {
         "items": ContextMenuItem[];
@@ -121,6 +127,7 @@ export namespace Components {
           * @default true
          */
         "isUtilityPanelVisible": boolean;
+        "theme": ThemeMode;
         /**
           * @default null
          */
@@ -294,6 +301,11 @@ export namespace Components {
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
         "syncConfig"?: KritzelSyncConfig;
+        /**
+          * The current theme to apply to the editor
+          * @default 'light'
+         */
+        "theme": ThemeName;
         "triggerSelectionChange": () => Promise<void>;
         "undo": () => Promise<void>;
         "ungroup": () => Promise<void>;
@@ -348,11 +360,6 @@ export namespace Components {
         "size": number;
     }
     interface KritzelLineEndings {
-        /**
-          * Stroke color used for rendering the preview
-          * @default '#000000'
-         */
-        "strokeColor": string;
         /**
           * Available ending styles
           * @default ['none', 'triangle']
@@ -540,6 +547,7 @@ export namespace Components {
           * @default false
          */
         "isExpanded": boolean;
+        "theme": ThemeMode;
         "tool": ConfigurableTool;
     }
     interface KritzelTooltip {
@@ -726,7 +734,7 @@ declare global {
         new (): HTMLKritzelColorElement;
     };
     interface HTMLKritzelColorPaletteElementEventMap {
-        "colorChange": string;
+        "colorChange": ThemeAwareColor;
     }
     interface HTMLKritzelColorPaletteElement extends Components.KritzelColorPalette, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelColorPaletteElementEventMap>(type: K, listener: (this: HTMLKritzelColorPaletteElement, ev: KritzelColorPaletteCustomEvent<HTMLKritzelColorPaletteElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -822,6 +830,7 @@ declare global {
         "isReady": HTMLElement;
         "objectsChange": KritzelBaseObject[];
         "undoStateChange": KritzelUndoState1;
+        "themeChange": ThemeName;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1303,13 +1312,14 @@ declare namespace LocalJSX {
           * @default 24
          */
         "size"?: number;
-        "value"?: string;
+        "theme"?: ThemeMode;
+        "value"?: string | ThemeAwareColor;
     }
     interface KritzelColorPalette {
         /**
           * @default []
          */
-        "colors"?: string[];
+        "colors"?: ThemeAwareColor[];
         /**
           * @default false
          */
@@ -1318,7 +1328,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "isOpaque"?: boolean;
-        "onColorChange"?: (event: KritzelColorPaletteCustomEvent<string>) => void;
+        "onColorChange"?: (event: KritzelColorPaletteCustomEvent<ThemeAwareColor>) => void;
         /**
           * @default 1
          */
@@ -1326,7 +1336,8 @@ declare namespace LocalJSX {
         /**
           * @default null
          */
-        "selectedColor"?: string | null;
+        "selectedColor"?: ThemeAwareColor | null;
+        "theme"?: ThemeMode;
     }
     interface KritzelContextMenu {
         "items"?: ContextMenuItem[];
@@ -1348,6 +1359,7 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         "onIsControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
+        "theme"?: ThemeMode;
         /**
           * @default null
          */
@@ -1454,6 +1466,7 @@ declare namespace LocalJSX {
         "objectContextMenuItems"?: ContextMenuItem[];
         "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
         "onObjectsChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
+        "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState1>) => void;
         /**
           * @default ABSOLUTE_SCALE_MAX
@@ -1492,6 +1505,11 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         "syncConfig"?: KritzelSyncConfig;
+        /**
+          * The current theme to apply to the editor
+          * @default 'light'
+         */
+        "theme"?: ThemeName;
         "workspace"?: KritzelWorkspace;
     }
     interface KritzelExport {
@@ -1545,11 +1563,6 @@ declare namespace LocalJSX {
     }
     interface KritzelLineEndings {
         "onValueChange"?: (event: KritzelLineEndingsCustomEvent<LineArrowConfig>) => void;
-        /**
-          * Stroke color used for rendering the preview
-          * @default '#000000'
-         */
-        "strokeColor"?: string;
         /**
           * Available ending styles
           * @default ['none', 'triangle']
@@ -1777,6 +1790,7 @@ declare namespace LocalJSX {
         "isExpanded"?: boolean;
         "onDisplayValuesChange"?: (event: KritzelToolConfigCustomEvent<ToolDisplayValues>) => void;
         "onToolChange"?: (event: KritzelToolConfigCustomEvent<ConfigurableTool>) => void;
+        "theme"?: ThemeMode;
         "tool"?: ConfigurableTool;
     }
     interface KritzelTooltip {

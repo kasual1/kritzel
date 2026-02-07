@@ -29,7 +29,7 @@ export class KritzelStrokeSize {
               }}
               onClick={() => this.handleSizeClick(size)}
             >
-              <kritzel-color value='#000000' size={size}></kritzel-color>
+              <kritzel-color value={'var(--kritzel-global-text-primary)'} size={size}></kritzel-color>
             </div>
           ))}
         </div>

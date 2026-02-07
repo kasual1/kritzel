@@ -23,11 +23,11 @@ button {
   margin: 0;
   font-family: inherit;
   font-size: inherit;
-  color: inherit;
+  color: var(--kritzel-split-button-color, #000000);
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  cursor: var(--kritzel-pointer-cursor, pointer);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   text-align: center;
   display: flex;
   align-items: center;

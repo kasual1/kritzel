@@ -97,13 +97,14 @@ export declare interface KritzelDialog extends Components.KritzelDialog {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['controls', 'customSvgIcons', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig'],
-  outputs: ['isReady', 'objectsChange', 'undoStateChange'],
+  outputs: ['isReady', 'objectsChange', 'undoStateChange', 'themeChange'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
   @Output() isReady = new EventEmitter<CustomEvent<HTMLElement>>();
   @Output() objectsChange = new EventEmitter<CustomEvent<IKritzelEditorKritzelBaseObject[]>>();
   @Output() undoStateChange = new EventEmitter<CustomEvent<IKritzelEditorKritzelUndoState>>();
+  @Output() themeChange = new EventEmitter<CustomEvent<IKritzelEditorThemeName>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -113,6 +114,7 @@ export class KritzelEditor {
 
 import type { KritzelBaseObject as IKritzelEditorKritzelBaseObject } from 'kritzel-stencil/dist/components';
 import type { KritzelUndoState as IKritzelEditorKritzelUndoState } from 'kritzel-stencil/dist/components';
+import type { ThemeName as IKritzelEditorThemeName } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelEditor extends Components.KritzelEditor {
 
@@ -121,6 +123,8 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   objectsChange: EventEmitter<CustomEvent<IKritzelEditorKritzelBaseObject[]>>;
 
   undoStateChange: EventEmitter<CustomEvent<IKritzelEditorKritzelUndoState>>;
+
+  themeChange: EventEmitter<CustomEvent<IKritzelEditorThemeName>>;
 }
 
 
@@ -157,14 +161,14 @@ export declare interface KritzelExport extends Components.KritzelExport {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelLineEndings,
-  inputs: ['strokeColor', 'styles', 'value']
+  inputs: ['styles', 'value']
 })
 @Component({
   selector: 'kritzel-line-endings',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['strokeColor', 'styles', 'value'],
+  inputs: ['styles', 'value'],
   outputs: ['valueChange'],
 })
 export class KritzelLineEndings {

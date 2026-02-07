@@ -19,7 +19,7 @@ export class KritzelShapeFill {
   }
 
   private renderFillIcon(type: ShapeFillType) {
-    const strokeColor = '#000000';
+    const strokeColor = 'var(--kritzel-global-text-primary)';
 
     if (type === 'transparent') {
       return (

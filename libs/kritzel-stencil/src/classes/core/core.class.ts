@@ -15,6 +15,7 @@ import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { KritzelAppStateMap } from '../structures/app-state-map.structure';
 import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelCursorManager } from '../managers/cursor.manager';
+import { KritzelThemeManager } from '../managers/theme.manager';
 
 export class KritzelCore {
   private readonly _kritzelEngine: KritzelEngine;
@@ -23,6 +24,7 @@ export class KritzelCore {
   private readonly _appStateMap: KritzelAppStateMap;
   private readonly _anchorManager: KritzelAnchorManager;
   private readonly _cursorManager: KritzelCursorManager;
+  private readonly _themeManager: KritzelThemeManager;
 
   get engine(): KritzelEngine {
     return this._kritzelEngine;
@@ -44,12 +46,17 @@ export class KritzelCore {
     return this._cursorManager;
   }
 
+  get themeManager(): KritzelThemeManager {
+    return this._themeManager;
+  }
+
   constructor(kritzelEngine: KritzelEngine) {
     this._kritzelEngine = kritzelEngine;
     this._store = new KritzelStore(DEFAULT_ENGINE_CONFIG);
     this._appStateMap = new KritzelAppStateMap();
     this._anchorManager = new KritzelAnchorManager(this);
     this._cursorManager = new KritzelCursorManager(this);
+    this._themeManager = new KritzelThemeManager(this);
   }
 
   setSyncConfig(config?: KritzelSyncConfig): void {

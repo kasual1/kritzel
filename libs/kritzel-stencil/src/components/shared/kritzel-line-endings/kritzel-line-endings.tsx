@@ -20,9 +20,6 @@ export class KritzelLineEndings {
   /** Current line arrow configuration */
   @Prop({ mutable: true }) value: LineArrowConfig | undefined;
 
-  /** Stroke color used for rendering the preview */
-  @Prop() strokeColor: string = '#000000';
-
   @Event() valueChange: EventEmitter<LineArrowConfig>;
 
   private getStartEnding(): LineEndingType {
@@ -73,7 +70,7 @@ export class KritzelLineEndings {
   }
 
   private renderEndingIcon(type: LineEndingType, isStart: boolean) {
-    const color = '#000000';
+    const color = 'var(--kritzel-global-text-primary)';
     if (type === 'none') {
       return (
         <svg viewBox="0 0 24 12" class="ending-icon">

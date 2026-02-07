@@ -24,6 +24,7 @@ import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { KritzelUndoState } from '../../..';
+import { ThemeName } from '../../../interfaces/theme.interface';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -140,6 +141,7 @@ export class KritzelEditor {
   @Event() isReady: EventEmitter<HTMLElement>;
   @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
   @Event() undoStateChange: EventEmitter<KritzelUndoState>;
+  @Event() themeChange: EventEmitter<ThemeName>;
 
   @State() isEngineReady: boolean = false;
   @State() isControlsReady: boolean = false;
@@ -149,6 +151,7 @@ export class KritzelEditor {
   @State() isVirtualKeyboardOpen: boolean = false;
   @State() undoState: KritzelUndoState = null;
   @State() isBackToContentButtonVisible: boolean = false;
+  @State() currentTheme: ThemeName = 'light';
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -172,6 +175,11 @@ export class KritzelEditor {
         this.activeWorkspace = updatedActiveWorkspace;
       }
     }
+  }
+
+  @Watch('currentTheme')
+  onCurrentThemeChange() {
+    setTimeout(() => this.setOsSpecificCssVariables(), 0);
   }
 
   @Listen('dblclick', { passive: false })
@@ -287,6 +295,9 @@ export class KritzelEditor {
         if (typeof parsed.lockDrawingScale === 'boolean') {
           this.lockDrawingScale = parsed.lockDrawingScale;
         }
+        if (parsed.theme === 'light' || parsed.theme === 'dark') {
+          this.currentTheme = parsed.theme;
+        }
       } catch {
         // Invalid JSON, use prop defaults
       }
@@ -334,6 +345,8 @@ export class KritzelEditor {
     this.scaleMin = event.detail.scaleMin;
     this.scaleMax = event.detail.scaleMax;
     this.lockDrawingScale = event.detail.lockDrawingScale;
+    this.currentTheme = event.detail.theme;
+    this.themeChange.emit(event.detail.theme);
   }
 
   async handleMoreMenuItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
@@ -413,6 +426,7 @@ export class KritzelEditor {
           scaleMax={this.scaleMax}
           lockDrawingScale={this.lockDrawingScale}
           scaleMin={this.scaleMin}
+          theme={this.currentTheme}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
           onIsEngineReady={event => this.onEngineReady(event)}
@@ -429,6 +443,7 @@ export class KritzelEditor {
           controls={this.controls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}
           undoState={this.undoState}
+          theme={this.currentTheme}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
 

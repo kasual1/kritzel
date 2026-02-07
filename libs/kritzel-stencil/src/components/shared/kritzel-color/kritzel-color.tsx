@@ -1,13 +1,22 @@
 import { Component, Host, Prop, h } from '@stencil/core';
+import { ThemeAwareColor, ThemeMode } from '../../../constants/color-palette.constants';
+import { KritzelColorHelper } from '../../../helpers/color.helper';
 
 @Component({
   tag: 'kritzel-color',
   styleUrl: 'kritzel-color.css',
   shadow: true,
 })
-export class KritzelColor {
-  @Prop() value: string;
+export class KritzelColorComponent {
+  @Prop() value: string | ThemeAwareColor;
+  @Prop() theme: ThemeMode;
   @Prop() size: number = 24;
+
+  private resolveColor(): string {
+    if (!this.value) return '';
+    if (typeof this.value === 'string') return this.value;
+    return KritzelColorHelper.resolveThemeColor(this.value, this.theme);
+  }
 
   private isLightColor(hexColor: string): boolean {
     if (!hexColor) return false;
@@ -40,7 +49,8 @@ export class KritzelColor {
   }
 
   render() {
-    const isColorVeryLight = this.isLightColor(this.value);
+    const resolvedColor = this.resolveColor();
+    const isColorVeryLight = this.isLightColor(resolvedColor);
     return (
       <Host>
         <div
@@ -59,7 +69,7 @@ export class KritzelColor {
               'white': isColorVeryLight,
             }}
             style={{
-              backgroundColor: this.value,
+              backgroundColor: resolvedColor,
               width: `${this.size}px`,
               height: `${this.size}px`,
               borderRadius: '50%',

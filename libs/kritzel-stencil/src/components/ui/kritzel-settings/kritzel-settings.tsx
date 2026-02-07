@@ -1,7 +1,8 @@
-import { Component, Host, h, State, Event, EventEmitter, Method } from '@stencil/core';
+import { Component, Host, h, State, Event, EventEmitter, Method, Element } from '@stencil/core';
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '../../../interfaces/master-detail.interface';
 import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
 import { KRITZEL_VERSION } from '../../../constants/version';
+import { ThemeName } from '../../../interfaces/theme.interface';
 
 const SETTINGS_STORAGE_KEY = 'kritzel-settings';
 const DEFAULT_SCALE_MIN = 0.0001;
@@ -19,11 +20,14 @@ const SETTINGS_CATEGORIES: IKritzelMasterDetailItem[] = [
   shadow: true,
 })
 export class KritzelSettings {
+  @Element() host!: HTMLElement;
+
   @State() isDialogOpen: boolean = false;
   @State() selectedCategoryId: string = SETTINGS_CATEGORIES[0].id;
   @State() scaleMin: number = DEFAULT_SCALE_MIN;
   @State() scaleMax: number = DEFAULT_SCALE_MAX;
   @State() lockDrawingScale: boolean = DEFAULT_LOCK_DRAWING_SCALE;
+  @State() currentTheme: ThemeName = 'light';
 
   /** Emitted when settings change */
   @Event() settingsChange: EventEmitter<KritzelSettingsConfig>;
@@ -46,6 +50,9 @@ export class KritzelSettings {
         if (typeof parsed.lockDrawingScale === 'boolean') {
           this.lockDrawingScale = parsed.lockDrawingScale;
         }
+        if (parsed.theme === 'light' || parsed.theme === 'dark') {
+          this.currentTheme = parsed.theme;
+        }
       } catch {
         // Invalid JSON, use defaults
       }
@@ -57,6 +64,7 @@ export class KritzelSettings {
       scaleMin: this.scaleMin,
       scaleMax: this.scaleMax,
       lockDrawingScale: this.lockDrawingScale,
+      theme: this.currentTheme,
     };
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
     this.settingsChange.emit(settings);
@@ -74,6 +82,11 @@ export class KritzelSettings {
 
   private handleLockDrawingScaleChange = (event: CustomEvent<boolean>): void => {
     this.lockDrawingScale = event.detail;
+    this.saveSettings();
+  };
+
+  private handleThemeChange = (event: CustomEvent<boolean>): void => {
+    this.currentTheme = event.detail ? 'dark' : 'light';
     this.saveSettings();
   };
 
@@ -98,6 +111,28 @@ export class KritzelSettings {
             <h3>General Settings</h3>
             <div class="settings-group">
               <div class="settings-item">
+                <label class="settings-label">Dark Mode</label>
+                <p class="settings-description">
+                  Toggle between light and dark color themes for the editor interface.
+                </p>
+                <kritzel-slide-toggle
+                  checked={this.currentTheme === 'dark'}
+                  label="Dark Mode"
+                  onCheckedChange={this.handleThemeChange}
+                />
+              </div>
+               <div class="settings-item">
+                <label class="settings-label">Lock Drawing Scale</label>
+                <p class="settings-description">
+                  When enabled, drawn objects maintain a fixed visual size regardless of the current zoom level.
+                </p>
+                <kritzel-slide-toggle
+                  checked={this.lockDrawingScale}
+                  label="Lock Drawing Scale"
+                  onCheckedChange={this.handleLockDrawingScaleChange}
+                />
+              </div>
+              <div class="settings-item">
                 <label class="settings-label">Minimum Zoom Level</label>
                 <p class="settings-description">
                   Sets the minimum zoom level. Lower values allow zooming out further to see more of the canvas.
@@ -121,17 +156,6 @@ export class KritzelSettings {
                   max={1000}
                   step={1}
                   onValueChange={this.handleScaleMaxChange}
-                />
-              </div>
-              <div class="settings-item">
-                <label class="settings-label">Lock Drawing Scale</label>
-                <p class="settings-description">
-                  When enabled, drawn objects maintain a fixed visual size regardless of the current zoom level.
-                </p>
-                <kritzel-slide-toggle
-                  checked={this.lockDrawingScale}
-                  label="Lock Drawing Scale"
-                  onCheckedChange={this.handleLockDrawingScaleChange}
                 />
               </div>
             </div>

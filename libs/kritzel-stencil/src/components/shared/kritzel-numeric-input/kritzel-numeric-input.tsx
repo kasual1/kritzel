@@ -100,10 +100,10 @@ export class KritzelNumericInput {
             <input
               type="number"
               class="numeric-input"
-              value={this.inputValue}
               min={this.min}
               max={this.max}
               step={this.step}
+              value={this.inputValue}
               onInput={this.handleInput}
               onBlur={this.handleBlur}
               onKeyDown={this.handleKeyDown}

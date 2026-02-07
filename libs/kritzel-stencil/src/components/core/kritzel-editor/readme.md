@@ -27,6 +27,7 @@
 | ----------------- | ----------- | ------------------------------------------------------------- |
 | `isReady`         |             | `CustomEvent<HTMLElement>`                                    |
 | `objectsChange`   |             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `themeChange`     |             | `CustomEvent<"dark" \| "light">`                              |
 | `undoStateChange` |             | `CustomEvent<KritzelUndoState>`                               |
 
 

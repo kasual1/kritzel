@@ -170,7 +170,7 @@ describe('KritzelText', () => {
     textObject = KritzelText.create(mockCore, 12, 'Helvetica');
     textObject.translateX = 10;
     textObject.translateY = 20;
-    textObject.fontColor = '#ff0000';
+    textObject.fontColor = { light: '#ff0000', dark: '#ff0000' };
   });
 
   afterEach(() => {
@@ -183,7 +183,7 @@ describe('KritzelText', () => {
 
       expect(defaultText.fontFamily).toBe('Arial');
       expect(defaultText.fontSize).toBe(8);
-      expect(defaultText.fontColor).toBe('#000000');
+      expect(defaultText.fontColor).toEqual({ light: '#000000', dark: '#ffffff' });
       expect(defaultText.__class__).toBe('KritzelText');
       expect(defaultText.isEditable).toBe(true);
       expect(defaultText.isEditing).toBe(false);
@@ -222,7 +222,7 @@ describe('KritzelText', () => {
     it('should set transparent background', () => {
       const createdText = KritzelText.create(mockCore);
 
-      expect(createdText.backgroundColor).toBe('transparent');
+      expect(createdText.backgroundColor).toEqual({ light: 'transparent', dark: 'transparent' });
     });
 
     it('should create an editor', () => {
@@ -715,7 +715,7 @@ describe('KritzelText', () => {
 
       expect(serialized.fontSize).toBe(12);
       expect(serialized.fontFamily).toBe('Helvetica');
-      expect(serialized.fontColor).toBe('#ff0000');
+      expect(serialized.fontColor).toEqual({ light: '#ff0000', dark: '#ff0000' });
       expect(serialized.content).toEqual({ type: 'doc', content: [] });
     });
   });

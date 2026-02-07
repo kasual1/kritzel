@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method } from '@stencil/core';
+import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method, Watch } from '@stencil/core';
 import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
 import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
@@ -11,6 +11,7 @@ import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 import { ToolDisplayValues } from '../../../interfaces/tool-config.interface';
 import { KritzelToolConfigHelper } from '../../../helpers/tool-config.helper';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
+import { ThemeMode } from '../../../constants/color-palette.constants';
 
 type ToolConfig = Record<string, any>;
 
@@ -27,6 +28,7 @@ export class KritzelControls {
   @Prop({ mutable: true }) activeControl: KritzelToolbarControl | null = null;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() undoState: KritzelUndoState = null;
+  @Prop() theme: ThemeMode;
 
   @Event() isControlsReady: EventEmitter<void>;
 
@@ -88,6 +90,13 @@ export class KritzelControls {
     }
   }
 
+  @Watch('theme')
+  onThemeChange() {
+    if (this.activeControl?.tool) {
+      this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
+    }
+  }
+
   @Method()
   async closeTooltip() {
     this.isTooltipVisible = false;
@@ -138,7 +147,7 @@ export class KritzelControls {
     const size = (tool as any)[config.sizeProperty];
 
     const displayValues: ToolDisplayValues = {
-      color: KritzelColorHelper.applyOpacity(color, opacity),
+      color: KritzelColorHelper.applyOpacity(color, opacity, this.theme),
       size,
     };
 
@@ -435,6 +444,7 @@ export class KritzelControls {
               >
                 <kritzel-tool-config 
                   tool={this.activeControl.tool as any} 
+                  theme={this.theme}
                   onToolChange={event => this.handleToolChange?.(event)}
                   onDisplayValuesChange={this.handleDisplayValuesChange}
                   style={{ width: '100%', height: '100%' }}
@@ -466,6 +476,7 @@ export class KritzelControls {
                   <div class="color-container">
                     <kritzel-color
                       value={this.displayValues.color}
+                      theme={this.theme}
                       size={this.displayValues.size}
                       style={{
                         borderRadius: '50%',

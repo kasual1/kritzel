@@ -3,30 +3,15 @@ import { KritzelBaseTool } from './base-tool.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelCore } from '../core/core.class';
+import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 
 export class KritzelTextTool extends KritzelBaseTool {
   fontFamily: string = 'Arial';
   fontSize: number = 16;
-  fontColor: string = '#000000';
+  fontColor: ThemeAwareColor = DEFAULT_COLOR_PALETTE[0];
   opacity: number = 1;
 
-  palette: string[] = [
-    '#000000',
-    '#FFFFFF',
-    '#FF0000',
-    '#00FF00',
-    '#0000FF',
-    '#FFFF00',
-    '#FF00FF',
-    '#00FFFF',
-    '#808080',
-    '#C0C0C0',
-    '#800000',
-    '#008000',
-    '#000080',
-    '#808000',
-    '#800080',
-  ];
+  palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
 
   constructor(core: KritzelCore) {
     super(core);

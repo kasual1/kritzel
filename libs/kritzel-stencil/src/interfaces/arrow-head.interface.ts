@@ -1,3 +1,5 @@
+import { ThemeAwareColor } from '../constants/color-palette.constants';
+
 /**
  * Arrow head style types
  */
@@ -14,7 +16,7 @@ export interface ArrowHeadConfig {
   /** Size of the arrow head in pixels (defaults to strokeWidth * 3) */
   size?: number;
   /** Fill color (defaults to stroke color of the line) */
-  fill?: string;
+  fill?: ThemeAwareColor;
 }
 
 /**

@@ -4,6 +4,7 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseHandler } from './base.handler';
 import { SnapTarget } from '../../interfaces/anchor.interface';
+import { KritzelColorHelper } from '../../helpers/color.helper';
 
 export type LineHandleType = 'start' | 'end' | 'center';
 
@@ -183,7 +184,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
           t,
           edgeX,
           edgeY,
-          lineStroke: line.stroke,
+          lineStroke: KritzelColorHelper.resolveThemeColor(line.stroke),
           lineStrokeWidth: line.strokeWidth / line.scale,
           arrowOffset: line.hasStartArrow ? line.getArrowSize('start') / line.scale : undefined,
           arrowStyle: line.hasStartArrow ? line.arrows?.start?.style : undefined,
@@ -252,7 +253,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
           t,
           edgeX,
           edgeY,
-          lineStroke: line.stroke,
+          lineStroke: KritzelColorHelper.resolveThemeColor(line.stroke),
           lineStrokeWidth: line.strokeWidth / line.scale,
           arrowOffset: line.hasEndArrow ? line.getArrowSize('end') / line.scale : undefined,
           arrowStyle: line.hasEndArrow ? line.arrows?.end?.style : undefined,

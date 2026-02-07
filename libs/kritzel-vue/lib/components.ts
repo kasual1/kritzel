@@ -59,11 +59,13 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'syncConfig',
   'isReady',
   'objectsChange',
-  'undoStateChange'
+  'undoStateChange',
+  'themeChange'
 ], [
   'isReady',
   'objectsChange',
-  'undoStateChange'
+  'undoStateChange',
+  'themeChange'
 ]);
 
 
@@ -79,7 +81,6 @@ export const KritzelExport: StencilVueComponent<JSX.KritzelExport> = /*@__PURE__
 export const KritzelLineEndings: StencilVueComponent<JSX.KritzelLineEndings> = /*@__PURE__*/ defineContainer<JSX.KritzelLineEndings>('kritzel-line-endings', defineKritzelLineEndings, [
   'styles',
   'value',
-  'strokeColor',
   'valueChange'
 ], [
   'valueChange'
