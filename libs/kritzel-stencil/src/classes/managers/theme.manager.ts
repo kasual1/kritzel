@@ -19,7 +19,7 @@ export class KritzelThemeManager {
   constructor(core: KritzelCore) {
     this._core = core;
     this._currentTheme = KritzelThemeManager.getStoredTheme();
-    void this._core; // Reserved for future use (e.g., theme change events)
+    void this._core;
   }
 
   /**
@@ -68,15 +68,6 @@ export class KritzelThemeManager {
       return stored;
     }
     return DEFAULT_THEME;
-  }
-
-  /**
-   * Gets the current theme (alias for getStoredTheme for convenience).
-   * Can be called statically without a manager instance.
-   * @returns The current theme name
-   */
-  static getCurrentTheme(): ThemeName {
-    return KritzelThemeManager.getStoredTheme();
   }
 
   /**

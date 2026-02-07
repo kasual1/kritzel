@@ -14,7 +14,7 @@ export class KritzelColorHelper {
       return '';
     }
     
-    const currentTheme = theme ?? KritzelThemeManager.getCurrentTheme();
+    const currentTheme = theme ?? KritzelThemeManager.getStoredTheme();
     return resolveColor(color, currentTheme);
   }
 
