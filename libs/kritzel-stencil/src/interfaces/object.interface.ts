@@ -14,8 +14,8 @@ export interface KritzelObject<T = Element> {
   translateY: number;
   height: number;
   width: number;
-  backgroundColor?: string | ThemeAwareColor;
-  borderColor?: string | ThemeAwareColor;
+  backgroundColor?: ThemeAwareColor;
+  borderColor?: ThemeAwareColor;
   borderWidth: number;
   opacity: number;
   scale: number;

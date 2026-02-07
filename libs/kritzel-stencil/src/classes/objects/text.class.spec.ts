@@ -170,7 +170,7 @@ describe('KritzelText', () => {
     textObject = KritzelText.create(mockCore, 12, 'Helvetica');
     textObject.translateX = 10;
     textObject.translateY = 20;
-    textObject.fontColor = '#ff0000';
+    textObject.fontColor = { light: '#ff0000', dark: '#ff0000' };
   });
 
   afterEach(() => {

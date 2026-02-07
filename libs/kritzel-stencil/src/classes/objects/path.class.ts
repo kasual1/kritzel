@@ -13,10 +13,10 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   points: number[][];
   d: string;
-  stroke: string | ThemeAwareColor = 'none';
+  stroke: ThemeAwareColor = { light: 'none', dark: 'none' };
   strokeWidth: number;
   lineSlack: number = 0.5;
-  fill: string | ThemeAwareColor;
+  fill: ThemeAwareColor;
   x: number = 0;
   y: number = 0;
   height: number = 0;

@@ -22,8 +22,8 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   translateY: number;
   height: number;
   width: number;
-  backgroundColor?: string | ThemeAwareColor;
-  borderColor?: string | ThemeAwareColor;
+  backgroundColor?: ThemeAwareColor;
+  borderColor?: ThemeAwareColor;
   borderWidth: number = 0;
   opacity: number = 1;
   padding: number = 0;
