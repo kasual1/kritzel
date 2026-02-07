@@ -1,6 +1,6 @@
 import { Component, Host, h, Prop, EventEmitter, Event } from '@stencil/core';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
-import { ThemeAwareColor } from '../../../constants/color-palette.constants';
+import { ThemeAwareColor, ThemeMode } from '../../../constants/color-palette.constants';
 
 @Component({
   tag: 'kritzel-color-palette',
@@ -13,6 +13,7 @@ export class KritzelColorPalette {
   @Prop() isExpanded: boolean = false;
   @Prop() isOpaque: boolean = false;
   @Prop() opacity: number = 1;
+  @Prop() theme: ThemeMode;
 
   @Event() colorChange: EventEmitter<ThemeAwareColor>;
 
@@ -57,7 +58,7 @@ export class KritzelColorPalette {
           }}
         >
           {displayedColors.map(color => {
-            const resolvedColor = KritzelColorHelper.resolveThemeColor(color);
+            const resolvedColor = KritzelColorHelper.resolveThemeColor(color, this.theme);
             return (
               <div
                 tabIndex={0}
@@ -68,7 +69,7 @@ export class KritzelColorPalette {
                 onClick={() => this.handleColorClick(color)}
                 onKeyDown={event => this.handleKeyDown(event, color)}
               >
-                <kritzel-color value={KritzelColorHelper.applyOpacity(resolvedColor, this.opacity)}></kritzel-color>
+                <kritzel-color value={KritzelColorHelper.applyOpacity(resolvedColor, this.opacity)} theme={this.theme}></kritzel-color>
               </div>
             );
           })}
