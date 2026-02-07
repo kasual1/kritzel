@@ -111,6 +111,28 @@ export class KritzelSettings {
             <h3>General Settings</h3>
             <div class="settings-group">
               <div class="settings-item">
+                <label class="settings-label">Dark Mode</label>
+                <p class="settings-description">
+                  Toggle between light and dark color themes for the editor interface.
+                </p>
+                <kritzel-slide-toggle
+                  checked={this.currentTheme === 'dark'}
+                  label="Dark Mode"
+                  onCheckedChange={this.handleThemeChange}
+                />
+              </div>
+               <div class="settings-item">
+                <label class="settings-label">Lock Drawing Scale</label>
+                <p class="settings-description">
+                  When enabled, drawn objects maintain a fixed visual size regardless of the current zoom level.
+                </p>
+                <kritzel-slide-toggle
+                  checked={this.lockDrawingScale}
+                  label="Lock Drawing Scale"
+                  onCheckedChange={this.handleLockDrawingScaleChange}
+                />
+              </div>
+              <div class="settings-item">
                 <label class="settings-label">Minimum Zoom Level</label>
                 <p class="settings-description">
                   Sets the minimum zoom level. Lower values allow zooming out further to see more of the canvas.
@@ -134,28 +156,6 @@ export class KritzelSettings {
                   max={1000}
                   step={1}
                   onValueChange={this.handleScaleMaxChange}
-                />
-              </div>
-              <div class="settings-item">
-                <label class="settings-label">Lock Drawing Scale</label>
-                <p class="settings-description">
-                  When enabled, drawn objects maintain a fixed visual size regardless of the current zoom level.
-                </p>
-                <kritzel-slide-toggle
-                  checked={this.lockDrawingScale}
-                  label="Lock Drawing Scale"
-                  onCheckedChange={this.handleLockDrawingScaleChange}
-                />
-              </div>
-              <div class="settings-item">
-                <label class="settings-label">Dark Mode</label>
-                <p class="settings-description">
-                  Toggle between light and dark color themes for the editor interface.
-                </p>
-                <kritzel-slide-toggle
-                  checked={this.currentTheme === 'dark'}
-                  label="Dark Mode"
-                  onCheckedChange={this.handleThemeChange}
                 />
               </div>
             </div>
