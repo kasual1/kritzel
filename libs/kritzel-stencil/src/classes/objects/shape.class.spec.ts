@@ -197,12 +197,12 @@ describe('KritzelShape', () => {
       const defaultShape = new KritzelShape();
 
       expect(defaultShape.shapeType).toBe(ShapeType.Rectangle);
-      expect(defaultShape.fillColor).toBe('transparent');
-      expect(defaultShape.strokeColor).toBe('#000000');
+      expect(defaultShape.fillColor).toEqual({ light: 'transparent', dark: 'transparent' });
+      expect(defaultShape.strokeColor).toEqual({ light: '#000000', dark: '#ffffff' });
       expect(defaultShape.strokeWidth).toBe(4);
       expect(defaultShape.fontFamily).toBe('Arial');
       expect(defaultShape.fontSize).toBe(16);
-      expect(defaultShape.fontColor).toBe('#000000');
+      expect(defaultShape.fontColor).toEqual({ light: '#000000', dark: '#ffffff' });
       expect(defaultShape.x).toBe(0);
       expect(defaultShape.y).toBe(0);
       expect(defaultShape.scale).toBe(1);
@@ -236,7 +236,7 @@ describe('KritzelShape', () => {
       expect(configuredShape.strokeWidth).toBe(8);
       expect(configuredShape.fontSize).toBe(24);
       expect(configuredShape.fontFamily).toBe('Helvetica');
-      expect(configuredShape.fontColor).toBe('#0000ff');
+      expect(configuredShape.fontColor).toEqual({ light: '#0000ff', dark: '#0000ff' });
       expect(configuredShape.scale).toBe(2);
     });
 
@@ -275,7 +275,7 @@ describe('KritzelShape', () => {
     it('should set transparent background', () => {
       const createdShape = KritzelShape.create(mockCore);
 
-      expect(createdShape.backgroundColor).toBe('transparent');
+      expect(createdShape.backgroundColor).toEqual({ light: 'transparent', dark: 'transparent' });
     });
 
     it('should create an editor', () => {
@@ -292,8 +292,8 @@ describe('KritzelShape', () => {
       expect(createdShape.width).toBe(100);
       expect(createdShape.height).toBe(100);
       expect(createdShape.shapeType).toBe(ShapeType.Rectangle);
-      expect(createdShape.fillColor).toBe('transparent');
-      expect(createdShape.strokeColor).toBe('#000000');
+      expect(createdShape.fillColor).toEqual({ light: 'transparent', dark: 'transparent' });
+      expect(createdShape.strokeColor).toEqual({ light: '#000000', dark: '#ffffff' });
       expect(createdShape.strokeWidth).toBe(4);
     });
   });
@@ -728,12 +728,12 @@ describe('KritzelShape', () => {
       const serialized = shapeObject.serialize();
 
       expect(serialized.shapeType).toBe(shapeObject.shapeType);
-      expect(serialized.fillColor).toBe(shapeObject.fillColor);
-      expect(serialized.strokeColor).toBe(shapeObject.strokeColor);
+      expect(serialized.fillColor).toEqual(shapeObject.fillColor);
+      expect(serialized.strokeColor).toEqual(shapeObject.strokeColor);
       expect(serialized.strokeWidth).toBe(shapeObject.strokeWidth);
       expect(serialized.fontFamily).toBe(shapeObject.fontFamily);
       expect(serialized.fontSize).toBe(shapeObject.fontSize);
-      expect(serialized.fontColor).toBe(shapeObject.fontColor);
+      expect(serialized.fontColor).toEqual(shapeObject.fontColor);
     });
 
     it('should exclude non-serializable properties', () => {
@@ -769,8 +769,8 @@ describe('KritzelShape', () => {
       newShape.deserialize(serializedData);
 
       expect(newShape.shapeType).toBe(ShapeType.Triangle);
-      expect(newShape.fillColor).toBe('#00ff00');
-      expect(newShape.strokeColor).toBe('#ff0000');
+      expect(newShape.fillColor).toEqual({ light: '#00ff00', dark: '#00ff00' });
+      expect(newShape.strokeColor).toEqual({ light: '#ff0000', dark: '#ff0000' });
       expect(newShape.strokeWidth).toBe(8);
     });
 

@@ -59,7 +59,7 @@ describe('ThemeHelper', () => {
       expect(variables.get('--kritzel-global-focus-color')).toBe('#007acc');
       expect(variables.get('--kritzel-global-icon-color')).toBe('currentColor');
       expect(variables.get('--kritzel-global-divider-color')).toBe('#e0e0e0');
-      expect(variables.get('--kritzel-global-selection-border-color')).toBe('#007AFF');
+      expect(variables.get('--kritzel-selection-border-color')).toBe('#007AFF');
     });
 
     it('should correctly flatten engine variables', () => {
@@ -69,10 +69,10 @@ describe('ThemeHelper', () => {
 
     it('should correctly flatten controls variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.get('--kritzel-controls-gap')).toBe('8px');
-      expect(variables.get('--kritzel-controls-padding')).toBe('8px');
       expect(variables.get('--kritzel-controls-background-color')).toBe('#ffffff');
+      expect(variables.get('--kritzel-controls-border')).toBe('1px solid #ebebeb');
       expect(variables.get('--kritzel-controls-control-hover-background-color')).toBe('hsl(0, 0%, 0%, 4.3%)');
+      expect(variables.get('--kritzel-controls-control-selected-background-color')).toBe('#007AFF');
     });
 
     it('should correctly flatten tooltip variables', () => {
@@ -85,12 +85,13 @@ describe('ThemeHelper', () => {
     it('should correctly flatten menu variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
       expect(variables.get('--kritzel-menu-item-selected-background-color')).toBe('#007aff');
-      expect(variables.get('--kritzel-menu-item-hover-background-color')).toBe('hsl(0, 0%, 0%, 4.3%)');
+      expect(variables.get('--kritzel-menu-item-color')).toBe('#333333');
+      expect(variables.get('--kritzel-menu-background-color')).toBe('#ffffff');
     });
 
     it('should correctly flatten dropdown variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.get('--kritzel-dropdown-color')).toBe('#333333');
+      expect(variables.get('--kritzel-dropdown-text-color')).toBe('#333333');
       expect(variables.get('--kritzel-dropdown-hover-background-color')).toBe('#f0f0f0');
       expect(variables.get('--kritzel-dropdown-selected-background-color')).toBe('#007bff1a');
     });
@@ -98,17 +99,13 @@ describe('ThemeHelper', () => {
     it('should use custom prefix when provided', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme, '--custom');
       expect(variables.get('--custom-global-pointer-cursor')).toBe('pointer');
-      expect(variables.get('--custom-controls-gap')).toBe('8px');
+      expect(variables.get('--custom-controls-background-color')).toBe('#ffffff');
     });
 
     it('should return the expected number of variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      // Count all string properties in theme (excluding 'name')
-      // global: 6, engine: 1, controls: 14, tooltip: 5, contextMenu: 13,
-      // menu: 17, slideToggle: 8, splitButton: 9, dropdown: 4, opacitySlider: 4,
-      // strokeSize: 2, lineEndings: 4, utilityPanel: 1, colorPalette: 2, submenu: 1, portal: 1
-      // Total: 92
-      expect(variables.size).toBe(92);
+      // The full theme structure now generates 173 CSS variables
+      expect(variables.size).toBe(173);
     });
   });
 
@@ -163,15 +160,15 @@ describe('ThemeHelper', () => {
     it('should apply all theme variables to the element', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      // Should have called setProperty for all 92 variables
-      expect(setPropertyMock).toHaveBeenCalledTimes(92);
+      // Should have called setProperty for all 173 variables
+      expect(setPropertyMock).toHaveBeenCalledTimes(173);
     });
 
     it('should apply specific theme values correctly', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
       expect(setPropertyMock).toHaveBeenCalledWith('--kritzel-global-pointer-cursor', 'pointer');
-      expect(setPropertyMock).toHaveBeenCalledWith('--kritzel-controls-gap', '8px');
+      expect(setPropertyMock).toHaveBeenCalledWith('--kritzel-controls-background-color', '#ffffff');
       expect(setPropertyMock).toHaveBeenCalledWith('--kritzel-tooltip-background-color', '#ffffff');
     });
 

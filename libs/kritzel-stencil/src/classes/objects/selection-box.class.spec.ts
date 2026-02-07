@@ -70,14 +70,14 @@ describe('KritzelSelectionBox', () => {
       expect(box.zIndex).toBe(99999);
     });
 
-    it('should set backgroundColor with CSS variable and fallback', () => {
+    it('should set backgroundColor with theme-aware color', () => {
       const box = KritzelSelectionBox.create(mockCore);
-      expect(box.backgroundColor).toBe('var(--kritzel-selection-box-background-color, rgba(0, 122, 255, 0.2))');
+      expect(box.backgroundColor).toEqual({ light: 'rgba(0, 122, 255, 0.2)', dark: 'rgba(0, 122, 255, 0.2)' });
     });
 
-    it('should set borderColor with CSS variable and fallback', () => {
+    it('should set borderColor with theme-aware color', () => {
       const box = KritzelSelectionBox.create(mockCore);
-      expect(box.borderColor).toBe('var(--kritzel-selection-box-border-color, rgba(0, 122, 255, 0.5))');
+      expect(box.borderColor).toEqual({ light: 'rgba(0, 122, 255, 0.5)', dark: 'rgba(0, 122, 255, 0.5)' });
     });
 
     it('should set borderWidth to 2', () => {

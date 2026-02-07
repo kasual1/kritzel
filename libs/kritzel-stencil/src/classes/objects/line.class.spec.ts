@@ -80,7 +80,7 @@ describe('KritzelLine', () => {
       expect(defaultLine.endX).toBe(0);
       expect(defaultLine.endY).toBe(0);
       expect(defaultLine.strokeWidth).toBe(4);
-      expect(defaultLine.stroke).toBe('#000000');
+      expect(defaultLine.stroke).toEqual({ light: '#000000', dark: '#ffffff' });
       expect(defaultLine.scale).toBe(1);
       // Note: translateX/Y are adjusted by updateDimensions() which accounts for bounding box
       expect(defaultLine.translateX).toBeDefined();
@@ -184,7 +184,7 @@ describe('KritzelLine', () => {
       expect(createdLine.endX).toBe(0);
       expect(createdLine.endY).toBe(0);
       expect(createdLine.strokeWidth).toBe(4);
-      expect(createdLine.stroke).toBe('#000000');
+      expect(createdLine.stroke).toEqual({ light: '#000000', dark: '#ffffff' });
     });
   });
 
@@ -604,8 +604,8 @@ describe('KritzelLine', () => {
 
     describe('getArrowFill', () => {
       it('should return stroke color by default', () => {
-        expect(line.getArrowFill('start')).toBe(line.stroke);
-        expect(line.getArrowFill('end')).toBe(line.stroke);
+        expect(line.getArrowFill('start')).toBe('#000000');
+        expect(line.getArrowFill('end')).toBe('#000000');
       });
 
       it('should return custom fill when configured', () => {
