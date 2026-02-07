@@ -1,5 +1,5 @@
 import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
-import { ThemeAwareColor, ThemeMode } from '../../../constants/color-palette.constants';
+import { ThemeMode } from '../../../constants/color-palette.constants';
 
 @Component({
   tag: 'kritzel-stroke-size',
@@ -9,7 +9,6 @@ import { ThemeAwareColor, ThemeMode } from '../../../constants/color-palette.con
 export class KritzelStrokeSize {
   @Prop() sizes: number[] = [4, 6, 8, 12, 16, 24];
   @Prop({ mutable: true }) selectedSize: number | null = null;
-  @Prop() color: ThemeAwareColor | string = { light: '#000000', dark: '#ffffff' };
   @Prop() theme: ThemeMode;
 
   @Event() sizeChange: EventEmitter<number>;
@@ -32,7 +31,7 @@ export class KritzelStrokeSize {
               }}
               onClick={() => this.handleSizeClick(size)}
             >
-              <kritzel-color value={this.color} theme={this.theme} size={size}></kritzel-color>
+              <kritzel-color value={this.theme === 'dark' ? '#ffffff' : '#000000'} size={size}></kritzel-color>
             </div>
           ))}
         </div>

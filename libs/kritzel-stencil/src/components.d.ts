@@ -350,6 +350,7 @@ export namespace Components {
           * @default [8, 10, 12, 16, 20, 24]
          */
         "sizes": number[];
+        "theme": ThemeMode;
     }
     interface KritzelIcon {
         "label"?: string;
@@ -361,15 +362,14 @@ export namespace Components {
     }
     interface KritzelLineEndings {
         /**
-          * Stroke color used for rendering the preview
-          * @default '#000000'
-         */
-        "strokeColor": string;
-        /**
           * Available ending styles
           * @default ['none', 'triangle']
          */
         "styles": LineEndingType[];
+        /**
+          * Current theme
+         */
+        "theme": ThemeMode;
         /**
           * Current line arrow configuration
          */
@@ -492,6 +492,10 @@ export namespace Components {
     }
     interface KritzelShapeFill {
         /**
+          * Current theme
+         */
+        "theme": ThemeMode;
+        /**
           * Current fill type
           * @default 'transparent'
          */
@@ -538,10 +542,6 @@ export namespace Components {
         "open": () => Promise<void>;
     }
     interface KritzelStrokeSize {
-        /**
-          * @default { light: '#000000', dark: '#ffffff' }
-         */
-        "color": ThemeAwareColor | string;
         /**
           * @default null
          */
@@ -1562,6 +1562,7 @@ declare namespace LocalJSX {
           * @default [8, 10, 12, 16, 20, 24]
          */
         "sizes"?: number[];
+        "theme"?: ThemeMode;
     }
     interface KritzelIcon {
         "label"?: string;
@@ -1574,15 +1575,14 @@ declare namespace LocalJSX {
     interface KritzelLineEndings {
         "onValueChange"?: (event: KritzelLineEndingsCustomEvent<LineArrowConfig>) => void;
         /**
-          * Stroke color used for rendering the preview
-          * @default '#000000'
-         */
-        "strokeColor"?: string;
-        /**
           * Available ending styles
           * @default ['none', 'triangle']
          */
         "styles"?: LineEndingType[];
+        /**
+          * Current theme
+         */
+        "theme"?: ThemeMode;
         /**
           * Current line arrow configuration
          */
@@ -1732,6 +1732,10 @@ declare namespace LocalJSX {
     interface KritzelShapeFill {
         "onValueChange"?: (event: KritzelShapeFillCustomEvent<ShapeFillType>) => void;
         /**
+          * Current theme
+         */
+        "theme"?: ThemeMode;
+        /**
           * Current fill type
           * @default 'transparent'
          */
@@ -1788,10 +1792,6 @@ declare namespace LocalJSX {
         "onMenuOpen"?: (event: KritzelSplitButtonCustomEvent<void>) => void;
     }
     interface KritzelStrokeSize {
-        /**
-          * @default { light: '#000000', dark: '#ffffff' }
-         */
-        "color"?: ThemeAwareColor | string;
         "onSizeChange"?: (event: KritzelStrokeSizeCustomEvent<number>) => void;
         /**
           * @default null
