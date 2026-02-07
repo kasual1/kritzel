@@ -90,12 +90,11 @@ export class KritzelToolConfig {
     if (!this.config) return;
 
     const color = (this.tool as any)[this.config.colorProperty];
-    const resolvedColor = KritzelColorHelper.resolveThemeColor(color, this.theme);
     const opacity = this.currentOpacity;
     const size = (this.tool as any)[this.config.sizeProperty];
 
     const displayValues: ToolDisplayValues = {
-      color: KritzelColorHelper.applyOpacity(resolvedColor, opacity),
+      color: KritzelColorHelper.applyOpacity(color, opacity, this.theme),
       size,
     };
 
