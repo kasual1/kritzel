@@ -293,8 +293,8 @@ graph TD;
   kritzel-font-size --> kritzel-font
   kritzel-font-family --> kritzel-dropdown
   kritzel-color-palette --> kritzel-color
-  kritzel-settings --> kritzel-numeric-input
   kritzel-settings --> kritzel-slide-toggle
+  kritzel-settings --> kritzel-numeric-input
   kritzel-settings --> kritzel-dialog
   kritzel-settings --> kritzel-master-detail
   kritzel-master-detail --> kritzel-icon
