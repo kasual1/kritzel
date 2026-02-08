@@ -22,14 +22,14 @@ export class KritzelCursorManager {
     // Reset cursor on old target
     if (this._targetElement) {
       this._targetElement.style.cursor = '';
-      this._targetElement.style.removeProperty('--kritzel-pointer-cursor');
+      this._targetElement.style.removeProperty('--kritzel-global-pointer-cursor');
     }
 
     this._targetElement = element;
 
     // Set the pointer cursor CSS variable for child components to use
     if (this._targetElement) {
-      this._targetElement.style.setProperty('--kritzel-pointer-cursor', KritzelCursorHelper.getPointerCursor());
+      this._targetElement.style.setProperty('--kritzel-global-pointer-cursor', KritzelCursorHelper.getPointerCursor());
     }
   }
 

@@ -11,7 +11,6 @@ export const darkTheme: KritzelTheme = {
     dividerColor: '#3a3a3a',
     focusColor: '#4da3ff',
     focusRingColor: 'rgba(0, 122, 255, 0.4)',
-    pointerCursor: 'pointer',
     hoverBackground: 'hsl(0, 0%, 100%, 8%)',
     iconColor: 'currentColor',
     scrollbarThumbColor: '#555555',

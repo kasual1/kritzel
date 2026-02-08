@@ -54,7 +54,6 @@ describe('ThemeHelper', () => {
 
     it('should correctly flatten global variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.get('--kritzel-global-pointer-cursor')).toBe('pointer');
       expect(variables.get('--kritzel-global-focus-ring-color')).toBe('rgba(0, 122, 255, 0.3)');
       expect(variables.get('--kritzel-global-focus-color')).toBe('#007acc');
       expect(variables.get('--kritzel-global-icon-color')).toBe('currentColor');
@@ -98,14 +97,14 @@ describe('ThemeHelper', () => {
 
     it('should use custom prefix when provided', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme, '--custom');
-      expect(variables.get('--custom-global-pointer-cursor')).toBe('pointer');
+      expect(variables.get('--custom-global-focus-color')).toBe('#007acc');
       expect(variables.get('--custom-controls-background-color')).toBe('#ffffff');
     });
 
     it('should return the expected number of variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      // The full theme structure now generates 173 CSS variables
-      expect(variables.size).toBe(173);
+      // The full theme structure now generates 172 CSS variables
+      expect(variables.size).toBe(172);
     });
   });
 
@@ -160,14 +159,14 @@ describe('ThemeHelper', () => {
     it('should apply all theme variables to the element', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      // Should have called setProperty for all 173 variables
-      expect(setPropertyMock).toHaveBeenCalledTimes(173);
+      // Should have called setProperty for all 172 variables
+      expect(setPropertyMock).toHaveBeenCalledTimes(172);
     });
 
     it('should apply specific theme values correctly', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      expect(setPropertyMock).toHaveBeenCalledWith('--kritzel-global-pointer-cursor', 'pointer');
+      expect(setPropertyMock).toHaveBeenCalledWith('--kritzel-global-focus-color', '#007acc');
       expect(setPropertyMock).toHaveBeenCalledWith('--kritzel-controls-background-color', '#ffffff');
       expect(setPropertyMock).toHaveBeenCalledWith('--kritzel-tooltip-background-color', '#ffffff');
     });
