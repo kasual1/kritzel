@@ -54,13 +54,12 @@ export class KritzelTextTool extends KritzelBaseTool {
       const clientY = event.clientY - this._core.store.offsetY;
       const viewportScale = this._core.store.state.scale;
       const lockScale = this._core.store.state.lockDrawingScale;
-      const divider = lockScale ? viewportScale : 1;
       const text = KritzelText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
 
       text.fontColor = this.fontColor;
       text.opacity = this.opacity;
-      text.translateX = (clientX - this._core.store.state.translateX) / divider;
-      text.translateY = (clientY - this._core.store.state.translateY) / divider;
+      text.translateX = (clientX - this._core.store.state.translateX) / viewportScale;
+      text.translateY = (clientY - this._core.store.state.translateY) / viewportScale;
       text.zIndex = this._core.store.currentZIndex;
 
       this._core.store.state.objects.insert(text);
@@ -104,13 +103,12 @@ export class KritzelTextTool extends KritzelBaseTool {
       const clientY = Math.round(activePointers[0].clientY - this._core.store.offsetY);
       const viewportScale = this._core.store.state.scale;
       const lockScale = this._core.store.state.lockDrawingScale;
-      const divider = lockScale ? viewportScale : 1;
       const text = KritzelText.create(this._core, this.fontSize, this.fontFamily, lockScale ? 1 : viewportScale);
 
       text.fontColor = this.fontColor;
       text.opacity = this.opacity;
-      text.translateX = (clientX - this._core.store.state.translateX) / divider;
-      text.translateY = (clientY - this._core.store.state.translateY) / divider;
+      text.translateX = (clientX - this._core.store.state.translateX) / viewportScale;
+      text.translateY = (clientY - this._core.store.state.translateY) / viewportScale;
       text.zIndex = this._core.store.currentZIndex;
 
       this._core.store.state.objects.insert(text);
