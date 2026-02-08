@@ -154,7 +154,7 @@ export class KritzelToolConfig {
   private handlePropertyChange = (propertyName: string, value: any) => {
     // Special handling for shape fill
     if ((this.config.type === 'shape' || this.config.type === 'selection') && propertyName === 'fillColor') {
-      const newFillColor = value === 'filled' ? (this.tool as any)[this.config.colorProperty] : 'transparent';
+      const newFillColor = value === 'filled' ? (this.tool as any)[this.config.colorProperty] : { light: 'transparent', dark: 'transparent' };
       (this.tool as any).fillColor = newFillColor;
       // When switching to fill mode, also update stroke color to match
       if (value === 'filled') {
@@ -173,7 +173,9 @@ export class KritzelToolConfig {
 
   private getShapeFillValue(): ShapeFillType {
     const fillColor = (this.tool as any).fillColor;
-    return fillColor === 'transparent' ? 'transparent' : 'filled';
+    const isTransparent = typeof fillColor === 'string' ? fillColor === 'transparent' : 
+      (fillColor.light === 'transparent' && fillColor.dark === 'transparent');
+    return isTransparent ? 'transparent' : 'filled';
   }
 
   private renderControl(control) {
