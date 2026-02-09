@@ -79,7 +79,15 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.width = width;
     this.height = height;
 
+    if (this.points.length === 1) {
+      const p = this.points[0];
+      const spreadX = Math.max(0, width - this.strokeWidth) / scaleX;
+      const spreadY = Math.max(0, height - this.strokeWidth) / scaleY;
+      this.points.push([p[0] + spreadX, p[1] + spreadY]);
+    }
+
     this.points = this.points.map(([x, y]) => [x * scaleX, y * scaleY]);
+
     this.d = this.generateSvgPath();
 
     this.width = Math.max(...this.points.map(p => p[0])) - Math.min(...this.points.map(p => p[0])) + this.strokeWidth;
