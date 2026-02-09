@@ -166,7 +166,6 @@ export class KritzelShapeTool extends KritzelBaseTool {
       opacity: this.opacity,
       fontSize: this.fontSize,
       fontFamily: this.fontFamily,
-      fontColor: this.fontColor,
       scale: lockScale ? 1 : viewportScale,
     });
 
