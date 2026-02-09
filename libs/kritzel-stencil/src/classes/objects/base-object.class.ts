@@ -293,6 +293,14 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     // This method can be overridden by subclasses to handle edit actions.
   }
 
+  /**
+   * Called after properties are updated via updateObject.
+   * Override in subclasses to perform custom logic when specific properties change.
+   */
+  onAfterUpdate(_changedProperties: string[]): void {
+    // Default implementation does nothing
+  }
+
   hitTest(_x: number, _y: number): boolean {
     return true; // Default implementation, can be overridden by subclasses
   }
