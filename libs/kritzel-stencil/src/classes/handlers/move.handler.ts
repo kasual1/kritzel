@@ -121,7 +121,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         const moveDeltaY = Math.abs(clientY - this.startY);
         const moveThreshold = 5;
 
-        if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
+        if (this.hasMoved || moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
           // Check for anchor disconnect threshold on lines
           this.checkAndDisconnectAnchors(clientX, clientY);
 
@@ -156,7 +156,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         const moveDeltaY = Math.abs(y - this.startY);
         const moveThreshold = 5;
 
-        if (moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
+        if (this.hasMoved || moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
           clearTimeout(this._core.store.state.longTouchTimeout);
 
           // Check for anchor disconnect threshold on lines
