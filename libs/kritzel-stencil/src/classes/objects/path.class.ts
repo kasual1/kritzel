@@ -315,17 +315,11 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    * Does NOT modify translateX/translateY (use updateDimensions for initial setup).
    */
   private updateBoundingBox(): void {
-    const rotatedPoints = this.points.map(([x, y]) => {
-      const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
-      const rotatedY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation);
-      return [rotatedX, rotatedY];
-    });
+    const minX = Math.min(...this.points.map(p => p[0])) - this.strokeWidth / 2;
+    const minY = Math.min(...this.points.map(p => p[1])) - this.strokeWidth / 2;
 
-    const minX = Math.min(...rotatedPoints.map(p => p[0] - this.strokeWidth / 2));
-    const minY = Math.min(...rotatedPoints.map(p => p[1] - this.strokeWidth / 2));
-
-    const maxX = Math.max(...rotatedPoints.map(p => p[0] + this.strokeWidth / 2));
-    const maxY = Math.max(...rotatedPoints.map(p => p[1] + this.strokeWidth / 2));
+    const maxX = Math.max(...this.points.map(p => p[0])) + this.strokeWidth / 2;
+    const maxY = Math.max(...this.points.map(p => p[1])) + this.strokeWidth / 2;
 
     this.width = maxX - minX + this.lineSlack;
     this.height = maxY - minY + this.lineSlack;
