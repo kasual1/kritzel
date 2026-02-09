@@ -387,6 +387,15 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   override onAfterUpdate(changedProperties: string[]): void {
     if (changedProperties.includes('fillColor')) {
       this.fontColor = KritzelColorHelper.determineTextColor(this.fillColor);
+      // Update the editor's text color immediately
+      if (this.editor?.dom?.parentElement) {
+        this.editor.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
+      }
+    } else if (changedProperties.includes('fontColor')) {
+      // Also update editor when fontColor changes directly
+      if (this.editor?.dom?.parentElement) {
+        this.editor.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
+      }
     }
   }
 
