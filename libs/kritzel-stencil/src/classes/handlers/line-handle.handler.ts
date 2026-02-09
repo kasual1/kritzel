@@ -53,7 +53,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
       if (activePointers.length === 1) {
         this.startHandleDrag(event);

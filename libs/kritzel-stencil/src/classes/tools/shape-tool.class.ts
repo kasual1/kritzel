@@ -63,7 +63,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
       this.startDrawing(event.clientX, event.clientY);
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       const path = event.composedPath().slice(1) as HTMLElement[];
@@ -112,7 +112,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
       this.updateShapeSize(event.clientX, event.clientY);
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 1) {
@@ -166,7 +166,6 @@ export class KritzelShapeTool extends KritzelBaseTool {
       opacity: this.opacity,
       fontSize: this.fontSize,
       fontFamily: this.fontFamily,
-      fontColor: this.fontColor,
       scale: lockScale ? 1 : viewportScale,
     });
 

@@ -91,7 +91,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.strokeWidth = config.strokeWidth ?? 4;
       this.fontSize = config.fontSize ?? 16;
       this.fontFamily = config.fontFamily ?? 'Arial';
-      this.fontColor = config.fontColor ?? { light: '#000000', dark: '#ffffff' };
+      this.fontColor = config.fontColor ?? KritzelColorHelper.determineTextColor(this.fillColor);
       this.scale = config.scale ?? 1;
       this.scaleFactor = config.scaleX ?? 1;
     }
@@ -143,7 +143,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.opacity = config?.opacity ?? 1;
     object.fontSize = config?.fontSize ?? 16;
     object.fontFamily = config?.fontFamily ?? 'Arial';
-    object.fontColor = config?.fontColor ?? { light: '#000000', dark: '#ffffff' };
+    object.fontColor = config?.fontColor ?? KritzelColorHelper.determineTextColor(object.fillColor);
     object.backgroundColor = { light: 'transparent', dark: 'transparent' };
     object.scaleFactor = 1;
     object.scale = config?.scale ?? core.store.state.scale;
@@ -378,6 +378,16 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.setContent(object.content);
     }
     return this as unknown as KritzelShape;
+  }
+
+  /**
+   * Called after properties are updated via updateObject.
+   * Automatically adjusts text color based on fill color brightness.
+   */
+  override onAfterUpdate(changedProperties: string[]): void {
+    if (changedProperties.includes('fillColor')) {
+      this.fontColor = KritzelColorHelper.determineTextColor(this.fillColor);
+    }
   }
 
   /**

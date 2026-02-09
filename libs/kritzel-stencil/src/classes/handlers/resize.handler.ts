@@ -44,7 +44,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
       const firstTouch = activePointers[0];
 
@@ -141,7 +141,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
       const oneFingerTouch = activePointers[0];
 
@@ -233,7 +233,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isResizing) {
         this._core.store.state.isResizing = false;
 
