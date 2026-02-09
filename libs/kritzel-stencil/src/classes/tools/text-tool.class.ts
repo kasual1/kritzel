@@ -69,7 +69,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       text.edit(event);
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       const path = event.composedPath().slice(1) as HTMLElement[];

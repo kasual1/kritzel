@@ -74,7 +74,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (this._core.store.state.pointers.size === 1) {
@@ -134,7 +134,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
       const selectionGroup = this._core.store.selectionGroup;
 
@@ -189,7 +189,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isDragging) {
         this._core.store.state.isDragging = false;
 

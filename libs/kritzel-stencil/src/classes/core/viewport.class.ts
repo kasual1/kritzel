@@ -69,7 +69,7 @@ export class KritzelViewport {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 2) {
@@ -130,7 +130,7 @@ export class KritzelViewport {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const hostRect = this._core.store.state.host.getBoundingClientRect();
       const xRelativeToHost = event.clientX - hostRect.left;
       const yRelativeToHost = event.clientY - hostRect.top;
@@ -188,7 +188,7 @@ export class KritzelViewport {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
 
       if (this._core.store.state.pointers.size === 0) {
         this._debounceEndScaling();

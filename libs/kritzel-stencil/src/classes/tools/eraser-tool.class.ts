@@ -16,7 +16,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       this.touchStartTimeout = setTimeout(() => {
         if (this._core.store.state.pointers.size === 1 && !this._core.store.state.isScaling) {
           this._core.store.state.isErasing = true;
@@ -43,7 +43,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.pointers.size === 1 && this._core.store.state.isErasing) {
         const shadowRoot = this._core.store.state.host?.shadowRoot;
         if (!shadowRoot) return;
@@ -84,7 +84,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       clearTimeout(this.touchStartTimeout);
 
       if (this._core.store.state.isErasing) {

@@ -49,7 +49,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
       const firstTouch = activePointers[0];
 
@@ -107,7 +107,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
       const firstTouch = activePointers[0];
 
@@ -150,7 +150,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isRotating) {
         this._core.store.selectionGroup.update();
         this._core.engine.emitObjectsChange();
