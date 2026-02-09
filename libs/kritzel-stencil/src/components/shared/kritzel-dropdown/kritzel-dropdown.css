@@ -126,7 +126,7 @@
 
 .dropdown-menu.is-open {
   opacity: 1;
-  visibility: visible;
+  visibility: inherit;
   transform: translateY(0);
 }
 
