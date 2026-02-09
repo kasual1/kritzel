@@ -1,5 +1,6 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
+import { KritzelColorHelper } from '../../helpers/color.helper';
 import { KritzelMoveHandler } from '../handlers/move.handler';
 import { KritzelResizeHandler } from '../handlers/resize.handler';
 import { KritzelRotationHandler } from '../handlers/rotation.handler';
@@ -122,7 +123,9 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
       if (obj instanceof KritzelShape) {
-        this._core.updateObject(obj, { fillColor: value });
+        // Calculate new font color based on fill color
+        const newFontColor = KritzelColorHelper.determineTextColor(value);
+        this._core.updateObject(obj, { fillColor: value, fontColor: newFontColor });
         // When switching to fill mode, also update stroke color to match
         const isTransparent = typeof value === 'string' ? value === 'transparent' : 
           (value.light === 'transparent' && value.dark === 'transparent');
