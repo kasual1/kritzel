@@ -212,6 +212,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  override onAfterUpdate(changedProperties: string[]): void {
+    if (changedProperties.includes('strokeWidth')) {
+      this.d = this.generateSvgPath();
+      this.updateBoundingBox();
+      this._adjustedPoints = null;
+    }
+  }
+
   private computeAdjustedPoints(): number[][] {
     if (!this.points?.length) {
       return [];
@@ -292,6 +300,30 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     this.translateX = (this.x + this.translateX) / this.scale;
     this.translateY = (this.y + this.translateY) / this.scale;
+  }
+
+  /**
+   * Updates width, height, x, y based on current points and strokeWidth.
+   * Does NOT modify translateX/translateY (use updateDimensions for initial setup).
+   */
+  private updateBoundingBox(): void {
+    const rotatedPoints = this.points.map(([x, y]) => {
+      const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
+      const rotatedY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation);
+      return [rotatedX, rotatedY];
+    });
+
+    const minX = Math.min(...rotatedPoints.map(p => p[0] - this.strokeWidth / 2));
+    const minY = Math.min(...rotatedPoints.map(p => p[1] - this.strokeWidth / 2));
+
+    const maxX = Math.max(...rotatedPoints.map(p => p[0] + this.strokeWidth / 2));
+    const maxY = Math.max(...rotatedPoints.map(p => p[1] + this.strokeWidth / 2));
+
+    this.width = maxX - minX + this.lineSlack;
+    this.height = maxY - minY + this.lineSlack;
+
+    this.x = minX;
+    this.y = minY;
   }
 
   private generateSvgPath(): string {
