@@ -277,12 +277,16 @@ export class KritzelCore {
   }
 
   updateObject<T extends KritzelBaseObject<any>>(object: T, updatedProperties: Partial<T>): void {
+    const changedKeys: string[] = [];
+
     for (const key in updatedProperties) {
       if (updatedProperties.hasOwnProperty(key)) {
         object[key] = updatedProperties[key];
+        changedKeys.push(key);
       }
     }
 
+    object.onAfterUpdate(changedKeys);
     this._store.state.objects.update(object);
   }
 
