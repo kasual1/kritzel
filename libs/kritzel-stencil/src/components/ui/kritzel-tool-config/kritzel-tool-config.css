@@ -1,7 +1,7 @@
 .expand-toggle {
   background: none;
   border: none;
-  cursor: pointer;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   padding: 0;
   margin: 0;
   display: flex;
