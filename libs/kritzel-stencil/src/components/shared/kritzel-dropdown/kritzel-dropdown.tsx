@@ -52,6 +52,13 @@ export class KritzelDropdown {
     this.evaluatePrefixContent();
   }
 
+  disconnectedCallback() {
+    // Close menu when component is removed from DOM to prevent orphaned open dropdowns
+    if (this.isOpen) {
+      this.isOpen = false;
+    }
+  }
+
   @Listen('click', { target: 'document' })
   handleDocumentClick(event: MouseEvent) {
     if (this.isOpen && !this.el.contains(event.target as Node)) {
