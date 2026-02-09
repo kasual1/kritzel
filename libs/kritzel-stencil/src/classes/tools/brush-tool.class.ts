@@ -49,7 +49,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 1) {
@@ -114,7 +114,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 1) {
@@ -173,7 +173,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isDrawing) {
         this._core.store.state.isDrawing = false;
 
