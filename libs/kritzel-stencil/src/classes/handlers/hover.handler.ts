@@ -19,7 +19,7 @@ export class KritzelHoverHandler extends KritzelBaseHandler {
       hoveredObject.isHovered = hoveredObject.hitTest(x, y);
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
     }
   }
 }

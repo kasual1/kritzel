@@ -293,7 +293,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this._core.rerender();
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isScaling === true) {
         return;
       }
@@ -351,7 +351,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this._core.rerender();
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isScaling === true) {
         return;
       }
@@ -381,7 +381,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this._core.rerender();
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isScaling === true) {
         return;
       }
