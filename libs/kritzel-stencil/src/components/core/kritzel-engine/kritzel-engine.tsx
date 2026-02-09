@@ -221,7 +221,7 @@ export class KritzelEngine {
       return;
     }
 
-    if (ev.pointerType === 'touch') {
+    if (ev.pointerType === 'touch' || ev.pointerType === 'pen') {
       return;
     }
 

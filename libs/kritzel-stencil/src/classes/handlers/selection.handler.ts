@@ -36,7 +36,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       this.touchStartTimeout = setTimeout(() => {
         if (this._core.store.state.pointers.size === 1 && !this._core.store.state.isScaling && !this._core.store.selectionGroup) {
           this.startTouchSelection();
@@ -53,7 +53,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       const x = Math.round(activePointers[0].clientX - this._core.store.offsetX);
@@ -99,7 +99,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       }
     }
 
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       clearTimeout(this.touchStartTimeout);
 
       const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
