@@ -46,17 +46,11 @@ export const darkTheme: KritzelTheme = {
   contextMenu: {
     backgroundColor: '#2a2a2a',
     border: '1px solid #3a3a3a',
-    borderRadius: '12px',
     boxShadow: '0 1px 8px rgba(0, 0, 0, 0.4)',
     itemActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
-    itemBorderRadius: '12px',
     itemColor: '#e0e0e0',
     itemDisabledColor: '#666666',
-    itemFontSize: '14px',
-    itemGap: '8px',
     itemHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
-    itemPadding: '8px',
-    padding: '4px',
   },
 
   controls: {
@@ -73,9 +67,7 @@ export const darkTheme: KritzelTheme = {
   dialog: {
     backdropColor: 'rgba(0, 0, 0, 0.6)',
     backgroundColor: '#2a2a2a',
-    bodyPadding: '16px',
     border: '1px solid #3a3a3a',
-    borderRadius: '16px',
     boxShadow: '0 4px 24px rgba(0, 0, 0, 0.5)',
     closeButtonActiveBackground: 'hsl(0, 0%, 100%, 12%)',
     closeButtonBackground: 'transparent',
@@ -85,8 +77,6 @@ export const darkTheme: KritzelTheme = {
     footerBorder: '1px solid #3a3a3a',
     headerBorder: '1px solid #3a3a3a',
     titleColor: '#ffffff',
-    titleFontSize: '18px',
-    titleFontWeight: '600',
   },
 
   dropdown: {
@@ -94,17 +84,6 @@ export const darkTheme: KritzelTheme = {
     hoverBackgroundColor: '#3a3a3a',
     selectedBackgroundColor: 'rgba(10, 132, 255, 0.2)',
     textColor: '#e0e0e0',
-  },
-
-  editor: {
-    controlsBottom: '16px',
-    controlsTransform: 'translateX(-50%)',
-    controlsTransition: 'opacity 0.2s ease',
-    controlsTransitionDuration: '0.2s',
-    topLeftButtonsLeft: '16px',
-    topLeftButtonsTop: '16px',
-    topRightButtonsRight: '16px',
-    topRightButtonsTop: '16px',
   },
 
   engine: {
@@ -146,34 +125,23 @@ export const darkTheme: KritzelTheme = {
   menu: {
     backgroundColor: '#2a2a2a',
     border: '1px solid #3a3a3a',
-    borderRadius: '12px',
     boxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
-    gap: '4px',
-    itemBorderRadius: '12px',
     itemButtonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
     itemChildOpenBackgroundColor: 'hsl(0, 0%, 100%, 6%)',
     itemColor: '#e0e0e0',
     itemEditingBackgroundColor: '#3a3a3a',
-    itemFontSize: '14px',
-    itemHeight: '40px',
     itemInputBorder: '1px solid #4a4a4a',
-    itemInputHeight: '32px',
     itemInputSelectionColor: 'rgba(255, 255, 255, 0.2)',
     itemInputSelectionTextColor: '#ffffff',
-    itemMinHeight: '40px',
     itemOverlayBackgroundColor: 'hsl(0, 0%, 0%, 20%)',
-    itemPadding: '8px',
     itemSelectedBackgroundColor: '#0A84FF',
     itemSelectedColor: '#ffffff',
-    padding: '8px',
-    width: '200px',
   },
 
   moreMenu: {
     buttonActiveBackgroundColor: '#444444',
     buttonBackgroundColor: '#2a2a2a',
     buttonBorder: '1px solid #3a3a3a',
-    buttonBorderRadius: '12px',
     buttonBoxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
     buttonColor: '#ffffff',
     buttonHoverBackgroundColor: '#3b3b3b',
@@ -199,10 +167,6 @@ export const darkTheme: KritzelTheme = {
     trackColor: '#4a4a4a',
   },
 
-  portal: {
-    maxHeight: '300px',
-  },
-
   settings: {
     contentHeadingColor: '#ffffff',
     contentTextColor: '#e0e0e0',
@@ -217,14 +181,10 @@ export const darkTheme: KritzelTheme = {
   },
 
   slideToggle: {
-    borderRadius: '11px',
-    height: '22px',
     thumbColor: '#ffffff',
-    thumbSize: '18px',
     trackCheckedColor: '#0A84FF',
     trackColor: '#4a4a4a',
     transitionDuration: '0.2s',
-    width: '40px',
   },
 
   splitButton: {
@@ -241,22 +201,15 @@ export const darkTheme: KritzelTheme = {
     selectedBackgroundColor: '#3a3a3a',
   },
 
-  submenu: {
-    gap: '4px',
-  },
-
-  tooltip: {
+    tooltip: {
     backgroundColor: '#2a2a2a',
     border: '1px solid #3a3a3a',
-    borderRadius: '16px',
     boxShadow: '0 1px 8px rgba(0, 0, 0, 0.4)',
     color: '#ffffff',
-    padding: '12px',
   },
 
   utilityPanel: {
     backgroundColor: '#3a3a3a',
-    buttonBorderRadius: '8px',
     buttonColor: '#e0e0e0',
     buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
     separatorColor: 'hsl(0, 0%, 100%, 12%)',
