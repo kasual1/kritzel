@@ -778,38 +778,40 @@ export class KritzelEngine {
 
                   {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
                     <svg ref={el => object.mount(el)} xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible' }} viewBox={object?.viewBox}>
-                      <defs>
-                        {object.hasStartArrow && (
-                          <marker
-                            id={object.startMarkerId}
-                            markerWidth={object.getArrowSize('start')}
-                            markerHeight={object.getArrowSize('start')}
-                            refX={0}
-                            refY={object.getArrowSize('start') / 2}
-                            orient="auto-start-reverse"
-                            markerUnits="userSpaceOnUse"
-                          >
-                            <path
-                              d={object.getArrowPath(object.arrows?.start?.style)}
-                              fill={object.getArrowFill('start')}
-                              transform={`scale(${object.getArrowSize('start') / 10})`}
-                            />
-                          </marker>
-                        )}
-                        {object.hasEndArrow && (
-                          <marker
-                            id={object.endMarkerId}
-                            markerWidth={object.getArrowSize('end')}
-                            markerHeight={object.getArrowSize('end')}
-                            refX={0}
-                            refY={object.getArrowSize('end') / 2}
-                            orient="auto"
-                            markerUnits="userSpaceOnUse"
-                          >
-                            <path d={object.getArrowPath(object.arrows?.end?.style)} fill={object.getArrowFill('end')} transform={`scale(${object.getArrowSize('end') / 10})`} />
-                          </marker>
-                        )}
-                      </defs>
+                      {(object.hasStartArrow || object.hasEndArrow) && (
+                        <defs>
+                          {object.hasStartArrow && (
+                            <marker
+                              id={object.startMarkerId}
+                              markerWidth={object.getArrowSize('start')}
+                              markerHeight={object.getArrowSize('start')}
+                              refX={0}
+                              refY={object.getArrowSize('start') / 2}
+                              orient="auto-start-reverse"
+                              markerUnits="userSpaceOnUse"
+                            >
+                              <path
+                                d={object.getArrowPath(object.arrows?.start?.style)}
+                                fill={object.getArrowFill('start')}
+                                transform={`scale(${object.getArrowSize('start') / 10})`}
+                              />
+                            </marker>
+                          )}
+                          {object.hasEndArrow && (
+                            <marker
+                              id={object.endMarkerId}
+                              markerWidth={object.getArrowSize('end')}
+                              markerHeight={object.getArrowSize('end')}
+                              refX={0}
+                              refY={object.getArrowSize('end') / 2}
+                              orient="auto"
+                              markerUnits="userSpaceOnUse"
+                            >
+                              <path d={object.getArrowPath(object.arrows?.end?.style)} fill={object.getArrowFill('end')} transform={`scale(${object.getArrowSize('end') / 10})`} />
+                            </marker>
+                          )}
+                        </defs>
+                      )}
                       <path
                         d={this.core.anchorManager.computeClippedLinePath(object)}
                         fill="none"
@@ -829,26 +831,24 @@ export class KritzelEngine {
                     </svg>
                   )}
 
-                  <foreignObject
-                    x="0"
-                    y="0"
-                    width={object.totalWidth.toString()}
-                    height={object.totalHeight.toString()}
-                    style={{
-                      minHeight: '0',
-                      minWidth: '0',
-                      backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
-                      borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
-                      borderWidth: object.borderWidth + 'px',
-                      borderStyle: 'solid',
-                      padding: object.padding + 'px',
-                      overflow: 'visible',
-                      display:
-                        KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') || KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath')
-                          ? 'none'
-                          : 'block',
-                    }}
-                  >
+                  {!KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') &&
+                    !KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
+                      <foreignObject
+                        x="0"
+                        y="0"
+                        width={object.totalWidth.toString()}
+                        height={object.totalHeight.toString()}
+                        style={{
+                          minHeight: '0',
+                          minWidth: '0',
+                          backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                          borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                          borderWidth: object.borderWidth + 'px',
+                          borderStyle: 'solid',
+                          padding: object.padding + 'px',
+                          overflow: 'visible',
+                        }}
+                      >
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <img
                         ref={el => object.mount(el)}
@@ -971,7 +971,8 @@ export class KritzelEngine {
                         }}
                       ></div>
                     )}
-                  </foreignObject>
+                      </foreignObject>
+                    )}
                 </svg>
                 {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
                   <div
@@ -993,22 +994,23 @@ export class KritzelEngine {
                   </div>
                 )}
 
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  style={{
-                    zIndex: (object.zIndex + 1).toString(),
-                    height: object?.totalHeight.toString(),
-                    width: object?.totalWidth.toString(),
-                    left: '0',
-                    top: '0',
-                    position: 'absolute',
-                    transform: `rotate(${object.rotationDegrees}deg)`,
-                    transformOrigin: `${object.totalWidth / 2}px ${object.totalHeight / 2}px`,
-                    overflow: 'visible',
-                    pointerEvents: 'none',
-                  }}
-                >
-                  {this.core.displaySelectionGroupUI(object) && (
+                {(this.core.displaySelectionGroupUI(object) || this.core.displaySelectionLineUI(object)) && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    style={{
+                      zIndex: (object.zIndex + 1).toString(),
+                      height: object?.totalHeight.toString(),
+                      width: object?.totalWidth.toString(),
+                      left: '0',
+                      top: '0',
+                      position: 'absolute',
+                      transform: `rotate(${object.rotationDegrees}deg)`,
+                      transformOrigin: `${object.totalWidth / 2}px ${object.totalHeight / 2}px`,
+                      overflow: 'visible',
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    {this.core.displaySelectionGroupUI(object) && (
                     <g class="selection-group-ui" style={{ pointerEvents: 'none' }}>
                       <g class="selection-group-borders">
                         <line
@@ -1301,7 +1303,8 @@ export class KritzelEngine {
                       )}
                     </g>
                   )}
-                </svg>
+                  </svg>
+                )}
               </div>
             );
           })}
