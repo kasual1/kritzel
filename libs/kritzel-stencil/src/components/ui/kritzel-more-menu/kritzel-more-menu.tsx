@@ -47,14 +47,12 @@ export class KritzelMoreMenu {
 
   @State() menuAnchor: HTMLElement = null;
 
-  private buttonRef: HTMLButtonElement;
-
   private toggleMenu = (event: MouseEvent): void => {
     event.stopPropagation();
     if (this.menuAnchor) {
       this.closeMenu();
     } else {
-      this.menuAnchor = this.buttonRef;
+      this.menuAnchor = this.host;
     }
   };
 
@@ -75,7 +73,6 @@ export class KritzelMoreMenu {
     return (
       <Host>
         <button
-          ref={el => (this.buttonRef = el)}
           class="more-menu-button"
           onClick={this.toggleMenu}
         >
