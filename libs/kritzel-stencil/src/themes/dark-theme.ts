@@ -139,12 +139,14 @@ export const darkTheme: KritzelTheme = {
   },
 
   moreMenu: {
-    buttonActiveBackgroundColor: '#444444',
-    buttonBackgroundColor: '#2a2a2a',
-    buttonBorder: '1px solid #3a3a3a',
-    buttonBoxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    borderRadius: '12px',
+    boxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
+    buttonActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
     buttonColor: '#ffffff',
-    buttonHoverBackgroundColor: '#3b3b3b',
+    buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    innerBorderRadius: '8px',
   },
 
   numericInput: {
