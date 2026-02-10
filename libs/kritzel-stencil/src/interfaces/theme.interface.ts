@@ -230,15 +230,17 @@ export interface KritzelTheme {
 
   /** More menu variables */
   moreMenu?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    padding?: string;
     buttonActiveBackgroundColor?: string;
-    buttonBackgroundColor?: string;
-    buttonBorder?: string;
-    buttonBorderRadius?: string;
-    buttonBoxShadow?: string;
     buttonColor?: string;
     buttonHeight?: string;
     buttonHoverBackgroundColor?: string;
     buttonWidth?: string;
+    innerBorderRadius?: string;
   };
 
   /** Numeric input variables */
