@@ -189,15 +189,16 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    if (this.editor.dom.parentElement === element) {
-      return;
-    }
-
     element.style.fontFamily = this.fontFamily;
     element.style.fontSize = `${this.fontSize}pt`;
     element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
     element.style.whiteSpace = 'pre-wrap';
     element.style.wordWrap = 'break-word';
+
+    if (this.editor.dom.parentElement === element) {
+      return;
+    }
+
     element.innerHTML = '';
     element.appendChild(this.editor.dom);
   }
