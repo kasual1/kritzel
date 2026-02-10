@@ -124,13 +124,12 @@ export class KritzelWorkspaceManager {
   }
 
   private handleMenuOpen() {
-    this.kritzelEngineRef?.disable();
+    // Menu open - engine remains interactive
   }
 
   private handleMenuClose() {
     this.cancel();
     this.closeChildMenu();
-    this.kritzelEngineRef?.enable();
   }
 
   render() {

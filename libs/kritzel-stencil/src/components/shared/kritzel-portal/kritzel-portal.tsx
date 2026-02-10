@@ -35,8 +35,6 @@ export class KritzelPortal {
 
   @Listen('click', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
-    event.stopPropagation();
-
     const isLastPortal = this.lastAddedPortal === this.portal;
     if (!isLastPortal) return;
 
@@ -49,19 +47,20 @@ export class KritzelPortal {
 
   @Listen('keydown', { target: 'window' })
   handleKeyDown(event: KeyboardEvent) {
-    event.stopPropagation();
-
     const isLastPortal = this.lastAddedPortal === this.portal;
     if (!isLastPortal) return;
 
     if (event.key === 'Escape') {
+      event.stopPropagation();
       this.anchor.focus();
       this.close.emit();
       this.closePortal();
+      return;
     }
 
     if (event.key === 'Tab') {
       this.trapFocus(event);
+      return;
     }
 
     if (event.key === 'Enter') {
