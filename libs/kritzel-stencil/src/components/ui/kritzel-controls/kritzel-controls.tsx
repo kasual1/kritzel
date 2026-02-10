@@ -236,11 +236,6 @@ export class KritzelControls {
   private handleConfigClick(event: MouseEvent) {
     event.stopPropagation();
     this.isTooltipVisible = !this.isTooltipVisible;
-    if(this.isTooltipVisible){
-      this.kritzelEngine?.disable();
-    } else {
-      this.kritzelEngine?.enable();
-    }
 
     setTimeout(() => {
       this.tooltipRef?.focusContent();
@@ -254,7 +249,6 @@ export class KritzelControls {
 
   private handleTooltipClosed() {
     this.isTooltipVisible = false;
-    this.kritzelEngine?.enable();
   }
 
   /**
