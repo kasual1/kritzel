@@ -11,11 +11,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--kritzel-more-menu-button-width, 42px);
-  height: var(--kritzel-more-menu-button-height, 42px);
+  width: var(--kritzel-more-menu-button-width, 40px);
+  height: var(--kritzel-more-menu-button-height, 40px);
   padding: 0;
   border: none;
-  border-radius: var(--kritzel-more-menu-inner-border-radius, 8px);
+  border-radius: var(--kritzel-more-menu-inner-border-radius, 12px);
   background-color: transparent;
   cursor: var(--kritzel-global-pointer-cursor, pointer);
   box-shadow: none;

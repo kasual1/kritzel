@@ -147,7 +147,7 @@ export const lightTheme: KritzelTheme = {
     buttonActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
     buttonColor: '#000000',
     buttonHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
-    innerBorderRadius: '8px',
+    innerBorderRadius: '12px',
   },
 
   numericInput: {

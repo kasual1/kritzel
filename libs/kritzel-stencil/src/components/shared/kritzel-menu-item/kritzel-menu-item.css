@@ -112,7 +112,7 @@ kritzel-icon {
   background-color: transparent;
   border-radius: 0;
   border: none;
-  border-bottom: 1px solid var(--kritzel-menu-item-input-border, #ccc);
+  border-bottom: var(--kritzel-menu-item-input-border, 1px solid #ccc);
   font-size: var(--kritzel-menu-item-font-size, 14px);
   width: 100%;
   min-width: 0;
