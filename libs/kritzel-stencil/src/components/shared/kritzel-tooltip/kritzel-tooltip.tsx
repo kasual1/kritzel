@@ -31,6 +31,20 @@ export class KritzelTooltip {
     }
   }
 
+  @Listen('pointerdown', { target: 'document', capture: true })
+  handleOutsidePointerDown(event: PointerEvent) {
+    if (!this.isVisible) return;
+
+    const path = event.composedPath();
+    const isInsideTooltip = path.some(el => el === this.host);
+
+    if (!isInsideTooltip) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.tooltipClosed.emit();
+    }
+  }
+
   @Listen('resize', { target: 'window' })
   handleWindowResize() {
     this.calculateAdjustedPosition();
