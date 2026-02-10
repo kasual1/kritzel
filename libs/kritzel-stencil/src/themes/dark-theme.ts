@@ -133,7 +133,7 @@ export const darkTheme: KritzelTheme = {
     itemInputBorder: '1px solid #4a4a4a',
     itemInputSelectionColor: 'rgba(255, 255, 255, 0.2)',
     itemInputSelectionTextColor: '#ffffff',
-    itemOverlayBackgroundColor: 'hsl(0, 0%, 0%, 20%)',
+    itemOverlayBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
     itemSelectedBackgroundColor: '#0A84FF',
     itemSelectedColor: '#ffffff',
   },
@@ -146,7 +146,7 @@ export const darkTheme: KritzelTheme = {
     buttonActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
     buttonColor: '#ffffff',
     buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
-    innerBorderRadius: '8px',
+    innerBorderRadius: '12px',
   },
 
   numericInput: {
