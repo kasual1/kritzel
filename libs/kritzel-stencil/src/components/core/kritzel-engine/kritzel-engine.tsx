@@ -179,7 +179,9 @@ export class KritzelEngine {
     }
 
     this.core.store.state.pointers.delete(ev.pointerId);
-    this.host.releasePointerCapture(ev.pointerId);
+    if (this.host.hasPointerCapture(ev.pointerId)) {
+      this.host.releasePointerCapture(ev.pointerId);
+    }
 
     // Reset cursor to default when all pointers are released
     if (this.core.store.state.pointers.size === 0) {
@@ -196,7 +198,9 @@ export class KritzelEngine {
       return;
     }
 
-    this.host.releasePointerCapture(ev.pointerId);
+    if (this.host.hasPointerCapture(ev.pointerId)) {
+      this.host.releasePointerCapture(ev.pointerId);
+    }
     this.core.store.state.pointers.delete(ev.pointerId);
 
     // Reset cursor to default when all pointers are released
@@ -758,6 +762,7 @@ export class KritzelEngine {
               >
                 {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
                   <svg
+                    ref={el => object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
                     style={{
                       height: object?.totalHeight + 'px',
@@ -769,21 +774,22 @@ export class KritzelEngine {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
+                      overflow: 'visible',
                     }}
+                    viewBox={object?.viewBox}
                   >
-                    <svg ref={el => object.mount(el)} xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible' }} viewBox={object?.viewBox}>
-                      <path
-                        d={object?.d}
-                        fill={KritzelColorHelper.resolveThemeColor(object.fill, currentTheme)}
-                        stroke={KritzelColorHelper.resolveThemeColor(object?.stroke, currentTheme)}
-                        shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'}
-                      />
-                    </svg>
+                    <path
+                      d={object?.d}
+                      fill={KritzelColorHelper.resolveThemeColor(object.fill, currentTheme)}
+                      stroke={KritzelColorHelper.resolveThemeColor(object?.stroke, currentTheme)}
+                      shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'}
+                    />
                   </svg>
                 )}
 
                 {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
                   <svg
+                    ref={el => object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
                     style={{
                       height: object?.totalHeight + 'px',
@@ -795,60 +801,60 @@ export class KritzelEngine {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
+                      overflow: 'visible',
                     }}
+                    viewBox={object?.viewBox}
                   >
-                    <svg ref={el => object.mount(el)} xmlns="http://www.w3.org/2000/svg" style={{ overflow: 'visible' }} viewBox={object?.viewBox}>
-                      {(object.hasStartArrow || object.hasEndArrow) && (
-                        <defs>
-                          {object.hasStartArrow && (
-                            <marker
-                              id={object.startMarkerId}
-                              markerWidth={object.getArrowSize('start')}
-                              markerHeight={object.getArrowSize('start')}
-                              refX={0}
-                              refY={object.getArrowSize('start') / 2}
-                              orient="auto-start-reverse"
-                              markerUnits="userSpaceOnUse"
-                            >
-                              <path
-                                d={object.getArrowPath(object.arrows?.start?.style)}
-                                fill={object.getArrowFill('start')}
-                                transform={`scale(${object.getArrowSize('start') / 10})`}
-                              />
-                            </marker>
-                          )}
-                          {object.hasEndArrow && (
-                            <marker
-                              id={object.endMarkerId}
-                              markerWidth={object.getArrowSize('end')}
-                              markerHeight={object.getArrowSize('end')}
-                              refX={0}
-                              refY={object.getArrowSize('end') / 2}
-                              orient="auto"
-                              markerUnits="userSpaceOnUse"
-                            >
-                              <path d={object.getArrowPath(object.arrows?.end?.style)} fill={object.getArrowFill('end')} transform={`scale(${object.getArrowSize('end') / 10})`} />
-                            </marker>
-                          )}
-                        </defs>
-                      )}
-                      <path
-                        d={this.core.anchorManager.computeClippedLinePath(object)}
-                        fill="none"
-                        stroke="transparent"
-                        stroke-width={Math.max(object?.strokeWidth || 0, 10)}
-                        stroke-linecap="round"
-                      />
-                      <path
-                        d={this.core.anchorManager.computeClippedLinePath(object)}
-                        fill="none"
-                        stroke={KritzelColorHelper.resolveThemeColor(object?.stroke, currentTheme)}
-                        stroke-width={object?.strokeWidth}
-                        stroke-linecap="round"
-                        marker-start={object.hasStartArrow ? `url(#${object.startMarkerId})` : undefined}
-                        marker-end={object.hasEndArrow ? `url(#${object.endMarkerId})` : undefined}
-                      />
-                    </svg>
+                    {(object.hasStartArrow || object.hasEndArrow) && (
+                      <defs>
+                        {object.hasStartArrow && (
+                          <marker
+                            id={object.startMarkerId}
+                            markerWidth={object.getArrowSize('start')}
+                            markerHeight={object.getArrowSize('start')}
+                            refX={0}
+                            refY={object.getArrowSize('start') / 2}
+                            orient="auto-start-reverse"
+                            markerUnits="userSpaceOnUse"
+                          >
+                            <path
+                              d={object.getArrowPath(object.arrows?.start?.style)}
+                              fill={object.getArrowFill('start')}
+                              transform={`scale(${object.getArrowSize('start') / 10})`}
+                            />
+                          </marker>
+                        )}
+                        {object.hasEndArrow && (
+                          <marker
+                            id={object.endMarkerId}
+                            markerWidth={object.getArrowSize('end')}
+                            markerHeight={object.getArrowSize('end')}
+                            refX={0}
+                            refY={object.getArrowSize('end') / 2}
+                            orient="auto"
+                            markerUnits="userSpaceOnUse"
+                          >
+                            <path d={object.getArrowPath(object.arrows?.end?.style)} fill={object.getArrowFill('end')} transform={`scale(${object.getArrowSize('end') / 10})`} />
+                          </marker>
+                        )}
+                      </defs>
+                    )}
+                    <path
+                      d={this.core.anchorManager.computeClippedLinePath(object)}
+                      fill="none"
+                      stroke="transparent"
+                      stroke-width={Math.max(object?.strokeWidth || 0, 10)}
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d={this.core.anchorManager.computeClippedLinePath(object)}
+                      fill="none"
+                      stroke={KritzelColorHelper.resolveThemeColor(object?.stroke, currentTheme)}
+                      stroke-width={object?.strokeWidth}
+                      stroke-linecap="round"
+                      marker-start={object.hasStartArrow ? `url(#${object.startMarkerId})` : undefined}
+                      marker-end={object.hasEndArrow ? `url(#${object.endMarkerId})` : undefined}
+                    />
                   </svg>
                 )}
 
