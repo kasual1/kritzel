@@ -180,15 +180,23 @@ export class KritzelControls {
     this.updateScrollIndicators();
   }
 
+  componentDidRender() {
+    this.updateScrollIndicators();
+  }
+
   private updateScrollIndicators() {
     if (!this.toolsScrollRef) return;
     
     const { scrollLeft, scrollWidth, clientWidth } = this.toolsScrollRef;
     const threshold = 2; // Small threshold to account for rounding
     
-    this.canScrollLeft = scrollLeft > threshold;
-    this.canScrollRight = scrollLeft + clientWidth < scrollWidth - threshold;
-    this.needsScrolling = scrollWidth > clientWidth;
+    const canScrollLeft = scrollLeft > threshold;
+    const canScrollRight = scrollLeft + clientWidth < scrollWidth - threshold;
+    const needsScrolling = scrollWidth > clientWidth;
+
+    if (this.canScrollLeft !== canScrollLeft) this.canScrollLeft = canScrollLeft;
+    if (this.canScrollRight !== canScrollRight) this.canScrollRight = canScrollRight;
+    if (this.needsScrolling !== needsScrolling) this.needsScrolling = needsScrolling;
   }
 
   private handleToolsScroll = () => {
@@ -333,11 +341,7 @@ export class KritzelControls {
           {/* Scrollable tool controls container */}
           <div 
             class="kritzel-tools-scroll"
-            ref={el => {
-              this.toolsScrollRef = el;
-              // Update indicators when ref is set
-              if (el) this.updateScrollIndicators();
-            }}
+            ref={el => this.toolsScrollRef = el}
             onScroll={this.handleToolsScroll}
           >
             {toolControls.map(control => {
