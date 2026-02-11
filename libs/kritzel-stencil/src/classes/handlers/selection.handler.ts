@@ -269,6 +269,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     const overlappingObjects = this._core.getObjectsFromPointerEvent(event, '.object');
 
     for (const object of overlappingObjects) {
+      if (object instanceof KritzelSelectionBox) continue;
       if (object.hitTest(pointerX, pointerY)) {
         return object;
       }
