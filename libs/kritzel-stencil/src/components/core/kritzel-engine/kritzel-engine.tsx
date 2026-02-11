@@ -985,6 +985,10 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') && (
                   <div
+                    ref={el => object.mount(el)}
+                    onPointerDown={e => object.handlePointerDown(e)}
+                    onPointerMove={e => object.handlePointerMove(e)}
+                    onPointerUp={e => object.handlePointerUp(e)}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -995,58 +999,46 @@ export class KritzelEngine {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
+                      overflow: 'visible',
                     }}
                   >
-                    <div
-                      ref={el => object.mount(el)}
-                      onPointerDown={e => object.handlePointerDown(e)}
-                      onPointerMove={e => object.handlePointerMove(e)}
-                      onPointerUp={e => object.handlePointerUp(e)}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
                       style={{
+                        position: 'absolute',
+                        top: '0',
+                        left: '0',
                         width: '100%',
                         height: '100%',
-                        position: 'relative',
                         overflow: 'visible',
+                        pointerEvents: 'none',
                       }}
+                      viewBox={object.viewBox}
+                      preserveAspectRatio="none"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        style={{
-                          position: 'absolute',
-                          top: '0',
-                          left: '0',
-                          width: '100%',
-                          height: '100%',
-                          overflow: 'visible',
-                          pointerEvents: 'none',
-                        }}
-                        viewBox={object.viewBox}
-                        preserveAspectRatio="none"
-                      >
-                        <path
-                          d={object.getSvgPath()}
-                          fill={KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme)}
-                          stroke={KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme)}
-                          stroke-width={object.strokeWidth}
-                        />
-                      </svg>
-                      <div
-                        ref={el => object.mountTextEditor(el)}
-                        style={{
-                          position: 'absolute',
-                          top: '0',
-                          left: '0',
-                          width: '100%',
-                          height: '100%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          textAlign: 'center',
-                          overflow: 'hidden',
-                          pointerEvents: object.isEditing ? 'auto' : 'none',
-                        }}
-                      ></div>
-                    </div>
+                      <path
+                        d={object.getSvgPath()}
+                        fill={KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme)}
+                        stroke={KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme)}
+                        stroke-width={object.strokeWidth}
+                      />
+                    </svg>
+                    <div
+                      ref={el => object.mountTextEditor(el)}
+                      style={{
+                        position: 'absolute',
+                        top: '0',
+                        left: '0',
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        overflow: 'hidden',
+                        pointerEvents: object.isEditing ? 'auto' : 'none',
+                      }}
+                    ></div>
                   </div>
                 )}
 
