@@ -1003,7 +1003,6 @@ export class KritzelEngine {
                         transform: `scale(${object.scaleFactor})`,
                         backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
                         overflow: 'visible',
-                        textRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'optimizeSpeed' : 'auto',
                       }}
                     ></div>
                   </div>
