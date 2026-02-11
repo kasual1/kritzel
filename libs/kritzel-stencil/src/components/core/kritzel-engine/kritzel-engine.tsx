@@ -746,20 +746,20 @@ export class KritzelEngine {
             return (
               <div
                 key={object.id}
+                id={object.id}
+                class="object"
                 style={{
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
                   position: 'absolute',
+                  zIndex: object.zIndex.toString(),
                   pointerEvents: this.core.store.state.isScaling ? 'none' : 'auto',
                 }}
               >
                 {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    id={object.id}
-                    class="object"
                     style={{
-                      zIndex: object.zIndex.toString(),
                       height: object?.totalHeight + 'px',
                       width: object?.totalWidth + 'px',
                       left: '0',
@@ -785,10 +785,7 @@ export class KritzelEngine {
                 {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    id={object.id}
-                    class="object"
                     style={{
-                      zIndex: object.zIndex.toString(),
                       height: object?.totalHeight + 'px',
                       width: object?.totalWidth + 'px',
                       left: '0',
@@ -857,8 +854,6 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                   <div
-                    id={object.id}
-                    class="object"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -867,7 +862,6 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      zIndex: object.zIndex.toString(),
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                       backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
@@ -896,8 +890,6 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
                   <div
-                    id={object.id}
-                    class="object"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -906,7 +898,6 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      zIndex: object.zIndex.toString(),
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                       backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
@@ -932,8 +923,6 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && !this.core.displaySelectionLineUI(object) && (
                   <div
-                    id={object.id}
-                    class="object"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -942,7 +931,6 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      zIndex: object.zIndex.toString(),
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                     }}
@@ -959,8 +947,6 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelSelectionBox>(object, 'KritzelSelectionBox') && (
                   <div
-                    id={object.id}
-                    class="object"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -969,7 +955,6 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      zIndex: object.zIndex.toString(),
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                       backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
@@ -990,8 +975,6 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
                   <div
-                    id={object.id}
-                    class="object"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -1000,7 +983,6 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      zIndex: object.zIndex.toString(),
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                     }}
@@ -1029,8 +1011,6 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') && (
                   <div
-                    id={object.id}
-                    class="object"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -1039,7 +1019,6 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      zIndex: object.zIndex.toString(),
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                     }}
