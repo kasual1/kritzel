@@ -118,7 +118,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
 
     if (this.isMounted && this.elementRef === element && this.editor.dom.parentElement === element) {
-      requestAnimationFrame(() => this.adjustSizeOnInput());
+      if (!this._core.store.state.isScaling && !this._core.store.state.isPanning) {
+        requestAnimationFrame(() => this.adjustSizeOnInput());
+      }
       return;
     }
 
