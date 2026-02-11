@@ -120,10 +120,9 @@ export class KritzelTextTool extends KritzelBaseTool {
   }
 
   handlePointerUp(event: PointerEvent): void {
-    if (event.cancelable) {
-      event.preventDefault();
+    const activeText = this._core.store.activeText;
+    if (activeText && activeText.isMounted && !activeText.editor?.hasFocus()) {
+      activeText.focus({ x: event.clientX, y: event.clientY });
     }
-
-    this._core.store.activeText?.edit(event);
   }
 }

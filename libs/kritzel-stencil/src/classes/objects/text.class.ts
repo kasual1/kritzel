@@ -233,7 +233,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     if (this.editor) {
       const doc = this.editor.state.doc;
 
-      if (coords.x && coords.y) {
+      if (coords.x && coords.y && !this.isEmpty) {
         const pos = this.editor.posAtCoords({ left: coords.x, top: coords.y });
         if (pos) {
           this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
@@ -319,7 +319,13 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    event.stopPropagation();
+    // Only stop propagation if the engine is not tracking this pointer.
+    // During text creation, the engine adds the pointer before the text element
+    // is in the DOM. We must let move events propagate so the engine can
+    // update its pointer state.
+    if (!this._core.store.state.pointers.has(event.pointerId)) {
+      event.stopPropagation();
+    }
   }
 
   handlePointerUp(event: PointerEvent): void {
@@ -327,7 +333,17 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    event.stopPropagation();
+    // Only stop propagation if the engine is not tracking this pointer.
+    // When a text is created during pointerdown, the engine adds the pointer
+    // to its map before the text element exists in the DOM. By the time
+    // pointerup fires, the text element may intercept the event (especially
+    // on iOS where pointer capture may not redirect events in shadow DOM).
+    // We must let the event propagate so the engine can clean up the pointer.
+    // Without this, stale pointers accumulate and single-finger touches
+    // get misinterpreted as two-finger zoom gestures.
+    if (!this._core.store.state.pointers.has(event.pointerId)) {
+      event.stopPropagation();
+    }
   }
 
   override copy(): KritzelText {
