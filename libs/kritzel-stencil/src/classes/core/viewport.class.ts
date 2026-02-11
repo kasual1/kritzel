@@ -200,11 +200,9 @@ export class KritzelViewport {
     // Cancel any ongoing viewport animation when user scrolls
     this.cancelViewportAnimation();
 
-    if (event.ctrlKey === true && Math.abs(event.deltaY) > 0 && Math.abs(event.deltaX) === 0) {
+    if (event.ctrlKey) {
       this.handleZoom(event);
-    }
-
-    if (!event.ctrlKey) {
+    } else {
       this.handlePan(event);
     }
   }
@@ -255,6 +253,11 @@ export class KritzelViewport {
 
     this._core.store.state.translateX = this._core.store.state.translateX - translateXAdjustment;
     this._core.store.state.translateY = this._core.store.state.translateY - translateYAdjustment;
+
+    // Apply horizontal pan from trackpad pinch+drag gestures
+    if (event.deltaX !== 0) {
+      this._core.store.state.translateX -= event.deltaX * 0.8;
+    }
 
     this._core.store.state.hasViewportChanged = true;
 

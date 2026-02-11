@@ -81,6 +81,8 @@ export class KritzelControls {
     if (this.activeControl?.tool) {
       this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
     }
+    this.isTooltipVisible = false;
+    this.openSubMenuControl = null;
   }
 
   @Listen('objectsSelectionChange', { target: 'document' })
