@@ -859,7 +859,9 @@ export class KritzelEngine {
                 )}
 
                 {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
-                  <div
+                  <img
+                    ref={el => object.mount(el)}
+                    src={object.src}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -876,26 +878,17 @@ export class KritzelEngine {
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
                       overflow: 'visible',
+                      userSelect: 'none',
+                      imageRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'pixelated' : 'auto',
                     }}
-                  >
-                    <img
-                      ref={el => object.mount(el)}
-                      src={object.src}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        userSelect: 'none',
-                        pointerEvents: 'none',
-                        imageRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'pixelated' : 'auto',
-                      }}
-                      draggable={false}
-                      onDragStart={e => e.preventDefault()}
-                    />
-                  </div>
+                    draggable={false}
+                    onDragStart={e => e.preventDefault()}
+                  />
                 )}
 
                 {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
                   <div
+                    ref={el => object.mount(el)}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -911,24 +904,15 @@ export class KritzelEngine {
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
-                      overflow: 'visible',
+                      overflow: 'hidden',
+                      display: 'block',
                     }}
-                  >
-                    <div
-                      ref={el => object.mount(el)}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        pointerEvents: 'auto',
-                        overflow: 'hidden',
-                        display: 'block',
-                      }}
-                    ></div>
-                  </div>
+                  ></div>
                 )}
 
                 {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && !this.core.displaySelectionLineUI(object) && (
                   <div
+                    ref={el => object.mount(el)}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -940,19 +924,12 @@ export class KritzelEngine {
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                     }}
-                  >
-                    <div
-                      ref={el => object.mount(el)}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                      }}
-                    ></div>
-                  </div>
+                  ></div>
                 )}
 
                 {KritzelClassHelper.isInstanceOf<KritzelSelectionBox>(object, 'KritzelSelectionBox') && (
                   <div
+                    ref={el => object.mount(el)}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -968,15 +945,7 @@ export class KritzelEngine {
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                     }}
-                  >
-                    <div
-                      ref={el => object.mount(el)}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                      }}
-                    ></div>
-                  </div>
+                  ></div>
                 )}
 
                 {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
