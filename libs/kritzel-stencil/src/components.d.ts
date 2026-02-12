@@ -552,6 +552,7 @@ export namespace Components {
     }
     interface KritzelTooltip {
         "anchorElement": HTMLElement;
+        "close": () => Promise<void>;
         "focusContent": () => Promise<void>;
         /**
           * @default false
@@ -561,6 +562,9 @@ export namespace Components {
           * @default 24
          */
         "offsetY": number;
+        "open": () => Promise<void>;
+        "toggle": () => Promise<void>;
+        "triggerElement": HTMLElement;
     }
     interface KritzelUtilityPanel {
         /**
@@ -1191,6 +1195,7 @@ declare global {
     };
     interface HTMLKritzelTooltipElementEventMap {
         "tooltipClosed": void;
+        "tooltipOpened": void;
     }
     interface HTMLKritzelTooltipElement extends Components.KritzelTooltip, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelTooltipElementEventMap>(type: K, listener: (this: HTMLKritzelTooltipElement, ev: KritzelTooltipCustomEvent<HTMLKritzelTooltipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1804,6 +1809,8 @@ declare namespace LocalJSX {
          */
         "offsetY"?: number;
         "onTooltipClosed"?: (event: KritzelTooltipCustomEvent<void>) => void;
+        "onTooltipOpened"?: (event: KritzelTooltipCustomEvent<void>) => void;
+        "triggerElement"?: HTMLElement;
     }
     interface KritzelUtilityPanel {
         "onDelete"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
