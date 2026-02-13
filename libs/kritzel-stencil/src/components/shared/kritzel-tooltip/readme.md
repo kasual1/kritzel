@@ -7,11 +7,12 @@
 
 ## Properties
 
-| Property        | Attribute    | Description | Type          | Default     |
-| --------------- | ------------ | ----------- | ------------- | ----------- |
-| `anchorElement` | --           |             | `HTMLElement` | `undefined` |
-| `isVisible`     | `is-visible` |             | `boolean`     | `false`     |
-| `offsetY`       | `offset-y`   |             | `number`      | `24`        |
+| Property         | Attribute    | Description | Type          | Default     |
+| ---------------- | ------------ | ----------- | ------------- | ----------- |
+| `anchorElement`  | --           |             | `HTMLElement` | `undefined` |
+| `isVisible`      | `is-visible` |             | `boolean`     | `false`     |
+| `offsetY`        | `offset-y`   |             | `number`      | `24`        |
+| `triggerElement` | --           |             | `HTMLElement` | `undefined` |
 
 
 ## Events
@@ -19,11 +20,42 @@
 | Event           | Description | Type                |
 | --------------- | ----------- | ------------------- |
 | `tooltipClosed` |             | `CustomEvent<void>` |
+| `tooltipOpened` |             | `CustomEvent<void>` |
 
 
 ## Methods
 
+### `close() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `focusContent() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `open() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `toggle() => Promise<void>`
 
 
 
