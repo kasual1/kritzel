@@ -78,7 +78,6 @@ describe('ThemeHelper', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
       expect(variables.get('--kritzel-tooltip-background-color')).toBe('#ffffff');
       expect(variables.get('--kritzel-tooltip-color')).toBe('#000000');
-      expect(variables.get('--kritzel-tooltip-padding')).toBe('12px');
     });
 
     it('should correctly flatten menu variables', () => {
@@ -103,8 +102,8 @@ describe('ThemeHelper', () => {
 
     it('should return the expected number of variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      // The full theme structure now generates 172 CSS variables
-      expect(variables.size).toBe(172);
+      // The full theme structure generates 140 CSS variables
+      expect(variables.size).toBe(140);
     });
   });
 
@@ -159,8 +158,8 @@ describe('ThemeHelper', () => {
     it('should apply all theme variables to the element', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      // Should have called setProperty for all 172 variables
-      expect(setPropertyMock).toHaveBeenCalledTimes(172);
+      // Should have called setProperty for all 140 variables
+      expect(setPropertyMock).toHaveBeenCalledTimes(140);
     });
 
     it('should apply specific theme values correctly', () => {

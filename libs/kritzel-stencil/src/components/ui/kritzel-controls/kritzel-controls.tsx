@@ -33,44 +33,18 @@ export class KritzelControls {
   @Event() isControlsReady: EventEmitter<void>;
 
   @State() firstConfig: ToolConfig | null = null;
-  @State() isTooltipVisible: boolean = false;
   @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
   @State() selectedSubOptions: Map<string, KritzelToolbarSubOption> = new Map();
-  @State() openSubMenuControl: KritzelToolbarControl | null = null;
   @State() canScrollLeft: boolean = false;
   @State() canScrollRight: boolean = false;
   @State() needsScrolling: boolean = false;
   @State() displayValues: ToolDisplayValues | null = null;
 
-  @Listen('click', { target: 'document' })
-  handleDocumentClick(event: MouseEvent) {
-    if (!this.kritzelEngine) {
-      return;
-    }
-
-    // Use composedPath to check if click is inside tooltip (works across shadow DOM boundaries)
-    const path = event.composedPath();
-    const isInsideTooltip = path.some(el => {
-      const element = el as HTMLElement;
-      if (element.tagName) {
-        return element.tagName.toLowerCase() === 'kritzel-tooltip' || element.classList?.contains('kritzel-tooltip');
-      }
-      return false;
-    });
-
-    if (isInsideTooltip) {
-      return;
-    }
-
-    this.isTooltipVisible = false;
-  }
-
   @Listen('keydown', { target: 'window' })
-  handleKeyDown(event) {
+  handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       event.preventDefault();
       this.closeTooltip();
-      this.openSubMenuControl = null;
       this.kritzelEngine?.enable();
     }
   }
@@ -81,8 +55,7 @@ export class KritzelControls {
     if (this.activeControl?.tool) {
       this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
     }
-    this.isTooltipVisible = false;
-    this.openSubMenuControl = null;
+    this.closeTooltip();
   }
 
   @Listen('objectsSelectionChange', { target: 'document' })
@@ -101,12 +74,12 @@ export class KritzelControls {
 
   @Method()
   async closeTooltip() {
-    this.isTooltipVisible = false;
+    document.dispatchEvent(new CustomEvent('kritzelTooltipCloseAll'));
   }
 
   kritzelEngine: HTMLKritzelEngineElement | null = null;
-  tooltipRef: HTMLKritzelTooltipElement | null = null;
   toolsScrollRef: HTMLDivElement | null = null;
+  private configTriggerRef: HTMLElement | null = null;
 
   get activeToolAsTextTool() {
     return this.activeControl?.tool as KritzelTextTool;
@@ -186,10 +159,10 @@ export class KritzelControls {
 
   private updateScrollIndicators() {
     if (!this.toolsScrollRef) return;
-    
+
     const { scrollLeft, scrollWidth, clientWidth } = this.toolsScrollRef;
     const threshold = 2; // Small threshold to account for rounding
-    
+
     const canScrollLeft = scrollLeft > threshold;
     const canScrollRight = scrollLeft + clientWidth < scrollWidth - threshold;
     const needsScrolling = scrollWidth > clientWidth;
@@ -243,22 +216,9 @@ export class KritzelControls {
     }
   }
 
-  private handleConfigClick(event: MouseEvent) {
-    event.stopPropagation();
-    this.isTooltipVisible = !this.isTooltipVisible;
-
-    setTimeout(() => {
-      this.tooltipRef?.focusContent();
-    }, 100);
-  }
-
   private async handleToolChange(event: CustomEvent) {
     this.activeControl = { ...this.activeControl, tool: event.detail };
     await this.kritzelEngine.changeActiveTool((this.activeControl as any).tool);
-  }
-
-  private handleTooltipClosed() {
-    this.isTooltipVisible = false;
   }
 
   /**
@@ -268,18 +228,6 @@ export class KritzelControls {
   private getSelectedSubOption(control: KritzelToolbarControl): KritzelToolbarSubOption | undefined {
     if (!control.subOptions?.length) return undefined;
     return this.selectedSubOptions.get(control.name) || control.subOptions[0];
-  }
-
-  /**
-   * Toggle the submenu for a split-button control
-   */
-  private toggleSubMenu(event: MouseEvent, control: KritzelToolbarControl) {
-    event.stopPropagation();
-    if (this.openSubMenuControl?.name === control.name) {
-      this.openSubMenuControl = null;
-    } else {
-      this.openSubMenuControl = control;
-    }
   }
 
   /**
@@ -297,14 +245,14 @@ export class KritzelControls {
     }
 
     // Close the submenu
-    this.openSubMenuControl = null;
+    this.closeTooltip();
 
     // Activate this control
     await this.handleControlClick(control);
   }
 
   render() {
-    const hasConfigUI = this.activeControl?.tool instanceof KritzelBrushTool || 
+    const hasConfigUI = this.activeControl?.tool instanceof KritzelBrushTool ||
                         this.activeControl?.tool instanceof KritzelTextTool ||
                         this.activeControl?.tool instanceof KritzelLineTool ||
                         this.activeControl?.tool instanceof KritzelShapeTool ||
@@ -337,9 +285,9 @@ export class KritzelControls {
         <div class="kritzel-controls">
           {/* Left scroll indicator gradient */}
           <div class={{ 'scroll-indicator-left': true, 'visible': this.canScrollLeft }}></div>
-          
+
           {/* Scrollable tool controls container */}
-          <div 
+          <div
             class="kritzel-tools-scroll"
             ref={el => this.toolsScrollRef = el}
             onScroll={this.handleToolsScroll}
@@ -349,7 +297,6 @@ export class KritzelControls {
               if (control.subOptions?.length) {
                 const selectedSubOption = this.getSelectedSubOption(control);
                 const isActive = this.activeControl?.name === control.name;
-                const isSubMenuOpen = this.openSubMenuControl?.name === control.name;
 
                 return (
                   <div
@@ -372,18 +319,16 @@ export class KritzelControls {
                         'kritzel-control-dropdown': true,
                         'visible': isActive,
                       }}
-                      onClick={(e) => this.toggleSubMenu(e, control)}
+                      ref={el => { if (el) (control as any)._triggerRef = el; }}
                       aria-label="Select shape type"
-                      aria-expanded={isSubMenuOpen ? 'true' : 'false'}
                       tabIndex={isActive ? 0 : -1}
                     >
                       <kritzel-icon name="chevron-down" size={12}></kritzel-icon>
                     </button>
 
                     <kritzel-tooltip
-                      isVisible={isSubMenuOpen}
                       anchorElement={(control as any)._anchorRef}
-                      onTooltipClosed={() => { this.openSubMenuControl = null; }}
+                      triggerElement={(control as any)._triggerRef}
                     >
                       <div class="kritzel-submenu-content">
                         {control.subOptions.map(option => (
@@ -420,13 +365,13 @@ export class KritzelControls {
               );
             })}
           </div>
-          
+
           {/* Right scroll indicator gradient */}
           <div class={{ 'scroll-indicator-right': true, 'visible': this.canScrollRight && !(configControl && this.activeControl && hasConfigUI) }}></div>
 
           {/* Config control stays outside the scroll area */}
           {configControl && this.activeControl && (
-            <div 
+            <div
               class={{
                 'kritzel-config-container': true,
                 'visible': hasConfigUI,
@@ -435,15 +380,13 @@ export class KritzelControls {
             >
               {/* Left gradient on config control */}
               <div class={{ 'config-gradient-left': true, 'visible': this.needsScrolling }}></div>
-              
+
               <kritzel-tooltip
-                ref={el => (this.tooltipRef = el)}
-                isVisible={this.isTooltipVisible}
                 anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}
-                onTooltipClosed={() => this.handleTooltipClosed()}
+                triggerElement={this.configTriggerRef}
               >
-                <kritzel-tool-config 
-                  tool={this.activeControl.tool as any} 
+                <kritzel-tool-config
+                  tool={this.activeControl.tool as any}
                   theme={this.theme}
                   onToolChange={event => this.handleToolChange?.(event)}
                   onDisplayValuesChange={this.handleDisplayValuesChange}
@@ -454,10 +397,10 @@ export class KritzelControls {
               <div
                 tabIndex={hasConfigUI ? 0 : -1}
                 class="kritzel-config"
-                onClick={event => this.handleConfigClick?.(event)}
+                ref={el => { if (el) this.configTriggerRef = el; }}
                 onKeyDown={event => {
                   if (event.key === 'Enter') {
-                    this.handleConfigClick?.(event as any);
+                    (event.target as HTMLElement).click();
                   }
                 }}
                 style={{

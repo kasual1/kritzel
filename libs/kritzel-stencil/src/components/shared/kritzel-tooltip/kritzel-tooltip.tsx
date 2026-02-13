@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h, Element, State, Listen, Method, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, Prop, h, Element, State, Listen, Method, Event, EventEmitter, Watch } from '@stencil/core';
 import { KritzelHTMLHelper } from '../../../helpers/html.helper';
 
 @Component({
@@ -9,11 +9,13 @@ import { KritzelHTMLHelper } from '../../../helpers/html.helper';
 export class KritzelTooltip {
   @Element() host: HTMLElement;
 
-  @Prop() isVisible: boolean = false;
+  @Prop({ mutable: true }) isVisible: boolean = false;
   @Prop() anchorElement: HTMLElement;
+  @Prop() triggerElement: HTMLElement;
   @Prop() offsetY: number = 24;
 
   @Event() tooltipClosed: EventEmitter<void>;
+  @Event() tooltipOpened: EventEmitter<void>;
 
   @State() positionX: number = 0;
   @State() positionY: number = 0;
@@ -21,13 +23,13 @@ export class KritzelTooltip {
   @Listen('click', { target: 'document' })
   handleOutsideClick(event: MouseEvent) {
     if (!this.isVisible) return;
-    
-    // Check if click is inside the tooltip host or any of its shadow DOM content
+
     const path = event.composedPath();
     const isInsideTooltip = path.some(el => el === this.host);
-    
-    if (!isInsideTooltip) {
-      this.tooltipClosed.emit();
+    const isOnTrigger = this.triggerElement && path.some(el => el === this.triggerElement);
+
+    if (!isInsideTooltip && !isOnTrigger) {
+      this.close();
     }
   }
 
@@ -37,17 +39,69 @@ export class KritzelTooltip {
 
     const path = event.composedPath();
     const isInsideTooltip = path.some(el => el === this.host);
+    const isOnTrigger = this.triggerElement && path.some(el => el === this.triggerElement);
 
-    if (!isInsideTooltip) {
+    if (!isInsideTooltip && !isOnTrigger) {
       event.stopPropagation();
       event.preventDefault();
-      this.tooltipClosed.emit();
+      this.close();
+    }
+  }
+
+  @Listen('kritzelTooltipCloseAll', { target: 'document' })
+  handleCloseAll(event: CustomEvent) {
+    if (event.detail !== this.host) {
+      this.close();
     }
   }
 
   @Listen('resize', { target: 'window' })
   handleWindowResize() {
     this.calculateAdjustedPosition();
+  }
+
+  @Watch('triggerElement')
+  handleTriggerElementChange(newTrigger: HTMLElement, oldTrigger: HTMLElement) {
+    if (oldTrigger) {
+      oldTrigger.removeEventListener('click', this.handleTriggerClick);
+    }
+    if (newTrigger) {
+      newTrigger.addEventListener('click', this.handleTriggerClick);
+    }
+  }
+
+  @Watch('isVisible')
+  handleVisibilityChange(newValue: boolean) {
+    if (newValue) {
+      this.calculateAdjustedPosition();
+      requestAnimationFrame(() => {
+        this.focusContent();
+      });
+    }
+  }
+
+  @Method()
+  async open() {
+    if (this.isVisible) return;
+    document.dispatchEvent(new CustomEvent('kritzelTooltipCloseAll', { detail: this.host }));
+    this.isVisible = true;
+    this.tooltipOpened.emit();
+  }
+
+  @Method()
+  async close() {
+    if (!this.isVisible) return;
+    this.isVisible = false;
+    this.tooltipClosed.emit();
+  }
+
+  @Method()
+  async toggle() {
+    if (this.isVisible) {
+      this.close();
+    } else {
+      this.open();
+    }
   }
 
   @Method()
@@ -58,8 +112,16 @@ export class KritzelTooltip {
     }
   }
 
+  connectedCallback() {
+    if (this.triggerElement) {
+      this.triggerElement.addEventListener('click', this.handleTriggerClick);
+    }
+  }
+
   componentDidLoad() {
-    this.focusSlottedContent();
+    if (this.triggerElement) {
+      this.triggerElement.addEventListener('click', this.handleTriggerClick);
+    }
   }
 
   componentWillLoad() {
@@ -70,14 +132,16 @@ export class KritzelTooltip {
     this.calculateAdjustedPosition();
   }
 
-  private focusSlottedContent() {
-    const slot = this.host.shadowRoot?.querySelector('slot');
-    const assignedElements = slot?.assignedElements() || [];
-    if (assignedElements.length > 0) {
-      const firstElement = assignedElements[0] as HTMLElement;
-      firstElement.focus();
+  disconnectedCallback() {
+    if (this.triggerElement) {
+      this.triggerElement.removeEventListener('click', this.handleTriggerClick);
     }
   }
+
+  private handleTriggerClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    this.toggle();
+  };
 
   private calculateAdjustedPosition() {
     if (this.isVisible && this.anchorElement) {
@@ -85,20 +149,20 @@ export class KritzelTooltip {
       const tooltipContent = this.host.shadowRoot?.querySelector('.tooltip-content') as HTMLElement;
       const tooltipRect = tooltipContent?.getBoundingClientRect();
       const tooltipWidth = tooltipRect?.width || 0;
-      
+
       const viewportPadding = 12; // Minimum distance from viewport edges
       const anchorCenterX = anchorRect.left + anchorRect.width / 2;
-      
+
       // Step 1: Try to center the tooltip above the anchor
       let idealLeft = anchorCenterX - tooltipWidth / 2;
-      
+
       // Step 2: Clamp to viewport bounds
       const minLeft = viewportPadding;
       const maxLeft = window.innerWidth - tooltipWidth - viewportPadding;
-      
+
       // Apply clamping - adjust if tooltip would overflow
       this.positionX = Math.max(minLeft, Math.min(idealLeft, maxLeft));
-      
+
       // Step 3: Calculate bottom position (distance from viewport bottom to top of anchor + offset)
       this.positionY = window.innerHeight - anchorRect.top + this.offsetY;
     }
