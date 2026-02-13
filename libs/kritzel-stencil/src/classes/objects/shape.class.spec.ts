@@ -159,6 +159,7 @@ describe('KritzelShape', () => {
           activeWorkspace: {
             id: 'workspace-1',
           },
+          pointers: new Map(),
         },
         currentZIndex: 1,
         setState: jest.fn(),
@@ -633,18 +634,29 @@ describe('KritzelShape', () => {
   });
 
   describe('handlePointerDown', () => {
-    it('should stop propagation when editing', () => {
+    it('should stop propagation when editing and pointer is not tracked', () => {
       shapeObject.isEditing = true;
-      const mockEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
+      mockCore.store.state.pointers.clear();
 
       shapeObject.handlePointerDown(mockEvent);
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled();
     });
 
+    it('should not stop propagation when editing and pointer is tracked', () => {
+      shapeObject.isEditing = true;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
+      mockCore.store.state.pointers.set(1, mockEvent);
+
+      shapeObject.handlePointerDown(mockEvent);
+
+      expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
+    });
+
     it('should not stop propagation when not editing', () => {
       shapeObject.isEditing = false;
-      const mockEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
 
       shapeObject.handlePointerDown(mockEvent);
 
@@ -653,18 +665,29 @@ describe('KritzelShape', () => {
   });
 
   describe('handlePointerMove', () => {
-    it('should stop propagation when editing', () => {
+    it('should stop propagation when editing and pointer is not tracked', () => {
       shapeObject.isEditing = true;
-      const mockEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
+      mockCore.store.state.pointers.clear();
 
       shapeObject.handlePointerMove(mockEvent);
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled();
     });
 
+    it('should not stop propagation when editing and pointer is tracked', () => {
+      shapeObject.isEditing = true;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
+      mockCore.store.state.pointers.set(1, mockEvent);
+
+      shapeObject.handlePointerMove(mockEvent);
+
+      expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
+    });
+
     it('should not stop propagation when not editing', () => {
       shapeObject.isEditing = false;
-      const mockEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
 
       shapeObject.handlePointerMove(mockEvent);
 
@@ -673,18 +696,29 @@ describe('KritzelShape', () => {
   });
 
   describe('handlePointerUp', () => {
-    it('should stop propagation when editing', () => {
+    it('should stop propagation when editing and pointer is not tracked', () => {
       shapeObject.isEditing = true;
-      const mockEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
+      mockCore.store.state.pointers.clear();
 
       shapeObject.handlePointerUp(mockEvent);
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled();
     });
 
+    it('should not stop propagation when editing and pointer is tracked', () => {
+      shapeObject.isEditing = true;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
+      mockCore.store.state.pointers.set(1, mockEvent);
+
+      shapeObject.handlePointerUp(mockEvent);
+
+      expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
+    });
+
     it('should not stop propagation when not editing', () => {
       shapeObject.isEditing = false;
-      const mockEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
 
       shapeObject.handlePointerUp(mockEvent);
 

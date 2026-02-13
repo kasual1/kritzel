@@ -149,6 +149,7 @@ describe('KritzelText', () => {
           activeWorkspace: {
             id: 'workspace-1',
           },
+          pointers: new Map(),
         },
         currentZIndex: 1,
         setState: setState,
@@ -598,18 +599,29 @@ describe('KritzelText', () => {
   });
 
   describe('handlePointerMove', () => {
-    it('should stop propagation when editing', () => {
+    it('should stop propagation when editing and pointer is not tracked', () => {
       textObject.isEditing = true;
-      const mockEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
+      mockCore.store.state.pointers.clear();
 
       textObject.handlePointerMove(mockEvent);
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled();
     });
 
+    it('should not stop propagation when editing and pointer is tracked', () => {
+      textObject.isEditing = true;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
+      mockCore.store.state.pointers.set(1, mockEvent);
+
+      textObject.handlePointerMove(mockEvent);
+
+      expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
+    });
+
     it('should not stop propagation when not editing', () => {
       textObject.isEditing = false;
-      const mockEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
 
       textObject.handlePointerMove(mockEvent);
 
@@ -618,18 +630,29 @@ describe('KritzelText', () => {
   });
 
   describe('handlePointerUp', () => {
-    it('should stop propagation when editing', () => {
+    it('should stop propagation when editing and pointer is not tracked', () => {
       textObject.isEditing = true;
-      const mockEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
+      mockCore.store.state.pointers.clear();
 
       textObject.handlePointerUp(mockEvent);
 
       expect(mockEvent.stopPropagation).toHaveBeenCalled();
     });
 
+    it('should not stop propagation when editing and pointer is tracked', () => {
+      textObject.isEditing = true;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
+      mockCore.store.state.pointers.set(1, mockEvent);
+
+      textObject.handlePointerUp(mockEvent);
+
+      expect(mockEvent.stopPropagation).not.toHaveBeenCalled();
+    });
+
     it('should not stop propagation when not editing', () => {
       textObject.isEditing = false;
-      const mockEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+      const mockEvent = { stopPropagation: jest.fn(), pointerId: 1 } as unknown as PointerEvent;
 
       textObject.handlePointerUp(mockEvent);
 
