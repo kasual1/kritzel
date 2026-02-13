@@ -331,7 +331,9 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    event.stopPropagation();
+    if (!this._core.store.state.pointers.has(event.pointerId)) {
+      event.stopPropagation();
+    }
   }
 
   handlePointerMove(event: PointerEvent): void {
@@ -339,7 +341,9 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    event.stopPropagation();
+    if (!this._core.store.state.pointers.has(event.pointerId)) {
+      event.stopPropagation();
+    }
   }
 
   handlePointerUp(event: PointerEvent): void {
@@ -347,7 +351,9 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    event.stopPropagation();
+    if (!this._core.store.state.pointers.has(event.pointerId)) {
+      event.stopPropagation();
+    }
   }
 
   override copy(): KritzelShape {
