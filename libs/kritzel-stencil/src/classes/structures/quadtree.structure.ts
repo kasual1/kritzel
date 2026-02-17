@@ -86,9 +86,17 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
 
   query(range: KritzelBoundingBox): T[] {
     const results: T[] = [];
+    this._queryInto(range, results);
+    return results;
+  }
 
+  /**
+   * Internal method that collects query results into a pre-allocated array.
+   * Avoids creating intermediate arrays from spread operators.
+   */
+  private _queryInto(range: KritzelBoundingBox, results: T[]): void {
     if (!this.intersects(range, this.bounds)) {
-      return results;
+      return;
     }
 
     for (const object of this.objects) {
@@ -99,31 +107,53 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
 
     if (this.children !== null) {
       for (const child of this.children) {
-        results.push(...child.query(range));
+        child._queryInto(range, results);
       }
     }
-
-    return results;
   }
 
   filter(predicate: (object: T) => boolean): T[] {
-    const results: T[] = this.objects.filter(o => predicate(o));
-    if (this.children !== null) {
-      for (const child of this.children) {
-        results.push(...child.filter(predicate));
-      }
-    }
+    const results: T[] = [];
+    this._filterInto(predicate, results);
     return results;
   }
 
-  allObjects(): T[] {
-    const results: T[] = [...this.objects];
-    if (this.children !== null) {
-      for (const child of this.children) {
-        results.push(...child.allObjects());
+  /**
+   * Internal method that collects filter results into a pre-allocated array.
+   * Avoids creating intermediate arrays from spread operators.
+   */
+  private _filterInto(predicate: (object: T) => boolean, results: T[]): void {
+    for (const obj of this.objects) {
+      if (predicate(obj)) {
+        results.push(obj);
       }
     }
+    if (this.children !== null) {
+      for (const child of this.children) {
+        child._filterInto(predicate, results);
+      }
+    }
+  }
+
+  allObjects(): T[] {
+    const results: T[] = [];
+    this._collectAllInto(results);
     return results;
+  }
+
+  /**
+   * Internal method that collects all objects into a pre-allocated array.
+   * Avoids creating intermediate arrays from spread operators.
+   */
+  private _collectAllInto(results: T[]): void {
+    for (const obj of this.objects) {
+      results.push(obj);
+    }
+    if (this.children !== null) {
+      for (const child of this.children) {
+        child._collectAllInto(results);
+      }
+    }
   }
 
   private subdivide(): void {

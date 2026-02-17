@@ -19,7 +19,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override __class__: string = 'KritzelSelectionGroup';
 
   // Store only object IDs instead of full objects
-  objectIds: string[] = [];
+  private _objectIds: string[] = [];
+
+  // Cached objects array - invalidated when objectIds changes
+  private _cachedObjects: KritzelBaseObject<any>[] | null = null;
+  private _cachedObjectIdsHash: string = '';
 
   // Store snapshots of object state for transformations (rotation, resize)
   unchangedObjectSnapshots: Map<string, UnchangedObjectSnapshot> = new Map();
@@ -31,16 +35,40 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   minY: number;
   maxY: number;
 
+  get objectIds(): string[] {
+    return this._objectIds;
+  }
+
+  set objectIds(value: string[]) {
+    this._objectIds = value;
+    this._cachedObjects = null; // Invalidate cache
+  }
+
+  /**
+   * Invalidate the cached objects array. Call this when objects might have changed
+   * externally (e.g., after undo/redo operations).
+   */
+  invalidateObjectsCache(): void {
+    this._cachedObjects = null;
+  }
+
   // Getter to retrieve actual objects from the store by their IDs
-  // Optimized: Single filter pass with Set lookup - O(n+m) instead of O(n×m)
+  // Optimized: Caches result and only recomputes when objectIds changes
   get objects(): KritzelBaseObject<any>[] {
-    const idSet = new Set(this.objectIds);
+    const currentHash = this._objectIds.join(',');
+    if (this._cachedObjects !== null && this._cachedObjectIdsHash === currentHash) {
+      return this._cachedObjects;
+    }
+
+    const idSet = new Set(this._objectIds);
     const foundObjects = this._core.store.state.objects.filter(obj => idSet.has(obj.id));
     // Preserve the original order from objectIds
     const objectMap = new Map(foundObjects.map(obj => [obj.id, obj]));
-    return this.objectIds
+    this._cachedObjects = this._objectIds
       .map(id => objectMap.get(id))
       .filter((obj): obj is KritzelBaseObject<any> => obj !== undefined);
+    this._cachedObjectIdsHash = currentHash;
+    return this._cachedObjects;
   }
 
   get length(): number {
@@ -60,15 +88,17 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   addOrRemove(object: KritzelBaseObject<any>) {
-    const index = this.objectIds.findIndex(id => id === object.id);
+    const index = this._objectIds.findIndex(id => id === object.id);
     if (index === -1) {
-      this.objectIds.push(object.id);
+      this._objectIds.push(object.id);
     } else {
-      this.objectIds.splice(index, 1);
+      this._objectIds.splice(index, 1);
     }
+    this._cachedObjects = null; // Invalidate cache
 
-    this.captureUnchangedSnapshots();
-    this.refreshObjectDimensions();
+    const children = this.objects; // Get cached objects once
+    this.captureUnchangedSnapshots(children);
+    this.refreshObjectDimensions(children);
   }
 
   /**
@@ -76,39 +106,49 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
    * Ensures snapshot state is aligned with the current visual state.
    */
   beginTransform(): void {
+    const children = this.objects; // Get cached objects once
+
     // Keep the selection group's bounding box current before snapshotting.
-    this.refreshObjectDimensions();
-    this.captureUnchangedSnapshots();
+    this.refreshObjectDimensions(children);
+    this.captureUnchangedSnapshots(children);
 
     // Groups need their own child snapshots aligned with the current transform.
-    this.objects.forEach(obj => {
+    for (const obj of children) {
       if (obj instanceof KritzelGroup) {
         obj.finalize();
       }
-    });
+    }
   }
 
   deselectAllChildren() {
-    this.objects.forEach(obj => (obj.isSelected = false));
+    const children = this.objects;
+    for (const obj of children) {
+      obj.isSelected = false;
+    }
   }
 
   updateWorkspaceId(workspaceId: string) {
     this.workspaceId = workspaceId;
-    this.objects.forEach(obj => (obj.workspaceId = workspaceId));
+    const children = this.objects;
+    for (const obj of children) {
+      obj.workspaceId = workspaceId;
+    }
   }
 
   updateZIndices(startZIndex: number) {
-    this.objects.forEach((obj, i) => {
-      obj.zIndex = startZIndex + i;
-    });
+    const children = this.objects;
+    for (let i = 0; i < children.length; i++) {
+      children[i].zIndex = startZIndex + i;
+    }
   }
 
   updatePosition(x: number, y: number) {
-    this.objects.forEach(obj => {
+    const children = this.objects;
+    for (const obj of children) {
       const deltaX = obj.translateX - this.translateX;
       const deltaY = obj.translateY - this.translateY;
       obj.updatePosition(x + deltaX, y + deltaY);
-    });
+    }
 
     // Update snapshots
     this.unchangedObjectSnapshots.forEach(snapshot => {
@@ -148,9 +188,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override serialize() {
-    const { _core, _elementRef, element, totalWidth, totalHeight, unchangedObjectSnapshots, ...remainingProps } = this as any;
+    const { _core, _elementRef, element, totalWidth, totalHeight, unchangedObjectSnapshots, _cachedObjects, _cachedObjectIdsHash, ...remainingProps } = this as any;
 
     const clonedProps = structuredClone(remainingProps);
+
+    // Ensure objectIds is serialized with the correct key name (getter returns _objectIds)
+    clonedProps.objectIds = this.objectIds;
+    delete clonedProps._objectIds;
 
     if (element && typeof element === 'object' && 'nodeType' in element && element.nodeType === 1) {
       clonedProps.element = element.cloneNode(true) as HTMLElement;
@@ -165,6 +209,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override deserialize<T>(object: any): T {
     // First, deserialize all base properties using parent's deserialize
     super.deserialize(object);
+
+    // Restore objectIds through setter
+    if (object.objectIds) {
+      this.objectIds = object.objectIds;
+    }
 
     // Restore the Map from serialized object
     if (object.unchangedObjectSnapshots) {
@@ -191,12 +240,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this._core.store.state.objects.transaction(() => {
       this._core.store.state.objects.update(this);
 
-      this.objects.forEach(obj => {
+      const children = this.objects;
+      for (const obj of children) {
         obj.move(startX, startY, endX, endY);
 
         // Update any lines that are anchored to this object
         this._core.anchorManager.updateAnchorsForObject(obj.id);
-      });
+      }
     });
 
     // Update snapshots
@@ -310,9 +360,10 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       // Update the SelectionGroup itself to propagate rotation to other tabs
       this._core.store.state.objects.update(this);
 
-      children.forEach(child => {
+      const childCount = children.length;
+      for (const child of children) {
         const unchangedSnapshot = this.unchangedObjectSnapshots.get(child.id);
-        if (!unchangedSnapshot) return;
+        if (!unchangedSnapshot) continue;
 
         const offsetX = this.getOffsetXToCenterFromSnapshot(unchangedSnapshot);
         const offsetY = this.getOffsetYToCenterFromSnapshot(unchangedSnapshot);
@@ -323,25 +374,26 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
         child.translateX = centerX + rotatedX - child.totalWidth / 2 / child.scale;
         child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
 
-        child.rotate(this.objects.length === 1 ? value : unchangedSnapshot.rotation + angle);
-      });
+        child.rotate(childCount === 1 ? value : unchangedSnapshot.rotation + angle);
+      }
     });
   }
 
   override copy(): KritzelBaseObject<HTMLElement> {
     const selectionGroup = KritzelSelectionGroup.create(this._core);
+    const children = this.objects;
 
-    this.objects
-      .sort((a, b) => a.zIndex - b.zIndex)
-      .forEach(obj => {
-        const copiedObject = obj.copy() as KritzelBaseObject<any>;
-        selectionGroup.addOrRemove(copiedObject);
-      });
+    // Sort children by zIndex and copy them
+    const sortedChildren = [...children].sort((a, b) => a.zIndex - b.zIndex);
+    for (const obj of sortedChildren) {
+      const copiedObject = obj.copy() as KritzelBaseObject<any>;
+      selectionGroup.addOrRemove(copiedObject);
+    }
 
     selectionGroup.captureUnchangedSnapshots();
 
-    if (this.objects.length === 1) {
-      selectionGroup.rotation = this.objects[0].rotation;
+    if (children.length === 1) {
+      selectionGroup.rotation = children[0].rotation;
     }
 
     return selectionGroup;
@@ -429,9 +481,10 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override hitTest(x: number, y: number): boolean {
-    const isSingleLine = this.objects.length === 1 && this.objects[0].__class__ === 'KritzelLine';
+    const children = this.objects;
+    const isSingleLine = children.length === 1 && children[0].__class__ === 'KritzelLine';
     if (isSingleLine) {
-      return this.objects[0].hitTest(x, y);
+      return children[0].hitTest(x, y);
     }
 
     const polygon = this.rotatedPolygon;
@@ -440,6 +493,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       return true;
     }
 
-    return this.objects.some(obj => obj.hitTest(x, y));
+    for (const obj of children) {
+      if (obj.hitTest(x, y)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
