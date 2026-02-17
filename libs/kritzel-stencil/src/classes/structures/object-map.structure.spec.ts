@@ -1,0 +1,734 @@
+import { KritzelObjectMap } from './object-map.structure';
+import { KritzelSelectionBox } from '../objects/selection-box.class';
+
+// --- Mock Yjs ---
+const mockMapObserve = jest.fn();
+const mockMapUnobserve = jest.fn();
+const mockMapSet = jest.fn();
+const mockMapDelete = jest.fn();
+const mockMapClear = jest.fn();
+const mockMapGet = jest.fn();
+const mockMapForEach = jest.fn();
+
+const mockUndoManagerOn = jest.fn();
+const mockUndoManagerOff = jest.fn();
+const mockUndoManagerUndo = jest.fn();
+const mockUndoManagerRedo = jest.fn();
+const mockUndoManagerCanUndo = jest.fn().mockReturnValue(false);
+const mockUndoManagerCanRedo = jest.fn().mockReturnValue(false);
+const mockUndoManagerClear = jest.fn();
+const mockUndoManagerDestroy = jest.fn();
+const mockUndoManagerStopCapturing = jest.fn();
+const mockUndoStack: any[] = [];
+const mockRedoStack: any[] = [];
+
+const mockYdocTransact = jest.fn((cb: () => void) => cb());
+const mockYdocGetMap = jest.fn().mockReturnValue({
+  observe: mockMapObserve,
+  unobserve: mockMapUnobserve,
+  set: mockMapSet,
+  delete: mockMapDelete,
+  clear: mockMapClear,
+  get: mockMapGet,
+  forEach: mockMapForEach,
+});
+const mockYdocDestroy = jest.fn();
+
+jest.mock('yjs', () => ({
+  Doc: jest.fn().mockImplementation(() => ({
+    transact: mockYdocTransact,
+    getMap: mockYdocGetMap,
+    destroy: mockYdocDestroy,
+  })),
+  UndoManager: jest.fn().mockImplementation(() => ({
+    on: mockUndoManagerOn,
+    off: mockUndoManagerOff,
+    undo: mockUndoManagerUndo,
+    redo: mockUndoManagerRedo,
+    canUndo: mockUndoManagerCanUndo,
+    canRedo: mockUndoManagerCanRedo,
+    clear: mockUndoManagerClear,
+    destroy: mockUndoManagerDestroy,
+    stopCapturing: mockUndoManagerStopCapturing,
+    get undoStack() { return mockUndoStack; },
+    get redoStack() { return mockRedoStack; },
+  })),
+}));
+
+// --- Mock Quadtree ---
+const mockQuadtreeInsert = jest.fn().mockReturnValue(true);
+const mockQuadtreeUpdate = jest.fn().mockReturnValue(true);
+const mockQuadtreeRemove = jest.fn().mockReturnValue(1);
+const mockQuadtreeFilter = jest.fn().mockReturnValue([]);
+const mockQuadtreeAllObjects = jest.fn().mockReturnValue([]);
+const mockQuadtreeQuery = jest.fn().mockReturnValue([]);
+const mockQuadtreeReset = jest.fn();
+let mockQuadtreeSize = 0;
+
+jest.mock('./quadtree.structure', () => ({
+  KritzelQuadtree: jest.fn().mockImplementation(() => ({
+    insert: mockQuadtreeInsert,
+    update: mockQuadtreeUpdate,
+    remove: mockQuadtreeRemove,
+    filter: mockQuadtreeFilter,
+    allObjects: mockQuadtreeAllObjects,
+    query: mockQuadtreeQuery,
+    reset: mockQuadtreeReset,
+    get size() { return mockQuadtreeSize; },
+  })),
+}));
+
+// --- Mock Reviver ---
+const mockRevive = jest.fn();
+jest.mock('../core/reviver.class', () => ({
+  KritzelReviver: jest.fn().mockImplementation(() => ({
+    revive: mockRevive,
+  })),
+}));
+
+// --- Mock SelectionBox (for isPersistable) ---
+jest.mock('../objects/selection-box.class');
+
+// --- Mock SelectionGroup (for handleObjectsChange) ---
+jest.mock('../objects/selection-group.class');
+
+// --- Mock default sync config ---
+jest.mock('../../configs/default-sync.config', () => ({
+  DEFAULT_SYNC_CONFIG: { providers: [] },
+}));
+
+// --- Mock barrel export for KritzelUndoState ---
+jest.mock('../..', () => ({}));
+
+const createMockCore = () => ({
+  rerender: jest.fn(),
+  engine: { emitObjectsChange: jest.fn() },
+});
+
+const createMockProvider = (): any => ({
+  connect: jest.fn().mockResolvedValue(undefined),
+  disconnect: jest.fn(),
+  destroy: jest.fn(),
+});
+
+const createMockObject = (id: string, opts: { isSelectionBox?: boolean } = {}): any => {
+  const obj: any = {
+    id,
+    rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 10, height: 10 },
+    serialize: jest.fn().mockReturnValue({ id, type: 'mock' }),
+  };
+  if (opts.isSelectionBox) {
+    Object.setPrototypeOf(obj, KritzelSelectionBox.prototype);
+  }
+  return obj;
+};
+
+describe('KritzelObjectMap', () => {
+  let objectMap: KritzelObjectMap<any>;
+  let mockCore: any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUndoStack.length = 0;
+    mockRedoStack.length = 0;
+    mockQuadtreeSize = 0;
+    mockUndoManagerCanUndo.mockReturnValue(false);
+    mockUndoManagerCanRedo.mockReturnValue(false);
+    mockQuadtreeFilter.mockReturnValue([]);
+
+    objectMap = new KritzelObjectMap();
+    mockCore = createMockCore();
+  });
+
+  describe('constructor', () => {
+    it('should create a quadtree with infinite bounds', () => {
+      const { KritzelQuadtree } = require('./quadtree.structure');
+      expect(KritzelQuadtree).toHaveBeenCalledWith(
+        { x: -Infinity, y: -Infinity, z: 0, width: Infinity, height: Infinity },
+        8,
+      );
+    });
+
+    it('should start with isReady false', () => {
+      expect(objectMap.isReady).toBe(false);
+    });
+
+    it('should start with null undoManager', () => {
+      expect(objectMap.undoManager).toBeNull();
+    });
+
+    it('should start with null workspaceId', () => {
+      expect(objectMap.workspaceId).toBeNull();
+    });
+  });
+
+  describe('initialize', () => {
+    it('should set isReady to true after initialization', async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+
+      expect(objectMap.isReady).toBe(true);
+    });
+
+    it('should set workspaceId', async () => {
+      await objectMap.initialize(mockCore, 'ws-42', { providers: [] });
+
+      expect(objectMap.workspaceId).toBe('ws-42');
+    });
+
+    it('should create Y.Doc and get objects map', async () => {
+      const Y = require('yjs');
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+
+      expect(Y.Doc).toHaveBeenCalled();
+      expect(mockYdocGetMap).toHaveBeenCalledWith('objects');
+    });
+
+    it('should create UndoManager', async () => {
+      const Y = require('yjs');
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+
+      expect(Y.UndoManager).toHaveBeenCalled();
+    });
+
+    it('should observe the objects map', async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+
+      expect(mockMapObserve).toHaveBeenCalledWith(expect.any(Function));
+    });
+
+    it('should connect providers from config', async () => {
+      const provider = createMockProvider();
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [factory] });
+
+      expect(factory.create).toHaveBeenCalledWith('kritzel-workspace-ws-1', expect.anything());
+      expect(provider.connect).toHaveBeenCalled();
+    });
+
+    it('should support class constructor providers', async () => {
+      const provider = createMockProvider();
+      const ProviderClass = jest.fn().mockImplementation(() => provider) as any;
+
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [ProviderClass] });
+
+      expect(ProviderClass).toHaveBeenCalledWith('kritzel-workspace-ws-1', expect.anything());
+      expect(provider.connect).toHaveBeenCalled();
+    });
+
+    it('should load objects from Yjs after connecting', async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+
+      expect(mockQuadtreeReset).toHaveBeenCalled();
+      expect(mockMapForEach).toHaveBeenCalled();
+    });
+
+    it('should register undo manager event listeners', async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+
+      expect(mockUndoManagerOn).toHaveBeenCalledWith('stack-item-added', expect.any(Function));
+      expect(mockUndoManagerOn).toHaveBeenCalledWith('stack-item-popped', expect.any(Function));
+    });
+  });
+
+  describe('insert', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should insert object into quadtree and Yjs map', () => {
+      const obj = createMockObject('obj-1');
+
+      const result = objectMap.insert(obj);
+
+      expect(result).toBe(true);
+      expect(mockQuadtreeInsert).toHaveBeenCalledWith(obj);
+      expect(mockMapSet).toHaveBeenCalledWith('obj-1', { id: 'obj-1', type: 'mock' });
+    });
+
+    it('should return false for object without id', () => {
+      const obj = createMockObject('');
+
+      const result = objectMap.insert(obj);
+
+      expect(result).toBe(false);
+    });
+
+    it('should not persist SelectionBox objects', () => {
+      const obj = createMockObject('sb-1', { isSelectionBox: true });
+
+      objectMap.insert(obj);
+
+      expect(mockQuadtreeInsert).toHaveBeenCalledWith(obj);
+      expect(mockMapSet).not.toHaveBeenCalled();
+    });
+
+    it('should transact with local origin', () => {
+      const obj = createMockObject('obj-1');
+
+      objectMap.insert(obj);
+
+      expect(mockYdocTransact).toHaveBeenCalledWith(expect.any(Function), 'local');
+    });
+  });
+
+  describe('update', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should update existing object in quadtree and Yjs', () => {
+      const obj = createMockObject('obj-1');
+      mockQuadtreeFilter.mockReturnValueOnce([obj]);
+
+      const result = objectMap.update(obj);
+
+      expect(result).toBe(true);
+      expect(mockQuadtreeUpdate).toHaveBeenCalledWith(obj);
+      expect(mockMapSet).toHaveBeenCalledWith('obj-1', { id: 'obj-1', type: 'mock' });
+    });
+
+    it('should return false for object without id', () => {
+      const obj = createMockObject('');
+
+      const result = objectMap.update(obj);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false when object does not exist', () => {
+      mockQuadtreeFilter.mockReturnValueOnce([]);
+
+      const result = objectMap.update(createMockObject('nonexistent'));
+
+      expect(result).toBe(false);
+    });
+
+    it('should use temporary origin when option is set', () => {
+      const obj = createMockObject('obj-1');
+      mockQuadtreeFilter.mockReturnValueOnce([obj]);
+
+      objectMap.update(obj, { temporary: true });
+
+      expect(mockYdocTransact).toHaveBeenCalledWith(expect.any(Function), 'temporary');
+    });
+
+    it('should use local origin by default', () => {
+      const obj = createMockObject('obj-1');
+      mockQuadtreeFilter.mockReturnValueOnce([obj]);
+
+      objectMap.update(obj);
+
+      expect(mockYdocTransact).toHaveBeenCalledWith(expect.any(Function), 'local');
+    });
+
+    it('should not persist SelectionBox objects', () => {
+      const obj = createMockObject('sb-1', { isSelectionBox: true });
+      mockQuadtreeFilter.mockReturnValueOnce([obj]);
+
+      objectMap.update(obj);
+
+      expect(mockQuadtreeUpdate).toHaveBeenCalledWith(obj);
+      // mapSet should not have been called after initialization
+      const setCallsAfterInit = mockMapSet.mock.calls;
+      expect(setCallsAfterInit.filter((c: any) => c[0] === 'sb-1')).toHaveLength(0);
+    });
+  });
+
+  describe('remove', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should remove matching objects from quadtree and Yjs', () => {
+      const obj = createMockObject('obj-1');
+      mockQuadtreeFilter.mockReturnValueOnce([obj]);
+
+      objectMap.remove(o => o.id === 'obj-1');
+
+      expect(mockQuadtreeRemove).toHaveBeenCalled();
+      expect(mockMapDelete).toHaveBeenCalledWith('obj-1');
+    });
+
+    it('should not delete from Yjs for SelectionBox objects', () => {
+      const obj = createMockObject('sb-1', { isSelectionBox: true });
+      mockQuadtreeFilter.mockReturnValueOnce([obj]);
+
+      objectMap.remove(o => o.id === 'sb-1');
+
+      expect(mockQuadtreeRemove).toHaveBeenCalled();
+      expect(mockMapDelete).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing when no objects match', () => {
+      mockQuadtreeFilter.mockReturnValueOnce([]);
+
+      objectMap.remove(o => o.id === 'nonexistent');
+
+      expect(mockQuadtreeRemove).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('filter / allObjects / query', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should delegate filter to quadtree', () => {
+      const predicate = (o: any) => o.id === 'a';
+      objectMap.filter(predicate);
+
+      expect(mockQuadtreeFilter).toHaveBeenCalledWith(predicate);
+    });
+
+    it('should delegate allObjects to quadtree', () => {
+      objectMap.allObjects();
+
+      expect(mockQuadtreeAllObjects).toHaveBeenCalled();
+    });
+
+    it('should delegate query to quadtree', () => {
+      const range = { x: 0, y: 0, z: 0, width: 100, height: 100 };
+      objectMap.query(range);
+
+      expect(mockQuadtreeQuery).toHaveBeenCalledWith(range);
+    });
+  });
+
+  describe('totalCount', () => {
+    it('should return quadtree size', () => {
+      mockQuadtreeSize = 42;
+
+      expect(objectMap.totalCount).toBe(42);
+    });
+  });
+
+  describe('transaction', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should run callback inside a Y.Doc transaction with local origin', () => {
+      const callback = jest.fn();
+      mockYdocTransact.mockClear();
+
+      objectMap.transaction(callback);
+
+      expect(mockYdocTransact).toHaveBeenCalledWith(callback, 'local');
+    });
+  });
+
+  describe('reset', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should reset quadtree and clear Yjs map', () => {
+      mockQuadtreeReset.mockClear();
+
+      objectMap.reset();
+
+      expect(mockQuadtreeReset).toHaveBeenCalled();
+      expect(mockMapClear).toHaveBeenCalled();
+    });
+  });
+
+  describe('undo / redo', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should call undoManager.undo when canUndo is true', () => {
+      mockUndoManagerCanUndo.mockReturnValue(true);
+
+      objectMap.undo();
+
+      expect(mockUndoManagerUndo).toHaveBeenCalled();
+      expect(mockCore.engine.emitObjectsChange).toHaveBeenCalled();
+    });
+
+    it('should not call undo when canUndo is false', () => {
+      mockUndoManagerCanUndo.mockReturnValue(false);
+
+      objectMap.undo();
+
+      expect(mockUndoManagerUndo).not.toHaveBeenCalled();
+    });
+
+    it('should call undoManager.redo when canRedo is true', () => {
+      mockUndoManagerCanRedo.mockReturnValue(true);
+
+      objectMap.redo();
+
+      expect(mockUndoManagerRedo).toHaveBeenCalled();
+      expect(mockCore.engine.emitObjectsChange).toHaveBeenCalled();
+    });
+
+    it('should not call redo when canRedo is false', () => {
+      mockUndoManagerCanRedo.mockReturnValue(false);
+
+      objectMap.redo();
+
+      expect(mockUndoManagerRedo).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('canUndo / canRedo', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should delegate canUndo to undoManager', () => {
+      mockUndoManagerCanUndo.mockReturnValue(true);
+      expect(objectMap.canUndo()).toBe(true);
+
+      mockUndoManagerCanUndo.mockReturnValue(false);
+      expect(objectMap.canUndo()).toBe(false);
+    });
+
+    it('should delegate canRedo to undoManager', () => {
+      mockUndoManagerCanRedo.mockReturnValue(true);
+      expect(objectMap.canRedo()).toBe(true);
+
+      mockUndoManagerCanRedo.mockReturnValue(false);
+      expect(objectMap.canRedo()).toBe(false);
+    });
+
+    it('should return false when undoManager is null', () => {
+      const freshMap = new KritzelObjectMap();
+      expect(freshMap.canUndo()).toBe(false);
+      expect(freshMap.canRedo()).toBe(false);
+    });
+  });
+
+  describe('undoState', () => {
+    it('should return all-false state when undoManager is null', () => {
+      const freshMap = new KritzelObjectMap();
+
+      expect(freshMap.undoState).toEqual({
+        canUndo: false,
+        canRedo: false,
+        undoStackSize: 0,
+        redoStackSize: 0,
+      });
+    });
+
+    it('should reflect undoManager state after initialization', async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      mockUndoManagerCanUndo.mockReturnValue(true);
+      mockUndoManagerCanRedo.mockReturnValue(false);
+      mockUndoStack.push({}, {});
+      mockRedoStack.push({});
+
+      const state = objectMap.undoState;
+
+      expect(state).toEqual({
+        canUndo: true,
+        canRedo: false,
+        undoStackSize: 2,
+        redoStackSize: 1,
+      });
+    });
+  });
+
+  describe('clearHistory', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should clear the undoManager', () => {
+      objectMap.clearHistory();
+
+      expect(mockUndoManagerClear).toHaveBeenCalled();
+    });
+  });
+
+  describe('consolidateTemporaryItems', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should do nothing when temporaryItemsCount is 0', () => {
+      objectMap.consolidateTemporaryItems();
+
+      expect(mockUndoManagerStopCapturing).not.toHaveBeenCalled();
+    });
+
+    it('should reset temporaryItemsCount when undo stack is empty', () => {
+      // Simulate adding a temporary item via the stack-item-added handler
+      const addedHandler = mockUndoManagerOn.mock.calls.find(
+        (c: any) => c[0] === 'stack-item-added'
+      )[1];
+      addedHandler({ type: 'undo', origin: 'temporary' });
+
+      objectMap.consolidateTemporaryItems();
+
+      // When stack is empty, returns early without calling stopCapturing
+      expect(mockUndoManagerStopCapturing).not.toHaveBeenCalled();
+      // Verify count was reset - clearTemporaryItems should be a no-op now
+      mockUndoStack.push({});
+      objectMap.clearTemporaryItems();
+      expect(mockUndoStack.length).toBe(1);
+    });
+  });
+
+  describe('clearTemporaryItems', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should do nothing when temporaryItemsCount is 0', () => {
+      objectMap.clearTemporaryItems();
+
+      // No stack manipulation should occur
+      expect(mockUndoStack.length).toBe(0);
+    });
+
+    it('should pop items from undo stack', () => {
+      // Simulate adding temporary items
+      const addedHandler = mockUndoManagerOn.mock.calls.find(
+        (c: any) => c[0] === 'stack-item-added'
+      )[1];
+      addedHandler({ type: 'undo', origin: 'temporary' });
+      addedHandler({ type: 'undo', origin: 'temporary' });
+
+      mockUndoStack.push({}, {});
+
+      objectMap.clearTemporaryItems();
+
+      expect(mockUndoStack.length).toBe(0);
+    });
+  });
+
+  describe('stack-item event handlers', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should increment temporaryItemsCount on temporary stack-item-added', () => {
+      const addedHandler = mockUndoManagerOn.mock.calls.find(
+        (c: any) => c[0] === 'stack-item-added'
+      )[1];
+
+      addedHandler({ type: 'undo', origin: 'temporary' });
+
+      // Verify by checking clearTemporaryItems removes one item
+      mockUndoStack.push({});
+      objectMap.clearTemporaryItems();
+      expect(mockUndoStack.length).toBe(0);
+    });
+
+    it('should not increment for non-temporary stack-item-added', () => {
+      const addedHandler = mockUndoManagerOn.mock.calls.find(
+        (c: any) => c[0] === 'stack-item-added'
+      )[1];
+
+      addedHandler({ type: 'undo', origin: 'local' });
+
+      // clearTemporaryItems should do nothing since count is 0
+      mockUndoStack.push({});
+      objectMap.clearTemporaryItems();
+      expect(mockUndoStack.length).toBe(1);
+    });
+
+    it('should not increment for non-undo type events', () => {
+      const addedHandler = mockUndoManagerOn.mock.calls.find(
+        (c: any) => c[0] === 'stack-item-added'
+      )[1];
+
+      addedHandler({ type: 'redo', origin: 'temporary' });
+
+      mockUndoStack.push({});
+      objectMap.clearTemporaryItems();
+      expect(mockUndoStack.length).toBe(1);
+    });
+
+    it('should decrement temporaryItemsCount on temporary stack-item-popped', () => {
+      const addedHandler = mockUndoManagerOn.mock.calls.find(
+        (c: any) => c[0] === 'stack-item-added'
+      )[1];
+      const poppedHandler = mockUndoManagerOn.mock.calls.find(
+        (c: any) => c[0] === 'stack-item-popped'
+      )[1];
+
+      // Add two, pop one
+      addedHandler({ type: 'undo', origin: 'temporary' });
+      addedHandler({ type: 'undo', origin: 'temporary' });
+      poppedHandler({ type: 'undo', origin: 'temporary' });
+
+      // Should have count of 1 now
+      mockUndoStack.push({}, {});
+      objectMap.clearTemporaryItems();
+      expect(mockUndoStack.length).toBe(1);
+    });
+  });
+
+  describe('loadFromYjs', () => {
+    it('should reset quadtree and revive objects from Yjs map', async () => {
+      const revived = createMockObject('revived-1');
+      mockRevive.mockReturnValue(revived);
+      mockMapForEach.mockImplementation((cb: (val: any) => void) => {
+        cb({ id: 'revived-1', type: 'path' });
+      });
+
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+
+      expect(mockQuadtreeReset).toHaveBeenCalled();
+      expect(mockRevive).toHaveBeenCalledWith({ id: 'revived-1', type: 'path' });
+      expect(mockQuadtreeInsert).toHaveBeenCalledWith(revived);
+    });
+  });
+
+  describe('destroy', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+    });
+
+    it('should unobserve the objects map', () => {
+      objectMap.destroy();
+
+      expect(mockMapUnobserve).toHaveBeenCalled();
+    });
+
+    it('should remove undo manager event listeners and destroy it', () => {
+      objectMap.destroy();
+
+      expect(mockUndoManagerOff).toHaveBeenCalledWith('stack-item-added', expect.any(Function));
+      expect(mockUndoManagerOff).toHaveBeenCalledWith('stack-item-popped', expect.any(Function));
+      expect(mockUndoManagerDestroy).toHaveBeenCalled();
+    });
+
+    it('should reset quadtree', () => {
+      mockQuadtreeReset.mockClear();
+
+      objectMap.destroy();
+
+      expect(mockQuadtreeReset).toHaveBeenCalled();
+    });
+
+    it('should destroy Y.Doc', () => {
+      objectMap.destroy();
+
+      expect(mockYdocDestroy).toHaveBeenCalled();
+    });
+
+    it('should reset state properties', () => {
+      objectMap.destroy();
+
+      expect(objectMap.isReady).toBe(false);
+      expect(objectMap.workspaceId).toBeNull();
+      expect(objectMap.undoManager).toBeNull();
+    });
+
+    it('should destroy providers', async () => {
+      const provider = createMockProvider();
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      const map2 = new KritzelObjectMap();
+      await map2.initialize(mockCore, 'ws-2', { providers: [factory] });
+
+      map2.destroy();
+
+      expect(provider.destroy).toHaveBeenCalled();
+    });
+  });
+});
