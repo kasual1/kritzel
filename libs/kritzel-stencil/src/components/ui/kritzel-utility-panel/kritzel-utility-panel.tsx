@@ -39,8 +39,8 @@ export class KritzelUtilityPanel {
 
         <div class="utility-separator"></div>
 
-        <button class="utility-button">
-          <kritzel-icon name="delete" onClick={() => this.delete.emit()}></kritzel-icon>
+        <button class="utility-button" onClick={() => this.delete.emit()}>
+          <kritzel-icon name="delete"></kritzel-icon>
         </button>
       </Host>
     );
