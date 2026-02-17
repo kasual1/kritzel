@@ -68,6 +68,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return object;
   }
 
+  override copy(): KritzelPath {
+    const copiedObject = super.copy() as KritzelPath;
+    if (this.points) {
+      copiedObject.points = this.points.map(p => [...p]);
+    }
+    return copiedObject;
+  }
+
   override resize(x: number | null, y: number | null, width: number, height: number): void {
     if (width <= 1 || height <= 1) {
       return;
