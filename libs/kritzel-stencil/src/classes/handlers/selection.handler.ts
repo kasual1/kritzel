@@ -15,6 +15,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   touchStartTimeout: any = null;
 
+  // Track previously selected objects for efficient deselection (WeakRef to avoid memory leaks)
+  private _previouslySelectedObjects: Set<KritzelBaseObject<any>> = new Set();
+
   get isSelectionClick() {
     const selectionBox = this._core.store.selectionBox;
     return selectionBox && selectionBox.width === 0 && selectionBox.height === 0;
@@ -131,6 +134,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   private removeSelectionBox(): void {
     this._core.store.state.isSelecting = false;
     this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
+    this._core.store.setSelectionBox(null);
   }
 
   private startMouseSelection(event: MouseEvent): void {
@@ -150,7 +154,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._core.store.state.isSelecting = true;
 
     this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._core.store.setSelectionBox(null);
+    this._core.store.setSelectionGroup(null);
     this._core.store.state.objects.insert(selectionBox);
+    this._core.store.setSelectionBox(selectionBox);
   }
 
   private startTouchSelection(): void {
@@ -179,7 +186,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._core.store.state.isSelecting = true;
 
     this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._core.store.setSelectionBox(null);
+    this._core.store.setSelectionGroup(null);
     this._core.store.state.objects.insert(selectionBox);
+    this._core.store.setSelectionBox(selectionBox);
   }
 
   private updateMouseSelection(event: MouseEvent): void {
@@ -252,20 +262,48 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     // Compute rotatedPolygon once per update (not per object)
     const selectionPolygon = selectionBox.rotatedPolygon;
 
+    // Calculate bounding box from the polygon we already have to avoid recomputing it
+    // calling selectionBox.rotatedBoundingBox would trigger another rotatedPolygon computation
+    const xValues = [selectionPolygon.topLeft.x, selectionPolygon.topRight.x, selectionPolygon.bottomRight.x, selectionPolygon.bottomLeft.x];
+    const yValues = [selectionPolygon.topLeft.y, selectionPolygon.topRight.y, selectionPolygon.bottomRight.y, selectionPolygon.bottomLeft.y];
+    const minX = Math.min(...xValues);
+    const maxX = Math.max(...xValues);
+    const minY = Math.min(...yValues);
+    const maxY = Math.max(...yValues);
+
     // Use quadtree spatial query to get only nearby candidates - O(log n + k) instead of O(n)
-    const selectionBounds = selectionBox.rotatedBoundingBox;
+    const selectionBounds = {
+      x: minX,
+      y: minY,
+      z: selectionBox.scale,
+      width: maxX - minX,
+      height: maxY - minY
+    };
+    
     const candidates = this._core.store.state.objects.query(selectionBounds);
 
-    // Clear selection on all non-selection objects first
-    this._core.store.allNonSelectionObjects.forEach(obj => {
-      obj.isSelected = false;
-    });
+    // Track newly selected objects for efficient comparison
+    const newlySelectedObjects = new Set<KritzelBaseObject<any>>();
 
     // Only test candidates that overlap the bounding box
     for (const object of candidates) {
       if (object instanceof KritzelSelectionBox) continue;
-      object.isSelected = object.hitTestPolygon(selectionPolygon);
+      const isHit = object.hitTestPolygon(selectionPolygon);
+      object.isSelected = isHit;
+      if (isHit) {
+        newlySelectedObjects.add(object);
+      }
     }
+
+    // Deselect only objects that were previously selected but aren't anymore
+    // This is O(k) where k is the number of previously selected objects, not O(n)
+    for (const prevObj of this._previouslySelectedObjects) {
+      if (!newlySelectedObjects.has(prevObj)) {
+        prevObj.isSelected = false;
+      }
+    }
+
+    this._previouslySelectedObjects = newlySelectedObjects;
   }
 
   private handleSelectionClick(event: PointerEvent): void {
@@ -293,9 +331,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   private clearSelectionPreview(): void {
-    this._core.store.allNonSelectionObjects.forEach(object => {
-      object.isSelected = false;
-    });
+    // Only clear previously tracked selected objects - O(k) instead of O(n)
+    for (const obj of this._previouslySelectedObjects) {
+      obj.isSelected = false;
+    }
+    this._previouslySelectedObjects.clear();
   }
 
   private addObjectToSelectionGroup(object: KritzelBaseObject): void {

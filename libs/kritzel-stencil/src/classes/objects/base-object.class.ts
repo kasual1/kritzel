@@ -68,12 +68,21 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   get rotatedBoundingBox(): KritzelBoundingBox {
+    const polygon = this.rotatedPolygon;
+    const xValues = [polygon.topLeft.x, polygon.topRight.x, polygon.bottomRight.x, polygon.bottomLeft.x];
+    const yValues = [polygon.topLeft.y, polygon.topRight.y, polygon.bottomRight.y, polygon.bottomLeft.y];
+
+    const minX = Math.min(...xValues);
+    const maxX = Math.max(...xValues);
+    const minY = Math.min(...yValues);
+    const maxY = Math.max(...yValues);
+
     return {
-      x: this.minXRotated,
-      y: this.minYRotated,
+      x: minX,
+      y: minY,
       z: this.scale,
-      width: this.maxXRotated - this.minXRotated,
-      height: this.maxYRotated - this.minYRotated,
+      width: maxX - minX,
+      height: maxY - minY,
     };
   }
 
@@ -81,26 +90,31 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     const cx = this.translateX + this.totalWidth / 2 / this.scale;
     const cy = this.translateY + this.totalHeight / 2 / this.scale;
     const angle = this.rotation;
+    
+    // Optimization: Precomputes cos/sin once
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
 
     const adjustedWidth = this.totalWidth / this.scale;
     const adjustedHeight = this.totalHeight / this.scale;
+    
+    const x1 = this.translateX;
+    const y1 = this.translateY;
+    const x2 = x1 + adjustedWidth;
+    const y2 = y1 + adjustedHeight;
 
-    const corners = {
-      topLeft: { x: this.translateX, y: this.translateY },
-      topRight: { x: this.translateX + adjustedWidth, y: this.translateY },
-      bottomRight: { x: this.translateX + adjustedWidth, y: this.translateY + adjustedHeight },
-      bottomLeft: { x: this.translateX, y: this.translateY + adjustedHeight },
+    // Helper to rotate a point around center
+    const rotate = (x: number, y: number) => ({
+      x: cos * (x - cx) - sin * (y - cy) + cx,
+      y: sin * (x - cx) + cos * (y - cy) + cy,
+    });
+
+    return {
+      topLeft: rotate(x1, y1),
+      topRight: rotate(x2, y1),
+      bottomRight: rotate(x2, y2),
+      bottomLeft: rotate(x1, y2),
     };
-
-    const rotatedCorners = Object.keys(corners).reduce((acc, key) => {
-      const corner = corners[key];
-      const rotatedX = Math.cos(angle) * (corner.x - cx) - Math.sin(angle) * (corner.y - cy) + cx;
-      const rotatedY = Math.sin(angle) * (corner.x - cx) + Math.cos(angle) * (corner.y - cy) + cy;
-      acc[key] = { x: rotatedX, y: rotatedY };
-      return acc;
-    }, {});
-
-    return rotatedCorners as KritzelPolygon;
   }
 
   get minXRotated(): number {
