@@ -418,75 +418,82 @@ export class KritzelCore {
       });
     }
 
-    // First add all copied objects to the objectsMap with updated positions
-    copiedObjects.forEach((obj, i) => {
-      // Update workspace if pasting to a different workspace
-      if (obj.workspaceId !== activeWorkspace.id) {
-        obj.workspaceId = activeWorkspace.id;
-      }
+    // Precompute zIndex once to avoid O(N * total_objects) repeated scans
+    const baseZIndex = this._store.currentZIndex;
 
-      // Update position
-      obj.updatePosition(obj.translateX + offsetX, obj.translateY + offsetY);
-
-      // Update z-index
-      obj.zIndex = this._store.currentZIndex + i;
-
-      // Handle KritzelGroup: also add pending children with offset
-      if (obj instanceof KritzelGroup) {
-        const pendingChildren = (obj as any)._pendingChildren as KritzelBaseObject<any>[] | undefined;
-        if (pendingChildren) {
-          pendingChildren.forEach((child, childIndex) => {
-            // Update workspace
-            if (child.workspaceId !== activeWorkspace.id) {
-              child.workspaceId = activeWorkspace.id;
-            }
-
-            // Update position with offset
-            child.updatePosition(child.translateX + offsetX, child.translateY + offsetY);
-
-            // Update z-index
-            child.zIndex = this._store.currentZIndex + i + childIndex;
-
-            // Add child to store
-            this.addObject(child);
-          });
-
-          // Clear pending children
-          delete (obj as any)._pendingChildren;
-
-          // Finalize the group's bounding box and snapshots
-          obj.finalize();
-        }
-      }
-
-      // Add to objectsMap
-      this.addObject(obj);
-
-      // Add to selection group
-      selectionGroup.addOrRemove(obj);
-    });
-
-    // Update line anchors to point to the newly pasted objects
-    // Only remap if the anchor target was also part of the copied selection
-    copiedObjects.forEach(obj => {
-      if (obj instanceof KritzelLine) {
-        let updated = false;
-
-        if (obj.startAnchor && originalToNewIdMap.has(obj.startAnchor.objectId)) {
-          obj.startAnchor = { objectId: originalToNewIdMap.get(obj.startAnchor.objectId)! };
-          updated = true;
+    // Batch all inserts and updates in a single Y.js transaction to avoid
+    // N separate observer callbacks and N rerenders (fires only once at commit)
+    this._store.state.objects.transaction(() => {
+      // First add all copied objects to the objectsMap with updated positions
+      copiedObjects.forEach((obj, i) => {
+        // Update workspace if pasting to a different workspace
+        if (obj.workspaceId !== activeWorkspace.id) {
+          obj.workspaceId = activeWorkspace.id;
         }
 
-        if (obj.endAnchor && originalToNewIdMap.has(obj.endAnchor.objectId)) {
-          obj.endAnchor = { objectId: originalToNewIdMap.get(obj.endAnchor.objectId)! };
-          updated = true;
+        // Update position
+        obj.updatePosition(obj.translateX + offsetX, obj.translateY + offsetY);
+
+        // Update z-index
+        obj.zIndex = baseZIndex + i;
+
+        // Handle KritzelGroup: also add pending children with offset
+        if (obj instanceof KritzelGroup) {
+          const pendingChildren = (obj as any)._pendingChildren as KritzelBaseObject<any>[] | undefined;
+          if (pendingChildren) {
+            pendingChildren.forEach((child, childIndex) => {
+              // Update workspace
+              if (child.workspaceId !== activeWorkspace.id) {
+                child.workspaceId = activeWorkspace.id;
+              }
+
+              // Update position with offset
+              child.updatePosition(child.translateX + offsetX, child.translateY + offsetY);
+
+              // Update z-index
+              child.zIndex = baseZIndex + i + childIndex;
+
+              // Add child to store
+              this.addObject(child);
+            });
+
+            // Clear pending children
+            delete (obj as any)._pendingChildren;
+
+            // Finalize the group's bounding box and snapshots
+            obj.finalize();
+          }
         }
 
-        // If anchors were updated, rebuild the anchor index and persist the change
-        if (updated) {
-          this._store.state.objects.update(obj);
+        // Add to objectsMap
+        this.addObject(obj);
+
+        // Add to selection group
+        selectionGroup.addOrRemove(obj);
+      });
+
+      // Update line anchors to point to the newly pasted objects
+      // Only remap if the anchor target was also part of the copied selection
+      copiedObjects.forEach(obj => {
+        if (obj instanceof KritzelLine) {
+          let updated = false;
+
+          if (obj.startAnchor && originalToNewIdMap.has(obj.startAnchor.objectId)) {
+            obj.startAnchor = { objectId: originalToNewIdMap.get(obj.startAnchor.objectId)! };
+            updated = true;
+          }
+
+          if (obj.endAnchor && originalToNewIdMap.has(obj.endAnchor.objectId)) {
+            obj.endAnchor = { objectId: originalToNewIdMap.get(obj.endAnchor.objectId)! };
+            updated = true;
+          }
+
+          // If anchors were updated, rebuild the anchor index and persist the change
+          if (updated) {
+            this._store.state.objects.update(obj);
+          }
         }
-      }
+      });
     });
 
     // Rebuild anchor index after all anchor updates
@@ -518,22 +525,24 @@ export class KritzelCore {
 
     this._store.state.isSelecting = false;
 
-    // Update copiedObjects to the newly created objects for potential future pastes
-    const newSelectionGroup = this._store.selectionGroup;
-    if (newSelectionGroup) {
-      // Create new copies and track the ID mapping for future pastes
-      const newIdMapping = new Map<string, string>();
-      const newCopiedObjects = newSelectionGroup.objects
-        .sort((a, b) => a.zIndex - b.zIndex)
-        .map(obj => {
-          const copiedObj = obj.copy() as KritzelBaseObject<any>;
-          newIdMapping.set(copiedObj.id, obj.id);
-          return copiedObj;
-        });
+    // Defer creating copies for future pastes to next frame to avoid
+    // doubling the object creation cost in the current paste frame
+    requestAnimationFrame(() => {
+      const newSelectionGroup = this._store.selectionGroup;
+      if (newSelectionGroup) {
+        const newIdMapping = new Map<string, string>();
+        const newCopiedObjects = newSelectionGroup.objects
+          .sort((a, b) => a.zIndex - b.zIndex)
+          .map(obj => {
+            const copiedObj = obj.copy() as KritzelBaseObject<any>;
+            newIdMapping.set(copiedObj.id, obj.id);
+            return copiedObj;
+          });
 
-      this._store.state.copiedObjects = newCopiedObjects;
-      this._store.state.copiedObjectIdMapping = newIdMapping;
-    }
+        this._store.state.copiedObjects = newCopiedObjects;
+        this._store.state.copiedObjectIdMapping = newIdMapping;
+      }
+    });
 
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
 
