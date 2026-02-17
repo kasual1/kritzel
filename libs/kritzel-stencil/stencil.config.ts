@@ -29,6 +29,14 @@ const INTERNAL_COMPONENTS = [
 
 export const config: Config = {
   namespace: 'stencil',
+  rollupConfig: {
+    inputOptions: {
+      external: (id: string) => {
+        const externalPackages = ['yjs', 'y-indexeddb', 'y-websocket', '@hocuspocus/provider', 'lib0'];
+        return externalPackages.some(pkg => id === pkg || id.startsWith(pkg + '/'));
+      },
+    },
+  },
   outputTargets: [
     { type: 'dist', esmLoaderPath: '../loader' },
     { type: 'docs-readme' },
