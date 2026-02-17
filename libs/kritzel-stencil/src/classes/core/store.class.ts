@@ -13,6 +13,12 @@ export class KritzelStore {
   private readonly _state: KritzelEngineState;
   private readonly _listeners: Map<StatePropertyKey, Set<StateChangeListener<any>>> = new Map();
 
+  // Cached references for O(1) access to frequently accessed special objects
+  private _cachedSelectionBox: KritzelSelectionBox | null = null;
+  private _cachedSelectionGroup: KritzelSelectionGroup | null = null;
+  private _selectionBoxCacheValid: boolean = false;
+  private _selectionGroupCacheValid: boolean = false;
+
   get state(): KritzelEngineState {
     return this._state;
   }
@@ -45,6 +51,25 @@ export class KritzelStore {
       .sort((a, b) => a.zIndex - b.zIndex);
   }
 
+  get objectsToRender(): KritzelBaseObject<Element>[] {
+    const objects = this.objectsInViewport;
+    
+    // Add selection objects explicitly since they are filtered out of objectsInViewport
+    const selectionGroup = this.selectionGroup;
+    if (selectionGroup) {
+      objects.push(selectionGroup);
+    }
+    
+    const selectionBox = this.selectionBox;
+    if (selectionBox) {
+      objects.push(selectionBox);
+    }
+    
+    // Sort combined list by zIndex to ensure correct rendering order
+    // This is fast since objectsInViewport is already small compared to allObjects
+    return objects.sort((a, b) => a.zIndex - b.zIndex);
+  }
+
   get allNonSelectionObjects(): KritzelBaseObject<Element>[]  {
     return this._state.objects.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
   }
@@ -54,13 +79,49 @@ export class KritzelStore {
   }
 
   get selectionBox(): KritzelSelectionBox | null {
+    if (this._selectionBoxCacheValid) {
+      return this._cachedSelectionBox;
+    }
     const selectionBoxes = this._state.objects.filter(o => o instanceof KritzelSelectionBox);
-    return selectionBoxes.length > 0 ? (selectionBoxes[0] as KritzelSelectionBox) : null;
+    this._cachedSelectionBox = selectionBoxes.length > 0 ? (selectionBoxes[0] as KritzelSelectionBox) : null;
+    this._selectionBoxCacheValid = true;
+    return this._cachedSelectionBox;
   }
 
   get selectionGroup(): KritzelSelectionGroup | null {
+    if (this._selectionGroupCacheValid) {
+      return this._cachedSelectionGroup;
+    }
     const selectionGroups = this._state.objects.filter(o => o instanceof KritzelSelectionGroup);
-    return selectionGroups.length > 0 ? (selectionGroups[0] as KritzelSelectionGroup) : null;
+    this._cachedSelectionGroup = selectionGroups.length > 0 ? (selectionGroups[0] as KritzelSelectionGroup) : null;
+    this._selectionGroupCacheValid = true;
+    return this._cachedSelectionGroup;
+  }
+
+  /**
+   * Invalidate cached selection objects. Call this when selection objects are inserted or removed.
+   */
+  invalidateSelectionCache(): void {
+    this._selectionBoxCacheValid = false;
+    this._selectionGroupCacheValid = false;
+  }
+
+  /**
+   * Directly set the cached selection box reference for O(1) access.
+   * Use this when creating the selection box to avoid a filter lookup.
+   */
+  setSelectionBox(box: KritzelSelectionBox | null): void {
+    this._cachedSelectionBox = box;
+    this._selectionBoxCacheValid = true;
+  }
+
+  /**
+   * Directly set the cached selection group reference for O(1) access.
+   * Use this when creating the selection group to avoid a filter lookup.
+   */
+  setSelectionGroup(group: KritzelSelectionGroup | null): void {
+    this._cachedSelectionGroup = group;
+    this._selectionGroupCacheValid = true;
   }
 
   get activeText(): KritzelText | null {

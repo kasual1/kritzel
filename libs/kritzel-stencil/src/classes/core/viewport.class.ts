@@ -82,8 +82,9 @@ export class KritzelViewport {
         if (this._core.store.state.isSelecting) {
           this._core.store.state.isSelecting = false;
           this._core.store.state.objects.remove(obj => obj instanceof KritzelSelectionBox);
-          // Clear selection preview state from objects
-          this._core.store.allNonSelectionObjects.forEach(object => {
+          this._core.store.setSelectionBox(null);
+          // Clear selection preview state from objects - use selectedObjects for efficiency
+          this._core.store.selectedObjects.forEach(object => {
             object.isSelected = false;
           });
         }

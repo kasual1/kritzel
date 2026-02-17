@@ -366,6 +366,7 @@ export class KritzelEngine {
     this.core.store.state.pointers.clear();
     this.core.store.state.isContextMenuVisible = false;
     this.core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
+    this.core.store.setSelectionBox(null);
     this.core.store.state.isSelecting = false;
     this.core.store.state.isEnabled = true;
     this.core.rerender();
@@ -679,6 +680,7 @@ export class KritzelEngine {
     if (!(activeTool instanceof KritzelSelectionTool)) {
       this.core.clearSelection();
       this.core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
+      this.core.store.setSelectionBox(null);
       this.core.store.state.isSelecting = false;
       this.core.store.state.isResizeHandleSelected = false;
       this.core.store.state.isRotationHandleSelected = false;
@@ -700,20 +702,13 @@ export class KritzelEngine {
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
-    const viewportBounds = {
-      x: -this.core.store.state.translateX / this.core.store.state.scale,
-      y: -this.core.store.state.translateY / this.core.store.state.scale,
-      z: this.core.store.state.scale,
-      width: this.core.store.state.viewportWidth / this.core.store.state.scale,
-      height: this.core.store.state.viewportHeight / this.core.store.state.scale,
-      depth: 100,
-    };
-    const visibleObjects = this.core.store.state.objects.query(viewportBounds).sort((a, b) => a.zIndex - b.zIndex);
+    const visibleObjects = this.core.store.objectsToRender;
 
     this.core.cursorManager.applyCursor();
 
-    if (this.core.store.totalObjectCount > 0) {
+    if (this.core.store.totalObjectCount > 0 && this.core.store.state.hasViewportChanged) {
       this.objectsInViewportChange.emit(visibleObjects);
+      this.core.store.state.hasViewportChanged = false;
     }
 
     return (

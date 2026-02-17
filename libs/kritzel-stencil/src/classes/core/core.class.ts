@@ -294,6 +294,7 @@ export class KritzelCore {
     this.removeSelectionGroup();
     this.removeSelectionBox();
     this._store.state.objects.insert(selectionGroup);
+    this._store.setSelectionGroup(selectionGroup);
     this._kritzelEngine.triggerSelectionChange();
   }
 
@@ -301,6 +302,7 @@ export class KritzelCore {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
       this._store.state.objects.remove(object => object.id === selectionGroup.id);
+      this._store.setSelectionGroup(null);
       this._kritzelEngine.triggerSelectionChange();
     }
   }
@@ -309,6 +311,7 @@ export class KritzelCore {
     const selectionBox = this._store.selectionBox;
     if (selectionBox) {
       this._store.state.objects.remove(object => object.id === selectionBox.id);
+      this._store.setSelectionBox(null);
     }
   }
 
@@ -740,6 +743,8 @@ export class KritzelCore {
     this.removeSelectionGroup();
 
     this._store.state.objects.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._store.setSelectionBox(null);
+    this._store.setSelectionGroup(null);
     this._store.state.isSelecting = false;
     this._store.state.isResizeHandleSelected = false;
     this._store.state.isRotationHandleSelected = false;

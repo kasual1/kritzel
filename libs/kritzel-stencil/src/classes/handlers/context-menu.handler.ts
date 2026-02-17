@@ -30,6 +30,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
 
     if (this._core.store.selectionBox) {
       this._core.store.state.objects.remove(object => object instanceof KritzelSelectionBox);
+      this._core.store.setSelectionBox(null);
       this._core.store.state.isSelecting = false;
     }
 
