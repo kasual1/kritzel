@@ -247,10 +247,24 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   private updateSelectedObjects(): void {
     const selectionBox = this._core.store.selectionBox;
-    if (selectionBox) {
-      this._core.store.allObjects
-        .filter(o => !(o instanceof KritzelSelectionBox))
-        .forEach(object => (object.isSelected = object.hitTestPolygon(selectionBox.rotatedPolygon)));
+    if (!selectionBox) return;
+
+    // Compute rotatedPolygon once per update (not per object)
+    const selectionPolygon = selectionBox.rotatedPolygon;
+
+    // Use quadtree spatial query to get only nearby candidates - O(log n + k) instead of O(n)
+    const selectionBounds = selectionBox.rotatedBoundingBox;
+    const candidates = this._core.store.state.objects.query(selectionBounds);
+
+    // Clear selection on all non-selection objects first
+    this._core.store.allNonSelectionObjects.forEach(obj => {
+      obj.isSelected = false;
+    });
+
+    // Only test candidates that overlap the bounding box
+    for (const object of candidates) {
+      if (object instanceof KritzelSelectionBox) continue;
+      object.isSelected = object.hitTestPolygon(selectionPolygon);
     }
   }
 
