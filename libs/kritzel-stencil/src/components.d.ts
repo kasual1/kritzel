@@ -1830,38 +1830,159 @@ declare namespace LocalJSX {
          */
         "workspaces"?: KritzelWorkspace[];
     }
+
+    interface KritzelBackToContentAttributes {
+        "visible": boolean;
+        "text": string;
+    }
+    interface KritzelBrushStyleAttributes {
+        "type": 'pen' | 'highlighter';
+    }
+    interface KritzelColorAttributes {
+        "value": string | ThemeAwareColor;
+        "theme": ThemeMode;
+        "size": number;
+    }
+    interface KritzelColorPaletteAttributes {
+        "isExpanded": boolean;
+        "isOpaque": boolean;
+        "opacity": number;
+        "theme": ThemeMode;
+    }
+    interface KritzelControlsAttributes {
+        "isUtilityPanelVisible": boolean;
+        "theme": ThemeMode;
+    }
+    interface KritzelDialogAttributes {
+        "isOpen": boolean;
+        "dialogTitle": string;
+        "closable": boolean;
+        "closeOnBackdrop": boolean;
+        "closeOnEscape": boolean;
+        "autoFocus": boolean;
+        "trapFocus": boolean;
+        "size": 'small' | 'medium' | 'large' | 'fullscreen';
+        "fullscreenOnMobile": boolean;
+    }
+    interface KritzelDropdownAttributes {
+        "value": string;
+        "width": string;
+    }
+    interface KritzelEditorAttributes {
+        "scaleMax": number;
+        "scaleMin": number;
+        "lockDrawingScale": boolean;
+        "isControlsVisible": boolean;
+        "isUtilityPanelVisible": boolean;
+    }
+    interface KritzelEngineAttributes {
+        "scaleMax": number;
+        "scaleMin": number;
+        "lockDrawingScale": boolean;
+        "theme": ThemeName;
+    }
+    interface KritzelFontAttributes {
+        "fontFamily": string;
+        "size": number;
+        "color": string;
+    }
+    interface KritzelFontFamilyAttributes {
+        "selectedFontFamily": string;
+    }
+    interface KritzelFontSizeAttributes {
+        "selectedSize": number | null;
+        "fontFamily": string;
+    }
+    interface KritzelIconAttributes {
+        "name": string;
+        "label": string;
+        "size": number;
+    }
+    interface KritzelMasterDetailAttributes {
+        "selectedItemId": string;
+    }
+    interface KritzelMoreMenuAttributes {
+        "icon": string;
+        "iconSize": number;
+        "offsetY": number;
+    }
+    interface KritzelNumericInputAttributes {
+        "value": number;
+        "min": number;
+        "max": number;
+        "step": number;
+        "label": string;
+    }
+    interface KritzelOpacitySliderAttributes {
+        "value": number;
+        "min": number;
+        "max": number;
+        "step": number;
+        "previewColor": string;
+    }
+    interface KritzelPortalAttributes {
+        "offsetX": number;
+        "offsetY": number;
+        "autoFocus": boolean;
+    }
+    interface KritzelShapeFillAttributes {
+        "value": ShapeFillType;
+    }
+    interface KritzelSlideToggleAttributes {
+        "checked": boolean;
+        "disabled": boolean;
+        "label": string;
+    }
+    interface KritzelSplitButtonAttributes {
+        "buttonIcon": string;
+        "dropdownIcon": string;
+        "mainButtonDisabled": boolean;
+        "menuButtonDisabled": boolean;
+    }
+    interface KritzelStrokeSizeAttributes {
+        "selectedSize": number | null;
+    }
+    interface KritzelToolConfigAttributes {
+        "isExpanded": boolean;
+        "theme": ThemeMode;
+    }
+    interface KritzelTooltipAttributes {
+        "isVisible": boolean;
+        "offsetY": number;
+    }
+
     interface IntrinsicElements {
-        "kritzel-back-to-content": KritzelBackToContent;
-        "kritzel-brush-style": KritzelBrushStyle;
-        "kritzel-color": KritzelColor;
-        "kritzel-color-palette": KritzelColorPalette;
+        "kritzel-back-to-content": Omit<KritzelBackToContent, keyof KritzelBackToContentAttributes> & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes]?: KritzelBackToContent[K] } & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes as `attr:${K}`]?: KritzelBackToContentAttributes[K] } & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes as `prop:${K}`]?: KritzelBackToContent[K] };
+        "kritzel-brush-style": Omit<KritzelBrushStyle, keyof KritzelBrushStyleAttributes> & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes]?: KritzelBrushStyle[K] } & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes as `attr:${K}`]?: KritzelBrushStyleAttributes[K] } & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes as `prop:${K}`]?: KritzelBrushStyle[K] };
+        "kritzel-color": Omit<KritzelColor, keyof KritzelColorAttributes> & { [K in keyof KritzelColor & keyof KritzelColorAttributes]?: KritzelColor[K] } & { [K in keyof KritzelColor & keyof KritzelColorAttributes as `attr:${K}`]?: KritzelColorAttributes[K] } & { [K in keyof KritzelColor & keyof KritzelColorAttributes as `prop:${K}`]?: KritzelColor[K] };
+        "kritzel-color-palette": Omit<KritzelColorPalette, keyof KritzelColorPaletteAttributes> & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes]?: KritzelColorPalette[K] } & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes as `attr:${K}`]?: KritzelColorPaletteAttributes[K] } & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes as `prop:${K}`]?: KritzelColorPalette[K] };
         "kritzel-context-menu": KritzelContextMenu;
-        "kritzel-controls": KritzelControls;
+        "kritzel-controls": Omit<KritzelControls, keyof KritzelControlsAttributes> & { [K in keyof KritzelControls & keyof KritzelControlsAttributes]?: KritzelControls[K] } & { [K in keyof KritzelControls & keyof KritzelControlsAttributes as `attr:${K}`]?: KritzelControlsAttributes[K] } & { [K in keyof KritzelControls & keyof KritzelControlsAttributes as `prop:${K}`]?: KritzelControls[K] };
         "kritzel-cursor-trail": KritzelCursorTrail;
-        "kritzel-dialog": KritzelDialog;
-        "kritzel-dropdown": KritzelDropdown;
-        "kritzel-editor": KritzelEditor;
-        "kritzel-engine": KritzelEngine;
+        "kritzel-dialog": Omit<KritzelDialog, keyof KritzelDialogAttributes> & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes]?: KritzelDialog[K] } & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes as `attr:${K}`]?: KritzelDialogAttributes[K] } & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes as `prop:${K}`]?: KritzelDialog[K] };
+        "kritzel-dropdown": Omit<KritzelDropdown, keyof KritzelDropdownAttributes> & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes]?: KritzelDropdown[K] } & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes as `attr:${K}`]?: KritzelDropdownAttributes[K] } & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes as `prop:${K}`]?: KritzelDropdown[K] };
+        "kritzel-editor": Omit<KritzelEditor, keyof KritzelEditorAttributes> & { [K in keyof KritzelEditor & keyof KritzelEditorAttributes]?: KritzelEditor[K] } & { [K in keyof KritzelEditor & keyof KritzelEditorAttributes as `attr:${K}`]?: KritzelEditorAttributes[K] } & { [K in keyof KritzelEditor & keyof KritzelEditorAttributes as `prop:${K}`]?: KritzelEditor[K] };
+        "kritzel-engine": Omit<KritzelEngine, keyof KritzelEngineAttributes> & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes]?: KritzelEngine[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `attr:${K}`]?: KritzelEngineAttributes[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `prop:${K}`]?: KritzelEngine[K] };
         "kritzel-export": KritzelExport;
-        "kritzel-font": KritzelFont;
-        "kritzel-font-family": KritzelFontFamily;
-        "kritzel-font-size": KritzelFontSize;
-        "kritzel-icon": KritzelIcon;
+        "kritzel-font": Omit<KritzelFont, keyof KritzelFontAttributes> & { [K in keyof KritzelFont & keyof KritzelFontAttributes]?: KritzelFont[K] } & { [K in keyof KritzelFont & keyof KritzelFontAttributes as `attr:${K}`]?: KritzelFontAttributes[K] } & { [K in keyof KritzelFont & keyof KritzelFontAttributes as `prop:${K}`]?: KritzelFont[K] };
+        "kritzel-font-family": Omit<KritzelFontFamily, keyof KritzelFontFamilyAttributes> & { [K in keyof KritzelFontFamily & keyof KritzelFontFamilyAttributes]?: KritzelFontFamily[K] } & { [K in keyof KritzelFontFamily & keyof KritzelFontFamilyAttributes as `attr:${K}`]?: KritzelFontFamilyAttributes[K] } & { [K in keyof KritzelFontFamily & keyof KritzelFontFamilyAttributes as `prop:${K}`]?: KritzelFontFamily[K] };
+        "kritzel-font-size": Omit<KritzelFontSize, keyof KritzelFontSizeAttributes> & { [K in keyof KritzelFontSize & keyof KritzelFontSizeAttributes]?: KritzelFontSize[K] } & { [K in keyof KritzelFontSize & keyof KritzelFontSizeAttributes as `attr:${K}`]?: KritzelFontSizeAttributes[K] } & { [K in keyof KritzelFontSize & keyof KritzelFontSizeAttributes as `prop:${K}`]?: KritzelFontSize[K] };
+        "kritzel-icon": Omit<KritzelIcon, keyof KritzelIconAttributes> & { [K in keyof KritzelIcon & keyof KritzelIconAttributes]?: KritzelIcon[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `attr:${K}`]?: KritzelIconAttributes[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `prop:${K}`]?: KritzelIcon[K] };
         "kritzel-line-endings": KritzelLineEndings;
-        "kritzel-master-detail": KritzelMasterDetail;
+        "kritzel-master-detail": Omit<KritzelMasterDetail, keyof KritzelMasterDetailAttributes> & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes]?: KritzelMasterDetail[K] } & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes as `attr:${K}`]?: KritzelMasterDetailAttributes[K] } & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes as `prop:${K}`]?: KritzelMasterDetail[K] };
         "kritzel-menu": KritzelMenu;
         "kritzel-menu-item": KritzelMenuItem;
-        "kritzel-more-menu": KritzelMoreMenu;
-        "kritzel-numeric-input": KritzelNumericInput;
-        "kritzel-opacity-slider": KritzelOpacitySlider;
-        "kritzel-portal": KritzelPortal;
+        "kritzel-more-menu": Omit<KritzelMoreMenu, keyof KritzelMoreMenuAttributes> & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes]?: KritzelMoreMenu[K] } & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes as `attr:${K}`]?: KritzelMoreMenuAttributes[K] } & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes as `prop:${K}`]?: KritzelMoreMenu[K] };
+        "kritzel-numeric-input": Omit<KritzelNumericInput, keyof KritzelNumericInputAttributes> & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes]?: KritzelNumericInput[K] } & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes as `attr:${K}`]?: KritzelNumericInputAttributes[K] } & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes as `prop:${K}`]?: KritzelNumericInput[K] };
+        "kritzel-opacity-slider": Omit<KritzelOpacitySlider, keyof KritzelOpacitySliderAttributes> & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes]?: KritzelOpacitySlider[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `attr:${K}`]?: KritzelOpacitySliderAttributes[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `prop:${K}`]?: KritzelOpacitySlider[K] };
+        "kritzel-portal": Omit<KritzelPortal, keyof KritzelPortalAttributes> & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes]?: KritzelPortal[K] } & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes as `attr:${K}`]?: KritzelPortalAttributes[K] } & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes as `prop:${K}`]?: KritzelPortal[K] };
         "kritzel-settings": KritzelSettings;
-        "kritzel-shape-fill": KritzelShapeFill;
-        "kritzel-slide-toggle": KritzelSlideToggle;
-        "kritzel-split-button": KritzelSplitButton;
-        "kritzel-stroke-size": KritzelStrokeSize;
-        "kritzel-tool-config": KritzelToolConfig;
-        "kritzel-tooltip": KritzelTooltip;
+        "kritzel-shape-fill": Omit<KritzelShapeFill, keyof KritzelShapeFillAttributes> & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes]?: KritzelShapeFill[K] } & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes as `attr:${K}`]?: KritzelShapeFillAttributes[K] } & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes as `prop:${K}`]?: KritzelShapeFill[K] };
+        "kritzel-slide-toggle": Omit<KritzelSlideToggle, keyof KritzelSlideToggleAttributes> & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes]?: KritzelSlideToggle[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `attr:${K}`]?: KritzelSlideToggleAttributes[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `prop:${K}`]?: KritzelSlideToggle[K] };
+        "kritzel-split-button": Omit<KritzelSplitButton, keyof KritzelSplitButtonAttributes> & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes]?: KritzelSplitButton[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `attr:${K}`]?: KritzelSplitButtonAttributes[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `prop:${K}`]?: KritzelSplitButton[K] };
+        "kritzel-stroke-size": Omit<KritzelStrokeSize, keyof KritzelStrokeSizeAttributes> & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes]?: KritzelStrokeSize[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `attr:${K}`]?: KritzelStrokeSizeAttributes[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `prop:${K}`]?: KritzelStrokeSize[K] };
+        "kritzel-tool-config": Omit<KritzelToolConfig, keyof KritzelToolConfigAttributes> & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes]?: KritzelToolConfig[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `attr:${K}`]?: KritzelToolConfigAttributes[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `prop:${K}`]?: KritzelToolConfig[K] };
+        "kritzel-tooltip": Omit<KritzelTooltip, keyof KritzelTooltipAttributes> & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes]?: KritzelTooltip[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `attr:${K}`]?: KritzelTooltipAttributes[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `prop:${K}`]?: KritzelTooltip[K] };
         "kritzel-utility-panel": KritzelUtilityPanel;
         "kritzel-workspace-manager": KritzelWorkspaceManager;
     }
@@ -1870,39 +1991,39 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "kritzel-back-to-content": LocalJSX.KritzelBackToContent & JSXBase.HTMLAttributes<HTMLKritzelBackToContentElement>;
-            "kritzel-brush-style": LocalJSX.KritzelBrushStyle & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
-            "kritzel-color": LocalJSX.KritzelColor & JSXBase.HTMLAttributes<HTMLKritzelColorElement>;
-            "kritzel-color-palette": LocalJSX.KritzelColorPalette & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
-            "kritzel-context-menu": LocalJSX.KritzelContextMenu & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
-            "kritzel-controls": LocalJSX.KritzelControls & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
-            "kritzel-cursor-trail": LocalJSX.KritzelCursorTrail & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
-            "kritzel-dialog": LocalJSX.KritzelDialog & JSXBase.HTMLAttributes<HTMLKritzelDialogElement>;
-            "kritzel-dropdown": LocalJSX.KritzelDropdown & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
-            "kritzel-editor": LocalJSX.KritzelEditor & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
-            "kritzel-engine": LocalJSX.KritzelEngine & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
-            "kritzel-export": LocalJSX.KritzelExport & JSXBase.HTMLAttributes<HTMLKritzelExportElement>;
-            "kritzel-font": LocalJSX.KritzelFont & JSXBase.HTMLAttributes<HTMLKritzelFontElement>;
-            "kritzel-font-family": LocalJSX.KritzelFontFamily & JSXBase.HTMLAttributes<HTMLKritzelFontFamilyElement>;
-            "kritzel-font-size": LocalJSX.KritzelFontSize & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
-            "kritzel-icon": LocalJSX.KritzelIcon & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
-            "kritzel-line-endings": LocalJSX.KritzelLineEndings & JSXBase.HTMLAttributes<HTMLKritzelLineEndingsElement>;
-            "kritzel-master-detail": LocalJSX.KritzelMasterDetail & JSXBase.HTMLAttributes<HTMLKritzelMasterDetailElement>;
-            "kritzel-menu": LocalJSX.KritzelMenu & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
-            "kritzel-menu-item": LocalJSX.KritzelMenuItem & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
-            "kritzel-more-menu": LocalJSX.KritzelMoreMenu & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
-            "kritzel-numeric-input": LocalJSX.KritzelNumericInput & JSXBase.HTMLAttributes<HTMLKritzelNumericInputElement>;
-            "kritzel-opacity-slider": LocalJSX.KritzelOpacitySlider & JSXBase.HTMLAttributes<HTMLKritzelOpacitySliderElement>;
-            "kritzel-portal": LocalJSX.KritzelPortal & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
-            "kritzel-settings": LocalJSX.KritzelSettings & JSXBase.HTMLAttributes<HTMLKritzelSettingsElement>;
-            "kritzel-shape-fill": LocalJSX.KritzelShapeFill & JSXBase.HTMLAttributes<HTMLKritzelShapeFillElement>;
-            "kritzel-slide-toggle": LocalJSX.KritzelSlideToggle & JSXBase.HTMLAttributes<HTMLKritzelSlideToggleElement>;
-            "kritzel-split-button": LocalJSX.KritzelSplitButton & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
-            "kritzel-stroke-size": LocalJSX.KritzelStrokeSize & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
-            "kritzel-tool-config": LocalJSX.KritzelToolConfig & JSXBase.HTMLAttributes<HTMLKritzelToolConfigElement>;
-            "kritzel-tooltip": LocalJSX.KritzelTooltip & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
-            "kritzel-utility-panel": LocalJSX.KritzelUtilityPanel & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;
-            "kritzel-workspace-manager": LocalJSX.KritzelWorkspaceManager & JSXBase.HTMLAttributes<HTMLKritzelWorkspaceManagerElement>;
+            "kritzel-back-to-content": LocalJSX.IntrinsicElements["kritzel-back-to-content"] & JSXBase.HTMLAttributes<HTMLKritzelBackToContentElement>;
+            "kritzel-brush-style": LocalJSX.IntrinsicElements["kritzel-brush-style"] & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
+            "kritzel-color": LocalJSX.IntrinsicElements["kritzel-color"] & JSXBase.HTMLAttributes<HTMLKritzelColorElement>;
+            "kritzel-color-palette": LocalJSX.IntrinsicElements["kritzel-color-palette"] & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
+            "kritzel-context-menu": LocalJSX.IntrinsicElements["kritzel-context-menu"] & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
+            "kritzel-controls": LocalJSX.IntrinsicElements["kritzel-controls"] & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
+            "kritzel-cursor-trail": LocalJSX.IntrinsicElements["kritzel-cursor-trail"] & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
+            "kritzel-dialog": LocalJSX.IntrinsicElements["kritzel-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelDialogElement>;
+            "kritzel-dropdown": LocalJSX.IntrinsicElements["kritzel-dropdown"] & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
+            "kritzel-editor": LocalJSX.IntrinsicElements["kritzel-editor"] & JSXBase.HTMLAttributes<HTMLKritzelEditorElement>;
+            "kritzel-engine": LocalJSX.IntrinsicElements["kritzel-engine"] & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
+            "kritzel-export": LocalJSX.IntrinsicElements["kritzel-export"] & JSXBase.HTMLAttributes<HTMLKritzelExportElement>;
+            "kritzel-font": LocalJSX.IntrinsicElements["kritzel-font"] & JSXBase.HTMLAttributes<HTMLKritzelFontElement>;
+            "kritzel-font-family": LocalJSX.IntrinsicElements["kritzel-font-family"] & JSXBase.HTMLAttributes<HTMLKritzelFontFamilyElement>;
+            "kritzel-font-size": LocalJSX.IntrinsicElements["kritzel-font-size"] & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
+            "kritzel-icon": LocalJSX.IntrinsicElements["kritzel-icon"] & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
+            "kritzel-line-endings": LocalJSX.IntrinsicElements["kritzel-line-endings"] & JSXBase.HTMLAttributes<HTMLKritzelLineEndingsElement>;
+            "kritzel-master-detail": LocalJSX.IntrinsicElements["kritzel-master-detail"] & JSXBase.HTMLAttributes<HTMLKritzelMasterDetailElement>;
+            "kritzel-menu": LocalJSX.IntrinsicElements["kritzel-menu"] & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
+            "kritzel-menu-item": LocalJSX.IntrinsicElements["kritzel-menu-item"] & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
+            "kritzel-more-menu": LocalJSX.IntrinsicElements["kritzel-more-menu"] & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
+            "kritzel-numeric-input": LocalJSX.IntrinsicElements["kritzel-numeric-input"] & JSXBase.HTMLAttributes<HTMLKritzelNumericInputElement>;
+            "kritzel-opacity-slider": LocalJSX.IntrinsicElements["kritzel-opacity-slider"] & JSXBase.HTMLAttributes<HTMLKritzelOpacitySliderElement>;
+            "kritzel-portal": LocalJSX.IntrinsicElements["kritzel-portal"] & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
+            "kritzel-settings": LocalJSX.IntrinsicElements["kritzel-settings"] & JSXBase.HTMLAttributes<HTMLKritzelSettingsElement>;
+            "kritzel-shape-fill": LocalJSX.IntrinsicElements["kritzel-shape-fill"] & JSXBase.HTMLAttributes<HTMLKritzelShapeFillElement>;
+            "kritzel-slide-toggle": LocalJSX.IntrinsicElements["kritzel-slide-toggle"] & JSXBase.HTMLAttributes<HTMLKritzelSlideToggleElement>;
+            "kritzel-split-button": LocalJSX.IntrinsicElements["kritzel-split-button"] & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
+            "kritzel-stroke-size": LocalJSX.IntrinsicElements["kritzel-stroke-size"] & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
+            "kritzel-tool-config": LocalJSX.IntrinsicElements["kritzel-tool-config"] & JSXBase.HTMLAttributes<HTMLKritzelToolConfigElement>;
+            "kritzel-tooltip": LocalJSX.IntrinsicElements["kritzel-tooltip"] & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
+            "kritzel-utility-panel": LocalJSX.IntrinsicElements["kritzel-utility-panel"] & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;
+            "kritzel-workspace-manager": LocalJSX.IntrinsicElements["kritzel-workspace-manager"] & JSXBase.HTMLAttributes<HTMLKritzelWorkspaceManagerElement>;
         }
     }
 }
