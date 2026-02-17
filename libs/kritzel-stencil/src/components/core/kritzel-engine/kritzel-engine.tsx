@@ -600,7 +600,18 @@ export class KritzelEngine {
 
   disconnectedCallback() {
     this.throttledPointerMoveMulti.cancel();
+
+    // Clean up current workspace's ObjectMap
+    if (this.core.store.state.objects) {
+      this.core.store.state.objects.destroy();
+    }
+
+    // Clean up AppStateMap (workspaces Y.Doc)
+    this.core.appStateMap.destroy();
+
+    // Clean up managers
     this.core.cursorManager.cleanup();
+    this.core.themeManager.cleanup();
   }
 
   componentWillLoad() {

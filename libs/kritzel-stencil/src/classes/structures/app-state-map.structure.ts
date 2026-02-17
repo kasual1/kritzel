@@ -13,6 +13,7 @@ export class KritzelAppStateMap {
   private _core: KritzelCore | null = null;
   private _isReady: boolean = false;
   private _onRemoteChangeCallback: (() => void) | null = null;
+  private _workspacesObserver: ((event: Y.YMapEvent<any>) => void) | null = null;
 
   get isReady(): boolean {
     return this._isReady;
@@ -53,9 +54,10 @@ export class KritzelAppStateMap {
     }
 
     // Observe changes to workspaces and sync with application state
-    this._workspacesMap.observe(event => {
+    this._workspacesObserver = event => {
       this.handleWorkspacesChange(event);
-    });
+    };
+    this._workspacesMap.observe(this._workspacesObserver);
 
     // Connect all providers in parallel
     await Promise.all(this._providers.map(p => p.connect()));
@@ -222,8 +224,17 @@ export class KritzelAppStateMap {
   }
 
   destroy(): void {
-    // Disconnect all providers
-    this._providers.forEach(p => p.disconnect());
+    // Unobserve the workspaces map
+    if (this._workspacesMap && this._workspacesObserver) {
+      this._workspacesMap.unobserve(this._workspacesObserver);
+      this._workspacesObserver = null;
+    }
+
+    // Disconnect and destroy all providers
+    this._providers.forEach(p => {
+      p.disconnect();
+      p.destroy();
+    });
     this._providers = [];
 
     // Clear maps
@@ -236,6 +247,9 @@ export class KritzelAppStateMap {
       this._ydoc = null;
     }
 
+    // Clear remaining references
+    this._core = null;
+    this._onRemoteChangeCallback = null;
     this._isReady = false;
   }
 }

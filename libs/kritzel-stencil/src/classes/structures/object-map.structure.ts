@@ -22,6 +22,11 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _isReady: boolean = false;
   private _temporaryItemsCount: number = 0;
 
+  // Store observer/listener references for cleanup
+  private _objectsObserver: ((event: Y.YMapEvent<any>) => void) | null = null;
+  private _stackItemAddedHandler: ((event: any) => void) | null = null;
+  private _stackItemPoppedHandler: ((event: any) => void) | null = null;
+
   get isReady(): boolean {
     return this._isReady;
   }
@@ -95,28 +100,33 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       ignoreRemoteMapChanges: true,
     });
 
-    this._undoManager.on('stack-item-added', event => {
+    // Store handler references for cleanup
+    this._stackItemAddedHandler = event => {
       if (event.type === 'undo') {
         // Track if this was a temporary item
         if (event.origin === 'temporary') {
           this._temporaryItemsCount++;
         }
       }
-    });
+    };
 
-    this._undoManager.on('stack-item-popped', event => {
+    this._stackItemPoppedHandler = event => {
       if (event.type === 'undo') {
         // Reduce temporary count when items are undone
         if (event.origin === 'temporary' && this._temporaryItemsCount > 0) {
           this._temporaryItemsCount--;
         }
       }
-    });
+    };
+
+    this._undoManager.on('stack-item-added', this._stackItemAddedHandler);
+    this._undoManager.on('stack-item-popped', this._stackItemPoppedHandler);
 
     // Observe changes to objects and sync with application state
-    this._objectsMap.observe(event => {
+    this._objectsObserver = event => {
       this.handleObjectsChange(event);
-    });
+    };
+    this._objectsMap.observe(this._objectsObserver);
 
     // Connect all providers in parallel
     await Promise.all(this._providers.map(p => p.connect()));
@@ -388,11 +398,47 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   destroy(): void {
+    // Unobserve the objects map
+    if (this._objectsMap && this._objectsObserver) {
+      this._objectsMap.unobserve(this._objectsObserver);
+      this._objectsObserver = null;
+    }
+
+    // Remove undo manager event listeners
+    if (this._undoManager) {
+      if (this._stackItemAddedHandler) {
+        this._undoManager.off('stack-item-added', this._stackItemAddedHandler);
+        this._stackItemAddedHandler = null;
+      }
+      if (this._stackItemPoppedHandler) {
+        this._undoManager.off('stack-item-popped', this._stackItemPoppedHandler);
+        this._stackItemPoppedHandler = null;
+      }
+      this._undoManager.destroy();
+      this._undoManager = null;
+    }
+
+    // Reset quadtree
+    this.quadtree.reset();
+
+    // Destroy providers
     this._providers.forEach(p => p.destroy());
     this._providers = [];
 
+    // Clear object map reference
+    this._objectsMap = null;
+
+    // Destroy Y.Doc
     if (this._ydoc) {
       this._ydoc.destroy();
+      this._ydoc = null;
     }
+
+    // Clear remaining references
+    this._core = null;
+    this._reviver = null;
+    this._workspaceId = null;
+    this._isReady = false;
+    this._temporaryItemsCount = 0;
   }
 }
