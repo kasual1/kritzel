@@ -311,29 +311,33 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       return;
     }
 
-    // Resolve child objects to their parent groups to avoid double-move
-    const resolvedObjects = new Map<string, KritzelBaseObject<any>>();
-
-    selectedObjects.forEach(obj => {
-      // Check if this object is a child of a KritzelGroup
-      const parentGroup = KritzelGroup.findParentGroup(this._core, obj.id);
-
-      if (parentGroup) {
-        // Add the parent group instead of the child
-        resolvedObjects.set(parentGroup.id, parentGroup);
-      } else {
-        // Not a child of any group, add the object itself
-        resolvedObjects.set(obj.id, obj);
+    // Build parent group lookup map ONCE - O(g * c) instead of O(n * g * c)
+    const allGroups = this._core.store.state.objects.filter(
+      obj => obj.__class__ === 'KritzelGroup',
+    ) as KritzelGroup[];
+    const childToParentMap = new Map<string, KritzelGroup>();
+    for (const group of allGroups) {
+      for (const childId of group.childIds) {
+        childToParentMap.set(childId, group);
       }
+    }
 
+    // Resolve child objects to their parent groups in a single pass - O(n)
+    const resolvedObjects = new Map<string, KritzelBaseObject<any>>();
+    for (const obj of selectedObjects) {
+      const parentGroup = childToParentMap.get(obj.id);
+      const toSelect = parentGroup || obj;
+      resolvedObjects.set(toSelect.id, toSelect);
       obj.isSelected = false;
-    });
+    }
 
+    // Create selection group and set all IDs at once (no per-item refresh)
     const selectionGroup = KritzelSelectionGroup.create(this._core);
-    resolvedObjects.forEach(o => {
-      selectionGroup.addOrRemove(o);
-    });
+    selectionGroup.objectIds = Array.from(resolvedObjects.keys());
 
+    // Only refresh dimensions and capture snapshots ONCE at the end - O(n) instead of O(n²)
+    selectionGroup.captureUnchangedSnapshots();
+    selectionGroup.refreshObjectDimensions();
     selectionGroup.isSelected = true;
 
     if (selectionGroup.length === 1) {

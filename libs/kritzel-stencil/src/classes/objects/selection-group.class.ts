@@ -32,13 +32,15 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   maxY: number;
 
   // Getter to retrieve actual objects from the store by their IDs
+  // Optimized: Single filter pass with Set lookup - O(n+m) instead of O(n×m)
   get objects(): KritzelBaseObject<any>[] {
+    const idSet = new Set(this.objectIds);
+    const foundObjects = this._core.store.state.objects.filter(obj => idSet.has(obj.id));
+    // Preserve the original order from objectIds
+    const objectMap = new Map(foundObjects.map(obj => [obj.id, obj]));
     return this.objectIds
-      .map(id => {
-        const found = this._core.store.state.objects.filter(obj => obj.id === id);
-        return found.length > 0 ? found[0] : null;
-      })
-      .filter(obj => obj !== null) as KritzelBaseObject<any>[];
+      .map(id => objectMap.get(id))
+      .filter((obj): obj is KritzelBaseObject<any> => obj !== undefined);
   }
 
   get length(): number {
@@ -124,11 +126,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
   /**
    * Capture snapshots of current object states for undo/redo operations
+   * @param cachedObjects Optional pre-fetched objects array to avoid redundant getter calls
    */
-  private captureUnchangedSnapshots(): void {
+  captureUnchangedSnapshots(cachedObjects?: KritzelBaseObject<any>[]): void {
     this.unchangedObjectSnapshots.clear();
     this.snapshotRotation = this.rotation;
-    this.objects.forEach(obj => {
+    const children = cachedObjects ?? this.objects;
+    children.forEach(obj => {
       this.unchangedObjectSnapshots.set(obj.id, {
         id: obj.id,
         translateX: obj.translateX,
@@ -223,7 +227,10 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const sinR = Math.sin(rotation);
 
     this._core.store.state.objects.transaction(() => {
-      this.objects.forEach(child => {
+      // Cache objects once to avoid repeated getter calls during resize
+      const children = this.objects;
+
+      children.forEach(child => {
         // Calculate child center
         const childCenterX = child.translateX + child.totalWidth / 2 / child.scale;
         const childCenterY = child.translateY + child.totalHeight / 2 / child.scale;
@@ -280,8 +287,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       });
 
       // Refresh dimensions and update the SelectionGroup to propagate changes to other tabs
-      this.refreshObjectDimensions();
-      this.captureUnchangedSnapshots();
+      this.refreshObjectDimensions(children);
+      this.captureUnchangedSnapshots(children);
       this._core.store.state.objects.update(this);
     });
   }
@@ -296,11 +303,14 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const cos = Math.cos(angle);
     const sin = Math.sin(angle);
 
+    // Cache objects once to avoid repeated getter calls during rotation
+    const children = this.objects;
+
     this._core.store.state.objects.transaction(() => {
       // Update the SelectionGroup itself to propagate rotation to other tabs
       this._core.store.state.objects.update(this);
 
-      this.objects.forEach(child => {
+      children.forEach(child => {
         const unchangedSnapshot = this.unchangedObjectSnapshots.get(child.id);
         if (!unchangedSnapshot) return;
 
@@ -337,9 +347,14 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return selectionGroup;
   }
 
-  refreshObjectDimensions() {
-    if (this.objects.length === 1) {
-      const obj = this.objects[0];
+  /**
+   * Refreshes the selection group's bounding box dimensions based on contained objects.
+   * @param cachedObjects Optional pre-fetched objects array to avoid redundant getter calls
+   */
+  refreshObjectDimensions(cachedObjects?: KritzelBaseObject<any>[]) {
+    const children = cachedObjects ?? this.objects;
+    if (children.length === 1) {
+      const obj = children[0];
       this.minX = obj.boundingBox.x / this.scale;
       this.maxX = obj.boundingBox.x / this.scale + obj.boundingBox.width;
       this.minY = obj.boundingBox.y / this.scale;
@@ -360,7 +375,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       let minY = Infinity;
       let maxY = -Infinity;
 
-      this.objects.forEach(obj => {
+      children.forEach(obj => {
         const polygon = obj.rotatedPolygon;
         const corners = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
 
