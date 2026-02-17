@@ -25,6 +25,8 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { KritzelUndoState } from '../../..';
 import { ThemeName } from '../../../interfaces/theme.interface';
+import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
+import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -337,7 +339,10 @@ export class KritzelEditor {
   }
 
   handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
-    const hasVisibleObjects = event.detail.length > 0;
+    const contentObjects = event.detail.filter(
+      obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox)
+    );
+    const hasVisibleObjects = contentObjects.length > 0;
     this.isBackToContentButtonVisible = !hasVisibleObjects;
   }
 
