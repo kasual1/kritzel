@@ -31,15 +31,19 @@ export class KritzelMenuItem {
   private inputRef: HTMLInputElement;
 
   private focusInput() {
-    if (this.item.isEditing && this.inputRef && !this.isDirty) {
-      this.inputRef.focus();
+    if (this.item.isEditing && !this.isDirty) {
+      requestAnimationFrame(() => {
+        if (this.inputRef) {
+          this.inputRef.focus();
 
-      if (KritzelDevicesHelper.isIOS()) {
-        const length = this.inputRef.value.length;
-        this.inputRef.setSelectionRange(length, length);
-      } else {
-        this.inputRef.select();
-      }
+          if (KritzelDevicesHelper.isIOS()) {
+            const length = this.inputRef.value.length;
+            this.inputRef.setSelectionRange(length, length);
+          } else {
+            this.inputRef.select();
+          }
+        }
+      });
     }
   }
 
