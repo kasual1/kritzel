@@ -61,6 +61,15 @@ export const config: Config = {
     setupFiles: ['<rootDir>/jest.setup.ts'],
     testPathIgnorePatterns: ['/node_modules/'],
     testRegex: ['(/__tests__/.*|(\\.|/)(spec|e2e))\\.(tsx?|ts?)$'],
+    emulate: [
+      {
+        userAgent: 'default',
+        viewport: {
+          width: 1280,
+          height: 720,
+        },
+      },
+    ],
   },
   extras: {
     enableImportInjection: true,

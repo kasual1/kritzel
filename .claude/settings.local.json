@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git --git-dir=\"c:\\\\Projects\\\\kritzel\\\\.git\" show 5291ca67a3fbb8e87d1253aac1bf61de3cf9b1c7)",
+      "Bash(git --git-dir=\"c:\\\\\\\\Projects\\\\\\\\kritzel\\\\\\\\.git\" cat-file:*)",
+      "Bash(git --git-dir=\"c:\\\\\\\\Projects\\\\\\\\kritzel\\\\\\\\.git\" --work-tree=\"c:\\\\\\\\Projects\\\\\\\\kritzel\" show:*)",
+      "Bash(git --git-dir=\"c:\\\\Projects\\\\kritzel\\\\.git\" --work-tree=\"c:\\\\Projects\\\\kritzel\" show HEAD:libs/kritzel-stencil/src/components/ui/kritzel-workspace-manager/readme.md)"
+    ]
+  }
+}
