@@ -40,6 +40,8 @@
 
 :host(.selected) .edit-input {
   color: var(--kritzel-menu-item-selected-color, #ffffff);
+  caret-color: var(--kritzel-menu-item-input-caret-color-on-selected, #ffffff);
+  border-color: var(--kritzel-menu-item-input-border-color-on-selected, #ffffff);
 }
 
 :host(.selected) .action-button kritzel-icon {
@@ -51,7 +53,8 @@ kritzel-icon {
 }
 
 :host(.selected) .edit-input::selection {
-  background-color: var(--kritzel-menu-item-input-selection-color, rgba(255, 255, 255, 0.16));
+  background-color: var(--kritzel-menu-item-input-selection-color-on-selected, rgba(255, 255, 255, 0.3));
+  color: var(--kritzel-menu-item-input-selection-text-color-on-selected, #ffffff);
 }
 
 :host(.editing) {
@@ -119,6 +122,10 @@ kritzel-icon {
   box-sizing: border-box;
   outline: none;
   color: inherit;
+}
+
+.edit-input {
+  caret-color: var(--kritzel-menu-item-input-caret-color, currentColor);
 }
 
 .edit-input::selection {

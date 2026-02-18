@@ -216,9 +216,14 @@ export interface KritzelTheme {
     itemFontSize?: string;
     itemHeight?: string;
     itemInputBorder?: string;
+    itemInputBorderColorOnSelected?: string;
+    itemInputCaretColor?: string;
+    itemInputCaretColorOnSelected?: string;
     itemInputHeight?: string;
     itemInputSelectionColor?: string;
+    itemInputSelectionColorOnSelected?: string;
     itemInputSelectionTextColor?: string;
+    itemInputSelectionTextColorOnSelected?: string;
     itemMinHeight?: string;
     itemOverlayBackgroundColor?: string;
     itemPadding?: string;
@@ -234,13 +239,13 @@ export interface KritzelTheme {
     border?: string;
     borderRadius?: string;
     boxShadow?: string;
-    padding?: string;
     buttonActiveBackgroundColor?: string;
     buttonColor?: string;
     buttonHeight?: string;
     buttonHoverBackgroundColor?: string;
     buttonWidth?: string;
     innerBorderRadius?: string;
+    padding?: string;
   };
 
   /** Numeric input variables */
