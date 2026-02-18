@@ -218,6 +218,10 @@ export class KritzelControlsComponent {
  * Page Object Model component for kritzel-workspace-manager.
  * Encapsulates all interactions with the workspace manager.
  */
+/**
+ * Page Object Model component for kritzel-workspace-manager.
+ * Encapsulates all interactions with the workspace manager.
+ */
 export class KritzelWorkspaceManagerComponent {
   constructor(private page: E2EPage) {}
 
@@ -234,6 +238,22 @@ export class KritzelWorkspaceManagerComponent {
   async getSplitButton(): Promise<E2EElement | null> {
     const workspaceManager = await this.getElement();
     return workspaceManager.find('pierce/kritzel-split-button');
+  }
+
+  /**
+   * Get the portal element containing the menu (rendered on document.body)
+   */
+  async getPortal(): Promise<E2EElement | null> {
+    return this.page.find('[id^="portal-"]');
+  }
+
+  /**
+   * Get the menu element from the portal
+   */
+  async getMenu(): Promise<E2EElement | null> {
+    const portal = await this.getPortal();
+    if (!portal) return null;
+    return portal.find('pierce/kritzel-menu');
   }
 
   /**
@@ -269,11 +289,12 @@ export class KritzelWorkspaceManagerComponent {
   }
 
   /**
-   * Get all workspace menu items
+   * Get all workspace menu items from the portal
    */
   async getWorkspaceMenuItems(): Promise<E2EElement[]> {
-    const workspaceManager = await this.getElement();
-    return workspaceManager.findAll('pierce/kritzel-menu-item');
+    const portal = await this.getPortal();
+    if (!portal) return [];
+    return portal.findAll('pierce/kritzel-menu-item');
   }
 
   /**
@@ -293,8 +314,9 @@ export class KritzelWorkspaceManagerComponent {
    * @param index - Zero-based index of the workspace
    */
   async getWorkspaceTextButton(index: number): Promise<E2EElement | null> {
-    const workspaceManager = await this.getElement();
-    const textButtons = await workspaceManager.findAll('pierce/.menu-item-text-button');
+    const portal = await this.getPortal();
+    if (!portal) return null;
+    const textButtons = await portal.findAll('pierce/.menu-item-text-button');
     return textButtons[index] ?? null;
   }
 
@@ -303,8 +325,10 @@ export class KritzelWorkspaceManagerComponent {
    * @param index - Zero-based index of the workspace
    */
   async openWorkspaceChildMenu(index: number): Promise<void> {
-    const workspaceManager = await this.getElement();
-    const childMenuButtons = await workspaceManager.findAll('pierce/.child-menu-button');
+    const portal = await this.getPortal();
+    if (!portal) return;
+    // The child menu toggle button has id="child-menu-toggle"
+    const childMenuButtons = await portal.findAll('pierce/#child-menu-toggle');
     if (childMenuButtons[index]) {
       await childMenuButtons[index].click();
       await this.page.waitForChanges();
@@ -315,10 +339,14 @@ export class KritzelWorkspaceManagerComponent {
    * Click rename option for a workspace (child menu must be open)
    */
   async clickRename(): Promise<void> {
-    const workspaceManager = await this.getElement();
-    const childMenuItems = await workspaceManager.findAll('pierce/kritzel-menu kritzel-menu-item');
-    // Rename is typically the first option
-    for (const item of childMenuItems) {
+    // Child menu is in a nested portal
+    const portals = await this.page.findAll('[id^="portal-"]');
+    // Get the last portal (nested child menu portal)
+    const childPortal = portals[portals.length - 1];
+    if (!childPortal) return;
+
+    const menuItems = await childPortal.findAll('pierce/kritzel-menu-item');
+    for (const item of menuItems) {
       const text = await item.getProperty('textContent');
       if (text?.includes('Rename')) {
         await item.click();
@@ -332,10 +360,14 @@ export class KritzelWorkspaceManagerComponent {
    * Click delete option for a workspace (child menu must be open)
    */
   async clickDelete(): Promise<void> {
-    const workspaceManager = await this.getElement();
-    const childMenuItems = await workspaceManager.findAll('pierce/kritzel-menu kritzel-menu-item');
-    // Delete is typically the second option
-    for (const item of childMenuItems) {
+    // Child menu is in a nested portal
+    const portals = await this.page.findAll('[id^="portal-"]');
+    // Get the last portal (nested child menu portal)
+    const childPortal = portals[portals.length - 1];
+    if (!childPortal) return;
+
+    const menuItems = await childPortal.findAll('pierce/kritzel-menu-item');
+    for (const item of menuItems) {
       const text = await item.getProperty('textContent');
       if (text?.includes('Delete')) {
         await item.click();
@@ -349,29 +381,46 @@ export class KritzelWorkspaceManagerComponent {
    * Get the input field when editing a workspace name
    */
   async getEditInput(): Promise<E2EElement | null> {
-    const workspaceManager = await this.getElement();
-    return workspaceManager.find('pierce/input.menu-item-edit-input');
+    const portal = await this.getPortal();
+    if (!portal) return null;
+    // Find the editing menu item first
+    const editingItem = await portal.find('pierce/kritzel-menu-item.editing');
+    if (!editingItem) return null;
+    return editingItem.find('pierce/input.edit-input');
   }
 
   /**
    * Type a new workspace name in the edit input
+   * The input text is automatically selected when entering edit mode,
+   * so typing will replace the existing text.
    * @param name - The new workspace name
    */
   async typeWorkspaceName(name: string): Promise<void> {
     const input = await this.getEditInput();
     if (input) {
-      await input.press('Control+A');
+      // Clear existing text first by selecting all with triple-click then typing
+      await input.click({ clickCount: 3 });
       await input.type(name);
       await this.page.waitForChanges();
     }
   }
 
   /**
-   * Save the workspace name edit (click save button or press Enter)
+   * Save the workspace name edit (click the check icon button)
    */
   async saveWorkspaceName(): Promise<void> {
-    const workspaceManager = await this.getElement();
-    const saveButton = await workspaceManager.find('pierce/.menu-item-save-button');
+    const portal = await this.getPortal();
+    if (!portal) return;
+    // Find the editing menu item and get its action buttons inside
+    // The menu item in edit mode has .editing class
+    const editingItem = await portal.find('pierce/kritzel-menu-item.editing');
+    if (!editingItem) return;
+
+    // Find action buttons within the editing item
+    // Save button is the second one (after cancel)
+    const actionButtons = await editingItem.findAll('pierce/.action-button');
+    // Save is the last action button (check icon)
+    const saveButton = actionButtons[actionButtons.length - 1];
     if (saveButton) {
       await saveButton.click();
       await this.page.waitForChanges();
@@ -379,11 +428,18 @@ export class KritzelWorkspaceManagerComponent {
   }
 
   /**
-   * Cancel the workspace name edit
+   * Cancel the workspace name edit (click the x icon button)
    */
   async cancelWorkspaceEdit(): Promise<void> {
-    const workspaceManager = await this.getElement();
-    const cancelButton = await workspaceManager.find('pierce/.menu-item-cancel-button');
+    const portal = await this.getPortal();
+    if (!portal) return;
+    // Find the editing menu item
+    const editingItem = await portal.find('pierce/kritzel-menu-item.editing');
+    if (!editingItem) return;
+
+    // Cancel button is the first action button (x icon)
+    const actionButtons = await editingItem.findAll('pierce/.action-button');
+    const cancelButton = actionButtons[0];
     if (cancelButton) {
       await cancelButton.click();
       await this.page.waitForChanges();
@@ -394,9 +450,8 @@ export class KritzelWorkspaceManagerComponent {
    * Check if the workspace menu is currently open
    */
   async isMenuOpen(): Promise<boolean> {
-    const workspaceManager = await this.getElement();
-    const menu = await workspaceManager.find('pierce/kritzel-menu');
-    return menu !== null;
+    const portal = await this.getPortal();
+    return portal !== null;
   }
 
   /**
