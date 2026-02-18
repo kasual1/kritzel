@@ -199,9 +199,12 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       // 1. The serialized state contains the old bounding box
       // 2. The child objects have been reverted to their previous positions
       // We need to invalidate the cache and recalculate dimensions
+      // skipPersist=true prevents creating new undo entries
       object.invalidateObjectsCache();
-      object.refreshObjectDimensions();
+      object.refreshObjectDimensions(undefined, true);
       object.captureUnchangedSnapshots();
+      // Update quadtree again with corrected dimensions
+      this.quadtree.update(object as unknown as T);
     });
 
     // If regular objects were changed but their SelectionGroup wasn't explicitly updated,
@@ -221,8 +224,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
         const hasChangedChildren = selectionGroup.objectIds.some(id => changedObjectIds.has(id));
         if (hasChangedChildren) {
           selectionGroup.invalidateObjectsCache();
-          selectionGroup.refreshObjectDimensions();
+          selectionGroup.refreshObjectDimensions(undefined, true);
           selectionGroup.captureUnchangedSnapshots();
+          // Update quadtree with corrected dimensions
+          this.quadtree.update(selectionGroup as unknown as T);
         }
       }
     }
@@ -232,7 +237,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     this._core?.rerender();
   }
-  
+
   transaction(callback: () => void): void {
     if (this._ydoc) {
       this._ydoc.transact(callback, 'local');
