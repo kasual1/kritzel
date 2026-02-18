@@ -54,8 +54,8 @@ describe('ThemeHelper', () => {
 
     it('should correctly flatten global variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.get('--kritzel-global-focus-ring-color')).toBe('rgba(0, 122, 255, 0.3)');
-      expect(variables.get('--kritzel-global-focus-color')).toBe('#007acc');
+      expect(variables.get('--kritzel-global-focus-ring-color')).toBe('#333333');
+      expect(variables.get('--kritzel-global-focus-color')).toBe('#333333');
       expect(variables.get('--kritzel-global-icon-color')).toBe('currentColor');
       expect(variables.get('--kritzel-global-divider-color')).toBe('#e0e0e0');
       expect(variables.get('--kritzel-selection-border-color')).toBe('#007AFF');
