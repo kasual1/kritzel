@@ -35,3 +35,19 @@ The core Stencil library follows a structured approach to organize its component
 - Follow consistent naming conventions for files, classes, methods, and variables.
 - All classes inside `libs/kritzel-stencil` should be prefixed with `Kritzel` but their filenames should not have the prefix.
 
+### Unit Testing
+- Unit test files use the `.spec.ts` extension and should be placed in the same directory as the file they are testing (e.g., `my-class.ts` and `my-class.spec.ts` should be in the same folder).
+
+### E2E Testing
+- E2E test files use the `.e2e.ts` extension and are placed inside `src/e2e/tests`.
+- Tests use the Page Object Model (POM) pattern.
+- Page object classes live under `src/e2e/pages` and have the `.page.ts` extension.
+- Tests exclusively use page object classes to interact with the application.
+- E2E tests have a strong focus on screenshot testing using Stencil's `compareScreenshot` API.
+
+### Theming
+Kritzel uses a CSS custom property (CSS variables) based theming system. All themeable properties are defined as `--kritzel-*` CSS variables in component stylesheets.
+
+- **Theme Interface Generation**: Run `node scripts/generate-theme-interface.js` to scan all CSS and TSX files for `--kritzel-*` variables and automatically generate/update the `KritzelTheme` interface in `src/interfaces/theme.interface.ts`. This groups variables by category (e.g., controls, menu, dialog).
+- **Theme Definitions**: Theme presets are defined in `src/themes/` (e.g., `light-theme.ts`, `dark-theme.ts`) and implement the `KritzelTheme` interface.
+- **Adding New Theme Variables**: When adding new CSS variables to components, re-run the generation script and update the theme files accordingly.
