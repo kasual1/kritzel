@@ -146,7 +146,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     const changedKeys = Array.from(event.keysChanged);
     const objectsToUpdate = [];
-    const selectionGroupsToUpdate = [];
+    const selectionGroupsToUpdate: KritzelSelectionGroup[] = [];
     const objectsToDelete = [];
 
     changedKeys.forEach(key => {
@@ -185,17 +185,54 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     });
 
     // Then, update or insert SelectionGroups
+    const updatedSelectionGroupIds = new Set<string>();
     selectionGroupsToUpdate.forEach(object => {
       const existed = this.quadtree.filter(o => o.id === object.id).length > 0;
       if (existed) {
-        this.quadtree.update(object);
+        this.quadtree.update(object as unknown as T);
       } else {
-        this.quadtree.insert(object);
+        this.quadtree.insert(object as unknown as T);
       }
+      updatedSelectionGroupIds.add(object.id);
+
+      // After undo/redo, the SelectionGroup's dimensions may be stale because:
+      // 1. The serialized state contains the old bounding box
+      // 2. The child objects have been reverted to their previous positions
+      // We need to invalidate the cache and recalculate dimensions
+      object.invalidateObjectsCache();
+      object.refreshObjectDimensions();
+      object.captureUnchangedSnapshots();
     });
+
+    // If regular objects were changed but their SelectionGroup wasn't explicitly updated,
+    // we still need to refresh that SelectionGroup's dimensions
+    if (objectsToUpdate.length > 0 || objectsToDelete.length > 0) {
+      const changedObjectIds = new Set([
+        ...objectsToUpdate.map(o => o.id),
+        ...objectsToDelete
+      ]);
+
+      // Find any existing SelectionGroups that contain changed objects
+      const existingSelectionGroups = this.quadtree.filter(
+        o => o instanceof KritzelSelectionGroup && !updatedSelectionGroupIds.has(o.id)
+      ) as unknown as KritzelSelectionGroup[];
+
+      for (const selectionGroup of existingSelectionGroups) {
+        const hasChangedChildren = selectionGroup.objectIds.some(id => changedObjectIds.has(id));
+        if (hasChangedChildren) {
+          selectionGroup.invalidateObjectsCache();
+          selectionGroup.refreshObjectDimensions();
+          selectionGroup.captureUnchangedSnapshots();
+        }
+      }
+    }
+
+    // Invalidate the store's selection cache so it fetches the updated SelectionGroup
+    this._core?.store.invalidateSelectionCache();
 
     this._core?.rerender();
   }
+  
   transaction(callback: () => void): void {
     if (this._ydoc) {
       this._ydoc.transact(callback, 'local');
