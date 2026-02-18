@@ -402,8 +402,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   /**
    * Refreshes the selection group's bounding box dimensions based on contained objects.
    * @param cachedObjects Optional pre-fetched objects array to avoid redundant getter calls
+   * @param skipPersist If true, only updates local state without persisting to Yjs (used during undo/redo)
    */
-  refreshObjectDimensions(cachedObjects?: KritzelBaseObject<any>[]) {
+  refreshObjectDimensions(cachedObjects?: KritzelBaseObject<any>[], skipPersist: boolean = false) {
     const children = cachedObjects ?? this.objects;
     if (children.length === 1) {
       const obj = children[0];
@@ -465,7 +466,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.translateY = cy - (this.height / this.scale + 2 * this.padding) / 2;
     }
 
-    this._core.store.state.objects.update(this);
+    if (!skipPersist) {
+      this._core.store.state.objects.update(this);
+    }
   }
 
   private getOffsetXToCenterFromSnapshot(snapshot: UnchangedObjectSnapshot): number {

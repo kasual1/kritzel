@@ -662,6 +662,160 @@ describe('KritzelObjectMap', () => {
     });
   });
 
+  describe('handleObjectsChange with SelectionGroup', () => {
+    let mockSelectionGroup: any;
+    let mockStore: any;
+    let observerCallback: (event: any) => void;
+
+    beforeEach(async () => {
+      // Create a mock SelectionGroup
+      mockSelectionGroup = {
+        id: 'sg-1',
+        __class__: 'KritzelSelectionGroup',
+        objectIds: ['obj-1', 'obj-2'],
+        invalidateObjectsCache: jest.fn(),
+        refreshObjectDimensions: jest.fn(),
+        captureUnchangedSnapshots: jest.fn(),
+        rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 100, height: 100 },
+        serialize: jest.fn().mockReturnValue({ id: 'sg-1', __class__: 'KritzelSelectionGroup' }),
+      };
+
+      // Make the mock a SelectionGroup instance
+      const { KritzelSelectionGroup } = require('../objects/selection-group.class');
+      Object.setPrototypeOf(mockSelectionGroup, KritzelSelectionGroup.prototype);
+
+      // Setup mock store with invalidateSelectionCache
+      mockStore = {
+        invalidateSelectionCache: jest.fn(),
+      };
+
+      mockCore = {
+        ...createMockCore(),
+        store: mockStore,
+      };
+
+      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+
+      // Capture the observer callback
+      observerCallback = mockMapObserve.mock.calls[0][0];
+    });
+
+    it('should call refreshObjectDimensions with skipPersist=true when processing SelectionGroup via undo/redo', () => {
+      // Mock the reviver to return our SelectionGroup
+      mockRevive.mockReturnValueOnce(mockSelectionGroup);
+
+      // Mock that the object exists in the quadtree (so it's an update, not insert)
+      mockQuadtreeFilter.mockReturnValue([mockSelectionGroup]);
+
+      // Mock the serialized data in Yjs map
+      mockMapGet.mockReturnValueOnce({ id: 'sg-1', __class__: 'KritzelSelectionGroup' });
+
+      // Create a mock YMapEvent for a non-local transaction (undo/redo scenario)
+      const mockEvent = {
+        transaction: { origin: null }, // null origin = remote or undo/redo
+        keysChanged: new Set(['sg-1']),
+        changes: {
+          keys: new Map([['sg-1', { action: 'update' }]]),
+        },
+      };
+
+      // Trigger the observer callback
+      observerCallback(mockEvent);
+
+      // Verify refreshObjectDimensions was called with skipPersist=true
+      expect(mockSelectionGroup.invalidateObjectsCache).toHaveBeenCalled();
+      expect(mockSelectionGroup.refreshObjectDimensions).toHaveBeenCalledWith(undefined, true);
+      expect(mockSelectionGroup.captureUnchangedSnapshots).toHaveBeenCalled();
+    });
+
+    it('should not create additional undo entries when refreshing SelectionGroup dimensions after undo/redo', () => {
+      // Mock the reviver to return our SelectionGroup
+      mockRevive.mockReturnValueOnce(mockSelectionGroup);
+      mockQuadtreeFilter.mockReturnValue([mockSelectionGroup]);
+      mockMapGet.mockReturnValueOnce({ id: 'sg-1', __class__: 'KritzelSelectionGroup' });
+
+      // Clear transact calls after initialization
+      mockYdocTransact.mockClear();
+
+      const mockEvent = {
+        transaction: { origin: null },
+        keysChanged: new Set(['sg-1']),
+        changes: {
+          keys: new Map([['sg-1', { action: 'update' }]]),
+        },
+      };
+
+      observerCallback(mockEvent);
+
+      // Verify that no additional Yjs transactions were created for updating the SelectionGroup
+      // The only transact calls should not be for persisting the SelectionGroup
+      const updateCalls = mockYdocTransact.mock.calls.filter(
+        (call: any) => call[1] === 'local'
+      );
+      expect(updateCalls.length).toBe(0);
+    });
+
+    it('should refresh existing SelectionGroups when their child objects change via undo/redo', () => {
+      const mockChildObject = {
+        id: 'obj-1',
+        __class__: 'KritzelPath',
+        rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 50, height: 50 },
+        serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'KritzelPath' }),
+      };
+
+      // First call returns the child object (regular object update)
+      mockRevive.mockReturnValueOnce(mockChildObject);
+
+      // Mock quadtree to return the existing SelectionGroup when filtering
+      mockQuadtreeFilter
+        .mockReturnValueOnce([]) // First filter: check if child object exists
+        .mockReturnValueOnce([mockSelectionGroup]); // Second filter: find SelectionGroups
+
+      mockMapGet.mockReturnValueOnce({ id: 'obj-1', __class__: 'KritzelPath' });
+
+      mockYdocTransact.mockClear();
+
+      const mockEvent = {
+        transaction: { origin: null },
+        keysChanged: new Set(['obj-1']),
+        changes: {
+          keys: new Map([['obj-1', { action: 'update' }]]),
+        },
+      };
+
+      observerCallback(mockEvent);
+
+      // Verify the SelectionGroup was refreshed with skipPersist=true
+      expect(mockSelectionGroup.invalidateObjectsCache).toHaveBeenCalled();
+      expect(mockSelectionGroup.refreshObjectDimensions).toHaveBeenCalledWith(undefined, true);
+      expect(mockSelectionGroup.captureUnchangedSnapshots).toHaveBeenCalled();
+
+      // Verify no local transactions were created
+      const localTransactCalls = mockYdocTransact.mock.calls.filter(
+        (call: any) => call[1] === 'local'
+      );
+      expect(localTransactCalls.length).toBe(0);
+    });
+
+    it('should invalidate store selection cache after processing undo/redo changes', () => {
+      mockRevive.mockReturnValueOnce(mockSelectionGroup);
+      mockQuadtreeFilter.mockReturnValue([mockSelectionGroup]);
+      mockMapGet.mockReturnValueOnce({ id: 'sg-1', __class__: 'KritzelSelectionGroup' });
+
+      const mockEvent = {
+        transaction: { origin: null },
+        keysChanged: new Set(['sg-1']),
+        changes: {
+          keys: new Map([['sg-1', { action: 'update' }]]),
+        },
+      };
+
+      observerCallback(mockEvent);
+
+      expect(mockStore.invalidateSelectionCache).toHaveBeenCalled();
+    });
+  });
+
   describe('loadFromYjs', () => {
     it('should reset quadtree and revive objects from Yjs map', async () => {
       const revived = createMockObject('revived-1');
