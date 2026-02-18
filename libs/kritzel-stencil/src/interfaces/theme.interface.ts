@@ -16,8 +16,8 @@ export interface KritzelTheme {
     cursorTrailOpacity?: string;
     dividerColor?: string;
     focusColor?: string;
-    focusRingColor?: string;
     borderColor?: string;
+    focusRingColor?: string;
     hoverBackground?: string;
     pointerCursor?: string;
     scrollbarThumbColor?: string;

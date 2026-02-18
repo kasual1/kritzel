@@ -77,9 +77,9 @@
 }
 
 .opacity-slider:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 3px var(--kritzel-focus-ring-color, rgba(0, 122, 255, 0.3));
+  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(0, 122, 255, 0.3));
 }
 
 .opacity-slider:focus::-moz-range-thumb {
-  box-shadow: 0 0 0 3px var(--kritzel-focus-ring-color, rgba(0, 122, 255, 0.3));
+  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(0, 122, 255, 0.3));
 }

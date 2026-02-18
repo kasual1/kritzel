@@ -9,8 +9,8 @@ export const lightTheme: KritzelTheme = {
   global: {
     borderColor: '#ebebeb',
     dividerColor: '#e0e0e0',
-    focusColor: '#007acc',
-    focusRingColor: 'rgba(0, 122, 255, 0.3)',
+    focusColor: '#333333',
+    focusRingColor: '#333333',
     hoverBackground: 'hsl(0, 0%, 0%, 4.3%)',
     iconColor: 'currentColor',
     scrollbarThumbColor: '#ebebeb',
@@ -108,7 +108,7 @@ export const lightTheme: KritzelTheme = {
     backButtonColor: '#333333',
     backgroundColor: '#ffffff',
     detailBackgroundColor: '#ffffff',
-    detailFocusOutline: '2px solid #007AFF',
+    detailFocusOutline: '2px solid #333333',
     menuBackgroundColor: '#ffffff',
     menuBorderRight: '1px solid #ebebeb',
     menuItemActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
@@ -116,7 +116,7 @@ export const lightTheme: KritzelTheme = {
     menuItemChevronColor: '#aaaaaa',
     menuItemColor: '#333333',
     menuItemDisabledColor: '#aaaaaa',
-    menuItemFocusOutline: '2px solid #007AFF',
+    menuItemFocusOutline: '2px solid #333333',
     menuItemHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
     menuItemSelectedBackgroundColor: '#007AFF',
     menuItemSelectedColor: '#ffffff',
@@ -157,7 +157,7 @@ export const lightTheme: KritzelTheme = {
 
   numericInput: {
     borderColor: '#ebebeb',
-    focusBorderColor: '#007AFF',
+    focusBorderColor: '#333333',
     hoverBorderColor: '#ccc',
     inputBackground: '#ffffff',
     labelColor: '#666666',
