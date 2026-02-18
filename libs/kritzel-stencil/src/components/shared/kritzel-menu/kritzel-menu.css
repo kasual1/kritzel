@@ -17,6 +17,7 @@
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
   outline: none;
+  clip-path: inset(0 round var(--kritzel-menu-border-radius, 12px));
 }
 
 :host:focus-visible {
