@@ -226,4 +226,150 @@ describe('kritzel-editor', () => {
       });
     });
   });
+
+  describe('workspace manager', () => {
+    let editor: KritzelEditorPage;
+
+    beforeEach(async () => {
+      editor = await KritzelEditorPage.create();
+    });
+
+    describe('initial state', () => {
+      it('should match screenshot with workspace manager visible', async () => {
+        const screenshot = await editor.compareScreenshot('workspace manager initial state');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+    });
+
+    describe('workspace menu', () => {
+      it('should match screenshot with workspace menu open', async () => {
+        await editor.workspaceManager.openWorkspaceMenu();
+
+        const screenshot = await editor.compareScreenshot('workspace menu open');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+
+      it('should match screenshot after closing workspace menu', async () => {
+        await editor.workspaceManager.openWorkspaceMenu();
+        await editor.workspaceManager.closeWorkspaceMenu();
+
+        const screenshot = await editor.compareScreenshot('workspace menu closed');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+    });
+
+    describe('adding workspaces', () => {
+      it('should match screenshot with new workspace in edit mode', async () => {
+        // Clicking add opens the menu and creates a new workspace in edit mode
+        await editor.workspaceManager.clickAddWorkspace();
+
+        const screenshot = await editor.compareScreenshot('new workspace edit mode');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+
+      it('should match screenshot after saving a new workspace', async () => {
+        await editor.workspaceManager.clickAddWorkspace();
+        await editor.workspaceManager.typeWorkspaceName('My New Workspace');
+        await editor.workspaceManager.saveWorkspaceName();
+
+        const screenshot = await editor.compareScreenshot('workspace saved');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+
+      it('should match screenshot with multiple workspaces in menu', async () => {
+        // Add and save first workspace
+        await editor.workspaceManager.clickAddWorkspace();
+        await editor.workspaceManager.typeWorkspaceName('Workspace 1');
+        await editor.workspaceManager.saveWorkspaceName();
+
+        // Add and save second workspace
+        await editor.workspaceManager.clickAddWorkspace();
+        await editor.workspaceManager.typeWorkspaceName('Workspace 2');
+        await editor.workspaceManager.saveWorkspaceName();
+
+        // Open menu to show all workspaces
+        await editor.workspaceManager.openWorkspaceMenu();
+
+        const screenshot = await editor.compareScreenshot('multiple workspaces in menu');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+    });
+
+    describe('selecting workspaces', () => {
+      it('should match screenshot after selecting a different workspace', async () => {
+        // Add and save a new workspace
+        await editor.workspaceManager.clickAddWorkspace();
+        await editor.workspaceManager.typeWorkspaceName('Second Workspace');
+        await editor.workspaceManager.saveWorkspaceName();
+
+        // Open menu and select the first workspace (original)
+        await editor.workspaceManager.openWorkspaceMenu();
+        await editor.workspaceManager.selectWorkspaceByIndex(1);
+
+        // Open menu again to show selection state
+        await editor.workspaceManager.openWorkspaceMenu();
+
+        const screenshot = await editor.compareScreenshot('workspace selected');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+    });
+
+    describe('workspace child menu', () => {
+      it('should match screenshot with child menu open', async () => {
+        await editor.workspaceManager.openWorkspaceMenu();
+        await editor.workspaceManager.openWorkspaceChildMenu(0);
+
+        const screenshot = await editor.compareScreenshot('workspace child menu open');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+    });
+
+    describe('renaming workspaces', () => {
+      it('should match screenshot in edit mode', async () => {
+        await editor.workspaceManager.openWorkspaceMenu();
+        await editor.workspaceManager.openWorkspaceChildMenu(0);
+        await editor.workspaceManager.clickRename();
+
+        const screenshot = await editor.compareScreenshot('workspace rename mode');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+
+      it('should match screenshot after renaming workspace', async () => {
+        await editor.workspaceManager.openWorkspaceMenu();
+        await editor.workspaceManager.openWorkspaceChildMenu(0);
+        await editor.workspaceManager.clickRename();
+        await editor.workspaceManager.typeWorkspaceName('My Custom Workspace');
+        await editor.workspaceManager.saveWorkspaceName();
+        await editor.workspaceManager.openWorkspaceMenu();
+
+        const screenshot = await editor.compareScreenshot('workspace renamed');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+    });
+
+    describe('deleting workspaces', () => {
+      it('should match screenshot after deleting a workspace', async () => {
+        // Add and save first workspace
+        await editor.workspaceManager.clickAddWorkspace();
+        await editor.workspaceManager.typeWorkspaceName('Workspace to Keep');
+        await editor.workspaceManager.saveWorkspaceName();
+
+        // Add and save second workspace
+        await editor.workspaceManager.clickAddWorkspace();
+        await editor.workspaceManager.typeWorkspaceName('Workspace to Delete');
+        await editor.workspaceManager.saveWorkspaceName();
+
+        // Delete the first workspace (most recently added, shown at top)
+        await editor.workspaceManager.openWorkspaceMenu();
+        await editor.workspaceManager.openWorkspaceChildMenu(0);
+        await editor.workspaceManager.clickDelete();
+
+        // Open menu to show remaining workspaces
+        await editor.workspaceManager.openWorkspaceMenu();
+
+        const screenshot = await editor.compareScreenshot('workspace deleted');
+        expect(screenshot).toMatchScreenshot({ allowableMismatchedPixels: 100 });
+      });
+    });
+  });
 });
