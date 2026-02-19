@@ -21,4 +21,8 @@ private static registry: Record<string, KritzelBaseTool> = {};
 
     return toolInstance;
   }
+
+  static getToolByIndex(index: number): KritzelBaseTool | null {
+    return Object.values(this.registry)[index] ?? null;
+  }
 }

@@ -16,12 +16,16 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     { key: 'z', ctrl: true, action: c => c.undo() },
     { key: 'y', ctrl: true, action: c => c.redo() },
 
-    // Tool selection
-    { key: 's', ctrl: true, action: () => this.switchTool('selection') },
-    { key: 'b', ctrl: true, action: () => this.switchTool('brush') },
-    { key: 'e', ctrl: true, action: () => this.switchTool('eraser') },
-    { key: 'i', ctrl: true, action: () => this.switchTool('image') },
-    { key: 'x', ctrl: true, action: () => this.switchTool('text') },
+    // Tool selection (Ctrl+1-9)
+    { key: '1', ctrl: true, action: () => this.switchToolByIndex(0) },
+    { key: '2', ctrl: true, action: () => this.switchToolByIndex(1) },
+    { key: '3', ctrl: true, action: () => this.switchToolByIndex(2) },
+    { key: '4', ctrl: true, action: () => this.switchToolByIndex(3) },
+    { key: '5', ctrl: true, action: () => this.switchToolByIndex(4) },
+    { key: '6', ctrl: true, action: () => this.switchToolByIndex(5) },
+    { key: '7', ctrl: true, action: () => this.switchToolByIndex(6) },
+    { key: '8', ctrl: true, action: () => this.switchToolByIndex(7) },
+    { key: '9', ctrl: true, action: () => this.switchToolByIndex(8) },
 
     // Clipboard
     {
@@ -50,11 +54,13 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     super(core);
   }
 
-  private switchTool(tool: string) {
-    const toolInstance = KritzelToolRegistry.getTool(tool);
-    this._core.store.setState('activeTool', toolInstance);
-    this._core.deselectAllObjects();
-    toolInstance.onActivate();
+  private switchToolByIndex(index: number) {
+    const toolInstance = KritzelToolRegistry.getToolByIndex(index);
+    if (toolInstance) {
+      this._core.store.setState('activeTool', toolInstance);
+      this._core.deselectAllObjects();
+      toolInstance.onActivate();
+    }
   }
 
   handleKeyDown(event: KeyboardEvent): void {
