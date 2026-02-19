@@ -22,6 +22,7 @@ import { KritzelTool } from "./interfaces/tool.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { Element } from "@stencil/core";
+import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
@@ -47,6 +48,7 @@ export { KritzelTool } from "./interfaces/tool.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { Element } from "@stencil/core";
+export { KritzelShortcut } from "./interfaces/shortcut.interface";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
@@ -271,6 +273,7 @@ export namespace Components {
         "exportViewportAsSvg": () => Promise<void>;
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
+        "getDisplayableShortcuts": () => Promise<Omit<KritzelShortcut, "action" | "condition">[]>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getScreenshot": (format?: "png" | "svg") => Promise<string>;
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
@@ -484,6 +487,11 @@ export namespace Components {
     }
     interface KritzelSettings {
         "open": () => Promise<void>;
+        /**
+          * Keyboard shortcuts to display in the settings dialog
+          * @default []
+         */
+        "shortcuts": Omit<KritzelShortcut, 'action' | 'condition'>[];
     }
     interface KritzelShapeFill {
         /**
@@ -1718,6 +1726,11 @@ declare namespace LocalJSX {
           * Emitted when settings change
          */
         "onSettingsChange"?: (event: KritzelSettingsCustomEvent<KritzelSettingsConfig>) => void;
+        /**
+          * Keyboard shortcuts to display in the settings dialog
+          * @default []
+         */
+        "shortcuts"?: Omit<KritzelShortcut, 'action' | 'condition'>[];
     }
     interface KritzelShapeFill {
         "onValueChange"?: (event: KritzelShapeFillCustomEvent<ShapeFillType>) => void;

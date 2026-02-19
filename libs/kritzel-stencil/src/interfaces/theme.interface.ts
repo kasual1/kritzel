@@ -290,6 +290,12 @@ export interface KritzelTheme {
     contentTextColor?: string;
     descriptionColor?: string;
     labelColor?: string;
+    shortcutItemBg?: string;
+    shortcutKeyBg?: string;
+    shortcutKeyBorder?: string;
+    shortcutKeyColor?: string;
+    shortcutLabelColor?: string;
+    shortcutsCategoryColor?: string;
   };
 
   /** Shape fill variables */

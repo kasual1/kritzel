@@ -73,4 +73,32 @@ describe('KritzelToolRegistry', () => {
       spy.mockRestore();
     });
   });
+
+  describe('getToolByIndex', () => {
+    it('should return tool at the given index based on registration order', () => {
+      const brushInstance = { name: '' };
+      const eraserInstance = { name: '' };
+      const selectionInstance = { name: '' };
+      const BrushTool = jest.fn(() => brushInstance) as any;
+      const EraserTool = jest.fn(() => eraserInstance) as any;
+      const SelectionTool = jest.fn(() => selectionInstance) as any;
+
+      KritzelToolRegistry.registerTool('brush', BrushTool, mockCore);
+      KritzelToolRegistry.registerTool('eraser', EraserTool, mockCore);
+      KritzelToolRegistry.registerTool('selection', SelectionTool, mockCore);
+
+      expect(KritzelToolRegistry.getToolByIndex(0)).toBe(brushInstance);
+      expect(KritzelToolRegistry.getToolByIndex(1)).toBe(eraserInstance);
+      expect(KritzelToolRegistry.getToolByIndex(2)).toBe(selectionInstance);
+    });
+
+    it('should return null for out-of-bounds index', () => {
+      const mockInstance = { name: '' };
+      const MockTool = jest.fn(() => mockInstance) as any;
+      KritzelToolRegistry.registerTool('brush', MockTool, mockCore);
+
+      expect(KritzelToolRegistry.getToolByIndex(5)).toBeNull();
+      expect(KritzelToolRegistry.getToolByIndex(-1)).toBeNull();
+    });
+  });
 });

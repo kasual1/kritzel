@@ -179,6 +179,12 @@ export const darkTheme: KritzelTheme = {
     contentTextColor: '#e0e0e0',
     descriptionColor: '#999999',
     labelColor: '#e0e0e0',
+    shortcutsCategoryColor: '#999999',
+    shortcutItemBg: '#3a3a3a',
+    shortcutLabelColor: '#e0e0e0',
+    shortcutKeyBg: '#2a2a2a',
+    shortcutKeyBorder: '#4a4a4a',
+    shortcutKeyColor: '#e0e0e0',
   },
 
   shapeFill: {
