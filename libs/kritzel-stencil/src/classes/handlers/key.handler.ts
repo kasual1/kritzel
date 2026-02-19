@@ -3,6 +3,8 @@ import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelShortcut } from '../../interfaces/shortcut.interface';
 
+const NUDGE_AMOUNT = 10;
+
 export class KritzelKeyHandler extends KritzelBaseHandler {
 
   private shortcuts: KritzelShortcut[] = [
@@ -50,6 +52,12 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     // Grouping
     { key: 'g', ctrl: true, label: 'Group', category: 'Grouping', condition: c => !!c.store.selectionGroup && c.store.selectionGroup.objects.length >= 2, action: c => c.group() },
     { key: 'G', ctrl: true, shift: true, label: 'Ungroup', category: 'Grouping', condition: c => !!c.store.selectionGroup, action: c => c.ungroup() },
+
+    // Movement
+    { key: 'ArrowUp', label: 'Move Object Up', category: 'Movement', condition: c => !!c.store.selectionGroup, action: c => { c.store.selectionGroup!.move(0, 0, 0, NUDGE_AMOUNT); c.rerender(); } },
+    { key: 'ArrowDown', label: 'Move Object Down', category: 'Movement', condition: c => !!c.store.selectionGroup, action: c => { c.store.selectionGroup!.move(0, NUDGE_AMOUNT, 0, 0); c.rerender(); } },
+    { key: 'ArrowLeft', label: 'Move Object Left', category: 'Movement', condition: c => !!c.store.selectionGroup, action: c => { c.store.selectionGroup!.move(0, 0, NUDGE_AMOUNT, 0); c.rerender(); } },
+    { key: 'ArrowRight', label: 'Move Object Right', category: 'Movement', condition: c => !!c.store.selectionGroup, action: c => { c.store.selectionGroup!.move(NUDGE_AMOUNT, 0, 0, 0); c.rerender(); } },
   ];
 
   constructor(core: KritzelCore) {
