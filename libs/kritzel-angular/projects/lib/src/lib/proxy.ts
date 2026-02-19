@@ -313,6 +313,7 @@ export declare interface KritzelOpacitySlider extends Components.KritzelOpacityS
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelSettings,
+  inputs: ['shortcuts'],
   methods: ['open']
 })
 @Component({
@@ -320,7 +321,7 @@ export declare interface KritzelOpacitySlider extends Components.KritzelOpacityS
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [],
+  inputs: ['shortcuts'],
   outputs: ['settingsChange'],
 })
 export class KritzelSettings {

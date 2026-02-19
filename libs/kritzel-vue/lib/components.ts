@@ -132,6 +132,7 @@ export const KritzelOpacitySlider: StencilVueComponent<JSX.KritzelOpacitySlider>
 
 
 export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PURE__*/ defineContainer<JSX.KritzelSettings>('kritzel-settings', defineKritzelSettings, [
+  'shortcuts',
   'settingsChange'
 ], [
   'settingsChange'
