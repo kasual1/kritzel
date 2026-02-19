@@ -38,4 +38,42 @@ describe('KritzelDevicesHelper', () => {
       expect(KritzelDevicesHelper.isTouchDevice()).toBe(false);
     });
   });
+
+  describe('isMobile', () => {
+    const originalUserAgent = navigator.userAgent;
+
+    afterEach(() => {
+      Object.defineProperty(navigator, 'userAgent', {
+        value: originalUserAgent,
+        configurable: true,
+      });
+    });
+
+    it('should return true for iOS devices', () => {
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)',
+        configurable: true,
+      });
+
+      expect(KritzelDevicesHelper.isMobile()).toBe(true);
+    });
+
+    it('should return true for Android devices', () => {
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Linux; Android 10; SM-G960U)',
+        configurable: true,
+      });
+
+      expect(KritzelDevicesHelper.isMobile()).toBe(true);
+    });
+
+    it('should return false for non-mobile devices', () => {
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        configurable: true,
+      });
+
+      expect(KritzelDevicesHelper.isMobile()).toBe(false);
+    });
+  });
 });

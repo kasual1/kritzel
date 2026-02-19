@@ -21,6 +21,10 @@ export class KritzelDevicesHelper {
     }
   }
 
+  static isMobile(): boolean {
+    return this.isIOS() || this.isAndroid();
+  }
+
   static isFirefox(): boolean {
     return /firefox/i.test(navigator.userAgent);
   }
