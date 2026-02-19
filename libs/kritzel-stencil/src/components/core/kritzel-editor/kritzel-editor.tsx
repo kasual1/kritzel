@@ -27,6 +27,7 @@ import { KritzelUndoState } from '../../..';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
+import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -154,6 +155,7 @@ export class KritzelEditor {
   @State() undoState: KritzelUndoState = null;
   @State() isBackToContentButtonVisible: boolean = false;
   @State() currentTheme: ThemeName = 'light';
+  @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -323,6 +325,11 @@ export class KritzelEditor {
     this.isEngineReady = true;
     this.activeWorkspace = event.detail.activeWorkspace;
     this.workspaces = event.detail.workspaces;
+    this.loadShortcuts();
+  }
+
+  private async loadShortcuts(): Promise<void> {
+    this.shortcuts = await this.engineRef.getDisplayableShortcuts();
   }
 
   handleWorkspacesChange(event: CustomEvent<KritzelWorkspace[]>) {
@@ -458,6 +465,7 @@ export class KritzelEditor {
         <div class="top-right-buttons">
           <kritzel-settings
             ref={el => (this.settingsRef = el)}
+            shortcuts={this.shortcuts}
             onSettingsChange={event => this.handleSettingsChange(event)}
           ></kritzel-settings>
 

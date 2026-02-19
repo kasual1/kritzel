@@ -77,3 +77,53 @@ kritzel-dialog {
   margin: 0;
   line-height: 1.4;
 }
+
+/* Shortcuts List */
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.shortcuts-category {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shortcuts-category-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--kritzel-settings-label-color, #333333);
+  margin: 0 0 4px 0;
+}
+
+.shortcuts-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: var(--kritzel-settings-shortcut-item-bg, rgba(0, 0, 0, 0.02));
+}
+
+.shortcut-label {
+  font-size: 13px;
+  color: var(--kritzel-settings-content-text-color, #666666);
+}
+
+.shortcut-key {
+  font-family: monospace;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--kritzel-settings-shortcut-key-bg, #f0f0f0);
+  color: var(--kritzel-settings-shortcut-key-color, #333333);
+  border: 1px solid var(--kritzel-settings-shortcut-key-border, #ddd);
+}

@@ -249,6 +249,16 @@ Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
 
 
 
+### `getDisplayableShortcuts() => Promise<Omit<KritzelShortcut, "action" | "condition">[]>`
+
+
+
+#### Returns
+
+Type: `Promise<Omit<KritzelShortcut, "action" | "condition">[]>`
+
+
+
 ### `getObjectById<T extends KritzelBaseObject>(id: string) => Promise<T | null>`
 
 
