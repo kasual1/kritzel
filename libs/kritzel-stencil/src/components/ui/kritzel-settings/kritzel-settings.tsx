@@ -1,8 +1,9 @@
-import { Component, Host, h, State, Event, EventEmitter, Method, Element } from '@stencil/core';
+import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop } from '@stencil/core';
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '../../../interfaces/master-detail.interface';
 import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
 import { KRITZEL_VERSION } from '../../../constants/version';
 import { ThemeName } from '../../../interfaces/theme.interface';
+import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 
 const SETTINGS_STORAGE_KEY = 'kritzel-settings';
 const DEFAULT_SCALE_MIN = 0.0001;
@@ -11,6 +12,7 @@ const DEFAULT_LOCK_DRAWING_SCALE = true;
 
 const SETTINGS_CATEGORIES: IKritzelMasterDetailItem[] = [
   { id: 'general', label: 'General', icon: 'settings' },
+  { id: 'shortcuts', label: 'Keyboard Shortcuts', icon: 'command' },
   { id: 'about', label: 'About', icon: 'info' },
 ];
 
@@ -21,6 +23,9 @@ const SETTINGS_CATEGORIES: IKritzelMasterDetailItem[] = [
 })
 export class KritzelSettings {
   @Element() host!: HTMLElement;
+
+  /** Keyboard shortcuts to display in the settings dialog */
+  @Prop() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
 
   @State() isDialogOpen: boolean = false;
   @State() selectedCategoryId: string = SETTINGS_CATEGORIES[0].id;
@@ -103,6 +108,33 @@ export class KritzelSettings {
     this.selectedCategoryId = event.detail.item.id;
   };
 
+  private formatKeyCombo(shortcut: Omit<KritzelShortcut, 'action' | 'condition'>): string {
+    const parts: string[] = [];
+    if (shortcut.ctrl) parts.push('Ctrl');
+    if (shortcut.shift) parts.push('Shift');
+    parts.push(this.formatKey(shortcut.key));
+    return parts.join('+');
+  }
+
+  private formatKey(key: string): string {
+    const keyMap: Record<string, string> = {
+      'Escape': 'Esc',
+      'Delete': 'Del',
+      ' ': 'Space',
+    };
+    return keyMap[key] ?? key.toUpperCase();
+  }
+
+  private groupShortcutsByCategory(): Map<string, Omit<KritzelShortcut, 'action' | 'condition'>[]> {
+    const grouped = new Map<string, Omit<KritzelShortcut, 'action' | 'condition'>[]>();
+    for (const shortcut of this.shortcuts) {
+      const existing = grouped.get(shortcut.category) || [];
+      existing.push(shortcut);
+      grouped.set(shortcut.category, existing);
+    }
+    return grouped;
+  }
+
   private renderCategoryContent() {
     switch (this.selectedCategoryId) {
       case 'general':
@@ -158,6 +190,27 @@ export class KritzelSettings {
                   onValueChange={this.handleScaleMaxChange}
                 />
               </div>
+            </div>
+          </div>
+        );
+      case 'shortcuts':
+        return (
+          <div class="settings-content">
+            <h3>Keyboard Shortcuts</h3>
+            <div class="shortcuts-list">
+              {Array.from(this.groupShortcutsByCategory()).map(([category, shortcuts]) => (
+                <div class="shortcuts-category" key={category}>
+                  <h4 class="shortcuts-category-title">{category}</h4>
+                  <div class="shortcuts-group">
+                    {shortcuts.map(shortcut => (
+                      <div class="shortcut-item" key={shortcut.key + shortcut.label}>
+                        <span class="shortcut-label">{shortcut.label}</span>
+                        <kbd class="shortcut-key">{this.formatKeyCombo(shortcut)}</kbd>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         );
