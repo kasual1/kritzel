@@ -702,6 +702,33 @@ export class KritzelCore {
     this.rerender();
   }
 
+  selectAllObjects() {
+    const allObjects = this._store.state.objects
+      .allObjects()
+      .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox) && !(o instanceof KritzelContextMenu));
+
+    if (allObjects.length > 0) {
+      const selectionGroup = KritzelSelectionGroup.create(this);
+
+      allObjects.forEach(obj => {
+        obj.isSelected = false;
+        selectionGroup.addOrRemove(obj);
+      });
+
+      selectionGroup.isSelected = true;
+
+      this._store.state.isSelecting = false;
+
+      if (allObjects.length === 1) {
+        selectionGroup.rotation = selectionGroup.objects[0].rotation;
+      }
+
+      this.addSelectionGroup(selectionGroup);
+      this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+      this.rerender();
+    }
+  }
+
   selectAllObjectsInViewport() {
     const viewportBounds = {
       x: -this._store.state.translateX / this._store.state.scale,
