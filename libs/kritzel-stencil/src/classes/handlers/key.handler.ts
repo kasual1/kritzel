@@ -9,6 +9,8 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     // General
     { key: 'Escape', condition: c => !!c.store.selectionGroup, action: c => c.clearSelection() },
     { key: 'Delete', condition: c => !!c.store.selectionGroup, action: c => c.delete() },
+    { key: 'a', ctrl: true, action: c => c.selectAllObjectsInViewport() },
+    { key: 'A', ctrl: true, shift: true, action: c => c.selectAllObjects() },
 
     // Undo/Redo
     { key: 'z', ctrl: true, action: c => c.undo() },
@@ -32,10 +34,6 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       },
     },
     { key: 'v', ctrl: true, condition: c => !!c.store.state.copiedObjects && !c.store.activeText, action: c => c.paste() },
-
-    // Text editing
-    // { key: 'a', ctrl: true, condition: c => !!c.store.activeText, action: c => c.store.activeText.selectAll() },
-    // { key: 'v', ctrl: true, condition: c => !!c.store.activeText, action: c => c.store.activeText.insertFromClipboard() },
 
     // Object layering
     { key: '+', ctrl: true, condition: c => !!c.store.selectionGroup, action: c => c.bringForward() },
