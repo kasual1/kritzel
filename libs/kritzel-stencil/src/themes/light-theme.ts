@@ -180,6 +180,12 @@ export const lightTheme: KritzelTheme = {
     contentTextColor: '#333333',
     descriptionColor: '#666666',
     labelColor: '#333333',
+    shortcutsCategoryColor: '#666666',
+    shortcutItemBg: '#f8f8f8',
+    shortcutLabelColor: '#333333',
+    shortcutKeyBg: '#ffffff',
+    shortcutKeyBorder: '#e0e0e0',
+    shortcutKeyColor: '#555555',
   },
 
   shapeFill: {

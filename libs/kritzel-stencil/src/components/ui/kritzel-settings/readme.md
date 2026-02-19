@@ -26,6 +26,13 @@ A settings button component that opens a settings dialog when clicked.
 <!-- Auto Generated Below -->
 
 
+## Properties
+
+| Property    | Attribute | Description                                          | Type                                               | Default |
+| ----------- | --------- | ---------------------------------------------------- | -------------------------------------------------- | ------- |
+| `shortcuts` | --        | Keyboard shortcuts to display in the settings dialog | `Omit<KritzelShortcut, "action" \| "condition">[]` | `[]`    |
+
+
 ## Events
 
 | Event            | Description                  | Type                                 |

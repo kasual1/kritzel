@@ -33,6 +33,7 @@ import { toPng, toSvg } from 'html-to-image';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelThemeManager } from '../../../classes/managers/theme.manager';
+import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -417,6 +418,11 @@ export class KritzelEngine {
   async getSelectedObjects(): Promise<KritzelBaseObject<any>[]> {
     const selectionGroup = this.core.store.selectionGroup;
     return selectionGroup ? selectionGroup.objects : [];
+  }
+
+  @Method()
+  async getDisplayableShortcuts(): Promise<Omit<KritzelShortcut, 'action' | 'condition'>[]> {
+    return this.keyHandler.getDisplayableShortcuts();
   }
 
   @Method()
