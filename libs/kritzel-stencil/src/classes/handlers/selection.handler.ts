@@ -33,16 +33,17 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   handlePointerDown(event: PointerEvent) {
+    const isAdditive = event.shiftKey || event.ctrlKey;
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event) && !this._core.store.selectionGroup) {
-        this.startMouseSelection(event);
+      if (KritzelEventHelper.isLeftClick(event) && (!this._core.store.selectionGroup || isAdditive)) {
+        this.startMouseSelection(event, isAdditive);
       }
     }
 
     if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       this.touchStartTimeout = setTimeout(() => {
-        if (this._core.store.state.pointers.size === 1 && !this._core.store.state.isScaling && !this._core.store.selectionGroup) {
-          this.startTouchSelection();
+        if (this._core.store.state.pointers.size === 1 && !this._core.store.state.isScaling && (!this._core.store.selectionGroup || isAdditive)) {
+          this.startTouchSelection(event, isAdditive);
           this.updateTouchSelection();
         }
       }, 80);
@@ -92,8 +93,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
           }
 
           if (this.isSelectionDrag) {
+            const isAdditive = event.shiftKey || event.ctrlKey;
             this.updateMouseSelection(event);
-            this.addSelectedObjectsToSelectionGroup();
+            this.addSelectedObjectsToSelectionGroup(isAdditive);
             this.removeSelectionBox();
           }
 
@@ -120,8 +122,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
         }
 
         if (this.isSelectionDrag) {
+          const isAdditive = event.shiftKey || event.ctrlKey;
           this.updateTouchSelection();
-          this.addSelectedObjectsToSelectionGroup();
+          this.addSelectedObjectsToSelectionGroup(isAdditive);
           this.removeSelectionBox();
         }
 
@@ -137,7 +140,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._core.store.setSelectionBox(null);
   }
 
-  private startMouseSelection(event: MouseEvent): void {
+  private startMouseSelection(event: MouseEvent, isAdditive: boolean = false): void {
     let clientX, clientY;
 
     clientX = event.clientX - this._core.store.offsetX;
@@ -153,14 +156,16 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.state.isSelecting = true;
 
-    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || (!isAdditive && o instanceof KritzelSelectionGroup));
     this._core.store.setSelectionBox(null);
-    this._core.store.setSelectionGroup(null);
+    if (!isAdditive) {
+      this._core.store.setSelectionGroup(null);
+    }
     this._core.store.state.objects.insert(selectionBox);
     this._core.store.setSelectionBox(selectionBox);
   }
 
-  private startTouchSelection(): void {
+  private startTouchSelection(_event: PointerEvent, isAdditive: boolean = false): void {
     const activePointers = Array.from(this._core.store.state.pointers.values());
     const firstTouch = activePointers[0];
 
@@ -185,9 +190,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.state.isSelecting = true;
 
-    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
+    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || (!isAdditive && o instanceof KritzelSelectionGroup));
     this._core.store.setSelectionBox(null);
-    this._core.store.setSelectionGroup(null);
+    if (!isAdditive) {
+      this._core.store.setSelectionGroup(null);
+    }
     this._core.store.state.objects.insert(selectionBox);
     this._core.store.setSelectionBox(selectionBox);
   }
@@ -279,7 +286,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       width: maxX - minX,
       height: maxY - minY
     };
-    
+
     const candidates = this._core.store.state.objects.query(selectionBounds);
 
     // Track newly selected objects for efficient comparison
@@ -287,7 +294,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     // Only test candidates that overlap the bounding box
     for (const object of candidates) {
-      if (object instanceof KritzelSelectionBox) continue;
+      if (object instanceof KritzelSelectionBox || object instanceof KritzelSelectionGroup) continue;
       const isHit = object.hitTestPolygon(selectionPolygon);
       object.isSelected = isHit;
       if (isHit) {
@@ -308,10 +315,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   private handleSelectionClick(event: PointerEvent): void {
     const selectedObject = this.getTopmostHitObject(event);
+    const isAdditive = event.shiftKey || event.ctrlKey;
 
     this.clearSelectionPreview();
 
-    this.addObjectToSelectionGroup(selectedObject);
+    this.addObjectToSelectionGroup(selectedObject, isAdditive);
     this.removeSelectionBox();
   }
 
@@ -321,7 +329,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     const overlappingObjects = this._core.getObjectsFromPointerEvent(event, '.object');
 
     for (const object of overlappingObjects) {
-      if (object instanceof KritzelSelectionBox) continue;
+      if (object instanceof KritzelSelectionBox || object instanceof KritzelSelectionGroup) continue;
       if (object.hitTest(pointerX, pointerY)) {
         return object;
       }
@@ -338,7 +346,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._previouslySelectedObjects.clear();
   }
 
-  private addObjectToSelectionGroup(object: KritzelBaseObject): void {
+  private addObjectToSelectionGroup(object: KritzelBaseObject, shiftKey: boolean = false): void {
     if (!object) {
       return;
     }
@@ -349,16 +357,25 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     objectToSelect.isSelected = false;
 
-    const selectionGroup = KritzelSelectionGroup.create(this._core);
-    selectionGroup.addOrRemove(objectToSelect);
-    selectionGroup.isSelected = true;
-    selectionGroup.rotation = objectToSelect.rotation;
+    const existingGroup = this._core.store.selectionGroup;
+    if (shiftKey && existingGroup) {
+      existingGroup.addOrRemove(objectToSelect);
+      if (existingGroup.objects.length === 0) {
+        this._core.removeSelectionGroup();
+      } else {
+        this._core.rerender();
+      }
+    } else {
+      const selectionGroup = KritzelSelectionGroup.create(this._core);
+      selectionGroup.addOrRemove(objectToSelect);
+      selectionGroup.isSelected = true;
 
-    this._core.addSelectionGroup(selectionGroup);
-    this._core.rerender();
+      this._core.addSelectionGroup(selectionGroup);
+      this._core.rerender();
+    }
   }
 
-  private addSelectedObjectsToSelectionGroup(): void {
+  private addSelectedObjectsToSelectionGroup(shiftKey: boolean = false): void {
     const selectedObjects = this._core.store.selectedObjects;
 
     if (selectedObjects.length === 0) {
@@ -385,20 +402,27 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       obj.isSelected = false;
     }
 
-    // Create selection group and set all IDs at once (no per-item refresh)
-    const selectionGroup = KritzelSelectionGroup.create(this._core);
-    selectionGroup.objectIds = Array.from(resolvedObjects.keys());
+    const unrolledObjects = Array.from(resolvedObjects.values());
+    const existingGroup = this._core.store.selectionGroup;
 
-    // Only refresh dimensions and capture snapshots ONCE at the end - O(n) instead of O(n²)
-    selectionGroup.captureUnchangedSnapshots();
-    selectionGroup.refreshObjectDimensions();
-    selectionGroup.isSelected = true;
+    if (shiftKey && existingGroup) {
+      existingGroup.addObjects(unrolledObjects);
+      this._core.rerender();
+    } else {
+      // Create selection group and set all IDs at once (no per-item refresh)
+      const selectionGroup = KritzelSelectionGroup.create(this._core);
+      selectionGroup.objectIds = Array.from(resolvedObjects.keys());
 
-    if (selectionGroup.length === 1) {
-      selectionGroup.rotation = selectionGroup.objects[0].rotation;
+      // Only refresh dimensions and capture snapshots ONCE at the end - O(n) instead of O(n²)
+      if (selectionGroup.length === 1) {
+        selectionGroup.rotation = selectionGroup.objects[0].rotation;
+      }
+      selectionGroup.captureUnchangedSnapshots();
+      selectionGroup.refreshObjectDimensions();
+      selectionGroup.isSelected = true;
+
+      this._core.addSelectionGroup(selectionGroup);
+      this._core.rerender();
     }
-
-    this._core.addSelectionGroup(selectionGroup);
-    this._core.rerender();
   }
 }
