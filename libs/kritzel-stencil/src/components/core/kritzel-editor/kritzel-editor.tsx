@@ -140,12 +140,12 @@ export class KritzelEditor {
       group: 'other',
       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
       children: [
-        { label: 'Align Left', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },
+        { label: 'Align Left', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },
         { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },
-        { label: 'Align Right', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },
-        { label: 'Align Top', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },
+        { label: 'Align Right', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },
+        { label: 'Align Top', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },
         { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },
-        { label: 'Align Bottom', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },
+        { label: 'Align Bottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },
       ],
     },
     {
