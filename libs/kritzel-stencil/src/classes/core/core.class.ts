@@ -367,6 +367,17 @@ export class KritzelCore {
     }
   }
 
+  cut(): void {
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup) {
+      return;
+    }
+
+    // Copy first, then delete
+    this.copy();
+    this.delete();
+  }
+
   paste(x?: number, y?: number) {
     const copiedObjects = this._store.state.copiedObjects;
     if (!copiedObjects || copiedObjects.length === 0) {
