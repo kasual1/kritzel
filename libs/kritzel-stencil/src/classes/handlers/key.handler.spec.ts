@@ -49,6 +49,7 @@ describe('KritzelKeyHandler', () => {
       undo: jest.fn(),
       redo: jest.fn(),
       copy: jest.fn(),
+      cut: jest.fn(),
       paste: jest.fn(),
       rerender: jest.fn(),
       bringForward: jest.fn(),
@@ -58,6 +59,8 @@ describe('KritzelKeyHandler', () => {
       group: jest.fn(),
       ungroup: jest.fn(),
       deselectAllObjects: jest.fn(),
+      selectAllObjectsInViewport: jest.fn(),
+      selectAllObjects: jest.fn(),
     } as unknown as jest.Mocked<KritzelCore>;
 
     keyHandler = new KritzelKeyHandler(mockCore);
@@ -70,7 +73,7 @@ describe('KritzelKeyHandler', () => {
   describe('handleKeyDown', () => {
     describe('isCtrlKeyPressed state', () => {
       it('should set isCtrlKeyPressed to true when ctrl is pressed', () => {
-        const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
+        const event = new KeyboardEvent('keydown', { key: 'q', ctrlKey: true });
 
         keyHandler.handleKeyDown(event);
 
@@ -154,53 +157,49 @@ describe('KritzelKeyHandler', () => {
     });
 
     describe('Tool selection shortcuts', () => {
-      it('should switch to selection tool when Ctrl+S is pressed', () => {
-        const event = new KeyboardEvent('keydown', { key: 's', ctrlKey: true });
+      beforeEach(() => {
+        (KritzelToolRegistry.getToolByIndex as jest.Mock).mockReturnValue(mockTool);
+      });
+
+      it('should switch to tool 1 when Ctrl+1 is pressed', () => {
+        const event = new KeyboardEvent('keydown', { key: '1', ctrlKey: true });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
         keyHandler.handleKeyDown(event);
 
         expect(preventDefaultSpy).toHaveBeenCalled();
-        expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('selection');
+        expect(KritzelToolRegistry.getToolByIndex).toHaveBeenCalledWith(0);
         expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockTool);
         expect(mockCore.deselectAllObjects).toHaveBeenCalled();
         expect(mockTool.onActivate).toHaveBeenCalled();
       });
 
-      it('should switch to brush tool when Ctrl+B is pressed', () => {
-        const event = new KeyboardEvent('keydown', { key: 'b', ctrlKey: true });
+      it('should switch to tool 2 when Ctrl+2 is pressed', () => {
+        const event = new KeyboardEvent('keydown', { key: '2', ctrlKey: true });
 
         keyHandler.handleKeyDown(event);
 
-        expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('brush');
+        expect(KritzelToolRegistry.getToolByIndex).toHaveBeenCalledWith(1);
         expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockTool);
       });
 
-      it('should switch to eraser tool when Ctrl+E is pressed', () => {
-        const event = new KeyboardEvent('keydown', { key: 'e', ctrlKey: true });
+      it('should switch to tool 3 when Ctrl+3 is pressed', () => {
+        const event = new KeyboardEvent('keydown', { key: '3', ctrlKey: true });
 
         keyHandler.handleKeyDown(event);
 
-        expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('eraser');
+        expect(KritzelToolRegistry.getToolByIndex).toHaveBeenCalledWith(2);
         expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockTool);
       });
 
-      it('should switch to image tool when Ctrl+I is pressed', () => {
-        const event = new KeyboardEvent('keydown', { key: 'i', ctrlKey: true });
+      it('should not switch tool when getToolByIndex returns undefined', () => {
+        (KritzelToolRegistry.getToolByIndex as jest.Mock).mockReturnValue(undefined);
+        const event = new KeyboardEvent('keydown', { key: '9', ctrlKey: true });
 
         keyHandler.handleKeyDown(event);
 
-        expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('image');
-        expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockTool);
-      });
-
-      it('should switch to text tool when Ctrl+X is pressed', () => {
-        const event = new KeyboardEvent('keydown', { key: 'x', ctrlKey: true });
-
-        keyHandler.handleKeyDown(event);
-
-        expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('text');
-        expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockTool);
+        expect(KritzelToolRegistry.getToolByIndex).toHaveBeenCalledWith(8);
+        expect(mockCore.store.setState).not.toHaveBeenCalled();
       });
     });
 
