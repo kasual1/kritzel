@@ -127,7 +127,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         const newFontColor = KritzelColorHelper.determineTextColor(value);
         this._core.updateObject(obj, { fillColor: value, fontColor: newFontColor });
         // When switching to fill mode, also update stroke color to match
-        const isTransparent = typeof value === 'string' ? value === 'transparent' : 
+        const isTransparent = typeof value === 'string' ? value === 'transparent' :
           (value.light === 'transparent' && value.dark === 'transparent');
         if (!isTransparent) {
           this._core.updateObject(obj, { strokeColor: value });
@@ -276,7 +276,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           selectionGroup &&
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected &&
-          !this._core.store.state.isLineHandleSelected
+          !this._core.store.state.isLineHandleSelected &&
+          !event.shiftKey
         ) {
           this._core.removeSelectionGroup();
           this._core.rerender();
@@ -321,7 +322,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           selectionGroup &&
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected &&
-          !this._core.store.state.isLineHandleSelected
+          !this._core.store.state.isLineHandleSelected &&
+          !event.shiftKey
         ) {
           this._core.removeSelectionGroup();
           this._core.rerender();
