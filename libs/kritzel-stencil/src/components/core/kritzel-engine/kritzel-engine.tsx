@@ -101,6 +101,34 @@ export class KritzelEngine {
     this.core.themeManager.setTheme(newValue);
   }
 
+  /** Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to. */
+  @Prop() viewportBoundaryLeft: number = -Infinity;
+  @Watch('viewportBoundaryLeft')
+  onViewportBoundaryLeftChange(newValue: number) {
+    this.core.store.state.viewportBoundaryLeft = newValue;
+  }
+
+  /** Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to. */
+  @Prop() viewportBoundaryRight: number = Infinity;
+  @Watch('viewportBoundaryRight')
+  onViewportBoundaryRightChange(newValue: number) {
+    this.core.store.state.viewportBoundaryRight = newValue;
+  }
+
+  /** Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to. */
+  @Prop() viewportBoundaryTop: number = -Infinity;
+  @Watch('viewportBoundaryTop')
+  onViewportBoundaryTopChange(newValue: number) {
+    this.core.store.state.viewportBoundaryTop = newValue;
+  }
+
+  /** Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to. */
+  @Prop() viewportBoundaryBottom: number = Infinity;
+  @Watch('viewportBoundaryBottom')
+  onViewportBoundaryBottomChange(newValue: number) {
+    this.core.store.state.viewportBoundaryBottom = newValue;
+  }
+
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
   @Event() activeToolChange: EventEmitter<KritzelBaseTool>;
   @Event() objectsSelectionChange: EventEmitter<void>;
@@ -636,6 +664,10 @@ export class KritzelEngine {
     this.validateScaleMax(this.scaleMax);
     this.validateScaleMin(this.scaleMin);
     this.core.store.state.lockDrawingScale = this.lockDrawingScale;
+    this.core.store.state.viewportBoundaryLeft = this.viewportBoundaryLeft;
+    this.core.store.state.viewportBoundaryRight = this.viewportBoundaryRight;
+    this.core.store.state.viewportBoundaryTop = this.viewportBoundaryTop;
+    this.core.store.state.viewportBoundaryBottom = this.viewportBoundaryBottom;
   }
 
   async componentDidLoad() {

@@ -9,6 +9,10 @@ const SETTINGS_STORAGE_KEY = 'kritzel-settings';
 const DEFAULT_SCALE_MIN = 0.0001;
 const DEFAULT_SCALE_MAX = 1000;
 const DEFAULT_LOCK_DRAWING_SCALE = true;
+const DEFAULT_VIEWPORT_BOUNDARY_LEFT = -Infinity;
+const DEFAULT_VIEWPORT_BOUNDARY_RIGHT = Infinity;
+const DEFAULT_VIEWPORT_BOUNDARY_TOP = -Infinity;
+const DEFAULT_VIEWPORT_BOUNDARY_BOTTOM = Infinity;
 
 const SETTINGS_CATEGORIES: IKritzelMasterDetailItem[] = [
   { id: 'general', label: 'General', icon: 'settings' },
@@ -34,6 +38,10 @@ export class KritzelSettings {
   @State() scaleMax: number = DEFAULT_SCALE_MAX;
   @State() lockDrawingScale: boolean = DEFAULT_LOCK_DRAWING_SCALE;
   @State() currentTheme: ThemeName = 'light';
+  @State() viewportBoundaryLeft: number = DEFAULT_VIEWPORT_BOUNDARY_LEFT;
+  @State() viewportBoundaryRight: number = DEFAULT_VIEWPORT_BOUNDARY_RIGHT;
+  @State() viewportBoundaryTop: number = DEFAULT_VIEWPORT_BOUNDARY_TOP;
+  @State() viewportBoundaryBottom: number = DEFAULT_VIEWPORT_BOUNDARY_BOTTOM;
 
   /** Emitted when settings change */
   @Event() settingsChange: EventEmitter<KritzelSettingsConfig>;
@@ -59,6 +67,18 @@ export class KritzelSettings {
         if (parsed.theme === 'light' || parsed.theme === 'dark') {
           this.currentTheme = parsed.theme;
         }
+        if (typeof parsed.viewportBoundaryLeft === 'number') {
+          this.viewportBoundaryLeft = parsed.viewportBoundaryLeft;
+        }
+        if (typeof parsed.viewportBoundaryRight === 'number') {
+          this.viewportBoundaryRight = parsed.viewportBoundaryRight;
+        }
+        if (typeof parsed.viewportBoundaryTop === 'number') {
+          this.viewportBoundaryTop = parsed.viewportBoundaryTop;
+        }
+        if (typeof parsed.viewportBoundaryBottom === 'number') {
+          this.viewportBoundaryBottom = parsed.viewportBoundaryBottom;
+        }
       } catch {
         // Invalid JSON, use defaults
       }
@@ -71,6 +91,10 @@ export class KritzelSettings {
       scaleMax: this.scaleMax,
       lockDrawingScale: this.lockDrawingScale,
       theme: this.currentTheme,
+      viewportBoundaryLeft: this.viewportBoundaryLeft,
+      viewportBoundaryRight: this.viewportBoundaryRight,
+      viewportBoundaryTop: this.viewportBoundaryTop,
+      viewportBoundaryBottom: this.viewportBoundaryBottom,
     };
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
     this.settingsChange.emit(settings);
@@ -93,6 +117,26 @@ export class KritzelSettings {
 
   private handleThemeChange = (event: CustomEvent<boolean>): void => {
     this.currentTheme = event.detail ? 'dark' : 'light';
+    this.saveSettings();
+  };
+
+  private handleViewportBoundaryLeftChange = (event: CustomEvent<number>): void => {
+    this.viewportBoundaryLeft = event.detail;
+    this.saveSettings();
+  };
+
+  private handleViewportBoundaryRightChange = (event: CustomEvent<number>): void => {
+    this.viewportBoundaryRight = event.detail;
+    this.saveSettings();
+  };
+
+  private handleViewportBoundaryTopChange = (event: CustomEvent<number>): void => {
+    this.viewportBoundaryTop = event.detail;
+    this.saveSettings();
+  };
+
+  private handleViewportBoundaryBottomChange = (event: CustomEvent<number>): void => {
+    this.viewportBoundaryBottom = event.detail;
     this.saveSettings();
   };
 
@@ -197,6 +241,50 @@ export class KritzelSettings {
                   max={1000}
                   step={1}
                   onValueChange={this.handleScaleMaxChange}
+                />
+              </div>
+              <div class="settings-item">
+                <label class="settings-label">Viewport Boundary Left</label>
+                <p class="settings-description">
+                  Left boundary in world coordinates. Set to limit how far left the viewport can pan.
+                </p>
+                <kritzel-numeric-input
+                  value={this.viewportBoundaryLeft}
+                  step={100}
+                  onValueChange={this.handleViewportBoundaryLeftChange}
+                />
+              </div>
+              <div class="settings-item">
+                <label class="settings-label">Viewport Boundary Right</label>
+                <p class="settings-description">
+                  Right boundary in world coordinates. Set to limit how far right the viewport can pan.
+                </p>
+                <kritzel-numeric-input
+                  value={this.viewportBoundaryRight}
+                  step={100}
+                  onValueChange={this.handleViewportBoundaryRightChange}
+                />
+              </div>
+              <div class="settings-item">
+                <label class="settings-label">Viewport Boundary Top</label>
+                <p class="settings-description">
+                  Top boundary in world coordinates. Set to limit how far up the viewport can pan.
+                </p>
+                <kritzel-numeric-input
+                  value={this.viewportBoundaryTop}
+                  step={100}
+                  onValueChange={this.handleViewportBoundaryTopChange}
+                />
+              </div>
+              <div class="settings-item">
+                <label class="settings-label">Viewport Boundary Bottom</label>
+                <p class="settings-description">
+                  Bottom boundary in world coordinates. Set to limit how far down the viewport can pan.
+                </p>
+                <kritzel-numeric-input
+                  value={this.viewportBoundaryBottom}
+                  step={100}
+                  onValueChange={this.handleViewportBoundaryBottomChange}
                 />
               </div>
             </div>

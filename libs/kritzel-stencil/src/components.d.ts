@@ -254,6 +254,22 @@ export namespace Components {
         "syncConfig"?: KritzelSyncConfig;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        /**
+          * @default Infinity
+         */
+        "viewportBoundaryBottom": number;
+        /**
+          * @default -Infinity
+         */
+        "viewportBoundaryLeft": number;
+        /**
+          * @default Infinity
+         */
+        "viewportBoundaryRight": number;
+        /**
+          * @default -Infinity
+         */
+        "viewportBoundaryTop": number;
     }
     interface KritzelEngine {
         "activeTool": KritzelTool;
@@ -318,6 +334,26 @@ export namespace Components {
         "ungroup": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        /**
+          * Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.
+          * @default Infinity
+         */
+        "viewportBoundaryBottom": number;
+        /**
+          * Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.
+          * @default -Infinity
+         */
+        "viewportBoundaryLeft": number;
+        /**
+          * Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.
+          * @default Infinity
+         */
+        "viewportBoundaryRight": number;
+        /**
+          * Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.
+          * @default -Infinity
+         */
+        "viewportBoundaryTop": number;
         "workspace"?: KritzelWorkspace;
     }
     interface KritzelExport {
@@ -1494,6 +1530,22 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         "syncConfig"?: KritzelSyncConfig;
+        /**
+          * @default Infinity
+         */
+        "viewportBoundaryBottom"?: number;
+        /**
+          * @default -Infinity
+         */
+        "viewportBoundaryLeft"?: number;
+        /**
+          * @default Infinity
+         */
+        "viewportBoundaryRight"?: number;
+        /**
+          * @default -Infinity
+         */
+        "viewportBoundaryTop"?: number;
     }
     interface KritzelEngine {
         "activeTool"?: KritzelTool;
@@ -1527,6 +1579,26 @@ declare namespace LocalJSX {
           * @default 'light'
          */
         "theme"?: ThemeName;
+        /**
+          * Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.
+          * @default Infinity
+         */
+        "viewportBoundaryBottom"?: number;
+        /**
+          * Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.
+          * @default -Infinity
+         */
+        "viewportBoundaryLeft"?: number;
+        /**
+          * Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.
+          * @default Infinity
+         */
+        "viewportBoundaryRight"?: number;
+        /**
+          * Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.
+          * @default -Infinity
+         */
+        "viewportBoundaryTop"?: number;
         "workspace"?: KritzelWorkspace;
     }
     interface KritzelExport {
@@ -1889,6 +1961,10 @@ declare namespace LocalJSX {
         "scaleMax": number;
         "scaleMin": number;
         "lockDrawingScale": boolean;
+        "viewportBoundaryLeft": number;
+        "viewportBoundaryRight": number;
+        "viewportBoundaryTop": number;
+        "viewportBoundaryBottom": number;
         "isControlsVisible": boolean;
         "isUtilityPanelVisible": boolean;
     }
@@ -1897,6 +1973,10 @@ declare namespace LocalJSX {
         "scaleMin": number;
         "lockDrawingScale": boolean;
         "theme": ThemeName;
+        "viewportBoundaryLeft": number;
+        "viewportBoundaryRight": number;
+        "viewportBoundaryTop": number;
+        "viewportBoundaryBottom": number;
     }
     interface KritzelFontAttributes {
         "fontFamily": string;

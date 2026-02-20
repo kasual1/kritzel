@@ -40,6 +40,10 @@ export class KritzelEditor {
   @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
   @Prop({ mutable: true }) scaleMin: number = ABSOLUTE_SCALE_MIN;
   @Prop({ mutable: true }) lockDrawingScale: boolean = true;
+  @Prop({ mutable: true }) viewportBoundaryLeft: number = -Infinity;
+  @Prop({ mutable: true }) viewportBoundaryRight: number = Infinity;
+  @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
+  @Prop({ mutable: true }) viewportBoundaryBottom: number = Infinity;
   @Prop() controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
@@ -340,6 +344,18 @@ export class KritzelEditor {
         if (parsed.theme === 'light' || parsed.theme === 'dark') {
           this.currentTheme = parsed.theme;
         }
+        if (typeof parsed.viewportBoundaryLeft === 'number') {
+          this.viewportBoundaryLeft = parsed.viewportBoundaryLeft;
+        }
+        if (typeof parsed.viewportBoundaryRight === 'number') {
+          this.viewportBoundaryRight = parsed.viewportBoundaryRight;
+        }
+        if (typeof parsed.viewportBoundaryTop === 'number') {
+          this.viewportBoundaryTop = parsed.viewportBoundaryTop;
+        }
+        if (typeof parsed.viewportBoundaryBottom === 'number') {
+          this.viewportBoundaryBottom = parsed.viewportBoundaryBottom;
+        }
       } catch {
         // Invalid JSON, use prop defaults
       }
@@ -394,6 +410,10 @@ export class KritzelEditor {
     this.scaleMax = event.detail.scaleMax;
     this.lockDrawingScale = event.detail.lockDrawingScale;
     this.currentTheme = event.detail.theme;
+    this.viewportBoundaryLeft = event.detail.viewportBoundaryLeft;
+    this.viewportBoundaryRight = event.detail.viewportBoundaryRight;
+    this.viewportBoundaryTop = event.detail.viewportBoundaryTop;
+    this.viewportBoundaryBottom = event.detail.viewportBoundaryBottom;
     this.themeChange.emit(event.detail.theme);
   }
 
@@ -474,6 +494,10 @@ export class KritzelEditor {
           scaleMax={this.scaleMax}
           lockDrawingScale={this.lockDrawingScale}
           scaleMin={this.scaleMin}
+          viewportBoundaryLeft={this.viewportBoundaryLeft}
+          viewportBoundaryRight={this.viewportBoundaryRight}
+          viewportBoundaryTop={this.viewportBoundaryTop}
+          viewportBoundaryBottom={this.viewportBoundaryBottom}
           theme={this.currentTheme}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
