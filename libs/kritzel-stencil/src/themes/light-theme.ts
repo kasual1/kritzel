@@ -47,6 +47,7 @@ export const lightTheme: KritzelTheme = {
     backgroundColor: '#ffffff',
     border: '1px solid #ebebeb',
     boxShadow: '0 1px 6px rgba(0, 0, 0, 0.12)',
+    dividerColor: 'rgba(0, 0, 0, 0.1)',
     itemActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
     itemColor: '#333333',
     itemDisabledColor: '#aaaaaa',

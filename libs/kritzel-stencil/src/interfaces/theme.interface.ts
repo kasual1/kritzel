@@ -65,6 +65,7 @@ export interface KritzelTheme {
     border?: string;
     borderRadius?: string;
     boxShadow?: string;
+    dividerColor?: string;
     itemActiveBackgroundColor?: string;
     itemBorderRadius?: string;
     itemColor?: string;

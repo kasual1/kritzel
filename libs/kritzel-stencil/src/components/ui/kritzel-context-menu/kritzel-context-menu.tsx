@@ -122,17 +122,23 @@ export class KritzelContextMenu {
     return (
       <Host>
         <div class="menu-container">
-          {this.processedItems.map(({ item, isDisabled }, index) => (
-            <button
-              key={`${item.label}-${index}`}
-              class={{ 'menu-item': true, 'disabled': isDisabled }}
-              onClick={() => this.handleItemClick(item, isDisabled)}
-              disabled={isDisabled}
-            >
-              {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
-              <span class="label">{item.label}</span>
-            </button>
-          ))}
+          {this.processedItems.map(({ item, isDisabled }, index) => {
+            const prevItem = index > 0 ? this.processedItems[index - 1].item : null;
+            const showDivider = prevItem && prevItem.group !== item.group;
+
+            return [
+              showDivider && <div class="menu-divider" key={`divider-${index}`}></div>,
+              <button
+                key={`${item.label}-${index}`}
+                class={{ 'menu-item': true, 'disabled': isDisabled }}
+                onClick={() => this.handleItemClick(item, isDisabled)}
+                disabled={isDisabled}
+              >
+                {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
+                <span class="label">{item.label}</span>
+              </button>
+            ];
+          })}
         </div>
       </Host>
     );

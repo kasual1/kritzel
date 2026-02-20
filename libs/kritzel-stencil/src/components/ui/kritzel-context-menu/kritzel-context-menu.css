@@ -52,3 +52,9 @@
 .label {
   flex-grow: 1;
 }
+
+.menu-divider {
+  height: 1px;
+  background-color: var(--kritzel-context-menu-divider-color, rgba(255, 255, 255, 0.1));
+  margin: var(--kritzel-context-menu-divider-margin, 4px 8px);
+}
