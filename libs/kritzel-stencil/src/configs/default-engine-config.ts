@@ -61,5 +61,9 @@ export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
     icon: 'default',
     iconActive: 'default'
   },
-  lockDrawingScale: true
+  lockDrawingScale: true,
+  viewportBoundaryLeft: -Infinity,
+  viewportBoundaryRight: Infinity,
+  viewportBoundaryTop: -Infinity,
+  viewportBoundaryBottom: Infinity
 };

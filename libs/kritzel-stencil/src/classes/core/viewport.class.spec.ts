@@ -50,6 +50,10 @@ describe('KritzelViewport', () => {
       pointerX: 0,
       pointerY: 0,
       pointers: new Map(),
+      viewportBoundaryLeft: -Infinity,
+      viewportBoundaryRight: Infinity,
+      viewportBoundaryTop: -Infinity,
+      viewportBoundaryBottom: Infinity,
       objects: {
         remove: jest.fn(),
         filter: jest.fn().mockReturnValue([]),
@@ -980,6 +984,291 @@ describe('KritzelViewport', () => {
       const calledScale = animateSpy.mock.calls[0][2];
       expect(calledScale).toBeLessThanOrEqual(5);
       expect(calledScale).toBeGreaterThanOrEqual(0.5);
+    });
+  });
+
+  describe('viewport boundary clamping', () => {
+    beforeEach(() => {
+      mockState.host = mockHost;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+      mockState.scale = 1;
+    });
+
+    describe('during mouse panning', () => {
+      it('should clamp translateX to respect left boundary', () => {
+        mockState.viewportBoundaryLeft = 0;
+        mockState.viewportBoundaryRight = Infinity;
+        mockState.isPanning = true;
+        mockState.startX = 500;
+        mockState.startY = 400;
+        mockState.translateX = 0;
+
+        // Try to pan right (which would show content left of boundaryLeft=0)
+        const event = createPointerEvent({
+          pointerType: 'mouse',
+          clientX: 600, // +100 from start
+          clientY: 400,
+        });
+
+        viewport.handlePointerMove(event);
+
+        // translateX should be clamped to 0 (cannot go positive when boundaryLeft=0)
+        expect(mockState.translateX).toBeCloseTo(0);
+      });
+
+      it('should clamp translateX to respect right boundary', () => {
+        mockState.viewportBoundaryLeft = -Infinity;
+        mockState.viewportBoundaryRight = 500;
+        mockState.isPanning = true;
+        mockState.startX = 500;
+        mockState.startY = 400;
+        mockState.translateX = 0;
+
+        // Try to pan left (which would show content right of boundaryRight=500)
+        const event = createPointerEvent({
+          pointerType: 'mouse',
+          clientX: 200, // -300 from start
+          clientY: 400,
+        });
+
+        viewport.handlePointerMove(event);
+
+        // translateX cannot go below viewportWidth - boundaryRight * scale = 1000 - 500 = 500
+        expect(mockState.translateX).toBe(500);
+      });
+
+      it('should clamp translateY to respect top boundary', () => {
+        mockState.viewportBoundaryTop = 0;
+        mockState.viewportBoundaryBottom = Infinity;
+        mockState.isPanning = true;
+        mockState.startX = 500;
+        mockState.startY = 400;
+        mockState.translateY = 0;
+
+        // Try to pan down (which would show content above boundaryTop=0)
+        const event = createPointerEvent({
+          pointerType: 'mouse',
+          clientX: 500,
+          clientY: 500, // +100 from start
+        });
+
+        viewport.handlePointerMove(event);
+
+        // translateY should be clamped to 0 (cannot go positive when boundaryTop=0)
+        expect(mockState.translateY).toBeCloseTo(0);
+      });
+
+      it('should clamp translateY to respect bottom boundary', () => {
+        mockState.viewportBoundaryTop = -Infinity;
+        mockState.viewportBoundaryBottom = 400;
+        mockState.isPanning = true;
+        mockState.startX = 500;
+        mockState.startY = 400;
+        mockState.translateY = 0;
+
+        // Try to pan up (which would show content below boundaryBottom=400)
+        const event = createPointerEvent({
+          pointerType: 'mouse',
+          clientX: 500,
+          clientY: 200, // -200 from start
+        });
+
+        viewport.handlePointerMove(event);
+
+        // translateY cannot go below viewportHeight - boundaryBottom * scale = 800 - 400 = 400
+        expect(mockState.translateY).toBe(400);
+      });
+
+      it('should allow panning within boundaries', () => {
+        mockState.viewportBoundaryLeft = -1000;
+        mockState.viewportBoundaryRight = 2000;
+        mockState.viewportBoundaryTop = -1000;
+        mockState.viewportBoundaryBottom = 2000;
+        mockState.isPanning = true;
+        mockState.startX = 500;
+        mockState.startY = 400;
+        mockState.translateX = 500;
+        mockState.translateY = 400;
+
+        const event = createPointerEvent({
+          pointerType: 'mouse',
+          clientX: 550,
+          clientY: 450,
+        });
+
+        viewport.handlePointerMove(event);
+
+        // Should pan normally within boundaries
+        expect(mockState.translateX).toBe(550);
+        expect(mockState.translateY).toBe(450);
+      });
+
+      it('should not clamp when boundaries are infinite', () => {
+        mockState.viewportBoundaryLeft = -Infinity;
+        mockState.viewportBoundaryRight = Infinity;
+        mockState.viewportBoundaryTop = -Infinity;
+        mockState.viewportBoundaryBottom = Infinity;
+        mockState.isPanning = true;
+        mockState.startX = 500;
+        mockState.startY = 400;
+        mockState.translateX = 0;
+        mockState.translateY = 0;
+
+        const event = createPointerEvent({
+          pointerType: 'mouse',
+          clientX: 1500, // +1000 from start
+          clientY: 1400, // +1000 from start
+        });
+
+        viewport.handlePointerMove(event);
+
+        // No clamping should occur
+        expect(mockState.translateX).toBe(1000);
+        expect(mockState.translateY).toBe(1000);
+      });
+    });
+
+    describe('during wheel panning', () => {
+      it('should clamp translate values when panning with wheel', () => {
+        // Use boundaries larger than viewport so clamping is meaningful at scale=1
+        mockState.viewportBoundaryLeft = 0;
+        mockState.viewportBoundaryRight = 2000;
+        mockState.viewportBoundaryTop = 0;
+        mockState.viewportBoundaryBottom = 1600;
+        mockState.translateX = 0;
+        mockState.translateY = 0;
+
+        // Try to pan right (negative deltaX pans right, making translateX positive)
+        const event = createWheelEvent({
+          deltaX: -1000,
+          deltaY: -1000,
+        });
+
+        viewport.handleWheel(event);
+
+        // Should be clamped to boundaries
+        // translateXMax = -boundaryLeft * scale = 0
+        // translateYMax = -boundaryTop * scale = 0
+        expect(mockState.translateX).toBeCloseTo(0); // Clamped to left boundary
+        expect(mockState.translateY).toBeCloseTo(0); // Clamped to top boundary
+      });
+    });
+
+    describe('during zoom', () => {
+      it('should prevent zooming out beyond boundary-based minimum scale', () => {
+        // Set boundaries that are smaller than viewport at scale=1
+        // Boundary width = 500, viewport width = 1000
+        // Min scale = 1000/500 = 2
+        mockState.viewportBoundaryLeft = 0;
+        mockState.viewportBoundaryRight = 500;
+        mockState.viewportBoundaryTop = 0;
+        mockState.viewportBoundaryBottom = 400;
+        mockState.scale = 3;
+        mockState.scaleMin = 0.1; // Configured min is lower than boundary-based min
+
+        // Try to zoom out significantly
+        const event = createWheelEvent({
+          ctrlKey: true,
+          deltaY: 1000, // Zoom out
+          clientX: 500,
+          clientY: 400,
+        });
+
+        viewport.handleWheel(event);
+
+        // Scale should not go below the boundary-based minimum (2.0 for width)
+        expect(mockState.scale).toBeGreaterThanOrEqual(2);
+      });
+
+      it('should allow zooming when within boundary constraints', () => {
+        mockState.viewportBoundaryLeft = -Infinity;
+        mockState.viewportBoundaryRight = Infinity;
+        mockState.viewportBoundaryTop = -Infinity;
+        mockState.viewportBoundaryBottom = Infinity;
+        mockState.scale = 1;
+        mockState.scaleMin = 0.1;
+
+        // Zoom out
+        const event = createWheelEvent({
+          ctrlKey: true,
+          deltaY: 100, // Zoom out
+          clientX: 500,
+          clientY: 400,
+        });
+
+        viewport.handleWheel(event);
+
+        // Scale should decrease (zoom out allowed with infinite boundaries)
+        expect(mockState.scale).toBeLessThan(1);
+        expect(mockState.scale).toBeGreaterThanOrEqual(0.1);
+      });
+
+      it('should clamp translate after zooming to stay within boundaries', () => {
+        mockState.viewportBoundaryLeft = 0;
+        mockState.viewportBoundaryRight = 1000;
+        mockState.viewportBoundaryTop = 0;
+        mockState.viewportBoundaryBottom = 800;
+        mockState.scale = 1;
+        mockState.translateX = 0;
+        mockState.translateY = 0;
+
+        // Zoom in at a corner
+        const event = createWheelEvent({
+          ctrlKey: true,
+          deltaY: -100, // Zoom in
+          clientX: 0,
+          clientY: 0,
+        });
+
+        viewport.handleWheel(event);
+
+        // Translate should be clamped to stay within boundaries
+        expect(mockState.translateX).toBeGreaterThanOrEqual(mockState.viewportWidth - mockState.viewportBoundaryRight * mockState.scale);
+        expect(mockState.translateX).toBeLessThanOrEqual(-mockState.viewportBoundaryLeft * mockState.scale);
+      });
+    });
+
+    describe('during centerFitInViewport', () => {
+      it('should respect boundary-based minimum scale when centering', () => {
+        mockState.viewportBoundaryLeft = 0;
+        mockState.viewportBoundaryRight = 500;
+        mockState.viewportBoundaryTop = 0;
+        mockState.viewportBoundaryBottom = 400;
+        mockState.scaleMin = 0.1;
+
+        // Large object that would require scale < boundary minimum
+        const mockObject = {
+          rotatedBoundingBox: { x: 0, y: 0, width: 5000, height: 4000 },
+        } as KritzelBaseObject;
+
+        viewport.centerFitInViewport(mockObject);
+
+        // Scale should not go below boundary-based minimum
+        expect(mockState.scale).toBeGreaterThanOrEqual(2); // 1000/500 = 2
+      });
+    });
+
+    describe('during centerFitNearestContent', () => {
+      it('should respect boundary-based minimum scale', () => {
+        mockState.viewportBoundaryLeft = 0;
+        mockState.viewportBoundaryRight = 500;
+        mockState.viewportBoundaryTop = 0;
+        mockState.viewportBoundaryBottom = 400;
+        mockState.scaleMin = 0.1;
+
+        const obj = {
+          rotatedBoundingBox: { x: 0, y: 0, width: 5000, height: 4000 },
+        };
+        (mockCore.store as any).allNonSelectionObjects = [obj];
+
+        const animateSpy = jest.spyOn(viewport, 'animateViewportTo');
+
+        viewport.centerFitNearestContent();
+
+        const calledScale = animateSpy.mock.calls[0][2];
+        expect(calledScale).toBeGreaterThanOrEqual(2); // Boundary-based minimum
+      });
     });
   });
 });
