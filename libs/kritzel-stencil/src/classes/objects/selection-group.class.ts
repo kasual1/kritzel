@@ -87,6 +87,28 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return object;
   }
 
+  addObjects(objects: KritzelBaseObject<any>[]) {
+    let changed = false;
+    for (const object of objects) {
+      if (!this._objectIds.includes(object.id)) {
+        this._objectIds.push(object.id);
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      this._cachedObjects = null;
+      const children = this.objects;
+      if (children.length === 1) {
+        this.rotation = children[0].rotation;
+      } else if (children.length > 1) {
+        this.rotation = 0;
+      }
+      this.captureUnchangedSnapshots(children);
+      this.refreshObjectDimensions(children);
+    }
+  }
+
   addOrRemove(object: KritzelBaseObject<any>) {
     const index = this._objectIds.findIndex(id => id === object.id);
     if (index === -1) {
@@ -97,6 +119,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this._cachedObjects = null; // Invalidate cache
 
     const children = this.objects; // Get cached objects once
+    if (children.length === 1) {
+      this.rotation = children[0].rotation;
+    } else if (children.length > 1) {
+      this.rotation = 0;
+    }
     this.captureUnchangedSnapshots(children);
     this.refreshObjectDimensions(children);
   }
