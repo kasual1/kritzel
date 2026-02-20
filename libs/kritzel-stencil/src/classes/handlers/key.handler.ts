@@ -41,6 +41,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
         c.rerender();
       },
     },
+    { key: 'x', ctrl: true, label: 'Cut', category: 'Clipboard', condition: c => !!c.store.selectionGroup, action: c => c.cut() },
     { key: 'v', ctrl: true, label: 'Paste', category: 'Clipboard', condition: c => !!c.store.state.copiedObjects && !c.store.activeText, action: c => c.paste() },
 
     // Object layering
