@@ -51,3 +51,5 @@ export * from './interfaces/shortcut.interface';
 export * from './themes/light-theme';
 export * from './themes/dark-theme';
 export * from './classes/managers/theme.manager';
+
+export * from './enums/alignment.enum';

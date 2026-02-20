@@ -2,6 +2,7 @@ import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventE
 import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
 import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
 import { ShapeType } from '../../../enums/shape-type.enum';
+import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
@@ -135,9 +136,17 @@ export class KritzelEditor {
     },
     {
       label: 'Align',
-      icon: 'layout-template',
+      icon: 'align',
       group: 'other',
-      children: [],
+      disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
+      children: [
+        { label: 'Align Left', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },
+        { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },
+        { label: 'Align Right', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },
+        { label: 'Align Top', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },
+        { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },
+        { label: 'Align Bottom', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },
+      ],
     },
     {
       label: 'Group',
