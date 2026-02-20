@@ -122,8 +122,15 @@ export class KritzelEditor {
       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),
     },
-    { label: 'Bring to Front', icon: 'bring-to-front', group: 'layer', action: () => this.engineRef.bringToFront() },
-    { label: 'Send to Back', icon: 'send-to-back', group: 'layer', action: () => this.engineRef.sendToBack() },
+    {
+      label: 'Ordering',
+      icon: 'ordering',
+      group: 'layer',
+      children: [
+        { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },
+        { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },
+      ],
+    },
     {
       label: 'Group',
       icon: 'group',
