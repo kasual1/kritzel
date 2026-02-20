@@ -9,4 +9,12 @@ export interface KritzelSettingsConfig {
   lockDrawingScale: boolean;
   /** The current theme name */
   theme: ThemeName;
+  /** Left boundary of the viewport in world coordinates */
+  viewportBoundaryLeft: number;
+  /** Right boundary of the viewport in world coordinates */
+  viewportBoundaryRight: number;
+  /** Top boundary of the viewport in world coordinates */
+  viewportBoundaryTop: number;
+  /** Bottom boundary of the viewport in world coordinates */
+  viewportBoundaryBottom: number;
 }

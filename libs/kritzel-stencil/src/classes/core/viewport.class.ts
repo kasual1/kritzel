@@ -47,6 +47,79 @@ export class KritzelViewport {
     this._debounceUpdate.cancel();
   }
 
+  /**
+   * Clamps translateX and translateY to respect viewport boundaries.
+   * Boundaries are defined in world coordinates and converted to screen-space translate limits.
+   * @param translateX - The proposed translateX value
+   * @param translateY - The proposed translateY value
+   * @returns Clamped translate values
+   */
+  private clampTranslate(translateX: number, translateY: number): { translateX: number; translateY: number } {
+    const state = this._core.store.state;
+    const { scale, viewportWidth, viewportHeight } = state;
+    const { viewportBoundaryLeft, viewportBoundaryRight, viewportBoundaryTop, viewportBoundaryBottom } = state;
+
+    // Convert world boundaries to screen-space translate limits
+    // translateX = viewportX - worldX * scale, so:
+    // - To show boundaryLeft at left edge (viewportX=0): translateX = -boundaryLeft * scale
+    // - To show boundaryRight at right edge (viewportX=viewportWidth): translateX = viewportWidth - boundaryRight * scale
+    const translateXMax = -viewportBoundaryLeft * scale;
+    const translateXMin = viewportWidth - viewportBoundaryRight * scale;
+
+    const translateYMax = -viewportBoundaryTop * scale;
+    const translateYMin = viewportHeight - viewportBoundaryBottom * scale;
+
+    // Only clamp if boundaries are finite
+    let clampedX = translateX;
+    let clampedY = translateY;
+
+    if (Number.isFinite(translateXMin) && Number.isFinite(translateXMax)) {
+      clampedX = Math.max(translateXMin, Math.min(translateXMax, translateX));
+    } else if (Number.isFinite(translateXMin)) {
+      clampedX = Math.max(translateXMin, translateX);
+    } else if (Number.isFinite(translateXMax)) {
+      clampedX = Math.min(translateXMax, translateX);
+    }
+
+    if (Number.isFinite(translateYMin) && Number.isFinite(translateYMax)) {
+      clampedY = Math.max(translateYMin, Math.min(translateYMax, translateY));
+    } else if (Number.isFinite(translateYMin)) {
+      clampedY = Math.max(translateYMin, translateY);
+    } else if (Number.isFinite(translateYMax)) {
+      clampedY = Math.min(translateYMax, translateY);
+    }
+
+    return { translateX: clampedX, translateY: clampedY };
+  }
+
+  /**
+   * Calculates the effective minimum scale considering both the configured scaleMin
+   * and the minimum scale required to keep the viewport within boundaries.
+   * This prevents users from zooming out far enough to see past the boundaries.
+   * @returns The effective minimum scale value
+   */
+  private getEffectiveMinScale(): number {
+    const state = this._core.store.state;
+    const { viewportWidth, viewportHeight, scaleMin } = state;
+    const { viewportBoundaryLeft, viewportBoundaryRight, viewportBoundaryTop, viewportBoundaryBottom } = state;
+
+    const boundaryWidth = viewportBoundaryRight - viewportBoundaryLeft;
+    const boundaryHeight = viewportBoundaryBottom - viewportBoundaryTop;
+
+    // If boundaries are infinite, just use the configured scaleMin
+    if (!Number.isFinite(boundaryWidth) || !Number.isFinite(boundaryHeight)) {
+      return scaleMin;
+    }
+
+    // Calculate minimum scale to fit viewport within boundaries
+    // scale >= viewportWidth / boundaryWidth and scale >= viewportHeight / boundaryHeight
+    const minScaleX = boundaryWidth > 0 ? viewportWidth / boundaryWidth : scaleMin;
+    const minScaleY = boundaryHeight > 0 ? viewportHeight / boundaryHeight : scaleMin;
+    const minScaleForBoundaries = Math.max(minScaleX, minScaleY);
+
+    return Math.max(scaleMin, minScaleForBoundaries);
+  }
+
   handleResize(): void {
     this._core.store.state.viewportWidth = this._core.store.state.host.clientWidth;
     this._core.store.state.viewportHeight = this._core.store.state.host.clientHeight;
@@ -119,8 +192,11 @@ export class KritzelViewport {
         const dx = xRelativeToHost - this._core.store.state.startX;
         const dy = yRelativeToHost - this._core.store.state.startY;
 
-        this._core.store.state.translateX += dx;
-        this._core.store.state.translateY += dy;
+        const newTranslateX = this._core.store.state.translateX + dx;
+        const newTranslateY = this._core.store.state.translateY + dy;
+        const clamped = this.clampTranslate(newTranslateX, newTranslateY);
+        this._core.store.state.translateX = clamped.translateX;
+        this._core.store.state.translateY = clamped.translateY;
         this._core.store.state.startX = xRelativeToHost;
         this._core.store.state.startY = yRelativeToHost;
         this._core.store.state.hasViewportChanged = true;
@@ -155,17 +231,24 @@ export class KritzelViewport {
 
         const scaleRatio = currentTouchDistance / this.initialTouchDistance!;
         const newScale = this._core.store.state.scale * scaleRatio;
+        const effectiveMinScale = this.getEffectiveMinScale();
 
-        if (newScale > this._core.store.state.scaleMax || newScale < this._core.store.state.scaleMin) {
-          this._core.store.state.translateX = this._core.store.state.translateX + midpointX - this.startX;
-          this._core.store.state.translateY = this._core.store.state.translateY + midpointY - this.startY;
+        if (newScale > this._core.store.state.scaleMax || newScale < effectiveMinScale) {
+          const newTranslateX = this._core.store.state.translateX + midpointX - this.startX;
+          const newTranslateY = this._core.store.state.translateY + midpointY - this.startY;
+          const clamped = this.clampTranslate(newTranslateX, newTranslateY);
+          this._core.store.state.translateX = clamped.translateX;
+          this._core.store.state.translateY = clamped.translateY;
         } else {
           const translateXAdjustment = (midpointX - this._core.store.state.translateX) * (scaleRatio - 1);
           const translateYAdjustment = (midpointY - this._core.store.state.translateY) * (scaleRatio - 1);
 
-          this._core.store.state.translateX = this._core.store.state.translateX + midpointX - this.startX - translateXAdjustment;
-          this._core.store.state.translateY = this._core.store.state.translateY + midpointY - this.startY - translateYAdjustment;
+          const newTranslateX = this._core.store.state.translateX + midpointX - this.startX - translateXAdjustment;
+          const newTranslateY = this._core.store.state.translateY + midpointY - this.startY - translateYAdjustment;
           this._core.store.state.scale = newScale;
+          const clamped = this.clampTranslate(newTranslateX, newTranslateY);
+          this._core.store.state.translateX = clamped.translateX;
+          this._core.store.state.translateY = clamped.translateY;
 
           this.initialTouchDistance = currentTouchDistance;
         }
@@ -215,8 +298,11 @@ export class KritzelViewport {
     const objectCenterX = x + width / 2;
     const objectCenterY = y + height / 2;
 
-    this._core.store.state.translateX = viewportWidth / 2 - objectCenterX * scale;
-    this._core.store.state.translateY = viewportHeight / 2 - objectCenterY * scale;
+    const newTranslateX = viewportWidth / 2 - objectCenterX * scale;
+    const newTranslateY = viewportHeight / 2 - objectCenterY * scale;
+    const clamped = this.clampTranslate(newTranslateX, newTranslateY);
+    this._core.store.state.translateX = clamped.translateX;
+    this._core.store.state.translateY = clamped.translateY;
     this._core.store.state.hasViewportChanged = true;
 
     this._core.rerender();
@@ -227,7 +313,7 @@ export class KritzelViewport {
     const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
     const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
     const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
-    const clampedScale = Math.max(newScale, this._core.store.state.scaleMin);
+    const clampedScale = Math.max(newScale, this.getEffectiveMinScale());
 
     this._core.store.state.scale = clampedScale;
     this.centerInViewport(object);
@@ -244,7 +330,8 @@ export class KritzelViewport {
 
     const rawScaleFactor = 1 + (event.deltaY * -0.012);
     const scaleFactor = Math.max(0.8, Math.min(1.2, rawScaleFactor));
-    const newScale = Math.min(this._core.store.state.scaleMax, Math.max(this._core.store.state.scaleMin, this._core.store.state.scale * scaleFactor));
+    const effectiveMinScale = this.getEffectiveMinScale();
+    const newScale = Math.min(this._core.store.state.scaleMax, Math.max(effectiveMinScale, this._core.store.state.scale * scaleFactor));
 
     const scaleRatio = newScale / this._core.store.state.scale;
     const translateXAdjustment = (xRelativeToHost - this._core.store.state.translateX) * (scaleRatio - 1);
@@ -252,13 +339,17 @@ export class KritzelViewport {
 
     this._core.store.state.scale = newScale;
 
-    this._core.store.state.translateX = this._core.store.state.translateX - translateXAdjustment;
-    this._core.store.state.translateY = this._core.store.state.translateY - translateYAdjustment;
+    let newTranslateX = this._core.store.state.translateX - translateXAdjustment;
+    let newTranslateY = this._core.store.state.translateY - translateYAdjustment;
 
     // Apply horizontal pan from trackpad pinch+drag gestures
     if (event.deltaX !== 0) {
-      this._core.store.state.translateX -= event.deltaX * 0.8;
+      newTranslateX -= event.deltaX * 0.8;
     }
+
+    const clamped = this.clampTranslate(newTranslateX, newTranslateY);
+    this._core.store.state.translateX = clamped.translateX;
+    this._core.store.state.translateY = clamped.translateY;
 
     this._core.store.state.hasViewportChanged = true;
 
@@ -270,8 +361,11 @@ export class KritzelViewport {
   private handlePan(event: WheelEvent): void {
     const panSpeed = 0.8;
 
-    this._core.store.state.translateX = this._core.store.state.translateX - event.deltaX * panSpeed;
-    this._core.store.state.translateY = this._core.store.state.translateY - event.deltaY * panSpeed;
+    const newTranslateX = this._core.store.state.translateX - event.deltaX * panSpeed;
+    const newTranslateY = this._core.store.state.translateY - event.deltaY * panSpeed;
+    const clamped = this.clampTranslate(newTranslateX, newTranslateY);
+    this._core.store.state.translateX = clamped.translateX;
+    this._core.store.state.translateY = clamped.translateY;
 
     this._core.store.state.hasViewportChanged = true;
 
@@ -312,9 +406,12 @@ export class KritzelViewport {
       // easeOutCubic easing function
       const eased = 1 - Math.pow(1 - progress, 3);
 
-      this._core.store.state.translateX = startTranslateX + (targetTranslateX - startTranslateX) * eased;
-      this._core.store.state.translateY = startTranslateY + (targetTranslateY - startTranslateY) * eased;
       this._core.store.state.scale = startScale + (targetScale - startScale) * eased;
+      const newTranslateX = startTranslateX + (targetTranslateX - startTranslateX) * eased;
+      const newTranslateY = startTranslateY + (targetTranslateY - startTranslateY) * eased;
+      const clamped = this.clampTranslate(newTranslateX, newTranslateY);
+      this._core.store.state.translateX = clamped.translateX;
+      this._core.store.state.translateY = clamped.translateY;
       this._core.store.state.hasViewportChanged = true;
       this._core.rerender();
 
@@ -386,7 +483,7 @@ export class KritzelViewport {
     const scaleX = this._core.store.state.viewportWidth / (contentWidth * 1.1);
     const scaleY = this._core.store.state.viewportHeight / (contentHeight * 1.1);
     const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
-    const clampedScale = Math.max(newScale, this._core.store.state.scaleMin);
+    const clampedScale = Math.max(newScale, this.getEffectiveMinScale());
 
     // Calculate target translation to center content
     const targetTranslateX = this._core.store.state.viewportWidth / 2 - contentCenterX * clampedScale;
