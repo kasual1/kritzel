@@ -123,9 +123,9 @@ export class KritzelEditor {
       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),
     },
     {
-      label: 'Ordering',
+      label: 'Order',
       icon: 'ordering',
-      group: 'layer',
+      group: 'other',
       children: [
         { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },
         { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },
@@ -134,22 +134,34 @@ export class KritzelEditor {
       ],
     },
     {
-      label: 'Group',
-      icon: 'group',
-      group: 'grouping',
-      disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
-      action: () => this.engineRef.group(),
+      label: 'Align',
+      icon: 'layout-template',
+      group: 'other',
+      children: [],
     },
     {
-      label: 'Ungroup',
-      icon: 'ungroup',
-      group: 'grouping',
-      disabled: async () => {
-        const selectedObjects = await this.engineRef.getSelectedObjects();
-        return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');
-      },
-      action: () => this.engineRef.ungroup(),
+      label: 'Group',
+      icon: 'group',
+      group: 'other',
+      children: [
+        {
+          label: 'Group',
+          icon: 'group',
+          disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
+          action: () => this.engineRef.group(),
+        },
+        {
+          label: 'Ungroup',
+          icon: 'ungroup',
+          disabled: async () => {
+            const selectedObjects = await this.engineRef.getSelectedObjects();
+            return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');
+          },
+          action: () => this.engineRef.ungroup(),
+        },
+      ],
     },
+
     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
   ];
 
@@ -363,9 +375,7 @@ export class KritzelEditor {
   }
 
   handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
-    const contentObjects = event.detail.filter(
-      obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox)
-    );
+    const contentObjects = event.detail.filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox));
     const hasVisibleObjects = contentObjects.length > 0;
     this.isBackToContentButtonVisible = !hasVisibleObjects;
   }
@@ -445,10 +455,7 @@ export class KritzelEditor {
             onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
           ></kritzel-workspace-manager>
 
-          <kritzel-back-to-content
-            visible={this.isBackToContentButtonVisible}
-            onBackToContent={() => this.backToContent()}
-          ></kritzel-back-to-content>
+          <kritzel-back-to-content visible={this.isBackToContentButtonVisible} onBackToContent={() => this.backToContent()}></kritzel-back-to-content>
         </div>
 
         <kritzel-engine
@@ -480,21 +487,15 @@ export class KritzelEditor {
         ></kritzel-controls>
 
         <div class="top-right-buttons">
-          <kritzel-settings
-            ref={el => (this.settingsRef = el)}
-            shortcuts={this.shortcuts}
-            onSettingsChange={event => this.handleSettingsChange(event)}
-          ></kritzel-settings>
+          <kritzel-settings ref={el => (this.settingsRef = el)} shortcuts={this.shortcuts} onSettingsChange={event => this.handleSettingsChange(event)}></kritzel-settings>
 
           <kritzel-export
             ref={el => (this.exportRef = el)}
             onExportPng={() => this.engineRef.exportViewportAsPng()}
             onExportSvg={() => this.engineRef.exportViewportAsSvg()}
           ></kritzel-export>
-          
-          <kritzel-more-menu
-            onItemSelect={event => this.handleMoreMenuItemSelect(event)}
-          ></kritzel-more-menu>
+
+          <kritzel-more-menu onItemSelect={event => this.handleMoreMenuItemSelect(event)}></kritzel-more-menu>
         </div>
       </Host>
     );
