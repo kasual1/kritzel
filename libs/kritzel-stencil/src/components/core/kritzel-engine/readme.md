@@ -7,18 +7,22 @@
 
 ## Properties
 
-| Property                 | Attribute            | Description                                                                  | Type                | Default              |
-| ------------------------ | -------------------- | ---------------------------------------------------------------------------- | ------------------- | -------------------- |
-| `activeTool`             | --                   |                                                                              | `KritzelTool`       | `undefined`          |
-| `cursorTarget`           | --                   |                                                                              | `HTMLElement`       | `undefined`          |
-| `globalContextMenuItems` | --                   |                                                                              | `ContextMenuItem[]` | `undefined`          |
-| `lockDrawingScale`       | `lock-drawing-scale` | When true, objects are drawn at a fixed visual size regardless of zoom level | `boolean`           | `true`               |
-| `objectContextMenuItems` | --                   |                                                                              | `ContextMenuItem[]` | `undefined`          |
-| `scaleMax`               | `scale-max`          |                                                                              | `number`            | `ABSOLUTE_SCALE_MAX` |
-| `scaleMin`               | `scale-min`          |                                                                              | `number`            | `ABSOLUTE_SCALE_MIN` |
-| `syncConfig`             | --                   |                                                                              | `KritzelSyncConfig` | `undefined`          |
-| `theme`                  | `theme`              | The current theme to apply to the editor                                     | `"dark" \| "light"` | `'light'`            |
-| `workspace`              | --                   |                                                                              | `KritzelWorkspace`  | `undefined`          |
+| Property                 | Attribute                  | Description                                                                                               | Type                | Default              |
+| ------------------------ | -------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------- | -------------------- |
+| `activeTool`             | --                         |                                                                                                           | `KritzelTool`       | `undefined`          |
+| `cursorTarget`           | --                         |                                                                                                           | `HTMLElement`       | `undefined`          |
+| `globalContextMenuItems` | --                         |                                                                                                           | `ContextMenuItem[]` | `undefined`          |
+| `lockDrawingScale`       | `lock-drawing-scale`       | When true, objects are drawn at a fixed visual size regardless of zoom level                              | `boolean`           | `true`               |
+| `objectContextMenuItems` | --                         |                                                                                                           | `ContextMenuItem[]` | `undefined`          |
+| `scaleMax`               | `scale-max`                |                                                                                                           | `number`            | `ABSOLUTE_SCALE_MAX` |
+| `scaleMin`               | `scale-min`                |                                                                                                           | `number`            | `ABSOLUTE_SCALE_MIN` |
+| `syncConfig`             | --                         |                                                                                                           | `KritzelSyncConfig` | `undefined`          |
+| `theme`                  | `theme`                    | The current theme to apply to the editor                                                                  | `"dark" \| "light"` | `'light'`            |
+| `viewportBoundaryBottom` | `viewport-boundary-bottom` | Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to. | `number`            | `Infinity`           |
+| `viewportBoundaryLeft`   | `viewport-boundary-left`   | Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.   | `number`            | `-Infinity`          |
+| `viewportBoundaryRight`  | `viewport-boundary-right`  | Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.  | `number`            | `Infinity`           |
+| `viewportBoundaryTop`    | `viewport-boundary-top`    | Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.    | `number`            | `-Infinity`          |
+| `workspace`              | --                         |                                                                                                           | `KritzelWorkspace`  | `undefined`          |
 
 
 ## Events
@@ -50,6 +54,22 @@
 #### Returns
 
 Type: `Promise<T>`
+
+
+
+### `alignObjects(alignment: KritzelAlignment) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name        | Type               | Description |
+| ----------- | ------------------ | ----------- |
+| `alignment` | `KritzelAlignment` |             |
+
+#### Returns
+
+Type: `Promise<void>`
 
 
 
@@ -272,6 +292,16 @@ Type: `Promise<Omit<KritzelShortcut, "action" | "condition">[]>`
 #### Returns
 
 Type: `Promise<T>`
+
+
+
+### `getObjectsInViewport() => Promise<KritzelBaseObject[]>`
+
+
+
+#### Returns
+
+Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
 
 
 
