@@ -33,16 +33,17 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   handlePointerDown(event: PointerEvent) {
+    const isAdditive = event.shiftKey || event.ctrlKey;
     if (event.pointerType === 'mouse') {
-      if (KritzelEventHelper.isLeftClick(event) && (!this._core.store.selectionGroup || event.shiftKey)) {
-        this.startMouseSelection(event);
+      if (KritzelEventHelper.isLeftClick(event) && (!this._core.store.selectionGroup || isAdditive)) {
+        this.startMouseSelection(event, isAdditive);
       }
     }
 
     if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       this.touchStartTimeout = setTimeout(() => {
-        if (this._core.store.state.pointers.size === 1 && !this._core.store.state.isScaling && (!this._core.store.selectionGroup || event.shiftKey)) {
-          this.startTouchSelection(event);
+        if (this._core.store.state.pointers.size === 1 && !this._core.store.state.isScaling && (!this._core.store.selectionGroup || isAdditive)) {
+          this.startTouchSelection(event, isAdditive);
           this.updateTouchSelection();
         }
       }, 80);
@@ -92,8 +93,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
           }
 
           if (this.isSelectionDrag) {
+            const isAdditive = event.shiftKey || event.ctrlKey;
             this.updateMouseSelection(event);
-            this.addSelectedObjectsToSelectionGroup(event.shiftKey);
+            this.addSelectedObjectsToSelectionGroup(isAdditive);
             this.removeSelectionBox();
           }
 
@@ -120,8 +122,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
         }
 
         if (this.isSelectionDrag) {
+          const isAdditive = event.shiftKey || event.ctrlKey;
           this.updateTouchSelection();
-          this.addSelectedObjectsToSelectionGroup(event.shiftKey);
+          this.addSelectedObjectsToSelectionGroup(isAdditive);
           this.removeSelectionBox();
         }
 
@@ -137,7 +140,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._core.store.setSelectionBox(null);
   }
 
-  private startMouseSelection(event: MouseEvent): void {
+  private startMouseSelection(event: MouseEvent, isAdditive: boolean = false): void {
     let clientX, clientY;
 
     clientX = event.clientX - this._core.store.offsetX;
@@ -153,16 +156,16 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.state.isSelecting = true;
 
-    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || (!event.shiftKey && o instanceof KritzelSelectionGroup));
+    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || (!isAdditive && o instanceof KritzelSelectionGroup));
     this._core.store.setSelectionBox(null);
-    if (!event.shiftKey) {
+    if (!isAdditive) {
       this._core.store.setSelectionGroup(null);
     }
     this._core.store.state.objects.insert(selectionBox);
     this._core.store.setSelectionBox(selectionBox);
   }
 
-  private startTouchSelection(event: PointerEvent): void {
+  private startTouchSelection(_event: PointerEvent, isAdditive: boolean = false): void {
     const activePointers = Array.from(this._core.store.state.pointers.values());
     const firstTouch = activePointers[0];
 
@@ -187,9 +190,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.state.isSelecting = true;
 
-    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || (!event.shiftKey && o instanceof KritzelSelectionGroup));
+    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || (!isAdditive && o instanceof KritzelSelectionGroup));
     this._core.store.setSelectionBox(null);
-    if (!event.shiftKey) {
+    if (!isAdditive) {
       this._core.store.setSelectionGroup(null);
     }
     this._core.store.state.objects.insert(selectionBox);
@@ -312,10 +315,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   private handleSelectionClick(event: PointerEvent): void {
     const selectedObject = this.getTopmostHitObject(event);
+    const isAdditive = event.shiftKey || event.ctrlKey;
 
     this.clearSelectionPreview();
 
-    this.addObjectToSelectionGroup(selectedObject, event.shiftKey);
+    this.addObjectToSelectionGroup(selectedObject, isAdditive);
     this.removeSelectionBox();
   }
 

@@ -270,6 +270,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         const selectedObject = this.getSelectedObject(event);
         const selectionGroup = this._core.store.selectionGroup;
         const isDifferentObject = selectedObject && selectionGroup && selectedObject.id !== selectionGroup.id;
+        const isAdditive = event.shiftKey || event.ctrlKey;
 
         if (
           (selectedObject === null || isDifferentObject) &&
@@ -277,7 +278,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected &&
           !this._core.store.state.isLineHandleSelected &&
-          !event.shiftKey
+          !isAdditive
         ) {
           this._core.removeSelectionGroup();
           this._core.rerender();
@@ -312,6 +313,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         const selectedObject = this.getSelectedObject(event);
         const selectionGroup = this._core.store.selectionGroup;
         const isDifferentObject = selectedObject && selectionGroup && selectedObject.id !== selectionGroup.id;
+        const isAdditive = event.shiftKey || event.ctrlKey;
 
         if (!selectionGroup && selectedObject) {
           this._core.store.state.skipContextMenu = true;
@@ -323,7 +325,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           !this._core.store.state.isResizeHandleSelected &&
           !this._core.store.state.isRotationHandleSelected &&
           !this._core.store.state.isLineHandleSelected &&
-          !event.shiftKey
+          !isAdditive
         ) {
           this._core.removeSelectionGroup();
           this._core.rerender();
