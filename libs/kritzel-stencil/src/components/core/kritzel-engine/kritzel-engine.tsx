@@ -467,6 +467,11 @@ export class KritzelEngine {
   }
 
   @Method()
+  async getObjectsInViewport(): Promise<KritzelBaseObject[]> {
+    return this.core.getObjectsInViewport();
+  }
+
+  @Method()
   async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string> {
     if (!this.host) return null;
 

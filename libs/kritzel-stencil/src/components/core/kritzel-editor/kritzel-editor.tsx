@@ -105,35 +105,43 @@ export class KritzelEditor {
       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
       action: menu => this.engineRef.paste(menu.x, menu.y),
     },
-    { label: 'Select All', icon: 'select-all', action: () => this.selectAllObjectsInViewport() },
+    {
+      label: 'Select All',
+      icon: 'select-all',
+      disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,
+      action: () => this.selectAllObjectsInViewport(),
+    },
   ];
 
   @Prop() objectContextMenuItems: ContextMenuItem[] = [
-    { label: 'Copy', icon: 'copy', action: () => this.engineRef.copy() },
+    { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },
     {
       label: 'Paste',
       icon: 'paste',
+      group: 'clipboard',
       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),
     },
-    { label: 'Delete', icon: 'delete', action: () => this.engineRef.delete() },
-    { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },
-    { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },
+    { label: 'Bring to Front', icon: 'bring-to-front', group: 'layer', action: () => this.engineRef.bringToFront() },
+    { label: 'Send to Back', icon: 'send-to-back', group: 'layer', action: () => this.engineRef.sendToBack() },
     {
       label: 'Group',
       icon: 'group',
+      group: 'grouping',
       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
       action: () => this.engineRef.group(),
     },
     {
       label: 'Ungroup',
       icon: 'ungroup',
+      group: 'grouping',
       disabled: async () => {
         const selectedObjects = await this.engineRef.getSelectedObjects();
         return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');
       },
       action: () => this.engineRef.ungroup(),
     },
+    { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
   ];
 
   @Prop() customSvgIcons: Record<string, string> = {};
