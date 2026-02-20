@@ -12,6 +12,7 @@ const DEFAULT_LOCK_DRAWING_SCALE = true;
 
 const SETTINGS_CATEGORIES: IKritzelMasterDetailItem[] = [
   { id: 'general', label: 'General', icon: 'settings' },
+  { id: 'viewport', label: 'Viewport', icon: 'viewport' },
   { id: 'shortcuts', label: 'Keyboard Shortcuts', icon: 'command' },
   { id: 'about', label: 'About', icon: 'info' },
 ];
@@ -164,6 +165,14 @@ export class KritzelSettings {
                   onCheckedChange={this.handleLockDrawingScaleChange}
                 />
               </div>
+            </div>
+          </div>
+        );
+      case 'viewport':
+        return (
+          <div class="settings-content">
+            <h3>Viewport Settings</h3>
+            <div class="settings-group">
               <div class="settings-item">
                 <label class="settings-label">Minimum Zoom Level</label>
                 <p class="settings-description">
