@@ -5,11 +5,13 @@
 .menu-container {
   display: flex;
   flex-direction: column;
+  gap: var(--kritzel-context-menu-item-spacing, 2px);
   background-color: var(--kritzel-context-menu-background-color, #ffffff);
   border-radius: var(--kritzel-context-menu-border-radius, 12px);
   box-shadow: var(--kritzel-context-menu-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
   border: var(--kritzel-context-menu-border, 1px solid #ebebeb);
   padding: var(--kritzel-context-menu-padding, 4px);
+  min-width: var(--kritzel-context-menu-min-width, 140px);
 }
 
 .menu-item-wrapper {
@@ -86,6 +88,7 @@
   margin-left: 4px;
   display: flex;
   flex-direction: column;
+  gap: var(--kritzel-context-menu-item-spacing, 2px);
   background-color: var(--kritzel-context-menu-background-color, #ffffff);
   border-radius: var(--kritzel-context-menu-border-radius, 12px);
   box-shadow: var(--kritzel-context-menu-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
