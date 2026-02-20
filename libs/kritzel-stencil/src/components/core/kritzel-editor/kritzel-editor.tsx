@@ -129,6 +129,8 @@ export class KritzelEditor {
       children: [
         { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },
         { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },
+        { label: 'Move Up', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },
+        { label: 'Move Down', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },
       ],
     },
     {
