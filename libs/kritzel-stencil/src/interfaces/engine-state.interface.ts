@@ -71,4 +71,12 @@ export interface KritzelEngineState {
   },
   /** When true, objects are drawn at a fixed visual size regardless of zoom level */
   lockDrawingScale: boolean;
+  /** Left boundary of the viewport in world coordinates */
+  viewportBoundaryLeft: number;
+  /** Right boundary of the viewport in world coordinates */
+  viewportBoundaryRight: number;
+  /** Top boundary of the viewport in world coordinates */
+  viewportBoundaryTop: number;
+  /** Bottom boundary of the viewport in world coordinates */
+  viewportBoundaryBottom: number;
 }
