@@ -34,6 +34,7 @@ import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelThemeManager } from '../../../classes/managers/theme.manager';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
+import { KritzelAlignment } from '../../../enums/alignment.enum';
 
 @Component({
   tag: 'kritzel-engine',
@@ -340,6 +341,11 @@ export class KritzelEngine {
   @Method()
   async sendToBack(object?: KritzelBaseObject<any>) {
     this.core.sendToBack(object);
+  }
+
+  @Method()
+  async alignObjects(alignment: KritzelAlignment) {
+    this.core.alignObjects(alignment);
   }
 
   @Method()

@@ -1,7 +1,9 @@
 import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engine';
 import { KritzelContextMenu } from '../../components/ui/kritzel-context-menu/kritzel-context-menu';
 import { DEFAULT_ENGINE_CONFIG } from '../../configs/default-engine-config';
+import { AlignmentHelper } from '../../helpers/alignment.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
+import { KritzelAlignment } from '../../enums/alignment.enum';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
@@ -618,6 +620,36 @@ export class KritzelCore {
       this.updateObject(obj, { zIndex: min });
     });
 
+    this.rerender();
+  }
+
+  /**
+   * Aligns objects within the current selection group based on the specified alignment type.
+   * Requires at least 2 objects to be selected.
+   * @param alignment The alignment type to apply
+   */
+  alignObjects(alignment: KritzelAlignment): void {
+    const selectionGroup = this._store.selectionGroup;
+    if (!selectionGroup || selectionGroup.objects.length < 2) {
+      return;
+    }
+
+    const objects = selectionGroup.objects;
+    const alignedPositions = AlignmentHelper.calculateAlignedPositions(objects, alignment);
+
+    this._store.state.objects.transaction(() => {
+      for (const obj of objects) {
+        const newPosition = alignedPositions.get(obj.id);
+        if (newPosition) {
+          this.updateObject(obj, {
+            translateX: newPosition.translateX,
+            translateY: newPosition.translateY,
+          } as Partial<typeof obj>);
+        }
+      }
+    });
+
+    selectionGroup.refreshObjectDimensions();
     this.rerender();
   }
 
