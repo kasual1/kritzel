@@ -138,6 +138,11 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
             break;
         }
 
+        // Lock aspect ratio when Shift key is pressed
+        if (event.shiftKey) {
+          this.constrainToAspectRatio();
+        }
+
         this.newSize.x = newCenterX - this.newSize.width / objectScale / 2;
         this.newSize.y = newCenterY - this.newSize.height / objectScale / 2;
 
@@ -214,11 +219,39 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
             break;
         }
 
+        // Note: Touch events don't have shiftKey, aspect ratio locking is mouse-only
+
         this.newSize.x = newCenterX - this.newSize.width / objectScale / 2;
         this.newSize.y = newCenterY - this.newSize.height / objectScale / 2;
 
         selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
       }
+    }
+  }
+
+  /**
+   * Constrains the new size to maintain the original aspect ratio.
+   * Uses the dominant scale factor (larger change) to determine the final size.
+   */
+  private constrainToAspectRatio(): void {
+    const initialWidth = this.initialSize.width;
+    const initialHeight = this.initialSize.height;
+
+    if (initialWidth === 0 || initialHeight === 0) {
+      return;
+    }
+
+    const aspectRatio = initialWidth / initialHeight;
+    const widthScale = this.newSize.width / initialWidth;
+    const heightScale = this.newSize.height / initialHeight;
+
+    // Use the dominant scale factor (the one with larger magnitude change)
+    if (Math.abs(widthScale - 1) > Math.abs(heightScale - 1)) {
+      // Width changed more, adjust height to match
+      this.newSize.height = this.newSize.width / aspectRatio;
+    } else {
+      // Height changed more, adjust width to match
+      this.newSize.width = this.newSize.height * aspectRatio;
     }
   }
 

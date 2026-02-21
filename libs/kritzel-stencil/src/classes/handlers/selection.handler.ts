@@ -33,6 +33,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   }
 
   handlePointerDown(event: PointerEvent) {
+    if (this._core.store.state.isResizeHandleSelected || this._core.store.state.isRotationHandleSelected) {
+      return;
+    }
+
     const isAdditive = event.shiftKey || event.ctrlKey;
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event) && (!this._core.store.selectionGroup || isAdditive)) {
