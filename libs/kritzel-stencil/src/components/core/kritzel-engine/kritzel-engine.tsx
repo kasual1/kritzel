@@ -289,23 +289,43 @@ export class KritzelEngine {
    * Determines if the engine should handle a keyboard event.
    * Returns true only if:
    * - The event originates from within the engine component, OR
-   * - The event target is the document body/html (no specific element has focus)
-   * 
-   * This prevents conflicts with parent web components, dialogs, or other
-   * interactive elements that may have their own keyboard handling.
+   * - The event target is not an interactive element that needs keyboard input
+   *
+   * This prevents conflicts with inputs, textareas, dialogs, or other
+   * interactive elements that need their own keyboard handling.
    */
   private shouldHandleKeyboardEvent(ev: KeyboardEvent): boolean {
-    const target = ev.target as HTMLElement;
-    
-    // Always handle if event originated from within the engine
-    if (this.host.contains(target)) {
+    const path = ev.composedPath();
+
+    // Check if event path includes our host - works reliably with Shadow DOM
+    if (path.includes(this.host)) {
       return true;
     }
-    
-    // Handle global shortcuts only when no specific element has focus
-    // (target is body or html element)
-    const isGlobalTarget = target === document.body || target === document.documentElement;
-    return isGlobalTarget;
+
+    // Check if event path includes a dialog (works across Shadow DOM boundaries)
+    const isInsideDialog = path.some((el: EventTarget) => {
+      if (!(el instanceof HTMLElement)) return false;
+      return (
+        el.tagName === 'DIALOG' ||
+        el.tagName === 'KRITZEL-DIALOG' ||
+        el.getAttribute?.('role') === 'dialog' ||
+        el.getAttribute?.('role') === 'alertdialog'
+      );
+    });
+
+    if (isInsideDialog) {
+      return false;
+    }
+
+    const target = ev.target as HTMLElement;
+
+    // Don't handle if target is an interactive element that needs keyboard input
+    if (target.matches?.('input, textarea, select, [contenteditable="true"], [contenteditable=""]')) {
+      return false;
+    }
+
+    // Handle global shortcuts when no interactive element has focus
+    return true;
   }
 
   @Listen('dblclick', { target: 'document' })
