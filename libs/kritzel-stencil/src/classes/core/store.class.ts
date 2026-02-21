@@ -27,11 +27,48 @@ export class KritzelStore {
     return Math.max(0, ...this._state.objects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).map(o => o.zIndex)) + 1;
   }
 
+  /**
+   * Returns true if viewport boundaries are set to finite values (not Infinity).
+   */
+  get hasViewportBoundaries(): boolean {
+    return (
+      Number.isFinite(this._state.viewportBoundaryLeft) ||
+      Number.isFinite(this._state.viewportBoundaryRight) ||
+      Number.isFinite(this._state.viewportBoundaryTop) ||
+      Number.isFinite(this._state.viewportBoundaryBottom)
+    );
+  }
+
+  /**
+   * Returns the viewport boundary bounds for querying objects.
+   * Uses the configured boundaries, defaulting to Infinity for unset values.
+   */
+  private get viewportBoundaryBounds(): { x: number; y: number; z: number; width: number; height: number } {
+    const left = this._state.viewportBoundaryLeft;
+    const right = this._state.viewportBoundaryRight;
+    const top = this._state.viewportBoundaryTop;
+    const bottom = this._state.viewportBoundaryBottom;
+
+    return {
+      x: Number.isFinite(left) ? left : -Infinity,
+      y: Number.isFinite(top) ? top : -Infinity,
+      z: 0,
+      width: Number.isFinite(left) && Number.isFinite(right) ? right - left : Infinity,
+      height: Number.isFinite(top) && Number.isFinite(bottom) ? bottom - top : Infinity,
+    };
+  }
+
   get totalObjectCount(): number {
+    if (this.hasViewportBoundaries) {
+      return this.allObjects.length;
+    }
     return this._state.objects.totalCount;
   }
 
   get allObjects(): KritzelBaseObject<Element>[]  {
+    if (this.hasViewportBoundaries) {
+      return this._state.objects.query(this.viewportBoundaryBounds);
+    }
     return this._state.objects.allObjects();
   }
 
@@ -51,7 +88,7 @@ export class KritzelStore {
   }
 
   get allNonSelectionObjects(): KritzelBaseObject<Element>[]  {
-    return this._state.objects.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
+    return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
   }
 
   get selectedObjects(): KritzelBaseObject<Element>[] {
