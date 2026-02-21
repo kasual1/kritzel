@@ -1,7 +1,7 @@
-import { KritzelCore } from "../..";
 import { KritzelSerializable } from "../../interfaces/serializable.interface";
+import type { KritzelCore } from "./core.class";
 
-export class KritzelWorkspace implements KritzelSerializable{
+export class KritzelWorkspace implements KritzelSerializable {
   __class__ = 'KritzelWorkspace';
 
   id: string;
@@ -16,7 +16,7 @@ export class KritzelWorkspace implements KritzelSerializable{
 
   _core: KritzelCore;
 
-  constructor(id: string, name: string,  viewport: { translateX: number; translateY: number; scale: number } = { translateX: 0, translateY: 0, scale: 1 }) {
+  constructor(id: string, name: string, viewport: { translateX: number; translateY: number; scale: number } = { translateX: 0, translateY: 0, scale: 1 }) {
     this.id = id;
     this.name = name;
     this.createdAt = new Date();

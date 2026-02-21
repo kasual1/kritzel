@@ -1,6 +1,6 @@
 import * as Y from 'yjs';
 import { KritzelWorkspace } from '../core/workspace.class';
-import { KritzelCore } from '../core/core.class';
+import type { KritzelCore } from '../core/core.class';
 import { ISyncProvider } from '../../interfaces/sync-provider.interface';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { DEFAULT_SYNC_CONFIG } from '../../configs/default-sync.config';
