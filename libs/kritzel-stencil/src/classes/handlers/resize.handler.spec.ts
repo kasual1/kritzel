@@ -17,6 +17,7 @@ describe('KritzelResizeHandler', () => {
     scale: number;
     resize: jest.Mock;
     update: jest.Mock;
+    beginTransform: jest.Mock;
   } | null;
   let mockState: {
     isResizing: boolean;
@@ -94,6 +95,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
         const event = createPointerEvent('pointerdown', {
@@ -124,6 +126,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
         const event = createPointerEvent('pointerdown', {
@@ -156,6 +159,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = false;
         const event = createPointerEvent('pointerdown', { pointerType: 'mouse' });
@@ -177,6 +181,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
         const event = createPointerEvent('pointerdown', {
@@ -203,6 +208,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
         mockState.pointers.set(1, { clientX: 150, clientY: 200 });
@@ -234,6 +240,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
@@ -258,6 +265,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
         // No pointers in map
@@ -281,6 +289,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });
@@ -307,6 +316,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
         mockState.pointers.set(1, { clientX: 200, clientY: 250 });
@@ -336,6 +346,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
       });
@@ -524,6 +535,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
       });
@@ -599,6 +611,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
       });
@@ -691,6 +704,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
       });
@@ -775,6 +789,7 @@ describe('KritzelResizeHandler', () => {
           scale: 1,
           resize: jest.fn(),
           update: jest.fn(),
+          beginTransform: jest.fn(),
         };
         mockState.isResizeHandleSelected = true;
         mockState.resizeHandleType = KritzelHandleType.BottomRight;
@@ -807,8 +822,9 @@ describe('KritzelResizeHandler', () => {
         rotation: 0,
         scale: 1,
         resize: jest.fn(),
-        update: jest.fn(),
-      };
+          update: jest.fn(),
+          beginTransform: jest.fn(),
+        };
       mockState.isResizeHandleSelected = true;
       mockState.resizeHandleType = KritzelHandleType.BottomRight;
     });
@@ -842,3 +858,4 @@ describe('KritzelResizeHandler', () => {
     });
   });
 });
+

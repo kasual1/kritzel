@@ -13,3 +13,4 @@ You are an expert in Jest. You write maintainable, performant, and accessible co
 - Mock external dependencies using `jest.mock()`
 - Use snapshot testing judiciously; prefer more specific assertions when possible
 - Tests related to indexedDB should use the `fake-indexeddb` package to mock IndexedDB in a Node.js environment
+- To run tests go to the root directory of the project and run `npm run test`
