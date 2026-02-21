@@ -28,6 +28,10 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   // Store snapshots of object state for transformations (rotation, resize)
   unchangedObjectSnapshots: Map<string, UnchangedObjectSnapshot> = new Map();
   snapshotRotation: number = 0;
+  snapshotWidth: number = 0;
+  snapshotHeight: number = 0;
+  snapshotTranslateX: number = 0;
+  snapshotTranslateY: number = 0;
 
   minX: number;
   maxX: number;
@@ -198,6 +202,10 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   captureUnchangedSnapshots(cachedObjects?: KritzelBaseObject<any>[]): void {
     this.unchangedObjectSnapshots.clear();
     this.snapshotRotation = this.rotation;
+    this.snapshotWidth = this.width;
+    this.snapshotHeight = this.height;
+    this.snapshotTranslateX = this.translateX;
+    this.snapshotTranslateY = this.translateY;
     const children = cachedObjects ?? this.objects;
     children.forEach(obj => {
       this.unchangedObjectSnapshots.set(obj.id, {
@@ -215,7 +223,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override serialize() {
-    const { _core, _elementRef, element, totalWidth, totalHeight, unchangedObjectSnapshots, _cachedObjects, _cachedObjectIdsHash, ...remainingProps } = this as any;
+    const { _core, _elementRef, element, totalWidth, totalHeight, unchangedObjectSnapshots, _cachedObjects, _cachedObjectIdsHash, snapshotWidth, snapshotHeight, snapshotTranslateX, snapshotTranslateY, ...remainingProps } = this as any;
 
     const clonedProps = structuredClone(remainingProps);
 
@@ -284,12 +292,15 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   override resize(x: number, y: number, width: number, height: number): void {
-    const widthScaleFactor = width / this.width;
-    const heightScaleFactor = height / this.height;
+    // Use snapshot dimensions for scale factor calculation to avoid compounding errors during drag
+    const widthScaleFactor = width / this.snapshotWidth;
+    const heightScaleFactor = height / this.snapshotHeight;
 
-    // Calculate old center
-    const oldCenterX = this.translateX + this.totalWidth / 2 / this.scale;
-    const oldCenterY = this.translateY + this.totalHeight / 2 / this.scale;
+    // Calculate old center from snapshot position
+    const snapshotTotalWidth = this.snapshotWidth + this.padding * 2;
+    const snapshotTotalHeight = this.snapshotHeight + this.padding * 2;
+    const oldCenterX = this.snapshotTranslateX + snapshotTotalWidth / 2 / this.scale;
+    const oldCenterY = this.snapshotTranslateY + snapshotTotalHeight / 2 / this.scale;
 
     // Calculate new center
     const newTotalWidth = width + this.padding * 2;
@@ -308,9 +319,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       const children = this.objects;
 
       children.forEach(child => {
-        // Calculate child center
-        const childCenterX = child.translateX + child.totalWidth / 2 / child.scale;
-        const childCenterY = child.translateY + child.totalHeight / 2 / child.scale;
+        // Use snapshot values for child to avoid compounding errors during drag
+        const snapshot = this.unchangedObjectSnapshots.get(child.id);
+        if (!snapshot) return;
+
+        // Calculate child center from snapshot position
+        const childCenterX = snapshot.translateX + snapshot.totalWidth / 2 / snapshot.scale;
+        const childCenterY = snapshot.translateY + snapshot.totalHeight / 2 / snapshot.scale;
 
         // Vector from old group center to child center
         const dx = childCenterX - oldCenterX;
@@ -333,8 +348,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
         const newChildCenterY = newCenterY + rotatedY;
 
         // New child top-left
-        // Calculate relative rotation
-        const relativeRotation = child.rotation - rotation;
+        // Calculate relative rotation using snapshot rotation
+        const relativeRotation = snapshot.rotation - rotation;
         const cosRel = Math.cos(relativeRotation);
         const sinRel = Math.sin(relativeRotation);
 
@@ -349,8 +364,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
           Math.pow(widthScaleFactor * sinRel, 2) + Math.pow(heightScaleFactor * cosRel, 2)
         );
 
-        const updatedWidth = child.width * newChildWidthScale;
-        const updatedHeight = child.height * newChildHeightScale;
+        // Use snapshot dimensions to calculate new size, avoiding compounding errors
+        const updatedWidth = snapshot.width * newChildWidthScale;
+        const updatedHeight = snapshot.height * newChildHeightScale;
         const updatedTotalWidth = updatedWidth + child.padding * 2;
         const updatedTotalHeight = updatedHeight + child.padding * 2;
 
@@ -364,8 +380,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       });
 
       // Refresh dimensions and update the SelectionGroup to propagate changes to other tabs
+      // Note: Don't capture new snapshots here - we need to preserve the original snapshots
+      // until the transform operation is complete to avoid compounding errors during drag
       this.refreshObjectDimensions(children);
-      this.captureUnchangedSnapshots(children);
       this._core.store.state.objects.update(this);
     });
   }

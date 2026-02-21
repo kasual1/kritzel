@@ -511,6 +511,7 @@ describe('KritzelSelectionGroup', () => {
       });
       obj.resize = jest.fn();
       selectionGroup.objectIds = ['obj-1'];
+      selectionGroup.captureUnchangedSnapshots();
 
       selectionGroup.resize(0, 0, 200, 200);
 
@@ -525,6 +526,7 @@ describe('KritzelSelectionGroup', () => {
       selectionGroup.scale = 1;
       selectionGroup.padding = 0;
       selectionGroup.rotation = 0;
+      selectionGroup.captureUnchangedSnapshots();
 
       selectionGroup.resize(0, 0, 200, 200);
 
@@ -543,6 +545,7 @@ describe('KritzelSelectionGroup', () => {
       const obj = createMockObject({ id: 'obj-1' });
       obj.resize = jest.fn();
       selectionGroup.objectIds = ['obj-1'];
+      selectionGroup.captureUnchangedSnapshots();
 
       selectionGroup.resize(0, 0, 200, 200);
 
