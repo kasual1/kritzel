@@ -371,10 +371,10 @@ export class KritzelEditor {
     this.scaleMax = event.detail.scaleMax;
     this.lockDrawingScale = event.detail.lockDrawingScale;
     this.currentTheme = event.detail.theme;
-    this.viewportBoundaryLeft = event.detail.viewportBoundaryLeft;
-    this.viewportBoundaryRight = event.detail.viewportBoundaryRight;
-    this.viewportBoundaryTop = event.detail.viewportBoundaryTop;
-    this.viewportBoundaryBottom = event.detail.viewportBoundaryBottom;
+    this.viewportBoundaryLeft = event.detail.viewportBoundaryLeft ?? -Infinity;
+    this.viewportBoundaryRight = event.detail.viewportBoundaryRight ?? Infinity;
+    this.viewportBoundaryTop = event.detail.viewportBoundaryTop ?? -Infinity;
+    this.viewportBoundaryBottom = event.detail.viewportBoundaryBottom ?? Infinity;
     this.themeChange.emit(event.detail.theme);
   }
 
