@@ -268,8 +268,8 @@ export class KritzelEngine {
   }
 
   @Listen('keydown', { target: 'window' })
-  handleKeyDown(ev) {
-    if (this.core.store.isDisabled) {
+  handleKeyDown(ev: KeyboardEvent) {
+    if (this.core.store.isDisabled || !this.shouldHandleKeyboardEvent(ev)) {
       return;
     }
 
@@ -277,12 +277,35 @@ export class KritzelEngine {
   }
 
   @Listen('keyup', { target: 'window' })
-  handleKeyUp(ev) {
-    if (this.core.store.isDisabled) {
+  handleKeyUp(ev: KeyboardEvent) {
+    if (this.core.store.isDisabled || !this.shouldHandleKeyboardEvent(ev)) {
       return;
     }
 
     this.keyHandler.handleKeyUp(ev);
+  }
+
+  /**
+   * Determines if the engine should handle a keyboard event.
+   * Returns true only if:
+   * - The event originates from within the engine component, OR
+   * - The event target is the document body/html (no specific element has focus)
+   * 
+   * This prevents conflicts with parent web components, dialogs, or other
+   * interactive elements that may have their own keyboard handling.
+   */
+  private shouldHandleKeyboardEvent(ev: KeyboardEvent): boolean {
+    const target = ev.target as HTMLElement;
+    
+    // Always handle if event originated from within the engine
+    if (this.host.contains(target)) {
+      return true;
+    }
+    
+    // Handle global shortcuts only when no specific element has focus
+    // (target is body or html element)
+    const isGlobalTarget = target === document.body || target === document.documentElement;
+    return isGlobalTarget;
   }
 
   @Listen('dblclick', { target: 'document' })

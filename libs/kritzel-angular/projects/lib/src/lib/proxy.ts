@@ -255,19 +255,19 @@ export declare interface KritzelMoreMenu extends Components.KritzelMoreMenu {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelNumericInput,
-  inputs: ['label', 'max', 'min', 'step', 'value']
+  inputs: ['label', 'max', 'min', 'placeholder', 'step', 'value']
 })
 @Component({
   selector: 'kritzel-numeric-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['label', 'max', 'min', 'step', 'value'],
+  inputs: ['label', 'max', 'min', 'placeholder', 'step', 'value'],
   outputs: ['valueChange'],
 })
 export class KritzelNumericInput {
   protected el: HTMLKritzelNumericInputElement;
-  @Output() valueChange = new EventEmitter<CustomEvent<number>>();
+  @Output() valueChange = new EventEmitter<CustomEvent<number | undefined>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -279,7 +279,7 @@ export declare interface KritzelNumericInput extends Components.KritzelNumericIn
   /**
    * Emitted when the value changes (after normalization)
    */
-  valueChange: EventEmitter<CustomEvent<number>>;
+  valueChange: EventEmitter<CustomEvent<number | undefined>>;
 }
 
 
