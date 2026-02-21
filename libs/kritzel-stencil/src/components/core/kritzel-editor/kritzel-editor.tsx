@@ -327,6 +327,68 @@ export class KritzelEditor {
     this.setOsSpecificCssVariables();
   }
 
+  async checkIsReady() {
+    await customElements.whenDefined('kritzel-editor');
+    await customElements.whenDefined('kritzel-workspace-manager');
+    await customElements.whenDefined('kritzel-controls');
+    await customElements.whenDefined('kritzel-engine');
+
+    if (!this.isEngineReady || !this.isControlsReady || !this.isWorkspaceManagerReady) {
+      return;
+    }
+
+    this.isReady.emit(this.host);
+  }
+
+  onEngineReady(event: CustomEvent<KritzelEngineState>) {
+    this.isEngineReady = true;
+    this.activeWorkspace = event.detail.activeWorkspace;
+    this.workspaces = event.detail.workspaces;
+    this.loadShortcuts();
+  }
+
+  handleWorkspacesChange(event: CustomEvent<KritzelWorkspace[]>) {
+    this.workspaces = event.detail;
+  }
+
+  handleObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
+    this.objectsChange.emit(event.detail);
+    this.isBackToContentButtonVisible = false;
+  }
+
+  handleUndoStateChange(event: CustomEvent<KritzelUndoState>) {
+    this.undoStateChange.emit(event.detail);
+    this.undoState = event.detail;
+  }
+
+  handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
+    const hasVisibleObjects = this.getContentObjects(event.detail).length > 0;
+    this.isBackToContentButtonVisible = !hasVisibleObjects;
+  }
+
+  handleSettingsChange(event: CustomEvent<KritzelSettingsConfig>) {
+    this.scaleMin = event.detail.scaleMin;
+    this.scaleMax = event.detail.scaleMax;
+    this.lockDrawingScale = event.detail.lockDrawingScale;
+    this.currentTheme = event.detail.theme;
+    this.viewportBoundaryLeft = event.detail.viewportBoundaryLeft;
+    this.viewportBoundaryRight = event.detail.viewportBoundaryRight;
+    this.viewportBoundaryTop = event.detail.viewportBoundaryTop;
+    this.viewportBoundaryBottom = event.detail.viewportBoundaryBottom;
+    this.themeChange.emit(event.detail.theme);
+  }
+
+  async handleMoreMenuItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
+    const { item } = event.detail;
+    if (item.id === 'settings') {
+      this.settingsRef.open();
+    }
+    if (item.id === 'export') {
+      const preview = await this.engineRef.getScreenshot('png');
+      this.exportRef.open(preview);
+    }
+  }
+
   private loadSettingsFromStorage(): void {
     const stored = localStorage.getItem('kritzel-settings');
     if (stored) {
@@ -362,70 +424,12 @@ export class KritzelEditor {
     }
   }
 
-  async checkIsReady() {
-    await customElements.whenDefined('kritzel-editor');
-    await customElements.whenDefined('kritzel-workspace-manager');
-    await customElements.whenDefined('kritzel-controls');
-    await customElements.whenDefined('kritzel-engine');
-
-    if (!this.isEngineReady || !this.isControlsReady || !this.isWorkspaceManagerReady) {
-      return;
-    }
-
-    this.isReady.emit(this.host);
-  }
-
-  onEngineReady(event: CustomEvent<KritzelEngineState>) {
-    this.isEngineReady = true;
-    this.activeWorkspace = event.detail.activeWorkspace;
-    this.workspaces = event.detail.workspaces;
-    this.loadShortcuts();
-  }
-
   private async loadShortcuts(): Promise<void> {
     this.shortcuts = await this.engineRef.getDisplayableShortcuts();
   }
 
-  handleWorkspacesChange(event: CustomEvent<KritzelWorkspace[]>) {
-    this.workspaces = event.detail;
-  }
-
-  handleObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
-    this.objectsChange.emit(event.detail);
-  }
-
-  handleUndoStateChange(event: CustomEvent<KritzelUndoState>) {
-    this.undoStateChange.emit(event.detail);
-    this.undoState = event.detail;
-  }
-
-  handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
-    const contentObjects = event.detail.filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox));
-    const hasVisibleObjects = contentObjects.length > 0;
-    this.isBackToContentButtonVisible = !hasVisibleObjects;
-  }
-
-  handleSettingsChange(event: CustomEvent<KritzelSettingsConfig>) {
-    this.scaleMin = event.detail.scaleMin;
-    this.scaleMax = event.detail.scaleMax;
-    this.lockDrawingScale = event.detail.lockDrawingScale;
-    this.currentTheme = event.detail.theme;
-    this.viewportBoundaryLeft = event.detail.viewportBoundaryLeft;
-    this.viewportBoundaryRight = event.detail.viewportBoundaryRight;
-    this.viewportBoundaryTop = event.detail.viewportBoundaryTop;
-    this.viewportBoundaryBottom = event.detail.viewportBoundaryBottom;
-    this.themeChange.emit(event.detail.theme);
-  }
-
-  async handleMoreMenuItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
-    const { item } = event.detail;
-    if (item.id === 'settings') {
-      this.settingsRef.open();
-    }
-    if (item.id === 'export') {
-      const preview = await this.engineRef.getScreenshot('png');
-      this.exportRef.open(preview);
-    }
+  private getContentObjects(objects: KritzelBaseObject<Element>[]): KritzelBaseObject<Element>[] {
+    return objects.filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox));
   }
 
   private registerCustomSvgIcons() {

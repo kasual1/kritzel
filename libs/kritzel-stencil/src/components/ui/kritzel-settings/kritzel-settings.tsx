@@ -251,6 +251,7 @@ export class KritzelSettings {
                 <kritzel-numeric-input
                   value={this.viewportBoundaryLeft}
                   step={100}
+                  placeholder="Infinite"
                   onValueChange={this.handleViewportBoundaryLeftChange}
                 />
               </div>
@@ -262,6 +263,7 @@ export class KritzelSettings {
                 <kritzel-numeric-input
                   value={this.viewportBoundaryRight}
                   step={100}
+                  placeholder="Infinite"
                   onValueChange={this.handleViewportBoundaryRightChange}
                 />
               </div>
@@ -273,6 +275,7 @@ export class KritzelSettings {
                 <kritzel-numeric-input
                   value={this.viewportBoundaryTop}
                   step={100}
+                  placeholder="Infinite"
                   onValueChange={this.handleViewportBoundaryTopChange}
                 />
               </div>
@@ -284,6 +287,7 @@ export class KritzelSettings {
                 <kritzel-numeric-input
                   value={this.viewportBoundaryBottom}
                   step={100}
+                  placeholder="Infinite"
                   onValueChange={this.handleViewportBoundaryBottomChange}
                 />
               </div>
