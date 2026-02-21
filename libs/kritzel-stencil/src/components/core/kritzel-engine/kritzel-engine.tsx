@@ -436,6 +436,16 @@ export class KritzelEngine {
     return object || null;
   }
 
+   @Method()
+  async getAllObjects<T extends KritzelBaseObject>(): Promise<T[]> {
+    return this.core.store.allObjects as T[];
+  }
+
+  @Method()
+  async getObjectsTotalCount(): Promise<number> {
+    return this.core.store.totalObjectCount;
+  }
+
   @Method()
   async addObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
@@ -744,6 +754,11 @@ export class KritzelEngine {
     }
   }
 
+  emitObjectsInViewportChange() {
+    const visibleObjects = this.core.store.objectsInViewport;
+    this.objectsInViewportChange.emit(visibleObjects);
+  }
+
   private _registerStateChangeListeners() {
     this.core.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
   }
@@ -774,13 +789,12 @@ export class KritzelEngine {
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
-    const visibleObjects = this.core.store.objectsToRender;
+    const visibleObjects = this.core.store.objectsInViewport;
 
     this.core.cursorManager.applyCursor();
 
     if (this.core.store.totalObjectCount > 0 && this.core.store.state.hasViewportChanged) {
-      this.objectsInViewportChange.emit(visibleObjects);
-      this.core.store.state.hasViewportChanged = false;
+      this.emitObjectsInViewportChange();
     }
 
     return (
@@ -810,6 +824,8 @@ export class KritzelEngine {
             <div>IsPointerDown: {this.core.store.isPointerDown ? 'true' : 'false'}</div>
             <div>PointerX: {this.core.store.state?.pointerX}</div>
             <div>PointerY: {this.core.store.state?.pointerY}</div>
+            <div>TotalObjects: {this.core.store.totalObjectCount}</div>
+            <div>ObjectsInViewport: {this.core.store.objectsInViewport.length}</div>
             <div>SelectedObjects: {this.core.store.selectionGroup?.objects.length || 0}</div>
             <div>
               ViewportCenter: ({viewportCenterX.toFixed(2)}, {viewportCenterY.toFixed(2)})

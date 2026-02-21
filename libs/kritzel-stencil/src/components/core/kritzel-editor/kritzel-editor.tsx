@@ -353,7 +353,6 @@ export class KritzelEditor {
 
   handleObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
     this.objectsChange.emit(event.detail);
-    this.isBackToContentButtonVisible = false;
   }
 
   handleUndoStateChange(event: CustomEvent<KritzelUndoState>) {
@@ -361,9 +360,10 @@ export class KritzelEditor {
     this.undoState = event.detail;
   }
 
-  handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
+  async handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
     const hasVisibleObjects = this.getContentObjects(event.detail).length > 0;
-    this.isBackToContentButtonVisible = !hasVisibleObjects;
+    const hasAnyObjectsAtAll = (await this.engineRef.getObjectsTotalCount()) > 0;
+    this.isBackToContentButtonVisible = !hasVisibleObjects && hasAnyObjectsAtAll;
   }
 
   handleSettingsChange(event: CustomEvent<KritzelSettingsConfig>) {

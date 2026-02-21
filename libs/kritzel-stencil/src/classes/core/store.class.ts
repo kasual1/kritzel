@@ -47,27 +47,7 @@ export class KritzelStore {
 
     return this._state.objects
       .query(viewportBounds)
-      .filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox))
       .sort((a, b) => a.zIndex - b.zIndex);
-  }
-
-  get objectsToRender(): KritzelBaseObject<Element>[] {
-    const objects = this.objectsInViewport;
-    
-    // Add selection objects explicitly since they are filtered out of objectsInViewport
-    const selectionGroup = this.selectionGroup;
-    if (selectionGroup) {
-      objects.push(selectionGroup);
-    }
-    
-    const selectionBox = this.selectionBox;
-    if (selectionBox) {
-      objects.push(selectionBox);
-    }
-    
-    // Sort combined list by zIndex to ensure correct rendering order
-    // This is fast since objectsInViewport is already small compared to allObjects
-    return objects.sort((a, b) => a.zIndex - b.zIndex);
   }
 
   get allNonSelectionObjects(): KritzelBaseObject<Element>[]  {
