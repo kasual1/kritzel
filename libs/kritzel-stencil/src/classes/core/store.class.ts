@@ -7,7 +7,7 @@ import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
-import { KritzelBaseObject } from '../..';
+import { KritzelBaseObject } from '../objects/base-object.class';
 
 export class KritzelStore {
   private readonly _state: KritzelEngineState;
