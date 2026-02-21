@@ -138,7 +138,7 @@ describe('KritzelStore', () => {
       expect(store.objectsInViewport).toEqual([]);
     });
 
-    it('should exclude SelectionGroup objects', () => {
+    it('should include SelectionGroup objects in viewport', () => {
       const obj = new KritzelBaseObject<Element>();
       obj.translateX = 50;
       obj.translateY = 50;
@@ -158,10 +158,10 @@ describe('KritzelStore', () => {
 
       const result = store.objectsInViewport;
       expect(result).toContain(obj);
-      expect(result).not.toContain(selGroup);
+      expect(result).toContain(selGroup);
     });
 
-    it('should exclude SelectionBox objects', () => {
+    it('should include SelectionBox objects in viewport', () => {
       const obj = new KritzelBaseObject<Element>();
       obj.translateX = 50;
       obj.translateY = 50;
@@ -181,7 +181,7 @@ describe('KritzelStore', () => {
 
       const result = store.objectsInViewport;
       expect(result).toContain(obj);
-      expect(result).not.toContain(selBox);
+      expect(result).toContain(selBox);
     });
 
     it('should sort objects by zIndex', () => {
@@ -233,8 +233,8 @@ describe('KritzelStore', () => {
       mockState.objects.insert(selGroup);
       store.setSelectionGroup(selGroup);
 
-      const result = store.objectsInViewport;
-      expect(result).toContain(selGroup);
+      expect(store.selectionGroup).toBe(selGroup);
+      expect(store.objectsInViewport).toContain(selGroup);
     });
 
     it('should include selection box when present', () => {
@@ -248,28 +248,27 @@ describe('KritzelStore', () => {
       mockState.objects.insert(selBox);
       store.setSelectionBox(selBox);
 
-      const result = store.objectsInViewport;
-      expect(result).toContain(selBox);
+      expect(store.selectionBox).toBe(selBox);
+      expect(store.objectsInViewport).toContain(selBox);
     });
 
     it('should sort all rendered objects by zIndex', () => {
-      const obj = new KritzelBaseObject<Element>();
-      obj.translateX = 50;
-      obj.translateY = 50;
-      obj.width = 100;
-      obj.height = 100;
-      obj.zIndex = 5;
+      const obj1 = new KritzelBaseObject<Element>();
+      obj1.translateX = 50;
+      obj1.translateY = 50;
+      obj1.width = 100;
+      obj1.height = 100;
+      obj1.zIndex = 5;
 
-      const selGroup = new KritzelSelectionGroup();
-      selGroup.translateX = 50;
-      selGroup.translateY = 50;
-      selGroup.width = 100;
-      selGroup.height = 100;
-      selGroup.zIndex = 99999;
+      const obj2 = new KritzelBaseObject<Element>();
+      obj2.translateX = 50;
+      obj2.translateY = 50;
+      obj2.width = 100;
+      obj2.height = 100;
+      obj2.zIndex = 10;
 
-      mockState.objects.insert(obj);
-      mockState.objects.insert(selGroup);
-      store.setSelectionGroup(selGroup);
+      mockState.objects.insert(obj1);
+      mockState.objects.insert(obj2);
 
       const result = store.objectsInViewport;
       for (let i = 1; i < result.length; i++) {

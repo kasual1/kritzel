@@ -40,6 +40,7 @@ describe('KritzelCore', () => {
     return {
       forceUpdate: 0,
       emitObjectsChange: jest.fn(),
+      emitObjectsInViewportChange: jest.fn(),
       triggerSelectionChange: jest.fn(),
       addObject: jest.fn(),
       viewport: {
