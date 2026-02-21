@@ -218,7 +218,7 @@ describe('KritzelStore', () => {
 
       mockState.objects.insert(obj);
 
-      const result = store.objectsToRender;
+      const result = store.objectsInViewport;
       expect(result).toContain(obj);
     });
 
@@ -233,7 +233,7 @@ describe('KritzelStore', () => {
       mockState.objects.insert(selGroup);
       store.setSelectionGroup(selGroup);
 
-      const result = store.objectsToRender;
+      const result = store.objectsInViewport;
       expect(result).toContain(selGroup);
     });
 
@@ -248,7 +248,7 @@ describe('KritzelStore', () => {
       mockState.objects.insert(selBox);
       store.setSelectionBox(selBox);
 
-      const result = store.objectsToRender;
+      const result = store.objectsInViewport;
       expect(result).toContain(selBox);
     });
 
@@ -271,7 +271,7 @@ describe('KritzelStore', () => {
       mockState.objects.insert(selGroup);
       store.setSelectionGroup(selGroup);
 
-      const result = store.objectsToRender;
+      const result = store.objectsInViewport;
       for (let i = 1; i < result.length; i++) {
         expect(result[i].zIndex).toBeGreaterThanOrEqual(result[i - 1].zIndex);
       }

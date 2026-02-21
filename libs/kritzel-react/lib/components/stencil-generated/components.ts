@@ -123,7 +123,7 @@ export const KritzelMoreMenu: StencilReactComponent<KritzelMoreMenuElement, Krit
     defineCustomElement: defineKritzelMoreMenu
 });
 
-export type KritzelNumericInputEvents = { onValueChange: EventName<KritzelNumericInputCustomEvent<number>> };
+export type KritzelNumericInputEvents = { onValueChange: EventName<KritzelNumericInputCustomEvent<number | undefined>> };
 
 export const KritzelNumericInput: StencilReactComponent<KritzelNumericInputElement, KritzelNumericInputEvents> = /*@__PURE__*/ createComponent<KritzelNumericInputElement, KritzelNumericInputEvents>({
     tagName: 'kritzel-numeric-input',
