@@ -362,7 +362,7 @@ export class KritzelEditor {
 
   async handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
     const hasVisibleObjects = this.getContentObjects(event.detail).length > 0;
-    const hasAnyObjectsAtAll = (await this.engineRef.getObjectsTotalCount()) > 0;
+    const hasAnyObjectsAtAll = this.getContentObjects((await this.engineRef.getAllObjects())).length > 0;
     this.isBackToContentButtonVisible = !hasVisibleObjects && hasAnyObjectsAtAll;
   }
 
