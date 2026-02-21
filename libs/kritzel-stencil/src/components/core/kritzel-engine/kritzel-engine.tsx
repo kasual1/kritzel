@@ -105,28 +105,28 @@ export class KritzelEngine {
   @Prop() viewportBoundaryLeft: number = -Infinity;
   @Watch('viewportBoundaryLeft')
   onViewportBoundaryLeftChange(newValue: number) {
-    this.core.store.state.viewportBoundaryLeft = newValue;
+    this.core.store.state.viewportBoundaryLeft = newValue ?? -Infinity;
   }
 
   /** Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to. */
   @Prop() viewportBoundaryRight: number = Infinity;
   @Watch('viewportBoundaryRight')
   onViewportBoundaryRightChange(newValue: number) {
-    this.core.store.state.viewportBoundaryRight = newValue;
+    this.core.store.state.viewportBoundaryRight = newValue ?? Infinity;
   }
 
   /** Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to. */
   @Prop() viewportBoundaryTop: number = -Infinity;
   @Watch('viewportBoundaryTop')
   onViewportBoundaryTopChange(newValue: number) {
-    this.core.store.state.viewportBoundaryTop = newValue;
+    this.core.store.state.viewportBoundaryTop = newValue ?? -Infinity;
   }
 
   /** Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to. */
   @Prop() viewportBoundaryBottom: number = Infinity;
   @Watch('viewportBoundaryBottom')
   onViewportBoundaryBottomChange(newValue: number) {
-    this.core.store.state.viewportBoundaryBottom = newValue;
+    this.core.store.state.viewportBoundaryBottom = newValue ?? Infinity;
   }
 
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
