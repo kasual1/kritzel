@@ -105,28 +105,28 @@ export class KritzelEngine {
   @Prop() viewportBoundaryLeft: number = -Infinity;
   @Watch('viewportBoundaryLeft')
   onViewportBoundaryLeftChange(newValue: number) {
-    this.core.store.state.viewportBoundaryLeft = newValue;
+    this.core.store.state.viewportBoundaryLeft = newValue ?? -Infinity;
   }
 
   /** Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to. */
   @Prop() viewportBoundaryRight: number = Infinity;
   @Watch('viewportBoundaryRight')
   onViewportBoundaryRightChange(newValue: number) {
-    this.core.store.state.viewportBoundaryRight = newValue;
+    this.core.store.state.viewportBoundaryRight = newValue ?? Infinity;
   }
 
   /** Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to. */
   @Prop() viewportBoundaryTop: number = -Infinity;
   @Watch('viewportBoundaryTop')
   onViewportBoundaryTopChange(newValue: number) {
-    this.core.store.state.viewportBoundaryTop = newValue;
+    this.core.store.state.viewportBoundaryTop = newValue ?? -Infinity;
   }
 
   /** Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to. */
   @Prop() viewportBoundaryBottom: number = Infinity;
   @Watch('viewportBoundaryBottom')
   onViewportBoundaryBottomChange(newValue: number) {
-    this.core.store.state.viewportBoundaryBottom = newValue;
+    this.core.store.state.viewportBoundaryBottom = newValue ?? Infinity;
   }
 
   @Event() isEngineReady: EventEmitter<KritzelEngineState>;
@@ -268,8 +268,8 @@ export class KritzelEngine {
   }
 
   @Listen('keydown', { target: 'window' })
-  handleKeyDown(ev) {
-    if (this.core.store.isDisabled) {
+  handleKeyDown(ev: KeyboardEvent) {
+    if (this.core.store.isDisabled || !this.shouldHandleKeyboardEvent(ev)) {
       return;
     }
 
@@ -277,12 +277,55 @@ export class KritzelEngine {
   }
 
   @Listen('keyup', { target: 'window' })
-  handleKeyUp(ev) {
-    if (this.core.store.isDisabled) {
+  handleKeyUp(ev: KeyboardEvent) {
+    if (this.core.store.isDisabled || !this.shouldHandleKeyboardEvent(ev)) {
       return;
     }
 
     this.keyHandler.handleKeyUp(ev);
+  }
+
+  /**
+   * Determines if the engine should handle a keyboard event.
+   * Returns true only if:
+   * - The event originates from within the engine component, OR
+   * - The event target is not an interactive element that needs keyboard input
+   *
+   * This prevents conflicts with inputs, textareas, dialogs, or other
+   * interactive elements that need their own keyboard handling.
+   */
+  private shouldHandleKeyboardEvent(ev: KeyboardEvent): boolean {
+    const path = ev.composedPath();
+
+    // Check if event path includes our host - works reliably with Shadow DOM
+    if (path.includes(this.host)) {
+      return true;
+    }
+
+    // Check if event path includes a dialog (works across Shadow DOM boundaries)
+    const isInsideDialog = path.some((el: EventTarget) => {
+      if (!(el instanceof HTMLElement)) return false;
+      return (
+        el.tagName === 'DIALOG' ||
+        el.tagName === 'KRITZEL-DIALOG' ||
+        el.getAttribute?.('role') === 'dialog' ||
+        el.getAttribute?.('role') === 'alertdialog'
+      );
+    });
+
+    if (isInsideDialog) {
+      return false;
+    }
+
+    const target = ev.target as HTMLElement;
+
+    // Don't handle if target is an interactive element that needs keyboard input
+    if (target.matches?.('input, textarea, select, [contenteditable="true"], [contenteditable=""]')) {
+      return false;
+    }
+
+    // Handle global shortcuts when no interactive element has focus
+    return true;
   }
 
   @Listen('dblclick', { target: 'document' })
@@ -411,6 +454,16 @@ export class KritzelEngine {
   async getObjectById<T extends KritzelBaseObject>(id: string): Promise<T | null> {
     const object = this.core.store.allObjects.find(obj => obj.id === id) as T | undefined;
     return object || null;
+  }
+
+   @Method()
+  async getAllObjects<T extends KritzelBaseObject>(): Promise<T[]> {
+    return this.core.store.allObjects as T[];
+  }
+
+  @Method()
+  async getObjectsTotalCount(): Promise<number> {
+    return this.core.store.totalObjectCount;
   }
 
   @Method()
@@ -721,6 +774,11 @@ export class KritzelEngine {
     }
   }
 
+  emitObjectsInViewportChange() {
+    const visibleObjects = this.core.store.objectsInViewport;
+    this.objectsInViewportChange.emit(visibleObjects);
+  }
+
   private _registerStateChangeListeners() {
     this.core.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
   }
@@ -751,13 +809,12 @@ export class KritzelEngine {
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
-    const visibleObjects = this.core.store.objectsToRender;
+    const visibleObjects = this.core.store.objectsInViewport;
 
     this.core.cursorManager.applyCursor();
 
     if (this.core.store.totalObjectCount > 0 && this.core.store.state.hasViewportChanged) {
-      this.objectsInViewportChange.emit(visibleObjects);
-      this.core.store.state.hasViewportChanged = false;
+      this.emitObjectsInViewportChange();
     }
 
     return (
@@ -787,6 +844,8 @@ export class KritzelEngine {
             <div>IsPointerDown: {this.core.store.isPointerDown ? 'true' : 'false'}</div>
             <div>PointerX: {this.core.store.state?.pointerX}</div>
             <div>PointerY: {this.core.store.state?.pointerY}</div>
+            <div>TotalObjects: {this.core.store.totalObjectCount}</div>
+            <div>ObjectsInViewport: {this.core.store.objectsInViewport.length}</div>
             <div>SelectedObjects: {this.core.store.selectionGroup?.objects.length || 0}</div>
             <div>
               ViewportCenter: ({viewportCenterX.toFixed(2)}, {viewportCenterY.toFixed(2)})

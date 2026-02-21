@@ -7,13 +7,14 @@
 
 ## Properties
 
-| Property | Attribute | Description                          | Type     | Default                   |
-| -------- | --------- | ------------------------------------ | -------- | ------------------------- |
-| `label`  | `label`   | Label text displayed above the input | `string` | `''`                      |
-| `max`    | `max`     | Maximum allowed value                | `number` | `Number.MAX_SAFE_INTEGER` |
-| `min`    | `min`     | Minimum allowed value                | `number` | `Number.MIN_SAFE_INTEGER` |
-| `step`   | `step`    | Step increment for the input         | `number` | `1`                       |
-| `value`  | `value`   | Current numeric value                | `number` | `0`                       |
+| Property      | Attribute     | Description                                    | Type     | Default                   |
+| ------------- | ------------- | ---------------------------------------------- | -------- | ------------------------- |
+| `label`       | `label`       | Label text displayed above the input           | `string` | `''`                      |
+| `max`         | `max`         | Maximum allowed value                          | `number` | `Number.MAX_SAFE_INTEGER` |
+| `min`         | `min`         | Minimum allowed value                          | `number` | `Number.MIN_SAFE_INTEGER` |
+| `placeholder` | `placeholder` | Placeholder text shown when input is empty     | `string` | `''`                      |
+| `step`        | `step`        | Step increment for the input                   | `number` | `1`                       |
+| `value`       | `value`       | Current numeric value (undefined when cleared) | `number` | `undefined`               |
 
 
 ## Events

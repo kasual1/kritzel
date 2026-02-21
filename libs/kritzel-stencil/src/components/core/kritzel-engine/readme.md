@@ -259,6 +259,16 @@ Type: `Promise<KritzelWorkspace>`
 
 
 
+### `getAllObjects<T extends KritzelBaseObject>() => Promise<T[]>`
+
+
+
+#### Returns
+
+Type: `Promise<T[]>`
+
+
+
 ### `getCopiedObjects() => Promise<KritzelBaseObject[]>`
 
 
@@ -302,6 +312,16 @@ Type: `Promise<T>`
 #### Returns
 
 Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
+
+
+
+### `getObjectsTotalCount() => Promise<number>`
+
+
+
+#### Returns
+
+Type: `Promise<number>`
 
 
 

@@ -8,7 +8,7 @@ import { KritzelImage } from '../objects/image.class';
 import { KritzelCustomElement } from '../objects/custom-element.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
-import { KritzelWorkspace } from '../..';
+import { KritzelWorkspace } from './workspace.class';
 import { KritzelBrushTool } from '../tools/brush-tool.class';
 import { KritzelEraserTool } from '../tools/eraser-tool.class';
 import { KritzelImageTool } from '../tools/image-tool.class';
@@ -25,7 +25,7 @@ jest.mock('../objects/image.class');
 jest.mock('../objects/custom-element.class');
 jest.mock('../objects/selection-group.class');
 jest.mock('../objects/group.class');
-jest.mock('../..', () => ({
+jest.mock('./workspace.class', () => ({
   KritzelWorkspace: {
     create: jest.fn(),
   },

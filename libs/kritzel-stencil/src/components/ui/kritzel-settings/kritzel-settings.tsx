@@ -120,23 +120,23 @@ export class KritzelSettings {
     this.saveSettings();
   };
 
-  private handleViewportBoundaryLeftChange = (event: CustomEvent<number>): void => {
-    this.viewportBoundaryLeft = event.detail;
+  private handleViewportBoundaryLeftChange = (event: CustomEvent<number | undefined>): void => {
+    this.viewportBoundaryLeft = event.detail ?? DEFAULT_VIEWPORT_BOUNDARY_LEFT;
     this.saveSettings();
   };
 
-  private handleViewportBoundaryRightChange = (event: CustomEvent<number>): void => {
-    this.viewportBoundaryRight = event.detail;
+  private handleViewportBoundaryRightChange = (event: CustomEvent<number | undefined>): void => {
+    this.viewportBoundaryRight = event.detail ?? DEFAULT_VIEWPORT_BOUNDARY_RIGHT;
     this.saveSettings();
   };
 
-  private handleViewportBoundaryTopChange = (event: CustomEvent<number>): void => {
-    this.viewportBoundaryTop = event.detail;
+  private handleViewportBoundaryTopChange = (event: CustomEvent<number | undefined>): void => {
+    this.viewportBoundaryTop = event.detail ?? DEFAULT_VIEWPORT_BOUNDARY_TOP;
     this.saveSettings();
   };
 
-  private handleViewportBoundaryBottomChange = (event: CustomEvent<number>): void => {
-    this.viewportBoundaryBottom = event.detail;
+  private handleViewportBoundaryBottomChange = (event: CustomEvent<number | undefined>): void => {
+    this.viewportBoundaryBottom = event.detail ?? DEFAULT_VIEWPORT_BOUNDARY_BOTTOM;
     this.saveSettings();
   };
 
@@ -251,6 +251,7 @@ export class KritzelSettings {
                 <kritzel-numeric-input
                   value={this.viewportBoundaryLeft}
                   step={100}
+                  placeholder="Infinite"
                   onValueChange={this.handleViewportBoundaryLeftChange}
                 />
               </div>
@@ -262,6 +263,7 @@ export class KritzelSettings {
                 <kritzel-numeric-input
                   value={this.viewportBoundaryRight}
                   step={100}
+                  placeholder="Infinite"
                   onValueChange={this.handleViewportBoundaryRightChange}
                 />
               </div>
@@ -273,6 +275,7 @@ export class KritzelSettings {
                 <kritzel-numeric-input
                   value={this.viewportBoundaryTop}
                   step={100}
+                  placeholder="Infinite"
                   onValueChange={this.handleViewportBoundaryTopChange}
                 />
               </div>
@@ -284,6 +287,7 @@ export class KritzelSettings {
                 <kritzel-numeric-input
                   value={this.viewportBoundaryBottom}
                   step={100}
+                  placeholder="Infinite"
                   onValueChange={this.handleViewportBoundaryBottomChange}
                 />
               </div>

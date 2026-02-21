@@ -27,8 +27,19 @@ const INTERNAL_COMPONENTS = [
   'kritzel-workspace-manager'
 ];
 
+const isDev = process.argv.includes('--dev') || process.argv.includes('--serve');
+
 export const config: Config = {
   namespace: 'stencil',
+  // Exclude yjs and its dependencies from the bundle, as they will be loaded separately in the consuming application
+  // Otherwise yjs will throw mulitple import error
+  ...(isDev ? {} : {
+    rollupConfig: {
+      inputOptions: {
+        external: ['yjs', 'y-websocket', 'y-indexeddb', 'lib0'],
+      },
+    },
+  }),
   outputTargets: [
     { type: 'dist', esmLoaderPath: '../loader' },
     { type: 'docs-readme' },

@@ -1,4 +1,4 @@
-import { KritzelBaseObject } from '../..';
+import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelMouseButton } from '../../enums/event-button.enum';
 import { KritzelCore } from './core.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';

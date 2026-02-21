@@ -117,6 +117,7 @@ export const KritzelNumericInput: StencilVueComponent<JSX.KritzelNumericInput> =
   'max',
   'step',
   'label',
+  'placeholder',
   'valueChange'
 ], [
   'valueChange'

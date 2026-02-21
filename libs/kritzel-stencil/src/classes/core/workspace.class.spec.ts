@@ -1,5 +1,5 @@
 import { KritzelWorkspace } from './workspace.class';
-import { KritzelCore } from '../..';
+import { KritzelCore } from './core.class';
 
 describe('KritzelWorkspace', () => {
   let mockCore: jest.Mocked<KritzelCore>;

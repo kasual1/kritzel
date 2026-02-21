@@ -3,11 +3,11 @@ import { KritzelReviver } from '../core/reviver.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelCore } from '../core/core.class';
+import type { KritzelCore } from '../core/core.class';
 import { ISyncProvider } from '../../interfaces/sync-provider.interface';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { DEFAULT_SYNC_CONFIG } from '../../configs/default-sync.config';
-import { KritzelUndoState } from '../..';
+import { KritzelUndoState } from '../../interfaces/undo-state.interface';
 import { KritzelQuadtree } from './quadtree.structure';
 
 export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
@@ -39,7 +39,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     return this._workspaceId;
   }
 
-  get undoState() : KritzelUndoState {
+  get undoState(): KritzelUndoState {
     return {
       canUndo: this._undoManager ? this._undoManager.canUndo() : false,
       canRedo: this._undoManager ? this._undoManager.canRedo() : false,
@@ -375,7 +375,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     // Get current stack length
     const stackLength = this._undoManager.undoStack.length;
-    
+
     if (stackLength === 0) {
       this._temporaryItemsCount = 0;
       return;
@@ -383,15 +383,15 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     // Stop tracking temporarily
     this._undoManager.stopCapturing();
-    
+
     // The temporary items should be at the end of the stack
     // We'll need to undo them all, then redo as a single transaction
     const itemsToConsolidate = Math.min(this._temporaryItemsCount, stackLength);
-    
+
     if (itemsToConsolidate > 1) {
       // Store the current state before undoing
       const undoneItems: any[] = [];
-      
+
       // Undo all temporary items
       for (let i = 0; i < itemsToConsolidate; i++) {
         if (this._undoManager.canUndo()) {
@@ -399,7 +399,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
           this._undoManager.undo();
         }
       }
-      
+
       // Now redo them all as a single 'local' transaction
       // This will consolidate them into one undo item
       this._ydoc.transact(() => {
@@ -413,7 +413,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       // If only one temporary item, just change its origin to 'local'
       // This is implicit - next transaction will be separate
     }
-    
+
     this._temporaryItemsCount = 0;
   }
 
@@ -428,14 +428,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     const stackLength = this._undoManager.undoStack.length;
     const itemsToRemove = Math.min(this._temporaryItemsCount, stackLength);
-    
+
     // Remove items from the end of the stack
     for (let i = 0; i < itemsToRemove; i++) {
       if (this._undoManager.undoStack.length > 0) {
         this._undoManager.undoStack.pop();
       }
     }
-    
+
     this._temporaryItemsCount = 0;
   }
 

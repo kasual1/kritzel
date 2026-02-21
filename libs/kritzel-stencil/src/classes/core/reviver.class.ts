@@ -13,8 +13,8 @@ import { KritzelSelectionTool } from "../tools/selection-tool.class";
 import { KritzelTextTool } from "../tools/text-tool.class";
 import { KritzelShapeTool } from "../tools/shape-tool.class";
 import { KritzelCustomElement } from "../objects/custom-element.class";
-import { KritzelCore } from "./core.class";
-import { KritzelWorkspace } from "../..";
+import type { KritzelCore } from "./core.class";
+import { KritzelWorkspace } from "./workspace.class";
 
 export class KritzelReviver {
 
