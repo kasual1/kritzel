@@ -331,6 +331,7 @@ export class KritzelCore {
     selectionGroup.objects.forEach(obj => this.removeObject(obj));
 
     this.removeSelectionGroup();
+    this.engine.emitObjectsInViewportChange();
     this.rerender();
   }
 
@@ -346,6 +347,7 @@ export class KritzelCore {
     const object = this.findObjectById(id);
     if (object) {
       this.removeObject(object);
+      this.engine.emitObjectsInViewportChange();
       this.rerender();
     }
   }
