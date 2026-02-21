@@ -80,8 +80,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       if (KritzelEventHelper.isLeftClick(event)) {
         const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
         const selectionGroup = this._core.store.selectionGroup;
+        const isAdditive = event.shiftKey || event.ctrlKey;
 
-        if (selectionGroup?.objects.length === 1 && hasObjectsMoved === false) {
+        if (selectionGroup?.objects.length === 1 && hasObjectsMoved === false && !isAdditive) {
           selectionGroup.objects[0].edit(event);
         }
 
@@ -109,8 +110,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
       const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
       const selectionGroup = this._core.store.selectionGroup;
+      const isAdditive = event.shiftKey || event.ctrlKey;
 
-      if (selectionGroup?.objects.length === 1 && hasObjectsMoved === false) {
+      if (selectionGroup?.objects.length === 1 && hasObjectsMoved === false && !isAdditive) {
         selectionGroup.objects[0].edit(event);
       }
 
