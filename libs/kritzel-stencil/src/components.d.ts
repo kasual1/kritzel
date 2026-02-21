@@ -291,10 +291,12 @@ export namespace Components {
         "exportViewportAsPng": () => Promise<void>;
         "exportViewportAsSvg": () => Promise<void>;
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
+        "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         "getDisplayableShortcuts": () => Promise<Omit<KritzelShortcut, "action" | "condition">[]>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
+        "getObjectsTotalCount": () => Promise<number>;
         "getScreenshot": (format?: "png" | "svg") => Promise<string>;
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
