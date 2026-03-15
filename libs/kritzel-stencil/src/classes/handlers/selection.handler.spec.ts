@@ -153,6 +153,9 @@ describe('KritzelSelectionHandler', () => {
       },
       engine: {
         emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
       },
       addSelectionGroup: jest.fn(),
       rerender: jest.fn(),
@@ -533,7 +536,7 @@ describe('KritzelSelectionHandler', () => {
 
       it('should clear long touch timeout on move above threshold', () => {
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
-        mockState.longTouchTimeout = setTimeout(() => {}, 1000);
+        mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         mockState.pointers.set(1, { clientX: 150, clientY: 150 });
         const moveEvent = createPointerEvent('pointermove', {
           pointerType: 'touch',

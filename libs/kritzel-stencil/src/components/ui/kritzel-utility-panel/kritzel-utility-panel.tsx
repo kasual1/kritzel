@@ -30,16 +30,16 @@ export class KritzelUtilityPanel {
   render() {
     return (
       <Host>
-        <button class="utility-button" disabled={!this.undoState?.canUndo} onClick={event => this.handleUndo(event)}>
+        <button class="utility-button" data-testid="utility-undo" disabled={!this.undoState?.canUndo} onClick={event => this.handleUndo(event)}>
           <kritzel-icon name="undo"></kritzel-icon>
         </button>
-        <button class="utility-button" disabled={!this.undoState?.canRedo} onClick={event => this.handleRedo(event)}>
+        <button class="utility-button" data-testid="utility-redo" disabled={!this.undoState?.canRedo} onClick={event => this.handleRedo(event)}>
           <kritzel-icon name="redo"></kritzel-icon>
         </button>
 
         <div class="utility-separator"></div>
 
-        <button class="utility-button" onClick={() => this.delete.emit()}>
+        <button class="utility-button" data-testid="utility-delete" onClick={() => this.delete.emit()}>
           <kritzel-icon name="delete"></kritzel-icon>
         </button>
       </Host>

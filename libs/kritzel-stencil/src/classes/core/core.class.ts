@@ -18,42 +18,133 @@ import { KritzelAppStateMap } from '../structures/app-state-map.structure';
 import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelCursorManager } from '../managers/cursor.manager';
 import { KritzelThemeManager } from '../managers/theme.manager';
+import { KritzelClassHelper } from '../../helpers/class.helper';
+import { IKritzelUser } from '../../interfaces/user.interface';
 
+interface InitializeWorkspaceOptions {
+  /**
+   * When true, no fallback workspace will be created if there is no provided workspace,
+   * no last active workspace, and no recent workspace.
+   */
+  skipFallbackCreation?: boolean;
+}
+
+/**
+ * Central orchestrator class for the Kritzel canvas system.
+ * Manages workspaces, objects, selection, clipboard operations, and coordinates
+ * between the engine, store, and various managers.
+ */
 export class KritzelCore {
+  /** The underlying Kritzel engine component */
   private readonly _kritzelEngine: KritzelEngine;
+  /** State management store */
   private readonly _store: KritzelStore;
+  /** Optional sync configuration for collaborative features */
   private _syncConfig?: KritzelSyncConfig;
+  /** App state map for persistent workspace storage */
   private readonly _appStateMap: KritzelAppStateMap;
+  /** Manager for line anchor points and connections */
   private readonly _anchorManager: KritzelAnchorManager;
+  /** Manager for cursor states and appearance */
   private readonly _cursorManager: KritzelCursorManager;
+  /** Manager for theme styling */
   private readonly _themeManager: KritzelThemeManager;
+  /** Optional unique identifier for namespacing storage keys across multiple editor instances */
+  private _editorId?: string;
+  /** Current user for awareness broadcasting */
+  private _user?: IKritzelUser;
 
+  /**
+   * Gets the Kritzel engine instance.
+   * @returns The KritzelEngine managing rendering and events
+   */
   get engine(): KritzelEngine {
     return this._kritzelEngine;
   }
 
+  /**
+   * Gets the state store instance.
+   * @returns The KritzelStore managing application state
+   */
   get store(): KritzelStore {
     return this._store;
   }
 
+  /**
+   * Gets the app state map for workspace persistence.
+   * @returns The KritzelAppStateMap for storing workspace data
+   */
   get appStateMap(): KritzelAppStateMap {
     return this._appStateMap;
   }
 
+  /**
+   * Gets the anchor manager for line connections.
+   * @returns The KritzelAnchorManager for managing line anchors
+   */
   get anchorManager(): KritzelAnchorManager {
     return this._anchorManager;
   }
 
+  /**
+   * Gets the cursor manager.
+   * @returns The KritzelCursorManager for managing cursor states
+   */
   get cursorManager(): KritzelCursorManager {
     return this._cursorManager;
   }
 
+  /**
+   * Gets the theme manager.
+   * @returns The KritzelThemeManager for managing visual themes
+   */
   get themeManager(): KritzelThemeManager {
     return this._themeManager;
   }
 
-  constructor(kritzelEngine: KritzelEngine) {
+  /**
+   * Gets the editor ID used for namespacing storage keys.
+   * @returns The editor ID or undefined if not set
+   */
+  get editorId(): string | undefined {
+    return this._editorId;
+  }
+
+  /**
+   * Builds a namespaced storage key.
+   * When editorId is set, appends it after the base prefix:
+   * e.g. 'kritzel-settings' → 'kritzel-settings-homepage'
+   * @param base - The base key name (e.g. 'kritzel-settings')
+   * @returns The namespaced key
+   */
+  getStorageKey(base: string): string {
+    return this._editorId ? `${base}-${this._editorId}` : base;
+  }
+
+  /**
+   * Gets the current user.
+   */
+  get user(): IKritzelUser | undefined {
+    return this._user;
+  }
+
+  /**
+   * Sets the current user and propagates to the active object map's awareness.
+   */
+  setUser(user?: IKritzelUser): void {
+    this._user = user;
+    this._store.state.objects?.setLocalUser(user);
+  }
+
+  /**
+   * Creates a new KritzelCore instance.
+   * Initializes the store with default configuration and sets up all managers.
+   * @param kritzelEngine - The KritzelEngine component to orchestrate
+   * @param editorId - Optional unique identifier for namespacing storage keys
+   */
+  constructor(kritzelEngine: KritzelEngine, editorId?: string) {
     this._kritzelEngine = kritzelEngine;
+    this._editorId = editorId;
     this._store = new KritzelStore(DEFAULT_ENGINE_CONFIG);
     this._appStateMap = new KritzelAppStateMap();
     this._anchorManager = new KritzelAnchorManager(this);
@@ -61,10 +152,30 @@ export class KritzelCore {
     this._themeManager = new KritzelThemeManager(this);
   }
 
+  /**
+   * Sets the synchronization configuration for collaborative features.
+   * @param config - The sync configuration or undefined to disable sync
+   */
   setSyncConfig(config?: KritzelSyncConfig): void {
     this._syncConfig = config;
   }
 
+  /**
+   * Sets the editor ID for namespacing storage keys.
+   * Must be called before any storage initialization (e.g., in componentWillLoad).
+   * Re-initializes the theme manager to pick up the new storage key.
+   * @param editorId - The unique identifier for this editor instance
+   */
+  setEditorId(editorId?: string): void {
+    this._editorId = editorId;
+    // Re-create theme manager so it picks up the new storage key
+    (this as any)._themeManager = new KritzelThemeManager(this);
+  }
+
+  /**
+   * Initializes the Yjs document for collaborative editing.
+   * Sets up the app state map with the current sync configuration.
+   */
   async initializeYjs(): Promise<void> {
     await this._appStateMap.initialize(this, this._syncConfig);
   }
@@ -94,15 +205,27 @@ export class KritzelCore {
     this._appStateMap.remove(w => w.id === workspaceId);
   }
 
-  async initializeWorkspace(workspace?: KritzelWorkspace): Promise<void> {
+  /**
+   * Initializes or switches to a workspace.
+   * Handles workspace loading from app state, localStorage preferences,
+   * viewport state restoration, and ObjectMap initialization.
+   * @param workspace - Optional workspace to switch to; if not provided, uses last active or most recent
+    * @param options - Optional initialization behavior flags
+   */
+    async initializeWorkspace(workspace?: KritzelWorkspace, options?: InitializeWorkspaceOptions): Promise<void> {
     // Load all workspaces from app state map
     const workspaces = this.loadWorkspacesFromAppState();
 
-    // Find most recently updated workspace or use provided/fallback
-    const mostRecentWorkspace = workspaces.length > 0 ? [...workspaces].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0] : null;
+    // Find newest created workspace (tie-break by most recently updated)
+    const newestCreatedWorkspace = workspaces.length > 0
+      ? [...workspaces].sort((a, b) => {
+          const diff = b.createdAt.getTime() - a.createdAt.getTime();
+          return diff !== 0 ? diff : b.updatedAt.getTime() - a.updatedAt.getTime();
+        })[0]
+      : null;
 
     // Check localStorage for last active workspace
-    const lastActiveWorkspaceId = localStorage.getItem('kritzel-active-workspace-id');
+    const lastActiveWorkspaceId = localStorage.getItem(this.getStorageKey('kritzel-active-workspace-id'));
     const lastActiveWorkspace = lastActiveWorkspaceId ? workspaces.find(w => w.id === lastActiveWorkspaceId) : null;
 
     let activeWorkspace: KritzelWorkspace;
@@ -119,9 +242,14 @@ export class KritzelCore {
     } else if (lastActiveWorkspace) {
       // Use last active workspace from localStorage
       activeWorkspace = lastActiveWorkspace;
-    } else if (mostRecentWorkspace) {
-      // Use most recent workspace
-      activeWorkspace = mostRecentWorkspace;
+    } else if (newestCreatedWorkspace) {
+      // Use newest created workspace
+      activeWorkspace = newestCreatedWorkspace;
+    } else if (options?.skipFallbackCreation) {
+      this._store.state.workspaces = workspaces;
+      this._store.state.activeWorkspace = null;
+      this.rerender();
+      return;
     } else {
       // Create fallback workspace
       activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
@@ -130,7 +258,7 @@ export class KritzelCore {
     }
 
     // Save active workspace ID to localStorage
-    localStorage.setItem('kritzel-active-workspace-id', activeWorkspace.id);
+    localStorage.setItem(this.getStorageKey('kritzel-active-workspace-id'), activeWorkspace.id);
 
     // Destroy old ObjectMap if switching workspaces
     if (this._store.state.objects && this._store.state.objects.isReady) {
@@ -155,6 +283,16 @@ export class KritzelCore {
 
     await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
 
+    // Set local user in awareness after object map is initialized
+    if (this._user) {
+      objectsMap.setLocalUser(this._user);
+    }
+
+    // Forward awareness changes to the engine as events
+    objectsMap.onAwarenessChange(states => {
+      this.engine.emitAwarenessChange(states);
+    });
+
     // Rebuild anchor index after loading objects
     this._anchorManager.rebuildIndex();
 
@@ -163,6 +301,38 @@ export class KritzelCore {
     this.rerender();
   }
 
+  /**
+   * Loads a shared workspace by token.
+   * If the workspace exists locally, it switches to it.
+   * If it doesn't exist, it adds it to the local workspaces list and then switches to it.
+   * @param token - The connection token identifying the shared workspace
+   */
+  async loadSharedWorkspace(token: string): Promise<void> {
+    const workspaceId = token;
+    const name = 'Shared Workspace';
+
+    // Token is the workspace ID
+    let workspace = this.getWorkspaces().find(w => w.id === workspaceId);
+
+    if (!workspace) {
+      // Create it if it doesn't exist locally
+      workspace = new KritzelWorkspace(workspaceId, name);
+      workspace.isPublic = true;
+      this.createWorkspace(workspace);
+    } else {
+      // If it exists, ensure isPublic is correct
+      workspace.isPublic = true;
+    }
+
+    // Now switch to it
+    await this.initializeWorkspace(workspace);
+  }
+
+  /**
+   * Gets all objects currently visible within the viewport bounds.
+   * Excludes selection-related objects and sorts by z-index.
+   * @returns Array of visible objects sorted by z-index ascending
+   */
   getObjectsInViewport(): KritzelBaseObject<any>[] {
     const viewportBounds = {
       x: -this._store.state.translateX / this._store.state.scale,
@@ -179,12 +349,21 @@ export class KritzelCore {
       .sort((a, b) => a.zIndex - b.zIndex);
   }
 
+  /**
+   * Forces a rerender of the engine component.
+   * Increments forceUpdate counter to trigger Stencil's reactivity.
+   */
   rerender() {
     if (this._kritzelEngine) {
       this._kritzelEngine.forceUpdate++;
     }
   }
 
+  /**
+   * Finds an object in the store by its unique identifier.
+   * @param id - The unique ID of the object to find
+   * @returns The found object or null if not found
+   */
   findObjectById(id: string): KritzelBaseObject<any> | null {
     for (const object of this._store.allObjects) {
       if (object.id === id) {
@@ -194,21 +373,42 @@ export class KritzelCore {
     return null;
   }
 
+  /**
+   * Gets all workspaces from the app state map.
+   * @returns Array of all available workspaces
+   */
   getWorkspaces(): KritzelWorkspace[] {
     return this.loadWorkspacesFromAppState();
   }
 
+  /**
+   * Creates a new workspace and saves it to the app state.
+   * Sets creation and update timestamps, and refreshes the workspaces list.
+   * @param workspace - The workspace to create
+   */
   createWorkspace(workspace: KritzelWorkspace): void {
+    console.log('Creating workspace:', workspace);
     workspace._core = this;
     workspace.createdAt = new Date();
     workspace.updatedAt = new Date();
     this.saveWorkspaceToAppState(workspace);
     this._store.state.workspaces = this.loadWorkspacesFromAppState();
+    console.log('Current workspaces after creation:', this._store.state.workspaces);
   }
 
+  /**
+   * Updates an existing workspace in the app state.
+   * Sets the update timestamp and refreshes the local workspaces list.
+   * @param workspace - The workspace with updated properties
+   */
   updateWorkspace(workspace: KritzelWorkspace): void {
     workspace.updatedAt = new Date();
     this.saveWorkspaceToAppState(workspace);
+
+    // Keep metadata map in sync when the active workspace's name changes
+    if (this._store.state.activeWorkspace?.id === workspace.id) {
+      this._store.state.objects?.setWorkspaceName(workspace.name);
+    }
 
     const workspaces = this._store.state.workspaces;
     const index = workspaces.findIndex(w => w.id === workspace.id);
@@ -219,6 +419,12 @@ export class KritzelCore {
     }
   }
 
+  /**
+   * Deletes a workspace and its associated data.
+   * Handles cleanup of active workspace ObjectMap if deleting the current workspace.
+   * Also deletes the workspace's IndexedDB database.
+   * @param workspace - The workspace to delete
+   */
   deleteWorkspace(workspace: KritzelWorkspace): void {
     // If deleting the active workspace, need to handle ObjectMap cleanup
     if (this._store.state.activeWorkspace?.id === workspace.id) {
@@ -230,10 +436,19 @@ export class KritzelCore {
     this._store.state.workspaces = this.loadWorkspacesFromAppState();
 
     // Also delete the workspace's IndexedDB database
-    const dbName = `kritzel-workspace-${workspace.id}`;
+    const dbName = this._editorId
+      ? `kritzel-workspace-${this._editorId}-${workspace.id}`
+      : `kritzel-workspace-${workspace.id}`;
     window.indexedDB.deleteDatabase(dbName);
   }
 
+  /**
+   * Persists the current viewport state to the active workspace.
+   * Validates that the workspace still exists before saving.
+   * @param translateX - The X translation of the viewport
+   * @param translateY - The Y translation of the viewport
+   * @param scale - The zoom scale of the viewport
+   */
   updateWorkspaceViewport(translateX: number, translateY: number, scale: number): void {
     const activeWorkspace = this._store.state.activeWorkspace;
     if (!activeWorkspace) {
@@ -251,13 +466,36 @@ export class KritzelCore {
     this.saveWorkspaceToAppState(activeWorkspace);
   }
 
+  /**
+   * Gets whether the active workspace is publicly accessible.
+   * @returns True if the workspace is public, false otherwise
+   */
+  getIsPublic(): boolean {
+    return this._store.state.activeWorkspace?.isPublic ?? false;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Object Management Methods
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * Adds an object to the current workspace's object map.
+   * @param object - The object to add to the canvas
+   */
   addObject(object: KritzelBaseObject<any>): void {
     this._store.state.objects.insert(object);
   }
 
+  /**
+   * Removes an object from the workspace.
+   * Handles recursive deletion of group children (unless preserved),
+   * cleans up line anchors, and removes from the object map.
+   * @param object - The object to remove
+   * @param preserveChildren - If true and object is a group, children are kept; defaults to false
+   */
   removeObject(object: KritzelBaseObject<any>, preserveChildren: boolean = false): void {
     // Handle KritzelGroup: recursively delete all children first (unless preserveChildren is true)
-    if (object instanceof KritzelGroup && !preserveChildren) {
+    if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') && !preserveChildren) {
       // Get children before removing the group
       const children = [...object.children];
       children.forEach(child => {
@@ -266,7 +504,7 @@ export class KritzelCore {
     }
 
     // Handle anchor cleanup
-    if (object instanceof KritzelLine) {
+    if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
       // If removing a line, clean up its anchor index entries
       this._anchorManager.handleLineDeleted(object.id);
     } else {
@@ -278,6 +516,13 @@ export class KritzelCore {
     this._store.state.objects.remove(o => o.id === object.id);
   }
 
+  /**
+   * Updates properties on an object and persists the changes.
+   * Calls the object's onAfterUpdate hook with changed property keys.
+   * @typeParam T - The type of the object being updated
+   * @param object - The object to update
+   * @param updatedProperties - Partial object containing properties to update
+   */
   updateObject<T extends KritzelBaseObject<any>>(object: T, updatedProperties: Partial<T>): void {
     const changedKeys: string[] = [];
 
@@ -292,6 +537,12 @@ export class KritzelCore {
     this._store.state.objects.update(object);
   }
 
+  /**
+   * Adds a selection group to the canvas.
+   * Removes any existing selection group and selection box first.
+   * Triggers the selection change event.
+   * @param selectionGroup - The selection group to add
+   */
   addSelectionGroup(selectionGroup: KritzelSelectionGroup): void {
     this.removeSelectionGroup();
     this.removeSelectionBox();
@@ -300,6 +551,10 @@ export class KritzelCore {
     this._kritzelEngine.triggerSelectionChange();
   }
 
+  /**
+   * Removes the current selection group from the canvas.
+   * Clears the cached reference and triggers the selection change event.
+   */
   removeSelectionGroup(): void {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
@@ -309,6 +564,10 @@ export class KritzelCore {
     }
   }
 
+  /**
+   * Removes the current selection box from the canvas.
+   * Clears the cached reference.
+   */
   removeSelectionBox(): void {
     const selectionBox = this._store.selectionBox;
     if (selectionBox) {
@@ -317,11 +576,19 @@ export class KritzelCore {
     }
   }
 
+  /**
+   * Deselects all objects by removing the selection group.
+   * Triggers a rerender.
+   */
   deselectAllObjects(): void {
     this.removeSelectionGroup();
     this.rerender();
   }
 
+  /**
+   * Deletes all objects in the current selection group.
+   * Removes the selection group and emits viewport change event.
+   */
   delete() {
     const selectionGroup = this._store.selectionGroup;
     if (!selectionGroup) {
@@ -335,14 +602,25 @@ export class KritzelCore {
     this.rerender();
   }
 
+  /**
+   * Undoes the last action in the history stack.
+   */
   undo(): void {
     this._store.state.objects?.undo();
   }
 
+  /**
+   * Redoes the last undone action from the history stack.
+   */
   redo(): void {
     this._store.state.objects?.redo();
   }
 
+  /**
+   * Deletes a specific object by its ID.
+   * Emits viewport change event and triggers rerender.
+   * @param id - The unique ID of the object to delete
+   */
   deleteObject(id: string) {
     const object = this.findObjectById(id);
     if (object) {
@@ -352,6 +630,10 @@ export class KritzelCore {
     }
   }
 
+  /**
+   * Copies the currently selected objects to the clipboard.
+   * Creates deep copies of objects and tracks ID mappings for anchor remapping.
+   */
   copy() {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
@@ -371,6 +653,10 @@ export class KritzelCore {
     }
   }
 
+  /**
+   * Cuts the currently selected objects (copy then delete).
+   * Objects are copied to clipboard and then removed from the canvas.
+   */
   cut(): void {
     const selectionGroup = this._store.selectionGroup;
     if (!selectionGroup) {
@@ -382,6 +668,14 @@ export class KritzelCore {
     this.delete();
   }
 
+  /**
+   * Pastes objects from the clipboard to the canvas.
+   * Handles positioning (explicit, offset, or centered for cross-workspace paste),
+   * workspace assignment, z-index ordering, group children, and anchor remapping.
+   * Creates a selection group containing the pasted objects.
+   * @param x - Optional explicit X position for paste
+   * @param y - Optional explicit Y position for paste
+   */
   paste(x?: number, y?: number) {
     const copiedObjects = this._store.state.copiedObjects;
     if (!copiedObjects || copiedObjects.length === 0) {
@@ -456,10 +750,9 @@ export class KritzelCore {
         obj.zIndex = baseZIndex + i;
 
         // Handle KritzelGroup: also add pending children with offset
-        if (obj instanceof KritzelGroup) {
-          const pendingChildren = (obj as any)._pendingChildren as KritzelBaseObject<any>[] | undefined;
-          if (pendingChildren) {
-            pendingChildren.forEach((child, childIndex) => {
+        if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
+          if (obj._pendingChildren.length > 0) {
+            obj._pendingChildren.forEach((child, childIndex) => {
               // Update workspace
               if (child.workspaceId !== activeWorkspace.id) {
                 child.workspaceId = activeWorkspace.id;
@@ -476,7 +769,7 @@ export class KritzelCore {
             });
 
             // Clear pending children
-            delete (obj as any)._pendingChildren;
+            obj._pendingChildren = [];
 
             // Finalize the group's bounding box and snapshots
             obj.finalize();
@@ -493,7 +786,7 @@ export class KritzelCore {
       // Update line anchors to point to the newly pasted objects
       // Only remap if the anchor target was also part of the copied selection
       copiedObjects.forEach(obj => {
-        if (obj instanceof KritzelLine) {
+        if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) {
           let updated = false;
 
           if (obj.startAnchor && originalToNewIdMap.has(obj.startAnchor.objectId)) {
@@ -569,6 +862,10 @@ export class KritzelCore {
     this.rerender();
   }
 
+  /**
+   * Moves objects one step forward in the z-order stack.
+   * @param object - Optional specific object to move; defaults to all selected objects
+   */
   bringForward(object?: KritzelBaseObject<any>) {
     const selectionGroup = this._store.selectionGroup;
     const objects = object ? [object] : selectionGroup?.objects || [];
@@ -584,6 +881,10 @@ export class KritzelCore {
     this.rerender();
   }
 
+  /**
+   * Moves objects one step backward in the z-order stack.
+   * @param object - Optional specific object to move; defaults to all selected objects
+   */
   sendBackward(object?: KritzelBaseObject<any>) {
     const selectionGroup = this._store.selectionGroup;
     const objects = object ? [object] : selectionGroup?.objects || [];
@@ -599,6 +900,10 @@ export class KritzelCore {
     this.rerender();
   }
 
+  /**
+   * Moves objects to the very front of the z-order stack.
+   * @param object - Optional specific object to move; defaults to all selected objects
+   */
   bringToFront(object?: KritzelBaseObject<any>) {
     const selectionGroup = this._store.selectionGroup;
     const objects = object ? [object] : selectionGroup?.objects || [];
@@ -612,6 +917,10 @@ export class KritzelCore {
     this.rerender();
   }
 
+  /**
+   * Moves objects to the very back of the z-order stack.
+   * @param object - Optional specific object to move; defaults to all selected objects
+   */
   sendToBack(object?: KritzelBaseObject<any>) {
     const selectionGroup = this._store.selectionGroup;
     const objects = object ? [object] : selectionGroup?.objects || [];
@@ -694,14 +1003,14 @@ export class KritzelCore {
       return;
     }
 
-    const groups = selectionGroup.objects.filter(obj => obj instanceof KritzelGroup) as KritzelGroup[];
+    const groups = selectionGroup.objects.filter(obj => KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) as KritzelGroup[];
     if (groups.length === 0) {
       return;
     }
 
     // Collect all children from all groups
     const allChildren: KritzelBaseObject<any>[] = [];
-    const nonGroupObjects = selectionGroup.objects.filter(obj => !(obj instanceof KritzelGroup));
+    const nonGroupObjects = selectionGroup.objects.filter(obj => !KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup'));
 
     groups.forEach(group => {
       // Get children before removing the group
@@ -726,6 +1035,11 @@ export class KritzelCore {
     this.rerender();
   }
 
+  /**
+   * Creates a selection from the given objects.
+   * Clears existing selection, creates a selection group, and marks objects as selected.
+   * @param objects - Array of objects to select; no-op if empty
+   */
   selectObjects(objects: KritzelBaseObject<any>[]) {
     if (objects.length === 0) {
       return;
@@ -747,6 +1061,11 @@ export class KritzelCore {
     this.rerender();
   }
 
+  /**
+   * Selects all objects in the workspace.
+   * Excludes selection-related and context menu objects.
+   * Switches to selection tool.
+   */
   selectAllObjects() {
     const allObjects = this._store.state.objects
       .allObjects()
@@ -774,6 +1093,11 @@ export class KritzelCore {
     }
   }
 
+  /**
+   * Selects all objects currently visible in the viewport.
+   * Excludes selection-related and context menu objects.
+   * Switches to selection tool.
+   */
   selectAllObjectsInViewport() {
     const viewportBounds = {
       x: -this._store.state.translateX / this._store.state.scale,
@@ -811,6 +1135,10 @@ export class KritzelCore {
     }
   }
 
+  /**
+   * Clears all selection state.
+   * Removes selection group and box, resets selection-related flags.
+   */
   clearSelection() {
     this.removeSelectionGroup();
 
@@ -827,6 +1155,10 @@ export class KritzelCore {
     this.rerender();
   }
 
+  /**
+   * Resets the active text object.
+   * Deletes empty text objects or saves non-empty ones.
+   */
   resetActiveText() {
     const activeText = this._store.activeText;
     if (activeText) {
@@ -838,6 +1170,9 @@ export class KritzelCore {
     }
   }
 
+  /**
+   * Resets the active shape object by saving it.
+   */
   resetActiveShape() {
     const activeShape = this._store.activeShape;
     if (activeShape) {
@@ -845,6 +1180,13 @@ export class KritzelCore {
     }
   }
 
+  /**
+   * Gets the topmost object at a pointer event location that matches a selector.
+   * Performs hit testing to verify the object is actually under the pointer.
+   * @param event - The pointer event with client coordinates
+   * @param selector - CSS selector to match elements; defaults to '.object'
+   * @returns The matched object or null if none found or hit test fails
+   */
   getObjectFromPointerEvent(event: PointerEvent, selector = '.object'): KritzelBaseObject<any> | null {
     const shadowRoot = this._store.state.host?.shadowRoot;
     if (!shadowRoot) return null;
@@ -866,6 +1208,13 @@ export class KritzelCore {
     return null;
   }
 
+  /**
+   * Gets all objects at a pointer event location that match a selector.
+   * Returns objects sorted by z-index (highest first) for proper layering.
+   * @param event - The pointer event with client coordinates
+   * @param selector - CSS selector to match elements; defaults to '.object'
+   * @returns Array of matched objects sorted by z-index descending
+   */
   getObjectsFromPointerEvent(event: PointerEvent, selector = '.object'): KritzelBaseObject<any>[] {
     const shadowRoot = this._store.state.host?.shadowRoot;
     if (!shadowRoot) return [];
@@ -914,6 +1263,12 @@ export class KritzelCore {
     return this.getElementsAtPoint(event, selector).length > 0;
   }
 
+  /**
+   * Converts a pointer event to canvas (world) coordinates.
+   * Accounts for host element offset and viewport transform.
+   * @param event - The pointer event with client coordinates
+   * @returns Object with x and y in canvas coordinates
+   */
   getCanvasPoint(event: PointerEvent): { x: number; y: number } {
     if (!this._store.state.host) {
       return { x: 0, y: 0 };
@@ -933,6 +1288,11 @@ export class KritzelCore {
     return { x: worldX, y: worldY };
   }
 
+  /**
+   * Prepares the engine for a workspace change.
+   * Cancels pending viewport updates, saves current viewport state,
+   * resets active text, clears selection, and switches to selection tool.
+   */
   beforeWorkspaceChange() {
     // Cancel any pending debounced viewport updates to prevent them from
     // saving the old workspace's viewport to the new workspace
@@ -953,6 +1313,12 @@ export class KritzelCore {
     this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
   }
 
+  /**
+   * Determines whether to display the selection group UI for an object.
+   * Hides UI for single KritzelLine selections (they have their own UI).
+   * @param object - The object to check
+   * @returns True if selection group UI should be displayed
+   */
   displaySelectionGroupUI(object: KritzelBaseObject<any>): boolean {
     if (!object.isSelected) {
       return false;
@@ -978,6 +1344,12 @@ export class KritzelCore {
     return true;
   }
 
+  /**
+   * Determines whether to display the line-specific selection UI for an object.
+   * Shows line UI only for single KritzelLine selections.
+   * @param object - The object to check
+   * @returns True if line selection UI should be displayed
+   */
   displaySelectionLineUI(object: KritzelBaseObject<any>): boolean {
     // Only show line UI on KritzelLine objects, not on selection groups
     if (!(object instanceof KritzelLine)) {

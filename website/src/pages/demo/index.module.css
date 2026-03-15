@@ -1,0 +1,32 @@
+/* -------------------------------------------------------
+   Demo page – true full-screen editor, no chrome
+   ------------------------------------------------------- */
+
+.demoPage {
+    position: fixed;
+    inset: 0;
+    width: 100dvw;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+/* Make the BrowserOnly wrapper and kritzel-editor fill the full container */
+.demoPage>*,
+.demoPage kritzel-editor,
+.demoPage kritzel-engine {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Loading placeholder */
+.editorLoading {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #666;
+    background: #fff;
+}

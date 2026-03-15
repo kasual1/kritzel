@@ -61,6 +61,7 @@ describe('KritzelLineTool', () => {
     mockObjectsMap = {
       insert: jest.fn(),
       update: jest.fn(),
+      findById: jest.fn().mockReturnValue(undefined),
     };
 
     mockState = {
@@ -99,11 +100,13 @@ describe('KritzelLineTool', () => {
         get state() { return mockState; },
         offsetX: 0,
         offsetY: 0,
-        currentLine: null as any,
         setState: jest.fn(),
       },
       engine: {
         emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
       },
       addSelectionGroup: jest.fn(),
       rerender: jest.fn(),
@@ -391,7 +394,7 @@ describe('KritzelLineTool', () => {
       // Start drawing
       tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
 
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       const updatedLine = { id: 'new-id', workspaceId: 'new-ws', zIndex: 99, isCompleted: true };
       (KritzelLine.create as jest.Mock).mockReturnValue(updatedLine);
 
@@ -411,7 +414,7 @@ describe('KritzelLineTool', () => {
       tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
 
       const currentLine = { ...mockCreatedLine, id: 'line-1', workspaceId: 'ws-1', zIndex: 5 };
-      mockCore.store.currentLine = currentLine;
+      mockObjectsMap.findById.mockReturnValue(currentLine);
 
       const updatedLine = { id: 'new-id', workspaceId: 'new-ws', zIndex: 99, isCompleted: true };
       (KritzelLine.create as jest.Mock).mockReturnValue(updatedLine);
@@ -430,9 +433,9 @@ describe('KritzelLineTool', () => {
       expect(mockObjectsMap.update).not.toHaveBeenCalled();
     });
 
-    it('should not update when currentLine is null', () => {
-      mockState.isDrawing = true;
-      mockCore.store.currentLine = null;
+    it('should not update when current line is not found by findById', () => {
+      tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
+      mockObjectsMap.findById.mockReturnValue(undefined);
 
       tool.handlePointerMove(createMouseEvent({ clientX: 150, clientY: 260 }));
 
@@ -444,7 +447,7 @@ describe('KritzelLineTool', () => {
       mockCore.store.offsetY = 30;
       tool.handlePointerDown(createMouseEvent({ clientX: 200, clientY: 300 }));
 
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       (KritzelLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       tool.handlePointerMove(createMouseEvent({ clientX: 400, clientY: 500 }));
@@ -465,7 +468,7 @@ describe('KritzelLineTool', () => {
 
       tool.handlePointerDown(createMouseEvent({ clientX: 200, clientY: 300 }));
 
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       (KritzelLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       tool.handlePointerMove(createMouseEvent({ clientX: 400, clientY: 500 }));
@@ -491,7 +494,7 @@ describe('KritzelLineTool', () => {
       mockState.pointers.set(1, { clientX: 50, clientY: 60 });
       tool.handlePointerDown(createTouchEvent());
 
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       (KritzelLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       mockState.pointers.clear();
@@ -522,7 +525,7 @@ describe('KritzelLineTool', () => {
       mockState.pointers.set(1, { clientX: 50, clientY: 60 });
       tool.handlePointerDown(createTouchEvent());
 
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       (KritzelLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
 
       mockState.pointers.clear();
@@ -535,12 +538,12 @@ describe('KritzelLineTool', () => {
       }));
     });
 
-    it('should not update when currentLine is null (touch)', () => {
+    it('should not update when current line is not found by findById (touch)', () => {
       mockState.pointers.set(1, { clientX: 50, clientY: 60 });
       tool.handlePointerDown(createTouchEvent());
       jest.clearAllMocks();
 
-      mockCore.store.currentLine = null;
+      mockObjectsMap.findById.mockReturnValue(undefined);
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 150, clientY: 260 });
       tool.handlePointerMove(createTouchEvent());
@@ -572,7 +575,7 @@ describe('KritzelLineTool', () => {
 
     it('should mark line as completed and emit change', () => {
       tool.handlePointerDown(createMouseEvent());
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
 
       tool.handlePointerUp(createMouseEvent());
 
@@ -584,7 +587,7 @@ describe('KritzelLineTool', () => {
 
     it('should create selection group and switch to selection tool', () => {
       tool.handlePointerDown(createMouseEvent());
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
 
       tool.handlePointerUp(createMouseEvent());
 
@@ -606,9 +609,9 @@ describe('KritzelLineTool', () => {
       expect(KritzelSelectionGroup.create).not.toHaveBeenCalled();
     });
 
-    it('should handle case where currentLine is null', () => {
-      mockState.isDrawing = true;
-      mockCore.store.currentLine = null;
+    it('should handle case where current line is not found by findById', () => {
+      tool.handlePointerDown(createMouseEvent());
+      mockObjectsMap.findById.mockReturnValue(undefined);
 
       tool.handlePointerUp(createMouseEvent());
 
@@ -626,7 +629,7 @@ describe('KritzelLineTool', () => {
     it('should mark line as completed for touch', () => {
       mockState.pointers.set(1, { clientX: 50, clientY: 60 });
       tool.handlePointerDown(createTouchEvent());
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
 
       tool.handlePointerUp(createTouchEvent());
 
@@ -639,7 +642,7 @@ describe('KritzelLineTool', () => {
     it('should mark line as completed for pen', () => {
       mockState.pointers.set(1, { clientX: 50, clientY: 60 });
       tool.handlePointerDown(createPenEvent());
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
 
       tool.handlePointerUp(createPenEvent());
 
@@ -650,7 +653,7 @@ describe('KritzelLineTool', () => {
     it('should create selection group and switch to selection tool (touch)', () => {
       mockState.pointers.set(1, { clientX: 50, clientY: 60 });
       tool.handlePointerDown(createTouchEvent());
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
 
       tool.handlePointerUp(createTouchEvent());
 
@@ -669,9 +672,10 @@ describe('KritzelLineTool', () => {
       expect(mockCore.engine.emitObjectsChange).not.toHaveBeenCalled();
     });
 
-    it('should handle case where currentLine is null (touch)', () => {
-      mockState.isDrawing = true;
-      mockCore.store.currentLine = null;
+    it('should handle case where current line is not found by findById (touch)', () => {
+      mockState.pointers.set(1, { clientX: 50, clientY: 60 });
+      tool.handlePointerDown(createTouchEvent());
+      mockObjectsMap.findById.mockReturnValue(undefined);
 
       tool.handlePointerUp(createTouchEvent());
 
@@ -693,7 +697,7 @@ describe('KritzelLineTool', () => {
       expect(mockObjectsMap.insert).toHaveBeenCalledTimes(1);
 
       // 2. Pointer move - extend line end point
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       const updatedLine = { ...mockCreatedLine };
       (KritzelLine.create as jest.Mock).mockReturnValue(updatedLine);
 
@@ -723,7 +727,7 @@ describe('KritzelLineTool', () => {
       expect(mockState.isDrawing).toBe(true);
 
       // 2. Pointer move
-      mockCore.store.currentLine = mockCreatedLine;
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
       (KritzelLine.create as jest.Mock).mockReturnValue({ ...mockCreatedLine });
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 300, clientY: 400 });

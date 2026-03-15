@@ -16,7 +16,3 @@
 .header-github-link::before {
   background-image: url("/img/github.svg");
 }
-
-[data-theme="dark"] .header-github-link::before {
-  background-image: url("/img/github_dark.svg");
-}

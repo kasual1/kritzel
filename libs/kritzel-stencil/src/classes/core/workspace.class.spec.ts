@@ -105,8 +105,8 @@ describe('KritzelWorkspace', () => {
 
       expect(typeof serialized.createdAt).toBe('string');
       expect(typeof serialized.updatedAt).toBe('string');
-      expect(new Date(serialized.createdAt).toISOString()).toBe(serialized.createdAt);
-      expect(new Date(serialized.updatedAt).toISOString()).toBe(serialized.updatedAt);
+      expect(new Date(serialized.createdAt as string).toISOString()).toBe(serialized.createdAt);
+      expect(new Date(serialized.updatedAt as string).toISOString()).toBe(serialized.updatedAt);
     });
   });
 

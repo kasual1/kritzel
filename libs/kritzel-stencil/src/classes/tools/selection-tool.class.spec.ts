@@ -86,6 +86,7 @@ describe('KritzelSelectionTool', () => {
 
   const createMockGroup = (children: any[]) => {
     const obj = Object.create(KritzelGroup.prototype);
+    obj.__class__ = 'KritzelGroup';
     Object.defineProperty(obj, 'children', { value: children, configurable: true });
     return obj;
   };
@@ -169,6 +170,9 @@ describe('KritzelSelectionTool', () => {
       },
       engine: {
         emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
       },
       rerender: jest.fn(),
       updateObject: jest.fn(),

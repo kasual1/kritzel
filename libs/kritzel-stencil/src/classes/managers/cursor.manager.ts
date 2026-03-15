@@ -10,13 +10,19 @@ export class KritzelCursorManager {
   private _targetElement: HTMLElement | null = null;
   private _shadowRoot: ShadowRoot | null = null;
 
+  /**
+   * Creates a new KritzelCursorManager instance.
+   * @param core - The KritzelCore instance that provides access to the store and other core functionality.
+   */
   constructor(core: KritzelCore) {
     this._core = core;
   }
 
   /**
    * Sets the target element where cursor styles will be applied.
-   * Also sets the pointer cursor CSS variable for child components.
+   * Resets any cursor styles on the previous target element before setting the new one.
+   * Also sets the `--kritzel-global-pointer-cursor` CSS variable for child components to use.
+   * @param element - The HTML element to apply cursor styles to, or null to clear the target.
    */
   setTargetElement(element: HTMLElement | null): void {
     // Reset cursor on old target
@@ -35,21 +41,24 @@ export class KritzelCursorManager {
 
   /**
    * Gets the current cursor target element.
+   * @returns The HTML element where cursor styles are applied, or null if not set.
    */
   getTargetElement(): HTMLElement | null {
     return this._targetElement;
   }
 
   /**
-   * Sets the shadow root for element detection.
+   * Sets the shadow root used for element detection in hover state calculations.
+   * Required for `elementsFromPoint()` to work within the shadow DOM.
+   * @param shadowRoot - The ShadowRoot instance of the component.
    */
   setShadowRoot(shadowRoot: ShadowRoot): void {
     this._shadowRoot = shadowRoot;
   }
 
   /**
-   * Resets cursor to default state.
-   * Should be called when all pointers are released.
+   * Resets cursor to default state by setting both icon and iconActive to 'default'.
+   * Should be called when all pointers are released to return to the standard cursor.
    */
   resetToDefault(): void {
     this._core.store.state.cursor = { icon: 'default', iconActive: 'default' };
@@ -57,7 +66,16 @@ export class KritzelCursorManager {
 
   /**
    * Detects handle hover states using elementsFromPoint() to work with overlapped elements.
-   * This approach finds all elements at the pointer position instead of relying on pointerenter/pointerleave.
+   * This approach finds all elements at the pointer position instead of relying on pointerenter/pointerleave,
+   * which allows proper detection even when elements overlap.
+   *
+   * Updates the cursor state based on which handle type is being hovered:
+   * - Resize handle overlays: Sets a rotated vertical move cursor based on handle position and selection rotation.
+   * - Rotation handle overlays: Sets a hand cursor that changes to grab when active.
+   * - Line handle overlays: Sets a hand cursor that changes to grab when active.
+   * - No handle: Resets to default cursor.
+   *
+   * @param ev - The PointerEvent containing the cursor position (clientX, clientY).
    */
   updateHoverState(ev: PointerEvent): void {
     if (this._core.store.isPointerDown) return;
@@ -101,7 +119,10 @@ export class KritzelCursorManager {
 
   /**
    * Applies the current cursor state to the target element.
-   * Should be called in the render loop.
+   * Reads the cursor configuration from the store state and uses KritzelCursorHelper
+   * to generate the appropriate cursor value. Uses the active icon when pointer is down,
+   * otherwise uses the default icon.
+   * Should be called in the render loop to keep the cursor in sync with state.
    */
   applyCursor(): void {
     const state = this._core.store.state;
@@ -123,6 +144,8 @@ export class KritzelCursorManager {
 
   /**
    * Cleans up cursor state when the component is disconnected.
+   * Removes cursor styles and CSS custom properties from the target element,
+   * then clears all internal references to allow garbage collection.
    */
   cleanup(): void {
     if (this._targetElement) {

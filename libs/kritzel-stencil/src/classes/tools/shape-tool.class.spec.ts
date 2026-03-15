@@ -111,6 +111,9 @@ describe('KritzelShapeTool', () => {
       },
       engine: {
         emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
       },
       rerender: jest.fn(),
       findObjectById: jest.fn().mockReturnValue(undefined),

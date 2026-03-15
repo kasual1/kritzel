@@ -5,19 +5,25 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "Kritzel - Free Infinite Canvas Library",
   tagline: "Kritzel is a open-source infinite canvas editor",
-  favicon: "img/favicon.svg",
+  favicon: "img/logo.svg",
   future: {
     v4: true,
   },
   url: "https://kasual1.github.io",
-  baseUrl: "/kritzel/",
+  baseUrl: "/",
   projectName: "kritzel",
   onBrokenLinks: "warn",
-  onBrokenMarkdownLinks: "warn",
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
   },
+  markdown: {
+    mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+    },
+  },
+  themes: ["@docusaurus/theme-mermaid"],
 
   presets: [
     [
@@ -33,7 +39,8 @@ const config: Config = {
             require.resolve("./src/css/navbar.css"),
             require.resolve("./src/css/hero.css"),
             require.resolve("./src/css/buttons.css"),
-            require.resolve("./src/css/general.css")
+            require.resolve("./src/css/general.css"),
+            require.resolve("./src/css/footer.css"),
           ],
         },
       } satisfies Preset.Options,
@@ -41,6 +48,18 @@ const config: Config = {
   ],
 
   plugins: [
+    function suppressWebpackCacheWarnings() {
+      return {
+        name: "suppress-webpack-cache-warnings",
+        configureWebpack() {
+          return {
+            infrastructureLogging: {
+              level: "error",
+            },
+          };
+        },
+      };
+    },
     [
       "@docusaurus/plugin-content-docs",
       {
@@ -80,9 +99,45 @@ const config: Config = {
       logo: {
         alt: "Kritzel Infinite Canvas",
         src: "img/logo.svg",
-        srcDark: "img/logo_dark.svg",
+        width: 32,
+        height: 32,
       },
       items: [
+        {
+          type: 'dropdown',
+          label: 'Features',
+          position: 'right',
+          items: [
+            {
+              label: 'Infinite Canvas',
+              to: '/features/infinite-canvas',
+            },
+            {
+              label: 'Framework Agnostic',
+              to: '/features/framework-agnostic',
+            },
+            {
+              label: 'Real-time Collaboration',
+              to: '/features/real-time-collaboration',
+            },
+            {
+              label: 'Drawing Tools',
+              to: '/features/drawing-tools',
+            },
+          ],
+        },
+        {
+          type: 'custom-pricingLink',
+          label: 'Pricing',
+          to: '/pricing',
+          position: 'right',
+        },
+        {
+          type: 'custom-docsLink',
+          label: 'Documentation',
+          to: '/docs/react/overview',
+          position: 'right',
+        },
         {
           type: 'dropdown',
           position: 'right',
@@ -90,32 +145,108 @@ const config: Config = {
           items: [
             {
               label: 'Angular',
-              to: '/docs/angular/getting-started',
+              to: '/docs/angular/overview',
               activeBasePath: 'docs/angular'
             },
             {
               label: 'React',
-              to: '/docs/react/getting-started',
+              to: '/docs/react/overview',
               activeBasePath: 'docs/react'
             },
             {
               label: 'Vue',
-              to: '/docs/vue/getting-started',
+              to: '/docs/vue/overview',
               activeBasePath: 'docs/vue'
             },
           ],
         },
-        {
-          href: "https://github.com/kasual1/kritzel",
-          position: "right",
-          className: "header-github-link",
-          "aria-label": "GitHub repository",
-        },
       ],
+    },
+    colorMode: {
+      defaultMode: 'light',
+      disableSwitch: true,
+      respectPrefersColorScheme: false,
     },
     prism: {
       theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+    },
+    footer: {
+      style: 'dark',
+      links: [
+        {
+          title: 'Documentation',
+          items: [
+            {
+              label: 'Getting Started',
+              to: '/docs/angular/overview',
+            },
+            {
+              label: 'API Reference',
+              to: '/docs/general/index',
+            },
+            {
+              label: 'Examples',
+              to: '#', // Placeholder
+            },
+          ],
+        },
+        {
+          title: 'Frameworks',
+          items: [
+            {
+              label: 'Angular',
+              to: '/docs/angular/overview',
+            },
+            {
+              label: 'React',
+              to: '/docs/react/overview',
+            },
+            {
+              label: 'Vue',
+              to: '/docs/vue/overview',
+            },
+          ],
+        },
+        {
+          title: 'Community',
+          items: [
+            {
+              label: 'GitHub',
+              href: 'https://github.com/kasual1/kritzel',
+            },
+            {
+              label: 'Discord',
+              href: '#', // Placeholder
+            },
+            {
+              label: 'Twitter',
+              href: '#', // Placeholder
+            },
+          ],
+        },
+        {
+          title: 'More',
+          items: [
+            {
+              label: 'Demo',
+              href: 'https://kasual1.github.io/kritzel/demo/',
+            },
+            {
+              label: 'Blog',
+              to: '#', // Placeholder
+            },
+            {
+              label: 'Changelog',
+              to: '#', // Placeholder
+            },
+            {
+              label: 'License',
+              href: 'https://github.com/kasual1/kritzel/blob/main/LICENSE',
+            },
+          ],
+        },
+      ],
+      copyright: `Copyright © ${new Date().getFullYear()} Kritzel. All rights reserved.`,
     },
   } satisfies Preset.ThemeConfig,
   headTags: [

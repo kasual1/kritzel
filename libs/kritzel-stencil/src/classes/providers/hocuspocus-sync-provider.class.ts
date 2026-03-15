@@ -1,4 +1,5 @@
 import * as Y from 'yjs';
+import { Awareness } from 'y-protocols/awareness';
 import { HocuspocusProvider, HocuspocusProviderWebsocket } from '@hocuspocus/provider';
 import { ISyncProvider, ProviderFactory } from '../../interfaces/sync-provider.interface';
 
@@ -108,6 +109,10 @@ export class HocuspocusSyncProvider implements ISyncProvider {
   private isSynced: boolean = false;
   private usesSharedSocket: boolean = false;
 
+  get awareness(): Awareness {
+    return this.provider.awareness;
+  }
+
   // Static shared WebSocket instance for multiplexing
   private static sharedWebSocketProvider: HocuspocusProviderWebsocket | null = null;
 
@@ -128,6 +133,9 @@ export class HocuspocusSyncProvider implements ISyncProvider {
         document: doc,
         token: options?.token || null,
         onConnect: () => {
+          if (this.isConnected) {
+            return;
+          }
           this.isConnected = true;
           if (!options?.quiet) {
             console.info(`Hocuspocus connected: ${name}`);
@@ -137,6 +145,9 @@ export class HocuspocusSyncProvider implements ISyncProvider {
           }
         },
         onDisconnect: () => {
+          if (!this.isConnected && !this.isSynced) {
+            return;
+          }
           this.isConnected = false;
           this.isSynced = false;
           if (!options?.quiet) {
@@ -147,6 +158,9 @@ export class HocuspocusSyncProvider implements ISyncProvider {
           }
         },
         onSynced: () => {
+          if (this.isSynced) {
+            return;
+          }
           this.isSynced = true;
           if (!options?.quiet) {
             console.info(`Hocuspocus synced: ${name}`);
@@ -188,6 +202,9 @@ export class HocuspocusSyncProvider implements ISyncProvider {
         document: doc,
         token: options?.token || null,
         onConnect: () => {
+          if (this.isConnected) {
+            return;
+          }
           this.isConnected = true;
           if (!options?.quiet) {
             console.info(`Hocuspocus connected: ${name}`);
@@ -197,6 +214,9 @@ export class HocuspocusSyncProvider implements ISyncProvider {
           }
         },
         onDisconnect: () => {
+          if (!this.isConnected && !this.isSynced) {
+            return;
+          }
           this.isConnected = false;
           this.isSynced = false;
           if (!options?.quiet) {
@@ -207,6 +227,9 @@ export class HocuspocusSyncProvider implements ISyncProvider {
           }
         },
         onSynced: () => {
+          if (this.isSynced) {
+            return;
+          }
           this.isSynced = true;
           if (!options?.quiet) {
             console.info(`Hocuspocus synced: ${name}`);
@@ -303,8 +326,9 @@ export class HocuspocusSyncProvider implements ISyncProvider {
    */
   static with(options?: HocuspocusOptions): ProviderFactory {
     return {
-      create: (docName: string, doc: Y.Doc) => {
-        return new HocuspocusSyncProvider(docName, doc, options);
+      create: (docName: string, doc: Y.Doc, runtimeOptions?: { quiet?: boolean }) => {
+        const mergedOptions = runtimeOptions ? { ...options, ...runtimeOptions } : options;
+        return new HocuspocusSyncProvider(docName, doc, mergedOptions);
       },
     };
   }

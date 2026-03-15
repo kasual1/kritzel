@@ -6,14 +6,26 @@ import { KritzelLine } from '../objects/line.class';
 /** Threshold in screen pixels for disconnecting anchored lines during drag */
 const ANCHOR_DISCONNECT_THRESHOLD = 30;
 
+/**
+ * Handler class responsible for managing move/drag operations on selected objects.
+ * Handles pointer events for mouse, touch, and pen inputs to enable dragging
+ * of selected objects on the canvas. Also manages anchor disconnection when
+ * lines are dragged beyond a threshold distance.
+ */
 export class KritzelMoveHandler extends KritzelBaseHandler {
+  /** X coordinate where the drag started (updates during drag for incremental movement) */
   dragStartX: number;
+  /** Y coordinate where the drag started (updates during drag for incremental movement) */
   dragStartY: number;
 
+  /** Initial X coordinate when starting interaction (remains constant during drag) */
   startX: number;
+  /** Initial Y coordinate when starting interaction (remains constant during drag) */
   startY: number;
 
+  /** Current X coordinate during move operation */
   endX: number;
+  /** Current Y coordinate during move operation */
   endY: number;
 
   /** Initial position when drag started (for calculating total accumulated distance) */
@@ -23,14 +35,26 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
   /** Set of line IDs that have been disconnected from anchors during this drag */
   private disconnectedLineIds: Set<string> = new Set();
 
+  /** Flag indicating whether objects have been moved during the current drag operation */
   hasMoved: boolean = false;
+  /** The pointer ID being tracked for the current drag operation (null if not dragging) */
   private trackedPointerId: number | null = null;
 
+  /**
+   * Creates a new instance of KritzelMoveHandler.
+   * @param core - The KritzelCore instance providing access to store, engine, and other core services
+   */
   constructor(core: KritzelCore) {
     super(core);
   }
 
-  private reset() {
+  /**
+   * Resets all internal state variables to their initial values.
+   * Called after a drag operation completes or is cancelled to prepare
+   * the handler for the next interaction.
+   * @returns void
+   */
+  private reset(): void {
     this.dragStartX = 0;
     this.dragStartY = 0;
     this.startX = 0;
@@ -44,12 +68,27 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     this.trackedPointerId = null;
   }
 
+  /**
+   * Cancels any pending drag operation without completing it.
+   * Sets the dragging state to false and resets internal state.
+   * Useful for aborting a drag when another interaction takes precedence.
+   * @returns void
+   */
   cancelPendingDrag(): void {
     this._core.store.state.isDragging = false;
     this.reset();
   }
 
-  handlePointerDown(event: PointerEvent) {
+  /**
+   * Handles the pointer down event to initiate a drag operation.
+   * Validates that the event is appropriate for starting a drag (e.g., left mouse click,
+   * single touch, correct state) and initializes drag tracking variables.
+   * Supports mouse, touch, and pen input types.
+   * @param event - The PointerEvent from the browser containing pointer information
+   *                including clientX, clientY, pointerId, pointerType, and modifier keys
+   * @returns void
+   */
+  handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         const selectionGroup = this._core.store.selectionGroup;
@@ -105,7 +144,16 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     }
   }
 
-  handlePointerMove(event: PointerEvent) {
+  /**
+   * Handles pointer move events during a drag operation.
+   * Calculates movement delta, applies a movement threshold to filter micro-movements,
+   * checks for anchor disconnection on lines, and updates the position of selected objects.
+   * Supports mouse, touch, and pen input types.
+   * @param event - The PointerEvent from the browser containing current pointer position
+   *                and pointer identification (pointerId, pointerType, clientX, clientY)
+   * @returns void
+   */
+  handlePointerMove(event: PointerEvent): void {
     if (this.trackedPointerId === null || this.trackedPointerId !== event.pointerId) {
       return;
     }
@@ -159,7 +207,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         const moveThreshold = 5;
 
         if (this.hasMoved || moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
-          clearTimeout(this._core.store.state.longTouchTimeout);
+          globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
 
           // Check for anchor disconnect threshold on lines
           this.checkAndDisconnectAnchors(x, y);
@@ -174,7 +222,16 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     }
   }
 
-  handlePointerUp(event: PointerEvent) {
+  /**
+   * Handles the pointer up event to complete a drag operation.
+   * Finalizes the move by updating the selection group, emitting change events
+   * if objects were moved, and resetting internal state for the next operation.
+   * Supports mouse, touch, and pen input types.
+   * @param event - The PointerEvent from the browser containing pointer identification
+   *                (pointerId, pointerType) to verify this is the tracked pointer
+   * @returns void
+   */
+  handlePointerUp(event: PointerEvent): void {
     if (this.trackedPointerId === null || this.trackedPointerId !== event.pointerId) {
       return;
     }
@@ -210,6 +267,14 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
    * Checks if the total accumulated drag distance exceeds the anchor disconnect threshold.
    * If so, disconnects all anchors from any KritzelLine objects in the selection group.
    * This allows anchored lines to be freely moved after dragging beyond the threshold.
+   * 
+   * Only disconnects anchors when the selection contains exclusively line objects.
+   * If the selection includes other object types (e.g., shapes that lines might be
+   * anchored to), no disconnection occurs to preserve intended relationships.
+   * 
+   * @param currentX - The current X coordinate of the pointer in screen pixels
+   * @param currentY - The current Y coordinate of the pointer in screen pixels
+   * @returns void
    */
   private checkAndDisconnectAnchors(currentX: number, currentY: number): void {
     const totalDeltaX = currentX - this.initialDragX;

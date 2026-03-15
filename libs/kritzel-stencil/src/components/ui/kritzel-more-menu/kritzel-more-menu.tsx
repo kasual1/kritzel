@@ -14,8 +14,18 @@ export class KritzelMoreMenu {
    */
   @Prop() items: IKritzelMenuItem[] = [
     {
+      id: 'share',
+      label: 'Share',
+      icon: 'share',
+    },
+    {
       id: 'export',
       label: 'Export',
+      icon: 'upload',
+    },
+    {
+      id: 'import',
+      label: 'Import',
       icon: 'download',
     },
     {
@@ -62,6 +72,7 @@ export class KritzelMoreMenu {
 
   private handleMenuItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>): void => {
     const { item, parent } = event.detail;
+
     if (item.action) {
       item.action(item, parent);
     }

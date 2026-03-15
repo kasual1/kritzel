@@ -76,6 +76,9 @@ describe('KritzelMoveHandler', () => {
       },
       engine: {
         emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
       },
       anchorManager: {
         removeAnchor: jest.fn(),
@@ -485,7 +488,7 @@ describe('KritzelMoveHandler', () => {
 
       it('should clear long touch timeout on move', () => {
         jest.useFakeTimers();
-        mockState.longTouchTimeout = setTimeout(() => {}, 1000);
+        mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
         mockState.pointers.set(1, { clientX: 100, clientY: 100 });

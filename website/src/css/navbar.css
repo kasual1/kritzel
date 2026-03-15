@@ -1,24 +1,31 @@
+.navbar__logo {
+  height: 32px !important;
+  width: 32px !important;
+}
+
 .navbar__toggle {
   background-image: url("/img/menu.svg") !important;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 32px 32px;
-  color: transparent !important; /* Hide default icon/text */
+  color: transparent !important;
+  /* Hide default icon/text */
 }
 
-.navbar__toggle {
-    background-image: url("/img/menu.svg") !important;
+.navbar__items {
+  gap: 1rem;
 }
 
-[data-theme="dark"] .navbar__toggle {
-    background-image: url("/img/menu_dark.svg") !important;
+.navbar__items a {
+  text-decoration: none !important;
 }
 
 button.navbar-sidebar__close {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 32px 32px;
-  color: transparent !important; /* Hide default icon/text */
+  color: transparent !important;
+  /* Hide default icon/text */
   height: 32px;
   width: 32px;
 }
@@ -27,12 +34,9 @@ button.navbar-sidebar__close {
   background-image: url("/img/close.svg") !important;
 }
 
-[data-theme="dark"] button.navbar-sidebar__close {
-  background-image: url("/img/close_dark.svg") !important;
-}
-
 button.navbar-sidebar__close>svg {
-  visibility: hidden !important; /* Hide SVG icon */
+  visibility: hidden !important;
+  /* Hide SVG icon */
 }
 
 .menu__link--sublist-caret::after {
@@ -46,10 +50,28 @@ button.navbar-sidebar__close>svg {
   background-repeat: no-repeat;
   background-position: center;
   vertical-align: middle;
-  opacity: 0.6;
+}
+
+.dropdown>.navbar__link::after {
+  border: none !important;
+  content: "" !important;
+  display: inline-block !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin-left: 0.3em !important;
+  background-image: url("/img/chevron_up.svg") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  vertical-align: middle !important;
+  opacity: 1 !important;
+  transform: rotate(180deg) !important;
+  top: 0 !important;
+  position: relative !important;
 }
 
 @media (max-width: 996px) {
+
   .navbar__inner .navbar__brand,
   .navbar__inner .navbar__logo,
   .navbar__inner .navbar__title,
@@ -63,5 +85,27 @@ button.navbar-sidebar__close>svg {
 
   [class*="tocCollapsibleButton"] {
     display: none !important;
+  }
+
+  .navbar__inner .navbar-pricing-link {
+    display: none !important;
+  }
+
+  .navbar-sidebar .menu__link--sublist {
+    font-weight: normal !important;
+    color: var(--ifm-menu-color) !important;
+  }
+
+  .navbar-sidebar .menu__caret::before {
+    background-image: url("/img/chevron_up.svg") !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    transform: rotate(180deg) !important;
+    opacity: 0.6 !important;
+  }
+
+  .navbar-sidebar .menu__list-item--collapsed>.menu__list-item-collapsible .menu__caret::before {
+    transform: rotate(0deg) !important;
   }
 }

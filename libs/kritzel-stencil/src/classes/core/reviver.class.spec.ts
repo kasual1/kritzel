@@ -65,6 +65,9 @@ describe('KritzelReviver', () => {
       },
       engine: {
         emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
       },
     } as unknown as jest.Mocked<KritzelCore>;
   };

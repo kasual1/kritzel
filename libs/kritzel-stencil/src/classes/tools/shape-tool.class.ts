@@ -6,27 +6,66 @@ import { KritzelCore } from '../core/core.class';
 import { ShapeType } from '../../enums/shape-type.enum';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 
+/**
+ * Shape tool for drawing geometric shapes (rectangles, ellipses, etc.) on the canvas.
+ * Creates shapes by tracking a drag gesture to define the bounding box.
+ * Supports configurable shape type, fill color, stroke color, stroke width, opacity, and text properties.
+ * Automatically switches to selection tool after shape completion.
+ */
 export class KritzelShapeTool extends KritzelBaseTool {
+  /** The type of shape to create (rectangle, ellipse, etc.) */
   shapeType: ShapeType = ShapeType.Rectangle;
+
+  /** The fill color of the shape (supports theme-aware light/dark colors) */
   fillColor: ThemeAwareColor = { light: 'transparent', dark: 'transparent' };
+
+  /** The stroke color of the shape border */
   strokeColor: ThemeAwareColor = DEFAULT_COLOR_PALETTE[0];
+
+  /** The stroke width of the shape border in pixels */
   strokeWidth: number = 4;
+
+  /** The opacity of the shape (0-1) */
   opacity: number = 1;
+
+  /** The font family for text inside the shape */
   fontFamily: string = 'Arial';
+
+  /** The font size for text inside the shape in pixels */
   fontSize: number = 16;
+
+  /** The font color for text inside the shape */
   fontColor: ThemeAwareColor = DEFAULT_COLOR_PALETTE[0];
 
+  /** Available color palette for the shape tool */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
 
+  /** X coordinate where the shape drawing started */
   private startX: number = 0;
+
+  /** Y coordinate where the shape drawing started */
   private startY: number = 0;
+
+  /** Whether currently drawing a shape */
   private isDrawing: boolean = false;
+
+  /** Reference to the shape being drawn */
   private currentShape: KritzelShape | null = null;
 
+  /**
+   * Creates a new instance of KritzelShapeTool.
+   * @param core - The KritzelCore instance that provides access to application state and functionality
+   */
   constructor(core: KritzelCore) {
     super(core);
   }
 
+  /**
+   * Handles pointer down events to start drawing a new shape or edit an existing one.
+   * If clicking on an existing shape, enters edit mode to modify its text content.
+   * Otherwise, begins drawing a new shape at the pointer position.
+   * @param event - The PointerEvent containing pointer position and input type information
+   */
   handlePointerDown(event: PointerEvent): void {
     if (event.cancelable) {
       event.preventDefault();
@@ -99,6 +138,12 @@ export class KritzelShapeTool extends KritzelBaseTool {
     }
   }
 
+  /**
+   * Handles pointer move events to update the shape size while drawing.
+   * Updates the current shape's dimensions based on the distance from the start point.
+   * Only processes events when actively drawing a shape.
+   * @param event - The PointerEvent containing the current pointer position
+   */
   handlePointerMove(event: PointerEvent): void {
     if (event.cancelable) {
       event.preventDefault();
@@ -123,6 +168,12 @@ export class KritzelShapeTool extends KritzelBaseTool {
     }
   }
 
+  /**
+   * Handles pointer up events to complete the shape drawing.
+   * Finalizes the shape if large enough, or removes it if too small (accidental click).
+   * Switches to selection tool with the shape selected after completion.
+   * @param event - The PointerEvent indicating the end of the drawing gesture
+   */
   handlePointerUp(event: PointerEvent): void {
     if (event.cancelable) {
       event.preventDefault();
@@ -136,11 +187,11 @@ export class KritzelShapeTool extends KritzelBaseTool {
   }
 
   /**
-   * Start drawing a shape. Following the same pattern as LineTool/BrushTool:
-   * - Store screen coordinates for startX, startY
-   * - Set translateX/Y to -viewportTranslateX/Y (viewport offset)
-   * - Set x, y to the actual screen position
-   * - Let updateDimensions() convert to world coordinates
+   * Initializes the shape drawing process at the given screen coordinates.
+   * Creates a new KritzelShape object with initial dimensions of 1x1 pixel.
+   * Follows the same coordinate pattern as LineTool/BrushTool for consistency.
+   * @param clientX - The X coordinate in screen/client space
+   * @param clientY - The Y coordinate in screen/client space
    */
   private startDrawing(clientX: number, clientY: number): void {
     // Store screen coordinates (relative to host element)
@@ -174,10 +225,11 @@ export class KritzelShapeTool extends KritzelBaseTool {
   }
 
   /**
-   * Update shape size during drawing. Following the same pattern as LineTool:
-   * - Use screen coordinates directly
-   * - The shape's x, y, width, height are all in screen space
-   * - updateDimensions() handles conversion to world coordinates
+   * Updates the shape's dimensions based on the current pointer position.
+   * Calculates the bounding box from start point to current point and updates
+   * the shape's position and size accordingly. Handles negative drag directions.
+   * @param clientX - The current X coordinate in screen/client space
+   * @param clientY - The current Y coordinate in screen/client space
    */
   private updateShapeSize(clientX: number, clientY: number): void {
     if (!this.currentShape) {
@@ -211,6 +263,12 @@ export class KritzelShapeTool extends KritzelBaseTool {
     this._core.store.state.objects.update(this.currentShape);
   }
 
+  /**
+   * Completes the shape drawing process.
+   * Removes shapes smaller than 10x10 pixels (accidental clicks).
+   * For valid shapes, assigns z-index, updates the store, emits change event,
+   * selects the shape, and switches to selection tool.
+   */
   private finishDrawing(): void {
     if (!this.currentShape) {
       return;
@@ -225,6 +283,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
       this.currentShape.zIndex = this._core.store.currentZIndex;
       this._core.store.state.objects.update(this.currentShape);
       this._core.engine.emitObjectsChange();
+      this._core.engine.emitObjectsAdded([this.currentShape]);
       this._core.selectObjects([this.currentShape]);
       this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
     }

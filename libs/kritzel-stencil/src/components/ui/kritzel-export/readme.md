@@ -5,12 +5,20 @@
 <!-- Auto Generated Below -->
 
 
+## Properties
+
+| Property        | Attribute        | Description                                                 | Type     | Default       |
+| --------------- | ---------------- | ----------------------------------------------------------- | -------- | ------------- |
+| `workspaceName` | `workspace-name` | The name of the current workspace, used as default filename | `string` | `'workspace'` |
+
+
 ## Events
 
-| Event       | Description | Type                |
-| ----------- | ----------- | ------------------- |
-| `exportPng` |             | `CustomEvent<void>` |
-| `exportSvg` |             | `CustomEvent<void>` |
+| Event        | Description | Type                  |
+| ------------ | ----------- | --------------------- |
+| `exportJson` |             | `CustomEvent<string>` |
+| `exportPng`  |             | `CustomEvent<void>`   |
+| `exportSvg`  |             | `CustomEvent<void>`   |
 
 
 ## Methods
@@ -40,14 +48,19 @@ Type: `Promise<void>`
 
 ### Depends on
 
+- [kritzel-input](../../shared/kritzel-input)
+- [kritzel-dropdown](../../shared/kritzel-dropdown)
 - [kritzel-dialog](../../shared/kritzel-dialog)
-- [kritzel-icon](../../shared/kritzel-icon)
+- [kritzel-pill-tabs](../../shared/kritzel-pill-tabs)
 
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-export --> kritzel-input
+  kritzel-export --> kritzel-dropdown
   kritzel-export --> kritzel-dialog
-  kritzel-export --> kritzel-icon
+  kritzel-export --> kritzel-pill-tabs
+  kritzel-pill-tabs --> kritzel-icon
   kritzel-editor --> kritzel-export
   style kritzel-export fill:#f9f,stroke:#333,stroke-width:4px
 ```

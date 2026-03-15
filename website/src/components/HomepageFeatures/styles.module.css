@@ -2,7 +2,7 @@
 .features {
   display: flex;
   align-items: center;
-  padding: 2rem 0;
+  padding: 6rem 0;
   width: 100%;
 }
 
@@ -10,4 +10,8 @@
   height: 48px; /* Adjusted from 150px or previous value */
   width: 48px;  /* Adjusted from 150px or previous value */
   margin-bottom: 1rem; /* Adds space between SVG and title */
+}
+
+.featureDescription {
+  color: var(--ifm-color-content-secondary);
 }

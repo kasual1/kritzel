@@ -3,10 +3,20 @@ import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelShortcut } from '../../interfaces/shortcut.interface';
 
+/** The amount of pixels to move an object when using arrow key nudging. */
 const NUDGE_AMOUNT = 10;
 
+/**
+ * Handles keyboard events and manages keyboard shortcuts for the Kritzel canvas.
+ * Provides functionality for tool switching, clipboard operations, object manipulation,
+ * undo/redo, and navigation via keyboard input.
+ */
 export class KritzelKeyHandler extends KritzelBaseHandler {
 
+  /**
+   * Array of registered keyboard shortcuts with their associated actions.
+   * Each shortcut defines the key combination, display label, category, optional condition, and action to execute.
+   */
   private shortcuts: KritzelShortcut[] = [
     // General
     { key: 'Escape', label: 'Clear Selection', category: 'General', condition: c => !!c.store.selectionGroup, action: c => c.clearSelection() },
@@ -61,11 +71,20 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     { key: 'ArrowRight', label: 'Move Object Right', category: 'Movement', condition: c => !!c.store.selectionGroup, action: c => { c.store.selectionGroup!.move(NUDGE_AMOUNT, 0, 0, 0); c.rerender(); } },
   ];
 
+  /**
+   * Creates a new instance of the key handler.
+   * @param core - The KritzelCore instance that provides access to the canvas state and operations.
+   */
   constructor(core: KritzelCore) {
     super(core);
   }
 
-  private switchToolByIndex(index: number) {
+  /**
+   * Switches the active tool to the tool at the specified index in the tool registry.
+   * Deselects all objects and activates the new tool if found.
+   * @param index - The zero-based index of the tool to activate from the tool registry.
+   */
+  private switchToolByIndex(index: number): void {
     const toolInstance = KritzelToolRegistry.getToolByIndex(index);
     if (toolInstance) {
       this._core.store.setState('activeTool', toolInstance);
@@ -74,6 +93,12 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Handles keydown events and executes matching keyboard shortcuts.
+   * Updates the Ctrl key state in the store and finds matching shortcuts based on
+   * the pressed key combination and any defined conditions.
+   * @param event - The keyboard event triggered by the user pressing a key.
+   */
   handleKeyDown(event: KeyboardEvent): void {
     this._core.store.state.isCtrlKeyPressed = event.ctrlKey;
 
@@ -85,10 +110,19 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Handles keyup events and updates the Ctrl key state.
+   * @param event - The keyboard event triggered by the user releasing a key.
+   */
   handleKeyUp(event: KeyboardEvent): void {
     this._core.store.state.isCtrlKeyPressed = event.ctrlKey;
   }
 
+  /**
+   * Returns a list of all registered shortcuts suitable for display in a UI help dialog.
+   * Excludes the action and condition properties to provide only the display-relevant information.
+   * @returns An array of shortcut objects containing key, modifiers, label, and category.
+   */
   getDisplayableShortcuts(): Omit<KritzelShortcut, 'action' | 'condition'>[] {
     return this.shortcuts.map(({ key, ctrl, shift, label, category }) => ({
       key,

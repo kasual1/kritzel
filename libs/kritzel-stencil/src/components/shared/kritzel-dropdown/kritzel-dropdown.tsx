@@ -30,6 +30,8 @@ export class KritzelDropdown {
 
   @Prop() width?: string;
   @Prop() selectStyles?: Record<string, string> = {};
+  /** Force the dropdown to open in a specific direction instead of auto-detecting */
+  @Prop() forceOpenDirection?: 'down' | 'up';
 
   @State() internalValue: string;
   @State() hasSuffixContent = false;
@@ -115,6 +117,11 @@ export class KritzelDropdown {
   };
 
   private calculateMenuDirection = () => {
+    if (this.forceOpenDirection) {
+      this.openDirection = this.forceOpenDirection;
+      return;
+    }
+
     if (!this.wrapperElement) {
       this.openDirection = 'down';
       return;

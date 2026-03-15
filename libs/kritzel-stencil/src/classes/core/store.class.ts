@@ -9,8 +9,15 @@ import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../objects/base-object.class';
 
+/**
+ * Central state management store for the Kritzel engine.
+ * Provides reactive state management with change listeners, caching for frequently
+ * accessed objects, and computed properties for viewport and selection state.
+ */
 export class KritzelStore {
+  /** Internal state object containing all engine state properties */
   private readonly _state: KritzelEngineState;
+  /** Map of property keys to their registered change listeners */
   private readonly _listeners: Map<StatePropertyKey, Set<StateChangeListener<any>>> = new Map();
 
   // Cached references for O(1) access to frequently accessed special objects
@@ -19,10 +26,19 @@ export class KritzelStore {
   private _selectionBoxCacheValid: boolean = false;
   private _selectionGroupCacheValid: boolean = false;
 
+  /**
+   * Gets the current engine state.
+   * @returns The mutable engine state object
+   */
   get state(): KritzelEngineState {
     return this._state;
   }
 
+  /**
+   * Gets the next available z-index for new objects.
+   * Calculates the maximum z-index among all non-selection objects and adds 1.
+   * @returns The next z-index value to use for new objects
+   */
   get currentZIndex() {
     return Math.max(0, ...this._state.objects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).map(o => o.zIndex)) + 1;
   }
@@ -58,6 +74,11 @@ export class KritzelStore {
     };
   }
 
+  /**
+   * Gets the total count of objects in the workspace.
+   * When viewport boundaries are set, returns only objects within those boundaries.
+   * @returns The total number of objects
+   */
   get totalObjectCount(): number {
     if (this.hasViewportBoundaries) {
       return this.allObjects.length;
@@ -65,6 +86,11 @@ export class KritzelStore {
     return this._state.objects.totalCount;
   }
 
+  /**
+   * Gets all objects in the workspace.
+   * When viewport boundaries are set, returns only objects within those boundaries.
+   * @returns Array of all canvas objects
+   */
   get allObjects(): KritzelBaseObject<Element>[]  {
     if (this.hasViewportBoundaries) {
       return this._state.objects.query(this.viewportBoundaryBounds);
@@ -72,6 +98,11 @@ export class KritzelStore {
     return this._state.objects.allObjects();
   }
 
+  /**
+   * Gets all objects currently visible in the viewport.
+   * Uses spatial querying for efficient retrieval and sorts by z-index.
+   * @returns Array of objects within the current viewport, sorted by z-index ascending
+   */
   get objectsInViewport(): KritzelBaseObject<Element>[]  {
      const viewportBounds = {
       x: -this._state.translateX / this._state.scale,
@@ -87,14 +118,27 @@ export class KritzelStore {
       .sort((a, b) => a.zIndex - b.zIndex);
   }
 
+  /**
+   * Gets all objects excluding selection-related objects (selection group and selection box).
+   * @returns Array of all regular canvas objects
+   */
   get allNonSelectionObjects(): KritzelBaseObject<Element>[]  {
     return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
   }
 
+  /**
+   * Gets all currently selected objects (excluding the selection group itself).
+   * @returns Array of selected objects
+   */
   get selectedObjects(): KritzelBaseObject<Element>[] {
     return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.isSelected);
   }
 
+  /**
+   * Gets the current selection box if one exists.
+   * Uses caching for O(1) access after initial lookup.
+   * @returns The selection box or null if none exists
+   */
   get selectionBox(): KritzelSelectionBox | null {
     if (this._selectionBoxCacheValid) {
       return this._cachedSelectionBox;
@@ -105,6 +149,11 @@ export class KritzelStore {
     return this._cachedSelectionBox;
   }
 
+  /**
+   * Gets the current selection group if one exists.
+   * Uses caching for O(1) access after initial lookup.
+   * @returns The selection group or null if none exists
+   */
   get selectionGroup(): KritzelSelectionGroup | null {
     if (this._selectionGroupCacheValid) {
       return this._cachedSelectionGroup;
@@ -126,6 +175,7 @@ export class KritzelStore {
   /**
    * Directly set the cached selection box reference for O(1) access.
    * Use this when creating the selection box to avoid a filter lookup.
+   * @param box - The selection box to cache, or null to clear the cache
    */
   setSelectionBox(box: KritzelSelectionBox | null): void {
     this._cachedSelectionBox = box;
@@ -135,53 +185,98 @@ export class KritzelStore {
   /**
    * Directly set the cached selection group reference for O(1) access.
    * Use this when creating the selection group to avoid a filter lookup.
+   * @param group - The selection group to cache, or null to clear the cache
    */
   setSelectionGroup(group: KritzelSelectionGroup | null): void {
     this._cachedSelectionGroup = group;
     this._selectionGroupCacheValid = true;
   }
 
+  /**
+   * Gets the currently active text object being edited.
+   * @returns The text object in editing mode, or null if none
+   */
   get activeText(): KritzelText | null {
     const activeTexts = this._state.objects.filter(o => o instanceof KritzelText && (o as KritzelText).isEditing);
     return activeTexts.length > 0 ? (activeTexts[0] as KritzelText) : null;
   }
 
+  /**
+   * Gets the currently active shape object being edited.
+   * @returns The shape object in editing mode, or null if none
+   */
   get activeShape(): KritzelShape | null {
     const activeShapes = this._state.objects.filter(o => o instanceof KritzelShape && (o as KritzelShape).isEditing);
     return activeShapes.length > 0 ? (activeShapes[0] as KritzelShape) : null;
   }
 
+  /**
+   * Gets the path currently being drawn (not yet completed).
+   * @returns The incomplete path object, or null if no path is being drawn
+   */
   get currentPath(): KritzelPath | null {
     const drawingPaths = this._state.objects.filter(o => o instanceof KritzelPath && (o as KritzelPath).isCompleted === false);
     return drawingPaths.length > 0 ? (drawingPaths[0] as KritzelPath) : null;
   }
 
+  /**
+   * Gets the line currently being drawn (not yet completed).
+   * @returns The incomplete line object, or null if no line is being drawn
+   */
   get currentLine(): KritzelLine | null {
     const drawingLines = this._state.objects.filter(o => o instanceof KritzelLine && (o as KritzelLine).isCompleted === false);
     return drawingLines.length > 0 ? (drawingLines[0] as KritzelLine) : null;
   }
 
+  /**
+   * Gets the horizontal offset of the host element from the viewport.
+   * @returns The left position of the host element in client coordinates
+   */
   get offsetX() {
     return this._state.host.getBoundingClientRect().left;
   }
 
+  /**
+   * Gets the vertical offset of the host element from the viewport.
+   * @returns The top position of the host element in client coordinates
+   */
   get offsetY() {
     return this._state.host.getBoundingClientRect().top;
   }
 
+  /**
+   * Checks if the engine is currently disabled.
+   * The engine is disabled when not enabled, not ready, or no active workspace exists.
+   * @returns True if the engine is disabled and should not process interactions
+   */
   get isDisabled() {
     return this._state.isEnabled === false || this._state.isReady === false || this._state.activeWorkspace === null;
   }
 
+  /**
+   * Checks if any pointer is currently down (active).
+   * @returns True if at least one pointer is currently active
+   */
   get isPointerDown() {
     return this._state.pointers.size > 0;
   }
 
+  /**
+   * Creates a new KritzelStore instance.
+   * @param state - The initial engine state configuration
+   */
   constructor(state: KritzelEngineState) {
     this._state = state;
     this._state.objects = new KritzelObjectMap();
   }
 
+  /**
+   * Registers a listener for changes to a specific state property.
+   * The listener will be called whenever the property value changes.
+   * @typeParam K - The state property key type
+   * @param property - The property key to listen for changes on
+   * @param listener - The callback function to invoke on changes
+   */
   onStateChange<K extends StatePropertyKey>(property: K, listener: StateChangeListener<KritzelEngineState[K]>): void {
     if (!this._listeners.has(property)) {
       this._listeners.set(property, new Set());
@@ -189,10 +284,23 @@ export class KritzelStore {
     this._listeners.get(property).add(listener);
   }
 
+  /**
+   * Gets the current value of a state property as readonly.
+   * @typeParam K - The state property key type
+   * @param property - The property key to retrieve
+   * @returns The current value of the property
+   */
   getState<K extends StatePropertyKey>(property: K): Readonly<KritzelEngineState[K]> {
     return this._state[property];
   }
 
+  /**
+   * Sets a state property value and notifies registered listeners.
+   * Only triggers listeners if the value actually changed.
+   * @typeParam K - The state property key type
+   * @param property - The property key to set
+   * @param value - The new value to assign
+   */
   setState<K extends StatePropertyKey>(property: K, value: KritzelEngineState[K]): void {
     const oldValue = this._state[property];
 

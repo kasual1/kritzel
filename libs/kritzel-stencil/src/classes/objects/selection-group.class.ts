@@ -2,19 +2,39 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelGroup } from './group.class';
+import { KritzelClassHelper } from '../../helpers/class.helper';
 
+/**
+ * Represents a snapshot of an object's transform state at a specific point in time.
+ * Used to preserve initial values during transform operations (rotate, resize)
+ * to avoid compounding errors from incremental updates.
+ */
 interface UnchangedObjectSnapshot {
+  /** The unique identifier of the object */
   id: string;
+  /** The x-translation position of the object */
   translateX: number;
+  /** The y-translation position of the object */
   translateY: number;
+  /** The rotation angle of the object in radians */
   rotation: number;
+  /** The content width of the object (excluding padding) */
   width: number;
+  /** The content height of the object (excluding padding) */
   height: number;
+  /** The total width of the object (including padding) */
   totalWidth: number;
+  /** The total height of the object (including padding) */
   totalHeight: number;
+  /** The scale factor applied to the object */
   scale: number;
 }
 
+/**
+ * Represents a selection group that manages multiple selected objects on the canvas.
+ * The selection group allows batch operations like move, resize, and rotate on multiple objects simultaneously.
+ * It maintains its own bounding box that encompasses all selected objects.
+ */
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override __class__: string = 'KritzelSelectionGroup';
 
@@ -39,10 +59,19 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   minY: number;
   maxY: number;
 
+  /**
+   * Gets the array of object IDs contained in this selection group.
+   * @returns Array of string IDs for the selected objects
+   */
   get objectIds(): string[] {
     return this._objectIds;
   }
 
+  /**
+   * Sets the array of object IDs contained in this selection group.
+   * Invalidates the cached objects array when changed.
+   * @param value - Array of string IDs to set as the selected objects
+   */
   set objectIds(value: string[]) {
     this._objectIds = value;
     this._cachedObjects = null; // Invalidate cache
@@ -56,8 +85,12 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this._cachedObjects = null;
   }
 
-  // Getter to retrieve actual objects from the store by their IDs
-  // Optimized: Caches result and only recomputes when objectIds changes
+  /**
+   * Retrieves the actual object instances from the store by their IDs.
+   * Uses caching to avoid redundant lookups - only recomputes when objectIds changes.
+   * Preserves the original insertion order of objects.
+   * @returns Array of KritzelBaseObject instances corresponding to the stored IDs
+   */
   get objects(): KritzelBaseObject<any>[] {
     const currentHash = this._objectIds.join(',');
     if (this._cachedObjects !== null && this._cachedObjectIdsHash === currentHash) {
@@ -75,10 +108,20 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return this._cachedObjects;
   }
 
+  /**
+   * Gets the number of objects in the selection group.
+   * @returns The count of selected objects
+   */
   get length(): number {
     return this.objectIds.length;
   }
 
+  /**
+   * Factory method to create a new KritzelSelectionGroup instance.
+   * Initializes the selection group with default properties and associates it with the core instance.
+   * @param core - The KritzelCore instance to associate with this selection group
+   * @returns A new KritzelSelectionGroup instance configured with default settings
+   */
   static override create(core: KritzelCore): KritzelSelectionGroup {
     const object = new KritzelSelectionGroup();
 
@@ -91,6 +134,15 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return object;
   }
 
+  /**
+   * Adds multiple objects to the selection group.
+   * Only adds objects that are not already in the selection.
+   * Updates the group's rotation based on the number of selected objects:
+   * - Single object: inherits the object's rotation
+   * - Multiple objects: resets rotation to 0
+   * Refreshes bounding box dimensions after adding objects.
+   * @param objects - Array of KritzelBaseObject instances to add to the selection
+   */
   addObjects(objects: KritzelBaseObject<any>[]) {
     let changed = false;
     for (const object of objects) {
@@ -113,6 +165,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
   }
 
+  /**
+   * Toggles an object's presence in the selection group.
+   * If the object is already selected, it will be removed.
+   * If the object is not selected, it will be added.
+   * Updates group rotation and refreshes bounding box dimensions after the change.
+   * @param object - The KritzelBaseObject instance to toggle in the selection
+   */
   addOrRemove(object: KritzelBaseObject<any>) {
     const index = this._objectIds.findIndex(id => id === object.id);
     if (index === -1) {
@@ -145,12 +204,16 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     // Groups need their own child snapshots aligned with the current transform.
     for (const obj of children) {
-      if (obj instanceof KritzelGroup) {
+      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
         obj.finalize();
       }
     }
   }
 
+  /**
+   * Sets the isSelected flag to false for all objects in the selection group.
+   * Used when clearing or changing the selection state.
+   */
   deselectAllChildren() {
     const children = this.objects;
     for (const obj of children) {
@@ -158,6 +221,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
   }
 
+  /**
+   * Updates the workspace ID for the selection group and all its contained objects.
+   * Used when moving objects between workspaces or updating workspace associations.
+   * @param workspaceId - The new workspace ID to assign to the group and its children
+   */
   updateWorkspaceId(workspaceId: string) {
     this.workspaceId = workspaceId;
     const children = this.objects;
@@ -166,6 +234,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
   }
 
+  /**
+   * Updates the z-index values for all objects in the selection group.
+   * Assigns sequential z-indices starting from the provided value.
+   * @param startZIndex - The starting z-index value; subsequent objects get startZIndex + 1, startZIndex + 2, etc.
+   */
   updateZIndices(startZIndex: number) {
     const children = this.objects;
     for (let i = 0; i < children.length; i++) {
@@ -173,6 +246,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
   }
 
+  /**
+   * Updates the absolute position of the selection group and all its contained objects.
+   * Maintains the relative positions of child objects within the group.
+   * Also updates the unchangedObjectSnapshots to reflect the new positions.
+   * @param x - The new x-coordinate for the selection group's top-left corner
+   * @param y - The new y-coordinate for the selection group's top-left corner
+   */
   updatePosition(x: number, y: number) {
     const children = this.objects;
     for (const obj of children) {
@@ -222,6 +302,12 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     });
   }
 
+  /**
+   * Serializes the selection group to a plain object for persistence or transmission.
+   * Excludes internal references like _core, element refs, and cached data.
+   * Converts the unchangedObjectSnapshots Map to a plain object for JSON compatibility.
+   * @returns A serializable object representation of the selection group
+   */
   override serialize() {
     const { _core, _elementRef, element, totalWidth, totalHeight, unchangedObjectSnapshots, _cachedObjects, _cachedObjectIdsHash, snapshotWidth, snapshotHeight, snapshotTranslateX, snapshotTranslateY, ...remainingProps } = this as any;
 
@@ -241,6 +327,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return clonedProps;
   }
 
+  /**
+   * Deserializes a plain object back into a KritzelSelectionGroup instance.
+   * Restores objectIds through the setter and reconstructs the unchangedObjectSnapshots Map.
+   * @template T - The return type for the deserialized object
+   * @param object - The serialized object containing the selection group data
+   * @returns The deserialized selection group instance cast to type T
+   */
   override deserialize<T>(object: any): T {
     // First, deserialize all base properties using parent's deserialize
     super.deserialize(object);
@@ -258,6 +351,12 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return this as unknown as T;
   }
 
+  /**
+   * Persists the selection group's current state to the store.
+   * Only updates the selection group itself, not child objects.
+   * Child objects are updated during their respective move/resize/rotate operations
+   * to avoid redundant Yjs updates.
+   */
   override update(): void {
     // Only update the selection group itself
     // Child objects are already updated during move/resize/rotate operations
@@ -265,6 +364,15 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Moves the selection group and all its contained objects by calculating the delta from drag coordinates.
+   * Updates anchor points for any lines connected to the moved objects.
+   * Uses a transaction to batch all object updates for performance.
+   * @param startX - The starting x-coordinate of the drag operation (in screen space)
+   * @param startY - The starting y-coordinate of the drag operation (in screen space)
+   * @param endX - The ending x-coordinate of the drag operation (in screen space)
+   * @param endY - The ending y-coordinate of the drag operation (in screen space)
+   */
   override move(startX: number, startY: number, endX: number, endY: number): void {
     const deltaX = (startX - endX) / this._core.store.state.scale;
     const deltaY = (startY - endY) / this._core.store.state.scale;
@@ -291,6 +399,16 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     });
   }
 
+  /**
+   * Resizes the selection group and scales all contained objects proportionally.
+   * Uses snapshot values to avoid compounding errors during continuous drag operations.
+   * Handles rotation by transforming coordinates into and out of the group's local space.
+   * Updates anchor points for any lines connected to resized objects.
+   * @param x - The new x-coordinate for the selection group's position
+   * @param y - The new y-coordinate for the selection group's position
+   * @param width - The new width for the selection group
+   * @param height - The new height for the selection group
+   */
   override resize(x: number, y: number, width: number, height: number): void {
     // Use snapshot dimensions for scale factor calculation to avoid compounding errors during drag
     const widthScaleFactor = width / this.snapshotWidth;
@@ -387,6 +505,12 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     });
   }
 
+  /**
+   * Rotates the selection group and all contained objects around the group's center.
+   * Objects rotate around the group center while also adjusting their individual rotations.
+   * Uses snapshot values to calculate incremental rotation from the initial state.
+   * @param value - The new rotation angle in radians for the selection group
+   */
   override rotate(value: number): void {
     this.rotation = value;
 
@@ -423,6 +547,12 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     });
   }
 
+  /**
+   * Creates a deep copy of the selection group including copies of all contained objects.
+   * Preserves z-index ordering by sorting children before copying.
+   * Copies maintain their relative positions within the new selection group.
+   * @returns A new KritzelSelectionGroup with copies of all contained objects
+   */
   override copy(): KritzelBaseObject<HTMLElement> {
     const selectionGroup = KritzelSelectionGroup.create(this._core);
     const children = this.objects;
@@ -515,18 +645,38 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
   }
 
+  /**
+   * Calculates the horizontal offset from the group's center to an object's center using snapshot data.
+   * Used during rotation to maintain relative positioning of objects.
+   * @param snapshot - The snapshot containing the object's recorded position and dimensions
+   * @returns The x-axis offset from the group center to the object center
+   */
   private getOffsetXToCenterFromSnapshot(snapshot: UnchangedObjectSnapshot): number {
     const objCenterX = snapshot.translateX + snapshot.totalWidth / snapshot.scale / 2;
     const groupCenterX = this.translateX + this.totalWidth / this.scale / 2;
     return objCenterX - groupCenterX;
   }
 
+  /**
+   * Calculates the vertical offset from the group's center to an object's center using snapshot data.
+   * Used during rotation to maintain relative positioning of objects.
+   * @param snapshot - The snapshot containing the object's recorded position and dimensions
+   * @returns The y-axis offset from the group center to the object center
+   */
   private getOffsetYToCenterFromSnapshot(snapshot: UnchangedObjectSnapshot): number {
     const objCenterY = snapshot.translateY + snapshot.totalHeight / snapshot.scale / 2;
     const groupCenterY = this.translateY + this.totalHeight / this.scale / 2;
     return objCenterY - groupCenterY;
   }
 
+  /**
+   * Tests whether a point intersects with the selection group or any of its contained objects.
+   * For a single line object, delegates hit testing to the line's own hit test (more precise).
+   * For other cases, first checks the group's rotated polygon bounding box, then individual objects.
+   * @param x - The x-coordinate of the point to test (in world space)
+   * @param y - The y-coordinate of the point to test (in world space)
+   * @returns True if the point is inside the selection group or any contained object, false otherwise
+   */
   override hitTest(x: number, y: number): boolean {
     const children = this.objects;
     const isSingleLine = children.length === 1 && children[0].__class__ === 'KritzelLine';

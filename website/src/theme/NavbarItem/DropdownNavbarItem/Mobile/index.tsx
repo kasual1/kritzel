@@ -11,6 +11,7 @@ import NavbarNavLink from '@theme/NavbarItem/NavbarNavLink';
 import NavbarItem, {type LinkLikeNavbarItemProps} from '@theme/NavbarItem';
 import type {Props} from '@theme/NavbarItem/DropdownNavbarItem/Mobile';
 import styles from './styles.module.css';
+import { setPreferredFramework, getFrameworkFromPath } from '@site/src/utils/frameworkPreference';
 
 function isItemActive(
   item: LinkLikeNavbarItemProps,
@@ -33,6 +34,22 @@ function containsActiveItems(
   localPathname: string,
 ): boolean {
   return items.some((item) => isItemActive(item, localPathname));
+}
+
+function isFrameworkPicker(items: readonly LinkLikeNavbarItemProps[]): boolean {
+  // Check if all items point to framework-specific docs
+  const frameworkPaths = ['/docs/angular', '/docs/react', '/docs/vue'];
+  return items.every((item) => 
+    frameworkPaths.some((path) => item.to?.includes(path) || item.activeBasePath?.includes(path))
+  );
+}
+
+function isFeaturesDropdown(items: readonly LinkLikeNavbarItemProps[]): boolean {
+  // Check if items point to feature pages
+  const featurePaths = ['/features/infinite-canvas', '/features/framework-agnostic', '/features/real-time-collaboration', '/features/drawing-tools'];
+  return items.some((item) => 
+    featurePaths.some((path) => item.to?.includes(path))
+  );
 }
 
 function CollapseButton({
@@ -105,6 +122,17 @@ export default function DropdownNavbarItemMobile({
   // There's probably a better solution though...
   const href = props.to ? undefined : '#';
 
+  // Hide framework picker dropdown when not on docs pages
+  const isOnDocsPage = localPathname.includes('/docs');
+  if (isFrameworkPicker(items) && !isOnDocsPage) {
+    return null;
+  }
+
+  // Hide Features dropdown when on docs pages
+  if (isFeaturesDropdown(items) && isOnDocsPage) {
+    return null;
+  }
+
   return (
     <li
       className={clsx('menu__list-item', {
@@ -143,16 +171,27 @@ export default function DropdownNavbarItemMobile({
       </div>
 
       <Collapsible lazy as="ul" className="menu__list" collapsed={collapsed}>
-        {items.map((childItemProps, i) => (
-          <NavbarItem
-            mobile
-            isDropdownItem
-            onClick={onClick}
-            activeClassName="menu__link--active"
-            {...childItemProps}
-            key={i}
-          />
-        ))}
+        {items.map((childItemProps, i) => {
+          const isFramework = isFrameworkPicker(items);
+          const handleClick = isFramework ? (e: React.MouseEvent<HTMLAnchorElement>) => {
+            const framework = getFrameworkFromPath(childItemProps.to || '');
+            if (framework) {
+              setPreferredFramework(framework);
+            }
+            onClick?.(e);
+          } : onClick;
+          
+          return (
+            <NavbarItem
+              mobile
+              isDropdownItem
+              onClick={handleClick}
+              activeClassName="menu__link--active"
+              {...childItemProps}
+              key={i}
+            />
+          );
+        })}
       </Collapsible>
     </li>
   );

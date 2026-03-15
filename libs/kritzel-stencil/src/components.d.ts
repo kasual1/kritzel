@@ -5,61 +5,118 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { IKritzelUser } from "./interfaces/user.interface";
 import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 import { ThemeAwareColor, ThemeMode } from "./constants/color-palette.constants";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
+import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 import { KritzelCore } from "./classes/core/core.class";
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
+import { IKritzelLoginConfig, IKritzelLoginEvent, IKritzelLoginProvider } from "./interfaces/login-config.interface";
+import { KritzelWorkspace } from "./classes/core/workspace.class";
+import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 import { KritzelUndoState as KritzelUndoState1 } from ".";
 import { ThemeName } from "./interfaces/theme.interface";
-import { KritzelWorkspace } from "./classes/core/workspace.class";
-import { KritzelTool } from "./interfaces/tool.interface";
-import { KritzelEngineState } from "./interfaces/engine-state.interface";
+import { KritzelViewportState } from "./interfaces/viewport-state.interface";
+import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
-import { Element } from "@stencil/core";
 import { KritzelAlignment } from "./enums/alignment.enum";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
+import { KritzelEngineState } from "./interfaces/engine-state.interface";
+import { Element, Event } from "@stencil/core";
+import { KritzelText } from "./classes/objects/text.class";
+import { KritzelGroup } from "./classes/objects/group.class";
+import { KritzelLine } from "./classes/objects/line.class";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
-import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
+import { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
+export { IKritzelUser } from "./interfaces/user.interface";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ThemeAwareColor, ThemeMode } from "./constants/color-palette.constants";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
+export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { KritzelCore } from "./classes/core/core.class";
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
+export { IKritzelLoginConfig, IKritzelLoginEvent, IKritzelLoginProvider } from "./interfaces/login-config.interface";
+export { KritzelWorkspace } from "./classes/core/workspace.class";
+export { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 export { KritzelUndoState as KritzelUndoState1 } from ".";
 export { ThemeName } from "./interfaces/theme.interface";
-export { KritzelWorkspace } from "./classes/core/workspace.class";
-export { KritzelTool } from "./interfaces/tool.interface";
-export { KritzelEngineState } from "./interfaces/engine-state.interface";
+export { KritzelViewportState } from "./interfaces/viewport-state.interface";
+export { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
-export { Element } from "@stencil/core";
 export { KritzelAlignment } from "./enums/alignment.enum";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
+export { KritzelEngineState } from "./interfaces/engine-state.interface";
+export { Element, Event } from "@stencil/core";
+export { KritzelText } from "./classes/objects/text.class";
+export { KritzelGroup } from "./classes/objects/group.class";
+export { KritzelLine } from "./classes/objects/line.class";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
 export { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
-export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
+export { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
 export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 export { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export namespace Components {
+    interface KritzelActiveUsers {
+        /**
+          * Avatar size in pixels
+          * @default 40
+         */
+        "avatarSize": number;
+        /**
+          * Maximum number of avatars to show before overflow text
+          * @default 3
+         */
+        "maxVisible": number;
+        /**
+          * Overlap offset in pixels (negative margin between avatars)
+          * @default 20
+         */
+        "overlap": number;
+        /**
+          * Array of active users to display
+          * @default []
+         */
+        "users": IKritzelUser[];
+    }
+    interface KritzelAvatar {
+        /**
+          * Background color for initials fallback
+         */
+        "color"?: string;
+        /**
+          * Direct prop: user's display name (used for initials fallback)
+         */
+        "name"?: string;
+        /**
+          * Avatar diameter in pixels
+          * @default 32
+         */
+        "size": number;
+        /**
+          * Full user object. If provided, individual props are ignored.
+         */
+        "user"?: IKritzelUser;
+    }
     interface KritzelBackToContent {
         /**
           * The text to display on the button
@@ -81,6 +138,23 @@ export namespace Components {
           * @default 'pen'
          */
         "type": 'pen' | 'highlighter';
+    }
+    interface KritzelButton {
+        /**
+          * Whether the button is disabled
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * The type attribute for the native button element
+          * @default 'button'
+         */
+        "type": 'button' | 'submit' | 'reset';
+        /**
+          * The visual variant of the button
+          * @default 'primary'
+         */
+        "variant": 'primary' | 'secondary' | 'text';
     }
     interface KritzelColor {
         /**
@@ -137,6 +211,22 @@ export namespace Components {
          */
         "undoState": KritzelUndoState;
     }
+    interface KritzelCurrentUser {
+        /**
+          * Avatar size in pixels
+          * @default 40
+         */
+        "avatarSize": number;
+        /**
+          * Offset Y for the portal positioning
+          * @default 4
+         */
+        "offsetY": number;
+        /**
+          * The current user to display
+         */
+        "user"?: IKritzelUser;
+    }
     interface KritzelCursorTrail {
         "core": KritzelCore;
     }
@@ -191,6 +281,10 @@ export namespace Components {
     }
     interface KritzelDropdown {
         /**
+          * Force the dropdown to open in a specific direction instead of auto-detecting
+         */
+        "forceOpenDirection"?: 'down' | 'up';
+        /**
           * @default []
          */
         "options": DropdownOption[];
@@ -202,28 +296,60 @@ export namespace Components {
         "width"?: string;
     }
     interface KritzelEditor {
+        "activeUsers"?: IKritzelUser[];
+        /**
+          * Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID.
+         */
+        "activeWorkspaceId"?: string;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
         "backToContent": () => Promise<boolean>;
+        "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "centerAllObjects": (animate?: boolean) => Promise<boolean>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
+        "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "clearSelection": () => Promise<void>;
         /**
-          * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
+          * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
          */
         "controls": KritzelToolbarControl[];
-        "createWorkspace": (name: string, viewport?: { translateX: number; translateY: number; scale: number; }) => Promise<KritzelWorkspace | null>;
+        "copy": () => Promise<void>;
+        "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
         /**
           * @default {}
          */
         "customSvgIcons": Record<string, string>;
+        "delete": () => Promise<void>;
         "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        "disable": () => Promise<void>;
+        "downloadAsJson": (filename?: string) => Promise<void>;
+        /**
+          * Optional unique identifier for namespacing storage keys across multiple editor instances.
+         */
+        "editorId"?: string;
+        "enable": () => Promise<void>;
+        "exportViewportAsPng": () => Promise<void>;
+        "exportViewportAsSvg": () => Promise<void>;
+        "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean) => Promise<T[]>;
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
+        "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
+        "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
+        "getDisplayableShortcuts": () => Promise<Omit<KritzelShortcut, "action" | "condition">[]>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
+        "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
+        "getObjectsTotalCount": () => Promise<number>;
+        "getScreenshot": (format?: "png" | "svg") => Promise<string>;
         "getSelectedObjects": () => Promise<KritzelBaseObject[]>;
+        "getViewport": () => Promise<KritzelViewportState>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
         /**
           * @default [     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Select All',       icon: 'select-all',       disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,       action: () => this.selectAllObjectsInViewport(),     },   ]
          */
         "globalContextMenuItems": ContextMenuItem[];
+        "group": () => Promise<void>;
+        "hideContextMenu": () => Promise<void>;
+        "importFromFile": () => Promise<void>;
         /**
           * @default true
          */
@@ -232,14 +358,26 @@ export namespace Components {
           * @default true
          */
         "isUtilityPanelVisible": boolean;
+        "loadObjectsFromJson": (json: string) => Promise<number>;
+        "loadSharedWorkspace": (token: string) => Promise<void>;
         /**
           * @default true
          */
         "lockDrawingScale": boolean;
         /**
-          * @default [     { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Order',       icon: 'ordering',       group: 'other',       children: [         { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'Move Up', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'Move Down', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'Align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'Align Left', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'Align Right', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'Align Top', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'Align Bottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'Group',       icon: 'group',       group: 'other',       children: [         {           label: 'Group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'Ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },      { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
+          * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
+         */
+        "loginConfig"?: IKritzelLoginConfig;
+        /**
+          * @default [     { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Order',       icon: 'ordering',       group: 'other',       children: [         { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'Move Up', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'Move Down', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'Align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'Align Left', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'Align Right', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'Align Top', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'Align Bottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'Group',       icon: 'group',       group: 'other',       children: [         {           label: 'Group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'Ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'Export',       icon: 'download',       group: 'export',       children: [         { label: 'Export as SVG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'Export as PNG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
+        "openLoginDialog": () => Promise<void>;
+        "panTo": (x: number, y: number) => Promise<void>;
+        "paste": (x: number, y: number) => Promise<void>;
+        "redo": () => Promise<void>;
+        "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool>;
+        "reinitSync": () => Promise<void>;
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         /**
           * @default ABSOLUTE_SCALE_MAX
@@ -249,11 +387,23 @@ export namespace Components {
           * @default ABSOLUTE_SCALE_MIN
          */
         "scaleMin": number;
+        "screenToWorld": (x: number, y: number) => Promise<{ x: number; y: number; }>;
         "selectAllObjectsInViewport": () => Promise<void>;
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
+        "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "setLoginLoading": (provider: string | null) => Promise<void>;
+        "setViewport": (x: number, y: number, scale: number) => Promise<void>;
+        /**
+          * @default {     providers: [IndexedDBSyncProvider]   }
+         */
         "syncConfig"?: KritzelSyncConfig;
+        "triggerSelectionChange": () => Promise<void>;
+        "undo": () => Promise<void>;
+        "ungroup": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        "user"?: IKritzelUser;
         /**
           * @default Infinity
          */
@@ -270,72 +420,359 @@ export namespace Components {
           * @default -Infinity
          */
         "viewportBoundaryTop": number;
+        /**
+          * @default true
+         */
+        "wheelEnabled": boolean;
+        "worldToScreen": (x: number, y: number) => Promise<{ x: number; y: number; }>;
+        "zoomTo": (scale: number, worldX?: number, worldY?: number) => Promise<void>;
     }
     interface KritzelEngine {
-        "activeTool": KritzelTool;
+        /**
+          * Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.
+         */
+        "activeWorkspaceId"?: string;
+        /**
+          * Adds a new object to the canvas. The object will be assigned an ID, core reference, and z-index automatically.
+          * @param object - The object instance to add.
+          * @returns The added object.
+         */
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        /**
+          * Aligns the currently selected objects according to the specified alignment.
+          * @param alignment - The alignment direction (e.g., `CenterHorizontal`, `StartVertical`).
+         */
         "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
+        /**
+          * Pans and zooms the viewport to fit the nearest content, with padding. Useful when the user has panned away from all objects.
+          * @returns `true` if content was found and the viewport was adjusted, `false` otherwise.
+         */
         "backToContent": () => Promise<boolean>;
+        /**
+          * Moves an object one layer forward in the z-order.
+          * @param object - The object to move. If omitted, applies to the current selection.
+         */
         "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
+        /**
+          * Moves an object to the very front of the z-order.
+          * @param object - The object to move. If omitted, applies to the current selection.
+         */
         "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
+        /**
+          * Pans and zooms the viewport to fit ALL objects on the canvas, including those not currently rendered. Calculates the combined bounding box of all objects and centers the viewport to show them.
+          * @param animate - Whether to animate the viewport transition (default: true).
+          * @returns `true` if objects were found and the viewport was adjusted, `false` otherwise.
+         */
+        "centerAllObjects": (animate?: boolean) => Promise<boolean>;
+        /**
+          * Pans and zooms the viewport to center on the given object.
+          * @param object - The object to center in the viewport.
+          * @returns The centered object.
+         */
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
+        /**
+          * Switches the active drawing tool. Deactivates the current tool and clears any selection.
+          * @param tool - The tool instance to activate.
+         */
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
+        /**
+          * Deselects all currently selected objects.
+         */
         "clearSelection": () => Promise<void>;
+        /**
+          * Copies the currently selected objects to the internal clipboard.
+         */
         "copy": () => Promise<void>;
+        /**
+          * Creates a new workspace and emits a `workspacesChange` event.
+          * @param workspace - The workspace to create.
+          * @returns The created workspace.
+         */
         "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
+        /**
+          * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
+         */
         "cursorTarget"?: HTMLElement;
+        /**
+          * Deletes the currently selected objects from the canvas.
+         */
         "delete": () => Promise<void>;
+        /**
+          * Deletes a workspace and emits a `workspacesChange` event.
+          * @param workspace - The workspace to delete.
+         */
         "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        /**
+          * Disables all user interaction with the engine (pointer, keyboard, etc.).
+         */
         "disable": () => Promise<void>;
+        /**
+          * Exports the current workspace as a JSON file and triggers a browser download.
+          * @param filename - Optional custom filename (without extension). Defaults to workspace name with timestamp.
+         */
+        "downloadAsJson": (filename?: string) => Promise<void>;
+        /**
+          * Optional unique identifier for namespacing storage keys across multiple editor instances.
+         */
+        "editorId"?: string;
+        /**
+          * Re-enables user interaction after a call to `disable()`.
+         */
         "enable": () => Promise<void>;
+        /**
+          * Exports the current workspace and all its objects as a JSON string. The exported data includes workspace metadata (id, name, viewport) and all canvas objects.
+          * @returns A JSON string representing the complete workspace state.
+         */
+        "exportAsJson": () => Promise<string>;
+        /**
+          * Exports the currently selected objects as a PNG file and triggers a browser download.
+          * @param options - Optional export settings (theme, padding, scale for resolution).
+         */
+        "exportSelectedObjectsAsPng": (options?: { theme?: "light" | "dark"; padding?: number; scale?: number; }) => Promise<void>;
+        /**
+          * Exports the currently selected objects as an SVG file and triggers a browser download. Creates clean, standards-compliant SVG markup suitable for import into vector editors.
+          * @param options - Optional export settings (theme, padding).
+         */
+        "exportSelectedObjectsAsSvg": (options?: { theme?: "light" | "dark"; padding?: number; }) => Promise<void>;
+        /**
+          * Exports the current viewport as a PNG file and triggers a browser download.
+         */
         "exportViewportAsPng": () => Promise<void>;
+        /**
+          * Exports the current viewport as an SVG file and triggers a browser download.
+         */
         "exportViewportAsSvg": () => Promise<void>;
+        /**
+          * Returns all objects that match the given predicate function. Excludes internal selection-related objects (selection groups and selection boxes).
+          * @param predicate - A filter function called for each object. Return `true` to include.
+          * @returns An array of matching objects.
+          * @example ```ts // Find all text objects const texts = await engine.findObjects(obj => obj.__class__ === 'KritzelText');  // Find objects at a point const hits = await engine.findObjects(obj => obj.hitTest(100, 200));  // Combine criteria const filtered = await engine.findObjects(obj => obj.__class__ === 'KritzelPath' && obj.opacity < 0.5); ```
+         */
+        "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean) => Promise<T[]>;
+        /**
+          * Returns the currently active workspace.
+         */
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
+        /**
+          * Returns all objects on the canvas across all layers.
+         */
         "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
+        /**
+          * Returns the objects currently stored in the internal clipboard from a prior `copy()` call.
+         */
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
+        /**
+          * Returns all registered keyboard shortcuts (without action/condition) for display in a help UI.
+         */
         "getDisplayableShortcuts": () => Promise<Omit<KritzelShortcut, "action" | "condition">[]>;
+        /**
+          * Gets whether the active workspace is publicly accessible.
+          * @returns True if the workspace is public, false otherwise
+         */
+        "getIsPublic": () => Promise<boolean>;
+        /**
+          * Retrieves a canvas object by its unique ID.
+          * @param id - The object's unique identifier.
+          * @returns The matching object, or `null` if not found.
+         */
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
+        /**
+          * Returns all objects currently visible within the viewport bounds.
+         */
         "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
+        /**
+          * Returns the total number of objects on the canvas.
+         */
         "getObjectsTotalCount": () => Promise<number>;
+        /**
+          * Captures a screenshot of the current viewport as a data URL.
+          * @param format - The image format: `'png'` (default) or `'svg'`.
+          * @returns A data URL string of the captured image.
+         */
         "getScreenshot": (format?: "png" | "svg") => Promise<string>;
+        /**
+          * Returns the currently selected objects. Returns an empty array if nothing is selected.
+         */
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
+        /**
+          * Generates a PNG data URL from the currently selected objects. Converts the SVG representation to a rasterized PNG image.
+          * @param options - Optional export settings (theme, padding, scale for resolution).
+          * @returns PNG data URL string, or null if no objects are selected.
+         */
+        "getSelectedObjectsAsPngDataUrl": (options?: { theme?: "light" | "dark"; padding?: number; scale?: number; }) => Promise<string | null>;
+        /**
+          * Generates an SVG string from the currently selected objects. Creates clean, standards-compliant SVG markup by directly serializing object properties.
+          * @param options - Optional export settings (theme, padding).
+          * @returns SVG markup string, or null if no objects are selected.
+         */
+        "getSelectedObjectsAsSvgString": (options?: { theme?: "light" | "dark"; padding?: number; }) => Promise<string | null>;
+        /**
+          * Returns the current viewport state including position, scale, and dimensions.
+          * @returns The current viewport state.
+         */
+        "getViewport": () => Promise<KritzelViewportState>;
+        /**
+          * Returns all available workspaces.
+         */
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
+        /**
+          * Context menu items shown when right-clicking the canvas background.
+         */
         "globalContextMenuItems": ContextMenuItem[];
+        /**
+          * Groups the currently selected objects into a single selection group.
+         */
         "group": () => Promise<void>;
+        /**
+          * Hides the context menu and resets any associated selection state.
+         */
         "hideContextMenu": () => Promise<void>;
+        /**
+          * Opens a file picker dialog and imports the selected JSON file into the workspace. This method creates a hidden file input, triggers the browser's file chooser, reads the selected JSON file, and imports it using importFromJson.
+          * @returns A promise that resolves when the import is complete or rejects on error/cancel.
+         */
+        "importFromFile": () => Promise<void>;
+        /**
+          * Imports a workspace from a JSON string into a new workspace. Creates a new workspace with the imported data and automatically switches to it.
+          * @param json - A JSON string containing workspace data (from exportAsJson).
+          * @throws Error if the JSON is invalid or the format version is incompatible.
+         */
+        "importFromJson": (json: string) => Promise<void>;
+        /**
+          * Loads objects from a workspace JSON string into the current workspace. Unlike importFromJson, this does not create a new workspace - it adds objects to the existing one. Useful for initializing a workspace with pre-existing content after the editor is ready.
+          * @param json - A JSON string containing workspace data (from exportAsJson).
+          * @returns The number of objects loaded.
+          * @throws Error if the JSON is invalid or the format version is incompatible.
+         */
+        "loadObjectsFromJson": (json: string) => Promise<number>;
+        /**
+          * Loads a shared workspace by token. If the workspace exists locally, it switches to it. If it doesn't exist, it adds it to the local workspaces list and then switches to it.
+          * @param token - The connection token identifying the shared workspace
+         */
+        "loadSharedWorkspace": (token: string) => Promise<void>;
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
          */
         "lockDrawingScale": boolean;
+        /**
+          * Context menu items shown when right-clicking a selected object.
+         */
         "objectContextMenuItems": ContextMenuItem[];
+        /**
+          * Pans the viewport to center on the given world coordinates without changing the scale.
+          * @param x - X position in world coordinates to center on.
+          * @param y - Y position in world coordinates to center on.
+         */
+        "panTo": (x: number, y: number) => Promise<void>;
+        /**
+          * Pastes previously copied objects at the specified world coordinates.
+          * @param x - X position in world coordinates.
+          * @param y - Y position in world coordinates.
+         */
         "paste": (x: number, y: number) => Promise<void>;
+        /**
+          * Redoes the last undone action.
+         */
         "redo": () => Promise<void>;
+        /**
+          * Registers a new drawing tool with the engine.
+          * @param toolName - Unique identifier for the tool (e.g., 'brush', 'eraser').
+          * @param toolClass - Constructor class extending `KritzelBaseTool`.
+          * @param toolConfig - Optional initial configuration to apply to the tool instance.
+          * @returns The registered tool instance, or `null` if registration failed.
+         */
         "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool>;
+        /**
+          * Reinitializes sync by performing a full teardown and re-initialization. Destroys the current Yjs documents and providers, then rebuilds everything from the current syncConfig. Data reloads from IndexedDB nearly instantly. Call this after updating the syncConfig prop (e.g. after authentication state changes).
+         */
+        "reinitSync": () => Promise<void>;
+        /**
+          * Removes an object from the canvas.
+          * @param object - The object to remove.
+          * @returns The removed object.
+         */
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         /**
+          * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
           * @default ABSOLUTE_SCALE_MAX
          */
         "scaleMax": number;
         /**
+          * Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.
           * @default ABSOLUTE_SCALE_MIN
          */
         "scaleMin": number;
+        /**
+          * Converts screen-relative pixel coordinates to world coordinates.
+          * @param x - X position in screen pixels (relative to the engine element).
+          * @param y - Y position in screen pixels (relative to the engine element).
+          * @returns World coordinates { x, y }.
+         */
+        "screenToWorld": (x: number, y: number) => Promise<{ x: number; y: number; }>;
+        /**
+          * Selects all objects currently visible in the viewport. Switches to the selection tool automatically.
+         */
         "selectAllObjectsInViewport": () => Promise<void>;
+        /**
+          * Programmatically selects the given objects. Switches to the selection tool automatically.
+          * @param objects - The objects to select.
+         */
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
+        /**
+          * Moves an object one layer backward in the z-order.
+          * @param object - The object to move. If omitted, applies to the current selection.
+         */
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
+        /**
+          * Moves an object to the very back of the z-order.
+          * @param object - The object to move. If omitted, applies to the current selection.
+         */
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
+        /**
+          * Sets the viewport to center on the given world coordinates at the specified scale.
+          * @param x - X position in world coordinates to center on.
+          * @param y - Y position in world coordinates to center on.
+          * @param scale - Target scale level.
+         */
+        "setViewport": (x: number, y: number, scale: number) => Promise<void>;
+        /**
+          * Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).
+         */
         "syncConfig"?: KritzelSyncConfig;
         /**
           * The current theme to apply to the editor
           * @default 'light'
          */
         "theme": ThemeName;
+        /**
+          * Manually triggers the `objectsSelectionChange` event.
+         */
         "triggerSelectionChange": () => Promise<void>;
+        /**
+          * Undoes the last action.
+         */
         "undo": () => Promise<void>;
+        /**
+          * Ungroups the currently selected group back into individual objects.
+         */
         "ungroup": () => Promise<void>;
+        /**
+          * Updates properties of an existing canvas object.
+          * @param object - The object to update.
+          * @param updatedProperties - A partial set of properties to apply.
+          * @returns The updated object.
+         */
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
+        /**
+          * Updates an existing workspace's metadata and emits a `workspacesChange` event.
+          * @param workspace - The workspace with updated properties.
+         */
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        /**
+          * The current user for awareness broadcasting (name, id, cursor position).
+         */
+        "user"?: IKritzelUser;
         /**
           * Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.
           * @default Infinity
@@ -356,10 +793,37 @@ export namespace Components {
           * @default -Infinity
          */
         "viewportBoundaryTop": number;
+        /**
+          * When false, wheel events will not trigger viewport pan/zoom. The event still propagates to parent elements.
+          * @default true
+         */
+        "wheelEnabled": boolean;
+        /**
+          * The workspace to load and display. Changing this prop switches the active workspace.
+         */
         "workspace"?: KritzelWorkspace;
+        /**
+          * Converts world coordinates to screen-relative pixel coordinates.
+          * @param x - X position in world coordinates.
+          * @param y - Y position in world coordinates.
+          * @returns Screen coordinates { x, y } relative to the engine element.
+         */
+        "worldToScreen": (x: number, y: number) => Promise<{ x: number; y: number; }>;
+        /**
+          * Zooms the viewport to the given scale level. Optionally centers on a world point; if omitted, zooms around the viewport center.
+          * @param scale - Target scale level.
+          * @param worldX - Optional X position in world coordinates to center on.
+          * @param worldY - Optional Y position in world coordinates to center on.
+         */
+        "zoomTo": (scale: number, worldX?: number, worldY?: number) => Promise<void>;
     }
     interface KritzelExport {
         "open": (previewUrl?: string) => Promise<void>;
+        /**
+          * The name of the current workspace, used as default filename
+          * @default 'workspace'
+         */
+        "workspaceName": string;
     }
     interface KritzelFont {
         /**
@@ -404,6 +868,38 @@ export namespace Components {
          */
         "size": number;
     }
+    interface KritzelInput {
+        /**
+          * Whether the input is disabled
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Label text displayed above the input
+          * @default ''
+         */
+        "label": string;
+        /**
+          * Placeholder text shown when input is empty
+          * @default ''
+         */
+        "placeholder": string;
+        /**
+          * Suffix text displayed after the input (e.g., file extension)
+          * @default ''
+         */
+        "suffix": string;
+        /**
+          * Input type
+          * @default 'text'
+         */
+        "type": 'text' | 'email' | 'password' | 'url';
+        /**
+          * Current text value
+          * @default ''
+         */
+        "value": string;
+    }
     interface KritzelLineEndings {
         /**
           * Available ending styles
@@ -414,6 +910,39 @@ export namespace Components {
           * Current line arrow configuration
          */
         "value": LineArrowConfig | undefined;
+    }
+    /**
+     * Login dialog component for displaying authentication provider buttons.
+     * This is a presentational component that emits events for all actions.
+     * The parent component (kritzel-editor) handles the actual authentication flow.
+     */
+    interface KritzelLoginDialog {
+        /**
+          * Closes the login dialog
+         */
+        "close": () => Promise<void>;
+        /**
+          * Dialog title
+          * @default 'Sign in'
+         */
+        "dialogTitle": string;
+        /**
+          * Opens the login dialog
+         */
+        "open": () => Promise<void>;
+        /**
+          * Array of authentication provider buttons to render
+          * @default []
+         */
+        "providers": IKritzelLoginProvider[];
+        /**
+          * Sets or clears the loading state on a provider button
+         */
+        "setLoading": (provider: string | null) => Promise<void>;
+        /**
+          * Optional subtitle text displayed below the title
+         */
+        "subtitle"?: string;
     }
     interface KritzelMasterDetail {
         /**
@@ -455,7 +984,7 @@ export namespace Components {
         "iconSize": number;
         /**
           * The menu items to display in the dropdown
-          * @default [     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
+          * @default [     {       id: 'share',       label: 'Share',       icon: 'share',     },     {       id: 'export',       label: 'Export',       icon: 'upload',     },     {       id: 'import',       label: 'Import',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
          */
         "items": IKritzelMenuItem[];
         /**
@@ -522,6 +1051,17 @@ export namespace Components {
          */
         "value": number;
     }
+    interface KritzelPillTabs {
+        /**
+          * Array of tab definitions to render
+          * @default []
+         */
+        "tabs": KritzelPillTab[];
+        /**
+          * Currently selected tab ID
+         */
+        "value": string;
+    }
     interface KritzelPortal {
         "anchor": HTMLElement;
         /**
@@ -532,6 +1072,10 @@ export namespace Components {
         "offsetY": number;
     }
     interface KritzelSettings {
+        /**
+          * Optional unique identifier for namespacing storage keys
+         */
+        "editorId"?: string;
         "open": () => Promise<void>;
         /**
           * Keyboard shortcuts to display in the settings dialog
@@ -545,6 +1089,31 @@ export namespace Components {
           * @default 'transparent'
          */
         "value": ShapeFillType;
+    }
+    /**
+     * Share dialog component for managing workspace link sharing.
+     * This is a presentational component that emits events for all actions.
+     * The parent component (kritzel-editor) handles the business logic.
+     */
+    interface KritzelShareDialog {
+        /**
+          * Closes the share dialog.
+         */
+        "close": () => Promise<void>;
+        /**
+          * Whether the workspace is currently public.
+          * @default false
+         */
+        "isPublic": boolean;
+        /**
+          * Opens the share dialog.
+         */
+        "open": () => Promise<void>;
+        /**
+          * The ID of the workspace being shared. Used to build the share URL.
+          * @default undefined
+         */
+        "workspaceId": string | undefined;
     }
     interface KritzelSlideToggle {
         /**
@@ -642,6 +1211,10 @@ export interface KritzelBrushStyleCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelBrushStyleElement;
 }
+export interface KritzelButtonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelButtonElement;
+}
 export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelColorPaletteElement;
@@ -653,6 +1226,10 @@ export interface KritzelContextMenuCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelControlsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelControlsElement;
+}
+export interface KritzelCurrentUserCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelCurrentUserElement;
 }
 export interface KritzelDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -682,9 +1259,17 @@ export interface KritzelFontSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelFontSizeElement;
 }
+export interface KritzelInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelInputElement;
+}
 export interface KritzelLineEndingsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelLineEndingsElement;
+}
+export interface KritzelLoginDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelLoginDialogElement;
 }
 export interface KritzelMasterDetailCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -710,6 +1295,10 @@ export interface KritzelOpacitySliderCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelOpacitySliderElement;
 }
+export interface KritzelPillTabsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelPillTabsElement;
+}
 export interface KritzelPortalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelPortalElement;
@@ -721,6 +1310,10 @@ export interface KritzelSettingsCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelShapeFillCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelShapeFillElement;
+}
+export interface KritzelShareDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelShareDialogElement;
 }
 export interface KritzelSlideToggleCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -751,6 +1344,18 @@ export interface KritzelWorkspaceManagerCustomEvent<T> extends CustomEvent<T> {
     target: HTMLKritzelWorkspaceManagerElement;
 }
 declare global {
+    interface HTMLKritzelActiveUsersElement extends Components.KritzelActiveUsers, HTMLStencilElement {
+    }
+    var HTMLKritzelActiveUsersElement: {
+        prototype: HTMLKritzelActiveUsersElement;
+        new (): HTMLKritzelActiveUsersElement;
+    };
+    interface HTMLKritzelAvatarElement extends Components.KritzelAvatar, HTMLStencilElement {
+    }
+    var HTMLKritzelAvatarElement: {
+        prototype: HTMLKritzelAvatarElement;
+        new (): HTMLKritzelAvatarElement;
+    };
     interface HTMLKritzelBackToContentElementEventMap {
         "backToContent": void;
     }
@@ -784,6 +1389,23 @@ declare global {
     var HTMLKritzelBrushStyleElement: {
         prototype: HTMLKritzelBrushStyleElement;
         new (): HTMLKritzelBrushStyleElement;
+    };
+    interface HTMLKritzelButtonElementEventMap {
+        "buttonClick": void;
+    }
+    interface HTMLKritzelButtonElement extends Components.KritzelButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelButtonElementEventMap>(type: K, listener: (this: HTMLKritzelButtonElement, ev: KritzelButtonCustomEvent<HTMLKritzelButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelButtonElementEventMap>(type: K, listener: (this: HTMLKritzelButtonElement, ev: KritzelButtonCustomEvent<HTMLKritzelButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelButtonElement: {
+        prototype: HTMLKritzelButtonElement;
+        new (): HTMLKritzelButtonElement;
     };
     interface HTMLKritzelColorElement extends Components.KritzelColor, HTMLStencilElement {
     }
@@ -843,6 +1465,23 @@ declare global {
         prototype: HTMLKritzelControlsElement;
         new (): HTMLKritzelControlsElement;
     };
+    interface HTMLKritzelCurrentUserElementEventMap {
+        "itemSelect": { item: IKritzelMenuItem; parent: IKritzelMenuItem };
+    }
+    interface HTMLKritzelCurrentUserElement extends Components.KritzelCurrentUser, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelCurrentUserElementEventMap>(type: K, listener: (this: HTMLKritzelCurrentUserElement, ev: KritzelCurrentUserCustomEvent<HTMLKritzelCurrentUserElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelCurrentUserElementEventMap>(type: K, listener: (this: HTMLKritzelCurrentUserElement, ev: KritzelCurrentUserCustomEvent<HTMLKritzelCurrentUserElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelCurrentUserElement: {
+        prototype: HTMLKritzelCurrentUserElement;
+        new (): HTMLKritzelCurrentUserElement;
+    };
     interface HTMLKritzelCursorTrailElement extends Components.KritzelCursorTrail, HTMLStencilElement {
     }
     var HTMLKritzelCursorTrailElement: {
@@ -886,9 +1525,18 @@ declare global {
     };
     interface HTMLKritzelEditorElementEventMap {
         "isReady": HTMLElement;
+        "activeWorkspaceChange": KritzelWorkspace;
         "objectsChange": KritzelBaseObject[];
+        "objectsAdded": ObjectsAddedEvent;
+        "objectsRemoved": ObjectsRemovedEvent;
+        "objectsUpdated": ObjectsUpdatedEvent;
         "undoStateChange": KritzelUndoState1;
         "themeChange": ThemeName;
+        "viewportChange": KritzelViewportState;
+        "logout": void;
+        "loginRequest": IKritzelLoginEvent;
+        "isPublicChange": IKritzelIsPublicChangedEvent;
+        "awarenessChange": Map<number, Record<string, any>>;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -909,10 +1557,16 @@ declare global {
         "activeToolChange": KritzelBaseTool;
         "objectsSelectionChange": void;
         "workspacesChange": KritzelWorkspace[];
+        "activeWorkspaceChange": KritzelWorkspace;
         "longpress": PointerEvent;
         "objectsChange": KritzelBaseObject[];
+        "objectsAdded": ObjectsAddedEvent;
+        "objectsRemoved": ObjectsRemovedEvent;
+        "objectsUpdated": ObjectsUpdatedEvent;
         "undoStateChange": KritzelUndoState;
         "objectsInViewportChange": KritzelBaseObject<Element>[];
+        "viewportChange": KritzelViewportState;
+        "awarenessChange": Map<number, Record<string, any>>;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -931,6 +1585,7 @@ declare global {
     interface HTMLKritzelExportElementEventMap {
         "exportPng": void;
         "exportSvg": void;
+        "exportJson": string;
     }
     interface HTMLKritzelExportElement extends Components.KritzelExport, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelExportElementEventMap>(type: K, listener: (this: HTMLKritzelExportElement, ev: KritzelExportCustomEvent<HTMLKritzelExportElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -992,6 +1647,23 @@ declare global {
         prototype: HTMLKritzelIconElement;
         new (): HTMLKritzelIconElement;
     };
+    interface HTMLKritzelInputElementEventMap {
+        "valueChange": string;
+    }
+    interface HTMLKritzelInputElement extends Components.KritzelInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelInputElementEventMap>(type: K, listener: (this: HTMLKritzelInputElement, ev: KritzelInputCustomEvent<HTMLKritzelInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelInputElementEventMap>(type: K, listener: (this: HTMLKritzelInputElement, ev: KritzelInputCustomEvent<HTMLKritzelInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelInputElement: {
+        prototype: HTMLKritzelInputElement;
+        new (): HTMLKritzelInputElement;
+    };
     interface HTMLKritzelLineEndingsElementEventMap {
         "valueChange": LineArrowConfig;
     }
@@ -1008,6 +1680,29 @@ declare global {
     var HTMLKritzelLineEndingsElement: {
         prototype: HTMLKritzelLineEndingsElement;
         new (): HTMLKritzelLineEndingsElement;
+    };
+    interface HTMLKritzelLoginDialogElementEventMap {
+        "providerLogin": IKritzelLoginEvent;
+        "dialogClosed": void;
+    }
+    /**
+     * Login dialog component for displaying authentication provider buttons.
+     * This is a presentational component that emits events for all actions.
+     * The parent component (kritzel-editor) handles the actual authentication flow.
+     */
+    interface HTMLKritzelLoginDialogElement extends Components.KritzelLoginDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelLoginDialogElementEventMap>(type: K, listener: (this: HTMLKritzelLoginDialogElement, ev: KritzelLoginDialogCustomEvent<HTMLKritzelLoginDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelLoginDialogElementEventMap>(type: K, listener: (this: HTMLKritzelLoginDialogElement, ev: KritzelLoginDialogCustomEvent<HTMLKritzelLoginDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelLoginDialogElement: {
+        prototype: HTMLKritzelLoginDialogElement;
+        new (): HTMLKritzelLoginDialogElement;
     };
     interface HTMLKritzelMasterDetailElementEventMap {
         "itemSelect": IKritzelMasterDetailSelectEvent;
@@ -1120,6 +1815,23 @@ declare global {
         prototype: HTMLKritzelOpacitySliderElement;
         new (): HTMLKritzelOpacitySliderElement;
     };
+    interface HTMLKritzelPillTabsElementEventMap {
+        "valueChange": string;
+    }
+    interface HTMLKritzelPillTabsElement extends Components.KritzelPillTabs, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelPillTabsElementEventMap>(type: K, listener: (this: HTMLKritzelPillTabsElement, ev: KritzelPillTabsCustomEvent<HTMLKritzelPillTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelPillTabsElementEventMap>(type: K, listener: (this: HTMLKritzelPillTabsElement, ev: KritzelPillTabsCustomEvent<HTMLKritzelPillTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelPillTabsElement: {
+        prototype: HTMLKritzelPillTabsElement;
+        new (): HTMLKritzelPillTabsElement;
+    };
     interface HTMLKritzelPortalElementEventMap {
         "close": void;
     }
@@ -1170,6 +1882,29 @@ declare global {
     var HTMLKritzelShapeFillElement: {
         prototype: HTMLKritzelShapeFillElement;
         new (): HTMLKritzelShapeFillElement;
+    };
+    interface HTMLKritzelShareDialogElementEventMap {
+        "toggleIsPublic": boolean;
+        "dialogClosed": void;
+    }
+    /**
+     * Share dialog component for managing workspace link sharing.
+     * This is a presentational component that emits events for all actions.
+     * The parent component (kritzel-editor) handles the business logic.
+     */
+    interface HTMLKritzelShareDialogElement extends Components.KritzelShareDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelShareDialogElementEventMap>(type: K, listener: (this: HTMLKritzelShareDialogElement, ev: KritzelShareDialogCustomEvent<HTMLKritzelShareDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelShareDialogElementEventMap>(type: K, listener: (this: HTMLKritzelShareDialogElement, ev: KritzelShareDialogCustomEvent<HTMLKritzelShareDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelShareDialogElement: {
+        prototype: HTMLKritzelShareDialogElement;
+        new (): HTMLKritzelShareDialogElement;
     };
     interface HTMLKritzelSlideToggleElementEventMap {
         "checkedChange": boolean;
@@ -1303,12 +2038,16 @@ declare global {
         new (): HTMLKritzelWorkspaceManagerElement;
     };
     interface HTMLElementTagNameMap {
+        "kritzel-active-users": HTMLKritzelActiveUsersElement;
+        "kritzel-avatar": HTMLKritzelAvatarElement;
         "kritzel-back-to-content": HTMLKritzelBackToContentElement;
         "kritzel-brush-style": HTMLKritzelBrushStyleElement;
+        "kritzel-button": HTMLKritzelButtonElement;
         "kritzel-color": HTMLKritzelColorElement;
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
         "kritzel-controls": HTMLKritzelControlsElement;
+        "kritzel-current-user": HTMLKritzelCurrentUserElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-dialog": HTMLKritzelDialogElement;
         "kritzel-dropdown": HTMLKritzelDropdownElement;
@@ -1319,16 +2058,20 @@ declare global {
         "kritzel-font-family": HTMLKritzelFontFamilyElement;
         "kritzel-font-size": HTMLKritzelFontSizeElement;
         "kritzel-icon": HTMLKritzelIconElement;
+        "kritzel-input": HTMLKritzelInputElement;
         "kritzel-line-endings": HTMLKritzelLineEndingsElement;
+        "kritzel-login-dialog": HTMLKritzelLoginDialogElement;
         "kritzel-master-detail": HTMLKritzelMasterDetailElement;
         "kritzel-menu": HTMLKritzelMenuElement;
         "kritzel-menu-item": HTMLKritzelMenuItemElement;
         "kritzel-more-menu": HTMLKritzelMoreMenuElement;
         "kritzel-numeric-input": HTMLKritzelNumericInputElement;
         "kritzel-opacity-slider": HTMLKritzelOpacitySliderElement;
+        "kritzel-pill-tabs": HTMLKritzelPillTabsElement;
         "kritzel-portal": HTMLKritzelPortalElement;
         "kritzel-settings": HTMLKritzelSettingsElement;
         "kritzel-shape-fill": HTMLKritzelShapeFillElement;
+        "kritzel-share-dialog": HTMLKritzelShareDialogElement;
         "kritzel-slide-toggle": HTMLKritzelSlideToggleElement;
         "kritzel-split-button": HTMLKritzelSplitButtonElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
@@ -1339,6 +2082,47 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface KritzelActiveUsers {
+        /**
+          * Avatar size in pixels
+          * @default 40
+         */
+        "avatarSize"?: number;
+        /**
+          * Maximum number of avatars to show before overflow text
+          * @default 3
+         */
+        "maxVisible"?: number;
+        /**
+          * Overlap offset in pixels (negative margin between avatars)
+          * @default 20
+         */
+        "overlap"?: number;
+        /**
+          * Array of active users to display
+          * @default []
+         */
+        "users"?: IKritzelUser[];
+    }
+    interface KritzelAvatar {
+        /**
+          * Background color for initials fallback
+         */
+        "color"?: string;
+        /**
+          * Direct prop: user's display name (used for initials fallback)
+         */
+        "name"?: string;
+        /**
+          * Avatar diameter in pixels
+          * @default 32
+         */
+        "size"?: number;
+        /**
+          * Full user object. If provided, individual props are ignored.
+         */
+        "user"?: IKritzelUser;
+    }
     interface KritzelBackToContent {
         /**
           * Emitted when the button is clicked
@@ -1365,6 +2149,27 @@ declare namespace LocalJSX {
           * @default 'pen'
          */
         "type"?: 'pen' | 'highlighter';
+    }
+    interface KritzelButton {
+        /**
+          * Whether the button is disabled
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Emitted when the button is clicked
+         */
+        "onButtonClick"?: (event: KritzelButtonCustomEvent<void>) => void;
+        /**
+          * The type attribute for the native button element
+          * @default 'button'
+         */
+        "type"?: 'button' | 'submit' | 'reset';
+        /**
+          * The visual variant of the button
+          * @default 'primary'
+         */
+        "variant"?: 'primary' | 'secondary' | 'text';
     }
     interface KritzelColor {
         /**
@@ -1424,6 +2229,26 @@ declare namespace LocalJSX {
          */
         "undoState"?: KritzelUndoState;
     }
+    interface KritzelCurrentUser {
+        /**
+          * Avatar size in pixels
+          * @default 40
+         */
+        "avatarSize"?: number;
+        /**
+          * Offset Y for the portal positioning
+          * @default 4
+         */
+        "offsetY"?: number;
+        /**
+          * Emitted when a menu item is selected
+         */
+        "onItemSelect"?: (event: KritzelCurrentUserCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => void;
+        /**
+          * The current user to display
+         */
+        "user"?: IKritzelUser;
+    }
     interface KritzelCursorTrail {
         "core"?: KritzelCore;
     }
@@ -1482,6 +2307,10 @@ declare namespace LocalJSX {
         "trapFocus"?: boolean;
     }
     interface KritzelDropdown {
+        /**
+          * Force the dropdown to open in a specific direction instead of auto-detecting
+         */
+        "forceOpenDirection"?: 'down' | 'up';
         "onValueChanged"?: (event: KritzelDropdownCustomEvent<string>) => void;
         /**
           * @default []
@@ -1495,14 +2324,23 @@ declare namespace LocalJSX {
         "width"?: string;
     }
     interface KritzelEditor {
+        "activeUsers"?: IKritzelUser[];
         /**
-          * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
+          * Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID.
+         */
+        "activeWorkspaceId"?: string;
+        /**
+          * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
          */
         "controls"?: KritzelToolbarControl[];
         /**
           * @default {}
          */
         "customSvgIcons"?: Record<string, string>;
+        /**
+          * Optional unique identifier for namespacing storage keys across multiple editor instances.
+         */
+        "editorId"?: string;
         /**
           * @default [     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Select All',       icon: 'select-all',       disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,       action: () => this.selectAllObjectsInViewport(),     },   ]
          */
@@ -1520,13 +2358,26 @@ declare namespace LocalJSX {
          */
         "lockDrawingScale"?: boolean;
         /**
-          * @default [     { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Order',       icon: 'ordering',       group: 'other',       children: [         { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'Move Up', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'Move Down', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'Align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'Align Left', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'Align Right', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'Align Top', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'Align Bottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'Group',       icon: 'group',       group: 'other',       children: [         {           label: 'Group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'Ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },      { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
+          * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
+         */
+        "loginConfig"?: IKritzelLoginConfig;
+        /**
+          * @default [     { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Order',       icon: 'ordering',       group: 'other',       children: [         { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'Move Up', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'Move Down', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'Align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'Align Left', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'Align Right', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'Align Top', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'Align Bottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'Group',       icon: 'group',       group: 'other',       children: [         {           label: 'Group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'Ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'Export',       icon: 'download',       group: 'export',       children: [         { label: 'Export as SVG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'Export as PNG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
+        "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<KritzelWorkspace>) => void;
+        "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
+        "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangedEvent>) => void;
         "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
+        "onLoginRequest"?: (event: KritzelEditorCustomEvent<IKritzelLoginEvent>) => void;
+        "onLogout"?: (event: KritzelEditorCustomEvent<void>) => void;
+        "onObjectsAdded"?: (event: KritzelEditorCustomEvent<ObjectsAddedEvent>) => void;
         "onObjectsChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
+        "onObjectsRemoved"?: (event: KritzelEditorCustomEvent<ObjectsRemovedEvent>) => void;
+        "onObjectsUpdated"?: (event: KritzelEditorCustomEvent<ObjectsUpdatedEvent>) => void;
         "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState1>) => void;
+        "onViewportChange"?: (event: KritzelEditorCustomEvent<KritzelViewportState>) => void;
         /**
           * @default ABSOLUTE_SCALE_MAX
          */
@@ -1535,7 +2386,11 @@ declare namespace LocalJSX {
           * @default ABSOLUTE_SCALE_MIN
          */
         "scaleMin"?: number;
+        /**
+          * @default {     providers: [IndexedDBSyncProvider]   }
+         */
         "syncConfig"?: KritzelSyncConfig;
+        "user"?: IKritzelUser;
         /**
           * @default Infinity
          */
@@ -1552,39 +2407,116 @@ declare namespace LocalJSX {
           * @default -Infinity
          */
         "viewportBoundaryTop"?: number;
+        /**
+          * @default true
+         */
+        "wheelEnabled"?: boolean;
     }
     interface KritzelEngine {
-        "activeTool"?: KritzelTool;
+        /**
+          * Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.
+         */
+        "activeWorkspaceId"?: string;
+        /**
+          * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
+         */
         "cursorTarget"?: HTMLElement;
+        /**
+          * Optional unique identifier for namespacing storage keys across multiple editor instances.
+         */
+        "editorId"?: string;
+        /**
+          * Context menu items shown when right-clicking the canvas background.
+         */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
          */
         "lockDrawingScale"?: boolean;
+        /**
+          * Context menu items shown when right-clicking a selected object.
+         */
         "objectContextMenuItems"?: ContextMenuItem[];
+        /**
+          * Emitted when the active drawing tool changes.
+         */
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
+        /**
+          * Emitted when the active workspace changes (e.g., after import).
+         */
+        "onActiveWorkspaceChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace>) => void;
+        /**
+          * Emitted when the awareness state changes (remote user cursors, presence).
+         */
+        "onAwarenessChange"?: (event: KritzelEngineCustomEvent<Map<number, Record<string, any>>>) => void;
+        /**
+          * Emitted when the engine has fully initialized and is ready for interaction.
+         */
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
+        /**
+          * Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.
+         */
         "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
+        /**
+          * Emitted when one or more objects are added to the canvas.
+         */
+        "onObjectsAdded"?: (event: KritzelEngineCustomEvent<ObjectsAddedEvent>) => void;
+        /**
+          * Emitted when objects on the canvas are added, removed, or modified.
+         */
         "onObjectsChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject[]>) => void;
+        /**
+          * Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).
+         */
         "onObjectsInViewportChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject<Element>[]>) => void;
+        /**
+          * Emitted when one or more objects are removed from the canvas.
+         */
+        "onObjectsRemoved"?: (event: KritzelEngineCustomEvent<ObjectsRemovedEvent>) => void;
+        /**
+          * Emitted when the set of selected objects changes.
+         */
         "onObjectsSelectionChange"?: (event: KritzelEngineCustomEvent<void>) => void;
+        /**
+          * Emitted when one or more objects are updated on the canvas.
+         */
+        "onObjectsUpdated"?: (event: KritzelEngineCustomEvent<ObjectsUpdatedEvent>) => void;
+        /**
+          * Emitted when the undo/redo state changes, providing current undo availability.
+         */
         "onUndoStateChange"?: (event: KritzelEngineCustomEvent<KritzelUndoState>) => void;
+        /**
+          * Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).
+         */
+        "onViewportChange"?: (event: KritzelEngineCustomEvent<KritzelViewportState>) => void;
+        /**
+          * Emitted when workspaces are created, updated, or deleted.
+         */
         "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
         /**
+          * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
           * @default ABSOLUTE_SCALE_MAX
          */
         "scaleMax"?: number;
         /**
+          * Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.
           * @default ABSOLUTE_SCALE_MIN
          */
         "scaleMin"?: number;
+        /**
+          * Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).
+         */
         "syncConfig"?: KritzelSyncConfig;
         /**
           * The current theme to apply to the editor
           * @default 'light'
          */
         "theme"?: ThemeName;
+        /**
+          * The current user for awareness broadcasting (name, id, cursor position).
+         */
+        "user"?: IKritzelUser;
         /**
           * Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.
           * @default Infinity
@@ -1605,11 +2537,25 @@ declare namespace LocalJSX {
           * @default -Infinity
          */
         "viewportBoundaryTop"?: number;
+        /**
+          * When false, wheel events will not trigger viewport pan/zoom. The event still propagates to parent elements.
+          * @default true
+         */
+        "wheelEnabled"?: boolean;
+        /**
+          * The workspace to load and display. Changing this prop switches the active workspace.
+         */
         "workspace"?: KritzelWorkspace;
     }
     interface KritzelExport {
+        "onExportJson"?: (event: KritzelExportCustomEvent<string>) => void;
         "onExportPng"?: (event: KritzelExportCustomEvent<void>) => void;
         "onExportSvg"?: (event: KritzelExportCustomEvent<void>) => void;
+        /**
+          * The name of the current workspace, used as default filename
+          * @default 'workspace'
+         */
+        "workspaceName"?: string;
     }
     interface KritzelFont {
         /**
@@ -1656,6 +2602,42 @@ declare namespace LocalJSX {
          */
         "size"?: number;
     }
+    interface KritzelInput {
+        /**
+          * Whether the input is disabled
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Label text displayed above the input
+          * @default ''
+         */
+        "label"?: string;
+        /**
+          * Emitted when the value changes
+         */
+        "onValueChange"?: (event: KritzelInputCustomEvent<string>) => void;
+        /**
+          * Placeholder text shown when input is empty
+          * @default ''
+         */
+        "placeholder"?: string;
+        /**
+          * Suffix text displayed after the input (e.g., file extension)
+          * @default ''
+         */
+        "suffix"?: string;
+        /**
+          * Input type
+          * @default 'text'
+         */
+        "type"?: 'text' | 'email' | 'password' | 'url';
+        /**
+          * Current text value
+          * @default ''
+         */
+        "value"?: string;
+    }
     interface KritzelLineEndings {
         "onValueChange"?: (event: KritzelLineEndingsCustomEvent<LineArrowConfig>) => void;
         /**
@@ -1667,6 +2649,35 @@ declare namespace LocalJSX {
           * Current line arrow configuration
          */
         "value"?: LineArrowConfig | undefined;
+    }
+    /**
+     * Login dialog component for displaying authentication provider buttons.
+     * This is a presentational component that emits events for all actions.
+     * The parent component (kritzel-editor) handles the actual authentication flow.
+     */
+    interface KritzelLoginDialog {
+        /**
+          * Dialog title
+          * @default 'Sign in'
+         */
+        "dialogTitle"?: string;
+        /**
+          * Emitted when the dialog is closed
+         */
+        "onDialogClosed"?: (event: KritzelLoginDialogCustomEvent<void>) => void;
+        /**
+          * Emitted when a provider button is clicked
+         */
+        "onProviderLogin"?: (event: KritzelLoginDialogCustomEvent<IKritzelLoginEvent>) => void;
+        /**
+          * Array of authentication provider buttons to render
+          * @default []
+         */
+        "providers"?: IKritzelLoginProvider[];
+        /**
+          * Optional subtitle text displayed below the title
+         */
+        "subtitle"?: string;
     }
     interface KritzelMasterDetail {
         /**
@@ -1721,7 +2732,7 @@ declare namespace LocalJSX {
         "iconSize"?: number;
         /**
           * The menu items to display in the dropdown
-          * @default [     {       id: 'export',       label: 'Export',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
+          * @default [     {       id: 'share',       label: 'Share',       icon: 'share',     },     {       id: 'export',       label: 'Export',       icon: 'upload',     },     {       id: 'import',       label: 'Import',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
          */
         "items"?: IKritzelMenuItem[];
         /**
@@ -1797,6 +2808,21 @@ declare namespace LocalJSX {
          */
         "value"?: number;
     }
+    interface KritzelPillTabs {
+        /**
+          * Emitted when the selected tab changes
+         */
+        "onValueChange"?: (event: KritzelPillTabsCustomEvent<string>) => void;
+        /**
+          * Array of tab definitions to render
+          * @default []
+         */
+        "tabs"?: KritzelPillTab[];
+        /**
+          * Currently selected tab ID
+         */
+        "value"?: string;
+    }
     interface KritzelPortal {
         "anchor"?: HTMLElement;
         /**
@@ -1808,6 +2834,10 @@ declare namespace LocalJSX {
         "onClose"?: (event: KritzelPortalCustomEvent<void>) => void;
     }
     interface KritzelSettings {
+        /**
+          * Optional unique identifier for namespacing storage keys
+         */
+        "editorId"?: string;
         /**
           * Emitted when settings change
          */
@@ -1825,6 +2855,31 @@ declare namespace LocalJSX {
           * @default 'transparent'
          */
         "value"?: ShapeFillType;
+    }
+    /**
+     * Share dialog component for managing workspace link sharing.
+     * This is a presentational component that emits events for all actions.
+     * The parent component (kritzel-editor) handles the business logic.
+     */
+    interface KritzelShareDialog {
+        /**
+          * Whether the workspace is currently public.
+          * @default false
+         */
+        "isPublic"?: boolean;
+        /**
+          * Emitted when the dialog is closed.
+         */
+        "onDialogClosed"?: (event: KritzelShareDialogCustomEvent<void>) => void;
+        /**
+          * Emitted when the user toggles the public sharing state.
+         */
+        "onToggleIsPublic"?: (event: KritzelShareDialogCustomEvent<boolean>) => void;
+        /**
+          * The ID of the workspace being shared. Used to build the share URL.
+          * @default undefined
+         */
+        "workspaceId"?: string | undefined;
     }
     interface KritzelSlideToggle {
         /**
@@ -1930,12 +2985,27 @@ declare namespace LocalJSX {
         "workspaces"?: KritzelWorkspace[];
     }
 
+    interface KritzelActiveUsersAttributes {
+        "avatarSize": number;
+        "maxVisible": number;
+        "overlap": number;
+    }
+    interface KritzelAvatarAttributes {
+        "name": string;
+        "size": number;
+        "color": string;
+    }
     interface KritzelBackToContentAttributes {
         "visible": boolean;
         "text": string;
     }
     interface KritzelBrushStyleAttributes {
         "type": 'pen' | 'highlighter';
+    }
+    interface KritzelButtonAttributes {
+        "variant": 'primary' | 'secondary' | 'text';
+        "disabled": boolean;
+        "type": 'button' | 'submit' | 'reset';
     }
     interface KritzelColorAttributes {
         "value": string | ThemeAwareColor;
@@ -1952,6 +3022,10 @@ declare namespace LocalJSX {
         "isUtilityPanelVisible": boolean;
         "theme": ThemeMode;
     }
+    interface KritzelCurrentUserAttributes {
+        "avatarSize": number;
+        "offsetY": number;
+    }
     interface KritzelDialogAttributes {
         "isOpen": boolean;
         "dialogTitle": string;
@@ -1966,6 +3040,7 @@ declare namespace LocalJSX {
     interface KritzelDropdownAttributes {
         "value": string;
         "width": string;
+        "forceOpenDirection": 'down' | 'up';
     }
     interface KritzelEditorAttributes {
         "scaleMax": number;
@@ -1975,10 +3050,15 @@ declare namespace LocalJSX {
         "viewportBoundaryRight": number;
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
+        "wheelEnabled": boolean;
         "isControlsVisible": boolean;
         "isUtilityPanelVisible": boolean;
+        "editorId": string;
+        "activeWorkspaceId": string;
     }
     interface KritzelEngineAttributes {
+        "editorId": string;
+        "activeWorkspaceId": string;
         "scaleMax": number;
         "scaleMin": number;
         "lockDrawingScale": boolean;
@@ -1987,6 +3067,10 @@ declare namespace LocalJSX {
         "viewportBoundaryRight": number;
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
+        "wheelEnabled": boolean;
+    }
+    interface KritzelExportAttributes {
+        "workspaceName": string;
     }
     interface KritzelFontAttributes {
         "fontFamily": string;
@@ -2004,6 +3088,18 @@ declare namespace LocalJSX {
         "name": string;
         "label": string;
         "size": number;
+    }
+    interface KritzelInputAttributes {
+        "value": string;
+        "label": string;
+        "placeholder": string;
+        "suffix": string;
+        "type": 'text' | 'email' | 'password' | 'url';
+        "disabled": boolean;
+    }
+    interface KritzelLoginDialogAttributes {
+        "dialogTitle": string;
+        "subtitle": string;
     }
     interface KritzelMasterDetailAttributes {
         "selectedItemId": string;
@@ -2028,13 +3124,23 @@ declare namespace LocalJSX {
         "step": number;
         "previewColor": string;
     }
+    interface KritzelPillTabsAttributes {
+        "value": string;
+    }
     interface KritzelPortalAttributes {
         "offsetX": number;
         "offsetY": number;
         "autoFocus": boolean;
     }
+    interface KritzelSettingsAttributes {
+        "editorId": string;
+    }
     interface KritzelShapeFillAttributes {
         "value": ShapeFillType;
+    }
+    interface KritzelShareDialogAttributes {
+        "isPublic": boolean;
+        "workspaceId": string | undefined;
     }
     interface KritzelSlideToggleAttributes {
         "checked": boolean;
@@ -2060,32 +3166,40 @@ declare namespace LocalJSX {
     }
 
     interface IntrinsicElements {
+        "kritzel-active-users": Omit<KritzelActiveUsers, keyof KritzelActiveUsersAttributes> & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes]?: KritzelActiveUsers[K] } & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes as `attr:${K}`]?: KritzelActiveUsersAttributes[K] } & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes as `prop:${K}`]?: KritzelActiveUsers[K] };
+        "kritzel-avatar": Omit<KritzelAvatar, keyof KritzelAvatarAttributes> & { [K in keyof KritzelAvatar & keyof KritzelAvatarAttributes]?: KritzelAvatar[K] } & { [K in keyof KritzelAvatar & keyof KritzelAvatarAttributes as `attr:${K}`]?: KritzelAvatarAttributes[K] } & { [K in keyof KritzelAvatar & keyof KritzelAvatarAttributes as `prop:${K}`]?: KritzelAvatar[K] };
         "kritzel-back-to-content": Omit<KritzelBackToContent, keyof KritzelBackToContentAttributes> & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes]?: KritzelBackToContent[K] } & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes as `attr:${K}`]?: KritzelBackToContentAttributes[K] } & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes as `prop:${K}`]?: KritzelBackToContent[K] };
         "kritzel-brush-style": Omit<KritzelBrushStyle, keyof KritzelBrushStyleAttributes> & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes]?: KritzelBrushStyle[K] } & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes as `attr:${K}`]?: KritzelBrushStyleAttributes[K] } & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes as `prop:${K}`]?: KritzelBrushStyle[K] };
+        "kritzel-button": Omit<KritzelButton, keyof KritzelButtonAttributes> & { [K in keyof KritzelButton & keyof KritzelButtonAttributes]?: KritzelButton[K] } & { [K in keyof KritzelButton & keyof KritzelButtonAttributes as `attr:${K}`]?: KritzelButtonAttributes[K] } & { [K in keyof KritzelButton & keyof KritzelButtonAttributes as `prop:${K}`]?: KritzelButton[K] };
         "kritzel-color": Omit<KritzelColor, keyof KritzelColorAttributes> & { [K in keyof KritzelColor & keyof KritzelColorAttributes]?: KritzelColor[K] } & { [K in keyof KritzelColor & keyof KritzelColorAttributes as `attr:${K}`]?: KritzelColorAttributes[K] } & { [K in keyof KritzelColor & keyof KritzelColorAttributes as `prop:${K}`]?: KritzelColor[K] };
         "kritzel-color-palette": Omit<KritzelColorPalette, keyof KritzelColorPaletteAttributes> & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes]?: KritzelColorPalette[K] } & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes as `attr:${K}`]?: KritzelColorPaletteAttributes[K] } & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes as `prop:${K}`]?: KritzelColorPalette[K] };
         "kritzel-context-menu": KritzelContextMenu;
         "kritzel-controls": Omit<KritzelControls, keyof KritzelControlsAttributes> & { [K in keyof KritzelControls & keyof KritzelControlsAttributes]?: KritzelControls[K] } & { [K in keyof KritzelControls & keyof KritzelControlsAttributes as `attr:${K}`]?: KritzelControlsAttributes[K] } & { [K in keyof KritzelControls & keyof KritzelControlsAttributes as `prop:${K}`]?: KritzelControls[K] };
+        "kritzel-current-user": Omit<KritzelCurrentUser, keyof KritzelCurrentUserAttributes> & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes]?: KritzelCurrentUser[K] } & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes as `attr:${K}`]?: KritzelCurrentUserAttributes[K] } & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes as `prop:${K}`]?: KritzelCurrentUser[K] };
         "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-dialog": Omit<KritzelDialog, keyof KritzelDialogAttributes> & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes]?: KritzelDialog[K] } & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes as `attr:${K}`]?: KritzelDialogAttributes[K] } & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes as `prop:${K}`]?: KritzelDialog[K] };
         "kritzel-dropdown": Omit<KritzelDropdown, keyof KritzelDropdownAttributes> & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes]?: KritzelDropdown[K] } & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes as `attr:${K}`]?: KritzelDropdownAttributes[K] } & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes as `prop:${K}`]?: KritzelDropdown[K] };
         "kritzel-editor": Omit<KritzelEditor, keyof KritzelEditorAttributes> & { [K in keyof KritzelEditor & keyof KritzelEditorAttributes]?: KritzelEditor[K] } & { [K in keyof KritzelEditor & keyof KritzelEditorAttributes as `attr:${K}`]?: KritzelEditorAttributes[K] } & { [K in keyof KritzelEditor & keyof KritzelEditorAttributes as `prop:${K}`]?: KritzelEditor[K] };
         "kritzel-engine": Omit<KritzelEngine, keyof KritzelEngineAttributes> & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes]?: KritzelEngine[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `attr:${K}`]?: KritzelEngineAttributes[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `prop:${K}`]?: KritzelEngine[K] };
-        "kritzel-export": KritzelExport;
+        "kritzel-export": Omit<KritzelExport, keyof KritzelExportAttributes> & { [K in keyof KritzelExport & keyof KritzelExportAttributes]?: KritzelExport[K] } & { [K in keyof KritzelExport & keyof KritzelExportAttributes as `attr:${K}`]?: KritzelExportAttributes[K] } & { [K in keyof KritzelExport & keyof KritzelExportAttributes as `prop:${K}`]?: KritzelExport[K] };
         "kritzel-font": Omit<KritzelFont, keyof KritzelFontAttributes> & { [K in keyof KritzelFont & keyof KritzelFontAttributes]?: KritzelFont[K] } & { [K in keyof KritzelFont & keyof KritzelFontAttributes as `attr:${K}`]?: KritzelFontAttributes[K] } & { [K in keyof KritzelFont & keyof KritzelFontAttributes as `prop:${K}`]?: KritzelFont[K] };
         "kritzel-font-family": Omit<KritzelFontFamily, keyof KritzelFontFamilyAttributes> & { [K in keyof KritzelFontFamily & keyof KritzelFontFamilyAttributes]?: KritzelFontFamily[K] } & { [K in keyof KritzelFontFamily & keyof KritzelFontFamilyAttributes as `attr:${K}`]?: KritzelFontFamilyAttributes[K] } & { [K in keyof KritzelFontFamily & keyof KritzelFontFamilyAttributes as `prop:${K}`]?: KritzelFontFamily[K] };
         "kritzel-font-size": Omit<KritzelFontSize, keyof KritzelFontSizeAttributes> & { [K in keyof KritzelFontSize & keyof KritzelFontSizeAttributes]?: KritzelFontSize[K] } & { [K in keyof KritzelFontSize & keyof KritzelFontSizeAttributes as `attr:${K}`]?: KritzelFontSizeAttributes[K] } & { [K in keyof KritzelFontSize & keyof KritzelFontSizeAttributes as `prop:${K}`]?: KritzelFontSize[K] };
         "kritzel-icon": Omit<KritzelIcon, keyof KritzelIconAttributes> & { [K in keyof KritzelIcon & keyof KritzelIconAttributes]?: KritzelIcon[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `attr:${K}`]?: KritzelIconAttributes[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `prop:${K}`]?: KritzelIcon[K] };
+        "kritzel-input": Omit<KritzelInput, keyof KritzelInputAttributes> & { [K in keyof KritzelInput & keyof KritzelInputAttributes]?: KritzelInput[K] } & { [K in keyof KritzelInput & keyof KritzelInputAttributes as `attr:${K}`]?: KritzelInputAttributes[K] } & { [K in keyof KritzelInput & keyof KritzelInputAttributes as `prop:${K}`]?: KritzelInput[K] };
         "kritzel-line-endings": KritzelLineEndings;
+        "kritzel-login-dialog": Omit<KritzelLoginDialog, keyof KritzelLoginDialogAttributes> & { [K in keyof KritzelLoginDialog & keyof KritzelLoginDialogAttributes]?: KritzelLoginDialog[K] } & { [K in keyof KritzelLoginDialog & keyof KritzelLoginDialogAttributes as `attr:${K}`]?: KritzelLoginDialogAttributes[K] } & { [K in keyof KritzelLoginDialog & keyof KritzelLoginDialogAttributes as `prop:${K}`]?: KritzelLoginDialog[K] };
         "kritzel-master-detail": Omit<KritzelMasterDetail, keyof KritzelMasterDetailAttributes> & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes]?: KritzelMasterDetail[K] } & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes as `attr:${K}`]?: KritzelMasterDetailAttributes[K] } & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes as `prop:${K}`]?: KritzelMasterDetail[K] };
         "kritzel-menu": KritzelMenu;
         "kritzel-menu-item": KritzelMenuItem;
         "kritzel-more-menu": Omit<KritzelMoreMenu, keyof KritzelMoreMenuAttributes> & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes]?: KritzelMoreMenu[K] } & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes as `attr:${K}`]?: KritzelMoreMenuAttributes[K] } & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes as `prop:${K}`]?: KritzelMoreMenu[K] };
         "kritzel-numeric-input": Omit<KritzelNumericInput, keyof KritzelNumericInputAttributes> & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes]?: KritzelNumericInput[K] } & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes as `attr:${K}`]?: KritzelNumericInputAttributes[K] } & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes as `prop:${K}`]?: KritzelNumericInput[K] };
         "kritzel-opacity-slider": Omit<KritzelOpacitySlider, keyof KritzelOpacitySliderAttributes> & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes]?: KritzelOpacitySlider[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `attr:${K}`]?: KritzelOpacitySliderAttributes[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `prop:${K}`]?: KritzelOpacitySlider[K] };
+        "kritzel-pill-tabs": Omit<KritzelPillTabs, keyof KritzelPillTabsAttributes> & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes]?: KritzelPillTabs[K] } & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes as `attr:${K}`]?: KritzelPillTabsAttributes[K] } & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes as `prop:${K}`]?: KritzelPillTabs[K] };
         "kritzel-portal": Omit<KritzelPortal, keyof KritzelPortalAttributes> & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes]?: KritzelPortal[K] } & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes as `attr:${K}`]?: KritzelPortalAttributes[K] } & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes as `prop:${K}`]?: KritzelPortal[K] };
-        "kritzel-settings": KritzelSettings;
+        "kritzel-settings": Omit<KritzelSettings, keyof KritzelSettingsAttributes> & { [K in keyof KritzelSettings & keyof KritzelSettingsAttributes]?: KritzelSettings[K] } & { [K in keyof KritzelSettings & keyof KritzelSettingsAttributes as `attr:${K}`]?: KritzelSettingsAttributes[K] } & { [K in keyof KritzelSettings & keyof KritzelSettingsAttributes as `prop:${K}`]?: KritzelSettings[K] };
         "kritzel-shape-fill": Omit<KritzelShapeFill, keyof KritzelShapeFillAttributes> & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes]?: KritzelShapeFill[K] } & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes as `attr:${K}`]?: KritzelShapeFillAttributes[K] } & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes as `prop:${K}`]?: KritzelShapeFill[K] };
+        "kritzel-share-dialog": Omit<KritzelShareDialog, keyof KritzelShareDialogAttributes> & { [K in keyof KritzelShareDialog & keyof KritzelShareDialogAttributes]?: KritzelShareDialog[K] } & { [K in keyof KritzelShareDialog & keyof KritzelShareDialogAttributes as `attr:${K}`]?: KritzelShareDialogAttributes[K] } & { [K in keyof KritzelShareDialog & keyof KritzelShareDialogAttributes as `prop:${K}`]?: KritzelShareDialog[K] };
         "kritzel-slide-toggle": Omit<KritzelSlideToggle, keyof KritzelSlideToggleAttributes> & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes]?: KritzelSlideToggle[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `attr:${K}`]?: KritzelSlideToggleAttributes[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `prop:${K}`]?: KritzelSlideToggle[K] };
         "kritzel-split-button": Omit<KritzelSplitButton, keyof KritzelSplitButtonAttributes> & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes]?: KritzelSplitButton[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `attr:${K}`]?: KritzelSplitButtonAttributes[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `prop:${K}`]?: KritzelSplitButton[K] };
         "kritzel-stroke-size": Omit<KritzelStrokeSize, keyof KritzelStrokeSizeAttributes> & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes]?: KritzelStrokeSize[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `attr:${K}`]?: KritzelStrokeSizeAttributes[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `prop:${K}`]?: KritzelStrokeSize[K] };
@@ -2099,12 +3213,16 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "kritzel-active-users": LocalJSX.IntrinsicElements["kritzel-active-users"] & JSXBase.HTMLAttributes<HTMLKritzelActiveUsersElement>;
+            "kritzel-avatar": LocalJSX.IntrinsicElements["kritzel-avatar"] & JSXBase.HTMLAttributes<HTMLKritzelAvatarElement>;
             "kritzel-back-to-content": LocalJSX.IntrinsicElements["kritzel-back-to-content"] & JSXBase.HTMLAttributes<HTMLKritzelBackToContentElement>;
             "kritzel-brush-style": LocalJSX.IntrinsicElements["kritzel-brush-style"] & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
+            "kritzel-button": LocalJSX.IntrinsicElements["kritzel-button"] & JSXBase.HTMLAttributes<HTMLKritzelButtonElement>;
             "kritzel-color": LocalJSX.IntrinsicElements["kritzel-color"] & JSXBase.HTMLAttributes<HTMLKritzelColorElement>;
             "kritzel-color-palette": LocalJSX.IntrinsicElements["kritzel-color-palette"] & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
             "kritzel-context-menu": LocalJSX.IntrinsicElements["kritzel-context-menu"] & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
             "kritzel-controls": LocalJSX.IntrinsicElements["kritzel-controls"] & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
+            "kritzel-current-user": LocalJSX.IntrinsicElements["kritzel-current-user"] & JSXBase.HTMLAttributes<HTMLKritzelCurrentUserElement>;
             "kritzel-cursor-trail": LocalJSX.IntrinsicElements["kritzel-cursor-trail"] & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-dialog": LocalJSX.IntrinsicElements["kritzel-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelDialogElement>;
             "kritzel-dropdown": LocalJSX.IntrinsicElements["kritzel-dropdown"] & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
@@ -2115,16 +3233,30 @@ declare module "@stencil/core" {
             "kritzel-font-family": LocalJSX.IntrinsicElements["kritzel-font-family"] & JSXBase.HTMLAttributes<HTMLKritzelFontFamilyElement>;
             "kritzel-font-size": LocalJSX.IntrinsicElements["kritzel-font-size"] & JSXBase.HTMLAttributes<HTMLKritzelFontSizeElement>;
             "kritzel-icon": LocalJSX.IntrinsicElements["kritzel-icon"] & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
+            "kritzel-input": LocalJSX.IntrinsicElements["kritzel-input"] & JSXBase.HTMLAttributes<HTMLKritzelInputElement>;
             "kritzel-line-endings": LocalJSX.IntrinsicElements["kritzel-line-endings"] & JSXBase.HTMLAttributes<HTMLKritzelLineEndingsElement>;
+            /**
+             * Login dialog component for displaying authentication provider buttons.
+             * This is a presentational component that emits events for all actions.
+             * The parent component (kritzel-editor) handles the actual authentication flow.
+             */
+            "kritzel-login-dialog": LocalJSX.IntrinsicElements["kritzel-login-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelLoginDialogElement>;
             "kritzel-master-detail": LocalJSX.IntrinsicElements["kritzel-master-detail"] & JSXBase.HTMLAttributes<HTMLKritzelMasterDetailElement>;
             "kritzel-menu": LocalJSX.IntrinsicElements["kritzel-menu"] & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
             "kritzel-menu-item": LocalJSX.IntrinsicElements["kritzel-menu-item"] & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
             "kritzel-more-menu": LocalJSX.IntrinsicElements["kritzel-more-menu"] & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
             "kritzel-numeric-input": LocalJSX.IntrinsicElements["kritzel-numeric-input"] & JSXBase.HTMLAttributes<HTMLKritzelNumericInputElement>;
             "kritzel-opacity-slider": LocalJSX.IntrinsicElements["kritzel-opacity-slider"] & JSXBase.HTMLAttributes<HTMLKritzelOpacitySliderElement>;
+            "kritzel-pill-tabs": LocalJSX.IntrinsicElements["kritzel-pill-tabs"] & JSXBase.HTMLAttributes<HTMLKritzelPillTabsElement>;
             "kritzel-portal": LocalJSX.IntrinsicElements["kritzel-portal"] & JSXBase.HTMLAttributes<HTMLKritzelPortalElement>;
             "kritzel-settings": LocalJSX.IntrinsicElements["kritzel-settings"] & JSXBase.HTMLAttributes<HTMLKritzelSettingsElement>;
             "kritzel-shape-fill": LocalJSX.IntrinsicElements["kritzel-shape-fill"] & JSXBase.HTMLAttributes<HTMLKritzelShapeFillElement>;
+            /**
+             * Share dialog component for managing workspace link sharing.
+             * This is a presentational component that emits events for all actions.
+             * The parent component (kritzel-editor) handles the business logic.
+             */
+            "kritzel-share-dialog": LocalJSX.IntrinsicElements["kritzel-share-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelShareDialogElement>;
             "kritzel-slide-toggle": LocalJSX.IntrinsicElements["kritzel-slide-toggle"] & JSXBase.HTMLAttributes<HTMLKritzelSlideToggleElement>;
             "kritzel-split-button": LocalJSX.IntrinsicElements["kritzel-split-button"] & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
             "kritzel-stroke-size": LocalJSX.IntrinsicElements["kritzel-stroke-size"] & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;

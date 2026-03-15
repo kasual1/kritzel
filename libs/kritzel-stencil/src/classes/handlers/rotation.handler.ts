@@ -2,22 +2,44 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 
+/**
+ * Handles rotation interactions for selected objects on the canvas.
+ * Supports both mouse and touch/pen input for rotating the selection group
+ * around its center point.
+ */
 export class KritzelRotationHandler extends KritzelBaseHandler {
+  /** The initial angle (in radians) between the cursor and the selection group center when rotation starts. */
   initialRotation: number = 0;
 
+  /** The current rotation angle (in radians) applied to the selection group. */
   rotation: number = 0;
 
+  /** The rotation value of the selection group before the current rotation operation began. */
   initialSelectionGroupRotation: number = 0;
 
+  /**
+   * Creates an instance of KritzelRotationHandler.
+   * @param core - The KritzelCore instance that provides access to the store, engine, and other core functionalities.
+   */
   constructor(core: KritzelCore) {
     super(core);
   }
 
+  /**
+   * Resets the rotation state to initial values.
+   * Called after a rotation operation is completed.
+   */
   private reset() {
     this.initialRotation = 0;
     this.rotation = 0;
   }
 
+  /**
+   * Handles the pointer down event to initiate a rotation operation.
+   * Calculates the initial angle between the cursor position and the selection group center.
+   * Supports both mouse (left-click) and touch/pen input.
+   * @param event - The PointerEvent containing information about the pointer interaction.
+   */
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
@@ -71,12 +93,18 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           this.initialSelectionGroupRotation = selectionGroup.rotation;
           this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - selectionGroup.rotation;
 
-          clearTimeout(this._core.store.state.longTouchTimeout);
+          globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
         }
       }
     }
   }
 
+  /**
+   * Handles the pointer move event during an active rotation operation.
+   * Calculates the current rotation angle based on the cursor position relative
+   * to the selection group center and applies the rotation to the selection group.
+   * @param event - The PointerEvent containing the current pointer position.
+   */
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       const selectionGroup = this._core.store.selectionGroup;
@@ -125,11 +153,17 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         selectionGroup.rotate(this.rotation);
 
-        clearTimeout(this._core.store.state.longTouchTimeout);
+        globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
       }
     }
   }
 
+  /**
+   * Handles the pointer up event to finalize the rotation operation.
+   * Updates the selection group state, emits the objects change event,
+   * resets the rotation state, and marks objects as changed.
+   * @param event - The PointerEvent indicating the end of the pointer interaction.
+   */
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
@@ -151,7 +185,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         this.reset();
 
-        clearTimeout(this._core.store.state.longTouchTimeout);
+        globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
       }
     }
   }

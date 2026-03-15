@@ -111,7 +111,7 @@ describe('KritzelViewport', () => {
     jest.spyOn(global, 'requestAnimationFrame').mockImplementation((_cb) => {
       return 1;
     });
-    jest.spyOn(global, 'cancelAnimationFrame').mockImplementation(() => {});
+    jest.spyOn(global, 'cancelAnimationFrame').mockImplementation(() => { });
   });
 
   afterEach(() => {
@@ -1269,6 +1269,217 @@ describe('KritzelViewport', () => {
         const calledScale = animateSpy.mock.calls[0][2];
         expect(calledScale).toBeGreaterThanOrEqual(2); // Boundary-based minimum
       });
+    });
+  });
+
+  describe('getViewport', () => {
+    it('should return current viewport state', () => {
+      mockState.translateX = 100;
+      mockState.translateY = 200;
+      mockState.scale = 2;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      const result = viewport.getViewport();
+
+      expect(result).toEqual({
+        translateX: 100,
+        translateY: 200,
+        scale: 2,
+        width: 1000,
+        height: 800,
+      });
+    });
+  });
+
+  describe('screenToWorld', () => {
+    it('should convert screen coordinates to world coordinates at scale 1', () => {
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.scale = 1;
+
+      const result = viewport.screenToWorld(500, 400);
+
+      expect(result).toEqual({ x: 500, y: 400 });
+    });
+
+    it('should account for translation', () => {
+      mockState.translateX = 100;
+      mockState.translateY = 200;
+      mockState.scale = 1;
+
+      const result = viewport.screenToWorld(500, 400);
+
+      expect(result).toEqual({ x: 400, y: 200 });
+    });
+
+    it('should account for scale', () => {
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.scale = 2;
+
+      const result = viewport.screenToWorld(500, 400);
+
+      expect(result).toEqual({ x: 250, y: 200 });
+    });
+
+    it('should account for both translation and scale', () => {
+      mockState.translateX = 100;
+      mockState.translateY = 200;
+      mockState.scale = 2;
+
+      const result = viewport.screenToWorld(500, 400);
+
+      expect(result).toEqual({ x: 200, y: 100 });
+    });
+  });
+
+  describe('worldToScreen', () => {
+    it('should convert world coordinates to screen coordinates at scale 1', () => {
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.scale = 1;
+
+      const result = viewport.worldToScreen(500, 400);
+
+      expect(result).toEqual({ x: 500, y: 400 });
+    });
+
+    it('should account for translation', () => {
+      mockState.translateX = 100;
+      mockState.translateY = 200;
+      mockState.scale = 1;
+
+      const result = viewport.worldToScreen(500, 400);
+
+      expect(result).toEqual({ x: 600, y: 600 });
+    });
+
+    it('should account for scale', () => {
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.scale = 2;
+
+      const result = viewport.worldToScreen(500, 400);
+
+      expect(result).toEqual({ x: 1000, y: 800 });
+    });
+
+    it('should be the inverse of screenToWorld', () => {
+      mockState.translateX = 150;
+      mockState.translateY = -50;
+      mockState.scale = 1.5;
+
+      const world = viewport.screenToWorld(600, 300);
+      const backToScreen = viewport.worldToScreen(world.x, world.y);
+
+      expect(backToScreen.x).toBeCloseTo(600);
+      expect(backToScreen.y).toBeCloseTo(300);
+    });
+  });
+
+  describe('setViewport', () => {
+    it('should call animateViewportTo with correct translation for center', () => {
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      const animateSpy = jest.spyOn(viewport, 'animateViewportTo');
+
+      viewport.setViewport(200, 300, 1);
+
+      // targetTranslateX = 1000/2 - 200*1 = 300
+      // targetTranslateY = 800/2 - 300*1 = 100
+      expect(animateSpy).toHaveBeenCalledWith(300, 100, 1);
+    });
+
+    it('should clamp scale to scaleMax', () => {
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+      mockState.scaleMax = 5;
+
+      const animateSpy = jest.spyOn(viewport, 'animateViewportTo');
+
+      viewport.setViewport(0, 0, 20);
+
+      const calledScale = animateSpy.mock.calls[0][2];
+      expect(calledScale).toBe(5);
+    });
+
+    it('should clamp scale to scaleMin', () => {
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+      mockState.scaleMin = 0.5;
+
+      const animateSpy = jest.spyOn(viewport, 'animateViewportTo');
+
+      viewport.setViewport(0, 0, 0.01);
+
+      const calledScale = animateSpy.mock.calls[0][2];
+      expect(calledScale).toBe(0.5);
+    });
+  });
+
+  describe('panTo', () => {
+    it('should call setViewport with current scale', () => {
+      mockState.scale = 2;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      const animateSpy = jest.spyOn(viewport, 'animateViewportTo');
+
+      viewport.panTo(100, 200);
+
+      // targetTranslateX = 1000/2 - 100*2 = 300
+      // targetTranslateY = 800/2 - 200*2 = 0
+      expect(animateSpy).toHaveBeenCalledWith(300, 0, 2);
+    });
+  });
+
+  describe('zoomTo', () => {
+    it('should zoom around viewport center when no world coordinates given', () => {
+      mockState.scale = 1;
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      const animateSpy = jest.spyOn(viewport, 'animateViewportTo');
+
+      viewport.zoomTo(2);
+
+      // Current center in world: (500, 400)
+      // targetTranslateX = 1000/2 - 500*2 = -500
+      // targetTranslateY = 800/2 - 400*2 = -400
+      expect(animateSpy).toHaveBeenCalledWith(-500, -400, 2);
+    });
+
+    it('should zoom centered on given world coordinates', () => {
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      const animateSpy = jest.spyOn(viewport, 'animateViewportTo');
+
+      viewport.zoomTo(3, 100, 200);
+
+      // targetTranslateX = 1000/2 - 100*3 = 200
+      // targetTranslateY = 800/2 - 200*3 = -200
+      expect(animateSpy).toHaveBeenCalledWith(200, -200, 3);
+    });
+
+    it('should clamp scale', () => {
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+      mockState.scaleMax = 5;
+      mockState.scale = 1;
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+
+      const animateSpy = jest.spyOn(viewport, 'animateViewportTo');
+
+      viewport.zoomTo(100);
+
+      const calledScale = animateSpy.mock.calls[0][2];
+      expect(calledScale).toBe(5);
     });
   });
 });

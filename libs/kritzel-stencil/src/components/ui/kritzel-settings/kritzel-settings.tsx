@@ -32,6 +32,9 @@ export class KritzelSettings {
   /** Keyboard shortcuts to display in the settings dialog */
   @Prop() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
 
+  /** Optional unique identifier for namespacing storage keys */
+  @Prop() editorId?: string;
+
   @State() isDialogOpen: boolean = false;
   @State() selectedCategoryId: string = SETTINGS_CATEGORIES[0].id;
   @State() scaleMin: number = DEFAULT_SCALE_MIN;
@@ -50,8 +53,12 @@ export class KritzelSettings {
     this.loadSettings();
   }
 
+  private get storageKey(): string {
+    return this.editorId ? `${SETTINGS_STORAGE_KEY}-${this.editorId}` : SETTINGS_STORAGE_KEY;
+  }
+
   private loadSettings(): void {
-    const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    const stored = localStorage.getItem(this.storageKey);
     if (stored) {
       try {
         const parsed = JSON.parse(stored) as Partial<KritzelSettingsConfig>;
@@ -96,7 +103,7 @@ export class KritzelSettings {
       viewportBoundaryTop: this.viewportBoundaryTop,
       viewportBoundaryBottom: this.viewportBoundaryBottom,
     };
-    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+    localStorage.setItem(this.storageKey, JSON.stringify(settings));
     this.settingsChange.emit(settings);
   }
 

@@ -1,11 +1,37 @@
-import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
+import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
   tutorialSidebar: [
-    'getting-started',
-    'configuration',
-    'interaction',
-    'theming'
+    {
+      type: 'category',
+      label: 'Getting Started',
+      collapsed: false,
+      items: ['overview', 'quick-start', 'basic-usage'],
+    },
+    {
+      type: 'category',
+      label: 'Core Concepts',
+      collapsed: false,
+      items: ['concept-components', 'concept-tools', 'concept-objects', 'concept-workspaces', 'collaboration', 'theming'],
+    },
+    {
+      type: 'category',
+      label: 'Examples',
+      collapsed: false,
+      items: ['custom-toolbar'],
+    },
+    {
+      type: 'category',
+      label: 'License',
+      collapsed: false,
+      items: ['license'],
+    },
+    {
+      type: 'category',
+      label: 'Api Reference',
+      collapsed: false,
+      items: ['api-reference-editor', 'api-reference-engine', 'types'],
+    }
   ],
 };
 

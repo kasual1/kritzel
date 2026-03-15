@@ -1,0 +1,552 @@
+import { KritzelSvgExportHelper, SvgExportOptions } from './svg-export.helper';
+import { KritzelPath } from '../classes/objects/path.class';
+import { KritzelLine } from '../classes/objects/line.class';
+import { KritzelShape } from '../classes/objects/shape.class';
+import { KritzelText } from '../classes/objects/text.class';
+import { KritzelImage } from '../classes/objects/image.class';
+import { KritzelGroup } from '../classes/objects/group.class';
+import { ShapeType } from '../enums/shape-type.enum';
+
+// Mock ProseMirror modules for KritzelText
+jest.mock('prosemirror-state', () => ({
+  EditorState: {
+    create: jest.fn(() => ({
+      doc: {
+        content: { size: 10 },
+        textContent: 'test content',
+        toJSON: jest.fn(() => ({ type: 'doc', content: [] })),
+      },
+      tr: {
+        replaceWith: jest.fn().mockReturnThis(),
+        setSelection: jest.fn().mockReturnThis(),
+        setMeta: jest.fn().mockReturnThis(),
+        getMeta: jest.fn(() => false),
+        docChanged: false,
+      },
+      schema: {
+        nodeFromJSON: jest.fn(() => ({ content: {} })),
+      },
+      apply: jest.fn(function () {
+        return this;
+      }),
+    })),
+  },
+  TextSelection: {
+    create: jest.fn(() => ({})),
+  },
+}));
+
+jest.mock('prosemirror-view', () => ({
+  EditorView: jest.fn().mockImplementation((_element, _options) => {
+    const mockDom = document.createElement('div');
+    mockDom.classList.add('ProseMirror');
+    return {
+      dom: mockDom,
+      state: {
+        doc: {
+          content: { size: 10 },
+          textContent: 'test content',
+          toJSON: jest.fn(() => ({ type: 'doc', content: [] })),
+        },
+        tr: {
+          replaceWith: jest.fn().mockReturnThis(),
+          setSelection: jest.fn().mockReturnThis(),
+          setMeta: jest.fn().mockReturnThis(),
+          getMeta: jest.fn(() => false),
+        },
+        schema: {
+          nodeFromJSON: jest.fn(() => ({ content: {} })),
+        },
+        apply: jest.fn(function () {
+          return this;
+        }),
+      },
+      updateState: jest.fn(),
+      dispatch: jest.fn(),
+      focus: jest.fn(),
+      setProps: jest.fn(),
+      posAtCoords: jest.fn(() => ({ pos: 5 })),
+      destroy: jest.fn(),
+    };
+  }),
+}));
+
+jest.mock('prosemirror-model', () => ({
+  Schema: jest.fn().mockImplementation(() => ({
+    node: jest.fn(() => ({})),
+    spec: { nodes: {}, marks: {} },
+  })),
+}));
+
+jest.mock('prosemirror-schema-basic', () => ({
+  schema: { spec: { nodes: {}, marks: {} } },
+}));
+
+jest.mock('prosemirror-schema-list', () => ({
+  addListNodes: jest.fn(() => ({})),
+}));
+
+jest.mock('prosemirror-keymap', () => ({
+  keymap: jest.fn(() => ({})),
+}));
+
+jest.mock('prosemirror-commands', () => ({
+  baseKeymap: {},
+}));
+
+jest.mock('../classes/managers/theme.manager', () => ({
+  KritzelThemeManager: {
+    getStoredTheme: jest.fn().mockReturnValue('light'),
+  },
+}));
+
+describe('KritzelSvgExportHelper', () => {
+  describe('calculateCombinedBounds', () => {
+    it('should return null for empty array', () => {
+      const result = KritzelSvgExportHelper.calculateCombinedBounds([]);
+      expect(result).toBeNull();
+    });
+
+    it('should return null for undefined input', () => {
+      const result = KritzelSvgExportHelper.calculateCombinedBounds(undefined as any);
+      expect(result).toBeNull();
+    });
+
+    it('should calculate bounds for a single object', () => {
+      const path = new KritzelPath({
+        points: [[0, 0], [100, 100]],
+        translateX: 50,
+        translateY: 50,
+        scale: 1,
+      });
+      path.width = 100;
+      path.height = 100;
+
+      const result = KritzelSvgExportHelper.calculateCombinedBounds([path]);
+
+      expect(result).not.toBeNull();
+      expect(result!.x).toBe(46);
+      expect(result!.y).toBe(46);
+      expect(result!.width).toBeGreaterThan(0);
+      expect(result!.height).toBeGreaterThan(0);
+    });
+
+    it('should calculate union bounds for multiple objects', () => {
+      const path1 = new KritzelPath({
+        points: [[0, 0], [50, 50]],
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+      });
+      path1.width = 50;
+      path1.height = 50;
+
+      const path2 = new KritzelPath({
+        points: [[0, 0], [50, 50]],
+        translateX: 100,
+        translateY: 100,
+        scale: 1,
+      });
+      path2.width = 50;
+      path2.height = 50;
+
+      const result = KritzelSvgExportHelper.calculateCombinedBounds([path1, path2]);
+
+      expect(result).not.toBeNull();
+      expect(result!.x).toBe(-4);
+      expect(result!.y).toBe(-4);
+      expect(result!.width).toBe(150);
+      expect(result!.height).toBe(150);
+    });
+  });
+
+  describe('generateSvg', () => {
+    it('should return empty string for empty array', () => {
+      const result = KritzelSvgExportHelper.generateSvg([]);
+      expect(result).toBe('');
+    });
+
+    it('should generate valid SVG with XML declaration by default', () => {
+      const path = new KritzelPath({
+        points: [[0, 0], [100, 100]],
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+        fill: { light: '#ff0000', dark: '#00ff00' },
+      });
+      path.width = 100;
+      path.height = 100;
+      path.d = 'M 0 0 L 100 100';
+
+      const result = KritzelSvgExportHelper.generateSvg([path]);
+
+      expect(result).toContain('<?xml version="1.0" encoding="UTF-8"?>');
+      expect(result).toContain('<svg xmlns="http://www.w3.org/2000/svg"');
+      expect(result).toContain('viewBox=');
+      expect(result).toContain('</svg>');
+    });
+
+    it('should omit XML declaration when option is false', () => {
+      const path = new KritzelPath({
+        points: [[0, 0], [100, 100]],
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+      });
+      path.width = 100;
+      path.height = 100;
+      path.d = 'M 0 0 L 100 100';
+
+      const options: SvgExportOptions = { includeXmlDeclaration: false };
+      const result = KritzelSvgExportHelper.generateSvg([path], options);
+
+      expect(result).not.toContain('<?xml');
+      expect(result).toContain('<svg xmlns');
+    });
+
+    it('should add padding to viewBox', () => {
+      const path = new KritzelPath({
+        points: [[0, 0], [100, 100]],
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+      });
+      path.width = 100;
+      path.height = 100;
+      path.d = 'M 0 0 L 100 100';
+
+      const options: SvgExportOptions = { padding: 10 };
+      const result = KritzelSvgExportHelper.generateSvg([path], options);
+
+      // ViewBox should include negative offset for padding
+      expect(result).toContain('viewBox="-14 -14');
+    });
+  });
+
+  describe('objectToSvgElement', () => {
+    describe('KritzelPath', () => {
+      it('should convert path to SVG element', () => {
+        const path = new KritzelPath({
+          points: [[0, 0], [100, 100]],
+          translateX: 10,
+          translateY: 20,
+          scale: 1,
+          fill: { light: '#ff0000', dark: '#00ff00' },
+        });
+        path.width = 100;
+        path.height = 100;
+        path.d = 'M 0 0 L 100 100';
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(path, 'light');
+
+        expect(result).toContain('<g transform="translate(6, 16)"');
+        expect(result).toContain('<path d="M 0 0 L 100 100"');
+        expect(result).toContain('fill="#ff0000"');
+      });
+
+      it('should include opacity when not 1', () => {
+        const path = new KritzelPath({
+          points: [[0, 0], [100, 100]],
+          translateX: 0,
+          translateY: 0,
+          scale: 1,
+        });
+        path.width = 100;
+        path.height = 100;
+        path.d = 'M 0 0 L 100 100';
+        path.opacity = 0.5;
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(path, 'light');
+
+        expect(result).toContain('opacity="0.5"');
+      });
+    });
+
+    describe('KritzelLine', () => {
+      it('should convert line to SVG element', () => {
+        const line = new KritzelLine({
+          startX: 0,
+          startY: 0,
+          endX: 100,
+          endY: 100,
+          translateX: 0,
+          translateY: 0,
+          scale: 1,
+          strokeWidth: 2,
+          stroke: { light: '#000000', dark: '#ffffff' },
+        });
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(line, 'light');
+
+        expect(result).toContain('<path d=');
+        expect(result).toContain('stroke="#000000"');
+        expect(result).toContain('stroke-width="2"');
+      });
+
+      it('should include arrow markers when arrows are enabled', () => {
+        const line = new KritzelLine({
+          startX: 0,
+          startY: 0,
+          endX: 100,
+          endY: 100,
+          translateX: 0,
+          translateY: 0,
+          scale: 1,
+          strokeWidth: 2,
+          stroke: { light: '#000000', dark: '#ffffff' },
+          arrows: {
+            start: { enabled: true, style: 'triangle' },
+            end: { enabled: true, style: 'triangle' },
+          },
+        });
+
+        const result = KritzelSvgExportHelper.generateSvg([line], { includeXmlDeclaration: false });
+
+        expect(result).toContain('<defs>');
+        expect(result).toContain('<marker');
+        expect(result).toContain('marker-start=');
+        expect(result).toContain('marker-end=');
+      });
+    });
+
+    describe('KritzelShape', () => {
+      it('should convert rectangle shape to SVG element', () => {
+        const shape = new KritzelShape({
+          x: 0,
+          y: 0,
+          translateX: 10,
+          translateY: 20,
+          width: 100,
+          height: 50,
+          shapeType: ShapeType.Rectangle,
+          fillColor: { light: '#0000ff', dark: '#ff00ff' },
+          strokeColor: { light: '#000000', dark: '#ffffff' },
+          strokeWidth: 2,
+          scale: 1,
+        });
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(shape, 'light');
+
+        expect(result).toContain('<g transform="translate(10, 20)"');
+        expect(result).toContain('fill="#0000ff"');
+        expect(result).toContain('stroke="#000000"');
+        expect(result).toContain('stroke-width="2"');
+      });
+
+      it('should convert ellipse shape to SVG element', () => {
+        const shape = new KritzelShape({
+          x: 0,
+          y: 0,
+          translateX: 0,
+          translateY: 0,
+          width: 100,
+          height: 50,
+          shapeType: ShapeType.Ellipse,
+          scale: 1,
+        });
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(shape, 'light');
+
+        expect(result).toContain('<path d=');
+        // Ellipse path uses arc commands
+        expect(result).toMatch(/A\s+\d/);
+      });
+
+      it('should convert triangle shape to SVG element', () => {
+        const shape = new KritzelShape({
+          x: 0,
+          y: 0,
+          translateX: 0,
+          translateY: 0,
+          width: 100,
+          height: 100,
+          shapeType: ShapeType.Triangle,
+          scale: 1,
+        });
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(shape, 'light');
+
+        expect(result).toContain('<path d=');
+        // Triangle has M, L, L, Z
+        expect(result).toMatch(/M\s+\d.*L\s+\d.*L\s+\d.*Z/);
+      });
+    });
+
+    describe('KritzelText', () => {
+      it('should convert text to SVG with foreignObject', () => {
+        const text = new KritzelText({
+          text: 'Hello World',
+          translateX: 50,
+          translateY: 100,
+          fontSize: 16,
+          fontFamily: 'Arial',
+          fontColor: { light: '#333333', dark: '#cccccc' },
+        });
+        text.width = 100;
+        text.height = 24;
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(text, 'light');
+
+        expect(result).toContain('<g transform="translate(50, 100)"');
+        expect(result).toContain('<foreignObject');
+        expect(result).toContain('font-family: Arial');
+        expect(result).toContain('font-size: 16pt');
+        expect(result).toContain('color: #333333');
+      });
+    });
+
+    describe('KritzelImage', () => {
+      it('should convert image to SVG element', () => {
+        const image = new KritzelImage({
+          src: 'data:image/png;base64,ABC123',
+          translateX: 100,
+          translateY: 200,
+          width: 150,
+          height: 100,
+          scale: 1,
+        });
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(image);
+
+        expect(result).toContain('<g transform="translate(100, 200)"');
+        expect(result).toContain('<image href="data:image/png;base64,ABC123"');
+        expect(result).toContain('width="150"');
+        expect(result).toContain('height="100"');
+      });
+    });
+
+    describe('KritzelGroup', () => {
+      it('should convert group with children to nested SVG elements', () => {
+        // Create a group with mock _core to enable children getter
+        const group = new KritzelGroup();
+        group.translateX = 10;
+        group.translateY = 20;
+        group.opacity = 0.8;
+
+        // Add pending children since _core is not available
+        const path = new KritzelPath({
+          points: [[0, 0], [50, 50]],
+          translateX: 0,
+          translateY: 0,
+          scale: 1,
+          fill: { light: '#ff0000', dark: '#00ff00' },
+        });
+        path.width = 50;
+        path.height = 50;
+        path.d = 'M 0 0 L 50 50';
+        group._pendingChildren.push(path);
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(group, 'light');
+
+        expect(result).toContain('<g opacity="0.8"');
+        expect(result).toContain('<path d="M 0 0 L 50 50"');
+      });
+
+      it('should return empty string for empty group', () => {
+        const group = new KritzelGroup();
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(group, 'light');
+
+        expect(result).toBe('');
+      });
+    });
+  });
+
+  describe('rotation handling', () => {
+    it('should include rotation transform when object is rotated', () => {
+      const path = new KritzelPath({
+        points: [[0, 0], [100, 100]],
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+      });
+      path.width = 100;
+      path.height = 100;
+      path.d = 'M 0 0 L 100 100';
+      path.rotation = Math.PI / 4; // 45 degrees
+
+      const result = KritzelSvgExportHelper.objectToSvgElement(path, 'light');
+
+      expect(result).toContain('rotate(45');
+    });
+
+    it('should not include rotation transform when rotation is 0', () => {
+      const path = new KritzelPath({
+        points: [[0, 0], [100, 100]],
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+      });
+      path.width = 100;
+      path.height = 100;
+      path.d = 'M 0 0 L 100 100';
+      path.rotation = 0;
+
+      const result = KritzelSvgExportHelper.objectToSvgElement(path, 'light');
+
+      expect(result).not.toContain('rotate(');
+    });
+  });
+
+  describe('theme color resolution', () => {
+    it('should resolve light theme colors', () => {
+      const path = new KritzelPath({
+        points: [[0, 0], [100, 100]],
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+        fill: { light: '#aabbcc', dark: '#112233' },
+      });
+      path.width = 100;
+      path.height = 100;
+      path.d = 'M 0 0 L 100 100';
+
+      const result = KritzelSvgExportHelper.objectToSvgElement(path, 'light');
+
+      expect(result).toContain('fill="#aabbcc"');
+    });
+
+    it('should resolve dark theme colors', () => {
+      const path = new KritzelPath({
+        points: [[0, 0], [100, 100]],
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+        fill: { light: '#aabbcc', dark: '#112233' },
+      });
+      path.width = 100;
+      path.height = 100;
+      path.d = 'M 0 0 L 100 100';
+
+      const result = KritzelSvgExportHelper.objectToSvgElement(path, 'dark');
+
+      expect(result).toContain('fill="#112233"');
+    });
+  });
+
+  describe('HTML escaping', () => {
+    it('should escape special characters in text content', () => {
+      const text = new KritzelText({
+        translateX: 0,
+        translateY: 0,
+      });
+      text.width = 100;
+      text.height = 24;
+      text.content = {
+        type: 'doc',
+        content: [{
+          type: 'paragraph',
+          content: [{
+            type: 'text',
+            text: '<script>alert("xss")</script>',
+          }],
+        }],
+      };
+
+      const result = KritzelSvgExportHelper.objectToSvgElement(text, 'light');
+
+      expect(result).not.toContain('<script>');
+      expect(result).toContain('&lt;script&gt;');
+    });
+  });
+});

@@ -34,9 +34,16 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   isDebugInfoVisible: boolean = true;
   isCompleted: boolean = false;
 
+  /** Cached adjusted points for hit testing, accounting for rotation and translation */
   private _adjustedPoints?: number[][] = null;
+  /** Cached clip information for anchored line endpoints */
   private _clipInfo: { start?: { x: number; y: number; t?: number }; end?: { x: number; y: number; t?: number } } | null = null;
 
+  /**
+   * Generates the SVG path data string for the line.
+   * Returns a quadratic Bezier curve path if control point exists, otherwise a straight line.
+   * @returns SVG path data string in the format "M x y Q cx cy ex ey" or "M x y L ex ey"
+   */
   get d(): string {
     if (this.controlX !== undefined && this.controlY !== undefined) {
       return `M ${this.startX} ${this.startY} Q ${this.controlX} ${this.controlY} ${this.endX} ${this.endY}`;
@@ -44,10 +51,19 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     return `M ${this.startX} ${this.startY} L ${this.endX} ${this.endY}`;
   }
 
+  /**
+   * Generates the SVG viewBox attribute string for rendering the line.
+   * @returns ViewBox string in the format "x y width height"
+   */
   get viewBox(): string {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
+  /**
+   * Creates a new KritzelLine instance.
+   * @param config - Optional configuration options for the line including start/end points,
+   *                 control point for curves, stroke settings, anchors, and arrow configuration
+   */
   constructor(config?: KritzelLineOptions) {
     super();
     this.options = config;
@@ -68,6 +84,13 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.updateDimensions();
   }
 
+  /**
+   * Factory method to create a new KritzelLine with a core reference and unique ID.
+   * This is the preferred way to create lines that will be managed by the core.
+   * @param core - The KritzelCore instance that will manage this line
+   * @param options - Optional configuration options for the line
+   * @returns A fully initialized KritzelLine instance with generated ID and workspace assignment
+   */
   static override create(core: KritzelCore, options?: KritzelLineOptions): KritzelLine {
     const object = new KritzelLine();
 
@@ -96,6 +119,14 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     return object;
   }
 
+  /**
+   * Resizes the line to fit within the specified dimensions.
+   * Scales both endpoints and control point proportionally, then repositions the line.
+   * @param x - New X position for the line (or null to keep current)
+   * @param y - New Y position for the line (or null to keep current)
+   * @param width - New width to scale the line to (must be > 1)
+   * @param height - New height to scale the line to (must be > 1)
+   */
   override resize(x: number | null, y: number | null, width: number, height: number): void {
     if (width <= 1 || height <= 1) {
       return;
@@ -143,6 +174,11 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     }
   }
 
+  /**
+   * Sets the rotation angle of the line around its center.
+   * Invalidates cached adjusted points and clip info.
+   * @param value - Rotation angle in radians
+   */
   override rotate(value: number): void {
     this.rotation = value;
     this._adjustedPoints = null;
@@ -151,6 +187,14 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Moves the line by calculating the delta between start and end positions.
+   * Updates anchored objects if the line has anchor connections.
+   * @param startX - Starting X position of the drag in screen coordinates
+   * @param startY - Starting Y position of the drag in screen coordinates
+   * @param endX - Ending X position of the drag in screen coordinates
+   * @param endY - Ending Y position of the drag in screen coordinates
+   */
   override move(startX: number, startY: number, endX: number, endY: number): void {
     const deltaX = (startX - endX) / this._core.store.state.scale;
     const deltaY = (startY - endY) / this._core.store.state.scale;
@@ -172,6 +216,13 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Tests if a point intersects with the line within the stroke tolerance.
+   * Uses distance to line segment for straight lines, or distance to Bezier curve for curved lines.
+   * @param x - X coordinate of the point to test in world coordinates
+   * @param y - Y coordinate of the point to test in world coordinates
+   * @returns True if the point is within the stroke width tolerance of the line
+   */
   override hitTest(x: number, y: number): boolean {
     const minHitThreshold = 20;
     const strokeWidth = Math.max(this.strokeWidth, minHitThreshold);
@@ -199,6 +250,13 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     return distance <= halfStroke;
   }
 
+  /**
+   * Tests if the line intersects with or is contained within a polygon.
+   * Checks endpoint containment, polygon vertex proximity, curve sampling for Bezier curves,
+   * and line-edge intersections for straight lines.
+   * @param polygon - The polygon to test intersection with, defined by four corner points
+   * @returns True if any part of the line intersects with the polygon
+   */
   override hitTestPolygon(polygon: KritzelPolygon): boolean {
     const halfStroke = this.strokeWidth / this.scale / 2;
 
@@ -298,6 +356,12 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     return false;
   }
 
+  /**
+   * Updates the translation position of the line without recalculating dimensions.
+   * Invalidates cached adjusted points and clip info.
+   * @param x - New X translation in world coordinates
+   * @param y - New Y translation in world coordinates
+   */
   override updatePosition(x: number, y: number): void {
     this.translateX = x;
     this.translateY = y;
@@ -308,12 +372,11 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
 
   /**
    * Updates a specific endpoint of the line (start or end).
-   * The coordinates are in viewBox-local space (relative to x, y origin).
-   * This method recalculates the bounding box dimensions.
-   *
+   * Recalculates the bounding box dimensions and adjusts translation to maintain
+   * the visual position after the origin shift, accounting for rotation.
    * @param handleType - Which endpoint to update: 'start' or 'end'
-   * @param newX - New X coordinate in viewBox-local space
-   * @param newY - New Y coordinate in viewBox-local space
+   * @param newX - New X coordinate in viewBox-local space (relative to x, y origin)
+   * @param newY - New Y coordinate in viewBox-local space (relative to x, y origin)
    */
   updateEndpoint(handleType: 'start' | 'end', newX: number, newY: number): void {
     // Update the appropriate endpoint
@@ -380,6 +443,13 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Updates the control point for a quadratic Bezier curve.
+   * Recalculates bounding box and adjusts translation to maintain visual position.
+   * Pass undefined for both parameters to convert the line back to a straight line.
+   * @param newX - New X coordinate for the control point, or undefined to remove
+   * @param newY - New Y coordinate for the control point, or undefined to remove
+   */
   updateControlPoint(newX: number | undefined, newY: number | undefined): void {
     this.controlX = newX;
     this.controlY = newY;
@@ -439,6 +509,11 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Computes the line endpoints in world coordinates, accounting for rotation,
+   * scale, and translation transformations.
+   * @returns Array of two points [[startX, startY], [endX, endY]] in world coordinates
+   */
   private computeAdjustedPoints(): number[][] {
     const points = [
       [this.startX, this.startY],
@@ -467,6 +542,17 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     return rotatedPoints.map(([px, py]) => [(px - this.x) / this.scale + this.translateX, (py - this.y) / this.scale + this.translateY]);
   }
 
+  /**
+   * Calculates the minimum distance from a point to a line segment.
+   * Uses parametric projection to find the closest point on the segment.
+   * @param x - X coordinate of the test point
+   * @param y - Y coordinate of the test point
+   * @param x1 - X coordinate of the segment start
+   * @param y1 - Y coordinate of the segment start
+   * @param x2 - X coordinate of the segment end
+   * @param y2 - Y coordinate of the segment end
+   * @returns The minimum distance from the point to the line segment
+   */
   private pointToLineSegmentDistance(x: number, y: number, x1: number, y1: number, x2: number, y2: number): number {
     const A = x - x1;
     const B = y - y1;
@@ -500,7 +586,12 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
 
   /**
    * Calculates the minimum distance from a point to a quadratic Bezier curve.
-   * Uses sampling along the curve to find the closest point.
+   * Uses sampling along the curve (20 samples) to approximate the closest point.
+   * @param x - X coordinate of the test point in world coordinates
+   * @param y - Y coordinate of the test point in world coordinates
+   * @param startT - Start parameter for curve sampling (0-1), used for clipped curves
+   * @param endT - End parameter for curve sampling (0-1), used for clipped curves
+   * @returns The minimum distance from the point to the sampled curve
    */
   private pointToBezierDistance(x: number, y: number, startT: number = 0, endT: number = 1): number {
     if (this._adjustedPoints === null) {
@@ -537,6 +628,12 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     return minDistance;
   }
 
+  /**
+   * Retrieves or computes the clip information for anchored line endpoints.
+   * Caches the result to avoid recalculation on subsequent calls.
+   * @returns Object containing optional start and end clip points with world coordinates
+   *          and parametric t values for curve clipping
+   */
   private getClipInfo() {
     if (this._clipInfo) return this._clipInfo;
 
@@ -570,7 +667,10 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   }
 
   /**
-   * Computes the adjusted control point in world coordinates, accounting for rotation and translation.
+   * Computes the adjusted control point in world coordinates.
+   * Applies rotation around the bounding box center, then scale and translation transforms.
+   * @returns Array [x, y] representing the control point in world coordinates,
+   *          or the midpoint of the line if no control point is defined
    */
   private computeAdjustedControlPoint(): number[] {
     if (this.controlX === undefined || this.controlY === undefined) {
@@ -602,6 +702,12 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     return [(rotatedX - this.x) / this.scale + this.translateX, (rotatedY - this.y) / this.scale + this.translateY];
   }
 
+  /**
+   * Gets the bounding polygon of the line in world coordinates, accounting for rotation.
+   * Used for selection bounds and intersection testing.
+   * @returns A polygon with four corner points (topLeft, topRight, bottomRight, bottomLeft)
+   *          transformed to world coordinates with rotation applied
+   */
   override get rotatedPolygon(): KritzelPolygon {
     const padding = this.padding;
 
@@ -652,7 +758,16 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
 
   /**
    * Calculates the tight bounding box for a quadratic Bezier curve or straight line.
-   * For curves, it finds the extrema points where the derivative equals zero.
+   * For curves, finds extrema points where the derivative equals zero to ensure
+   * the bounding box encompasses the entire curve arc.
+   * @param startX - X coordinate of the line start point
+   * @param startY - Y coordinate of the line start point
+   * @param endX - X coordinate of the line end point
+   * @param endY - Y coordinate of the line end point
+   * @param controlX - X coordinate of the control point (undefined for straight lines)
+   * @param controlY - Y coordinate of the control point (undefined for straight lines)
+   * @param strokeWidth - Width of the line stroke for padding calculation
+   * @returns Object with minX, minY, maxX, maxY including stroke width padding
    */
   static calculateBoundingBox(
     startX: number,
@@ -705,6 +820,11 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     };
   }
 
+  /**
+   * Calculates the bounding box for this line instance using the current endpoint,
+   * control point, and stroke width values.
+   * @returns Object with minX, minY, maxX, maxY bounds including stroke width padding
+   */
   calculateBoundingBox(): { minX: number; minY: number; maxX: number; maxY: number } {
     return KritzelLine.calculateBoundingBox(
       this.startX,
@@ -717,6 +837,11 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     );
   }
 
+  /**
+   * Recalculates and updates the width, height, x, y, and translation properties
+   * based on the current endpoint positions and stroke width.
+   * Called during construction and after endpoint changes.
+   */
   private updateDimensions(): void {
     const { minX, minY, maxX, maxY } = this.calculateBoundingBox();
 
@@ -730,23 +855,40 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.translateY = (this.y + this.translateY) / this.scale;
   }
 
-  /** Get unique marker ID for SVG defs at the start of the line */
+  /**
+   * Gets the unique SVG marker ID for the arrow head at the start of the line.
+   * Used in SVG defs for marker-start attribute.
+   * @returns A unique marker ID string in the format "arrow-start-{lineId}"
+   */
   get startMarkerId(): string {
     return `arrow-start-${this.id}`;
   }
 
-  /** Get unique marker ID for SVG defs at the end of the line */
+  /**
+   * Gets the unique SVG marker ID for the arrow head at the end of the line.
+   * Used in SVG defs for marker-end attribute.
+   * @returns A unique marker ID string in the format "arrow-end-{lineId}"
+   */
   get endMarkerId(): string {
     return `arrow-end-${this.id}`;
   }
 
-  /** Get the arrow size for start or end, defaulting to strokeWidth * 3 */
+  /**
+   * Gets the arrow head size for the specified end of the line.
+   * @param end - Which end to get the arrow size for: 'start' or 'end'
+   * @returns The configured arrow size, or strokeWidth * 3 as default
+   */
   getArrowSize(end: 'start' | 'end'): number {
     const config = end === 'start' ? this.arrows?.start : this.arrows?.end;
     return config?.size ?? this.strokeWidth * 3;
   }
 
-  /** Get the arrow fill color for start or end, defaulting to stroke color */
+  /**
+   * Gets the resolved fill color for the arrow head at the specified end.
+   * Resolves theme-aware colors to the appropriate value for the current theme.
+   * @param end - Which end to get the arrow fill for: 'start' or 'end'
+   * @returns The resolved CSS color string for the arrow fill
+   */
   getArrowFill(end: 'start' | 'end'): string {
     const config = end === 'start' ? this.arrows?.start : this.arrows?.end;
     const color = config?.fill ?? this.stroke;
@@ -754,10 +896,11 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   }
 
   /**
-   * Generate SVG path data for an arrow head based on the given style.
-   * The path is designed to fit in a 10x10 viewBox with the tip at (10, 5).
-   * @param style The arrow head style
-   * @returns SVG path data string
+   * Generates SVG path data for an arrow head based on the given style.
+   * All paths are designed to fit in a 10x10 viewBox with the tip at (10, 5).
+   * @param style - The arrow head style: 'triangle' (filled), 'open' (outline),
+   *                'diamond' (rhombus), or 'circle'. Defaults to 'triangle'.
+   * @returns SVG path data string for use in a marker element
    */
   getArrowPath(style: ArrowHeadStyle = 'triangle'): string {
     switch (style) {
@@ -774,12 +917,18 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     }
   }
 
-  /** Check if start arrow is enabled */
+  /**
+   * Checks if an arrow head is enabled at the start of the line.
+   * @returns True if the start arrow configuration exists and is enabled
+   */
   get hasStartArrow(): boolean {
     return this.arrows?.start?.enabled === true;
   }
 
-  /** Check if end arrow is enabled */
+  /**
+   * Checks if an arrow head is enabled at the end of the line.
+   * @returns True if the end arrow configuration exists and is enabled
+   */
   get hasEndArrow(): boolean {
     return this.arrows?.end?.enabled === true;
   }

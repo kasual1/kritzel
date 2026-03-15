@@ -140,6 +140,8 @@ export class KritzelWorkspaceManager {
         return {
           id: ws.id,
           label: ws.name,
+          icon: ws.isPublic ? 'users-round' : undefined,
+          iconTooltip: ws.isPublic ? 'Shared workspace' : undefined,
           value: ws,
           isEditing: this.editingItemId === ws.id,
           isSelected: this.activeWorkspace?.id === ws.id,

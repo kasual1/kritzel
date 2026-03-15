@@ -7,65 +7,74 @@
 
 ## Properties
 
-| Property                 | Attribute                  | Description                                                                                               | Type                | Default              |
-| ------------------------ | -------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------- | -------------------- |
-| `activeTool`             | --                         |                                                                                                           | `KritzelTool`       | `undefined`          |
-| `cursorTarget`           | --                         |                                                                                                           | `HTMLElement`       | `undefined`          |
-| `globalContextMenuItems` | --                         |                                                                                                           | `ContextMenuItem[]` | `undefined`          |
-| `lockDrawingScale`       | `lock-drawing-scale`       | When true, objects are drawn at a fixed visual size regardless of zoom level                              | `boolean`           | `true`               |
-| `objectContextMenuItems` | --                         |                                                                                                           | `ContextMenuItem[]` | `undefined`          |
-| `scaleMax`               | `scale-max`                |                                                                                                           | `number`            | `ABSOLUTE_SCALE_MAX` |
-| `scaleMin`               | `scale-min`                |                                                                                                           | `number`            | `ABSOLUTE_SCALE_MIN` |
-| `syncConfig`             | --                         |                                                                                                           | `KritzelSyncConfig` | `undefined`          |
-| `theme`                  | `theme`                    | The current theme to apply to the editor                                                                  | `"dark" \| "light"` | `'light'`            |
-| `viewportBoundaryBottom` | `viewport-boundary-bottom` | Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to. | `number`            | `Infinity`           |
-| `viewportBoundaryLeft`   | `viewport-boundary-left`   | Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.   | `number`            | `-Infinity`          |
-| `viewportBoundaryRight`  | `viewport-boundary-right`  | Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.  | `number`            | `Infinity`           |
-| `viewportBoundaryTop`    | `viewport-boundary-top`    | Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.    | `number`            | `-Infinity`          |
-| `workspace`              | --                         |                                                                                                           | `KritzelWorkspace`  | `undefined`          |
+| Property                 | Attribute                  | Description                                                                                                 | Type                | Default              |
+| ------------------------ | -------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------- | -------------------- |
+| `activeWorkspaceId`      | `active-workspace-id`      | Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.          | `string`            | `undefined`          |
+| `cursorTarget`           | --                         | The HTML element to apply cursor styles to. Defaults to `document.body` if not set.                         | `HTMLElement`       | `undefined`          |
+| `editorId`               | `editor-id`                | Optional unique identifier for namespacing storage keys across multiple editor instances.                   | `string`            | `undefined`          |
+| `globalContextMenuItems` | --                         | Context menu items shown when right-clicking the canvas background.                                         | `ContextMenuItem[]` | `undefined`          |
+| `lockDrawingScale`       | `lock-drawing-scale`       | When true, objects are drawn at a fixed visual size regardless of zoom level                                | `boolean`           | `true`               |
+| `objectContextMenuItems` | --                         | Context menu items shown when right-clicking a selected object.                                             | `ContextMenuItem[]` | `undefined`          |
+| `scaleMax`               | `scale-max`                | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.                          | `number`            | `ABSOLUTE_SCALE_MAX` |
+| `scaleMin`               | `scale-min`                | Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.                          | `number`            | `ABSOLUTE_SCALE_MIN` |
+| `syncConfig`             | --                         | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).                         | `KritzelSyncConfig` | `undefined`          |
+| `theme`                  | `theme`                    | The current theme to apply to the editor                                                                    | `"dark" \| "light"` | `'light'`            |
+| `user`                   | --                         | The current user for awareness broadcasting (name, id, cursor position).                                    | `IKritzelUser`      | `undefined`          |
+| `viewportBoundaryBottom` | `viewport-boundary-bottom` | Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.   | `number`            | `Infinity`           |
+| `viewportBoundaryLeft`   | `viewport-boundary-left`   | Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.     | `number`            | `-Infinity`          |
+| `viewportBoundaryRight`  | `viewport-boundary-right`  | Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.    | `number`            | `Infinity`           |
+| `viewportBoundaryTop`    | `viewport-boundary-top`    | Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.      | `number`            | `-Infinity`          |
+| `wheelEnabled`           | `wheel-enabled`            | When false, wheel events will not trigger viewport pan/zoom. The event still propagates to parent elements. | `boolean`           | `true`               |
+| `workspace`              | --                         | The workspace to load and display. Changing this prop switches the active workspace.                        | `KritzelWorkspace`  | `undefined`          |
 
 
 ## Events
 
-| Event                     | Description | Type                                                          |
-| ------------------------- | ----------- | ------------------------------------------------------------- |
-| `activeToolChange`        |             | `CustomEvent<KritzelBaseTool>`                                |
-| `isEngineReady`           |             | `CustomEvent<KritzelEngineState>`                             |
-| `longpress`               |             | `CustomEvent<PointerEvent>`                                   |
-| `objectsChange`           |             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsInViewportChange` |             | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
-| `objectsSelectionChange`  |             | `CustomEvent<void>`                                           |
-| `undoStateChange`         |             | `CustomEvent<KritzelUndoState>`                               |
-| `workspacesChange`        |             | `CustomEvent<KritzelWorkspace[]>`                             |
+| Event                     | Description                                                                                         | Type                                                          |
+| ------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `activeToolChange`        | Emitted when the active drawing tool changes.                                                       | `CustomEvent<KritzelBaseTool>`                                |
+| `activeWorkspaceChange`   | Emitted when the active workspace changes (e.g., after import).                                     | `CustomEvent<KritzelWorkspace>`                               |
+| `awarenessChange`         | Emitted when the awareness state changes (remote user cursors, presence).                           | `CustomEvent<Map<number, Record<string, any>>>`               |
+| `isEngineReady`           | Emitted when the engine has fully initialized and is ready for interaction.                         | `CustomEvent<KritzelEngineState>`                             |
+| `longpress`               | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.               | `CustomEvent<PointerEvent>`                                   |
+| `objectsAdded`            | Emitted when one or more objects are added to the canvas.                                           | `CustomEvent<ObjectsAddedEvent>`                              |
+| `objectsChange`           | Emitted when objects on the canvas are added, removed, or modified.                                 | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsInViewportChange` | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).  | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
+| `objectsRemoved`          | Emitted when one or more objects are removed from the canvas.                                       | `CustomEvent<ObjectsRemovedEvent>`                            |
+| `objectsSelectionChange`  | Emitted when the set of selected objects changes.                                                   | `CustomEvent<void>`                                           |
+| `objectsUpdated`          | Emitted when one or more objects are updated on the canvas.                                         | `CustomEvent<ObjectsUpdatedEvent>`                            |
+| `undoStateChange`         | Emitted when the undo/redo state changes, providing current undo availability.                      | `CustomEvent<KritzelUndoState>`                               |
+| `viewportChange`          | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize). | `CustomEvent<KritzelViewportState>`                           |
+| `workspacesChange`        | Emitted when workspaces are created, updated, or deleted.                                           | `CustomEvent<KritzelWorkspace[]>`                             |
 
 
 ## Methods
 
 ### `addObject<T extends KritzelBaseObject>(object: T) => Promise<T | null>`
 
-
+Adds a new object to the canvas. The object will be assigned an ID, core reference, and z-index automatically.
 
 #### Parameters
 
-| Name     | Type | Description |
-| -------- | ---- | ----------- |
-| `object` | `T`  |             |
+| Name     | Type | Description                   |
+| -------- | ---- | ----------------------------- |
+| `object` | `T`  | - The object instance to add. |
 
 #### Returns
 
 Type: `Promise<T>`
 
-
+The added object.
 
 ### `alignObjects(alignment: KritzelAlignment) => Promise<void>`
 
-
+Aligns the currently selected objects according to the specified alignment.
 
 #### Parameters
 
-| Name        | Type               | Description |
-| ----------- | ------------------ | ----------- |
-| `alignment` | `KritzelAlignment` |             |
+| Name        | Type               | Description                                                            |
+| ----------- | ------------------ | ---------------------------------------------------------------------- |
+| `alignment` | `KritzelAlignment` | - The alignment direction (e.g., `CenterHorizontal`, `StartVertical`). |
 
 #### Returns
 
@@ -75,23 +84,24 @@ Type: `Promise<void>`
 
 ### `backToContent() => Promise<boolean>`
 
-
+Pans and zooms the viewport to fit the nearest content, with padding.
+Useful when the user has panned away from all objects.
 
 #### Returns
 
 Type: `Promise<boolean>`
 
-
+`true` if content was found and the viewport was adjusted, `false` otherwise.
 
 ### `bringForward(object?: KritzelBaseObject<any>) => Promise<void>`
 
-
+Moves an object one layer forward in the z-order.
 
 #### Parameters
 
-| Name     | Type                     | Description |
-| -------- | ------------------------ | ----------- |
-| `object` | `KritzelBaseObject<any>` |             |
+| Name     | Type                     | Description                                                         |
+| -------- | ------------------------ | ------------------------------------------------------------------- |
+| `object` | `KritzelBaseObject<any>` | - The object to move. If omitted, applies to the current selection. |
 
 #### Returns
 
@@ -101,13 +111,13 @@ Type: `Promise<void>`
 
 ### `bringToFront(object?: KritzelBaseObject<any>) => Promise<void>`
 
-
+Moves an object to the very front of the z-order.
 
 #### Parameters
 
-| Name     | Type                     | Description |
-| -------- | ------------------------ | ----------- |
-| `object` | `KritzelBaseObject<any>` |             |
+| Name     | Type                     | Description                                                         |
+| -------- | ------------------------ | ------------------------------------------------------------------- |
+| `object` | `KritzelBaseObject<any>` | - The object to move. If omitted, applies to the current selection. |
 
 #### Returns
 
@@ -115,31 +125,48 @@ Type: `Promise<void>`
 
 
 
-### `centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>`
+### `centerAllObjects(animate?: boolean) => Promise<boolean>`
 
-
+Pans and zooms the viewport to fit ALL objects on the canvas, including those not currently rendered.
+Calculates the combined bounding box of all objects and centers the viewport to show them.
 
 #### Parameters
 
-| Name     | Type                                           | Description |
-| -------- | ---------------------------------------------- | ----------- |
-| `object` | `KritzelBaseObject<HTMLElement \| SVGElement>` |             |
+| Name      | Type      | Description                                                   |
+| --------- | --------- | ------------------------------------------------------------- |
+| `animate` | `boolean` | - Whether to animate the viewport transition (default: true). |
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+`true` if objects were found and the viewport was adjusted, `false` otherwise.
+
+### `centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>`
+
+Pans and zooms the viewport to center on the given object.
+
+#### Parameters
+
+| Name     | Type                                           | Description                             |
+| -------- | ---------------------------------------------- | --------------------------------------- |
+| `object` | `KritzelBaseObject<HTMLElement \| SVGElement>` | - The object to center in the viewport. |
 
 #### Returns
 
 Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>>`
 
-
+The centered object.
 
 ### `changeActiveTool(tool: KritzelBaseTool) => Promise<void>`
 
-
+Switches the active drawing tool. Deactivates the current tool and clears any selection.
 
 #### Parameters
 
-| Name   | Type              | Description |
-| ------ | ----------------- | ----------- |
-| `tool` | `KritzelBaseTool` |             |
+| Name   | Type              | Description                      |
+| ------ | ----------------- | -------------------------------- |
+| `tool` | `KritzelBaseTool` | - The tool instance to activate. |
 
 #### Returns
 
@@ -149,7 +176,7 @@ Type: `Promise<void>`
 
 ### `clearSelection() => Promise<void>`
 
-
+Deselects all currently selected objects.
 
 #### Returns
 
@@ -159,7 +186,7 @@ Type: `Promise<void>`
 
 ### `copy() => Promise<void>`
 
-
+Copies the currently selected objects to the internal clipboard.
 
 #### Returns
 
@@ -169,23 +196,23 @@ Type: `Promise<void>`
 
 ### `createWorkspace(workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>`
 
-
+Creates a new workspace and emits a `workspacesChange` event.
 
 #### Parameters
 
-| Name        | Type               | Description |
-| ----------- | ------------------ | ----------- |
-| `workspace` | `KritzelWorkspace` |             |
+| Name        | Type               | Description                |
+| ----------- | ------------------ | -------------------------- |
+| `workspace` | `KritzelWorkspace` | - The workspace to create. |
 
 #### Returns
 
 Type: `Promise<KritzelWorkspace>`
 
-
+The created workspace.
 
 ### `delete() => Promise<void>`
 
-
+Deletes the currently selected objects from the canvas.
 
 #### Returns
 
@@ -195,13 +222,13 @@ Type: `Promise<void>`
 
 ### `deleteWorkspace(workspace: KritzelWorkspace) => Promise<void>`
 
-
+Deletes a workspace and emits a `workspacesChange` event.
 
 #### Parameters
 
-| Name        | Type               | Description |
-| ----------- | ------------------ | ----------- |
-| `workspace` | `KritzelWorkspace` |             |
+| Name        | Type               | Description                |
+| ----------- | ------------------ | -------------------------- |
+| `workspace` | `KritzelWorkspace` | - The workspace to delete. |
 
 #### Returns
 
@@ -211,7 +238,23 @@ Type: `Promise<void>`
 
 ### `disable() => Promise<void>`
 
+Disables all user interaction with the engine (pointer, keyboard, etc.).
 
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `downloadAsJson(filename?: string) => Promise<void>`
+
+Exports the current workspace as a JSON file and triggers a browser download.
+
+#### Parameters
+
+| Name       | Type     | Description                                                                                |
+| ---------- | -------- | ------------------------------------------------------------------------------------------ |
+| `filename` | `string` | - Optional custom filename (without extension). Defaults to workspace name with timestamp. |
 
 #### Returns
 
@@ -221,7 +264,51 @@ Type: `Promise<void>`
 
 ### `enable() => Promise<void>`
 
+Re-enables user interaction after a call to `disable()`.
 
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `exportAsJson() => Promise<string>`
+
+Exports the current workspace and all its objects as a JSON string.
+The exported data includes workspace metadata (id, name, viewport) and all canvas objects.
+
+#### Returns
+
+Type: `Promise<string>`
+
+A JSON string representing the complete workspace state.
+
+### `exportSelectedObjectsAsPng(options?: { theme?: "light" | "dark"; padding?: number; scale?: number; }) => Promise<void>`
+
+Exports the currently selected objects as a PNG file and triggers a browser download.
+
+#### Parameters
+
+| Name      | Type                                                               | Description                                                        |
+| --------- | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `options` | `{ theme?: "light" \| "dark"; padding?: number; scale?: number; }` | - Optional export settings (theme, padding, scale for resolution). |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `exportSelectedObjectsAsSvg(options?: { theme?: "light" | "dark"; padding?: number; }) => Promise<void>`
+
+Exports the currently selected objects as an SVG file and triggers a browser download.
+Creates clean, standards-compliant SVG markup suitable for import into vector editors.
+
+#### Parameters
+
+| Name      | Type                                               | Description                                  |
+| --------- | -------------------------------------------------- | -------------------------------------------- |
+| `options` | `{ theme?: "light" \| "dark"; padding?: number; }` | - Optional export settings (theme, padding). |
 
 #### Returns
 
@@ -231,7 +318,7 @@ Type: `Promise<void>`
 
 ### `exportViewportAsPng() => Promise<void>`
 
-
+Exports the current viewport as a PNG file and triggers a browser download.
 
 #### Returns
 
@@ -241,7 +328,7 @@ Type: `Promise<void>`
 
 ### `exportViewportAsSvg() => Promise<void>`
 
-
+Exports the current viewport as an SVG file and triggers a browser download.
 
 #### Returns
 
@@ -249,9 +336,26 @@ Type: `Promise<void>`
 
 
 
+### `findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean) => Promise<T[]>`
+
+Returns all objects that match the given predicate function.
+Excludes internal selection-related objects (selection groups and selection boxes).
+
+#### Parameters
+
+| Name        | Type                                                             | Description                                                           |
+| ----------- | ---------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `predicate` | `(obj: KritzelBaseObject<HTMLElement \| SVGElement>) => boolean` | - A filter function called for each object. Return `true` to include. |
+
+#### Returns
+
+Type: `Promise<T[]>`
+
+An array of matching objects.
+
 ### `getActiveWorkspace() => Promise<KritzelWorkspace>`
 
-
+Returns the currently active workspace.
 
 #### Returns
 
@@ -261,7 +365,7 @@ Type: `Promise<KritzelWorkspace>`
 
 ### `getAllObjects<T extends KritzelBaseObject>() => Promise<T[]>`
 
-
+Returns all objects on the canvas across all layers.
 
 #### Returns
 
@@ -271,7 +375,7 @@ Type: `Promise<T[]>`
 
 ### `getCopiedObjects() => Promise<KritzelBaseObject[]>`
 
-
+Returns the objects currently stored in the internal clipboard from a prior `copy()` call.
 
 #### Returns
 
@@ -281,7 +385,7 @@ Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
 
 ### `getDisplayableShortcuts() => Promise<Omit<KritzelShortcut, "action" | "condition">[]>`
 
-
+Returns all registered keyboard shortcuts (without action/condition) for display in a help UI.
 
 #### Returns
 
@@ -289,25 +393,35 @@ Type: `Promise<Omit<KritzelShortcut, "action" | "condition">[]>`
 
 
 
+### `getIsPublic() => Promise<boolean>`
+
+Gets whether the active workspace is publicly accessible.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+True if the workspace is public, false otherwise
+
 ### `getObjectById<T extends KritzelBaseObject>(id: string) => Promise<T | null>`
 
-
+Retrieves a canvas object by its unique ID.
 
 #### Parameters
 
-| Name | Type     | Description |
-| ---- | -------- | ----------- |
-| `id` | `string` |             |
+| Name | Type     | Description                       |
+| ---- | -------- | --------------------------------- |
+| `id` | `string` | - The object's unique identifier. |
 
 #### Returns
 
 Type: `Promise<T>`
 
-
+The matching object, or `null` if not found.
 
 ### `getObjectsInViewport() => Promise<KritzelBaseObject[]>`
 
-
+Returns all objects currently visible within the viewport bounds.
 
 #### Returns
 
@@ -317,7 +431,7 @@ Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
 
 ### `getObjectsTotalCount() => Promise<number>`
 
-
+Returns the total number of objects on the canvas.
 
 #### Returns
 
@@ -327,23 +441,23 @@ Type: `Promise<number>`
 
 ### `getScreenshot(format?: "png" | "svg") => Promise<string>`
 
-
+Captures a screenshot of the current viewport as a data URL.
 
 #### Parameters
 
-| Name     | Type             | Description |
-| -------- | ---------------- | ----------- |
-| `format` | `"svg" \| "png"` |             |
+| Name     | Type             | Description                                       |
+| -------- | ---------------- | ------------------------------------------------- |
+| `format` | `"svg" \| "png"` | - The image format: `'png'` (default) or `'svg'`. |
 
 #### Returns
 
 Type: `Promise<string>`
 
-
+A data URL string of the captured image.
 
 ### `getSelectedObjects() => Promise<KritzelBaseObject<any>[]>`
 
-
+Returns the currently selected objects. Returns an empty array if nothing is selected.
 
 #### Returns
 
@@ -351,9 +465,53 @@ Type: `Promise<KritzelBaseObject<any>[]>`
 
 
 
+### `getSelectedObjectsAsPngDataUrl(options?: { theme?: "light" | "dark"; padding?: number; scale?: number; }) => Promise<string | null>`
+
+Generates a PNG data URL from the currently selected objects.
+Converts the SVG representation to a rasterized PNG image.
+
+#### Parameters
+
+| Name      | Type                                                               | Description                                                        |
+| --------- | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `options` | `{ theme?: "light" \| "dark"; padding?: number; scale?: number; }` | - Optional export settings (theme, padding, scale for resolution). |
+
+#### Returns
+
+Type: `Promise<string>`
+
+PNG data URL string, or null if no objects are selected.
+
+### `getSelectedObjectsAsSvgString(options?: { theme?: "light" | "dark"; padding?: number; }) => Promise<string | null>`
+
+Generates an SVG string from the currently selected objects.
+Creates clean, standards-compliant SVG markup by directly serializing object properties.
+
+#### Parameters
+
+| Name      | Type                                               | Description                                  |
+| --------- | -------------------------------------------------- | -------------------------------------------- |
+| `options` | `{ theme?: "light" \| "dark"; padding?: number; }` | - Optional export settings (theme, padding). |
+
+#### Returns
+
+Type: `Promise<string>`
+
+SVG markup string, or null if no objects are selected.
+
+### `getViewport() => Promise<KritzelViewportState>`
+
+Returns the current viewport state including position, scale, and dimensions.
+
+#### Returns
+
+Type: `Promise<KritzelViewportState>`
+
+The current viewport state.
+
 ### `getWorkspaces() => Promise<KritzelWorkspace[]>`
 
-
+Returns all available workspaces.
 
 #### Returns
 
@@ -363,7 +521,7 @@ Type: `Promise<KritzelWorkspace[]>`
 
 ### `group() => Promise<void>`
 
-
+Groups the currently selected objects into a single selection group.
 
 #### Returns
 
@@ -373,7 +531,89 @@ Type: `Promise<void>`
 
 ### `hideContextMenu() => Promise<void>`
 
+Hides the context menu and resets any associated selection state.
 
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `importFromFile() => Promise<void>`
+
+Opens a file picker dialog and imports the selected JSON file into the workspace.
+This method creates a hidden file input, triggers the browser's file chooser,
+reads the selected JSON file, and imports it using importFromJson.
+
+#### Returns
+
+Type: `Promise<void>`
+
+A promise that resolves when the import is complete or rejects on error/cancel.
+
+### `importFromJson(json: string) => Promise<void>`
+
+Imports a workspace from a JSON string into a new workspace.
+Creates a new workspace with the imported data and automatically switches to it.
+
+#### Parameters
+
+| Name   | Type     | Description                                                    |
+| ------ | -------- | -------------------------------------------------------------- |
+| `json` | `string` | - A JSON string containing workspace data (from exportAsJson). |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `loadObjectsFromJson(json: string) => Promise<number>`
+
+Loads objects from a workspace JSON string into the current workspace.
+Unlike importFromJson, this does not create a new workspace - it adds objects to the existing one.
+Useful for initializing a workspace with pre-existing content after the editor is ready.
+
+#### Parameters
+
+| Name   | Type     | Description                                                    |
+| ------ | -------- | -------------------------------------------------------------- |
+| `json` | `string` | - A JSON string containing workspace data (from exportAsJson). |
+
+#### Returns
+
+Type: `Promise<number>`
+
+The number of objects loaded.
+
+### `loadSharedWorkspace(token: string) => Promise<void>`
+
+Loads a shared workspace by token.
+If the workspace exists locally, it switches to it.
+If it doesn't exist, it adds it to the local workspaces list and then switches to it.
+
+#### Parameters
+
+| Name    | Type     | Description                                             |
+| ------- | -------- | ------------------------------------------------------- |
+| `token` | `string` | - The connection token identifying the shared workspace |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `panTo(x: number, y: number) => Promise<void>`
+
+Pans the viewport to center on the given world coordinates without changing the scale.
+
+#### Parameters
+
+| Name | Type     | Description                                     |
+| ---- | -------- | ----------------------------------------------- |
+| `x`  | `number` | - X position in world coordinates to center on. |
+| `y`  | `number` | - Y position in world coordinates to center on. |
 
 #### Returns
 
@@ -383,14 +623,14 @@ Type: `Promise<void>`
 
 ### `paste(x: number, y: number) => Promise<void>`
 
-
+Pastes previously copied objects at the specified world coordinates.
 
 #### Parameters
 
-| Name | Type     | Description |
-| ---- | -------- | ----------- |
-| `x`  | `number` |             |
-| `y`  | `number` |             |
+| Name | Type     | Description                        |
+| ---- | -------- | ---------------------------------- |
+| `x`  | `number` | - X position in world coordinates. |
+| `y`  | `number` | - Y position in world coordinates. |
 
 #### Returns
 
@@ -400,7 +640,7 @@ Type: `Promise<void>`
 
 ### `redo() => Promise<void>`
 
-
+Redoes the last undone action.
 
 #### Returns
 
@@ -410,41 +650,71 @@ Type: `Promise<void>`
 
 ### `registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool>`
 
-
+Registers a new drawing tool with the engine.
 
 #### Parameters
 
-| Name         | Type                                                                                                 | Description |
-| ------------ | ---------------------------------------------------------------------------------------------------- | ----------- |
-| `toolName`   | `string`                                                                                             |             |
-| `toolClass`  | `any`                                                                                                |             |
-| `toolConfig` | `KritzelTextToolConfig \| KritzelBrushToolConfig \| KritzelLineToolConfig \| KritzelShapeToolConfig` |             |
+| Name         | Type                                                                                                 | Description                                                     |
+| ------------ | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `toolName`   | `string`                                                                                             | - Unique identifier for the tool (e.g., 'brush', 'eraser').     |
+| `toolClass`  | `any`                                                                                                | - Constructor class extending `KritzelBaseTool`.                |
+| `toolConfig` | `KritzelTextToolConfig \| KritzelBrushToolConfig \| KritzelLineToolConfig \| KritzelShapeToolConfig` | - Optional initial configuration to apply to the tool instance. |
 
 #### Returns
 
 Type: `Promise<KritzelBaseTool>`
 
+The registered tool instance, or `null` if registration failed.
+
+### `reinitSync() => Promise<void>`
+
+Reinitializes sync by performing a full teardown and re-initialization.
+Destroys the current Yjs documents and providers, then rebuilds everything
+from the current syncConfig. Data reloads from IndexedDB nearly instantly.
+Call this after updating the syncConfig prop (e.g. after authentication state changes).
+
+#### Returns
+
+Type: `Promise<void>`
+
 
 
 ### `removeObject<T extends KritzelBaseObject>(object: T) => Promise<T | null>`
 
-
+Removes an object from the canvas.
 
 #### Parameters
 
-| Name     | Type | Description |
-| -------- | ---- | ----------- |
-| `object` | `T`  |             |
+| Name     | Type | Description             |
+| -------- | ---- | ----------------------- |
+| `object` | `T`  | - The object to remove. |
 
 #### Returns
 
 Type: `Promise<T>`
 
+The removed object.
 
+### `screenToWorld(x: number, y: number) => Promise<{ x: number; y: number; }>`
+
+Converts screen-relative pixel coordinates to world coordinates.
+
+#### Parameters
+
+| Name | Type     | Description                                                     |
+| ---- | -------- | --------------------------------------------------------------- |
+| `x`  | `number` | - X position in screen pixels (relative to the engine element). |
+| `y`  | `number` | - Y position in screen pixels (relative to the engine element). |
+
+#### Returns
+
+Type: `Promise<{ x: number; y: number; }>`
+
+World coordinates { x, y }.
 
 ### `selectAllObjectsInViewport() => Promise<void>`
 
-
+Selects all objects currently visible in the viewport. Switches to the selection tool automatically.
 
 #### Returns
 
@@ -454,13 +724,13 @@ Type: `Promise<void>`
 
 ### `selectObjects(objects: KritzelBaseObject[]) => Promise<void>`
 
-
+Programmatically selects the given objects. Switches to the selection tool automatically.
 
 #### Parameters
 
-| Name      | Type                                             | Description |
-| --------- | ------------------------------------------------ | ----------- |
-| `objects` | `KritzelBaseObject<HTMLElement \| SVGElement>[]` |             |
+| Name      | Type                                             | Description              |
+| --------- | ------------------------------------------------ | ------------------------ |
+| `objects` | `KritzelBaseObject<HTMLElement \| SVGElement>[]` | - The objects to select. |
 
 #### Returns
 
@@ -470,13 +740,13 @@ Type: `Promise<void>`
 
 ### `sendBackward(object?: KritzelBaseObject<any>) => Promise<void>`
 
-
+Moves an object one layer backward in the z-order.
 
 #### Parameters
 
-| Name     | Type                     | Description |
-| -------- | ------------------------ | ----------- |
-| `object` | `KritzelBaseObject<any>` |             |
+| Name     | Type                     | Description                                                         |
+| -------- | ------------------------ | ------------------------------------------------------------------- |
+| `object` | `KritzelBaseObject<any>` | - The object to move. If omitted, applies to the current selection. |
 
 #### Returns
 
@@ -486,13 +756,31 @@ Type: `Promise<void>`
 
 ### `sendToBack(object?: KritzelBaseObject<any>) => Promise<void>`
 
-
+Moves an object to the very back of the z-order.
 
 #### Parameters
 
-| Name     | Type                     | Description |
-| -------- | ------------------------ | ----------- |
-| `object` | `KritzelBaseObject<any>` |             |
+| Name     | Type                     | Description                                                         |
+| -------- | ------------------------ | ------------------------------------------------------------------- |
+| `object` | `KritzelBaseObject<any>` | - The object to move. If omitted, applies to the current selection. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setViewport(x: number, y: number, scale: number) => Promise<void>`
+
+Sets the viewport to center on the given world coordinates at the specified scale.
+
+#### Parameters
+
+| Name    | Type     | Description                                     |
+| ------- | -------- | ----------------------------------------------- |
+| `x`     | `number` | - X position in world coordinates to center on. |
+| `y`     | `number` | - Y position in world coordinates to center on. |
+| `scale` | `number` | - Target scale level.                           |
 
 #### Returns
 
@@ -502,7 +790,7 @@ Type: `Promise<void>`
 
 ### `triggerSelectionChange() => Promise<void>`
 
-
+Manually triggers the `objectsSelectionChange` event.
 
 #### Returns
 
@@ -512,7 +800,7 @@ Type: `Promise<void>`
 
 ### `undo() => Promise<void>`
 
-
+Undoes the last action.
 
 #### Returns
 
@@ -522,7 +810,7 @@ Type: `Promise<void>`
 
 ### `ungroup() => Promise<void>`
 
-
+Ungroups the currently selected group back into individual objects.
 
 #### Returns
 
@@ -532,30 +820,66 @@ Type: `Promise<void>`
 
 ### `updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>`
 
-
+Updates properties of an existing canvas object.
 
 #### Parameters
 
-| Name                | Type                         | Description |
-| ------------------- | ---------------------------- | ----------- |
-| `object`            | `T`                          |             |
-| `updatedProperties` | `{ [P in keyof T]?: T[P]; }` |             |
+| Name                | Type                         | Description                             |
+| ------------------- | ---------------------------- | --------------------------------------- |
+| `object`            | `T`                          | - The object to update.                 |
+| `updatedProperties` | `{ [P in keyof T]?: T[P]; }` | - A partial set of properties to apply. |
 
 #### Returns
 
 Type: `Promise<T>`
 
-
+The updated object.
 
 ### `updateWorkspace(workspace: KritzelWorkspace) => Promise<void>`
 
-
+Updates an existing workspace's metadata and emits a `workspacesChange` event.
 
 #### Parameters
 
-| Name        | Type               | Description |
-| ----------- | ------------------ | ----------- |
-| `workspace` | `KritzelWorkspace` |             |
+| Name        | Type               | Description                              |
+| ----------- | ------------------ | ---------------------------------------- |
+| `workspace` | `KritzelWorkspace` | - The workspace with updated properties. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `worldToScreen(x: number, y: number) => Promise<{ x: number; y: number; }>`
+
+Converts world coordinates to screen-relative pixel coordinates.
+
+#### Parameters
+
+| Name | Type     | Description                        |
+| ---- | -------- | ---------------------------------- |
+| `x`  | `number` | - X position in world coordinates. |
+| `y`  | `number` | - Y position in world coordinates. |
+
+#### Returns
+
+Type: `Promise<{ x: number; y: number; }>`
+
+Screen coordinates { x, y } relative to the engine element.
+
+### `zoomTo(scale: number, worldX?: number, worldY?: number) => Promise<void>`
+
+Zooms the viewport to the given scale level.
+Optionally centers on a world point; if omitted, zooms around the viewport center.
+
+#### Parameters
+
+| Name     | Type     | Description                                              |
+| -------- | -------- | -------------------------------------------------------- |
+| `scale`  | `number` | - Target scale level.                                    |
+| `worldX` | `number` | - Optional X position in world coordinates to center on. |
+| `worldY` | `number` | - Optional Y position in world coordinates to center on. |
 
 #### Returns
 

@@ -38,6 +38,7 @@ export class KritzelDialog {
   @Prop() fullscreenOnMobile: boolean = true;
 
   @State() isAnimating: boolean = false;
+  @State() mobileLockedHeight: string | null = null;
 
   /** Emitted when the dialog opens */
   @Event() dialogOpen: EventEmitter<void>;
@@ -103,6 +104,7 @@ export class KritzelDialog {
     this.isAnimating = true;
     this.previousActiveElement = document.activeElement as HTMLElement;
     this.lockBodyScroll();
+    this.lockMobileViewportHeight();
     this.dialogOpen.emit();
 
     if (this.autoFocus) {
@@ -118,6 +120,7 @@ export class KritzelDialog {
 
   private closeDialog() {
     this.restoreBodyScroll();
+    this.mobileLockedHeight = null;
     this.returnFocusToPreviousElement();
   }
 
@@ -128,6 +131,16 @@ export class KritzelDialog {
   private lockBodyScroll() {
     this.previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+  }
+
+  private lockMobileViewportHeight() {
+    // Only lock height on mobile when fullscreenOnMobile is enabled
+    if (!this.fullscreenOnMobile || window.innerWidth > 576) {
+      this.mobileLockedHeight = null;
+      return;
+    }
+    // Capture the current viewport height before keyboard can affect it
+    this.mobileLockedHeight = `${window.innerHeight}px`;
   }
 
   private restoreBodyScroll() {
@@ -277,6 +290,7 @@ export class KritzelDialog {
               [`size-${this.size}`]: true,
               'fullscreen-on-mobile': this.fullscreenOnMobile,
             }}
+            style={this.mobileLockedHeight ? { height: this.mobileLockedHeight, maxHeight: this.mobileLockedHeight } : undefined}
             role="dialog"
             aria-modal="true"
             aria-labelledby={this.dialogTitle ? 'dialog-title' : undefined}

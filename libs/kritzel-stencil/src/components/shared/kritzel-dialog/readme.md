@@ -107,13 +107,17 @@ Type: `Promise<void>`
 ### Used by
 
  - [kritzel-export](../../ui/kritzel-export)
+ - [kritzel-login-dialog](../../ui/kritzel-login-dialog)
  - [kritzel-settings](../../ui/kritzel-settings)
+ - [kritzel-share-dialog](../../ui/kritzel-share-dialog)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-export --> kritzel-dialog
+  kritzel-login-dialog --> kritzel-dialog
   kritzel-settings --> kritzel-dialog
+  kritzel-share-dialog --> kritzel-dialog
   style kritzel-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

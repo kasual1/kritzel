@@ -1,4 +1,5 @@
 import * as Y from 'yjs';
+import { Awareness } from 'y-protocols/awareness';
 import { WebsocketProvider } from 'y-websocket';
 import { ISyncProvider, ProviderFactory } from '../../interfaces/sync-provider.interface';
 
@@ -40,6 +41,11 @@ export interface WebSocketOptions {
    * Maximum number of connection attempts (optional, defaults to Infinity)
    */
   maxBackoffTime?: number;
+
+  /**
+   * Quiet mode - suppress console output (optional, defaults to false)
+   */
+  quiet?: boolean;
 }
 
 /**
@@ -48,6 +54,11 @@ export interface WebSocketOptions {
 export class WebSocketSyncProvider implements ISyncProvider {
   private provider: WebsocketProvider;
   private isConnected: boolean = false;
+  private _quiet: boolean = false;
+
+  get awareness(): Awareness {
+    return this.provider.awareness;
+  }
 
   constructor(docName: string, doc: Y.Doc, options?: WebSocketOptions) {
     const url = options?.url || 'ws://localhost:1234';
@@ -62,8 +73,11 @@ export class WebSocketSyncProvider implements ISyncProvider {
       disableBc: true,
     });
 
+    this._quiet = options?.quiet ?? false;
     this.setupEventListeners();
-    console.info(`WebSocket Provider initialized: ${url}/${roomName}`);
+    if (!this._quiet) {
+      console.info(`WebSocket Provider initialized: ${url}/${roomName}`);
+    }
   }
 
   /**
@@ -72,8 +86,9 @@ export class WebSocketSyncProvider implements ISyncProvider {
    */
   static with(options?: WebSocketOptions): ProviderFactory {
     return {
-      create: (docName: string, doc: Y.Doc) => {
-        return new WebSocketSyncProvider(docName, doc, options);
+      create: (docName: string, doc: Y.Doc, runtimeOptions?: { quiet?: boolean }) => {
+        const mergedOptions = runtimeOptions ? { ...options, ...runtimeOptions } : options;
+        return new WebSocketSyncProvider(docName, doc, mergedOptions);
       },
     };
   }
@@ -82,15 +97,19 @@ export class WebSocketSyncProvider implements ISyncProvider {
     this.provider.on('status', ({ status }: { status: string }) => {
       if (status === 'connected') {
         this.isConnected = true;
-        console.info('WebSocket connected');
+        if (!this._quiet) {
+          console.info('WebSocket connected');
+        }
       } else if (status === 'disconnected') {
         this.isConnected = false;
-        console.info('WebSocket disconnected');
+        if (!this._quiet) {
+          console.info('WebSocket disconnected');
+        }
       }
     });
 
     this.provider.on('sync', (synced: boolean) => {
-      if (synced) {
+      if (synced && !this._quiet) {
         console.info('WebSocket synced');
       }
     });

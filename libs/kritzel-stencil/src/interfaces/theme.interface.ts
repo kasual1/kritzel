@@ -18,8 +18,10 @@ export interface KritzelTheme {
     focusColor?: string;
     borderColor?: string;
     focusRingColor?: string;
-    hoverBackground?: string;
     pointerCursor?: string;
+    primaryColor?: string;
+    primaryHoverColor?: string;
+    primaryTextColor?: string;
     scrollbarThumbColor?: string;
     textPrimary?: string;
     textSecondary?: string;
@@ -27,6 +29,25 @@ export interface KritzelTheme {
     snapIndicatorFill?: string;
     snapIndicatorStroke?: string;
     snapLineStroke?: string;
+  };
+
+  /** Active users variables */
+  activeUsers?: {
+    avatarBorderColor?: string;
+    overflowColor?: string;
+    overflowFontSize?: string;
+    tooltipBackground?: string;
+    tooltipColor?: string;
+  };
+
+  /** Avatar variables */
+  avatar?: {
+    border?: string;
+    defaultBackground?: string;
+    defaultColor?: string;
+    initialsColor?: string;
+    initialsFontFamily?: string;
+    initialsFontWeight?: string;
   };
 
   /** Back to content variables */
@@ -44,6 +65,25 @@ export interface KritzelTheme {
     hoverBackgroundColor?: string;
     padding?: string;
     zIndex?: string;
+  };
+
+  /** Button variables */
+  button?: {
+    borderRadius?: string;
+    fontSize?: string;
+    fontWeight?: string;
+    padding?: string;
+    primaryActiveBackgroundColor?: string;
+    primaryBackgroundColor?: string;
+    primaryColor?: string;
+    primaryHoverBackgroundColor?: string;
+    secondaryActiveBackgroundColor?: string;
+    secondaryBackgroundColor?: string;
+    secondaryColor?: string;
+    secondaryHoverBackgroundColor?: string;
+    textActiveBackgroundColor?: string;
+    textColor?: string;
+    textHoverBackgroundColor?: string;
   };
 
   /** Checkerboard variables */
@@ -66,6 +106,7 @@ export interface KritzelTheme {
     borderRadius?: string;
     boxShadow?: string;
     dividerColor?: string;
+    dividerMargin?: string;
     itemActiveBackgroundColor?: string;
     itemBorderRadius?: string;
     itemColor?: string;
@@ -74,6 +115,8 @@ export interface KritzelTheme {
     itemGap?: string;
     itemHoverBackgroundColor?: string;
     itemPadding?: string;
+    itemSpacing?: string;
+    minWidth?: string;
     padding?: string;
   };
 
@@ -130,9 +173,14 @@ export interface KritzelTheme {
   /** Dropdown variables */
   dropdown?: {
     accentColor?: string;
+    background?: string;
+    borderColor?: string;
     hoverBackgroundColor?: string;
+    hoverBorderColor?: string;
     selectedBackgroundColor?: string;
     textColor?: string;
+    triggerFontSize?: string;
+    triggerPadding?: string;
   };
 
   /** Editor variables */
@@ -165,6 +213,19 @@ export interface KritzelTheme {
     labelColor?: string;
     optionBackground?: string;
     selectedBackgroundColor?: string;
+  };
+
+  /** Login dialog variables */
+  loginDialog?: {
+    buttonActiveBackground?: string;
+    buttonBackground?: string;
+    buttonBorderColor?: string;
+    buttonHoverBackground?: string;
+    buttonHoverBorderColor?: string;
+    buttonTextColor?: string;
+    spinnerActiveColor?: string;
+    spinnerColor?: string;
+    subtitleColor?: string;
   };
 
   /** Master detail variables */
@@ -256,6 +317,8 @@ export interface KritzelTheme {
     hoverBorderColor?: string;
     inputBackground?: string;
     labelColor?: string;
+    selectionBackground?: string;
+    selectionColor?: string;
     spinnerActiveBackground?: string;
     spinnerBackground?: string;
     spinnerColor?: string;
@@ -269,6 +332,19 @@ export interface KritzelTheme {
     thumbBorderColor?: string;
     thumbColor?: string;
     trackColor?: string;
+  };
+
+  /** Pill tabs variables */
+  pillTabs?: {
+    background?: string;
+    borderRadius?: string;
+    tabBackground?: string;
+    tabBackgroundHover?: string;
+    tabBackgroundSelected?: string;
+    tabBorderRadius?: string;
+    tabShadowSelected?: string;
+    tabTextColor?: string;
+    tabTextColorSelected?: string;
   };
 
   /** Portal variables */
@@ -295,8 +371,6 @@ export interface KritzelTheme {
     shortcutKeyBg?: string;
     shortcutKeyBorder?: string;
     shortcutKeyColor?: string;
-    shortcutLabelColor?: string;
-    shortcutsCategoryColor?: string;
   };
 
   /** Shape fill variables */
@@ -304,6 +378,27 @@ export interface KritzelTheme {
     hoverBackgroundColor?: string;
     optionBackground?: string;
     selectedBackgroundColor?: string;
+  };
+
+  /** Share dialog variables */
+  shareDialog?: {
+    borderColor?: string;
+    copyButtonBackground?: string;
+    copyButtonColor?: string;
+    copyButtonHoverBackground?: string;
+    copyButtonHoverColor?: string;
+    copySuccessBackground?: string;
+    copySuccessColor?: string;
+    descriptionColor?: string;
+    inputBackground?: string;
+    inputBorderColor?: string;
+    inputTextColor?: string;
+    labelColor?: string;
+    revokeButtonBorderColor?: string;
+    revokeButtonColor?: string;
+    revokeButtonHoverBackground?: string;
+    revokeButtonHoverColor?: string;
+    selectionColor?: string;
   };
 
   /** Slide toggle variables */
@@ -342,6 +437,21 @@ export interface KritzelTheme {
   /** Submenu variables */
   submenu?: {
     gap?: string;
+  };
+
+  /** Text input variables */
+  textInput?: {
+    background?: string;
+    borderColor?: string;
+    focusBorderColor?: string;
+    hoverBorderColor?: string;
+    labelColor?: string;
+    placeholderColor?: string;
+    selectionBackground?: string;
+    selectionColor?: string;
+    suffixBackground?: string;
+    suffixColor?: string;
+    textColor?: string;
   };
 
   /** Tooltip variables */
