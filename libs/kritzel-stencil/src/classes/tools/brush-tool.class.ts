@@ -4,21 +4,41 @@ import { KritzelBaseTool } from './base-tool.class';
 import { KritzelCore } from '../core/core.class';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 
+/**
+ * Brush tool for free-hand drawing on the canvas.
+ * Creates smooth paths by tracking pointer movement and rendering stroke paths.
+ * Supports mouse, touch, and pen input with configurable color, size, and opacity.
+ */
 export class KritzelBrushTool extends KritzelBaseTool {
+  /** The color of the brush stroke (supports theme-aware light/dark colors) */
   color: ThemeAwareColor = DEFAULT_COLOR_PALETTE[0];
 
+  /** The width of the brush stroke in pixels */
   size: number = 6;
 
+  /** The opacity of the brush stroke (0-1) */
   opacity: number = 1;
 
+  /** Available color palette for the brush tool */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
 
+  /** Tracks the ID of the path currently being drawn */
   private _currentPathId: string | null = null;
 
+  /**
+   * Creates a new instance of KritzelBrushTool.
+   * @param core - The KritzelCore instance that provides access to application state and functionality
+   */
   constructor(core: KritzelCore) {
     super(core);
   }
 
+  /**
+   * Handles pointer down events to start drawing a new path.
+   * Creates a new KritzelPath object at the pointer position and adds it to the canvas.
+   * Supports both mouse (left-click) and touch/pen input.
+   * @param event - The PointerEvent containing pointer position and input type information
+   */
   handlePointerDown(event: PointerEvent): void {
     if (event.cancelable) {
       event.preventDefault();
@@ -78,6 +98,12 @@ export class KritzelBrushTool extends KritzelBaseTool {
     }
   }
 
+  /**
+   * Handles pointer move events to extend the current path while drawing.
+   * Adds new points to the current path as the pointer moves across the canvas.
+   * Only processes events when actively drawing (isDrawing state is true).
+   * @param event - The PointerEvent containing the current pointer position
+   */
   handlePointerMove(event: PointerEvent): void {
     if (event.cancelable) {
       event.preventDefault();
@@ -85,8 +111,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDrawing && this._currentPathId) {
-        const matchingObjects = this._core.store.state.objects.filter(o => o.id === this._currentPathId);
-        const currentPath = matchingObjects.length > 0 ? (matchingObjects[0] as KritzelPath) : null;
+        const currentPath = this._core.store.state.objects.findById(this._currentPathId) as KritzelPath | undefined;
 
         if (currentPath) {
           const viewportScale = this._core.store.state.scale;
@@ -119,8 +144,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
       if (activePointers.length === 1) {
         if (this._currentPathId) {
-          const matchingObjects = this._core.store.state.objects.filter(o => o.id === this._currentPathId);
-          const currentPath = matchingObjects.length > 0 ? (matchingObjects[0] as KritzelPath) : null;
+          const currentPath = this._core.store.state.objects.findById(this._currentPathId) as KritzelPath | undefined;
 
           if (currentPath) {
             const viewportScale = this._core.store.state.scale;
@@ -150,6 +174,12 @@ export class KritzelBrushTool extends KritzelBaseTool {
     }
   }
 
+  /**
+   * Handles pointer up events to complete the current path.
+   * Marks the path as completed, updates the store, and emits an objects change event.
+   * Resets the drawing state and clears the current path reference.
+   * @param event - The PointerEvent indicating the end of the drawing gesture
+   */
   handlePointerUp(event: PointerEvent): void {
     if (event.cancelable) {
       event.preventDefault();
@@ -160,13 +190,13 @@ export class KritzelBrushTool extends KritzelBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentPathId) {
-          const matchingObjects = this._core.store.state.objects.filter(o => o.id === this._currentPathId);
-          const currentPath = matchingObjects.length > 0 ? (matchingObjects[0] as KritzelPath) : null;
+          const currentPath = this._core.store.state.objects.findById(this._currentPathId) as KritzelPath | undefined;
 
           if (currentPath) {
             currentPath.isCompleted = true;
             this._core.store.state.objects.update(currentPath);
             this._core.engine.emitObjectsChange();
+            this._core.engine.emitObjectsAdded([currentPath]);
           }
           this._currentPathId = null;
         }
@@ -178,13 +208,13 @@ export class KritzelBrushTool extends KritzelBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentPathId) {
-          const matchingObjects = this._core.store.state.objects.filter(o => o.id === this._currentPathId);
-          const currentPath = matchingObjects.length > 0 ? (matchingObjects[0] as KritzelPath) : null;
+          const currentPath = this._core.store.state.objects.findById(this._currentPathId) as KritzelPath | undefined;
 
           if (currentPath) {
             currentPath.isCompleted = true;
             this._core.store.state.objects.update(currentPath);
             this._core.engine.emitObjectsChange();
+            this._core.engine.emitObjectsAdded([currentPath]);
           }
           this._currentPathId = null;
         }

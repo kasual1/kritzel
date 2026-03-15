@@ -3,20 +3,39 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseHandler } from './base.handler';
 
+/**
+ * Handler class responsible for managing resize operations on selected objects.
+ * Supports mouse, touch, and pen input types, with rotation-aware resizing
+ * and optional aspect ratio locking via Shift key (mouse only).
+ */
 export class KritzelResizeHandler extends KritzelBaseHandler {
+  /** Initial mouse/pointer X coordinate when resize started */
   initialMouseX: number = 0;
+  /** Initial mouse/pointer Y coordinate when resize started */
   initialMouseY: number = 0;
 
+  /** Initial position and dimensions of the selection group before resize */
   initialSize: { x: number; y: number; width: number; height: number } = { x: 0, y: 0, width: 0, height: 0 };
 
+  /** New position and dimensions being calculated during resize */
   newSize: { x: number; y: number; width: number; height: number } = { x: 0, y: 0, width: 0, height: 0 };
 
+  /** Flag indicating whether the user has moved past the resize threshold */
   hasResized: boolean = false;
 
+  /**
+   * Creates a new KritzelResizeHandler instance.
+   * @param core - The KritzelCore instance providing access to store, engine, and other core functionalities
+   */
   constructor(core: KritzelCore) {
     super(core);
   }
 
+  /**
+   * Resets all internal state variables to their default values.
+   * Called after a resize operation completes to prepare for the next resize.
+   * @private
+   */
   private reset() {
     this.initialMouseX = 0;
     this.initialMouseY = 0;
@@ -25,6 +44,16 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
     this.hasResized = false;
   }
 
+  /**
+   * Handles the pointer down event to initiate a resize operation.
+   * Captures the initial mouse position and selection group dimensions when
+   * the user clicks/touches a resize handle. Supports both mouse and touch/pen inputs.
+   *
+   * For mouse: Requires left click on an active resize handle.
+   * For touch/pen: Requires single finger touch on an active resize handle.
+   *
+   * @param event - The PointerEvent containing pointer type, position, and button information
+   */
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
@@ -70,12 +99,25 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           this.initialSize.x = selectionGroup.translateX;
           this.initialSize.y = selectionGroup.translateY;
 
-          clearTimeout(this._core.store.state.longTouchTimeout);
+          globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
         }
       }
     }
   }
 
+  /**
+   * Handles the pointer move event during an active resize operation.
+   * Calculates the new dimensions based on pointer movement, taking into account:
+   * - The rotation of the selection group (transforms screen delta to local space)
+   * - The current canvas scale/zoom level
+   * - The type of resize handle being dragged (TopLeft, TopRight, BottomLeft, BottomRight)
+   * - Aspect ratio locking when Shift key is pressed (mouse only)
+   *
+   * Uses a movement threshold to prevent accidental micro-resizes.
+   * The resize is applied symmetrically around the center point.
+   *
+   * @param event - The PointerEvent containing current pointer position and modifier keys
+   */
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       const selectionGroup = this._core.store.selectionGroup;
@@ -171,7 +213,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         const resizeThreshold = 5;
 
         if (resizeDeltaX > resizeThreshold || resizeDeltaY > resizeThreshold) {
-          clearTimeout(this._core.store.state.longTouchTimeout);
+          globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
           this.hasResized = true;
         }
 
@@ -231,7 +273,14 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
   /**
    * Constrains the new size to maintain the original aspect ratio.
-   * Uses the dominant scale factor (larger change) to determine the final size.
+   * Uses the dominant scale factor (the axis with larger relative change)
+   * to determine the final size, ensuring natural resize behavior.
+   *
+   * If width changed more proportionally, height is adjusted to match the aspect ratio.
+   * If height changed more proportionally, width is adjusted to match the aspect ratio.
+   *
+   * @private
+   * @remarks Does nothing if initial width or height is zero to prevent division errors
    */
   private constrainToAspectRatio(): void {
     const initialWidth = this.initialSize.width;
@@ -255,6 +304,16 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Handles the pointer up event to finalize a resize operation.
+   * If resizing occurred (movement exceeded threshold), updates the selection group
+   * and emits change events. Resets all internal state regardless of whether
+   * actual resizing took place.
+   *
+   * For touch/pen inputs, also clears any pending long touch timeout.
+   *
+   * @param event - The PointerEvent containing pointer type information
+   */
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isResizing) {
@@ -282,7 +341,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
         this.reset();
 
-        clearTimeout(this._core.store.state.longTouchTimeout);
+        globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
       }
     }
   }

@@ -1,10 +1,10 @@
 import { KritzelCore } from './core.class';
-import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engine';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
+import { KritzelBaseTool } from '../tools/base-tool.class';
 import { KritzelWorkspace } from './workspace.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
@@ -30,16 +30,19 @@ jest.mock('../registries/tool.registry');
 
 describe('KritzelCore', () => {
   let core: KritzelCore;
-  let mockEngine: jest.Mocked<KritzelEngine>;
+  let mockEngine: any;
   let mockStore: any;
   let mockAppStateMap: any;
   let mockAnchorManager: any;
   let mockObjectsMap: any;
 
-  const createMockEngine = (): jest.Mocked<KritzelEngine> => {
+  const createMockEngine = () => {
     return {
       forceUpdate: 0,
       emitObjectsChange: jest.fn(),
+      emitObjectsAdded: jest.fn(),
+      emitObjectsRemoved: jest.fn(),
+      emitObjectsUpdated: jest.fn(),
       emitObjectsInViewportChange: jest.fn(),
       triggerSelectionChange: jest.fn(),
       addObject: jest.fn(),
@@ -47,7 +50,7 @@ describe('KritzelCore', () => {
         cancelPendingUpdates: jest.fn(),
         centerFitInViewport: jest.fn(),
       },
-    } as unknown as jest.Mocked<KritzelEngine>;
+    };
   };
 
   beforeEach(() => {
@@ -80,7 +83,7 @@ describe('KritzelCore', () => {
       totalCount: 0,
     };
 
-    (KritzelObjectMap as jest.Mock).mockImplementation(() => mockObjectsMap);
+    jest.mocked(KritzelObjectMap).mockImplementation(() => mockObjectsMap);
 
     // Setup mock app state map
     mockAppStateMap = {
@@ -95,7 +98,7 @@ describe('KritzelCore', () => {
       destroy: jest.fn(),
     };
 
-    (KritzelAppStateMap as jest.Mock).mockImplementation(() => mockAppStateMap);
+    jest.mocked(KritzelAppStateMap).mockImplementation(() => mockAppStateMap);
 
     // Setup mock anchor manager
     mockAnchorManager = {
@@ -105,9 +108,25 @@ describe('KritzelCore', () => {
       updateAnchorsForObject: jest.fn(),
     };
 
-    (KritzelAnchorManager as jest.Mock).mockImplementation(() => mockAnchorManager);
-    (KritzelCursorManager as jest.Mock).mockImplementation(() => ({}));
-    (KritzelThemeManager as unknown as jest.Mock).mockImplementation(() => ({}));
+    jest.mocked(KritzelAnchorManager).mockImplementation(() => mockAnchorManager);
+    jest.mocked(KritzelCursorManager).mockImplementation(function (this: KritzelCursorManager) {
+      Object.assign(this, {
+        setTargetElement: jest.fn(),
+        setShadowRoot: jest.fn(),
+        resetToDefault: jest.fn(),
+        cleanup: jest.fn(),
+        updateHoverState: jest.fn(),
+      });
+      return this;
+    });
+    jest.mocked(KritzelThemeManager).mockImplementation(function (this: KritzelThemeManager) {
+      Object.assign(this, {
+        setTheme: jest.fn(),
+        setTargetElement: jest.fn(),
+        cleanup: jest.fn(),
+      });
+      return this;
+    });
 
     // Setup mock store
     mockStore = {
@@ -149,8 +168,10 @@ describe('KritzelCore', () => {
       onStateChange: jest.fn(),
     };
 
-    (KritzelStore as jest.Mock).mockImplementation(() => mockStore);
-    (KritzelToolRegistry.getTool as jest.Mock) = jest.fn().mockReturnValue({ name: 'selection' });
+    jest.mocked(KritzelStore).mockImplementation(() => mockStore);
+    const selectionTool = new KritzelBaseTool(Object.create(KritzelCore.prototype));
+    selectionTool.name = 'selection';
+    jest.mocked(KritzelToolRegistry.getTool).mockReturnValue(selectionTool);
 
     mockEngine = createMockEngine();
     core = new KritzelCore(mockEngine);
@@ -184,6 +205,15 @@ describe('KritzelCore', () => {
     it('should initialize the theme manager', () => {
       expect(KritzelThemeManager).toHaveBeenCalledWith(core);
     });
+
+    it('should have undefined editorId by default', () => {
+      expect(core.editorId).toBeUndefined();
+    });
+
+    it('should accept an editorId parameter', () => {
+      const coreWithId = new KritzelCore(mockEngine, 'my-editor');
+      expect(coreWithId.editorId).toBe('my-editor');
+    });
   });
 
   describe('getters', () => {
@@ -209,6 +239,47 @@ describe('KritzelCore', () => {
 
     it('should return the themeManager', () => {
       expect(core.themeManager).toBeDefined();
+    });
+  });
+
+  describe('getStorageKey', () => {
+    it('should return the base key when no editorId is set', () => {
+      expect(core.getStorageKey('kritzel-settings')).toBe('kritzel-settings');
+    });
+
+    it('should append editorId to the base key when set', () => {
+      const coreWithId = new KritzelCore(mockEngine, 'homepage');
+      expect(coreWithId.getStorageKey('kritzel-settings')).toBe('kritzel-settings-homepage');
+    });
+
+    it('should work with different base keys', () => {
+      const coreWithId = new KritzelCore(mockEngine, 'demo');
+      expect(coreWithId.getStorageKey('kritzel-active-workspace-id')).toBe('kritzel-active-workspace-id-demo');
+    });
+  });
+
+  describe('setEditorId', () => {
+    it('should update the editorId', () => {
+      core.setEditorId('new-id');
+      expect(core.editorId).toBe('new-id');
+    });
+
+    it('should update getStorageKey results', () => {
+      core.setEditorId('instance-1');
+      expect(core.getStorageKey('kritzel-theme')).toBe('kritzel-theme-instance-1');
+    });
+
+    it('should re-create the theme manager', () => {
+      const callCountBefore = jest.mocked(KritzelThemeManager).mock.calls.length;
+      core.setEditorId('new-id');
+      expect(jest.mocked(KritzelThemeManager).mock.calls.length).toBe(callCountBefore + 1);
+    });
+
+    it('should clear editorId when called with undefined', () => {
+      core.setEditorId('temp-id');
+      core.setEditorId(undefined);
+      expect(core.editorId).toBeUndefined();
+      expect(core.getStorageKey('kritzel-theme')).toBe('kritzel-theme');
     });
   });
 
@@ -346,6 +417,18 @@ describe('KritzelCore', () => {
 
       expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-ws-db');
     });
+
+    it('should use editorId-namespaced database name when editorId is set', () => {
+      const coreWithId = new KritzelCore(mockEngine, 'homepage');
+      // Point the new core at the same mock store
+      (coreWithId as any)._store = mockStore;
+      mockStore.state.activeWorkspace = { id: 'ws-other' };
+
+      const ws = new KritzelWorkspace('ws-db', 'DB Test');
+      coreWithId.deleteWorkspace(ws);
+
+      expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-homepage-ws-db');
+    });
   });
 
   describe('updateWorkspaceViewport', () => {
@@ -403,6 +486,7 @@ describe('KritzelCore', () => {
 
     it('should cleanup anchors for line objects', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.id = 'line-1';
       line.isMounted = true;
 
@@ -424,6 +508,7 @@ describe('KritzelCore', () => {
       const child2 = { id: 'child-2', isMounted: true } as any;
 
       const group = Object.create(KritzelGroup.prototype);
+      group.__class__ = 'KritzelGroup';
       group.id = 'group-1';
       group.isMounted = true;
       Object.defineProperty(group, 'children', { get: () => [child1, child2] });
@@ -438,6 +523,7 @@ describe('KritzelCore', () => {
       const child = { id: 'child-1', isMounted: true } as any;
 
       const group = Object.create(KritzelGroup.prototype);
+      group.__class__ = 'KritzelGroup';
       group.id = 'group-1';
       group.isMounted = true;
       Object.defineProperty(group, 'children', { get: () => [child] });
@@ -718,13 +804,13 @@ describe('KritzelCore', () => {
     });
 
     it('should create selection group with provided objects', () => {
-      const mockSG = {
+      const mockSG: any = {
         addOrRemove: jest.fn(),
         isSelected: false,
         objects: [{ rotation: 0.5 }],
         rotation: 0,
       };
-      (KritzelSelectionGroup.create as jest.Mock) = jest.fn().mockReturnValue(mockSG);
+      jest.spyOn(KritzelSelectionGroup, 'create').mockReturnValue(mockSG);
 
       const obj = { id: 'obj-1', isSelected: true } as any;
 
@@ -1154,6 +1240,104 @@ describe('KritzelCore', () => {
       const event = { clientX: 100, clientY: 200 } as PointerEvent;
 
       expect(core.isPointerOverElement(event, '.handle')).toBe(false);
+    });
+  });
+
+  describe('initializeWorkspace', () => {
+    const STORAGE_KEY = 'kritzel-active-workspace-id';
+
+    function createWorkspace(id: string, name: string, createdAt: Date, updatedAt?: Date): KritzelWorkspace {
+      const ws = new KritzelWorkspace(id, name);
+      ws.createdAt = createdAt;
+      ws.updatedAt = updatedAt ?? createdAt;
+      return ws;
+    }
+
+    beforeEach(() => {
+      localStorage.removeItem(STORAGE_KEY);
+    });
+
+    afterEach(() => {
+      localStorage.removeItem(STORAGE_KEY);
+    });
+
+    it('should use the provided workspace when one is passed', async () => {
+      const ws = createWorkspace('ws-explicit', 'Explicit', new Date('2025-06-01'));
+      mockAppStateMap.allWorkspaces.mockReturnValue([]);
+      mockAppStateMap.has.mockReturnValue(false);
+
+      await core.initializeWorkspace(ws);
+
+      expect(mockStore.state.activeWorkspace).toBe(ws);
+    });
+
+    it('should use last-active workspace from localStorage when no workspace argument is given', async () => {
+      const wsOld = createWorkspace('ws-old', 'Old', new Date('2025-01-01'));
+      const wsNew = createWorkspace('ws-new', 'New', new Date('2025-06-01'));
+      mockAppStateMap.allWorkspaces.mockReturnValue([wsOld, wsNew]);
+      localStorage.setItem(STORAGE_KEY, 'ws-old');
+
+      await core.initializeWorkspace();
+
+      expect(mockStore.state.activeWorkspace).toBe(wsOld);
+    });
+
+    it('should prefer newest createdAt when last-active is absent', async () => {
+      const wsOld = createWorkspace('ws-old', 'Old', new Date('2025-01-01'), new Date('2025-12-01'));
+      const wsNew = createWorkspace('ws-new', 'New', new Date('2025-06-01'), new Date('2025-06-01'));
+      mockAppStateMap.allWorkspaces.mockReturnValue([wsOld, wsNew]);
+
+      await core.initializeWorkspace();
+
+      expect(mockStore.state.activeWorkspace).toBe(wsNew);
+    });
+
+    it('should use updatedAt as tie-breaker when createdAt is identical', async () => {
+      const sameDate = new Date('2025-05-01');
+      const wsA = createWorkspace('ws-a', 'A', sameDate, new Date('2025-06-01'));
+      const wsB = createWorkspace('ws-b', 'B', sameDate, new Date('2025-09-01'));
+      mockAppStateMap.allWorkspaces.mockReturnValue([wsA, wsB]);
+
+      await core.initializeWorkspace();
+
+      expect(mockStore.state.activeWorkspace).toBe(wsB);
+    });
+
+    it('should select the single existing workspace when exactly one exists', async () => {
+      const ws = createWorkspace('ws-only', 'Only', new Date('2025-03-01'));
+      mockAppStateMap.allWorkspaces.mockReturnValue([ws]);
+
+      await core.initializeWorkspace();
+
+      expect(mockStore.state.activeWorkspace).toBe(ws);
+    });
+
+    it('should create a new workspace when none exist', async () => {
+      mockAppStateMap.allWorkspaces.mockReturnValue([]);
+      mockAppStateMap.has.mockReturnValue(false);
+
+      await core.initializeWorkspace();
+
+      expect(mockStore.state.activeWorkspace).toBeDefined();
+      expect(mockStore.state.activeWorkspace).not.toBeNull();
+      expect(mockAppStateMap.insert).toHaveBeenCalled();
+    });
+
+    it('should set activeWorkspace to null when skipFallbackCreation is true and no workspaces exist', async () => {
+      mockAppStateMap.allWorkspaces.mockReturnValue([]);
+
+      await core.initializeWorkspace(undefined, { skipFallbackCreation: true });
+
+      expect(mockStore.state.activeWorkspace).toBeNull();
+    });
+
+    it('should persist active workspace id to localStorage', async () => {
+      const ws = createWorkspace('ws-persist', 'Persist', new Date('2025-04-01'));
+      mockAppStateMap.allWorkspaces.mockReturnValue([ws]);
+
+      await core.initializeWorkspace(ws);
+
+      expect(localStorage.getItem(STORAGE_KEY)).toBe('ws-persist');
     });
   });
 });

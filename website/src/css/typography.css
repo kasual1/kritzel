@@ -24,8 +24,9 @@ h3 {
 }
 
 p {
-  font-size: 1.1rem;
+  font-size: 1rem;
   opacity: 0.75;
+  font-family: Arial, sans-serif !important;
 }
 
 table th,
@@ -33,18 +34,30 @@ table td {
   font-size: 1rem;
 }
 
-.markdown ul {
-  font-size: 1.1rem;
+table td {
+  font-family: Arial, sans-serif !important;
+}
+
+.markdown a {
+  font-family: Arial, sans-serif !important;
+}
+
+.markdown ul,
+.markdown ol,
+.markdown li {
+  font-size: 1rem;
   color: var(--ifm-text-color-light);
+  font-family: Arial, sans-serif !important;
 }
 
 nav.menu {
   font-size: 0.8rem;
 }
 
-code, .token-line * {
+code,
+.token-line * {
   font-size: 0.8rem;
-  font-family:  monospace !important;
-  line-height: 1.1!important;
+  font-family: monospace !important;
+  line-height: 1.1 !important;
 
 }

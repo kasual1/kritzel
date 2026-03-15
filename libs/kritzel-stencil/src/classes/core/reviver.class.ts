@@ -16,14 +16,40 @@ import { KritzelCustomElement } from "../objects/custom-element.class";
 import type { KritzelCore } from "./core.class";
 import { KritzelWorkspace } from "./workspace.class";
 
+/**
+ * Handles deserialization/revival of Kritzel objects from plain JavaScript objects.
+ * This class uses a pattern similar to JSON.parse reviver to reconstruct class instances
+ * from their serialized representations, preserving the object's prototype chain and methods.
+ */
 export class KritzelReviver {
 
+  /** Reference to the KritzelCore instance for creating objects */
   private readonly _core: KritzelCore;
 
+  /**
+   * Creates a new KritzelReviver instance.
+   * @param core - The KritzelCore instance used to create revived objects
+   */
   constructor(core: KritzelCore) {
     this._core = core;
   }
 
+  /**
+   * Recursively revives a plain JavaScript object (or array) into typed Kritzel instances.
+   * Uses the `__class__` property to determine the correct class to instantiate.
+   * Objects without `__class__` are recursively processed to revive nested objects.
+   *
+   * Supported classes:
+   * - Objects: KritzelPath, KritzelLine, KritzelText, KritzelShape, KritzelImage,
+   *            KritzelCustomElement, KritzelSelectionGroup, KritzelGroup
+   * - Workspace: KritzelWorkspace
+   * - Tools: KritzelBrushTool, KritzelEraserTool, KritzelImageTool, KritzelSelectionTool,
+   *          KritzelTextTool, KritzelLineTool, KritzelShapeTool
+   *
+   * @typeParam T - The expected return type after revival
+   * @param obj - The plain object to revive, typically from JSON deserialization
+   * @returns The revived object with proper class instances, or the original value if not an object
+   */
   revive<T>(obj: any): T {
     if (obj && typeof obj === 'object') {
       if (obj.__class__) {

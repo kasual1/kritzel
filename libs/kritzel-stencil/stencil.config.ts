@@ -24,7 +24,15 @@ const INTERNAL_COMPONENTS = [
   'kritzel-menu',
   'kritzel-menu-item',
   'kritzel-split-button',
-  'kritzel-workspace-manager'
+  'kritzel-workspace-manager',
+  'kritzel-active-users',
+  'kritzel-current-user',
+  'kritzel-more-menu',
+  'kritzel-avatar',
+  'kritzel-active-users',
+  'kritzel-share-dialog',
+  'kritzel-slide-toggle',
+  'kritzel-shape-fill'
 ];
 
 const isDev = process.argv.includes('--dev') || process.argv.includes('--serve');

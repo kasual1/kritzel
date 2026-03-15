@@ -1,5 +1,6 @@
 import { KritzelObjectMap } from './object-map.structure';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
+import type { KritzelCore } from '../core/core.class';
 
 // --- Mock Yjs ---
 const mockMapObserve = jest.fn();
@@ -100,12 +101,37 @@ jest.mock('../../configs/default-sync.config', () => ({
 // --- Mock barrel export for KritzelUndoState ---
 jest.mock('../..', () => ({}));
 
-const createMockCore = () => ({
+type MockCore = jest.Mocked<Pick<KritzelCore, 'rerender' | 'editorId'>> & {
+  engine: {
+    emitObjectsChange: jest.Mock;
+    emitObjectsAdded: jest.Mock;
+    emitObjectsRemoved: jest.Mock;
+    emitObjectsUpdated: jest.Mock;
+  };
+  store?: {
+    invalidateSelectionCache: jest.Mock;
+  };
+};
+
+const createMockCore = (overrides: Partial<MockCore> = {}): MockCore => ({
   rerender: jest.fn(),
-  engine: { emitObjectsChange: jest.fn() },
+  editorId: undefined,
+  engine: {
+    emitObjectsChange: jest.fn(),
+    emitObjectsAdded: jest.fn(),
+    emitObjectsRemoved: jest.fn(),
+    emitObjectsUpdated: jest.fn(),
+  },
+  ...overrides,
 });
 
-const createMockProvider = (): any => ({
+interface MockProvider {
+  connect: jest.Mock<Promise<void>>;
+  disconnect: jest.Mock<void>;
+  destroy: jest.Mock<void>;
+}
+
+const createMockProvider = (): MockProvider => ({
   connect: jest.fn().mockResolvedValue(undefined),
   disconnect: jest.fn(),
   destroy: jest.fn(),
@@ -125,7 +151,7 @@ const createMockObject = (id: string, opts: { isSelectionBox?: boolean } = {}): 
 
 describe('KritzelObjectMap', () => {
   let objectMap: KritzelObjectMap<any>;
-  let mockCore: any;
+  let mockCore: MockCore;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -164,20 +190,20 @@ describe('KritzelObjectMap', () => {
 
   describe('initialize', () => {
     it('should set isReady to true after initialization', async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
 
       expect(objectMap.isReady).toBe(true);
     });
 
     it('should set workspaceId', async () => {
-      await objectMap.initialize(mockCore, 'ws-42', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-42', { providers: [] });
 
       expect(objectMap.workspaceId).toBe('ws-42');
     });
 
     it('should create Y.Doc and get objects map', async () => {
       const Y = require('yjs');
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
 
       expect(Y.Doc).toHaveBeenCalled();
       expect(mockYdocGetMap).toHaveBeenCalledWith('objects');
@@ -185,13 +211,13 @@ describe('KritzelObjectMap', () => {
 
     it('should create UndoManager', async () => {
       const Y = require('yjs');
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
 
       expect(Y.UndoManager).toHaveBeenCalled();
     });
 
     it('should observe the objects map', async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
 
       expect(mockMapObserve).toHaveBeenCalledWith(expect.any(Function));
     });
@@ -199,9 +225,9 @@ describe('KritzelObjectMap', () => {
     it('should connect providers from config', async () => {
       const provider = createMockProvider();
       const factory = { create: jest.fn().mockReturnValue(provider) };
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [factory] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
 
-      expect(factory.create).toHaveBeenCalledWith('kritzel-workspace-ws-1', expect.anything());
+      expect(factory.create).toHaveBeenCalledWith('kritzel-workspace-ws-1', expect.anything(), expect.anything());
       expect(provider.connect).toHaveBeenCalled();
     });
 
@@ -209,21 +235,41 @@ describe('KritzelObjectMap', () => {
       const provider = createMockProvider();
       const ProviderClass = jest.fn().mockImplementation(() => provider) as any;
 
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [ProviderClass] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [ProviderClass] });
 
-      expect(ProviderClass).toHaveBeenCalledWith('kritzel-workspace-ws-1', expect.anything());
+      expect(ProviderClass).toHaveBeenCalledWith('kritzel-workspace-ws-1', expect.anything(), expect.anything());
       expect(provider.connect).toHaveBeenCalled();
     });
 
+    it('should use editorId-namespaced doc name when editorId is set', async () => {
+      const coreWithId = createMockCore({ editorId: 'homepage' });
+      const provider = createMockProvider();
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      await objectMap.initialize(coreWithId as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      expect(factory.create).toHaveBeenCalledWith('kritzel-workspace-homepage-ws-1', expect.anything(), expect.anything());
+    });
+
+    it('should use default doc name when editorId is undefined', async () => {
+      const coreNoId = createMockCore({ editorId: undefined });
+      const provider = createMockProvider();
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      await objectMap.initialize(coreNoId as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      expect(factory.create).toHaveBeenCalledWith('kritzel-workspace-ws-1', expect.anything(), expect.anything());
+    });
+
     it('should load objects from Yjs after connecting', async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
 
       expect(mockQuadtreeReset).toHaveBeenCalled();
       expect(mockMapForEach).toHaveBeenCalled();
     });
 
     it('should register undo manager event listeners', async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
 
       expect(mockUndoManagerOn).toHaveBeenCalledWith('stack-item-added', expect.any(Function));
       expect(mockUndoManagerOn).toHaveBeenCalledWith('stack-item-popped', expect.any(Function));
@@ -232,7 +278,9 @@ describe('KritzelObjectMap', () => {
 
   describe('insert', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      mockMapSet.mockClear();
+      mockYdocTransact.mockClear();
     });
 
     it('should insert object into quadtree and Yjs map', () => {
@@ -273,12 +321,13 @@ describe('KritzelObjectMap', () => {
 
   describe('update', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should update existing object in quadtree and Yjs', () => {
       const obj = createMockObject('obj-1');
-      mockQuadtreeFilter.mockReturnValueOnce([obj]);
+      objectMap.insert(obj);
+      jest.clearAllMocks();
 
       const result = objectMap.update(obj);
 
@@ -296,8 +345,6 @@ describe('KritzelObjectMap', () => {
     });
 
     it('should return false when object does not exist', () => {
-      mockQuadtreeFilter.mockReturnValueOnce([]);
-
       const result = objectMap.update(createMockObject('nonexistent'));
 
       expect(result).toBe(false);
@@ -305,7 +352,8 @@ describe('KritzelObjectMap', () => {
 
     it('should use temporary origin when option is set', () => {
       const obj = createMockObject('obj-1');
-      mockQuadtreeFilter.mockReturnValueOnce([obj]);
+      objectMap.insert(obj);
+      mockYdocTransact.mockClear();
 
       objectMap.update(obj, { temporary: true });
 
@@ -314,7 +362,8 @@ describe('KritzelObjectMap', () => {
 
     it('should use local origin by default', () => {
       const obj = createMockObject('obj-1');
-      mockQuadtreeFilter.mockReturnValueOnce([obj]);
+      objectMap.insert(obj);
+      mockYdocTransact.mockClear();
 
       objectMap.update(obj);
 
@@ -323,12 +372,13 @@ describe('KritzelObjectMap', () => {
 
     it('should not persist SelectionBox objects', () => {
       const obj = createMockObject('sb-1', { isSelectionBox: true });
-      mockQuadtreeFilter.mockReturnValueOnce([obj]);
+      objectMap.insert(obj);
+      jest.clearAllMocks();
 
       objectMap.update(obj);
 
       expect(mockQuadtreeUpdate).toHaveBeenCalledWith(obj);
-      // mapSet should not have been called after initialization
+      // mapSet should not have been called during update (SelectionBox is not persistable)
       const setCallsAfterInit = mockMapSet.mock.calls;
       expect(setCallsAfterInit.filter((c: any) => c[0] === 'sb-1')).toHaveLength(0);
     });
@@ -336,7 +386,7 @@ describe('KritzelObjectMap', () => {
 
   describe('remove', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should remove matching objects from quadtree and Yjs', () => {
@@ -370,7 +420,7 @@ describe('KritzelObjectMap', () => {
 
   describe('filter / allObjects / query', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should delegate filter to quadtree', () => {
@@ -404,7 +454,7 @@ describe('KritzelObjectMap', () => {
 
   describe('transaction', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should run callback inside a Y.Doc transaction with local origin', () => {
@@ -419,7 +469,7 @@ describe('KritzelObjectMap', () => {
 
   describe('reset', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should reset quadtree and clear Yjs map', () => {
@@ -434,7 +484,7 @@ describe('KritzelObjectMap', () => {
 
   describe('undo / redo', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should call undoManager.undo when canUndo is true', () => {
@@ -474,7 +524,7 @@ describe('KritzelObjectMap', () => {
 
   describe('canUndo / canRedo', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should delegate canUndo to undoManager', () => {
@@ -513,7 +563,7 @@ describe('KritzelObjectMap', () => {
     });
 
     it('should reflect undoManager state after initialization', async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
       mockUndoManagerCanUndo.mockReturnValue(true);
       mockUndoManagerCanRedo.mockReturnValue(false);
       mockUndoStack.push({}, {});
@@ -532,7 +582,7 @@ describe('KritzelObjectMap', () => {
 
   describe('clearHistory', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should clear the undoManager', () => {
@@ -544,7 +594,7 @@ describe('KritzelObjectMap', () => {
 
   describe('consolidateTemporaryItems', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should do nothing when temporaryItemsCount is 0', () => {
@@ -573,7 +623,7 @@ describe('KritzelObjectMap', () => {
 
   describe('clearTemporaryItems', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should do nothing when temporaryItemsCount is 0', () => {
@@ -601,7 +651,7 @@ describe('KritzelObjectMap', () => {
 
   describe('stack-item event handlers', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should increment temporaryItemsCount on temporary stack-item-added', () => {
@@ -694,7 +744,7 @@ describe('KritzelObjectMap', () => {
         store: mockStore,
       };
 
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
 
       // Capture the observer callback
       observerCallback = mockMapObserve.mock.calls[0][0];
@@ -763,13 +813,15 @@ describe('KritzelObjectMap', () => {
         serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'KritzelPath' }),
       };
 
+      // Insert the child object first so _idMap.has('obj-1') returns true (simulates existing object)
+      objectMap.insert(mockChildObject as any);
+
       // First call returns the child object (regular object update)
       mockRevive.mockReturnValueOnce(mockChildObject);
 
-      // Mock quadtree to return the existing SelectionGroup when filtering
+      // Mock quadtree to return the existing SelectionGroup when filtering for SelectionGroups
       mockQuadtreeFilter
-        .mockReturnValueOnce([]) // First filter: check if child object exists
-        .mockReturnValueOnce([mockSelectionGroup]); // Second filter: find SelectionGroups
+        .mockReturnValueOnce([mockSelectionGroup]); // filter: find SelectionGroups
 
       mockMapGet.mockReturnValueOnce({ id: 'obj-1', __class__: 'KritzelPath' });
 
@@ -824,7 +876,7 @@ describe('KritzelObjectMap', () => {
         cb({ id: 'revived-1', type: 'path' });
       });
 
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
 
       expect(mockQuadtreeReset).toHaveBeenCalled();
       expect(mockRevive).toHaveBeenCalledWith({ id: 'revived-1', type: 'path' });
@@ -834,7 +886,7 @@ describe('KritzelObjectMap', () => {
 
   describe('destroy', () => {
     beforeEach(async () => {
-      await objectMap.initialize(mockCore, 'ws-1', { providers: [] });
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
     });
 
     it('should unobserve the objects map', () => {
@@ -878,7 +930,7 @@ describe('KritzelObjectMap', () => {
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
       const map2 = new KritzelObjectMap();
-      await map2.initialize(mockCore, 'ws-2', { providers: [factory] });
+      await map2.initialize(mockCore as unknown as KritzelCore, 'ws-2', { providers: [factory] });
 
       map2.destroy();
 

@@ -54,11 +54,13 @@ A slide toggle (switch) component for toggling between on/off states.
 ### Used by
 
  - [kritzel-settings](../../ui/kritzel-settings)
+ - [kritzel-share-dialog](../../ui/kritzel-share-dialog)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-settings --> kritzel-slide-toggle
+  kritzel-share-dialog --> kritzel-slide-toggle
   style kritzel-slide-toggle fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

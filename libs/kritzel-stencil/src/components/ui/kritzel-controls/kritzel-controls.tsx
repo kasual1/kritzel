@@ -259,7 +259,7 @@ export class KritzelControls {
                         (this.activeControl?.tool instanceof KritzelSelectionTool && this.activeControl.tool.hasSelection());
 
     // Separate tool controls from config control
-    const toolControls = this.controls.filter(c => c.type === 'tool');
+    const toolControls = this.controls.filter(c => c.type === 'tool' || c.type === 'separator');
     const configControl = this.controls.find(c => c.type === 'config' && c.name === this.firstConfig?.name);
 
     return (
@@ -305,12 +305,14 @@ export class KritzelControls {
                       'selected': isActive,
                     }}
                     key={control.name}
+                    data-testid={`tool-${control.name}`}
                     ref={el => { if (el) (control as any)._anchorRef = el; }}
                   >
                     <button
                       class="kritzel-control-main"
                       onClick={() => this.handleControlClick(control)}
                       title={selectedSubOption?.label}
+                      data-testid={`tool-${control.name}-main`}
                     >
                       <kritzel-icon name={selectedSubOption?.icon || control.icon}></kritzel-icon>
                     </button>
@@ -321,6 +323,7 @@ export class KritzelControls {
                       }}
                       ref={el => { if (el) (control as any)._triggerRef = el; }}
                       aria-label="Select shape type"
+                      data-testid={`tool-${control.name}-dropdown`}
                       tabIndex={isActive ? 0 : -1}
                     >
                       <kritzel-icon name="chevron-down" size={12}></kritzel-icon>
@@ -338,6 +341,7 @@ export class KritzelControls {
                               'active': option.id === selectedSubOption?.id,
                             }}
                             key={option.id}
+                            data-testid={`suboption-${option.id}`}
                             onClick={() => this.selectSubOption(control, option)}
                           >
                             <kritzel-icon name={option.icon} size={20}></kritzel-icon>
@@ -350,6 +354,10 @@ export class KritzelControls {
                 );
               }
 
+              if (control.type === 'separator') {
+                return <div class="kritzel-control-separator" key={control.name}></div>;
+              }
+
               // Regular tool control (no sub-options)
               return (
                 <button
@@ -358,6 +366,7 @@ export class KritzelControls {
                     'selected': this.activeControl?.name === control?.name,
                   }}
                   key={control.name}
+                  data-testid={`tool-${control.name}`}
                   onClick={_event => this.handleControlClick?.(control)}
                 >
                   <kritzel-icon name={control.icon}></kritzel-icon>
@@ -397,6 +406,7 @@ export class KritzelControls {
               <div
                 tabIndex={hasConfigUI ? 0 : -1}
                 class="kritzel-config"
+                data-testid="tool-config"
                 ref={el => { if (el) this.configTriggerRef = el; }}
                 onKeyDown={event => {
                   if (event.key === 'Enter') {

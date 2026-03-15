@@ -6,8 +6,8 @@ describe('ObjectHelper', () => {
       expect(typeof ObjectHelper.generateUUID()).toBe('string');
     });
 
-    it('should return a string of length 9', () => {
-      expect(ObjectHelper.generateUUID().length).toBe(9);
+    it('should return a string of length 16', () => {
+      expect(ObjectHelper.generateUUID().length).toBe(16);
     });
 
     it('should return different values on subsequent calls', () => {

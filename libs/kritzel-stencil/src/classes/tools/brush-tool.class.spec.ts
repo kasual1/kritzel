@@ -55,7 +55,7 @@ describe('KritzelBrushTool', () => {
     mockObjectsMap = {
       insert: jest.fn(),
       update: jest.fn(),
-      filter: jest.fn().mockReturnValue([]),
+      findById: jest.fn().mockReturnValue(undefined),
     };
 
     mockState = {
@@ -76,6 +76,9 @@ describe('KritzelBrushTool', () => {
       },
       engine: {
         emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
       },
     } as unknown as jest.Mocked<KritzelCore>;
 
@@ -304,7 +307,7 @@ describe('KritzelBrushTool', () => {
       tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
 
       const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
-      mockObjectsMap.filter.mockReturnValue([existingPath]);
+      mockObjectsMap.findById.mockReturnValue(existingPath);
 
       const moveEvent = createMouseEvent({ clientX: 150, clientY: 260 });
       tool.handlePointerMove(moveEvent);
@@ -319,7 +322,7 @@ describe('KritzelBrushTool', () => {
       tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
 
       const existingPath = { ...mockCreatedPath, points: [[50, 60]], id: 'path-1', workspaceId: 'ws-1', zIndex: 5 };
-      mockObjectsMap.filter.mockReturnValue([existingPath]);
+      mockObjectsMap.findById.mockReturnValue(existingPath);
 
       const newPath = { id: 'new-id', workspaceId: 'new-ws', zIndex: 99, isCompleted: true };
       (KritzelPath.create as jest.Mock).mockReturnValue(newPath);
@@ -340,7 +343,7 @@ describe('KritzelBrushTool', () => {
 
     it('should not update when current path is not found', () => {
       tool.handlePointerDown(createMouseEvent());
-      mockObjectsMap.filter.mockReturnValue([]);
+      mockObjectsMap.findById.mockReturnValue(undefined);
 
       tool.handlePointerMove(createMouseEvent({ clientX: 150, clientY: 260 }));
 
@@ -359,7 +362,7 @@ describe('KritzelBrushTool', () => {
       tool.handlePointerDown(createTouchEvent());
 
       const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
-      mockObjectsMap.filter.mockReturnValue([existingPath]);
+      mockObjectsMap.findById.mockReturnValue(existingPath);
 
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 150, clientY: 260 });
@@ -387,7 +390,7 @@ describe('KritzelBrushTool', () => {
       tool.handlePointerDown(createTouchEvent());
 
       const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
-      mockObjectsMap.filter.mockReturnValue([existingPath]);
+      mockObjectsMap.findById.mockReturnValue(existingPath);
 
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 150.7, clientY: 260.3 });
@@ -417,7 +420,7 @@ describe('KritzelBrushTool', () => {
       tool.handlePointerDown(createMouseEvent());
 
       const existingPath = { ...mockCreatedPath, isCompleted: false };
-      mockObjectsMap.filter.mockReturnValue([existingPath]);
+      mockObjectsMap.findById.mockReturnValue(existingPath);
 
       tool.handlePointerUp(createMouseEvent());
 
@@ -429,7 +432,7 @@ describe('KritzelBrushTool', () => {
 
     it('should clear current path id after completion', () => {
       tool.handlePointerDown(createMouseEvent());
-      mockObjectsMap.filter.mockReturnValue([mockCreatedPath]);
+      mockObjectsMap.findById.mockReturnValue(mockCreatedPath);
 
       tool.handlePointerUp(createMouseEvent());
 
@@ -448,7 +451,7 @@ describe('KritzelBrushTool', () => {
 
     it('should handle case where path is not found', () => {
       tool.handlePointerDown(createMouseEvent());
-      mockObjectsMap.filter.mockReturnValue([]);
+      mockObjectsMap.findById.mockReturnValue(undefined);
 
       tool.handlePointerUp(createMouseEvent());
 
@@ -466,7 +469,7 @@ describe('KritzelBrushTool', () => {
       mockState.pointers.set(1, { clientX: 50, clientY: 60 });
       tool.handlePointerDown(createTouchEvent());
 
-      mockObjectsMap.filter.mockReturnValue([mockCreatedPath]);
+      mockObjectsMap.findById.mockReturnValue(mockCreatedPath);
 
       tool.handlePointerUp(createTouchEvent());
 
@@ -480,7 +483,7 @@ describe('KritzelBrushTool', () => {
       mockState.pointers.set(1, { clientX: 50, clientY: 60 });
       tool.handlePointerDown(createPenEvent());
 
-      mockObjectsMap.filter.mockReturnValue([mockCreatedPath]);
+      mockObjectsMap.findById.mockReturnValue(mockCreatedPath);
 
       tool.handlePointerUp(createPenEvent());
 
@@ -510,14 +513,14 @@ describe('KritzelBrushTool', () => {
 
       // 2. Pointer move - extend path
       const existingPath = { ...mockCreatedPath, points: [[10, 20]] };
-      mockObjectsMap.filter.mockReturnValue([existingPath]);
+      mockObjectsMap.findById.mockReturnValue(existingPath);
 
       const moveEvent = createMouseEvent({ clientX: 30, clientY: 40 });
       tool.handlePointerMove(moveEvent);
       expect(mockObjectsMap.update).toHaveBeenCalledTimes(1);
 
       // 3. Pointer up - finish drawing
-      mockObjectsMap.filter.mockReturnValue([existingPath]);
+      mockObjectsMap.findById.mockReturnValue(existingPath);
       const upEvent = createMouseEvent();
       tool.handlePointerUp(upEvent);
       expect(mockState.isDrawing).toBe(false);
@@ -533,14 +536,14 @@ describe('KritzelBrushTool', () => {
 
       // 2. Pointer move
       const existingPath = { ...mockCreatedPath, points: [[10, 20]] };
-      mockObjectsMap.filter.mockReturnValue([existingPath]);
+      mockObjectsMap.findById.mockReturnValue(existingPath);
       mockState.pointers.clear();
       mockState.pointers.set(1, { clientX: 30, clientY: 40 });
       tool.handlePointerMove(createTouchEvent());
       expect(mockObjectsMap.update).toHaveBeenCalled();
 
       // 3. Pointer up
-      mockObjectsMap.filter.mockReturnValue([existingPath]);
+      mockObjectsMap.findById.mockReturnValue(existingPath);
       tool.handlePointerUp(createTouchEvent());
       expect(mockState.isDrawing).toBe(false);
       expect(existingPath.isCompleted).toBe(true);

@@ -28,9 +28,10 @@ A settings button component that opens a settings dialog when clicked.
 
 ## Properties
 
-| Property    | Attribute | Description                                          | Type                                               | Default |
-| ----------- | --------- | ---------------------------------------------------- | -------------------------------------------------- | ------- |
-| `shortcuts` | --        | Keyboard shortcuts to display in the settings dialog | `Omit<KritzelShortcut, "action" \| "condition">[]` | `[]`    |
+| Property    | Attribute   | Description                                             | Type                                               | Default     |
+| ----------- | ----------- | ------------------------------------------------------- | -------------------------------------------------- | ----------- |
+| `editorId`  | `editor-id` | Optional unique identifier for namespacing storage keys | `string`                                           | `undefined` |
+| `shortcuts` | --          | Keyboard shortcuts to display in the settings dialog    | `Omit<KritzelShortcut, "action" \| "condition">[]` | `[]`        |
 
 
 ## Events

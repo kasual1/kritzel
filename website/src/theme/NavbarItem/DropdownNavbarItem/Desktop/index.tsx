@@ -1,8 +1,26 @@
 import React, {useState, useRef, useEffect, type ReactNode} from 'react';
 import clsx from 'clsx';
+import {useLocalPathname} from '@docusaurus/theme-common/internal';
 import NavbarNavLink from '@theme/NavbarItem/NavbarNavLink';
-import NavbarItem from '@theme/NavbarItem';
+import NavbarItem, {type LinkLikeNavbarItemProps} from '@theme/NavbarItem';
 import type {Props} from '@theme/NavbarItem/DropdownNavbarItem/Desktop';
+import { setPreferredFramework, getFrameworkFromPath } from '@site/src/utils/frameworkPreference';
+
+function isFrameworkPicker(items: readonly LinkLikeNavbarItemProps[]): boolean {
+  // Check if all items point to framework-specific docs
+  const frameworkPaths = ['/docs/angular', '/docs/react', '/docs/vue'];
+  return items.every((item) => 
+    frameworkPaths.some((path) => item.to?.includes(path) || item.activeBasePath?.includes(path))
+  );
+}
+
+function isFeaturesDropdown(items: readonly LinkLikeNavbarItemProps[]): boolean {
+  // Check if items point to feature pages
+  const featurePaths = ['/features/infinite-canvas', '/features/framework-agnostic', '/features/real-time-collaboration', '/features/drawing-tools'];
+  return items.some((item) => 
+    featurePaths.some((path) => item.to?.includes(path))
+  );
+}
 
 export default function DropdownNavbarItemDesktop({
   items,
@@ -13,6 +31,7 @@ export default function DropdownNavbarItemDesktop({
 }: Props): ReactNode {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const localPathname = useLocalPathname();
 
   useEffect(() => {
     const handleClickOutside = (
@@ -37,6 +56,17 @@ export default function DropdownNavbarItemDesktop({
       document.removeEventListener('focusin', handleClickOutside);
     };
   }, [dropdownRef]);
+
+  // Hide framework picker dropdown when not on docs pages
+  const isOnDocsPage = localPathname.includes('/docs');
+  if (isFrameworkPicker(items) && !isOnDocsPage) {
+    return null;
+  }
+
+  // Hide Features dropdown when on docs pages
+  if (isFeaturesDropdown(items) && isOnDocsPage) {
+    return null;
+  }
 
   return (
     <div
@@ -65,14 +95,25 @@ export default function DropdownNavbarItemDesktop({
         {props.children ?? props.label}
       </NavbarNavLink>
       <ul className="dropdown__menu">
-        {items.map((childItemProps, i) => (
-          <NavbarItem
-            isDropdownItem
-            activeClassName="dropdown__link--active"
-            {...childItemProps}
-            key={i}
-          />
-        ))}
+        {items.map((childItemProps, i) => {
+          const isFramework = isFrameworkPicker(items);
+          const handleClick = isFramework ? () => {
+            const framework = getFrameworkFromPath(childItemProps.to || '');
+            if (framework) {
+              setPreferredFramework(framework);
+            }
+          } : undefined;
+          
+          return (
+            <NavbarItem
+              isDropdownItem
+              activeClassName="dropdown__link--active"
+              {...childItemProps}
+              onClick={handleClick}
+              key={i}
+            />
+          );
+        })}
       </ul>
     </div>
   );

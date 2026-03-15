@@ -11,7 +11,7 @@ export interface KritzelToolbarSubOption {
 }
 
 export interface KritzelToolbarControl {
-  type: 'tool' | 'config';
+  type: 'tool' | 'config' | 'separator';
   tool?: (new (...args: any[]) => KritzelBaseTool) | KritzelBaseTool;
   icon?: string;
   isDefault?: boolean;

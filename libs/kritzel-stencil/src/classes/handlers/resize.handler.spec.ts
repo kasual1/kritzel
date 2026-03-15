@@ -77,6 +77,9 @@ describe('KritzelResizeHandler', () => {
       },
       engine: {
         emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
       },
     } as unknown as jest.Mocked<KritzelCore>;
 
@@ -228,7 +231,7 @@ describe('KritzelResizeHandler', () => {
 
       it('should clear long touch timeout on touch resize start', () => {
         jest.useFakeTimers();
-        mockState.longTouchTimeout = setTimeout(() => {}, 1000);
+        mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
         mockSelectionGroup = {
@@ -562,7 +565,7 @@ describe('KritzelResizeHandler', () => {
 
       it('should clear long touch timeout on touch resize', () => {
         jest.useFakeTimers();
-        mockState.longTouchTimeout = setTimeout(() => {}, 1000);
+        mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
         mockState.resizeHandleType = KritzelHandleType.BottomRight;
@@ -756,7 +759,7 @@ describe('KritzelResizeHandler', () => {
 
       it('should clear long touch timeout on touch up', () => {
         jest.useFakeTimers();
-        mockState.longTouchTimeout = setTimeout(() => {}, 1000);
+        mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
         mockState.resizeHandleType = KritzelHandleType.BottomRight;
@@ -822,9 +825,9 @@ describe('KritzelResizeHandler', () => {
         rotation: 0,
         scale: 1,
         resize: jest.fn(),
-          update: jest.fn(),
-          beginTransform: jest.fn(),
-        };
+        update: jest.fn(),
+        beginTransform: jest.fn(),
+      };
       mockState.isResizeHandleSelected = true;
       mockState.resizeHandleType = KritzelHandleType.BottomRight;
     });

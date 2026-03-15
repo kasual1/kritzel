@@ -3,15 +3,16 @@ import * as d from './proxy';
 
 export const DIRECTIVES = [
   d.KritzelBackToContent,
+  d.KritzelButton,
   d.KritzelDialog,
   d.KritzelEditor,
   d.KritzelExport,
+  d.KritzelInput,
   d.KritzelLineEndings,
+  d.KritzelLoginDialog,
   d.KritzelMasterDetail,
-  d.KritzelMoreMenu,
   d.KritzelNumericInput,
   d.KritzelOpacitySlider,
-  d.KritzelSettings,
-  d.KritzelShapeFill,
-  d.KritzelSlideToggle
+  d.KritzelPillTabs,
+  d.KritzelSettings
 ];

@@ -5,18 +5,44 @@ import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelCore } from '../core/core.class';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 
+/**
+ * Text tool for creating and editing text objects on the canvas.
+ * Clicking creates a new text object at the pointer position and enters edit mode.
+ * Clicking on an existing text object enters edit mode for that object.
+ * Supports configurable font family, size, color, and opacity.
+ */
 export class KritzelTextTool extends KritzelBaseTool {
+  /** The font family for new text objects */
   fontFamily: string = 'Arial';
+  
+  /** The font size for new text objects in pixels */
   fontSize: number = 16;
+  
+  /** The font color for new text objects (supports theme-aware light/dark colors) */
   fontColor: ThemeAwareColor = DEFAULT_COLOR_PALETTE[0];
+  
+  /** The opacity of new text objects (0-1) */
   opacity: number = 1;
 
+  /** Available color palette for the text tool */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
 
+  /**
+   * Creates a new instance of KritzelTextTool.
+   * @param core - The KritzelCore instance that provides access to application state and functionality
+   */
   constructor(core: KritzelCore) {
     super(core);
   }
 
+  /**
+   * Handles pointer down events for text creation and editing.
+   * If clicking on an existing text object, enters edit mode for that object.
+   * If there's an active text being edited and clicking elsewhere, saves the active text
+   * and switches to selection tool. If clicking on empty space, creates a new text object
+   * at that position and enters edit mode.
+   * @param event - The PointerEvent containing pointer position and input type information
+   */
   handlePointerDown(event: PointerEvent): void {
     if (event.cancelable) {
       event.preventDefault();
@@ -119,6 +145,12 @@ export class KritzelTextTool extends KritzelBaseTool {
     }
   }
 
+  /**
+   * Handles pointer up events for text editing focus management.
+   * If there's an active text that is mounted but doesn't have focus,
+   * focuses the text editor at the pointer position to allow typing.
+   * @param event - The PointerEvent containing the pointer position for focus placement
+   */
   handlePointerUp(event: PointerEvent): void {
     const activeText = this._core.store.activeText;
     if (activeText && activeText.isMounted && !activeText.editor?.hasFocus()) {

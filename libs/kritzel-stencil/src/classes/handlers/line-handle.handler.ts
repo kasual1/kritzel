@@ -6,8 +6,14 @@ import { KritzelBaseHandler } from './base.handler';
 import { SnapTarget } from '../../interfaces/anchor.interface';
 import { KritzelColorHelper } from '../../helpers/color.helper';
 
+/** The type of line handle being manipulated: start point, end point, or center control point. */
 export type LineHandleType = 'start' | 'end' | 'center';
 
+/**
+ * Handler for manipulating line object handles (endpoints and control points).
+ * Manages dragging of line start/end points and curve control points,
+ * including snap-to-object functionality for creating anchored connections.
+ */
 export class KritzelLineHandleHandler extends KritzelBaseHandler {
   initialMouseX = 0;
   initialMouseY = 0;
@@ -26,10 +32,19 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
   /** Current snap target during drag, if any */
   private currentSnapTarget: SnapTarget | null = null;
 
+  /**
+   * Creates a new instance of the line handle handler.
+   * @param core - The KritzelCore instance providing access to the drawing engine and state management.
+   */
   constructor(core: KritzelCore) {
     super(core);
   }
 
+  /**
+   * Resets the handler's internal state to its initial values.
+   * Called after a drag operation completes to prepare for the next interaction.
+   * Clears all stored initial positions, movement flags, and snap candidates.
+   */
   private reset(): void {
     this.initialMouseX = 0;
     this.initialMouseY = 0;
@@ -46,6 +61,12 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     this._core.anchorManager.clearSnapCandidate();
   }
 
+  /**
+   * Handles pointer down events to initiate line handle dragging.
+   * For mouse input, responds only to left clicks.
+   * For touch/pen input, responds only when there's exactly one active pointer.
+   * @param event - The pointer event containing position and input type information.
+   */
   handlePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
@@ -61,6 +82,13 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Initializes the drag operation for a line handle.
+   * Stores the initial mouse position and line state (endpoints, control point, translation)
+   * to enable delta calculations during movement. Also removes any existing anchor
+   * for the endpoint being dragged to allow repositioning.
+   * @param event - The pointer event that initiated the drag.
+   */
   private startHandleDrag(event: PointerEvent): void {
     const line = this.getSelectedLine();
     if (!line || !this._core.store.state.isLineHandleSelected) {
@@ -90,9 +118,21 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       this._core.anchorManager.removeAnchor(line.id, handleType);
     }
 
-    clearTimeout(this._core.store.state.longTouchTimeout);
+    globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
   }
 
+  /**
+   * Handles pointer move events during a line handle drag operation.
+   * Updates the appropriate line property based on the handle type being dragged:
+   * - 'start': Updates the line's start point, checking for snap targets.
+   * - 'end': Updates the line's end point, checking for snap targets.
+   * - 'center': Updates the quadratic curve control point, with snap-to-straight behavior.
+   *
+   * Applies coordinate transformations to convert screen delta to the line's local coordinate system,
+   * accounting for viewport scale, object scale, and rotation.
+   *
+   * @param event - The pointer event containing the current cursor position.
+   */
   handlePointerMove(event: PointerEvent): void {
     const line = this.getSelectedLine();
     if (!line || !this._core.store.state.isLineHandleDragging) {
@@ -325,6 +365,13 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
 
   /**
    * Converts world coordinates to a line's local coordinate system.
+   * Accounts for the line's translation, scale, and rotation to transform
+   * absolute canvas positions into the line's internal coordinate space.
+   *
+   * @param line - The line object whose coordinate system to transform into.
+   * @param worldX - The X coordinate in world/canvas space.
+   * @param worldY - The Y coordinate in world/canvas space.
+   * @returns An object containing the transformed local X and Y coordinates.
    */
   private worldToLineLocal(line: KritzelLine, worldX: number, worldY: number): { x: number; y: number } {
     const dx = (worldX - line.translateX) * line.scale;
@@ -347,6 +394,13 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
 
   /**
    * Converts a line's local coordinate system to world coordinates.
+   * Reverses the transformations applied by worldToLineLocal to convert
+   * the line's internal coordinates back to absolute canvas positions.
+   *
+   * @param line - The line object whose coordinate system to transform from.
+   * @param localX - The X coordinate in the line's local space.
+   * @param localY - The Y coordinate in the line's local space.
+   * @returns An object containing the transformed world X and Y coordinates.
    */
   private lineLocalToWorld(line: KritzelLine, localX: number, localY: number): { x: number; y: number } {
     const px = localX - line.x;
@@ -367,6 +421,18 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     };
   }
 
+  /**
+   * Updates a line's endpoint positions and recalculates all dependent properties.
+   * Computes new bounding boxes for both the old and new line configurations,
+   * adjusts the line's position (x, y), dimensions (width, height), and translation
+   * to maintain visual consistency while moving endpoints.
+   *
+   * @param line - The line object to update.
+   * @param startX - The new X coordinate for the line's start point in local space.
+   * @param startY - The new Y coordinate for the line's start point in local space.
+   * @param endX - The new X coordinate for the line's end point in local space.
+   * @param endY - The new Y coordinate for the line's end point in local space.
+   */
   private updateLineEndpoint(line: KritzelLine, startX: number, startY: number, endX: number, endY: number): void {
     // Calculate new bounding box using the static method that accounts for curve extrema
     const { minX, minY, maxX, maxY } = KritzelLine.calculateBoundingBox(
@@ -441,6 +507,14 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     this._core.store.state.objects.update(line);
   }
 
+  /**
+   * Handles pointer up events to complete a line handle drag operation.
+   * If the line was moved and snapped to a target object, creates an anchor connection.
+   * Refreshes the selection group dimensions and triggers change events.
+   * Finally resets the handler state and triggers a rerender.
+   *
+   * @param _event - The pointer event (unused, but required by the handler interface).
+   */
   handlePointerUp(_event: PointerEvent): void {
     if (this._core.store.state.isLineHandleDragging) {
       const line = this.getSelectedLine();
@@ -468,6 +542,12 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Retrieves the currently selected line object, if any.
+   * Returns the line only when exactly one object is selected and it is a KritzelLine instance.
+   *
+   * @returns The selected KritzelLine object, or null if no single line is selected.
+   */
   private getSelectedLine(): KritzelLine | null {
     const selectionGroup = this._core.store.selectionGroup;
     if (!selectionGroup || selectionGroup.objects.length !== 1) {

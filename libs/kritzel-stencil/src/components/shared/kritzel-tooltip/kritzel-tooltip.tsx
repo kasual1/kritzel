@@ -33,7 +33,7 @@ export class KritzelTooltip {
     }
   }
 
-  @Listen('pointerdown', { target: 'document', capture: true })
+  @Listen('pointerdown', { target: 'document', capture: true, passive: false })
   handleOutsidePointerDown(event: PointerEvent) {
     if (!this.isVisible) return;
 

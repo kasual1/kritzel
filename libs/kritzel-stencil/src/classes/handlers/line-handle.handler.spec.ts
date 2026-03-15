@@ -124,6 +124,9 @@ describe('KritzelLineHandleHandler', () => {
       },
       engine: {
         emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
       },
       anchorManager: {
         removeAnchor: jest.fn(),
@@ -316,7 +319,7 @@ describe('KritzelLineHandleHandler', () => {
 
       it('should clear long touch timeout on drag start', () => {
         jest.useFakeTimers();
-        mockState.longTouchTimeout = setTimeout(() => {}, 1000);
+        mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
         mockSelectionGroup = {

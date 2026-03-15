@@ -1,6 +1,7 @@
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
+import { KritzelClassHelper } from '../../helpers/class.helper';
 
 /**
  * KritzelGroup represents a permanent grouping of objects that act as a single unit.
@@ -24,6 +25,13 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     childIds: string[] = [];
 
     /**
+     * Holds child objects that have been added via addChild() before the group
+     * is added to the engine. Once the group is added (and _core is set),
+     * these are flushed into the store and this array is cleared.
+     */
+    _pendingChildren: KritzelBaseObject<any>[] = [];
+
+    /**
      * Snapshots of child states for transformation operations (resize, rotate).
      * Similar pattern to KritzelSelectionGroup.
      */
@@ -38,8 +46,14 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
     /**
      * Retrieves the actual child objects from the store by their IDs.
+     * Filters out any IDs that no longer exist in the store.
+     * @returns An array of KritzelBaseObject instances representing the group's children.
      */
     get children(): KritzelBaseObject<any>[] {
+        if (!this._core) {
+            return this._pendingChildren;
+        }
+
         return this.childIds
             .map(id => {
                 const found = this._core.store.state.objects.filter(obj => obj.id === id);
@@ -50,13 +64,17 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
     /**
      * Returns the number of children in this group.
+     * @returns The count of child IDs stored in this group.
      */
     get length(): number {
         return this.childIds.length;
     }
 
     /**
-     * Creates a new empty KritzelGroup.
+     * Factory method to create a new empty KritzelGroup with core integration.
+     * Initializes the group with default values and links it to the core store.
+     * @param core - The KritzelCore instance providing access to store and state management.
+     * @returns A new KritzelGroup instance configured with the core context.
      */
     static override create(core: KritzelCore): KritzelGroup {
         const group = new KritzelGroup();
@@ -71,8 +89,12 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     /**
-     * Creates a KritzelGroup from an array of objects.
-     * The objects are added as children and their bounding box is calculated.
+     * Creates a KritzelGroup from an array of existing objects.
+     * The objects are added as children and the group's bounding box is calculated
+     * to encompass all children. Child snapshots are captured for transformation operations.
+     * @param core - The KritzelCore instance providing access to store and state management.
+     * @param objects - An array of KritzelBaseObject instances to group together.
+     * @returns A new KritzelGroup containing the specified objects as children.
      */
     static createFromObjects(core: KritzelCore, objects: KritzelBaseObject<any>[]): KritzelGroup {
         const group = KritzelGroup.create(core);
@@ -90,8 +112,11 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     /**
-     * Finds the parent KritzelGroup that contains the given object as a child.
-     * Returns null if the object is not a child of any group.
+     * Finds the parent KritzelGroup that contains the given object as a direct child.
+     * Searches through all groups in the store to find one containing the specified object ID.
+     * @param core - The KritzelCore instance providing access to the object store.
+     * @param objectId - The unique identifier of the object to find the parent group for.
+     * @returns The parent KritzelGroup if found, or null if the object is not a child of any group.
      */
     static findParentGroup(core: KritzelCore, objectId: string): KritzelGroup | null {
         const allGroups = core.store.state.objects
@@ -108,17 +133,29 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
     /**
      * Adds a child object to this group.
+     * If the object is already a child, no action is taken.
+     * Automatically refreshes the bounding box and captures child snapshots.
+     * @param object - The KritzelBaseObject instance to add as a child.
      */
     addChild(object: KritzelBaseObject<any>): void {
         if (!this.childIds.includes(object.id)) {
             this.childIds.push(object.id);
+
+            if (!this._core) {
+                this._pendingChildren.push(object);
+                return;
+            }
+
             this.refreshBoundingBox();
             this.captureChildSnapshots();
         }
     }
 
     /**
-     * Removes a child object from this group.
+     * Removes a child object from this group by its ID.
+     * If the object is not a child, no action is taken.
+     * Automatically refreshes the bounding box and captures child snapshots.
+     * @param objectId - The unique identifier of the child object to remove.
      */
     removeChild(objectId: string): void {
         const index = this.childIds.indexOf(objectId);
@@ -131,7 +168,8 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
     /**
      * Ungroups this group, returning all children to top-level objects.
-     * The group itself should be removed after calling this.
+     * The group itself should be removed from the store after calling this method.
+     * @returns An array of all child objects that were part of this group.
      */
     ungroup(): KritzelBaseObject<any>[] {
         return this.children;
@@ -139,7 +177,8 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
     /**
      * Finalizes the group after children have been positioned (e.g., after paste).
-     * Refreshes the bounding box and captures child snapshots.
+     * Refreshes the bounding box to encompass all children and captures
+     * child snapshots for subsequent transformation operations.
      */
     finalize(): void {
         this.refreshBoundingBox();
@@ -147,7 +186,38 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     /**
+     * Moves the group and all its children to the center of the viewport.
+     * Overrides the base implementation to ensure children move with the group.
+     */
+    override centerInViewport(): void {
+        const { viewportWidth, viewportHeight, translateX: viewportTranslateX, translateY: viewportTranslateY, scale: viewportScale } = this._core.store.state;
+        const { x, y, width, height } = this.rotatedBoundingBox;
+
+        const objectCenterX = x + width / 2;
+        const objectCenterY = y + height / 2;
+
+        const targetCenterX = (viewportWidth / 2 - viewportTranslateX) / viewportScale;
+        const targetCenterY = (viewportHeight / 2 - viewportTranslateY) / viewportScale;
+
+        const deltaX = targetCenterX - objectCenterX;
+        const deltaY = targetCenterY - objectCenterY;
+
+        this.translateX += deltaX;
+        this.translateY += deltaY;
+
+        this.children.forEach(child => {
+            child.translateX += deltaX;
+            child.translateY += deltaY;
+        });
+
+        this.captureChildSnapshots();
+    }
+
+    /**
      * Recalculates the group's bounding box based on its children.
+     * Handles three cases: empty group (zero dimensions), single child (inherit its bounds),
+     * and multiple children (calculate encompassing bounds with rotation support).
+     * Updates translateX, translateY, width, and height properties.
      */
     refreshBoundingBox(): void {
         if (this.children.length === 0) {
@@ -217,7 +287,9 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     /**
-     * Captures snapshots of child states for transformation operations.
+     * Captures snapshots of all child states for transformation operations.
+     * Stores position, rotation, dimensions, and scale for each child.
+     * Also captures the group's current state for relative calculations.
      */
     private captureChildSnapshots(): void {
         this.unchangedChildSnapshots.clear();
@@ -248,6 +320,15 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     // TRANSFORMATION METHODS
     // ─────────────────────────────────────────────────────────────────────────────
 
+    /**
+     * Moves the group and all its children by the delta between start and end positions.
+     * Updates are wrapped in a transaction for atomic persistence.
+     * Also updates any lines anchored to child objects.
+     * @param startX - The starting x coordinate in screen space.
+     * @param startY - The starting y coordinate in screen space.
+     * @param endX - The ending x coordinate in screen space.
+     * @param endY - The ending y coordinate in screen space.
+     */
     override move(startX: number, startY: number, endX: number, endY: number): void {
         const deltaX = (startX - endX) / this._core.store.state.scale;
         const deltaY = (startY - endY) / this._core.store.state.scale;
@@ -273,6 +354,15 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         });
     }
 
+    /**
+     * Resizes the group and proportionally transforms all children.
+     * Children are scaled and repositioned relative to the group's center,
+     * accounting for rotation. Updates are wrapped in a transaction.
+     * @param x - The new x translation coordinate for the group.
+     * @param y - The new y translation coordinate for the group.
+     * @param width - The new width of the group's content area.
+     * @param height - The new height of the group's content area.
+     */
     override resize(x: number, y: number, width: number, height: number): void {
         const widthScaleFactor = width / this.width;
         const heightScaleFactor = height / this.height;
@@ -351,6 +441,12 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         });
     }
 
+    /**
+     * Rotates the group and all its children around the group's center.
+     * Children maintain their relative positions and are individually rotated.
+     * Uses captured snapshots to calculate rotation deltas.
+     * @param value - The new absolute rotation angle in radians.
+     */
     override rotate(value: number): void {
         this.rotation = value;
 
@@ -382,6 +478,12 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         });
     }
 
+    /**
+     * Calculates the horizontal offset from the group's center to a child's center
+     * using the captured snapshot values.
+     * @param snapshot - The captured state of the child object.
+     * @returns The x-axis offset from the group center to the child center.
+     */
     private getOffsetXToCenterFromSnapshot(snapshot: ChildSnapshot): number {
         const childCenterX = snapshot.translateX + snapshot.totalWidth / snapshot.scale / 2;
         const groupScale = this.snapshotScale || this.scale || 1;
@@ -389,6 +491,12 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         return childCenterX - groupCenterX;
     }
 
+    /**
+     * Calculates the vertical offset from the group's center to a child's center
+     * using the captured snapshot values.
+     * @param snapshot - The captured state of the child object.
+     * @returns The y-axis offset from the group center to the child center.
+     */
     private getOffsetYToCenterFromSnapshot(snapshot: ChildSnapshot): number {
         const childCenterY = snapshot.translateY + snapshot.totalHeight / snapshot.scale / 2;
         const groupScale = this.snapshotScale || this.scale || 1;
@@ -400,11 +508,24 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     // HIT TESTING
     // ─────────────────────────────────────────────────────────────────────────────
 
+    /**
+     * Tests if a point lies within any of the group's children.
+     * The group is considered hit if any child passes the hit test.
+     * @param x - The x coordinate to test in world space.
+     * @param y - The y coordinate to test in world space.
+     * @returns True if the point is inside any child, false otherwise.
+     */
     override hitTest(x: number, y: number): boolean {
         // Check if point is inside any child
         return this.children.some(child => child.hitTest(x, y));
     }
 
+    /**
+     * Tests if a polygon intersects with any of the group's children.
+     * Used for lasso selection and area-based hit detection.
+     * @param polygon - The polygon to test intersection against.
+     * @returns True if the polygon intersects any child, false otherwise.
+     */
     override hitTestPolygon(polygon: KritzelPolygon): boolean {
         // Check if polygon intersects with any child
         return this.children.some(child => child.hitTestPolygon(polygon));
@@ -414,6 +535,12 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     // COPY & SERIALIZATION
     // ─────────────────────────────────────────────────────────────────────────────
 
+    /**
+     * Creates a deep copy of this group and all its children.
+     * Children are copied but not added to the store; they are stored
+     * in a temporary _pendingChildren property for paste() to handle.
+     * @returns A new KritzelGroup with copied children and properties.
+     */
     override copy(): KritzelGroup {
         const copiedGroup = KritzelGroup.create(this._core);
 
@@ -429,8 +556,8 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
                 copiedGroup.childIds.push(copiedChild.id);
             });
 
-        // Store copied children on the group for paste() to access
-        (copiedGroup as any)._pendingChildren = copiedChildren;
+        // Store copied children on the group for paste() to handle
+        copiedGroup._pendingChildren = copiedChildren;
 
         // Copy group properties
         copiedGroup.rotation = this.rotation;
@@ -442,8 +569,14 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         return copiedGroup;
     }
 
+    /**
+     * Serializes the group to a plain object for persistence.
+     * Excludes runtime references (_core, _elementRef, element) and
+     * converts the unchangedChildSnapshots Map to a plain object.
+     * @returns A serializable plain object representation of this group.
+     */
     override serialize() {
-        const { _core, _elementRef, element, totalWidth, totalHeight, unchangedChildSnapshots, ...remainingProps } = this as any;
+        const { _core, _elementRef, element, totalWidth, totalHeight, unchangedChildSnapshots, _pendingChildren, ...remainingProps } = this as any;
 
         const clonedProps = structuredClone(remainingProps);
 
@@ -453,6 +586,12 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         return clonedProps;
     }
 
+    /**
+     * Deserializes a plain object back into this KritzelGroup instance.
+     * Restores the unchangedChildSnapshots Map from the serialized object format.
+     * @param object - The serialized plain object containing group data.
+     * @returns This group instance after deserialization, cast to type T.
+     */
     override deserialize<T>(object: any): T {
         super.deserialize(object);
 
@@ -464,19 +603,25 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         return this as unknown as T;
     }
 
+    /**
+     * Persists the current state of this group to the store.
+     * Triggers synchronization with y.js for collaborative editing.
+     */
     override update(): void {
         this._core.store.state.objects.update(this);
     }
 
     /**
-     * Updates the workspace ID for this group and all its children.
+     * Updates the workspace ID for this group and all its children recursively.
+     * Handles nested groups by recursively calling this method on child groups.
+     * @param workspaceId - The new workspace ID to assign to this group and its children.
      */
     updateWorkspaceId(workspaceId: string): void {
         this.workspaceId = workspaceId;
         this.children.forEach(child => {
             child.workspaceId = workspaceId;
             // Recursively update nested groups
-            if (child instanceof KritzelGroup) {
+            if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
                 child.updateWorkspaceId(workspaceId);
             }
         });

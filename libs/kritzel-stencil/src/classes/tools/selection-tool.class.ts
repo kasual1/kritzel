@@ -1,5 +1,6 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
+import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelColorHelper } from '../../helpers/color.helper';
 import { KritzelMoveHandler } from '../handlers/move.handler';
 import { KritzelResizeHandler } from '../handlers/resize.handler';
@@ -20,30 +21,59 @@ import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-c
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
 
+/**
+ * Selection tool for selecting, moving, resizing, and rotating objects on the canvas.
+ * Provides comprehensive object manipulation capabilities including multi-select,
+ * property editing, and various transformation handles. Delegates specific interactions
+ * to specialized handlers (selection, move, resize, rotation, hover, line handle).
+ */
 export class KritzelSelectionTool extends KritzelBaseTool {
+  /** Handler for selection box and object selection logic */
   selectionHandler: KritzelSelectionHandler;
+
+  /** Handler for moving selected objects */
   moveHandler: KritzelMoveHandler;
+
+  /** Handler for hover effects on objects */
   hoverHandler: KritzelHoverHandler;
+
+  /** Handler for resizing selected objects */
   resizeHandler: KritzelResizeHandler;
+
+  /** Handler for rotating selected objects */
   rotationHandler: KritzelRotationHandler;
+
+  /** Handler for manipulating line start/end handles */
   lineHandleHandler: KritzelLineHandleHandler;
 
+  /** Available color palette for selected objects */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
 
-  /** Returns true if there are objects in the selection group */
+  /**
+   * Checks if there are any objects currently selected.
+   * @returns True if there are objects in the selection group, false otherwise
+   */
   hasSelection(): boolean {
     return !!this._core.store.selectionGroup && this._core.store.selectionGroup.objects.length > 0;
   }
 
-  /** Returns the selected objects or empty array */
+  /**
+   * Gets the currently selected objects.
+   * @returns Array of selected objects, or empty array if no selection
+   */
   getSelectedObjects(): any[] {
     return this._core.store.selectionGroup?.objects ?? [];
   }
 
+  /**
+   * Recursively flattens a collection of objects, expanding any groups into their children.
+   * @param objects - Array of objects that may include groups
+   * @returns Flattened array with all nested group children expanded
+   */
   private flattenObjects(objects: any[]): any[] {
     let result: any[] = [];
     for (const obj of objects) {
-      if (obj instanceof KritzelGroup) {
+      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
         result = result.concat(this.flattenObjects(obj.children));
       } else {
         result.push(obj);
@@ -52,6 +82,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return result;
   }
 
+  /**
+   * Gets the primary color of the selected objects.
+   * Returns the fill color for paths, stroke for lines, font color for text, or stroke color for shapes.
+   */
   get color(): ThemeAwareColor {
     const objects = this.flattenObjects(this.getSelectedObjects());
     if (objects.length === 0) return DEFAULT_COLOR_PALETTE[0];
@@ -64,6 +98,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return DEFAULT_COLOR_PALETTE[0];
   }
 
+  /**
+   * Sets the primary color of all selected objects.
+   * Updates the appropriate color property based on object type (fill, stroke, fontColor, strokeColor).
+   */
   set color(value: ThemeAwareColor) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
@@ -75,18 +113,30 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this._core.rerender();
   }
 
+  /**
+   * Gets the opacity of the first selected object.
+   * @returns The opacity value (0-1) or 1 if no selection
+   */
   get opacity(): number {
     const objects = this.flattenObjects(this.getSelectedObjects());
     if (objects.length === 0) return 1;
     return objects[0].opacity;
   }
 
+  /**
+   * Sets the opacity of all selected objects.
+   * @param value - The opacity value (0-1)
+   */
   set opacity(value: number) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => this._core.updateObject(obj, { opacity: value }));
     this._core.rerender();
   }
 
+  /**
+   * Gets the size (stroke width or font size) of the selected objects.
+   * Returns strokeWidth for paths/lines/shapes, fontSize for text objects.
+   */
   get size(): number {
     const objects = this.flattenObjects(this.getSelectedObjects());
     if (objects.length === 0) return 1;
@@ -99,6 +149,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return 1;
   }
 
+  /**
+   * Sets the size (stroke width or font size) of all selected objects.
+   * Updates strokeWidth for paths/lines/shapes and fontSize for text objects.
+   * Refreshes selection group dimensions after updating.
+   */
   set size(value: number) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
@@ -111,6 +166,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.refreshSelectionGroupDimensions();
   }
 
+  /**
+   * Gets the fill color of the first selected shape.
+   * @returns The fill color or transparent if no shapes are selected
+   */
   get fillColor(): ThemeAwareColor {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
@@ -119,6 +178,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return { light: 'transparent', dark: 'transparent' };
   }
 
+  /**
+   * Sets the fill color of all selected shapes.
+   * Also updates the font color based on fill color contrast and syncs stroke color when fill is not transparent.
+   */
   set fillColor(value: ThemeAwareColor) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
@@ -137,6 +200,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this._core.rerender();
   }
 
+  /**
+   * Gets the font family of the first selected text or shape object.
+   * @returns The font family name or 'Arial' as default
+   */
   get fontFamily(): string {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
@@ -146,6 +213,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return 'Arial';
   }
 
+  /**
+   * Sets the font family of all selected text and shape objects.
+   * Refreshes selection group dimensions after updating.
+   */
   set fontFamily(value: string) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
@@ -156,6 +227,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.refreshSelectionGroupDimensions();
   }
 
+  /**
+   * Gets the arrow configuration of the first selected line.
+   * @returns The arrow config or default disabled arrows if no lines are selected
+   */
   get arrows(): LineArrowConfig {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
@@ -164,6 +239,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return { start: { enabled: false }, end: { enabled: false } };
   }
 
+  /**
+   * Sets the arrow configuration of all selected lines.
+   * Refreshes selection group dimensions after updating.
+   */
   set arrows(value: LineArrowConfig) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
@@ -173,7 +252,12 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.refreshSelectionGroupDimensions();
   }
 
-  /** Returns the tool config for selected objects, or null if no selection */
+  /**
+   * Generates a tool configuration definition based on the types of selected objects.
+   * Determines which controls should be shown in the UI based on whether the selection
+   * contains shapes, text, lines, images, or stroke-based objects.
+   * @returns Tool configuration for the UI, or null if nothing is selected
+   */
   getToolConfig(): ToolConfigDefinition | null {
     if (!this.hasSelection()) return null;
 
@@ -254,6 +338,13 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     this.lineHandleHandler = new KritzelLineHandleHandler(this._core);
   }
 
+  /**
+   * Handles pointer down events for selection and manipulation.
+   * Determines the type of interaction (resize handle, rotation handle, line handle, or object)
+   * and delegates to the appropriate handler. Manages selection state and supports
+   * additive selection with Shift/Ctrl modifiers.
+   * @param event - The PointerEvent containing pointer position and input type information
+   */
   handlePointerDown(event: PointerEvent): void {
     if (event.cancelable) {
       event.preventDefault();
@@ -342,6 +433,12 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
+  /**
+   * Handles pointer move events during selection and manipulation.
+   * Delegates movement to the appropriate handler based on the current interaction state
+   * (line handle, move, hover, selection box, resize, or rotation).
+   * @param event - The PointerEvent containing the current pointer position
+   */
   handlePointerMove(event: PointerEvent): void {
     if (event.cancelable) {
       event.preventDefault();
@@ -373,6 +470,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
+  /**
+   * Handles pointer up events to complete selection and manipulation operations.
+   * Delegates to all handlers to finalize their respective operations.
+   * @param event - The PointerEvent indicating the end of the interaction
+   */
   handlePointerUp(event: PointerEvent): void {
     if (event.cancelable) {
       event.preventDefault();
@@ -403,6 +505,12 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
+  /**
+   * Gets the object at the pointer event location and wraps it in a selection group.
+   * Performs hit testing to ensure the pointer is actually over the object.
+   * @param event - The PointerEvent to get the object from
+   * @returns A KritzelSelectionGroup containing the object, or null if no object at that location
+   */
   private getSelectedObject(event: PointerEvent): KritzelSelectionGroup | null {
     const path = event.composedPath().slice(1) as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
@@ -428,6 +536,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
+  /**
+   * Determines the type of resize handle at the pointer location.
+   * @param event - The PointerEvent to check for handle type
+   * @returns The KritzelHandleType if a resize handle is at the location, undefined otherwise
+   */
   private getHandleType(event: PointerEvent): KritzelHandleType | undefined {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return;
@@ -439,6 +552,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return handle?.classList[1] as KritzelHandleType;
   }
 
+  /**
+   * Checks if a resize handle is at the pointer location.
+   * @param event - The PointerEvent to check
+   * @returns True if a resize handle overlay element is at the pointer location
+   */
   private isHandleSelected(event: PointerEvent): boolean {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return false;
@@ -448,6 +566,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return elementsAtPoint.some(el => el.classList.contains('resize-handle-overlay'));
   }
 
+  /**
+   * Checks if a rotation handle is at the pointer location.
+   * @param event - The PointerEvent to check
+   * @returns True if a rotation handle overlay element is at the pointer location
+   */
   private isRotationHandleSelected(event: PointerEvent): boolean {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return false;
@@ -457,6 +580,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return elementsAtPoint.some(el => el.classList.contains('rotation-handle-overlay'));
   }
 
+  /**
+   * Checks if a line handle (start or end point) is at the pointer location.
+   * @param event - The PointerEvent to check
+   * @returns True if a line handle overlay element is at the pointer location
+   */
   private isLineHandleSelected(event: PointerEvent): boolean {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return false;
@@ -466,6 +594,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     return elementsAtPoint.some(el => el.classList.contains('selection-line-handle-overlay'));
   }
 
+  /**
+   * Determines the type of line handle (start or end) at the pointer location.
+   * @param event - The PointerEvent to check for line handle type
+   * @returns The LineHandleType if a line handle is at the location, undefined otherwise
+   */
   private getLineHandleType(event: PointerEvent): LineHandleType | undefined {
     const shadowRoot = this._core.store.state.host?.shadowRoot;
     if (!shadowRoot) return;

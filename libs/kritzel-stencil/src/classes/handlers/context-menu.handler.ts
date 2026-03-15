@@ -4,17 +4,49 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionTool } from '../tools/selection-tool.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 
+/**
+ * Handles context menu interactions on the Kritzel canvas.
+ * Manages the display and positioning of context menus, selecting appropriate menu items
+ * based on whether an object is targeted or the canvas background is right-clicked.
+ */
 export class KritzelContextMenuHandler extends KritzelBaseHandler {
+  /**
+   * Menu items to display when the context menu is opened on the canvas background
+   * (i.e., when no object is selected).
+   */
   globalContextMenuItems = [];
 
+  /**
+   * Menu items to display when the context menu is opened on a selected object.
+   */
   objectContextMenuItems = [];
 
+  /**
+   * Creates a new instance of the context menu handler.
+   * @param core - The KritzelCore instance that provides access to canvas state and operations.
+   * @param globalContextMenuItems - Array of menu items to show for canvas-level context menus.
+   * @param objectContextMenuItems - Array of menu items to show when right-clicking on objects.
+   */
   constructor(core: KritzelCore, globalContextMenuItems: any[], objectContextMenuItems: any[]) {
     super(core);
     this.globalContextMenuItems = globalContextMenuItems;
     this.objectContextMenuItems = objectContextMenuItems;
   }
 
+  /**
+   * Handles the context menu event (typically triggered by right-click).
+   * This method performs the following operations:
+   * 1. Validates that the selection tool is active; exits early otherwise.
+   * 2. Checks and resets the `skipContextMenu` flag if set.
+   * 3. Cancels any pending drag operation on the selection tool.
+   * 4. Clears any active selection box if present.
+   * 5. If an object is clicked, creates a new selection group containing that object.
+   * 6. Determines which menu items to display (object or global context menu).
+   * 7. Calculates the menu position, ensuring it stays within viewport bounds.
+   * 8. Updates the store state to show the context menu and disables canvas interactions.
+   * @param event - The pointer event containing the click coordinates and target information.
+   * @returns void - This method does not return a value; it updates state and triggers a rerender.
+   */
   handleContextMenu(event: PointerEvent): void {
     if (!(this._core.store.state.activeTool instanceof KritzelSelectionTool)) {
       return;

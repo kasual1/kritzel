@@ -13,6 +13,7 @@
   ],
   "devDependencies": {
     "@ngrok/ngrok": "^1.5.2",
+    "@playwright/test": "^1.58.2",
     "@types/node": "^22.14.1",
     "dotenv": "^17.2.2",
     "typescript": "^5.8.3"
@@ -23,8 +24,6 @@
     "bump-minor": "node ./scripts/bump-minor.js",
     "bump-major": "node ./scripts/bump-major.js",
     "test": "npm run test -w libs/kritzel-stencil",
-    "e2e": "npm run e2e -w libs/kritzel-stencil",
-    "e2e:update-screenshots": "npm run e2e:update-screenshots -w libs/kritzel-stencil",
     "build": "npm run build --workspaces --if-present",
     "publish": "npm run release --workspaces --if-present",
     "start": "npm run start -w libs/kritzel-stencil",
@@ -36,6 +35,12 @@
     "server:dev": "npm run start:dev -w server/websocket-demo",
     "server:debug": "npm run start:debug -w server/websocket-demo",
     "server:build": "npm run build -w server/websocket-demo",
+    "e2e": "npx playwright test --config=e2e/playwright.config.ts",
+    "e2e:angular": "npx playwright test --config=e2e/playwright.config.ts --project=angular",
+    "e2e:react": "npx playwright test --config=e2e/playwright.config.ts --project=react",
+    "e2e:vue": "npx playwright test --config=e2e/playwright.config.ts --project=vue",
+    "e2e:update-screenshots": "npx playwright test --config=e2e/playwright.config.ts --update-snapshots",
+    "e2e:report": "npx playwright show-report e2e/playwright-report",
     "docs:start": "cd website && npm run start",
     "docs:build": "cd website && npm run build",
     "docs:serve": "cd website && npm run serve"

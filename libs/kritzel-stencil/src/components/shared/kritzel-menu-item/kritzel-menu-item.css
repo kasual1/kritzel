@@ -52,6 +52,10 @@ kritzel-icon {
   --kritzel-icon-color: var(--kritzel-menu-item-color, #333333);
 }
 
+:host(.selected) kritzel-icon {
+  --kritzel-icon-color: var(--kritzel-menu-item-selected-color, #ffffff);
+}
+
 :host(.selected) .edit-input::selection {
   background-color: var(--kritzel-menu-item-input-selection-color-on-selected, rgba(255, 255, 255, 0.3));
   color: var(--kritzel-menu-item-input-selection-text-color-on-selected, #ffffff);
@@ -98,7 +102,7 @@ kritzel-icon {
   min-width: 0;
 }
 
-.left > div {
+.left>div {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

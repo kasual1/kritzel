@@ -35,7 +35,10 @@ export class HocuspocusGateway
       },
 
       onChange: async (data) => {
-        console.log(`Document changed: ${data.documentName}`);
+        const metadata = data.document.getMap('metadata');
+        const type = metadata.get('type');
+        const isPublic = metadata.get('isPublic');
+        console.log(`Document changed: ${data.documentName} | type=${type}, isPublic=${isPublic}`);
       },
 
       onLoadDocument: async (data) => {

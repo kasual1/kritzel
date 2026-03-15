@@ -34,6 +34,8 @@ const KNOWN_CATEGORIES = [
   'more-menu',
   'back-to-content',
   'numeric-input',
+  'text-input',
+  'pill-tabs',
   'shape-fill',
   'settings',
   'dialog',
@@ -43,6 +45,10 @@ const KNOWN_CATEGORIES = [
   'font-size',
   'selection',
   'checkerboard',
+  'button',
+  'avatar',
+  'active-users',
+  'share-dialog',
 ];
 
 /**

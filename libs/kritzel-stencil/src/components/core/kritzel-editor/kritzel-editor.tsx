@@ -24,11 +24,18 @@ import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
-import { KritzelUndoState } from '../../..';
+import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
+import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
+import { IndexedDBSyncProvider, KritzelUndoState } from '../../..';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
+import { KritzelViewportState } from '../../../interfaces/viewport-state.interface';
+import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from '../../../interfaces/object-change-event.interface';
+import { IKritzelUser } from '../../../interfaces/user.interface';
+import { IKritzelIsPublicChangedEvent } from '../../../interfaces/share.interface';
+import { IKritzelLoginConfig, IKritzelLoginEvent } from '../../../interfaces/login-config.interface';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -44,6 +51,9 @@ export class KritzelEditor {
   @Prop({ mutable: true }) viewportBoundaryRight: number = Infinity;
   @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
   @Prop({ mutable: true }) viewportBoundaryBottom: number = Infinity;
+  @Prop({ mutable: true }) wheelEnabled: boolean = true;
+  @Prop() user?: IKritzelUser;
+  @Prop() activeUsers?: IKritzelUser[];
   @Prop() controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
@@ -60,24 +70,17 @@ export class KritzelEditor {
       config: DEFAULT_BRUSH_CONFIG,
     },
     {
-      name: 'line',
-      type: 'tool',
-      tool: KritzelLineTool,
-      icon: 'arrow',
-      config: DEFAULT_LINE_TOOL_CONFIG,
-    },
-    {
       name: 'eraser',
       type: 'tool',
       tool: KritzelEraserTool,
       icon: 'eraser',
     },
     {
-      name: 'text',
+      name: 'line',
       type: 'tool',
-      tool: KritzelTextTool,
-      icon: 'type',
-      config: DEFAULT_TEXT_CONFIG,
+      tool: KritzelLineTool,
+      icon: 'arrow',
+      config: DEFAULT_LINE_TOOL_CONFIG,
     },
     {
       name: 'shape',
@@ -90,6 +93,13 @@ export class KritzelEditor {
         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },
         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },
       ],
+    },
+    {
+      name: 'text',
+      type: 'tool',
+      tool: KritzelTextTool,
+      icon: 'type',
+      config: DEFAULT_TEXT_CONFIG,
     },
     {
       name: 'image',
@@ -174,19 +184,47 @@ export class KritzelEditor {
         },
       ],
     },
-
+    {
+      label: 'Export',
+      icon: 'download',
+      group: 'export',
+      children: [
+        { label: 'Export as SVG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },
+        { label: 'Export as PNG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },
+      ],
+    },
     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
   ];
 
   @Prop() customSvgIcons: Record<string, string> = {};
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
-  @Prop() syncConfig?: KritzelSyncConfig;
+  @Prop() syncConfig?: KritzelSyncConfig = {
+    providers: [IndexedDBSyncProvider]
+  }
+
+  /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
+  @Prop() loginConfig?: IKritzelLoginConfig;
+
+  /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
+  @Prop() editorId?: string;
+
+  /** Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID. */
+  @Prop() activeWorkspaceId?: string;
 
   @Event() isReady: EventEmitter<HTMLElement>;
+  @Event() activeWorkspaceChange: EventEmitter<KritzelWorkspace>; 
   @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
+  @Event() objectsAdded: EventEmitter<ObjectsAddedEvent>;
+  @Event() objectsRemoved: EventEmitter<ObjectsRemovedEvent>;
+  @Event() objectsUpdated: EventEmitter<ObjectsUpdatedEvent>;
   @Event() undoStateChange: EventEmitter<KritzelUndoState>;
   @Event() themeChange: EventEmitter<ThemeName>;
+  @Event() viewportChange: EventEmitter<KritzelViewportState>;
+  @Event() logout: EventEmitter<void>;
+  @Event() loginRequest: EventEmitter<IKritzelLoginEvent>;
+  @Event() isPublicChange: EventEmitter<IKritzelIsPublicChangedEvent>;
+  @Event() awarenessChange: EventEmitter<Map<number, Record<string, any>>>;
 
   @State() isEngineReady: boolean = false;
   @State() isControlsReady: boolean = false;
@@ -198,6 +236,7 @@ export class KritzelEditor {
   @State() isBackToContentButtonVisible: boolean = false;
   @State() currentTheme: ThemeName = 'light';
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
+  @State() currentIsPublic: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -220,6 +259,40 @@ export class KritzelEditor {
       if (updatedActiveWorkspace && updatedActiveWorkspace !== this.activeWorkspace) {
         this.activeWorkspace = updatedActiveWorkspace;
       }
+    }
+    // If activeWorkspaceId is set, try to keep it in sync with the updated workspaces list
+    if (this.activeWorkspaceId) {
+      const workspaceWithId = newWorkspaces.find(ws => ws.id === this.activeWorkspaceId);
+      if (workspaceWithId && workspaceWithId !== this.activeWorkspace) {
+        this.activeWorkspace = workspaceWithId;
+      }
+    }
+  }
+
+  @Watch('activeWorkspace')
+  onActiveWorkspaceChange() {
+    this.updateCurrentIsPublic();
+  }
+
+  @Watch('activeWorkspaceId')
+  onActiveWorkspaceIdChange(newId?: string) {
+    // If no ID is provided, do nothing (allows other logic to control activeWorkspace)
+    if (!newId) {
+      return;
+    }
+    // If workspaces are not loaded yet, the watch will fire again once they are
+    if (this.workspaces.length === 0) {
+      return;
+    }
+    // Find the workspace with the matching ID
+    const workspace = this.workspaces.find(ws => ws.id === newId);
+    if (workspace) {
+      // Only update if it's different from the current activeWorkspace
+      if (workspace !== this.activeWorkspace) {
+        this.activeWorkspace = workspace;
+      }
+    } else {
+      console.warn(`[KritzelEditor] No workspace found with ID: ${newId}`);
     }
   }
 
@@ -286,8 +359,42 @@ export class KritzelEditor {
   }
 
   @Method()
-  async createWorkspace(name: string, viewport?: { translateX: number; translateY: number; scale: number }): Promise<KritzelWorkspace | null> {
-    const workspace = new KritzelWorkspace(`workspace-${Date.now()}`, name, viewport);
+  async centerAllObjects(animate = true): Promise<boolean> {
+    return this.engineRef.centerAllObjects(animate);
+  }
+
+  @Method()
+  async setViewport(x: number, y: number, scale: number): Promise<void> {
+    return this.engineRef.setViewport(x, y, scale);
+  }
+
+  @Method()
+  async panTo(x: number, y: number): Promise<void> {
+    return this.engineRef.panTo(x, y);
+  }
+
+  @Method()
+  async zoomTo(scale: number, worldX?: number, worldY?: number): Promise<void> {
+    return this.engineRef.zoomTo(scale, worldX, worldY);
+  }
+
+  @Method()
+  async getViewport(): Promise<KritzelViewportState> {
+    return this.engineRef.getViewport();
+  }
+
+  @Method()
+  async screenToWorld(x: number, y: number): Promise<{ x: number; y: number }> {
+    return this.engineRef.screenToWorld(x, y);
+  }
+
+  @Method()
+  async worldToScreen(x: number, y: number): Promise<{ x: number; y: number }> {
+    return this.engineRef.worldToScreen(x, y);
+  }
+
+  @Method()
+  async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
     return this.engineRef.createWorkspace(workspace);
   }
 
@@ -311,11 +418,179 @@ export class KritzelEditor {
     return this.engineRef.getActiveWorkspace();
   }
 
+  @Method()
+  async loadSharedWorkspace(token: string): Promise<void> {
+    return this.engineRef.loadSharedWorkspace(token);
+  }
+
+  @Method()
+  async reinitSync(): Promise<void> {
+    return this.engineRef.reinitSync();
+  }
+
+  // ── Tool management ─────────────────────────────────────────────────
+
+  @Method()
+  async registerTool(
+    toolName: string,
+    toolClass: any,
+    toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
+  ): Promise<KritzelBaseTool> {
+    return this.engineRef.registerTool(toolName, toolClass, toolConfig);
+  }
+
+  @Method()
+  async changeActiveTool(tool: KritzelBaseTool) {
+    return this.engineRef.changeActiveTool(tool);
+  }
+
+  @Method()
+  async disable() {
+    return this.engineRef.disable();
+  }
+
+  @Method()
+  async enable() {
+    return this.engineRef.enable();
+  }
+
+  @Method()
+  async copy() {
+    return this.engineRef.copy();
+  }
+
+  @Method()
+  async paste(x: number, y: number) {
+    return this.engineRef.paste(x, y);
+  }
+
+  @Method()
+  async delete() {
+    return this.engineRef.delete();
+  }
+
+  @Method()
+  async bringForward(object?: KritzelBaseObject<any>) {
+    return this.engineRef.bringForward(object);
+  }
+
+  @Method()
+  async sendBackward(object?: KritzelBaseObject<any>) {
+    return this.engineRef.sendBackward(object);
+  }
+
+  @Method()
+  async bringToFront(object?: KritzelBaseObject<any>) {
+    return this.engineRef.bringToFront(object);
+  }
+
+  @Method()
+  async sendToBack(object?: KritzelBaseObject<any>) {
+    return this.engineRef.sendToBack(object);
+  }
+
+  @Method()
+  async alignObjects(alignment: KritzelAlignment) {
+    return this.engineRef.alignObjects(alignment);
+  }
+
+  @Method()
+  async group() {
+    return this.engineRef.group();
+  }
+
+  @Method()
+  async ungroup() {
+    return this.engineRef.ungroup();
+  }
+
+  @Method()
+  async undo() {
+    return this.engineRef.undo();
+  }
+
+  @Method()
+  async redo() {
+    return this.engineRef.redo();
+  }
+
+  @Method()
+  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string> {
+    return this.engineRef.getScreenshot(format);
+  }
+
+  @Method()
+  async exportViewportAsPng(): Promise<void> {
+    return this.engineRef.exportViewportAsPng();
+  }
+
+  @Method()
+  async exportViewportAsSvg(): Promise<void> {
+    return this.engineRef.exportViewportAsSvg();
+  }
+
+  @Method()
+  async downloadAsJson(filename?: string): Promise<void> {
+    return this.engineRef.downloadAsJson(filename);
+  }
+
+  @Method()
+  async importFromFile(): Promise<void> {
+    return this.engineRef.importFromFile();
+  }
+
+  @Method()
+  async loadObjectsFromJson(json: string): Promise<number> {
+    return this.engineRef.loadObjectsFromJson(json);
+  }
+
+  @Method()
+  async getObjectsTotalCount(): Promise<number> {
+    return this.engineRef.getObjectsTotalCount();
+  }
+
+  @Method()
+  async getAllObjects<T extends KritzelBaseObject>(): Promise<T[]> {
+    return this.engineRef.getAllObjects();
+  }
+
+  @Method()
+  async findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean): Promise<T[]> {
+    return this.engineRef.findObjects(predicate);
+  }
+
+  @Method()
+  async getCopiedObjects(): Promise<KritzelBaseObject[]> {
+    return this.engineRef.getCopiedObjects();
+  }
+
+  @Method()
+  async getObjectsInViewport(): Promise<KritzelBaseObject[]> {
+    return this.engineRef.getObjectsInViewport();
+  }
+
+  @Method()
+  async hideContextMenu() {
+    return this.engineRef.hideContextMenu();
+  }
+
+  @Method()
+  async triggerSelectionChange() {
+    return this.engineRef.triggerSelectionChange();
+  }
+
+  @Method()
+  async getDisplayableShortcuts(): Promise<Omit<KritzelShortcut, 'action' | 'condition'>[]> {
+    return this.engineRef.getDisplayableShortcuts();
+  }
+
   engineRef!: HTMLKritzelEngineElement;
   controlsRef!: HTMLKritzelControlsElement;
   settingsRef!: HTMLKritzelSettingsElement;
   exportRef!: HTMLKritzelExportElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
+  shareDialogRef!: HTMLKritzelShareDialogElement;
+  loginDialogRef!: HTMLKritzelLoginDialogElement;
 
   componentWillLoad() {
     this.loadSettingsFromStorage();
@@ -340,10 +615,11 @@ export class KritzelEditor {
     this.isReady.emit(this.host);
   }
 
-  onEngineReady(event: CustomEvent<KritzelEngineState>) {
+  async onEngineReady(event: CustomEvent<KritzelEngineState>) {
     this.isEngineReady = true;
     this.activeWorkspace = event.detail.activeWorkspace;
     this.workspaces = event.detail.workspaces;
+    this.currentIsPublic = await this.engineRef.getIsPublic();
     this.loadShortcuts();
   }
 
@@ -351,8 +627,26 @@ export class KritzelEditor {
     this.workspaces = event.detail;
   }
 
+  handleActiveWorkspaceChange(event: CustomEvent<KritzelWorkspace>) {
+    event.stopPropagation();
+    this.activeWorkspace = event.detail;
+    this.activeWorkspaceChange.emit(this.activeWorkspace);
+  }
+
   handleObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
     this.objectsChange.emit(event.detail);
+  }
+
+  handleObjectsAdded(event: CustomEvent<ObjectsAddedEvent>) {
+    this.objectsAdded.emit(event.detail);
+  }
+
+  handleObjectsRemoved(event: CustomEvent<ObjectsRemovedEvent>) {
+    this.objectsRemoved.emit(event.detail);
+  }
+
+  handleObjectsUpdated(event: CustomEvent<ObjectsUpdatedEvent>) {
+    this.objectsUpdated.emit(event.detail);
   }
 
   handleUndoStateChange(event: CustomEvent<KritzelUndoState>) {
@@ -362,8 +656,16 @@ export class KritzelEditor {
 
   async handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
     const hasVisibleObjects = this.getContentObjects(event.detail).length > 0;
-    const hasAnyObjectsAtAll = this.getContentObjects((await this.engineRef.getAllObjects())).length > 0;
+    const hasAnyObjectsAtAll = this.getContentObjects(await this.engineRef.getAllObjects()).length > 0;
     this.isBackToContentButtonVisible = !hasVisibleObjects && hasAnyObjectsAtAll;
+  }
+
+  handleViewportChange(event: CustomEvent<KritzelViewportState>) {
+    this.viewportChange.emit(event.detail);
+  }
+
+  handleAwarenessChange(event: CustomEvent<Map<number, Record<string, any>>>) {
+    this.awarenessChange.emit(event.detail);
   }
 
   handleSettingsChange(event: CustomEvent<KritzelSettingsConfig>) {
@@ -380,6 +682,9 @@ export class KritzelEditor {
 
   async handleMoreMenuItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
     const { item } = event.detail;
+    if (item.id === 'share') {
+      this.shareDialogRef.open();
+    }
     if (item.id === 'settings') {
       this.settingsRef.open();
     }
@@ -387,10 +692,59 @@ export class KritzelEditor {
       const preview = await this.engineRef.getScreenshot('png');
       this.exportRef.open(preview);
     }
+    if (item.id === 'download') {
+      await this.engineRef.downloadAsJson();
+    }
+    if (item.id === 'import') {
+      await this.engineRef.importFromFile();
+    }
+  }
+
+  private handleToggleIsPublic = async (event: CustomEvent<boolean>): Promise<void> => {
+    const isPublic = event.detail;
+    const activeWorkspace = await this.engineRef.getActiveWorkspace();
+    activeWorkspace.isPublic = isPublic;
+    await this.engineRef.updateWorkspace(activeWorkspace);
+    this.isPublicChange.emit({ isPublic, workspaceId: this.activeWorkspace?.id });
+  };
+
+  /**
+   * Updates the currentIsPublic state from the active workspace and emits the isPublicChange event.
+   */
+  private updateCurrentIsPublic(): void {
+    const isPublic = this.activeWorkspace?.isPublic ?? false;
+    const workspaceId = this.activeWorkspace?.id;
+    this.currentIsPublic = isPublic;
+    this.isPublicChange.emit({ isPublic, workspaceId });
+  }
+
+  private handleCurrentUserItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
+    const { item } = event.detail;
+    if (item.id === 'logout') {
+      this.logout.emit();
+    }
+  }
+
+  private handleProviderLogin = (event: CustomEvent<IKritzelLoginEvent>): void => {
+    this.loginRequest.emit(event.detail);
+  };
+
+  @Method()
+  async openLoginDialog(): Promise<void> {
+    this.loginDialogRef?.open();
+  }
+
+  @Method()
+  async setLoginLoading(provider: string | null): Promise<void> {
+    this.loginDialogRef?.setLoading(provider);
+  }
+
+  private getSettingsStorageKey(): string {
+    return this.editorId ? `kritzel-settings-${this.editorId}` : 'kritzel-settings';
   }
 
   private loadSettingsFromStorage(): void {
-    const stored = localStorage.getItem('kritzel-settings');
+    const stored = localStorage.getItem(this.getSettingsStorageKey());
     if (stored) {
       try {
         const parsed = JSON.parse(stored) as Partial<KritzelSettingsConfig>;
@@ -494,7 +848,10 @@ export class KritzelEditor {
         <kritzel-engine
           ref={el => (this.engineRef = el)}
           workspace={this.activeWorkspace}
+          activeWorkspaceId={this.activeWorkspaceId}
+          editorId={this.editorId}
           syncConfig={this.syncConfig}
+          user={this.user}
           scaleMax={this.scaleMax}
           lockDrawingScale={this.lockDrawingScale}
           scaleMin={this.scaleMin}
@@ -502,14 +859,21 @@ export class KritzelEditor {
           viewportBoundaryRight={this.viewportBoundaryRight}
           viewportBoundaryTop={this.viewportBoundaryTop}
           viewportBoundaryBottom={this.viewportBoundaryBottom}
+          wheelEnabled={this.wheelEnabled}
           theme={this.currentTheme}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
           onIsEngineReady={event => this.onEngineReady(event)}
           onWorkspacesChange={event => this.handleWorkspacesChange(event)}
+          onActiveWorkspaceChange={event => this.handleActiveWorkspaceChange(event)}
           onObjectsChange={event => this.handleObjectsChange(event)}
+          onObjectsAdded={event => this.handleObjectsAdded(event)}
+          onObjectsRemoved={event => this.handleObjectsRemoved(event)}
+          onObjectsUpdated={event => this.handleObjectsUpdated(event)}
           onUndoStateChange={event => this.handleUndoStateChange(event)}
           onObjectsInViewportChange={event => this.handleObjectsInViewportChange(event)}
+          onViewportChange={event => this.handleViewportChange(event)}
+          onAwarenessChange={event => this.handleAwarenessChange(event)}
         ></kritzel-engine>
 
         <kritzel-controls
@@ -524,15 +888,44 @@ export class KritzelEditor {
         ></kritzel-controls>
 
         <div class="top-right-buttons">
-          <kritzel-settings ref={el => (this.settingsRef = el)} shortcuts={this.shortcuts} onSettingsChange={event => this.handleSettingsChange(event)}></kritzel-settings>
+          <kritzel-settings ref={el => (this.settingsRef = el)} shortcuts={this.shortcuts} editorId={this.editorId} onSettingsChange={event => this.handleSettingsChange(event)}></kritzel-settings>
 
           <kritzel-export
             ref={el => (this.exportRef = el)}
+            workspaceName={this.activeWorkspace?.name || 'workspace'}
             onExportPng={() => this.engineRef.exportViewportAsPng()}
             onExportSvg={() => this.engineRef.exportViewportAsSvg()}
+            onExportJson={(event) => this.engineRef.downloadAsJson(event.detail)}
           ></kritzel-export>
 
-          <kritzel-more-menu onItemSelect={event => this.handleMoreMenuItemSelect(event)}></kritzel-more-menu>
+          <kritzel-active-users users={this.activeUsers}></kritzel-active-users>
+          
+          <kritzel-current-user user={this.user} onItemSelect={event => this.handleCurrentUserItemSelect(event)}></kritzel-current-user>
+
+          {this.loginConfig && !this.user && (
+            <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>
+          )}
+          
+          <kritzel-more-menu
+            onItemSelect={event => this.handleMoreMenuItemSelect(event)}
+          ></kritzel-more-menu>
+
+          <kritzel-share-dialog
+            ref={el => (this.shareDialogRef = el)}
+            isPublic={this.currentIsPublic}
+            workspaceId={this.activeWorkspace?.id}
+            onToggleIsPublic={this.handleToggleIsPublic}
+          ></kritzel-share-dialog>
+
+          {this.loginConfig && (
+            <kritzel-login-dialog
+              ref={el => (this.loginDialogRef = el)}
+              providers={this.loginConfig.providers}
+              dialogTitle={this.loginConfig.title}
+              subtitle={this.loginConfig.subtitle}
+              onProviderLogin={this.handleProviderLogin}
+            ></kritzel-login-dialog>
+          )}
         </div>
       </Host>
     );

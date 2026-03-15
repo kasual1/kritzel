@@ -78,6 +78,9 @@ describe('KritzelRotationHandler', () => {
       },
       engine: {
         emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
       },
     } as unknown as jest.Mocked<KritzelCore>;
 
@@ -248,7 +251,7 @@ describe('KritzelRotationHandler', () => {
 
       it('should clear long touch timeout on touch rotation start', () => {
         jest.useFakeTimers();
-        mockState.longTouchTimeout = setTimeout(() => {}, 1000);
+        mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
         mockSelectionGroup = {
@@ -500,7 +503,7 @@ describe('KritzelRotationHandler', () => {
 
       it('should clear long touch timeout on touch rotation', () => {
         jest.useFakeTimers();
-        mockState.longTouchTimeout = setTimeout(() => {}, 1000);
+        mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
         mockState.pointers.set(1, { clientX: 100, clientY: 0 });
@@ -669,7 +672,7 @@ describe('KritzelRotationHandler', () => {
 
       it('should clear long touch timeout on touch up', () => {
         jest.useFakeTimers();
-        mockState.longTouchTimeout = setTimeout(() => {}, 1000);
+        mockState.longTouchTimeout = setTimeout(() => { }, 1000);
         const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
         mockState.pointers.set(1, { clientX: 100, clientY: 0 });

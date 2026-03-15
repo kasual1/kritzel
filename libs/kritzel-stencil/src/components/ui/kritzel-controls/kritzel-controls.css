@@ -39,7 +39,7 @@
   min-width: 0;
   padding: 4px;
   margin: -4px;
-  
+
   /* Hide scrollbar for all browsers */
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -110,8 +110,15 @@
 }
 
 .kritzel-control.selected:focus {
-    background-color: var(--kritzel-controls-control-selected-background-color, #007bffe3) !important;
+  background-color: var(--kritzel-controls-control-selected-background-color, #007bffe3) !important;
 
+}
+
+.kritzel-control-separator {
+  width: 1px;
+  height: 24px;
+  background-color: var(--kritzel-controls-border, #ebebeb);
+  margin: 0 4px;
 }
 
 
@@ -153,14 +160,14 @@
   -webkit-tap-highlight-color: transparent;
   border-radius: 0 var(--kritzel-controls-control-border-radius, 12px) var(--kritzel-controls-control-border-radius, 12px) 0;
   color: inherit;
-  
+
   /* Hidden state - collapsed with no visibility */
   width: 0;
   padding: 0;
   opacity: 0;
   overflow: hidden;
   pointer-events: none;
-  
+
   /* Smooth transition */
   transition: width 0.15s ease-out, padding 0.15s ease-out, opacity 0.15s ease-out;
 }
@@ -240,14 +247,14 @@
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
-  
+
   /* Hidden state - collapsed */
   width: 0;
   opacity: 0;
   overflow: hidden;
   pointer-events: none;
   margin-left: calc(-1 * var(--kritzel-controls-gap, 8px));
-  
+
   /* Smooth transition */
   transition: width 0.2s ease-out, opacity 0.2s ease-out, margin-left 0.2s ease-out;
 }
@@ -313,10 +320,10 @@
 }
 
 .no-config {
-    height: 24px;
-    width: 24px;
-    border-radius: 50%;
-    border: 1px dashed gray;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  border: 1px dashed gray;
 }
 
 kritzel-tooltip {

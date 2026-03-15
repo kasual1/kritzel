@@ -4,7 +4,3 @@
   align-items: center;
   --button-icon-color: #ffffff;
 }
-
-[data-theme="dark"] .buttonIcon {
-  --button-icon-color: #000000;
-}

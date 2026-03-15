@@ -58,6 +58,7 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [kritzel-current-user](../../ui/kritzel-current-user)
  - [kritzel-menu-item](../kritzel-menu-item)
  - [kritzel-more-menu](../../ui/kritzel-more-menu)
  - [kritzel-split-button](../kritzel-split-button)
@@ -71,6 +72,7 @@ Type: `Promise<void>`
 graph TD;
   kritzel-menu --> kritzel-menu-item
   kritzel-menu-item --> kritzel-menu
+  kritzel-current-user --> kritzel-menu
   kritzel-more-menu --> kritzel-menu
   kritzel-split-button --> kritzel-menu
   style kritzel-menu fill:#f9f,stroke:#333,stroke-width:4px

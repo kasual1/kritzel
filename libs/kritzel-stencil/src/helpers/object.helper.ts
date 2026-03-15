@@ -1,6 +1,11 @@
 export class ObjectHelper {
-  static generateUUID(): string {
-    return Math.random().toString(36).substr(2, 9);
+  static generateUUID(length: number = 16): string {
+    const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const bytes = crypto.getRandomValues(new Uint8Array(length));
+
+    return Array.from(bytes)
+      .map(byte => alphabet[byte % alphabet.length])
+      .join('');
   }
 
   static isEmpty(obj: any): boolean {

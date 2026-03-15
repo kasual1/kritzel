@@ -6,6 +6,12 @@ import { KritzelBaseHandler } from './base.handler';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelCore } from '../core/core.class';
 
+/**
+ * Handles object selection interactions on the canvas.
+ * Supports both click-to-select and drag-to-select (marquee) selection modes
+ * for mouse, touch, and pen input types. Also handles additive selection
+ * via shift/ctrl modifiers.
+ */
 export class KritzelSelectionHandler extends KritzelBaseHandler {
   startX: number;
   startY: number;
@@ -15,23 +21,44 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
   touchStartTimeout: any = null;
 
-  // Track previously selected objects for efficient deselection (WeakRef to avoid memory leaks)
+  /**
+   * Tracks previously selected objects for efficient deselection.
+   * Uses a Set for O(1) lookup when determining which objects need to be deselected.
+   */
   private _previouslySelectedObjects: Set<KritzelBaseObject<any>> = new Set();
 
+  /**
+   * Indicates whether the current selection action is a single click (no drag).
+   * @returns `true` if a selection box exists with zero width and height
+   */
   get isSelectionClick() {
     const selectionBox = this._core.store.selectionBox;
     return selectionBox && selectionBox.width === 0 && selectionBox.height === 0;
   }
 
+  /**
+   * Indicates whether the current selection action is a drag selection (marquee).
+   * @returns `true` if a selection box exists with non-zero width or height
+   */
   get isSelectionDrag() {
     const selectionBox = this._core.store.selectionBox;
     return selectionBox && (selectionBox.width > 0 || selectionBox.height > 0);
   }
 
+  /**
+   * Creates a new selection handler instance.
+   * @param core - The KritzelCore instance providing access to store, engine, and other core services
+   */
   constructor(core: KritzelCore) {
     super(core);
   }
 
+  /**
+   * Handles the pointer down event to initiate selection.
+   * For mouse input, starts selection on left-click when no selection group exists or in additive mode.
+   * For touch/pen input, initiates selection after a brief delay (80ms) to distinguish from other gestures.
+   * @param event - The pointer event containing input type, coordinates, and modifier keys
+   */
   handlePointerDown(event: PointerEvent) {
     if (this._core.store.state.isResizeHandleSelected || this._core.store.state.isRotationHandleSelected) {
       return;
@@ -54,6 +81,12 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Handles the pointer move event to update the selection box during drag selection.
+   * For mouse input, updates selection when actively selecting.
+   * For touch/pen input, updates selection and cancels long-touch timeout if movement exceeds threshold.
+   * @param event - The pointer event containing current pointer position and input type
+   */
   handlePointerMove(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isSelecting) {
@@ -79,6 +112,13 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Handles the pointer up event to complete the selection action.
+   * Determines whether the action was a click or drag selection and processes accordingly.
+   * Triggers object edit mode when a single object is selected without movement.
+   * Emits objects change event after selection completes.
+   * @param event - The pointer event containing input type, coordinates, and modifier keys
+   */
   handlePointerUp(event: PointerEvent) {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
@@ -140,12 +180,23 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Removes the selection box from the canvas and resets selection state.
+   * Clears the selecting flag and removes the selection box object from the store.
+   */
   private removeSelectionBox(): void {
     this._core.store.state.isSelecting = false;
     this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
     this._core.store.setSelectionBox(null);
   }
 
+  /**
+   * Initiates a mouse-based selection by creating a selection box at the click position.
+   * Calculates canvas coordinates accounting for offset, translation, and scale.
+   * In non-additive mode, clears any existing selection group.
+   * @param event - The mouse event containing click coordinates
+   * @param isAdditive - When `true`, preserves existing selection group for adding objects
+   */
   private startMouseSelection(event: MouseEvent, isAdditive: boolean = false): void {
     let clientX, clientY;
 
@@ -171,6 +222,13 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._core.store.setSelectionBox(selectionBox);
   }
 
+  /**
+   * Initiates a touch/pen-based selection by creating a selection box at the touch position.
+   * Uses the first active pointer from the pointers map to determine coordinates.
+   * In non-additive mode, clears any existing selection group.
+   * @param _event - The pointer event (unused, coordinates from active pointers)
+   * @param isAdditive - When `true`, preserves existing selection group for adding objects
+   */
   private startTouchSelection(_event: PointerEvent, isAdditive: boolean = false): void {
     const activePointers = Array.from(this._core.store.state.pointers.values());
     const firstTouch = activePointers[0];
@@ -205,6 +263,12 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._core.store.setSelectionBox(selectionBox);
   }
 
+  /**
+   * Updates the selection box dimensions during mouse drag.
+   * Calculates the new width, height, and position based on current mouse position
+   * relative to the start position. Supports selection in any direction.
+   * @param event - The mouse event containing current cursor position
+   */
   private updateMouseSelection(event: MouseEvent): void {
     let clientX, clientY;
 
@@ -233,6 +297,12 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Updates the selection box dimensions during touch/pen drag.
+   * Uses the first active pointer to calculate new dimensions.
+   * Supports selection in any direction by using absolute width/height
+   * and positioning at the minimum coordinates.
+   */
   private updateTouchSelection(): void {
     const activePointers = Array.from(this._core.store.state.pointers.values());
     const firstTouch = activePointers[0];
@@ -268,6 +338,12 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Updates the selection state of objects intersecting with the selection box.
+   * Uses quadtree spatial indexing for efficient O(log n + k) candidate lookup.
+   * Performs polygon-based hit testing for accurate rotated selection support.
+   * Efficiently deselects only previously selected objects that no longer intersect.
+   */
   private updateSelectedObjects(): void {
     const selectionBox = this._core.store.selectionBox;
     if (!selectionBox) return;
@@ -319,6 +395,12 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._previouslySelectedObjects = newlySelectedObjects;
   }
 
+  /**
+   * Handles a single-click selection action.
+   * Finds the topmost object at the click position and adds it to the selection group.
+   * Supports additive selection mode via shift/ctrl modifier keys.
+   * @param event - The pointer event containing click coordinates and modifier keys
+   */
   private handleSelectionClick(event: PointerEvent): void {
     const selectedObject = this.getTopmostHitObject(event);
     const isAdditive = event.shiftKey || event.ctrlKey;
@@ -329,6 +411,13 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this.removeSelectionBox();
   }
 
+  /**
+   * Finds the topmost (highest z-order) object at the pointer position.
+   * Iterates through overlapping objects from top to bottom and performs hit testing.
+   * Excludes selection-related objects (selection box and selection group).
+   * @param event - The pointer event used to query overlapping DOM elements
+   * @returns The topmost object that passes hit testing, or `null` if none found
+   */
   private getTopmostHitObject(event: PointerEvent): KritzelBaseObject<any> | null {
     const pointerX = this._core.store.state.pointerX;
     const pointerY = this._core.store.state.pointerY;
@@ -344,6 +433,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     return null;
   }
 
+  /**
+   * Clears the visual selection preview by deselecting all previously selected objects.
+   * Operates in O(k) time where k is the number of previously selected objects,
+   * rather than O(n) by iterating only tracked objects.
+   */
   private clearSelectionPreview(): void {
     // Only clear previously tracked selected objects - O(k) instead of O(n)
     for (const obj of this._previouslySelectedObjects) {
@@ -352,6 +446,14 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._previouslySelectedObjects.clear();
   }
 
+  /**
+   * Adds a single object to the selection group.
+   * Resolves child objects to their parent groups before adding.
+   * In additive mode (shift), toggles object presence in existing group.
+   * In non-additive mode, creates a new selection group with the object.
+   * @param object - The object to add to selection (may be a child of a group)
+   * @param shiftKey - When `true`, adds to/removes from existing selection group
+   */
   private addObjectToSelectionGroup(object: KritzelBaseObject, shiftKey: boolean = false): void {
     if (!object) {
       return;
@@ -381,6 +483,14 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     }
   }
 
+  /**
+   * Adds all currently selected objects to a selection group.
+   * Builds a parent group lookup map for efficient O(n) resolution of child objects.
+   * Deduplicates objects by ID to prevent duplicate entries from group resolution.
+   * In additive mode, adds to existing group; otherwise creates a new selection group.
+   * Captures unchanged snapshots and refreshes dimensions once at the end for O(n) performance.
+   * @param shiftKey - When `true`, adds objects to existing selection group
+   */
   private addSelectedObjectsToSelectionGroup(shiftKey: boolean = false): void {
     const selectedObjects = this._core.store.selectedObjects;
 

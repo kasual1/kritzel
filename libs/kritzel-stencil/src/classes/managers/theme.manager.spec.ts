@@ -61,6 +61,68 @@ describe('KritzelThemeManager', () => {
   });
 
   // ============================================
+  // editorId namespacing
+  // ============================================
+
+  describe('editorId namespacing', () => {
+    let editorManager: KritzelThemeManager;
+    let mockCoreWithId: any;
+
+    beforeEach(() => {
+      mockCoreWithId = { editorId: 'homepage' } as unknown as jest.Mocked<KritzelCore>;
+      editorManager = new KritzelThemeManager(mockCoreWithId);
+    });
+
+    it('should use namespaced storage key when editorId is set', () => {
+      editorManager.saveTheme('dark');
+
+      expect(localStorage.getItem('kritzel-theme-homepage')).toBe('dark');
+      expect(localStorage.getItem('kritzel-theme')).toBeNull();
+    });
+
+    it('should restore theme from namespaced key', () => {
+      localStorage.setItem('kritzel-theme-homepage', 'dark');
+
+      const freshManager = new KritzelThemeManager(mockCoreWithId);
+
+      expect(freshManager.currentTheme).toBe('dark');
+    });
+
+    it('should not read from the non-namespaced key when editorId is set', () => {
+      localStorage.setItem('kritzel-theme', 'dark');
+
+      const freshManager = new KritzelThemeManager(mockCoreWithId);
+
+      expect(freshManager.currentTheme).toBe('light');
+    });
+
+    it('should isolate storage between different editorIds', () => {
+      const mockCoreA = { editorId: 'editor-a' } as unknown as jest.Mocked<KritzelCore>;
+      const mockCoreB = { editorId: 'editor-b' } as unknown as jest.Mocked<KritzelCore>;
+
+      const managerA = new KritzelThemeManager(mockCoreA);
+      const managerB = new KritzelThemeManager(mockCoreB);
+
+      managerA.setTheme('dark');
+      managerB.setTheme('light');
+
+      expect(managerA.currentTheme).toBe('dark');
+      expect(managerB.currentTheme).toBe('light');
+      expect(localStorage.getItem('kritzel-theme-editor-a')).toBe('dark');
+      expect(localStorage.getItem('kritzel-theme-editor-b')).toBe('light');
+    });
+
+    it('should use default key when editorId is undefined', () => {
+      const noIdCore = { editorId: undefined } as unknown as jest.Mocked<KritzelCore>;
+      const noIdManager = new KritzelThemeManager(noIdCore);
+
+      noIdManager.saveTheme('dark');
+
+      expect(localStorage.getItem('kritzel-theme')).toBe('dark');
+    });
+  });
+
+  // ============================================
   // setTargetElement / getTargetElement
   // ============================================
 

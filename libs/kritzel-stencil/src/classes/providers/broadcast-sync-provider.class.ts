@@ -12,7 +12,7 @@ export class BroadcastSyncProvider implements ISyncProvider {
   private readonly channel: BroadcastChannel;
   private _synced: boolean = false;
 
-  constructor(docName: string, doc: Y.Doc, _options?: any) {
+  constructor(docName: string, doc: Y.Doc, _options?: { quiet?: boolean }) {
     this.doc = doc;
     this.channel = new BroadcastChannel(docName);
 
@@ -32,7 +32,9 @@ export class BroadcastSyncProvider implements ISyncProvider {
       this._synced = true;
     }, 100);
 
-    console.info(`BroadcastChannel Provider initialized: ${docName}`);
+    if (!_options?.quiet) {
+      console.info(`BroadcastChannel Provider initialized: ${docName}`);
+    }
   }
 
   private handleDocUpdate = (update: Uint8Array, origin: any) => {

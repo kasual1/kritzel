@@ -86,6 +86,16 @@
     max-height: 100dvh;
     border-radius: 0;
   }
+
+  .dialog-content.fullscreen-on-mobile .dialog-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dialog-content.fullscreen-on-mobile .dialog-body ::slotted(*) {
+    flex: 1;
+    min-height: 0;
+  }
 }
 
 .dialog-header {

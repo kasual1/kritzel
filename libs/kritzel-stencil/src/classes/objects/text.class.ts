@@ -13,6 +13,10 @@ import { baseKeymap } from 'prosemirror-commands';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 import { KritzelColorHelper } from '../../helpers/color.helper';
 
+/**
+ * Represents a text object on the canvas that supports rich text editing via ProseMirror.
+ * Extends the base object class to inherit common object properties and behaviors.
+ */
 export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelText';
 
@@ -41,6 +45,10 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
   readonly rows: number = 1;
 
+  /**
+   * Checks whether the text object contains any content.
+   * @returns `true` if the editor is empty or contains only whitespace, `false` otherwise.
+   */
   get isEmpty(): boolean {
     if (!this.editor) {
       return true;
@@ -56,7 +64,30 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     return text.length === 0;
   }
 
+  /**
+   * Constructs a new KritzelText instance with optional configuration.
+   * Can be used by consumers to create text objects programmatically:
+   * ```ts
+   * const text = new KritzelText({ text: 'Hello World', translateX: 100, translateY: 100 });
+   * await editor.addObject(text);
+   * ```
+   * @param config - Optional configuration object.
+   * @param config.text - Initial plain text content.
+   * @param config.translateX - Initial X translation position.
+   * @param config.translateY - Initial Y translation position.
+   * @param config.fontSize - Font size in points (default: 8).
+   * @param config.fontFamily - Font family name (default: 'Arial').
+   * @param config.fontColor - Theme-aware color object with light and dark values.
+   * @param config.height - Initial height of the text element.
+   * @param config.width - Initial width of the text element.
+   * @param config.scale - Scale factor for the text object.
+   * @param config.initialWidth - Initial width before scaling.
+   * @param config.initialHeight - Initial height before scaling.
+   * @param config.scaleX - Horizontal scale factor.
+   * @param config.scaleY - Vertical scale factor.
+   */
   constructor(config?: {
+    text?: string;
     translateX?: number;
     translateY?: number;
     fontSize?: number;
@@ -72,19 +103,49 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }) {
     super();
 
+    // Always create the editor so setContent() works immediately
+    this.editor = this.createEditor();
+
     if (config) {
       this.translateX = config.translateX || 0;
       this.translateY = config.translateY || 0;
       this.fontSize = config.fontSize || 8;
       this.fontFamily = config.fontFamily || 'Arial';
       this.fontColor = config.fontColor || { light: '#000000', dark: '#ffffff' };
-      this.width = this.initialWidth / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
-      this.height = (this.fontSize * 1.2) / (this._core.store.state.scale < 0 ? this._core.store.state.scale : 1);
+
+      // Guard _core access: scale may not be available when created by consumers
+      const coreScale = this._core?.store?.state?.scale;
+      const effectiveScale = coreScale != null && coreScale < 0 ? coreScale : 1;
+      this.width = this.initialWidth / effectiveScale;
+      this.height = (this.fontSize * 1.2) / effectiveScale;
+
       this.scale = config.scale || 1;
       this.scaleFactor = config.scaleX ?? 1;
+
+      // Set initial text content if provided
+      if (config.text) {
+        this.setContent({
+          type: 'doc',
+          content: [
+            {
+              type: 'paragraph',
+              content: [{ type: 'text', text: config.text }],
+            },
+          ],
+        });
+      }
     }
   }
 
+  /**
+   * Factory method to create a new KritzelText instance with default settings.
+   * Initializes the editor and registers the object with the core store.
+   * @param core - The KritzelCore instance managing the canvas.
+   * @param fontSize - Optional font size in points.
+   * @param fontFamily - Optional font family name.
+   * @param scale - Optional scale factor (defaults to current viewport scale).
+   * @returns A new, fully initialized KritzelText instance.
+   */
   static override create(core: KritzelCore, fontSize?: number, fontFamily?: string, scale?: number): KritzelText {
     const object = new KritzelText();
 
@@ -95,19 +156,29 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.fontFamily = fontFamily;
     object.translateX = 0;
     object.translateY = 0;
-    object.width = object.initialWidth / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
-    object.height = (object.fontSize * 1.2) / (object._core.store.state.scale < 0 ? object._core.store.state.scale : 1);
+
+    const coreScale = core.store.state.scale;
+    const effectiveScale = coreScale < 0 ? coreScale : 1;
+    object.width = object.initialWidth / effectiveScale;
+    object.height = (object.fontSize * 1.2) / effectiveScale;
+
     object.backgroundColor = { light: 'transparent', dark: 'transparent' };
     object.initialWidth = object.width;
     object.initialHeight = object.height;
     object.scaleFactor = 1;
-    object.scale = scale ?? object._core.store.state.scale;
+    object.scale = scale ?? coreScale;
     object.zIndex = core.store.currentZIndex;
-    object.editor = object.createEditor();
+
+    // Editor is already created in the constructor
 
     return object;
   }
 
+  /**
+   * Mounts the text object to a DOM element, attaching the ProseMirror editor.
+   * Applies font styling and ensures the editor is properly rendered.
+   * @param element - The HTML div element to mount the text object into.
+   */
   override mount(element: HTMLDivElement): void {
     if (element === null || this.isInViewport() === false) {
       return;
@@ -135,7 +206,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     requestAnimationFrame(() => this.adjustSizeOnInput());
   }
 
-  private createEditor(): EditorView {
+  /**
+   * Creates and configures a new ProseMirror EditorView instance.
+   * Sets up the document schema, plugins, and transaction handling.
+   * @returns A configured ProseMirror EditorView instance.
+   */
+  createEditor(): EditorView {
     const doc = this._schema.node('doc', null, [this._schema.node('paragraph')]);
 
     return new EditorView(null, {
@@ -161,18 +237,28 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     });
   }
 
+  /**
+   * Sets the content of the text editor from a serialized document structure.
+   * Used to restore content from saved state or synchronize with remote changes.
+   * @param content - The serialized ProseMirror document content in JSON format.
+   */
   public setContent(content: any): void {
     this.content = content;
 
     if (this.editor && content) {
       const newDoc = this.editor.state.schema.nodeFromJSON(content);
       const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
-      
+
       tr.setMeta('fromRemote', true);
       this.editor.dispatch(tr);
     }
   }
 
+  /**
+   * Dynamically adjusts the width and height of the text object based on content.
+   * Recalculates dimensions when content changes and handles rotation offsets
+   * to maintain proper positioning.
+   */
   adjustSizeOnInput(): void {
     const element = this.elementRef;
 
@@ -207,6 +293,14 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
+  /**
+   * Resizes the text object while maintaining aspect ratio through scale factor adjustment.
+   * Updates position and dimensions, then persists changes to the store.
+   * @param x - New X position (translateX value).
+   * @param y - New Y position (translateY value).
+   * @param width - Target width for the text object.
+   * @param height - Target height for the text object.
+   */
   override resize(x: number, y: number, width: number, height: number): void {
     if (width <= 1 || height <= 1) {
       return;
@@ -229,6 +323,14 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Focuses the text editor and optionally positions the cursor at specific coordinates.
+   * Falls back to placing cursor at the end of the document if coordinates are invalid.
+   * Handles iOS-specific scrolling behavior.
+   * @param coords - Optional coordinates to position the cursor.
+   * @param coords.x - X coordinate for cursor placement.
+   * @param coords.y - Y coordinate for cursor placement.
+   */
   focus(coords?: { x: number; y: number }): void {
     if (this.editor) {
       const doc = this.editor.state.doc;
@@ -238,7 +340,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
         if (pos) {
           this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
           this.editor.focus();
-          
+
           if (KritzelDevicesHelper.isIOS()) {
             this.scrollIntoViewOnIOS();
           }
@@ -249,13 +351,17 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       const end = Math.max(1, doc.content.size - 1);
       this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, end)));
       this.editor.focus();
-      
+
       if (KritzelDevicesHelper.isIOS()) {
         this.scrollIntoViewOnIOS();
       }
     }
   }
 
+  /**
+   * Scrolls the editor into view on iOS devices after a short delay.
+   * Addresses iOS-specific virtual keyboard and viewport issues.
+   */
   private scrollIntoViewOnIOS(): void {
     setTimeout(() => {
       if (this.editor && this.editor.dom) {
@@ -268,6 +374,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     }, 300);
   }
 
+  /**
+   * Enters edit mode for the text object, enabling content editing.
+   * Saves a snapshot of the current state, activates the text tool,
+   * enables the editor, and focuses at the pointer position.
+   * @param event - Optional pointer event containing cursor coordinates for focus placement.
+   */
   edit(event?: PointerEvent): void {
     KritzelKeyboardHelper.disableInteractiveWidget();
 
@@ -288,6 +400,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     KritzelKeyboardHelper.enableInteractiveWidget();
   }
 
+  /**
+   * Exits edit mode and saves the current content.
+   * Disables the editor, persists content to the document,
+   * consolidates temporary history items, and emits change events.
+   */
   save(): void {
     requestAnimationFrame(() => this.adjustSizeOnInput());
 
@@ -306,6 +423,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this._core.engine.emitObjectsChange();
   }
 
+  /**
+   * Handles pointer down events during text editing.
+   * Stops event propagation to prevent canvas interaction while editing.
+   * @param event - The pointer down event.
+   */
   handlePointerDown(event: PointerEvent): void {
     if (!this.isEditing) {
       return;
@@ -314,6 +436,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     event.stopPropagation();
   }
 
+  /**
+   * Handles pointer move events during text editing.
+   * Conditionally stops propagation based on whether the engine is tracking
+   * the pointer, allowing proper event flow during text creation.
+   * @param event - The pointer move event.
+   */
   handlePointerMove(event: PointerEvent): void {
     if (!this.isEditing) {
       return;
@@ -328,6 +456,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
+  /**
+   * Handles pointer up events during text editing.
+   * Conditionally stops propagation to allow the engine to clean up pointer state,
+   * preventing issues with stale pointers that could cause gesture misinterpretation.
+   * @param event - The pointer up event.
+   */
   handlePointerUp(event: PointerEvent): void {
     if (!this.isEditing) {
       return;
@@ -346,6 +480,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
+  /**
+   * Creates a deep copy of this text object, including a new editor instance.
+   * Preserves all content from the original object.
+   * @returns A new KritzelText instance with copied properties and content.
+   */
   override copy(): KritzelText {
     const copiedObject = super.copy() as KritzelText;
     copiedObject.editor = copiedObject.createEditor();
@@ -357,6 +496,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     return copiedObject;
   }
 
+  /**
+   * Serializes the text object to a plain object for storage or transmission.
+   * Excludes non-serializable properties like the core reference, editor instance,
+   * and DOM elements.
+   * @returns A plain object containing all serializable properties.
+   */
   override serialize() {
     const { _core, _elementRef, _schema, element, totalWidth, totalHeight, editor, uneditedObject, ...remainingProps } = this as any;
 
@@ -369,6 +514,13 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     return clonedProps;
   }
 
+  /**
+   * Restores a text object from a serialized representation.
+   * Reconstructs the editor content from the saved document state.
+   * @template KritzelText - The return type (for type inference).
+   * @param object - The serialized object data to restore from.
+   * @returns The deserialized text object instance.
+   */
   override deserialize<KritzelText>(object: any): KritzelText {
     super.deserialize<KritzelText>(object);
     if (object.content) {

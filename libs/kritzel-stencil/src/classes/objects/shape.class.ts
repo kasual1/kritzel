@@ -58,6 +58,29 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
+  /**
+   * Creates a new KritzelShape instance with optional configuration.
+   * This constructor initializes the shape with default values that can be
+   * overridden by the provided configuration object.
+   *
+   * @param config - Optional configuration object for the shape
+   * @param config.x - Screen-space x coordinate of the shape's top-left corner
+   * @param config.y - Screen-space y coordinate of the shape's top-left corner
+   * @param config.translateX - World-space x translation offset
+   * @param config.translateY - World-space y translation offset
+   * @param config.width - Width of the shape in screen-space pixels
+   * @param config.height - Height of the shape in screen-space pixels
+   * @param config.shapeType - Type of shape (Rectangle, Ellipse, Triangle)
+   * @param config.fillColor - Theme-aware fill color with light and dark variants
+   * @param config.strokeColor - Theme-aware stroke color with light and dark variants
+   * @param config.strokeWidth - Width of the shape's stroke in pixels
+   * @param config.fontSize - Font size for text content in points
+   * @param config.fontFamily - Font family for text content
+   * @param config.fontColor - Theme-aware font color (auto-determined from fillColor if not specified)
+   * @param config.scale - Viewport scale factor at creation time
+   * @param config.scaleX - Horizontal scale factor for transformations
+   * @param config.scaleY - Vertical scale factor for transformations
+   */
   constructor(config?: {
     x?: number;
     y?: number;
@@ -87,7 +110,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.height = config.height ?? 100;
       this.shapeType = config.shapeType ?? ShapeType.Rectangle;
       this.fillColor = config.fillColor ?? { light: 'transparent', dark: 'transparent' };
-      this.strokeColor = config.strokeColor ?? { light: '#000000', dark: '#ffffff' };
+      this.strokeColor = config.strokeColor ?? config.fillColor ?? { light: '#000000', dark: '#ffffff' };
       this.strokeWidth = config.strokeWidth ?? 4;
       this.fontSize = config.fontSize ?? 16;
       this.fontFamily = config.fontFamily ?? 'Arial';
@@ -138,7 +161,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.height = config?.height ?? 100;
     object.shapeType = config?.shapeType ?? ShapeType.Rectangle;
     object.fillColor = config?.fillColor ?? { light: 'transparent', dark: 'transparent' };
-    object.strokeColor = config?.strokeColor ?? { light: '#000000', dark: '#ffffff' };
+    object.strokeColor = config?.strokeColor ?? config?.fillColor ?? { light: '#000000', dark: '#ffffff' };
     object.strokeWidth = config?.strokeWidth ?? 4;
     object.opacity = config?.opacity ?? 1;
     object.fontSize = config?.fontSize ?? 16;
@@ -171,6 +194,15 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     this.translateY = (this.y + this.translateY) / this.scale;
   }
 
+  /**
+   * Mounts the shape to a DOM element for rendering.
+   * This method attaches the shape to the provided HTML element, enabling
+   * it to be displayed in the viewport. It performs visibility checks and
+   * prevents redundant mounting operations.
+   *
+   * @param element - The HTML div element to mount the shape to
+   * @returns void
+   */
   override mount(element: HTMLDivElement): void {
     if (element === null || this.isInViewport() === false) {
       return;
@@ -184,6 +216,15 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     this.isMounted = true;
   }
 
+  /**
+   * Mounts the ProseMirror text editor to a DOM element.
+   * This method attaches the rich text editor to the provided container element,
+   * applying font styling and ensuring proper text wrapping. It prevents
+   * redundant DOM operations if the editor is already mounted to the same element.
+   *
+   * @param element - The HTML div element to mount the text editor to
+   * @returns void
+   */
   mountTextEditor(element: HTMLDivElement): void {
     if (element === null) {
       return;
@@ -203,6 +244,14 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     element.appendChild(this.editor.dom);
   }
 
+  /**
+   * Creates and initializes a ProseMirror editor instance for rich text editing.
+   * The editor is configured with a schema that supports basic text formatting
+   * and list nodes. It starts in non-editable mode and handles document changes
+   * by updating the shape's content and syncing with the store.
+   *
+   * @returns A new ProseMirror EditorView instance configured for this shape
+   */
   private createEditor(): EditorView {
     const doc = this._schema.node('doc', null, [this._schema.node('paragraph')]);
 
@@ -228,6 +277,15 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     });
   }
 
+  /**
+   * Sets the text content of the shape's editor from a serialized document.
+   * This method is typically used to restore content from storage or to apply
+   * remote changes during collaboration. The 'fromRemote' meta flag prevents
+   * the change from being re-broadcast to collaborators.
+   *
+   * @param content - The serialized ProseMirror document content (JSON format)
+   * @returns void
+   */
   public setContent(content: any): void {
     this.content = content;
 
@@ -240,6 +298,18 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
+  /**
+   * Resizes the shape to the specified dimensions and position.
+   * This method updates the shape's world-space coordinates and dimensions,
+   * then triggers a store update to persist the changes. Minimum dimension
+   * constraints prevent the shape from becoming invisibly small.
+   *
+   * @param x - New world-space x coordinate for the shape's position
+   * @param y - New world-space y coordinate for the shape's position
+   * @param width - New width of the shape in pixels
+   * @param height - New height of the shape in pixels
+   * @returns void
+   */
   override resize(x: number, y: number, width: number, height: number): void {
     if (width <= 1 || height <= 1) {
       return;
@@ -253,6 +323,17 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Focuses the text editor and optionally positions the cursor at specific coordinates.
+   * If coordinates are provided, the cursor is placed at the corresponding text position.
+   * Otherwise, the cursor is placed at the end of the document. On iOS devices,
+   * additional scrolling behavior is triggered to ensure visibility.
+   *
+   * @param coords - Optional screen coordinates to position the cursor
+   * @param coords.x - Screen x coordinate for cursor placement
+   * @param coords.y - Screen y coordinate for cursor placement
+   * @returns void
+   */
   focus(coords?: { x: number; y: number }): void {
     if (this.editor) {
       const doc = this.editor.state.doc;
@@ -280,6 +361,14 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
+  /**
+   * Scrolls the editor into view on iOS devices with a slight delay.
+   * This workaround addresses iOS-specific behavior where the virtual keyboard
+   * can obscure the editor. The delay allows the keyboard to fully appear
+   * before scrolling.
+   *
+   * @returns void
+   */
   private scrollIntoViewOnIOS(): void {
     setTimeout(() => {
       if (this.editor && this.editor.dom) {
@@ -292,6 +381,16 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     }, 300);
   }
 
+  /**
+   * Enters edit mode for the shape, enabling text editing.
+   * This method stores a clone of the current state for potential undo operations,
+   * switches to the shape tool, enables the editor, and focuses at the pointer
+   * location if provided. Keyboard handling is temporarily adjusted to support
+   * text input.
+   *
+   * @param event - Optional pointer event containing the click coordinates for cursor placement
+   * @returns void
+   */
   edit(event?: PointerEvent): void {
     KritzelKeyboardHelper.disableInteractiveWidget();
 
@@ -310,6 +409,14 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     KritzelKeyboardHelper.enableInteractiveWidget();
   }
 
+  /**
+   * Exits edit mode and saves the current text content.
+   * This method serializes the editor's document state, disables editing,
+   * removes focus from the editor, consolidates any temporary changes in the
+   * store, and emits an objects change event to notify listeners.
+   *
+   * @returns void
+   */
   save(): void {
     this.content = this.editor.state.doc.toJSON();
 
@@ -326,6 +433,14 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     this._core.engine.emitObjectsChange();
   }
 
+  /**
+   * Handles pointer down events when the shape is in edit mode.
+   * This method stops event propagation for untracked pointers to prevent
+   * the canvas from capturing text selection interactions within the editor.
+   *
+   * @param event - The pointer down event from user interaction
+   * @returns void
+   */
   handlePointerDown(event: PointerEvent): void {
     if (!this.isEditing) {
       return;
@@ -336,6 +451,15 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
+  /**
+   * Handles pointer move events when the shape is in edit mode.
+   * This method stops event propagation for untracked pointers to allow
+   * text selection drag operations within the editor without triggering
+   * canvas pan or other interactions.
+   *
+   * @param event - The pointer move event from user interaction
+   * @returns void
+   */
   handlePointerMove(event: PointerEvent): void {
     if (!this.isEditing) {
       return;
@@ -346,6 +470,15 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
+  /**
+   * Handles pointer up events when the shape is in edit mode.
+   * This method stops event propagation for untracked pointers to complete
+   * text selection operations within the editor without triggering
+   * canvas click handlers.
+   *
+   * @param event - The pointer up event from user interaction
+   * @returns void
+   */
   handlePointerUp(event: PointerEvent): void {
     if (!this.isEditing) {
       return;
@@ -356,6 +489,14 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     }
   }
 
+  /**
+   * Creates a copy of this shape with a new editor instance.
+   * This method extends the base copy behavior by creating a fresh
+   * ProseMirror editor for the copied shape and restoring the text
+   * content from the original.
+   *
+   * @returns A new KritzelShape instance with copied properties and content
+   */
   override copy(): KritzelShape {
     const copiedObject = super.copy() as KritzelShape;
     copiedObject.editor = copiedObject.createEditor();
@@ -367,6 +508,14 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     return copiedObject;
   }
 
+  /**
+   * Serializes the shape to a plain JavaScript object for storage or transmission.
+   * This method excludes non-serializable properties like the core reference,
+   * DOM elements, schema, and editor instance. The remaining properties are
+   * deep-cloned to prevent reference issues.
+   *
+   * @returns A serializable object containing all persistent shape properties
+   */
   override serialize() {
     const { _core, _elementRef, _schema, element, totalWidth, totalHeight, editor, uneditedObject, ...remainingProps } = this as any;
 
@@ -379,6 +528,15 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     return clonedProps;
   }
 
+  /**
+   * Restores a shape from a serialized object representation.
+   * This method extends the base deserialization by additionally restoring
+   * the text editor content from the serialized data.
+   *
+   * @template KritzelShape - The type parameter for return type consistency
+   * @param object - The serialized shape data to restore from
+   * @returns The deserialized shape instance (this)
+   */
   override deserialize<KritzelShape>(object: any): KritzelShape {
     super.deserialize<KritzelShape>(object);
     if (object.content) {
@@ -388,8 +546,13 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   }
 
   /**
-   * Called after properties are updated via updateObject.
-   * Automatically adjusts text color based on fill color brightness.
+   * Lifecycle hook called after properties are updated via updateObject.
+   * This method automatically adjusts the text color based on fill color
+   * brightness to ensure readability. When the fill color changes, the font
+   * color is recalculated and the editor's styling is updated immediately.
+   *
+   * @param changedProperties - Array of property names that were modified
+   * @returns void
    */
   override onAfterUpdate(changedProperties: string[]): void {
     if (changedProperties.includes('fillColor')) {
@@ -407,12 +570,20 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   }
 
   /**
-   * Returns the clipping polygon for arrow intersection.
-   * For ellipse: returns a many-sided polygon approximation
-   * For triangle: returns the 3 corners
-   * For rectangle: returns null (uses default rotatedPolygon)
+   * Returns the clipping polygon for arrow intersection calculations.
+   * This method generates a polygon representation of the shape's outline
+   * for use in determining where arrows or connectors should terminate.
    * 
-   * Includes padding for half the stroke width so arrow heads don't overlap the stroke.
+   * The polygon includes padding for half the stroke width to ensure
+   * arrow heads don't visually overlap the shape's stroke.
+   *
+   * Shape-specific behavior:
+   * - Ellipse: Returns a 32-segment polygon approximation of the ellipse
+   * - Triangle: Returns the 3 corner points, expanded outward by stroke padding
+   * - Rectangle: Returns null to use the default rotatedPolygon from base class
+   *
+   * @returns An array of KritzelPoint objects defining the clipping polygon,
+   *          or null for rectangles (which use the default implementation)
    */
   getClipPolygon(): KritzelPoint[] | null {
     // Calculate world-space center and dimensions
@@ -493,8 +664,16 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   }
 
   /**
-   * Returns the SVG path for rendering the shape.
-   * The path uses screen-space coordinates relative to (x, y).
+   * Generates the SVG path string for rendering the shape.
+   * The path uses screen-space coordinates relative to the shape's (x, y) position.
+   * This method supports all shape types and returns the appropriate path commands.
+   *
+   * Path formats by shape type:
+   * - Rectangle: Four-point closed path (M, L, L, L, Z)
+   * - Ellipse: Two-arc closed path using the elliptical arc command (M, A, A)
+   * - Triangle: Three-point closed path with vertices at top-center, bottom-right, bottom-left
+   *
+   * @returns An SVG path data string (d attribute) for the shape
    */
   getSvgPath(): string {
     const w = this.width;

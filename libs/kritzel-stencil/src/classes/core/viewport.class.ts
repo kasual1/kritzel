@@ -2,18 +2,37 @@ import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelMouseButton } from '../../enums/event-button.enum';
 import { KritzelCore } from './core.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
+import { KritzelViewportState } from '../../interfaces/viewport-state.interface';
 import { debounce, DebouncedFunc } from 'lodash';
 
+/**
+ * Manages viewport transformations including panning, zooming, and centering.
+ * Handles mouse, touch, and wheel events for viewport manipulation.
+ * Supports viewport boundaries and animated transitions.
+ */
 export class KritzelViewport {
+  /** Reference to the KritzelCore instance */
   private readonly _core: KritzelCore;
+  /** Debounced function to persist viewport state to workspace */
   private readonly _debounceUpdate: DebouncedFunc<() => void>;
+  /** Debounced function to end scaling state after pinch gestures */
   private readonly _debounceEndScaling: DebouncedFunc<() => void>;
+  /** Animation frame ID for cancellable viewport animations */
   private _animationFrameId: number | null = null;
 
+  /** Initial distance between two touch points for pinch-to-zoom */
   initialTouchDistance: number = 0;
+  /** Starting X position for pan/zoom gestures */
   startX: number = 0;
+  /** Starting Y position for pan/zoom gestures */
   startY: number = 0;
 
+  /**
+   * Creates a new KritzelViewport instance and initializes viewport state.
+   * Sets up debounced handlers for viewport updates and scaling end events.
+   * @param core - The KritzelCore instance to manage viewport for
+   * @param host - The HTML element hosting the canvas
+   */
   constructor(core: KritzelCore, host: HTMLElement) {
     this._core = core;
     this._core.store.state.host = host;
@@ -120,6 +139,10 @@ export class KritzelViewport {
     return Math.max(scaleMin, minScaleForBoundaries);
   }
 
+  /**
+   * Handles viewport resize events.
+   * Updates the stored viewport dimensions and triggers a rerender.
+   */
   handleResize(): void {
     this._core.store.state.viewportWidth = this._core.store.state.host.clientWidth;
     this._core.store.state.viewportHeight = this._core.store.state.host.clientHeight;
@@ -127,6 +150,13 @@ export class KritzelViewport {
     this._core.rerender();
   }
 
+  /**
+   * Handles pointer down events for initiating viewport interactions.
+   * For mouse: Right-click starts panning mode.
+   * For touch/pen: Two-finger touch initiates pinch-to-zoom.
+   * Cancels any ongoing viewport animation when user starts interacting.
+   * @param event - The pointer down event
+   */
   handlePointerDown(event: PointerEvent): void {
     // Cancel any ongoing viewport animation when user starts interacting
     this.cancelViewportAnimation();
@@ -179,6 +209,12 @@ export class KritzelViewport {
     }
   }
 
+  /**
+   * Handles pointer move events for viewport panning and zooming.
+   * For mouse: Updates pointer position and handles right-click pan dragging.
+   * For touch/pen: Handles two-finger pinch-to-zoom with translation.
+   * @param event - The pointer move event
+   */
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       const hostRect = this._core.store.state.host.getBoundingClientRect();
@@ -187,6 +223,7 @@ export class KritzelViewport {
 
       this._core.store.state.pointerX = (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale;
       this._core.store.state.pointerY = (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale;
+      this._core.store.state.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
 
       if (this._core.store.state.isPanning) {
         const dx = xRelativeToHost - this._core.store.state.startX;
@@ -214,6 +251,7 @@ export class KritzelViewport {
 
       this._core.store.state.pointerX = (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale;
       this._core.store.state.pointerY = (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale;
+      this._core.store.state.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
 
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
@@ -264,6 +302,12 @@ export class KritzelViewport {
     }
   }
 
+  /**
+   * Handles pointer up events to end viewport interactions.
+   * For mouse: Ends panning mode on right-click release.
+   * For touch/pen: Triggers debounced end of scaling when all fingers are lifted.
+   * @param event - The pointer up event
+   */
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isPanning) {
@@ -280,6 +324,12 @@ export class KritzelViewport {
     }
   }
 
+  /**
+   * Handles mouse wheel events for panning and zooming.
+   * Ctrl+wheel triggers zoom; regular wheel triggers pan.
+   * Cancels any ongoing viewport animation when user scrolls.
+   * @param event - The wheel event
+   */
   handleWheel(event: WheelEvent): void {
     // Cancel any ongoing viewport animation when user scrolls
     this.cancelViewportAnimation();
@@ -291,6 +341,98 @@ export class KritzelViewport {
     }
   }
 
+  /**
+   * Returns the current viewport state.
+   * @returns The current viewport position, scale, and dimensions.
+   */
+  getViewport(): KritzelViewportState {
+    const state = this._core.store.state;
+    return {
+      translateX: state.translateX,
+      translateY: state.translateY,
+      scale: state.scale,
+      width: state.viewportWidth,
+      height: state.viewportHeight,
+    };
+  }
+
+  /**
+   * Converts screen-relative pixel coordinates to world coordinates.
+   * @param x - X position in screen pixels (relative to the host element)
+   * @param y - Y position in screen pixels (relative to the host element)
+   * @returns World coordinates { x, y }
+   */
+  screenToWorld(x: number, y: number): { x: number; y: number } {
+    const state = this._core.store.state;
+    return {
+      x: (x - state.translateX) / state.scale,
+      y: (y - state.translateY) / state.scale,
+    };
+  }
+
+  /**
+   * Converts world coordinates to screen-relative pixel coordinates.
+   * @param x - X position in world coordinates
+   * @param y - Y position in world coordinates
+   * @returns Screen coordinates { x, y } relative to the host element
+   */
+  worldToScreen(x: number, y: number): { x: number; y: number } {
+    const state = this._core.store.state;
+    return {
+      x: x * state.scale + state.translateX,
+      y: y * state.scale + state.translateY,
+    };
+  }
+
+  /**
+   * Animates the viewport to center on the given world coordinates at the specified scale.
+   * Respects scale limits and viewport boundaries.
+   * @param x - X position in world coordinates to center on
+   * @param y - Y position in world coordinates to center on
+   * @param scale - Target scale level
+   */
+  setViewport(x: number, y: number, scale: number): void {
+    const state = this._core.store.state;
+    const clampedScale = Math.min(state.scaleMax, Math.max(this.getEffectiveMinScale(), scale));
+    const targetTranslateX = state.viewportWidth / 2 - x * clampedScale;
+    const targetTranslateY = state.viewportHeight / 2 - y * clampedScale;
+    this.animateViewportTo(targetTranslateX, targetTranslateY, clampedScale);
+  }
+
+  /**
+   * Animates the viewport to center on the given world coordinates without changing the scale.
+   * @param x - X position in world coordinates to center on
+   * @param y - Y position in world coordinates to center on
+   */
+  panTo(x: number, y: number): void {
+    this.setViewport(x, y, this._core.store.state.scale);
+  }
+
+  /**
+   * Animates the viewport to the given scale level.
+   * Optionally centers on a world point; if omitted, zooms around the viewport center.
+   * @param scale - Target scale level
+   * @param worldX - Optional X position in world coordinates to center on
+   * @param worldY - Optional Y position in world coordinates to center on
+   */
+  zoomTo(scale: number, worldX?: number, worldY?: number): void {
+    const state = this._core.store.state;
+    if (worldX !== undefined && worldY !== undefined) {
+      this.setViewport(worldX, worldY, scale);
+    } else {
+      // Zoom around viewport center
+      const centerWorldX = (state.viewportWidth / 2 - state.translateX) / state.scale;
+      const centerWorldY = (state.viewportHeight / 2 - state.translateY) / state.scale;
+      this.setViewport(centerWorldX, centerWorldY, scale);
+    }
+  }
+
+  /**
+   * Centers a given object in the viewport without changing the scale.
+   * The object's center point will be positioned at the viewport center.
+   * Respects viewport boundary constraints.
+   * @param object - The object to center in the viewport
+   */
   centerInViewport(object: KritzelBaseObject): void {
     const { scale, viewportWidth, viewportHeight } = this._core.store.state;
     const { x, y, width, height } = object.rotatedBoundingBox;
@@ -309,6 +451,12 @@ export class KritzelViewport {
     this._debounceUpdate();
   }
 
+  /**
+   * Centers and scales the viewport to fit a given object with 10% padding.
+   * Calculates the optimal scale to show the entire object while respecting
+   * scale limits and viewport boundaries.
+   * @param object - The object to fit in the viewport
+   */
   centerFitInViewport(object: KritzelBaseObject): void {
     const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
     const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
@@ -319,6 +467,12 @@ export class KritzelViewport {
     this.centerInViewport(object);
   }
 
+  /**
+   * Handles zoom operations triggered by wheel events with Ctrl key.
+   * Zooms around the cursor position, respecting scale limits.
+   * Also handles horizontal pan from trackpad pinch+drag gestures.
+   * @param event - The wheel event with Ctrl modifier
+   */
   private handleZoom(event: WheelEvent): void {
     this._core.store.state.isScaling = true;
     const rect = this._core.store.state.host.getBoundingClientRect();
@@ -327,6 +481,7 @@ export class KritzelViewport {
 
     this._core.store.state.pointerX = (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale;
     this._core.store.state.pointerY = (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale;
+    this._core.store.state.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
 
     const rawScaleFactor = 1 + (event.deltaY * -0.012);
     const scaleFactor = Math.max(0.8, Math.min(1.2, rawScaleFactor));
@@ -358,6 +513,11 @@ export class KritzelViewport {
     this._debounceEndScaling();
   }
 
+  /**
+   * Handles pan operations triggered by wheel events (without Ctrl).
+   * Applies a pan speed multiplier and clamps to viewport boundaries.
+   * @param event - The wheel event without Ctrl modifier
+   */
   private handlePan(event: WheelEvent): void {
     const panSpeed = 0.8;
 
@@ -491,6 +651,54 @@ export class KritzelViewport {
 
     // Animate to the target position
     this.animateViewportTo(targetTranslateX, targetTranslateY, clampedScale);
+
+    return true;
+  }
+
+  /**
+   * Centers and fits ALL objects in the viewport, including objects not currently rendered.
+   * Calculates the combined bounding box of all objects and optionally animates the viewport to show them.
+   * @param animate - Whether to animate the viewport transition (default: true)
+   * @returns true if objects were found and viewport was adjusted, false if no objects exist
+   */
+  centerFitAllObjects(animate = true): boolean {
+    const allObjects = this._core.store.allNonSelectionObjects;
+
+    if (allObjects.length === 0) {
+      return false;
+    }
+
+    // Calculate combined bounds of all objects
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    for (const obj of allObjects) {
+      const bounds = obj.rotatedBoundingBox;
+      minX = Math.min(minX, bounds.x);
+      minY = Math.min(minY, bounds.y);
+      maxX = Math.max(maxX, bounds.x + bounds.width);
+      maxY = Math.max(maxY, bounds.y + bounds.height);
+    }
+
+    const contentWidth = maxX - minX;
+    const contentHeight = maxY - minY;
+    const contentCenterX = minX + contentWidth / 2;
+    const contentCenterY = minY + contentHeight / 2;
+
+    // Calculate scale to fit with 10% padding
+    const scaleX = this._core.store.state.viewportWidth / (contentWidth * 1.1);
+    const scaleY = this._core.store.state.viewportHeight / (contentHeight * 1.1);
+    const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
+    const clampedScale = Math.max(newScale, this.getEffectiveMinScale());
+
+    // Calculate target translation to center content
+    const targetTranslateX = this._core.store.state.viewportWidth / 2 - contentCenterX * clampedScale;
+    const targetTranslateY = this._core.store.state.viewportHeight / 2 - contentCenterY * clampedScale;
+
+    // Animate or set immediately based on the animate parameter
+    this.animateViewportTo(targetTranslateX, targetTranslateY, clampedScale, animate ? 150 : 0);
 
     return true;
   }

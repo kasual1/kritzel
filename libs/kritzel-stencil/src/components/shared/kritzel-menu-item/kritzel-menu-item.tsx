@@ -100,7 +100,11 @@ export class KritzelMenuItem {
   private renderViewMode() {
     return [
       <div class="menu-item-content left">
-        {this.item.icon && <kritzel-icon name={this.item.icon} size={16}></kritzel-icon>}
+        {this.item.icon && (
+          <span title={this.item.iconTooltip}>
+            <kritzel-icon name={this.item.icon} size={16}></kritzel-icon>
+          </span>
+        )}
         <div>{this.item.label}</div>
       </div>,
       <div class="menu-item-content right">

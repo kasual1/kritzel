@@ -30,10 +30,25 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   private _adjustedPoints?: number[][] = null;
 
+  /**
+   * Gets the SVG viewBox string based on the path's position and dimensions.
+   * @returns The viewBox attribute value in the format "x y width height"
+   */
   get viewBox(): string {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
+  /**
+   * Creates a new KritzelPath instance.
+   * @param config - Optional configuration object for the path
+   * @param config.points - Array of [x, y] coordinate pairs defining the path
+   * @param config.translateX - Horizontal translation offset (default: 0)
+   * @param config.translateY - Vertical translation offset (default: 0)
+   * @param config.scale - Scale factor for the path (default: 1)
+   * @param config.strokeWidth - Width of the stroke in pixels (default: 8)
+   * @param config.fill - Theme-aware fill color with light and dark variants
+   * @param config.lineSlack - Additional padding for bounding box calculations (default: 0.5)
+   */
   constructor(config?: { points: number[][]; translateX?: number; translateY?: number; scale?: number; strokeWidth?: number; fill?: ThemeAwareColor; lineSlack?: number }) {
     super();
     this.options = config;
@@ -47,6 +62,13 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.updateDimensions();
   }
 
+  /**
+   * Factory method to create a new KritzelPath instance with a core reference.
+   * This is the preferred way to create paths that will be managed by the canvas.
+   * @param core - The KritzelCore instance that will manage this path
+   * @param options - Optional configuration options for the path
+   * @returns A new KritzelPath instance configured with the provided options
+   */
   static override create(core: KritzelCore, options?: KritzelPathOptions): KritzelPath {
     const object = new KritzelPath();
 
@@ -68,6 +90,11 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return object;
   }
 
+  /**
+   * Creates a deep copy of this path object.
+   * The points array is cloned to ensure the copy is independent.
+   * @returns A new KritzelPath instance with copied properties
+   */
   override copy(): KritzelPath {
     const copiedObject = super.copy() as KritzelPath;
     if (this.points) {
@@ -76,6 +103,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return copiedObject;
   }
 
+  /**
+   * Resizes the path to fit within the specified dimensions.
+   * Scales all points proportionally and updates the SVG path.
+   * @param x - New X position for the path, or null to keep current
+   * @param y - New Y position for the path, or null to keep current
+   * @param width - New width for the path (must be > 1)
+   * @param height - New height for the path (must be > 1)
+   */
   override resize(x: number | null, y: number | null, width: number, height: number): void {
     if (width <= 1 || height <= 1) {
       return;
@@ -112,6 +147,11 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Rotates the path by the specified angle.
+   * Invalidates cached adjusted points to force recalculation.
+   * @param value - Rotation angle in radians
+   */
   override rotate(value: number): void {
     this.rotation = value;
     this._adjustedPoints = null;
@@ -119,6 +159,14 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Moves the path by calculating the delta between start and end positions.
+   * The delta is adjusted for the current viewport scale.
+   * @param startX - Starting X coordinate in screen space
+   * @param startY - Starting Y coordinate in screen space
+   * @param endX - Ending X coordinate in screen space
+   * @param endY - Ending Y coordinate in screen space
+   */
   override move(startX: number, startY: number, endX: number, endY: number): void {
     const deltaX = (startX - endX) / this._core.store.state.scale;
     const deltaY = (startY - endY) / this._core.store.state.scale;
@@ -131,6 +179,13 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Tests whether a point intersects with the path's stroke.
+   * Uses distance-to-line-segment calculations for accurate hit detection.
+   * @param x - X coordinate to test in world space
+   * @param y - Y coordinate to test in world space
+   * @returns True if the point is within the stroke width of the path
+   */
   override hitTest(x: number, y: number): boolean {
     const halfStroke = this.strokeWidth / this.scale / 2;
 
@@ -158,6 +213,12 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return false;
   }
 
+  /**
+   * Tests whether a polygon intersects with the path.
+   * Checks for point containment, edge intersections, and proximity to stroke.
+   * @param polygon - The polygon to test against, defined by its corner points
+   * @returns True if any part of the polygon overlaps with the path's stroke
+   */
   override hitTestPolygon(polygon: KritzelPolygon): boolean {
     const halfStroke = this.strokeWidth / this.scale / 2;
 
@@ -221,6 +282,12 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return false;
   }
 
+  /**
+   * Updates the path's position to the specified coordinates.
+   * Invalidates cached adjusted points and triggers a store update.
+   * @param x - New X position in world space
+   * @param y - New Y position in world space
+   */
   override updatePosition(x: number, y: number): void {
     this.translateX = x;
     this.translateY = y;
@@ -228,6 +295,11 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this._core.store.state.objects.update(this);
   }
 
+  /**
+   * Lifecycle hook called after properties have been updated.
+   * Regenerates the SVG path and bounding box when strokeWidth changes.
+   * @param changedProperties - Array of property names that were modified
+   */
   override onAfterUpdate(changedProperties: string[]): void {
     if (changedProperties.includes('strokeWidth')) {
       this.d = this.generateSvgPath();
@@ -236,6 +308,12 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     }
   }
 
+  /**
+   * Computes the world-space coordinates of all path points.
+   * Applies rotation around the path's center and adjusts for translation and scale.
+   * Results are cached in _adjustedPoints for performance.
+   * @returns Array of [x, y] coordinate pairs in world space
+   */
   private computeAdjustedPoints(): number[][] {
     if (!this.points?.length) {
       return [];
@@ -263,6 +341,17 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return rotatedPoints.map(([px, py]) => [Math.abs(px - this.x) / this.scale + this.translateX, Math.abs(py - this.y) / this.scale + this.translateY]);
   }
 
+  /**
+   * Calculates the shortest distance from a point to a line segment.
+   * Uses projection to find the closest point on the segment.
+   * @param x - X coordinate of the test point
+   * @param y - Y coordinate of the test point
+   * @param x1 - X coordinate of the line segment start
+   * @param y1 - Y coordinate of the line segment start
+   * @param x2 - X coordinate of the line segment end
+   * @param y2 - Y coordinate of the line segment end
+   * @returns The shortest distance from the point to the line segment
+   */
   private pointToLineSegmentDistance(x: number, y: number, x1: number, y1: number, x2: number, y2: number): number {
     const A = x - x1;
     const B = y - y1;
@@ -295,6 +384,11 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
+  /**
+   * Updates width, height, x, y, translateX, and translateY based on current points.
+   * Accounts for rotation and stroke width in the calculations.
+   * Called during initial setup to establish the path's dimensions and position.
+   */
   private updateDimensions(): void {
     const rotatedPoints = this.points.map(([x, y]) => {
       const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
@@ -336,11 +430,23 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.y = minY;
   }
 
+  /**
+   * Generates the SVG path data string from the current points.
+   * Uses perfect-freehand to create a smooth, pressure-sensitive stroke.
+   * @returns SVG path data string (d attribute value)
+   */
   private generateSvgPath(): string {
     const stroke = this.getStrokeFromPoints(this.points, this.strokeWidth);
     return this.getSvgPathFromStroke(stroke);
   }
 
+  /**
+   * Converts raw input points into a smooth stroke outline using perfect-freehand.
+   * Applies pressure simulation and smoothing for a natural pen-like appearance.
+   * @param points - Array of [x, y] coordinate pairs representing the input path
+   * @param strokeWidth - The desired stroke width in pixels
+   * @returns Array of [x, y] coordinate pairs forming the stroke outline polygon
+   */
   private getStrokeFromPoints(points: number[][], strokeWidth: number): number[][] {
     return getStroke(points, {
       size: strokeWidth,
@@ -363,6 +469,13 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     });
   }
 
+  /**
+   * Converts stroke outline points into an SVG path data string.
+   * Uses quadratic bezier curves for smooth rendering.
+   * @param points - Array of [x, y] coordinate pairs forming the stroke outline
+   * @param closed - Whether to close the path with 'Z' command (default: true)
+   * @returns SVG path data string with M, Q, and T commands
+   */
   private getSvgPathFromStroke(points: number[][], closed = true) {
     const len = points.length;
 
@@ -391,6 +504,11 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     return result;
   }
 
+  /**
+   * Determines if the path appears too small on screen for detailed rendering.
+   * Used for level-of-detail optimizations.
+   * @returns True if the path's screen area is less than 500 square pixels
+   */
   isLowRes(): boolean {
     if (!this._core) {
       return false;
@@ -405,8 +523,10 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   /**
    * Finds the point where a line from outsidePoint to the path's center
-   * intersects the stroke edge. Returns null if no intersection found.
-   * This is used for arrow clipping at the actual stroke edge.
+   * intersects the stroke edge. Used for arrow clipping at the actual stroke edge.
+   * Uses binary search refinement for accurate intersection detection.
+   * @param outsidePoint - A point outside the path to trace from
+   * @returns The intersection point on the stroke edge, or null if no intersection found
    */
   getClipPoint(outsidePoint: KritzelPoint): KritzelPoint | null {
     const centerX = this.centerX;
