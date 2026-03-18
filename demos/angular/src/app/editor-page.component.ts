@@ -12,7 +12,8 @@ import {
   KritzelEditor,
   KritzelSyncConfig,
 } from 'kritzel-angular';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, LoginEvent } from 'kritzel-stencil';
+import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, HocuspocusSyncProvider, LoginEvent } from 'kritzel-stencil';
+import { UserData } from './user.resolver';
 
 @Component({
   selector: 'app-editor-page',
@@ -37,9 +38,9 @@ export class EditorPageComponent implements OnInit {
 
   activeWorkspaceId: string | null = null;
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [IndexedDBSyncProvider]
-  };
+  isShared = false;
+
+  syncConfig!: KritzelSyncConfig;
 
   loginConfig = {
     providers: [
@@ -51,12 +52,26 @@ export class EditorPageComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.activeWorkspaceId = this.route.snapshot.paramMap.get('workspaceId');
+    const user = this.route.snapshot.data['user'] as UserData;
+
+    this.activeWorkspaceId = this.route.snapshot.params['workspaceId'];
+
+    this.isShared = this.route.snapshot.queryParams['share'] === 'true';
+
+    this.syncConfig = {
+      appStateId: user.id,
+      providers: [IndexedDBSyncProvider, HocuspocusSyncProvider],
+    };
   }
 
-  onIsReady(event: CustomEvent<EditorIsReadyEvent>) {
+  async onIsReady(event: CustomEvent<EditorIsReadyEvent>) {
     const editorState = event.detail;
     console.log('Editor is ready with state:', editorState);
+
+    if(this.isShared && this.activeWorkspaceId) {
+      await this.editor.loadSharedWorkspace(this.activeWorkspaceId);
+      return;
+    }
 
     this.activeWorkspaceId = editorState.activeWorkspace.id;
     window.history.replaceState(null, '', `/${editorState.activeWorkspace.id}`);
