@@ -22,10 +22,10 @@ The parent component (kritzel-editor) handles the actual authentication flow.
 
 ## Events
 
-| Event           | Description                               | Type                             |
-| --------------- | ----------------------------------------- | -------------------------------- |
-| `dialogClosed`  | Emitted when the dialog is closed         | `CustomEvent<void>`              |
-| `providerLogin` | Emitted when a provider button is clicked | `CustomEvent<KritzelLoginEvent>` |
+| Event           | Description                               | Type                      |
+| --------------- | ----------------------------------------- | ------------------------- |
+| `dialogClosed`  | Emitted when the dialog is closed         | `CustomEvent<void>`       |
+| `providerLogin` | Emitted when a provider button is clicked | `CustomEvent<LoginEvent>` |
 
 
 ## Methods

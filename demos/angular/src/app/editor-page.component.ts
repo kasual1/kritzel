@@ -8,13 +8,11 @@ import {
 import { ActivatedRoute } from '@angular/router';
 
 import {
-  ActiveWorkspaceChangeEvent,
-  EditorIsReadyEvent,
   IndexedDBSyncProvider,
   KritzelEditor,
   KritzelSyncConfig,
-  KritzelWorkspace,
 } from 'kritzel-angular';
+import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, LoginEvent } from 'kritzel-stencil';
 
 @Component({
   selector: 'app-editor-page',
@@ -23,8 +21,11 @@ import {
   template: `
     <kritzel-editor
       [syncConfig]="syncConfig"
+      [loginConfig]="loginConfig"
       [activeWorkspaceId]="activeWorkspaceId"
       (isReady)="onIsReady($event)"
+      (login)="onLogin($event)"
+      (logout)="onLogout()"
       (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
     ></kritzel-editor>
   `,
@@ -38,6 +39,15 @@ export class EditorPageComponent implements OnInit {
 
   syncConfig: KritzelSyncConfig = {
     providers: [IndexedDBSyncProvider]
+  };
+
+  loginConfig = {
+    providers: [
+      { name: 'google', label: 'Sign in with Google' },
+      { name: 'apple', label: 'Sign in with Apple' },
+      { name: 'facebook', label: 'Sign in with Facebook' },
+    ],
+    title: 'Welcome to Kritzel',
   };
 
   ngOnInit(): void {
@@ -58,6 +68,15 @@ export class EditorPageComponent implements OnInit {
 
     this.activeWorkspaceId = workspace.id;
     window.history.replaceState(null, '', `/${workspace.id}`);
+  }
+
+  onLogin(event: CustomEvent<LoginEvent>) {
+    const login = event.detail;
+    console.log('Login event:', login);
+  }
+
+  onLogout() {
+    console.log('Logout event');
   }
 
 }

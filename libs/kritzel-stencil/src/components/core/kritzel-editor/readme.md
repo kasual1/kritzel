@@ -39,7 +39,7 @@
 | `awarenessChange`       |             | `CustomEvent<Map<number, Record<string, any>>>`               |
 | `isPublicChange`        |             | `CustomEvent<IKritzelIsPublicChangedEvent>`                   |
 | `isReady`               |             | `CustomEvent<EditorIsReadyEvent>`                             |
-| `loginRequest`          |             | `CustomEvent<KritzelLoginEvent>`                              |
+| `login`                 |             | `CustomEvent<LoginEvent>`                                     |
 | `logout`                |             | `CustomEvent<void>`                                           |
 | `objectsAdded`          |             | `CustomEvent<ObjectsAddedEvent>`                              |
 | `objectsChange`         |             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |

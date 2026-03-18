@@ -17,11 +17,12 @@ import { KritzelCore } from "./classes/core/core.class";
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
-import { KritzelLoginConfig, KritzelLoginEvent, KritzelLoginProvider } from "./interfaces/login-config.interface";
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1 } from ".";
+import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
+import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 import { ThemeName } from "./interfaces/theme.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
+import { LoginEvent } from "./events/login.event";
 import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
@@ -52,11 +53,12 @@ export { KritzelCore } from "./classes/core/core.class";
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
-export { KritzelLoginConfig, KritzelLoginEvent, KritzelLoginProvider } from "./interfaces/login-config.interface";
-export { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1 } from ".";
+export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
+export { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
 export { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 export { ThemeName } from "./interfaces/theme.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
+export { LoginEvent } from "./events/login.event";
 export { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
@@ -1534,7 +1536,7 @@ declare global {
         "themeChange": ThemeName;
         "viewportChange": KritzelViewportState;
         "logout": void;
-        "loginRequest": KritzelLoginEvent;
+        "login": LoginEvent;
         "isPublicChange": IKritzelIsPublicChangedEvent;
         "awarenessChange": Map<number, Record<string, any>>;
     }
@@ -1682,7 +1684,7 @@ declare global {
         new (): HTMLKritzelLineEndingsElement;
     };
     interface HTMLKritzelLoginDialogElementEventMap {
-        "providerLogin": KritzelLoginEvent;
+        "providerLogin": LoginEvent1;
         "dialogClosed": void;
     }
     /**
@@ -2369,7 +2371,7 @@ declare namespace LocalJSX {
         "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
         "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangedEvent>) => void;
         "onIsReady"?: (event: KritzelEditorCustomEvent<EditorIsReadyEvent>) => void;
-        "onLoginRequest"?: (event: KritzelEditorCustomEvent<KritzelLoginEvent>) => void;
+        "onLogin"?: (event: KritzelEditorCustomEvent<LoginEvent>) => void;
         "onLogout"?: (event: KritzelEditorCustomEvent<void>) => void;
         "onObjectsAdded"?: (event: KritzelEditorCustomEvent<ObjectsAddedEvent>) => void;
         "onObjectsChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
@@ -2668,7 +2670,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when a provider button is clicked
          */
-        "onProviderLogin"?: (event: KritzelLoginDialogCustomEvent<KritzelLoginEvent>) => void;
+        "onProviderLogin"?: (event: KritzelLoginDialogCustomEvent<LoginEvent1>) => void;
         /**
           * Array of authentication provider buttons to render
           * @default []
