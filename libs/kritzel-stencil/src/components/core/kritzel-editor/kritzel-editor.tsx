@@ -26,7 +26,7 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
-import { IndexedDBSyncProvider, KritzelUndoState } from '../../..';
+import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, IndexedDBSyncProvider, KritzelUndoState } from '../../..';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
@@ -35,7 +35,7 @@ import { KritzelViewportState } from '../../../interfaces/viewport-state.interfa
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from '../../../interfaces/object-change-event.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
 import { IKritzelIsPublicChangedEvent } from '../../../interfaces/share.interface';
-import { IKritzelLoginConfig, IKritzelLoginEvent } from '../../../interfaces/login-config.interface';
+import { KritzelLoginConfig as KritzelLoginConfig, KritzelLoginEvent } from '../../../interfaces/login-config.interface';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -200,11 +200,11 @@ export class KritzelEditor {
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() syncConfig?: KritzelSyncConfig = {
-    providers: [IndexedDBSyncProvider]
-  }
+    providers: [IndexedDBSyncProvider],
+  };
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
-  @Prop() loginConfig?: IKritzelLoginConfig;
+  @Prop() loginConfig?: KritzelLoginConfig;
 
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
   @Prop() editorId?: string;
@@ -212,8 +212,8 @@ export class KritzelEditor {
   /** Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID. */
   @Prop() activeWorkspaceId?: string;
 
-  @Event() isReady: EventEmitter<HTMLElement>;
-  @Event() activeWorkspaceChange: EventEmitter<KritzelWorkspace>; 
+  @Event() isReady: EventEmitter<EditorIsReadyEvent>;
+  @Event() activeWorkspaceChange: EventEmitter<ActiveWorkspaceChangeEvent>;
   @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
   @Event() objectsAdded: EventEmitter<ObjectsAddedEvent>;
   @Event() objectsRemoved: EventEmitter<ObjectsRemovedEvent>;
@@ -222,7 +222,7 @@ export class KritzelEditor {
   @Event() themeChange: EventEmitter<ThemeName>;
   @Event() viewportChange: EventEmitter<KritzelViewportState>;
   @Event() logout: EventEmitter<void>;
-  @Event() loginRequest: EventEmitter<IKritzelLoginEvent>;
+  @Event() loginRequest: EventEmitter<KritzelLoginEvent>;
   @Event() isPublicChange: EventEmitter<IKritzelIsPublicChangedEvent>;
   @Event() awarenessChange: EventEmitter<Map<number, Record<string, any>>>;
 
@@ -612,7 +612,20 @@ export class KritzelEditor {
       return;
     }
 
-    this.isReady.emit(this.host);
+    const { id, name, isPublic, createdAt, updatedAt } = this.activeWorkspace;
+
+    this.isReady.emit({
+      host: this.host,
+      activeWorkspace: {
+        id,
+        name,
+        isPublic,
+        createdAt,
+        updatedAt,
+      },
+      syncConfig: this.syncConfig,
+      loginConfig: this.loginConfig,
+    });
   }
 
   async onEngineReady(event: CustomEvent<KritzelEngineState>) {
@@ -629,8 +642,22 @@ export class KritzelEditor {
 
   handleActiveWorkspaceChange(event: CustomEvent<KritzelWorkspace>) {
     event.stopPropagation();
+
     this.activeWorkspace = event.detail;
-    this.activeWorkspaceChange.emit(this.activeWorkspace);
+
+    if (!this.isEngineReady) {
+      return;
+    }
+
+    const { id, name, isPublic, createdAt, updatedAt } = this.activeWorkspace;
+
+    this.activeWorkspaceChange.emit({
+      id,
+      name,
+      isPublic,
+      createdAt,
+      updatedAt,
+    });
   }
 
   handleObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
@@ -725,7 +752,7 @@ export class KritzelEditor {
     }
   }
 
-  private handleProviderLogin = (event: CustomEvent<IKritzelLoginEvent>): void => {
+  private handleProviderLogin = (event: CustomEvent<KritzelLoginEvent>): void => {
     this.loginRequest.emit(event.detail);
   };
 
@@ -888,27 +915,28 @@ export class KritzelEditor {
         ></kritzel-controls>
 
         <div class="top-right-buttons">
-          <kritzel-settings ref={el => (this.settingsRef = el)} shortcuts={this.shortcuts} editorId={this.editorId} onSettingsChange={event => this.handleSettingsChange(event)}></kritzel-settings>
+          <kritzel-settings
+            ref={el => (this.settingsRef = el)}
+            shortcuts={this.shortcuts}
+            editorId={this.editorId}
+            onSettingsChange={event => this.handleSettingsChange(event)}
+          ></kritzel-settings>
 
           <kritzel-export
             ref={el => (this.exportRef = el)}
             workspaceName={this.activeWorkspace?.name || 'workspace'}
             onExportPng={() => this.engineRef.exportViewportAsPng()}
             onExportSvg={() => this.engineRef.exportViewportAsSvg()}
-            onExportJson={(event) => this.engineRef.downloadAsJson(event.detail)}
+            onExportJson={event => this.engineRef.downloadAsJson(event.detail)}
           ></kritzel-export>
 
           <kritzel-active-users users={this.activeUsers}></kritzel-active-users>
-          
+
           <kritzel-current-user user={this.user} onItemSelect={event => this.handleCurrentUserItemSelect(event)}></kritzel-current-user>
 
-          {this.loginConfig && !this.user && (
-            <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>
-          )}
-          
-          <kritzel-more-menu
-            onItemSelect={event => this.handleMoreMenuItemSelect(event)}
-          ></kritzel-more-menu>
+          {this.loginConfig && !this.user && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>}
+
+          <kritzel-more-menu onItemSelect={event => this.handleMoreMenuItemSelect(event)}></kritzel-more-menu>
 
           <kritzel-share-dialog
             ref={el => (this.shareDialogRef = el)}

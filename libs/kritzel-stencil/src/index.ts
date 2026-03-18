@@ -35,6 +35,7 @@ export * from './classes/providers/hocuspocus-sync-provider.class';
 export * from './classes/core/workspace.class';
 
 export * from './classes/managers/anchor.manager';
+export * from './classes/managers/theme.manager';
 
 export * from './interfaces/toolbar-control.interface';
 export * from './interfaces/menu-item.interface';
@@ -43,20 +44,17 @@ export * from './interfaces/sync-config.interface';
 export * from './interfaces/login-config.interface';
 export * from './interfaces/document-metadata.interface';
 export * from './interfaces/anchor.interface';
+export * from './interfaces/viewport-state.interface';
+export * from './interfaces/user.interface';
+export * from './interfaces/theme.interface';
+export * from './interfaces/shortcut.interface';
 
 export * from './configs/default-brush-tool.config';
 export * from './configs/default-text-tool.config';
 export * from './configs/default-line-tool.config';
 
-export * from './interfaces/theme.interface';
-export * from './interfaces/shortcut.interface';
 export * from './themes/light-theme';
 export * from './themes/dark-theme';
-export * from './classes/managers/theme.manager';
 
 export * from './enums/alignment.enum';
 export * from './enums/shape-type.enum';
-
-export * from './interfaces/viewport-state.interface';
-
-export * from './interfaces/user.interface';
