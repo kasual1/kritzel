@@ -63,10 +63,6 @@ export class KritzelCurrentUser {
   };
 
   render() {
-    if (!this.user) {
-      return <Host style={{ display: 'none' }}></Host>;
-    }
-
     return (
       <Host>
         <kritzel-avatar user={this.user}  size={this.avatarSize} onClick={this.toggleMenu}></kritzel-avatar>
