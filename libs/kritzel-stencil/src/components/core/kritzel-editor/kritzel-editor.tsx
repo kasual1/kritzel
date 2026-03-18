@@ -933,9 +933,11 @@ export class KritzelEditor {
 
           <kritzel-active-users users={this.activeUsers}></kritzel-active-users>
 
-          <kritzel-current-user user={this.user} onItemSelect={event => this.handleCurrentUserItemSelect(event)}></kritzel-current-user>
+          {this.loginConfig && this.user && !this.user.isGuest && (
+            <kritzel-current-user user={this.user} onItemSelect={event => this.handleCurrentUserItemSelect(event)}></kritzel-current-user>
+          )}
 
-          {this.loginConfig && !this.user && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>}
+          {this.loginConfig && (!this.user || this.user.isGuest) && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>}
 
           <kritzel-more-menu onItemSelect={event => this.handleMoreMenuItemSelect(event)}></kritzel-more-menu>
 
