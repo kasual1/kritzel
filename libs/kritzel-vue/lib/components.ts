@@ -88,7 +88,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'themeChange',
   'viewportChange',
   'logout',
-  'loginRequest',
+  'login',
   'isPublicChange',
   'awarenessChange'
 ], [
@@ -102,7 +102,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'themeChange',
   'viewportChange',
   'logout',
-  'loginRequest',
+  'login',
   'isPublicChange',
   'awarenessChange'
 ]);

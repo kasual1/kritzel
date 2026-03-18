@@ -128,7 +128,7 @@ export declare interface KritzelDialog extends Components.KritzelDialog {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeUsers', 'activeWorkspaceId', 'controls', 'customSvgIcons', 'editorId', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'lockDrawingScale', 'loginConfig', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'wheelEnabled'],
-  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'themeChange', 'viewportChange', 'logout', 'loginRequest', 'isPublicChange', 'awarenessChange'],
+  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'themeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
@@ -142,7 +142,7 @@ export class KritzelEditor {
   @Output() themeChange = new EventEmitter<CustomEvent<IKritzelEditorThemeName>>();
   @Output() viewportChange = new EventEmitter<CustomEvent<IKritzelEditorKritzelViewportState>>();
   @Output() logout = new EventEmitter<CustomEvent<void>>();
-  @Output() loginRequest = new EventEmitter<CustomEvent<IKritzelEditorKritzelLoginEvent>>();
+  @Output() login = new EventEmitter<CustomEvent<IKritzelEditorLoginEvent>>();
   @Output() isPublicChange = new EventEmitter<CustomEvent<IKritzelEditorIKritzelIsPublicChangedEvent>>();
   @Output() awarenessChange = new EventEmitter<CustomEvent<Map<number, Record<string, any>>>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
@@ -161,7 +161,7 @@ import type { ObjectsUpdatedEvent as IKritzelEditorObjectsUpdatedEvent } from 'k
 import type { KritzelUndoState as IKritzelEditorKritzelUndoState } from 'kritzel-stencil/dist/components';
 import type { ThemeName as IKritzelEditorThemeName } from 'kritzel-stencil/dist/components';
 import type { KritzelViewportState as IKritzelEditorKritzelViewportState } from 'kritzel-stencil/dist/components';
-import type { KritzelLoginEvent as IKritzelEditorKritzelLoginEvent } from 'kritzel-stencil/dist/components';
+import type { LoginEvent as IKritzelEditorLoginEvent } from 'kritzel-stencil/dist/components';
 import type { IKritzelIsPublicChangedEvent as IKritzelEditorIKritzelIsPublicChangedEvent } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelEditor extends Components.KritzelEditor {
@@ -186,7 +186,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 
   logout: EventEmitter<CustomEvent<void>>;
 
-  loginRequest: EventEmitter<CustomEvent<IKritzelEditorKritzelLoginEvent>>;
+  login: EventEmitter<CustomEvent<IKritzelEditorLoginEvent>>;
 
   isPublicChange: EventEmitter<CustomEvent<IKritzelEditorIKritzelIsPublicChangedEvent>>;
 
@@ -304,7 +304,7 @@ export declare interface KritzelLineEndings extends Components.KritzelLineEnding
 })
 export class KritzelLoginDialog {
   protected el: HTMLKritzelLoginDialogElement;
-  @Output() providerLogin = new EventEmitter<CustomEvent<IKritzelLoginDialogKritzelLoginEvent>>();
+  @Output() providerLogin = new EventEmitter<CustomEvent<IKritzelLoginDialogLoginEvent>>();
   @Output() dialogClosed = new EventEmitter<CustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -313,13 +313,13 @@ export class KritzelLoginDialog {
 }
 
 
-import type { KritzelLoginEvent as IKritzelLoginDialogKritzelLoginEvent } from 'kritzel-stencil/dist/components';
+import type { LoginEvent as IKritzelLoginDialogLoginEvent } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelLoginDialog extends Components.KritzelLoginDialog {
   /**
    * Emitted when a provider button is clicked
    */
-  providerLogin: EventEmitter<CustomEvent<IKritzelLoginDialogKritzelLoginEvent>>;
+  providerLogin: EventEmitter<CustomEvent<IKritzelLoginDialogLoginEvent>>;
   /**
    * Emitted when the dialog is closed
    */

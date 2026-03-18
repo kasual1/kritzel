@@ -35,7 +35,8 @@ import { KritzelViewportState } from '../../../interfaces/viewport-state.interfa
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from '../../../interfaces/object-change-event.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
 import { IKritzelIsPublicChangedEvent } from '../../../interfaces/share.interface';
-import { KritzelLoginConfig as KritzelLoginConfig, KritzelLoginEvent } from '../../../interfaces/login-config.interface';
+import { KritzelLoginConfig as KritzelLoginConfig } from '../../../interfaces/login-config.interface';
+import { LoginEvent } from '../../../events/login.event';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -222,7 +223,7 @@ export class KritzelEditor {
   @Event() themeChange: EventEmitter<ThemeName>;
   @Event() viewportChange: EventEmitter<KritzelViewportState>;
   @Event() logout: EventEmitter<void>;
-  @Event() loginRequest: EventEmitter<KritzelLoginEvent>;
+  @Event() login: EventEmitter<LoginEvent>;
   @Event() isPublicChange: EventEmitter<IKritzelIsPublicChangedEvent>;
   @Event() awarenessChange: EventEmitter<Map<number, Record<string, any>>>;
 
@@ -752,8 +753,8 @@ export class KritzelEditor {
     }
   }
 
-  private handleProviderLogin = (event: CustomEvent<KritzelLoginEvent>): void => {
-    this.loginRequest.emit(event.detail);
+  private handleProviderLogin = (event: CustomEvent<LoginEvent>): void => {
+    this.login.emit(event.detail);
   };
 
   @Method()

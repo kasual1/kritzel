@@ -28,10 +28,3 @@ export interface KritzelLoginConfig {
   subtitle?: string;
 }
 
-/**
- * Event payload emitted when a user clicks a login provider button.
- */
-export interface KritzelLoginEvent {
-  /** The provider name that was clicked */
-  provider: string;
-}
