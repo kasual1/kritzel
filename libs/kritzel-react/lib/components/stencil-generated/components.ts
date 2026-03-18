@@ -10,7 +10,7 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
-import { type IKritzelDialogCloseEvent, type IKritzelIsPublicChangedEvent, type IKritzelLoginEvent, type IKritzelMasterDetailSelectEvent, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelButtonCustomEvent, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelExportCustomEvent, type KritzelInputCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelLoginDialogCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelPillTabsCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelUndoState, type KritzelViewportState, type KritzelWorkspace, type LineArrowConfig, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ThemeName } from "../../../../kritzel-stencil";
+import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelDialogCloseEvent, type IKritzelIsPublicChangedEvent, type IKritzelMasterDetailSelectEvent, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelButtonCustomEvent, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelExportCustomEvent, type KritzelInputCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelLoginDialogCustomEvent, type KritzelLoginEvent, type KritzelMasterDetailCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelPillTabsCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelUndoState, type KritzelViewportState, type LineArrowConfig, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ThemeName } from "../../../../kritzel-stencil";
 import { KritzelBackToContent as KritzelBackToContentElement, defineCustomElement as defineKritzelBackToContent } from "../../../../kritzel-stencil/dist/components/kritzel-back-to-content.js";
 import { KritzelButton as KritzelButtonElement, defineCustomElement as defineKritzelButton } from "../../../../kritzel-stencil/dist/components/kritzel-button.js";
 import { KritzelDialog as KritzelDialogElement, defineCustomElement as defineKritzelDialog } from "../../../../kritzel-stencil/dist/components/kritzel-dialog.js";
@@ -65,8 +65,8 @@ export const KritzelDialog: StencilReactComponent<KritzelDialogElement, KritzelD
 });
 
 export type KritzelEditorEvents = {
-    onIsReady: EventName<KritzelEditorCustomEvent<HTMLElement>>,
-    onActiveWorkspaceChange: EventName<KritzelEditorCustomEvent<KritzelWorkspace>>,
+    onIsReady: EventName<KritzelEditorCustomEvent<EditorIsReadyEvent>>,
+    onActiveWorkspaceChange: EventName<KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>>,
     onObjectsChange: EventName<KritzelEditorCustomEvent<KritzelBaseObject[]>>,
     onObjectsAdded: EventName<KritzelEditorCustomEvent<ObjectsAddedEvent>>,
     onObjectsRemoved: EventName<KritzelEditorCustomEvent<ObjectsRemovedEvent>>,
@@ -75,7 +75,7 @@ export type KritzelEditorEvents = {
     onThemeChange: EventName<KritzelEditorCustomEvent<ThemeName>>,
     onViewportChange: EventName<KritzelEditorCustomEvent<KritzelViewportState>>,
     onLogout: EventName<KritzelEditorCustomEvent<void>>,
-    onLoginRequest: EventName<KritzelEditorCustomEvent<IKritzelLoginEvent>>,
+    onLoginRequest: EventName<KritzelEditorCustomEvent<KritzelLoginEvent>>,
     onIsPublicChange: EventName<KritzelEditorCustomEvent<IKritzelIsPublicChangedEvent>>,
     onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>
 };
@@ -145,7 +145,7 @@ export const KritzelLineEndings: StencilReactComponent<KritzelLineEndingsElement
 });
 
 export type KritzelLoginDialogEvents = {
-    onProviderLogin: EventName<KritzelLoginDialogCustomEvent<IKritzelLoginEvent>>,
+    onProviderLogin: EventName<KritzelLoginDialogCustomEvent<KritzelLoginEvent>>,
     onDialogClosed: EventName<KritzelLoginDialogCustomEvent<void>>
 };
 

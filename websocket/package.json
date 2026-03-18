@@ -6,10 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "node dist/main.js",
-    "start:dev": "tsx watch src/main.ts",
+    "start": "tsx watch src/main.ts",
     "lint": "eslint \"src/**/*.ts\" --fix"
   },
   "dependencies": {

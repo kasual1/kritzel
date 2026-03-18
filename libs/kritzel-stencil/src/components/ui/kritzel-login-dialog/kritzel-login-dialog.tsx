@@ -1,5 +1,5 @@
 import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop } from '@stencil/core';
-import { IKritzelLoginEvent, IKritzelLoginProvider } from '../../../interfaces/login-config.interface';
+import { KritzelLoginEvent, KritzelLoginProvider } from '../../../interfaces/login-config.interface';
 
 /**
  * Login dialog component for displaying authentication provider buttons.
@@ -15,7 +15,7 @@ export class KritzelLoginDialog {
   @Element() host!: HTMLElement;
 
   /** Array of authentication provider buttons to render */
-  @Prop() providers: IKritzelLoginProvider[] = [];
+  @Prop() providers: KritzelLoginProvider[] = [];
 
   /** Dialog title */
   @Prop() dialogTitle: string = 'Sign in';
@@ -27,7 +27,7 @@ export class KritzelLoginDialog {
   @State() loadingProvider: string | null = null;
 
   /** Emitted when a provider button is clicked */
-  @Event() providerLogin: EventEmitter<IKritzelLoginEvent>;
+  @Event() providerLogin: EventEmitter<KritzelLoginEvent>;
 
   /** Emitted when the dialog is closed */
   @Event() dialogClosed: EventEmitter<void>;
@@ -52,7 +52,7 @@ export class KritzelLoginDialog {
     this.loadingProvider = provider;
   }
 
-  private handleProviderClick = (provider: IKritzelLoginProvider): void => {
+  private handleProviderClick = (provider: KritzelLoginProvider): void => {
     if (this.loadingProvider) return;
     this.loadingProvider = provider.name;
     this.providerLogin.emit({ provider: provider.name });
