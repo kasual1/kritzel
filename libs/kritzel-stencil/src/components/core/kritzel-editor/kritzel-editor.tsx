@@ -53,11 +53,7 @@ export class KritzelEditor {
   @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
   @Prop({ mutable: true }) viewportBoundaryBottom: number = Infinity;
   @Prop({ mutable: true }) wheelEnabled: boolean = true;
-  @Prop() user?: IKritzelUser = {
-    id: 'some-randome-id',
-    color: '#000000',
-    displayName: 'Guest User'
-  };
+  @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
   @Prop() controls: KritzelToolbarControl[] = [
     {
@@ -209,14 +205,7 @@ export class KritzelEditor {
   };
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
-  @Prop() loginConfig?: KritzelLoginConfig = {
-    providers: [
-      {
-        label: 'Sign in with Google',
-        name: 'google'
-      }
-    ],
-  }
+  @Prop() loginConfig?: KritzelLoginConfig;
 
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
   @Prop() editorId?: string;
@@ -737,6 +726,9 @@ export class KritzelEditor {
     if (item.id === 'import') {
       await this.engineRef.importFromFile();
     }
+    if (item.id === 'logout') {
+      this.logout.emit();
+    }
   }
 
   private handleToggleIsPublic = async (event: CustomEvent<boolean>): Promise<void> => {
@@ -755,13 +747,6 @@ export class KritzelEditor {
     const workspaceId = this.activeWorkspace?.id;
     this.currentIsPublic = isPublic;
     this.isPublicChange.emit({ isPublic, workspaceId });
-  }
-
-  private handleCurrentUserItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
-    const { item } = event.detail;
-    if (item.id === 'logout') {
-      this.logout.emit();
-    }
   }
 
   private handleProviderLogin = (event: CustomEvent<LoginEvent>): void => {
@@ -944,13 +929,13 @@ export class KritzelEditor {
 
           <kritzel-active-users users={this.activeUsers}></kritzel-active-users>
 
-          {this.loginConfig && this.user && !this.user.isGuest && (
-            <kritzel-current-user user={this.user} onItemSelect={event => this.handleCurrentUserItemSelect(event)}></kritzel-current-user>
+          {this.user && !this.user.isGuest && (
+            <kritzel-current-user user={this.user}></kritzel-current-user>
           )}
 
           {this.loginConfig && (!this.user || this.user.isGuest) && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>}
 
-          <kritzel-more-menu onItemSelect={event => this.handleMoreMenuItemSelect(event)}></kritzel-more-menu>
+          <kritzel-more-menu isLoggedIn={!!this.user && !this.user.isGuest} onItemSelect={event => this.handleMoreMenuItemSelect(event)}></kritzel-more-menu>
 
           <kritzel-share-dialog
             ref={el => (this.shareDialogRef = el)}

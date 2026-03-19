@@ -3,6 +3,7 @@ export interface IKritzelMenuItem<T = any> {
   label: string;
   icon?: string;
   iconTooltip?: string;
+  color?: string;
   value?: T;
   children?: IKritzelMenuItem[];
   isSelectable?: boolean;

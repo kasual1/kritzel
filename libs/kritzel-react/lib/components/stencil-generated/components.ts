@@ -13,6 +13,7 @@ import React from 'react';
 import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelDialogCloseEvent, type IKritzelIsPublicChangedEvent, type IKritzelMasterDetailSelectEvent, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelButtonCustomEvent, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelExportCustomEvent, type KritzelInputCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelLoginDialogCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelPillTabsCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelUndoState, type KritzelViewportState, type LineArrowConfig, type LoginEvent, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ThemeName } from "../../../../kritzel-stencil";
 import { KritzelBackToContent as KritzelBackToContentElement, defineCustomElement as defineKritzelBackToContent } from "../../../../kritzel-stencil/dist/components/kritzel-back-to-content.js";
 import { KritzelButton as KritzelButtonElement, defineCustomElement as defineKritzelButton } from "../../../../kritzel-stencil/dist/components/kritzel-button.js";
+import { KritzelCurrentUserDialog as KritzelCurrentUserDialogElement, defineCustomElement as defineKritzelCurrentUserDialog } from "../../../../kritzel-stencil/dist/components/kritzel-current-user-dialog.js";
 import { KritzelDialog as KritzelDialogElement, defineCustomElement as defineKritzelDialog } from "../../../../kritzel-stencil/dist/components/kritzel-dialog.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "../../../../kritzel-stencil/dist/components/kritzel-editor.js";
 import { KritzelExport as KritzelExportElement, defineCustomElement as defineKritzelExport } from "../../../../kritzel-stencil/dist/components/kritzel-export.js";
@@ -45,6 +46,17 @@ export const KritzelButton: StencilReactComponent<KritzelButtonElement, KritzelB
     react: React,
     events: { onButtonClick: 'buttonClick' } as KritzelButtonEvents,
     defineCustomElement: defineKritzelButton
+});
+
+export type KritzelCurrentUserDialogEvents = NonNullable<unknown>;
+
+export const KritzelCurrentUserDialog: StencilReactComponent<KritzelCurrentUserDialogElement, KritzelCurrentUserDialogEvents> = /*@__PURE__*/ createComponent<KritzelCurrentUserDialogElement, KritzelCurrentUserDialogEvents>({
+    tagName: 'kritzel-current-user-dialog',
+    elementClass: KritzelCurrentUserDialogElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as KritzelCurrentUserDialogEvents,
+    defineCustomElement: defineKritzelCurrentUserDialog
 });
 
 export type KritzelDialogEvents = {

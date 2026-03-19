@@ -8,6 +8,7 @@ import type { Components } from 'kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelBackToContent } from 'kritzel-stencil/dist/components/kritzel-back-to-content.js';
 import { defineCustomElement as defineKritzelButton } from 'kritzel-stencil/dist/components/kritzel-button.js';
+import { defineCustomElement as defineKritzelCurrentUserDialog } from 'kritzel-stencil/dist/components/kritzel-current-user-dialog.js';
 import { defineCustomElement as defineKritzelDialog } from 'kritzel-stencil/dist/components/kritzel-dialog.js';
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelExport } from 'kritzel-stencil/dist/components/kritzel-export.js';
@@ -77,6 +78,30 @@ export declare interface KritzelButton extends Components.KritzelButton {
    */
   buttonClick: EventEmitter<CustomEvent<void>>;
 }
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelCurrentUserDialog,
+  inputs: ['user'],
+  methods: ['open', 'close']
+})
+@Component({
+  selector: 'kritzel-current-user-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['user'],
+})
+export class KritzelCurrentUserDialog {
+  protected el: HTMLKritzelCurrentUserDialogElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelCurrentUserDialog extends Components.KritzelCurrentUserDialog {}
 
 
 @ProxyCmp({

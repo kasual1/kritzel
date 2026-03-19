@@ -102,10 +102,10 @@ export class KritzelMenuItem {
       <div class="menu-item-content left">
         {this.item.icon && (
           <span title={this.item.iconTooltip}>
-            <kritzel-icon name={this.item.icon} size={16}></kritzel-icon>
+            <kritzel-icon name={this.item.icon} size={16} style={this.item.color ? { '--kritzel-icon-color': this.item.color } : undefined}></kritzel-icon>
           </span>
         )}
-        <div>{this.item.label}</div>
+        <div style={this.item.color ? { color: this.item.color } : undefined}>{this.item.label}</div>
       </div>,
       <div class="menu-item-content right">
         {this.item.children &&
