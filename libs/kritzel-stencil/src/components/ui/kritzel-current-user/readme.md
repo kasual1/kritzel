@@ -7,18 +7,10 @@
 
 ## Properties
 
-| Property     | Attribute     | Description                         | Type           | Default     |
-| ------------ | ------------- | ----------------------------------- | -------------- | ----------- |
-| `avatarSize` | `avatar-size` | Avatar size in pixels               | `number`       | `40`        |
-| `offsetY`    | `offset-y`    | Offset Y for the portal positioning | `number`       | `4`         |
-| `user`       | --            | The current user to display         | `IKritzelUser` | `undefined` |
-
-
-## Events
-
-| Event        | Description                          | Type                                                                           |
-| ------------ | ------------------------------------ | ------------------------------------------------------------------------------ |
-| `itemSelect` | Emitted when a menu item is selected | `CustomEvent<{ item: IKritzelMenuItem<any>; parent: IKritzelMenuItem<any>; }>` |
+| Property     | Attribute     | Description                 | Type           | Default     |
+| ------------ | ------------- | --------------------------- | -------------- | ----------- |
+| `avatarSize` | `avatar-size` | Avatar size in pixels       | `number`       | `40`        |
+| `user`       | --            | The current user to display | `IKritzelUser` | `undefined` |
 
 
 ## Dependencies
@@ -30,19 +22,15 @@
 ### Depends on
 
 - [kritzel-avatar](../../shared/kritzel-avatar)
-- [kritzel-portal](../../shared/kritzel-portal)
-- [kritzel-menu](../../shared/kritzel-menu)
+- [kritzel-current-user-dialog](../kritzel-current-user-dialog)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-current-user --> kritzel-avatar
-  kritzel-current-user --> kritzel-portal
-  kritzel-current-user --> kritzel-menu
-  kritzel-menu --> kritzel-menu-item
-  kritzel-menu-item --> kritzel-icon
-  kritzel-menu-item --> kritzel-portal
-  kritzel-menu-item --> kritzel-menu
+  kritzel-current-user --> kritzel-current-user-dialog
+  kritzel-current-user-dialog --> kritzel-dialog
+  kritzel-current-user-dialog --> kritzel-avatar
   kritzel-editor --> kritzel-current-user
   style kritzel-current-user fill:#f9f,stroke:#333,stroke-width:4px
 ```

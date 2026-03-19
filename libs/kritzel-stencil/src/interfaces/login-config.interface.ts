@@ -1,7 +1,7 @@
 /**
  * Represents an authentication provider button displayed in the login dialog.
  */
-export interface IKritzelLoginProvider {
+export interface KritzelLoginProvider {
   /** Machine identifier emitted in events (e.g. 'google', 'apple', 'facebook') */
   name: string;
 
@@ -17,9 +17,9 @@ export interface IKritzelLoginProvider {
  * When provided to kritzel-editor, a "Sign in" button is rendered that opens
  * a dialog with the configured authentication provider buttons.
  */
-export interface IKritzelLoginConfig {
+export interface KritzelLoginConfig {
   /** Array of authentication provider buttons to render */
-  providers: IKritzelLoginProvider[];
+  providers: KritzelLoginProvider[];
 
   /** Dialog title (defaults to 'Sign in') */
   title?: string;
@@ -28,10 +28,3 @@ export interface IKritzelLoginConfig {
   subtitle?: string;
 }
 
-/**
- * Event payload emitted when a user clicks a login provider button.
- */
-export interface IKritzelLoginEvent {
-  /** The provider name that was clicked */
-  provider: string;
-}

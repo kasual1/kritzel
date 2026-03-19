@@ -33,6 +33,14 @@ export class KritzelPortal {
 
   @Event() close: EventEmitter<void>;
 
+  @Listen('kritzel-dismiss-menus', { target: 'window' })
+  handleDismissMenus() {
+    if (this.portal) {
+      this.close.emit();
+      this.closePortal();
+    }
+  }
+
   @Listen('click', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
     const isLastPortal = this.lastAddedPortal === this.portal;

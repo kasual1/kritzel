@@ -12,18 +12,18 @@ import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
-import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 import { KritzelCore } from "./classes/core/core.class";
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
-import { IKritzelLoginConfig, IKritzelLoginEvent, IKritzelLoginProvider } from "./interfaces/login-config.interface";
-import { KritzelWorkspace } from "./classes/core/workspace.class";
+import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
+import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
-import { KritzelUndoState as KritzelUndoState1 } from ".";
 import { ThemeName } from "./interfaces/theme.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
+import { LoginEvent } from "./events/login.event";
 import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
+import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
@@ -36,6 +36,7 @@ import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
+import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 import { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
@@ -47,18 +48,18 @@ export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
-export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { KritzelCore } from "./classes/core/core.class";
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
-export { IKritzelLoginConfig, IKritzelLoginEvent, IKritzelLoginProvider } from "./interfaces/login-config.interface";
-export { KritzelWorkspace } from "./classes/core/workspace.class";
+export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
+export { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
 export { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
-export { KritzelUndoState as KritzelUndoState1 } from ".";
 export { ThemeName } from "./interfaces/theme.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
+export { LoginEvent } from "./events/login.event";
 export { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
+export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
@@ -71,6 +72,7 @@ export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font
 export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
 export { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
+export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
 export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
@@ -218,13 +220,13 @@ export namespace Components {
          */
         "avatarSize": number;
         /**
-          * Offset Y for the portal positioning
-          * @default 4
-         */
-        "offsetY": number;
-        /**
           * The current user to display
          */
+        "user"?: IKritzelUser;
+    }
+    interface KritzelCurrentUserDialog {
+        "close": () => Promise<void>;
+        "open": () => Promise<void>;
         "user"?: IKritzelUser;
     }
     interface KritzelCursorTrail {
@@ -367,7 +369,7 @@ export namespace Components {
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
          */
-        "loginConfig"?: IKritzelLoginConfig;
+        "loginConfig"?: KritzelLoginConfig;
         /**
           * @default [     { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Order',       icon: 'ordering',       group: 'other',       children: [         { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'Move Up', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'Move Down', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'Align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'Align Left', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'Align Right', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'Align Top', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'Align Bottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'Group',       icon: 'group',       group: 'other',       children: [         {           label: 'Group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'Ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'Export',       icon: 'download',       group: 'export',       children: [         { label: 'Export as SVG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'Export as PNG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
@@ -395,7 +397,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default {     providers: [IndexedDBSyncProvider]   }
+          * @default {     providers: [IndexedDBSyncProvider],   }
          */
         "syncConfig"?: KritzelSyncConfig;
         "triggerSelectionChange": () => Promise<void>;
@@ -934,7 +936,7 @@ export namespace Components {
           * Array of authentication provider buttons to render
           * @default []
          */
-        "providers": IKritzelLoginProvider[];
+        "providers": KritzelLoginProvider[];
         /**
           * Sets or clears the loading state on a provider button
          */
@@ -982,6 +984,11 @@ export namespace Components {
           * @default 24
          */
         "iconSize": number;
+        /**
+          * Whether the user is currently logged in. When true, a Logout item is appended to the menu.
+          * @default false
+         */
+        "isLoggedIn": boolean;
         /**
           * The menu items to display in the dropdown
           * @default [     {       id: 'share',       label: 'Share',       icon: 'share',     },     {       id: 'export',       label: 'Export',       icon: 'upload',     },     {       id: 'import',       label: 'Import',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
@@ -1227,10 +1234,6 @@ export interface KritzelControlsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelControlsElement;
 }
-export interface KritzelCurrentUserCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLKritzelCurrentUserElement;
-}
 export interface KritzelDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelDialogElement;
@@ -1465,22 +1468,17 @@ declare global {
         prototype: HTMLKritzelControlsElement;
         new (): HTMLKritzelControlsElement;
     };
-    interface HTMLKritzelCurrentUserElementEventMap {
-        "itemSelect": { item: IKritzelMenuItem; parent: IKritzelMenuItem };
-    }
     interface HTMLKritzelCurrentUserElement extends Components.KritzelCurrentUser, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelCurrentUserElementEventMap>(type: K, listener: (this: HTMLKritzelCurrentUserElement, ev: KritzelCurrentUserCustomEvent<HTMLKritzelCurrentUserElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelCurrentUserElementEventMap>(type: K, listener: (this: HTMLKritzelCurrentUserElement, ev: KritzelCurrentUserCustomEvent<HTMLKritzelCurrentUserElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelCurrentUserElement: {
         prototype: HTMLKritzelCurrentUserElement;
         new (): HTMLKritzelCurrentUserElement;
+    };
+    interface HTMLKritzelCurrentUserDialogElement extends Components.KritzelCurrentUserDialog, HTMLStencilElement {
+    }
+    var HTMLKritzelCurrentUserDialogElement: {
+        prototype: HTMLKritzelCurrentUserDialogElement;
+        new (): HTMLKritzelCurrentUserDialogElement;
     };
     interface HTMLKritzelCursorTrailElement extends Components.KritzelCursorTrail, HTMLStencilElement {
     }
@@ -1524,8 +1522,8 @@ declare global {
         new (): HTMLKritzelDropdownElement;
     };
     interface HTMLKritzelEditorElementEventMap {
-        "isReady": HTMLElement;
-        "activeWorkspaceChange": KritzelWorkspace;
+        "isReady": EditorIsReadyEvent;
+        "activeWorkspaceChange": ActiveWorkspaceChangeEvent;
         "objectsChange": KritzelBaseObject[];
         "objectsAdded": ObjectsAddedEvent;
         "objectsRemoved": ObjectsRemovedEvent;
@@ -1534,7 +1532,7 @@ declare global {
         "themeChange": ThemeName;
         "viewportChange": KritzelViewportState;
         "logout": void;
-        "loginRequest": IKritzelLoginEvent;
+        "login": LoginEvent;
         "isPublicChange": IKritzelIsPublicChangedEvent;
         "awarenessChange": Map<number, Record<string, any>>;
     }
@@ -1682,7 +1680,7 @@ declare global {
         new (): HTMLKritzelLineEndingsElement;
     };
     interface HTMLKritzelLoginDialogElementEventMap {
-        "providerLogin": IKritzelLoginEvent;
+        "providerLogin": LoginEvent1;
         "dialogClosed": void;
     }
     /**
@@ -2048,6 +2046,7 @@ declare global {
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-current-user": HTMLKritzelCurrentUserElement;
+        "kritzel-current-user-dialog": HTMLKritzelCurrentUserDialogElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-dialog": HTMLKritzelDialogElement;
         "kritzel-dropdown": HTMLKritzelDropdownElement;
@@ -2236,17 +2235,11 @@ declare namespace LocalJSX {
          */
         "avatarSize"?: number;
         /**
-          * Offset Y for the portal positioning
-          * @default 4
-         */
-        "offsetY"?: number;
-        /**
-          * Emitted when a menu item is selected
-         */
-        "onItemSelect"?: (event: KritzelCurrentUserCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => void;
-        /**
           * The current user to display
          */
+        "user"?: IKritzelUser;
+    }
+    interface KritzelCurrentUserDialog {
         "user"?: IKritzelUser;
     }
     interface KritzelCursorTrail {
@@ -2360,16 +2353,16 @@ declare namespace LocalJSX {
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
          */
-        "loginConfig"?: IKritzelLoginConfig;
+        "loginConfig"?: KritzelLoginConfig;
         /**
           * @default [     { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     {       label: 'Paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Order',       icon: 'ordering',       group: 'other',       children: [         { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'Move Up', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'Move Down', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'Align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'Align Left', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'Align Right', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'Align Top', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'Align Bottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'Group',       icon: 'group',       group: 'other',       children: [         {           label: 'Group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'Ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'Export',       icon: 'download',       group: 'export',       children: [         { label: 'Export as SVG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'Export as PNG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
-        "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<KritzelWorkspace>) => void;
+        "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
         "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
         "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangedEvent>) => void;
-        "onIsReady"?: (event: KritzelEditorCustomEvent<HTMLElement>) => void;
-        "onLoginRequest"?: (event: KritzelEditorCustomEvent<IKritzelLoginEvent>) => void;
+        "onIsReady"?: (event: KritzelEditorCustomEvent<EditorIsReadyEvent>) => void;
+        "onLogin"?: (event: KritzelEditorCustomEvent<LoginEvent>) => void;
         "onLogout"?: (event: KritzelEditorCustomEvent<void>) => void;
         "onObjectsAdded"?: (event: KritzelEditorCustomEvent<ObjectsAddedEvent>) => void;
         "onObjectsChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
@@ -2387,7 +2380,7 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         /**
-          * @default {     providers: [IndexedDBSyncProvider]   }
+          * @default {     providers: [IndexedDBSyncProvider],   }
          */
         "syncConfig"?: KritzelSyncConfig;
         "user"?: IKritzelUser;
@@ -2668,12 +2661,12 @@ declare namespace LocalJSX {
         /**
           * Emitted when a provider button is clicked
          */
-        "onProviderLogin"?: (event: KritzelLoginDialogCustomEvent<IKritzelLoginEvent>) => void;
+        "onProviderLogin"?: (event: KritzelLoginDialogCustomEvent<LoginEvent1>) => void;
         /**
           * Array of authentication provider buttons to render
           * @default []
          */
-        "providers"?: IKritzelLoginProvider[];
+        "providers"?: KritzelLoginProvider[];
         /**
           * Optional subtitle text displayed below the title
          */
@@ -2730,6 +2723,11 @@ declare namespace LocalJSX {
           * @default 24
          */
         "iconSize"?: number;
+        /**
+          * Whether the user is currently logged in. When true, a Logout item is appended to the menu.
+          * @default false
+         */
+        "isLoggedIn"?: boolean;
         /**
           * The menu items to display in the dropdown
           * @default [     {       id: 'share',       label: 'Share',       icon: 'share',     },     {       id: 'export',       label: 'Export',       icon: 'upload',     },     {       id: 'import',       label: 'Import',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
@@ -3024,7 +3022,6 @@ declare namespace LocalJSX {
     }
     interface KritzelCurrentUserAttributes {
         "avatarSize": number;
-        "offsetY": number;
     }
     interface KritzelDialogAttributes {
         "isOpen": boolean;
@@ -3107,6 +3104,7 @@ declare namespace LocalJSX {
     interface KritzelMoreMenuAttributes {
         "icon": string;
         "iconSize": number;
+        "isLoggedIn": boolean;
         "offsetY": number;
     }
     interface KritzelNumericInputAttributes {
@@ -3176,6 +3174,7 @@ declare namespace LocalJSX {
         "kritzel-context-menu": KritzelContextMenu;
         "kritzel-controls": Omit<KritzelControls, keyof KritzelControlsAttributes> & { [K in keyof KritzelControls & keyof KritzelControlsAttributes]?: KritzelControls[K] } & { [K in keyof KritzelControls & keyof KritzelControlsAttributes as `attr:${K}`]?: KritzelControlsAttributes[K] } & { [K in keyof KritzelControls & keyof KritzelControlsAttributes as `prop:${K}`]?: KritzelControls[K] };
         "kritzel-current-user": Omit<KritzelCurrentUser, keyof KritzelCurrentUserAttributes> & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes]?: KritzelCurrentUser[K] } & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes as `attr:${K}`]?: KritzelCurrentUserAttributes[K] } & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes as `prop:${K}`]?: KritzelCurrentUser[K] };
+        "kritzel-current-user-dialog": KritzelCurrentUserDialog;
         "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-dialog": Omit<KritzelDialog, keyof KritzelDialogAttributes> & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes]?: KritzelDialog[K] } & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes as `attr:${K}`]?: KritzelDialogAttributes[K] } & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes as `prop:${K}`]?: KritzelDialog[K] };
         "kritzel-dropdown": Omit<KritzelDropdown, keyof KritzelDropdownAttributes> & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes]?: KritzelDropdown[K] } & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes as `attr:${K}`]?: KritzelDropdownAttributes[K] } & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes as `prop:${K}`]?: KritzelDropdown[K] };
@@ -3223,6 +3222,7 @@ declare module "@stencil/core" {
             "kritzel-context-menu": LocalJSX.IntrinsicElements["kritzel-context-menu"] & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
             "kritzel-controls": LocalJSX.IntrinsicElements["kritzel-controls"] & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-current-user": LocalJSX.IntrinsicElements["kritzel-current-user"] & JSXBase.HTMLAttributes<HTMLKritzelCurrentUserElement>;
+            "kritzel-current-user-dialog": LocalJSX.IntrinsicElements["kritzel-current-user-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelCurrentUserDialogElement>;
             "kritzel-cursor-trail": LocalJSX.IntrinsicElements["kritzel-cursor-trail"] & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-dialog": LocalJSX.IntrinsicElements["kritzel-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelDialogElement>;
             "kritzel-dropdown": LocalJSX.IntrinsicElements["kritzel-dropdown"] & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;

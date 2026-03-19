@@ -1403,7 +1403,23 @@ export class KritzelEngine {
    */
   @Method()
   async loadSharedWorkspace(token: string): Promise<void> {
-    await this.core.loadSharedWorkspace(token);
+    const workspaceId = token;
+
+    let workspace = this.core.getWorkspaces().find(w => w.id === workspaceId);
+
+    if (!workspace) {
+      workspace = new KritzelWorkspace(workspaceId, 'Shared Workspace');
+      workspace.isPublic = true;
+      this.core.createWorkspace(workspace);
+    } else {
+      workspace.isPublic = true;
+    }
+
+    this.workspacesChange.emit(this.core.store.state.workspaces);
+
+    this.core.beforeWorkspaceChange();
+    await this.initializeWorkspaceIfNeeded(workspace);
+    this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace);
   }
 
   /**

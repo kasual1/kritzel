@@ -1,5 +1,4 @@
-import { Component, Host, h, Prop, State, Element, Event, EventEmitter } from '@stencil/core';
-import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
+import { Component, Host, h, Prop, Element } from '@stencil/core';
 import { IKritzelUser } from '../../../interfaces/user.interface';
 
 @Component({
@@ -20,60 +19,18 @@ export class KritzelCurrentUser {
    */
   @Prop() avatarSize: number = 40;
 
-  /**
-   * Offset Y for the portal positioning
-   */
-  @Prop() offsetY: number = 4;
+  private dialogRef: HTMLKritzelCurrentUserDialogElement;
 
-  /**
-   * Emitted when a menu item is selected
-   */
-  @Event() itemSelect: EventEmitter<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>;
-
-  @State() menuAnchor: HTMLElement = null;
-
-  private menuItems: IKritzelMenuItem[] = [
-    {
-      id: 'logout',
-      label: 'Logout',
-      icon: 'log-out',
-    },
-  ];
-
-  private toggleMenu = (event: MouseEvent): void => {
+  private handleAvatarClick = (event: MouseEvent): void => {
     event.stopPropagation();
-    if (this.menuAnchor) {
-      this.closeMenu();
-    } else {
-      this.menuAnchor = this.host;
-    }
-  };
-
-  private closeMenu = (): void => {
-    this.menuAnchor = null;
-  };
-
-  private handleMenuItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>): void => {
-    const { item, parent } = event.detail;
-    if (item.action) {
-      item.action(item, parent);
-    }
-    this.itemSelect.emit(event.detail);
-    this.closeMenu();
+    this.dialogRef?.open();
   };
 
   render() {
-    if (!this.user) {
-      return <Host style={{ display: 'none' }}></Host>;
-    }
-
     return (
       <Host>
-        <kritzel-avatar user={this.user}  size={this.avatarSize} onClick={this.toggleMenu}></kritzel-avatar>
-
-        <kritzel-portal anchor={this.menuAnchor} offsetY={this.offsetY} onClose={this.closeMenu}>
-          <kritzel-menu items={this.menuItems} onItemSelect={this.handleMenuItemSelect}></kritzel-menu>
-        </kritzel-portal>
+        <kritzel-avatar user={this.user} size={this.avatarSize} onClick={this.handleAvatarClick}></kritzel-avatar>
+        <kritzel-current-user-dialog ref={el => (this.dialogRef = el)} user={this.user}></kritzel-current-user-dialog>
       </Host>
     );
   }

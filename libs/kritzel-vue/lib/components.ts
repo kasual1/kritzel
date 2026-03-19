@@ -7,6 +7,7 @@ import type { JSX } from '../../kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelBackToContent } from '../../kritzel-stencil/dist/components/kritzel-back-to-content.js';
 import { defineCustomElement as defineKritzelButton } from '../../kritzel-stencil/dist/components/kritzel-button.js';
+import { defineCustomElement as defineKritzelCurrentUserDialog } from '../../kritzel-stencil/dist/components/kritzel-current-user-dialog.js';
 import { defineCustomElement as defineKritzelDialog } from '../../kritzel-stencil/dist/components/kritzel-dialog.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelExport } from '../../kritzel-stencil/dist/components/kritzel-export.js';
@@ -36,6 +37,11 @@ export const KritzelButton: StencilVueComponent<JSX.KritzelButton> = /*@__PURE__
   'buttonClick'
 ], [
   'buttonClick'
+]);
+
+
+export const KritzelCurrentUserDialog: StencilVueComponent<JSX.KritzelCurrentUserDialog> = /*@__PURE__*/ defineContainer<JSX.KritzelCurrentUserDialog>('kritzel-current-user-dialog', defineKritzelCurrentUserDialog, [
+  'user'
 ]);
 
 
@@ -88,7 +94,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'themeChange',
   'viewportChange',
   'logout',
-  'loginRequest',
+  'login',
   'isPublicChange',
   'awarenessChange'
 ], [
@@ -102,7 +108,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'themeChange',
   'viewportChange',
   'logout',
-  'loginRequest',
+  'login',
   'isPublicChange',
   'awarenessChange'
 ]);
