@@ -105,8 +105,6 @@ export class KritzelWorkspace implements KritzelSerializable {
     Object.assign(this, object);
     this.createdAt = new Date(object.createdAt);
     this.updatedAt = new Date(object.updatedAt);
-    // Backward compatibility: infer isPublic from old linkShare/visibility fields
-    this.isPublic = object.isPublic ?? object.linkShare?.enabled ?? (object.visibility === 'shared') ?? false;
     return this;
   }
 }

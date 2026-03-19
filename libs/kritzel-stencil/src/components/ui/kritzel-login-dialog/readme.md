@@ -13,19 +13,19 @@ The parent component (kritzel-editor) handles the actual authentication flow.
 
 ## Properties
 
-| Property      | Attribute      | Description                                        | Type                      | Default     |
-| ------------- | -------------- | -------------------------------------------------- | ------------------------- | ----------- |
-| `dialogTitle` | `dialog-title` | Dialog title                                       | `string`                  | `'Sign in'` |
-| `providers`   | --             | Array of authentication provider buttons to render | `IKritzelLoginProvider[]` | `[]`        |
-| `subtitle`    | `subtitle`     | Optional subtitle text displayed below the title   | `string`                  | `undefined` |
+| Property      | Attribute      | Description                                        | Type                     | Default     |
+| ------------- | -------------- | -------------------------------------------------- | ------------------------ | ----------- |
+| `dialogTitle` | `dialog-title` | Dialog title                                       | `string`                 | `'Sign in'` |
+| `providers`   | --             | Array of authentication provider buttons to render | `KritzelLoginProvider[]` | `[]`        |
+| `subtitle`    | `subtitle`     | Optional subtitle text displayed below the title   | `string`                 | `undefined` |
 
 
 ## Events
 
-| Event           | Description                               | Type                              |
-| --------------- | ----------------------------------------- | --------------------------------- |
-| `dialogClosed`  | Emitted when the dialog is closed         | `CustomEvent<void>`               |
-| `providerLogin` | Emitted when a provider button is clicked | `CustomEvent<IKritzelLoginEvent>` |
+| Event           | Description                               | Type                      |
+| --------------- | ----------------------------------------- | ------------------------- |
+| `dialogClosed`  | Emitted when the dialog is closed         | `CustomEvent<void>`       |
+| `providerLogin` | Emitted when a provider button is clicked | `CustomEvent<LoginEvent>` |
 
 
 ## Methods

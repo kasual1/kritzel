@@ -1,18 +1,19 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   inject,
+  OnInit,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import {
   IndexedDBSyncProvider,
   KritzelEditor,
   KritzelSyncConfig,
-  KritzelWorkspace,
 } from 'kritzel-angular';
+import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, HocuspocusSyncProvider, LoginEvent } from 'kritzel-stencil';
+import { UserData } from './user.resolver';
 
 @Component({
   selector: 'app-editor-page',
@@ -21,66 +22,76 @@ import {
   template: `
     <kritzel-editor
       [syncConfig]="syncConfig"
+      [loginConfig]="loginConfig"
       [activeWorkspaceId]="activeWorkspaceId"
-      (isReady)="onEditorReady()"
+      (isReady)="onIsReady($event)"
+      (login)="onLogin($event)"
+      (logout)="onLogout()"
       (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
     ></kritzel-editor>
   `,
 })
-export class EditorPageComponent {
+export class EditorPageComponent implements OnInit {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
-  isInitialized: boolean = false;
+  activeWorkspaceId: string | null = null;
 
-  activeWorkspaceId: string | undefined;
+  isShared = false;
 
-  syncConfig: KritzelSyncConfig = {
-    appStateId: 'kritzel-angular-demo',
-    providers: [IndexedDBSyncProvider],
+  syncConfig!: KritzelSyncConfig;
+
+  loginConfig = {
+    providers: [
+      { name: 'google', label: 'Sign in with Google' },
+      { name: 'apple', label: 'Sign in with Apple' },
+      { name: 'facebook', label: 'Sign in with Facebook' },
+    ],
+    title: 'Welcome to Kritzel',
   };
 
-  constructor() {
+  ngOnInit(): void {
+    const user = this.route.snapshot.data['user'] as UserData;
+
     this.activeWorkspaceId = this.route.snapshot.params['workspaceId'];
+
+    this.isShared = this.route.snapshot.queryParams['share'] === 'true';
+
+    this.syncConfig = {
+      appStateId: user.id,
+      providers: [IndexedDBSyncProvider, HocuspocusSyncProvider],
+    };
   }
 
-  async onEditorReady() {
-    const workspaceId = this.route.snapshot.params['workspaceId'];
-    const isShared = this.route.snapshot.queryParams['share'] === 'true';
+  async onIsReady(event: CustomEvent<EditorIsReadyEvent>) {
+    const editorState = event.detail;
+    console.log('Editor is ready with state:', editorState);
 
-    if (isShared && workspaceId) {
-      const workspace = new KritzelWorkspace(workspaceId, 'New');
-      await this.editor.createWorkspace(workspace);
-    } else {
-      this.activeWorkspaceId = workspaceId;
-    }
-
-    this.isInitialized = true;
-
-    const { share, ...remainingParams } = this.route.snapshot.queryParams;
-    if (share) {
-      this.router.navigate([], { queryParams: remainingParams, replaceUrl: true });
-    }
-  }
-
-  onActiveWorkspaceChange(event: CustomEvent<{ id?: string }>) {
-    console.log('Active workspace changed:', event.detail?.id, this.isInitialized);
-    if(!this.isInitialized) {
+    if(this.isShared && this.activeWorkspaceId) {
+      await this.editor.loadSharedWorkspace(this.activeWorkspaceId);
       return;
     }
 
-    const workspaceId = event.detail?.id;
-    if (!workspaceId) {
-      return;
-    }
-
-    const currentPath = this.router.url.split('?')[0].split('#')[0];
-    if (currentPath === `/${workspaceId}`) {
-      return;
-    }
-
-    this.router.navigate([workspaceId], { replaceUrl: true });
+    this.activeWorkspaceId = editorState.activeWorkspace.id;
+    window.history.replaceState(null, '', `/${editorState.activeWorkspace.id}`);
   }
+
+  onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
+    const workspace = event.detail;
+    console.log('Active workspace changed:', workspace);
+
+    this.activeWorkspaceId = workspace.id;
+    window.history.replaceState(null, '', `/${workspace.id}`);
+  }
+
+  onLogin(event: CustomEvent<LoginEvent>) {
+    const login = event.detail;
+    console.log('Login event:', login);
+  }
+
+  onLogout() {
+    console.log('Logout event');
+  }
+
 }

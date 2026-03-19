@@ -106,6 +106,7 @@ Type: `Promise<void>`
 
 ### Used by
 
+ - [kritzel-current-user-dialog](../../ui/kritzel-current-user-dialog)
  - [kritzel-export](../../ui/kritzel-export)
  - [kritzel-login-dialog](../../ui/kritzel-login-dialog)
  - [kritzel-settings](../../ui/kritzel-settings)
@@ -114,6 +115,7 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-current-user-dialog --> kritzel-dialog
   kritzel-export --> kritzel-dialog
   kritzel-login-dialog --> kritzel-dialog
   kritzel-settings --> kritzel-dialog

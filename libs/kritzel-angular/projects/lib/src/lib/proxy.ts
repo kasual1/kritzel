@@ -8,6 +8,7 @@ import type { Components } from 'kritzel-stencil/dist/components';
 
 import { defineCustomElement as defineKritzelBackToContent } from 'kritzel-stencil/dist/components/kritzel-back-to-content.js';
 import { defineCustomElement as defineKritzelButton } from 'kritzel-stencil/dist/components/kritzel-button.js';
+import { defineCustomElement as defineKritzelCurrentUserDialog } from 'kritzel-stencil/dist/components/kritzel-current-user-dialog.js';
 import { defineCustomElement as defineKritzelDialog } from 'kritzel-stencil/dist/components/kritzel-dialog.js';
 import { defineCustomElement as defineKritzelEditor } from 'kritzel-stencil/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelExport } from 'kritzel-stencil/dist/components/kritzel-export.js';
@@ -80,6 +81,30 @@ export declare interface KritzelButton extends Components.KritzelButton {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineKritzelCurrentUserDialog,
+  inputs: ['user'],
+  methods: ['open', 'close']
+})
+@Component({
+  selector: 'kritzel-current-user-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['user'],
+})
+export class KritzelCurrentUserDialog {
+  protected el: HTMLKritzelCurrentUserDialogElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelCurrentUserDialog extends Components.KritzelCurrentUserDialog {}
+
+
+@ProxyCmp({
   defineCustomElementFn: defineKritzelDialog,
   inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'dialogTitle', 'fullscreenOnMobile', 'isOpen', 'size', 'trapFocus'],
   methods: ['open', 'close', 'focusFirstElement']
@@ -128,12 +153,12 @@ export declare interface KritzelDialog extends Components.KritzelDialog {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeUsers', 'activeWorkspaceId', 'controls', 'customSvgIcons', 'editorId', 'globalContextMenuItems', 'isControlsVisible', 'isUtilityPanelVisible', 'lockDrawingScale', 'loginConfig', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'wheelEnabled'],
-  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'themeChange', 'viewportChange', 'logout', 'loginRequest', 'isPublicChange', 'awarenessChange'],
+  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'themeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
-  @Output() isReady = new EventEmitter<CustomEvent<HTMLElement>>();
-  @Output() activeWorkspaceChange = new EventEmitter<CustomEvent<IKritzelEditorKritzelWorkspace>>();
+  @Output() isReady = new EventEmitter<CustomEvent<IKritzelEditorEditorIsReadyEvent>>();
+  @Output() activeWorkspaceChange = new EventEmitter<CustomEvent<IKritzelEditorActiveWorkspaceChangeEvent>>();
   @Output() objectsChange = new EventEmitter<CustomEvent<IKritzelEditorKritzelBaseObject[]>>();
   @Output() objectsAdded = new EventEmitter<CustomEvent<IKritzelEditorObjectsAddedEvent>>();
   @Output() objectsRemoved = new EventEmitter<CustomEvent<IKritzelEditorObjectsRemovedEvent>>();
@@ -142,7 +167,7 @@ export class KritzelEditor {
   @Output() themeChange = new EventEmitter<CustomEvent<IKritzelEditorThemeName>>();
   @Output() viewportChange = new EventEmitter<CustomEvent<IKritzelEditorKritzelViewportState>>();
   @Output() logout = new EventEmitter<CustomEvent<void>>();
-  @Output() loginRequest = new EventEmitter<CustomEvent<IKritzelEditorIKritzelLoginEvent>>();
+  @Output() login = new EventEmitter<CustomEvent<IKritzelEditorLoginEvent>>();
   @Output() isPublicChange = new EventEmitter<CustomEvent<IKritzelEditorIKritzelIsPublicChangedEvent>>();
   @Output() awarenessChange = new EventEmitter<CustomEvent<Map<number, Record<string, any>>>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
@@ -152,7 +177,8 @@ export class KritzelEditor {
 }
 
 
-import type { KritzelWorkspace as IKritzelEditorKritzelWorkspace } from 'kritzel-stencil/dist/components';
+import type { EditorIsReadyEvent as IKritzelEditorEditorIsReadyEvent } from 'kritzel-stencil/dist/components';
+import type { ActiveWorkspaceChangeEvent as IKritzelEditorActiveWorkspaceChangeEvent } from 'kritzel-stencil/dist/components';
 import type { KritzelBaseObject as IKritzelEditorKritzelBaseObject } from 'kritzel-stencil/dist/components';
 import type { ObjectsAddedEvent as IKritzelEditorObjectsAddedEvent } from 'kritzel-stencil/dist/components';
 import type { ObjectsRemovedEvent as IKritzelEditorObjectsRemovedEvent } from 'kritzel-stencil/dist/components';
@@ -160,14 +186,14 @@ import type { ObjectsUpdatedEvent as IKritzelEditorObjectsUpdatedEvent } from 'k
 import type { KritzelUndoState as IKritzelEditorKritzelUndoState } from 'kritzel-stencil/dist/components';
 import type { ThemeName as IKritzelEditorThemeName } from 'kritzel-stencil/dist/components';
 import type { KritzelViewportState as IKritzelEditorKritzelViewportState } from 'kritzel-stencil/dist/components';
-import type { IKritzelLoginEvent as IKritzelEditorIKritzelLoginEvent } from 'kritzel-stencil/dist/components';
+import type { LoginEvent as IKritzelEditorLoginEvent } from 'kritzel-stencil/dist/components';
 import type { IKritzelIsPublicChangedEvent as IKritzelEditorIKritzelIsPublicChangedEvent } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelEditor extends Components.KritzelEditor {
 
-  isReady: EventEmitter<CustomEvent<HTMLElement>>;
+  isReady: EventEmitter<CustomEvent<IKritzelEditorEditorIsReadyEvent>>;
 
-  activeWorkspaceChange: EventEmitter<CustomEvent<IKritzelEditorKritzelWorkspace>>;
+  activeWorkspaceChange: EventEmitter<CustomEvent<IKritzelEditorActiveWorkspaceChangeEvent>>;
 
   objectsChange: EventEmitter<CustomEvent<IKritzelEditorKritzelBaseObject[]>>;
 
@@ -185,7 +211,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 
   logout: EventEmitter<CustomEvent<void>>;
 
-  loginRequest: EventEmitter<CustomEvent<IKritzelEditorIKritzelLoginEvent>>;
+  login: EventEmitter<CustomEvent<IKritzelEditorLoginEvent>>;
 
   isPublicChange: EventEmitter<CustomEvent<IKritzelEditorIKritzelIsPublicChangedEvent>>;
 
@@ -303,7 +329,7 @@ export declare interface KritzelLineEndings extends Components.KritzelLineEnding
 })
 export class KritzelLoginDialog {
   protected el: HTMLKritzelLoginDialogElement;
-  @Output() providerLogin = new EventEmitter<CustomEvent<IKritzelLoginDialogIKritzelLoginEvent>>();
+  @Output() providerLogin = new EventEmitter<CustomEvent<IKritzelLoginDialogLoginEvent>>();
   @Output() dialogClosed = new EventEmitter<CustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -312,13 +338,13 @@ export class KritzelLoginDialog {
 }
 
 
-import type { IKritzelLoginEvent as IKritzelLoginDialogIKritzelLoginEvent } from 'kritzel-stencil/dist/components';
+import type { LoginEvent as IKritzelLoginDialogLoginEvent } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelLoginDialog extends Components.KritzelLoginDialog {
   /**
    * Emitted when a provider button is clicked
    */
-  providerLogin: EventEmitter<CustomEvent<IKritzelLoginDialogIKritzelLoginEvent>>;
+  providerLogin: EventEmitter<CustomEvent<IKritzelLoginDialogLoginEvent>>;
   /**
    * Emitted when the dialog is closed
    */

@@ -24,6 +24,9 @@ export {
     WebSocketSyncProvider,
     HocuspocusSyncProvider,
     ShapeType,
+    EditorIsReadyEvent,
+    LoginEvent,
+    ActiveWorkspaceChangeEvent,
     DEFAULT_BRUSH_CONFIG,
     DEFAULT_TEXT_CONFIG,
 } from 'kritzel-stencil';

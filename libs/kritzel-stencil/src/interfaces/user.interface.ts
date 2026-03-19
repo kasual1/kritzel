@@ -25,4 +25,7 @@ export interface IKritzelUser {
 
   /** User's preferred color (for avatar background when showing initials) */
   color?: string;
+
+  /** Whether the user is a guest (not authenticated) */
+  isGuest?: boolean;
 }
