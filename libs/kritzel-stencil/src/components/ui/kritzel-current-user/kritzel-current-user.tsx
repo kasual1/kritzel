@@ -45,6 +45,7 @@ export class KritzelCurrentUser {
     if (this.menuAnchor) {
       this.closeMenu();
     } else {
+      window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
       this.menuAnchor = this.host;
     }
   };
