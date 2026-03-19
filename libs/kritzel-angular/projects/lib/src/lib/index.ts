@@ -4,6 +4,7 @@ import * as d from './proxy';
 export const DIRECTIVES = [
   d.KritzelBackToContent,
   d.KritzelButton,
+  d.KritzelCurrentUserDialog,
   d.KritzelDialog,
   d.KritzelEditor,
   d.KritzelExport,

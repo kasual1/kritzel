@@ -2,7 +2,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: var(--kritzel-global-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
+}
+
+kritzel-avatar {
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   border-radius: 50%;
 }

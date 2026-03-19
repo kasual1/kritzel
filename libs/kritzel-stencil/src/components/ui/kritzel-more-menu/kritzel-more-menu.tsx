@@ -46,6 +46,12 @@ export class KritzelMoreMenu {
   @Prop() iconSize: number = 24;
 
   /**
+   * Whether the user is currently logged in.
+   * When true, a Logout item is appended to the menu.
+   */
+  @Prop() isLoggedIn: boolean = false;
+
+  /**
    * Offset Y for the portal positioning
    */
   @Prop() offsetY: number = 4;
@@ -71,6 +77,21 @@ export class KritzelMoreMenu {
     this.menuAnchor = null;
   };
 
+  private get computedItems(): IKritzelMenuItem[] {
+    if (!this.isLoggedIn) {
+      return this.items;
+    }
+    return [
+      ...this.items,
+      {
+        id: 'logout',
+        label: 'Logout',
+        icon: 'log-out',
+        color: '#ff3b30',
+      },
+    ];
+  }
+
   private handleMenuItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>): void => {
     const { item, parent } = event.detail;
 
@@ -93,7 +114,7 @@ export class KritzelMoreMenu {
 
         <kritzel-portal anchor={this.menuAnchor} offsetY={this.offsetY} onClose={this.closeMenu}>
           <kritzel-menu
-            items={this.items}
+            items={this.computedItems}
             onItemSelect={this.handleMenuItemSelect}
           ></kritzel-menu>
         </kritzel-portal>

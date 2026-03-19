@@ -12,7 +12,6 @@ import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
-import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 import { KritzelCore } from "./classes/core/core.class";
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
@@ -37,6 +36,7 @@ import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
+import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 import { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
@@ -48,7 +48,6 @@ export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
-export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { KritzelCore } from "./classes/core/core.class";
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
@@ -73,6 +72,7 @@ export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font
 export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
 export { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
+export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
 export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
@@ -220,13 +220,13 @@ export namespace Components {
          */
         "avatarSize": number;
         /**
-          * Offset Y for the portal positioning
-          * @default 4
-         */
-        "offsetY": number;
-        /**
           * The current user to display
          */
+        "user"?: IKritzelUser;
+    }
+    interface KritzelCurrentUserDialog {
+        "close": () => Promise<void>;
+        "open": () => Promise<void>;
         "user"?: IKritzelUser;
     }
     interface KritzelCursorTrail {
@@ -368,7 +368,6 @@ export namespace Components {
         "lockDrawingScale": boolean;
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
-          * @default {     providers: [       {         label: 'Sign in with Google',         name: 'google'       }     ],   }
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
@@ -406,9 +405,6 @@ export namespace Components {
         "ungroup": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
-        /**
-          * @default {     id: 'some-randome-id',     color: '#000000',     displayName: 'Guest User'   }
-         */
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -989,6 +985,11 @@ export namespace Components {
          */
         "iconSize": number;
         /**
+          * Whether the user is currently logged in. When true, a Logout item is appended to the menu.
+          * @default false
+         */
+        "isLoggedIn": boolean;
+        /**
           * The menu items to display in the dropdown
           * @default [     {       id: 'share',       label: 'Share',       icon: 'share',     },     {       id: 'export',       label: 'Export',       icon: 'upload',     },     {       id: 'import',       label: 'Import',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
          */
@@ -1233,10 +1234,6 @@ export interface KritzelControlsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelControlsElement;
 }
-export interface KritzelCurrentUserCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLKritzelCurrentUserElement;
-}
 export interface KritzelDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelDialogElement;
@@ -1471,22 +1468,17 @@ declare global {
         prototype: HTMLKritzelControlsElement;
         new (): HTMLKritzelControlsElement;
     };
-    interface HTMLKritzelCurrentUserElementEventMap {
-        "itemSelect": { item: IKritzelMenuItem; parent: IKritzelMenuItem };
-    }
     interface HTMLKritzelCurrentUserElement extends Components.KritzelCurrentUser, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelCurrentUserElementEventMap>(type: K, listener: (this: HTMLKritzelCurrentUserElement, ev: KritzelCurrentUserCustomEvent<HTMLKritzelCurrentUserElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelCurrentUserElementEventMap>(type: K, listener: (this: HTMLKritzelCurrentUserElement, ev: KritzelCurrentUserCustomEvent<HTMLKritzelCurrentUserElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLKritzelCurrentUserElement: {
         prototype: HTMLKritzelCurrentUserElement;
         new (): HTMLKritzelCurrentUserElement;
+    };
+    interface HTMLKritzelCurrentUserDialogElement extends Components.KritzelCurrentUserDialog, HTMLStencilElement {
+    }
+    var HTMLKritzelCurrentUserDialogElement: {
+        prototype: HTMLKritzelCurrentUserDialogElement;
+        new (): HTMLKritzelCurrentUserDialogElement;
     };
     interface HTMLKritzelCursorTrailElement extends Components.KritzelCursorTrail, HTMLStencilElement {
     }
@@ -2054,6 +2046,7 @@ declare global {
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
         "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-current-user": HTMLKritzelCurrentUserElement;
+        "kritzel-current-user-dialog": HTMLKritzelCurrentUserDialogElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-dialog": HTMLKritzelDialogElement;
         "kritzel-dropdown": HTMLKritzelDropdownElement;
@@ -2242,17 +2235,11 @@ declare namespace LocalJSX {
          */
         "avatarSize"?: number;
         /**
-          * Offset Y for the portal positioning
-          * @default 4
-         */
-        "offsetY"?: number;
-        /**
-          * Emitted when a menu item is selected
-         */
-        "onItemSelect"?: (event: KritzelCurrentUserCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => void;
-        /**
           * The current user to display
          */
+        "user"?: IKritzelUser;
+    }
+    interface KritzelCurrentUserDialog {
         "user"?: IKritzelUser;
     }
     interface KritzelCursorTrail {
@@ -2365,7 +2352,6 @@ declare namespace LocalJSX {
         "lockDrawingScale"?: boolean;
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
-          * @default {     providers: [       {         label: 'Sign in with Google',         name: 'google'       }     ],   }
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
@@ -2397,9 +2383,6 @@ declare namespace LocalJSX {
           * @default {     providers: [IndexedDBSyncProvider],   }
          */
         "syncConfig"?: KritzelSyncConfig;
-        /**
-          * @default {     id: 'some-randome-id',     color: '#000000',     displayName: 'Guest User'   }
-         */
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -2741,6 +2724,11 @@ declare namespace LocalJSX {
          */
         "iconSize"?: number;
         /**
+          * Whether the user is currently logged in. When true, a Logout item is appended to the menu.
+          * @default false
+         */
+        "isLoggedIn"?: boolean;
+        /**
           * The menu items to display in the dropdown
           * @default [     {       id: 'share',       label: 'Share',       icon: 'share',     },     {       id: 'export',       label: 'Export',       icon: 'upload',     },     {       id: 'import',       label: 'Import',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
          */
@@ -3034,7 +3022,6 @@ declare namespace LocalJSX {
     }
     interface KritzelCurrentUserAttributes {
         "avatarSize": number;
-        "offsetY": number;
     }
     interface KritzelDialogAttributes {
         "isOpen": boolean;
@@ -3117,6 +3104,7 @@ declare namespace LocalJSX {
     interface KritzelMoreMenuAttributes {
         "icon": string;
         "iconSize": number;
+        "isLoggedIn": boolean;
         "offsetY": number;
     }
     interface KritzelNumericInputAttributes {
@@ -3186,6 +3174,7 @@ declare namespace LocalJSX {
         "kritzel-context-menu": KritzelContextMenu;
         "kritzel-controls": Omit<KritzelControls, keyof KritzelControlsAttributes> & { [K in keyof KritzelControls & keyof KritzelControlsAttributes]?: KritzelControls[K] } & { [K in keyof KritzelControls & keyof KritzelControlsAttributes as `attr:${K}`]?: KritzelControlsAttributes[K] } & { [K in keyof KritzelControls & keyof KritzelControlsAttributes as `prop:${K}`]?: KritzelControls[K] };
         "kritzel-current-user": Omit<KritzelCurrentUser, keyof KritzelCurrentUserAttributes> & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes]?: KritzelCurrentUser[K] } & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes as `attr:${K}`]?: KritzelCurrentUserAttributes[K] } & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes as `prop:${K}`]?: KritzelCurrentUser[K] };
+        "kritzel-current-user-dialog": KritzelCurrentUserDialog;
         "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-dialog": Omit<KritzelDialog, keyof KritzelDialogAttributes> & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes]?: KritzelDialog[K] } & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes as `attr:${K}`]?: KritzelDialogAttributes[K] } & { [K in keyof KritzelDialog & keyof KritzelDialogAttributes as `prop:${K}`]?: KritzelDialog[K] };
         "kritzel-dropdown": Omit<KritzelDropdown, keyof KritzelDropdownAttributes> & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes]?: KritzelDropdown[K] } & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes as `attr:${K}`]?: KritzelDropdownAttributes[K] } & { [K in keyof KritzelDropdown & keyof KritzelDropdownAttributes as `prop:${K}`]?: KritzelDropdown[K] };
@@ -3233,6 +3222,7 @@ declare module "@stencil/core" {
             "kritzel-context-menu": LocalJSX.IntrinsicElements["kritzel-context-menu"] & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
             "kritzel-controls": LocalJSX.IntrinsicElements["kritzel-controls"] & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-current-user": LocalJSX.IntrinsicElements["kritzel-current-user"] & JSXBase.HTMLAttributes<HTMLKritzelCurrentUserElement>;
+            "kritzel-current-user-dialog": LocalJSX.IntrinsicElements["kritzel-current-user-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelCurrentUserDialogElement>;
             "kritzel-cursor-trail": LocalJSX.IntrinsicElements["kritzel-cursor-trail"] & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-dialog": LocalJSX.IntrinsicElements["kritzel-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelDialogElement>;
             "kritzel-dropdown": LocalJSX.IntrinsicElements["kritzel-dropdown"] & JSXBase.HTMLAttributes<HTMLKritzelDropdownElement>;
