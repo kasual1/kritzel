@@ -21,12 +21,14 @@
 
  - [kritzel-active-users](../../ui/kritzel-active-users)
  - [kritzel-current-user](../../ui/kritzel-current-user)
+ - [kritzel-current-user-dialog](../../ui/kritzel-current-user-dialog)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-active-users --> kritzel-avatar
   kritzel-current-user --> kritzel-avatar
+  kritzel-current-user-dialog --> kritzel-avatar
   style kritzel-avatar fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
