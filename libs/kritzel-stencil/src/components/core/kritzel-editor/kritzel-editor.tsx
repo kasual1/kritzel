@@ -53,7 +53,11 @@ export class KritzelEditor {
   @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
   @Prop({ mutable: true }) viewportBoundaryBottom: number = Infinity;
   @Prop({ mutable: true }) wheelEnabled: boolean = true;
-  @Prop() user?: IKritzelUser;
+  @Prop() user?: IKritzelUser = {
+    id: 'some-randome-id',
+    color: '#000000',
+    displayName: 'Guest User'
+  };
   @Prop() activeUsers?: IKritzelUser[];
   @Prop() controls: KritzelToolbarControl[] = [
     {
@@ -205,7 +209,14 @@ export class KritzelEditor {
   };
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
-  @Prop() loginConfig?: KritzelLoginConfig;
+  @Prop() loginConfig?: KritzelLoginConfig = {
+    providers: [
+      {
+        label: 'Sign in with Google',
+        name: 'google'
+      }
+    ],
+  }
 
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
   @Prop() editorId?: string;
