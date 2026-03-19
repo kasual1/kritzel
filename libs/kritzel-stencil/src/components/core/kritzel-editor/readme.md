@@ -873,8 +873,9 @@ graph TD;
   kritzel-pill-tabs --> kritzel-icon
   kritzel-active-users --> kritzel-avatar
   kritzel-current-user --> kritzel-avatar
-  kritzel-current-user --> kritzel-portal
-  kritzel-current-user --> kritzel-menu
+  kritzel-current-user --> kritzel-current-user-dialog
+  kritzel-current-user-dialog --> kritzel-dialog
+  kritzel-current-user-dialog --> kritzel-avatar
   kritzel-more-menu --> kritzel-icon
   kritzel-more-menu --> kritzel-portal
   kritzel-more-menu --> kritzel-menu
