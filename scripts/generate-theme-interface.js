@@ -49,6 +49,8 @@ const KNOWN_CATEGORIES = [
   'avatar',
   'active-users',
   'share-dialog',
+  'login-dialog',
+  'current-user-dialog',
 ];
 
 /**

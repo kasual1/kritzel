@@ -53,7 +53,12 @@ export class KritzelEditor {
   @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
   @Prop({ mutable: true }) viewportBoundaryBottom: number = Infinity;
   @Prop({ mutable: true }) wheelEnabled: boolean = true;
-  @Prop() user?: IKritzelUser;
+  @Prop() user?: IKritzelUser= {
+    id: 'default-user',
+    color: '#666',
+    displayName: 'Sir Guest',
+    email: 'somelongertest@mail.com'
+  }
   @Prop() activeUsers?: IKritzelUser[];
   @Prop() controls: KritzelToolbarControl[] = [
     {

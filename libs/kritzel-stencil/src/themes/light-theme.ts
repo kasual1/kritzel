@@ -88,6 +88,11 @@ export const lightTheme: KritzelTheme = {
     controlSelectedColor: '#ffffff',
   },
 
+  currentUserDialog: {
+    emailColor: '#666666',
+    nameColor: '#333333',
+  },
+
   dialog: {
     backdropColor: 'rgba(0, 0, 0, 0.4)',
     backgroundColor: '#ffffff',
@@ -231,6 +236,26 @@ export const lightTheme: KritzelTheme = {
     hoverBackgroundColor: '#ebebeb',
     optionBackground: '#ffffff',
     selectedBackgroundColor: '#ebebeb',
+  },
+
+  shareDialog: {
+    borderColor: '#e5e5e5',
+    copyButtonBackground: '#ffffff',
+    copyButtonColor: '#666666',
+    copyButtonHoverBackground: '#e8e8e8',
+    copyButtonHoverColor: '#333333',
+    copySuccessBackground: '#d4edda',
+    copySuccessColor: '#28a745',
+    descriptionColor: '#666666',
+    inputBackground: '#f5f5f5',
+    inputBorderColor: '#e0e0e0',
+    inputTextColor: '#333333',
+    labelColor: '#333333',
+    revokeButtonBorderColor: '#dc3545',
+    revokeButtonColor: '#dc3545',
+    revokeButtonHoverBackground: '#dc3545',
+    revokeButtonHoverColor: '#ffffff',
+    selectionColor: '#cce5ff',
   },
 
   slideToggle: {

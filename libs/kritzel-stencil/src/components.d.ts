@@ -405,6 +405,9 @@ export namespace Components {
         "ungroup": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        /**
+          * @default {     id: 'default-user',     color: '#666',     displayName: 'Sir Guest',     email: 'somelongertest@mail.com'   }
+         */
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -2383,6 +2386,9 @@ declare namespace LocalJSX {
           * @default {     providers: [IndexedDBSyncProvider],   }
          */
         "syncConfig"?: KritzelSyncConfig;
+        /**
+          * @default {     id: 'default-user',     color: '#666',     displayName: 'Sir Guest',     email: 'somelongertest@mail.com'   }
+         */
         "user"?: IKritzelUser;
         /**
           * @default Infinity

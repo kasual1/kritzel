@@ -88,6 +88,11 @@ export const darkTheme: KritzelTheme = {
     controlSelectedColor: '#ffffff',
   },
 
+  currentUserDialog: {
+    emailColor: '#999999',
+    nameColor: '#ffffff',
+  },
+
   dialog: {
     backdropColor: 'rgba(0, 0, 0, 0.6)',
     backgroundColor: '#2a2a2a',
