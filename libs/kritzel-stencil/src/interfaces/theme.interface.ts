@@ -137,6 +137,12 @@ export interface KritzelTheme {
     padding?: string;
   };
 
+  /** Current user dialog variables */
+  currentUserDialog?: {
+    emailColor?: string;
+    nameColor?: string;
+  };
+
   /** Dialog variables */
   dialog?: {
     backdropColor?: string;
