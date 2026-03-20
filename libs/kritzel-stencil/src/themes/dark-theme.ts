@@ -237,6 +237,21 @@ export const darkTheme: KritzelTheme = {
     selectedBackgroundColor: '#3a3a3a',
   },
 
+  shareDialog: {
+    labelColor: '#e0e0e0',
+    descriptionColor: '#e0e0e0',
+    inputBackground: '#1a1a1a',
+    inputBorderColor: '#4a4a4a',
+    inputTextColor: '#e0e0e0',
+    selectionColor: '#0A84FF',
+    copyButtonBackground: '#2a2a2a',
+    copyButtonColor: '#e0e0e0',
+    copyButtonHoverBackground: '#3a3a3a',
+    copyButtonHoverColor: '#ffffff',
+    copySuccessBackground: '#28a745',
+    copySuccessColor: '#ffffff',
+  },
+
   slideToggle: {
     thumbColor: '#ffffff',
     trackCheckedColor: '#0A84FF',
