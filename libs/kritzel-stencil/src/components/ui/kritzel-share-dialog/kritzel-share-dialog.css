@@ -33,7 +33,7 @@ kritzel-dialog {
 .share-label-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   flex: 1;
 }
 
