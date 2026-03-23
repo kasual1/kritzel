@@ -134,7 +134,7 @@ describe('KritzelCore', () => {
     mockStore = {
       state: {
         objects: mockObjectsMap,
-        activeWorkspace: { id: 'ws-1', viewport: { translateX: 0, translateY: 0, scale: 1 } },
+        activeWorkspace: { id: 'ws-1', viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 } },
         workspaces: [],
         scale: 1,
         translateX: 0,
@@ -434,14 +434,18 @@ describe('KritzelCore', () => {
   });
 
   describe('updateWorkspaceViewport', () => {
-    it('should update viewport on active workspace', () => {
+    it('should convert translate to world-space center and update viewport on active workspace', () => {
       const activeWs = { id: 'ws-1', viewport: null, updatedAt: null } as any;
       mockStore.state.activeWorkspace = activeWs;
       mockStore.state.workspaces = [activeWs];
+      mockStore.state.viewportWidth = 1000;
+      mockStore.state.viewportHeight = 800;
 
       core.updateWorkspaceViewport(100, 200, 2);
 
-      expect(activeWs.viewport).toEqual({ translateX: 100, translateY: 200, scale: 2 });
+      // centerWorldX = (1000/2 - 100) / 2 = 400/2 = 200
+      // centerWorldY = (800/2 - 200) / 2 = 200/2 = 100
+      expect(activeWs.viewport).toEqual({ centerWorldX: 200, centerWorldY: 100, scale: 2 });
       expect(activeWs.updatedAt).toBeInstanceOf(Date);
     });
 
@@ -1073,12 +1077,16 @@ describe('KritzelCore', () => {
       mockStore.state.translateX = 50;
       mockStore.state.translateY = 100;
       mockStore.state.scale = 2;
+      mockStore.state.viewportWidth = 1000;
+      mockStore.state.viewportHeight = 800;
 
       core.beforeWorkspaceChange();
 
+      // centerWorldX = (1000/2 - 50) / 2 = 225
+      // centerWorldY = (800/2 - 100) / 2 = 150
       expect(mockStore.state.activeWorkspace.viewport).toEqual({
-        translateX: 50,
-        translateY: 100,
+        centerWorldX: 225,
+        centerWorldY: 150,
         scale: 2,
       });
     });

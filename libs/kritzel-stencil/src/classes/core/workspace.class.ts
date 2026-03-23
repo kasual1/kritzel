@@ -2,7 +2,7 @@ import { KritzelSerializable } from "../../interfaces/serializable.interface";
 import type { KritzelCore } from "./core.class";
 
 /** Current version of the workspace export format */
-export const WORKSPACE_EXPORT_VERSION = '1.1.0';
+export const WORKSPACE_EXPORT_VERSION = '1.2.0';
 
 /**
  * Represents a workspace in the Kritzel canvas.
@@ -20,10 +20,10 @@ export class KritzelWorkspace implements KritzelSerializable {
   createdAt: Date;
   /** Timestamp when the workspace was last updated */
   updatedAt: Date;
-  /** Viewport state containing pan and zoom information */
+  /** Viewport state containing the world-space center point and zoom level */
   viewport: {
-    translateX: number;
-    translateY: number;
+    centerWorldX: number;
+    centerWorldY: number;
     scale: number;
   };
 
@@ -37,9 +37,9 @@ export class KritzelWorkspace implements KritzelSerializable {
    * Creates a new KritzelWorkspace instance.
    * @param id - Unique identifier for the workspace
    * @param name - Display name of the workspace
-   * @param viewport - Initial viewport state with translateX, translateY, and scale values
+   * @param viewport - Initial viewport state with centerWorldX, centerWorldY, and scale values
    */
-  constructor(id: string, name: string, viewport: { translateX: number; translateY: number; scale: number } = { translateX: 0, translateY: 0, scale: 1 }) {
+  constructor(id: string, name: string, viewport: { centerWorldX: number; centerWorldY: number; scale: number } = { centerWorldX: 0, centerWorldY: 0, scale: 1 }) {
     this.id = id;
     this.name = name;
     this.createdAt = new Date();

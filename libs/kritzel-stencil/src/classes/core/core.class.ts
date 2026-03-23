@@ -275,11 +275,14 @@ export class KritzelCore {
     this._store.state.activeWorkspace = activeWorkspace;
     this._store.state.workspaces = this.loadWorkspacesFromAppState();
 
-    // Set viewport from workspace
-    const viewport = activeWorkspace.viewport ?? { translateX: 0, translateY: 0, scale: 1 };
-    this._store.state.translateX = viewport.translateX ?? 0;
-    this._store.state.translateY = viewport.translateY ?? 0;
-    this._store.state.scale = viewport.scale ?? 1;
+    // Set viewport from workspace (convert world-space center to screen-space translate)
+    const viewport = activeWorkspace.viewport ?? { centerWorldX: 0, centerWorldY: 0, scale: 1 };
+    const scale = viewport.scale ?? 1;
+    const viewportWidth = this._store.state.viewportWidth;
+    const viewportHeight = this._store.state.viewportHeight;
+    this._store.state.translateX = viewportWidth / 2 - (viewport.centerWorldX ?? 0) * scale;
+    this._store.state.translateY = viewportHeight / 2 - (viewport.centerWorldY ?? 0) * scale;
+    this._store.state.scale = scale;
 
     await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
 
@@ -444,6 +447,7 @@ export class KritzelCore {
 
   /**
    * Persists the current viewport state to the active workspace.
+   * Converts screen-space translate values to device-independent world-space center coordinates.
    * Validates that the workspace still exists before saving.
    * @param translateX - The X translation of the viewport
    * @param translateY - The Y translation of the viewport
@@ -461,7 +465,13 @@ export class KritzelCore {
       return;
     }
 
-    activeWorkspace.viewport = { translateX, translateY, scale };
+    // Convert screen-space translate to device-independent world-space center
+    const viewportWidth = this._store.state.viewportWidth;
+    const viewportHeight = this._store.state.viewportHeight;
+    const centerWorldX = (viewportWidth / 2 - translateX) / scale;
+    const centerWorldY = (viewportHeight / 2 - translateY) / scale;
+
+    activeWorkspace.viewport = { centerWorldX, centerWorldY, scale };
     activeWorkspace.updatedAt = new Date();
     this.saveWorkspaceToAppState(activeWorkspace);
   }

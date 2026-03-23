@@ -1171,7 +1171,17 @@ export class KritzelEngine {
     // Create a new workspace with a fresh ID but use the imported name
     const newWorkspaceId = ObjectHelper.generateUUID();
     const importedName = data.name || 'Imported Workspace';
-    const importedViewport = data.viewport || { translateX: 0, translateY: 0, scale: 1 };
+    let importedViewport = data.viewport || { centerWorldX: 0, centerWorldY: 0, scale: 1 };
+
+    // Backward compatibility: convert legacy translateX/translateY to centerWorldX/centerWorldY
+    if ('translateX' in importedViewport && !('centerWorldX' in importedViewport)) {
+      const scale = importedViewport.scale ?? 1;
+      importedViewport = {
+        centerWorldX: -(importedViewport.translateX ?? 0) / scale,
+        centerWorldY: -(importedViewport.translateY ?? 0) / scale,
+        scale,
+      };
+    }
 
     const newWorkspace = new KritzelWorkspace(newWorkspaceId, importedName, importedViewport);
 

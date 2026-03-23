@@ -35,7 +35,7 @@ jest.mock('../core/workspace.class', () => ({
   KritzelWorkspace: jest.fn().mockImplementation((id: string, name: string, viewport: unknown) => ({
     id,
     name,
-    viewport: viewport ?? { translateX: 0, translateY: 0, scale: 1 },
+    viewport: viewport ?? { centerWorldX: 0, centerWorldY: 0, scale: 1 },
     createdAt: new Date(),
     updatedAt: new Date(),
     _core: null,
@@ -44,7 +44,7 @@ jest.mock('../core/workspace.class', () => ({
       name,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      viewport: viewport ?? { translateX: 0, translateY: 0, scale: 1 },
+      viewport: viewport ?? { centerWorldX: 0, centerWorldY: 0, scale: 1 },
     }),
   })),
 }));
@@ -126,7 +126,7 @@ const createMockProvider = (): MockProvider => ({
 const createMockWorkspace = (id: string, name: string = `Workspace ${id}`) => ({
   id,
   name,
-  viewport: { translateX: 0, translateY: 0, scale: 1 },
+  viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 },
   createdAt: new Date(),
   updatedAt: new Date(),
   _core: null,
@@ -135,7 +135,7 @@ const createMockWorkspace = (id: string, name: string = `Workspace ${id}`) => ({
     name,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    viewport: { translateX: 0, translateY: 0, scale: 1 },
+    viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 },
   }),
 });
 
