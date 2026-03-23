@@ -954,6 +954,7 @@ describe('KritzelObjectMap', () => {
         expect.objectContaining({ objects: expect.anything() }),
         expect.any(Array), // WORKSPACE_MIGRATIONS
         expect.any(Number), // CURRENT_WORKSPACE_SCHEMA_VERSION
+        expect.objectContaining({ quiet: expect.any(Boolean) }),
       );
     });
 
