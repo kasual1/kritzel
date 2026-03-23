@@ -31,7 +31,7 @@
   background-color: var(--kritzel-more-menu-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
-.more-menu-button:focus {
+.more-menu-button:focus-visible {
   background-color: var(--kritzel-more-menu-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
 }
 
