@@ -81,6 +81,8 @@ describe('KritzelCore', () => {
       redo: jest.fn(),
       destroy: jest.fn(),
       totalCount: 0,
+      setWorkspaceName: jest.fn(),
+      onAwarenessChange: jest.fn(),
     };
 
     jest.mocked(KritzelObjectMap).mockImplementation(() => mockObjectsMap);

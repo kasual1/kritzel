@@ -652,6 +652,7 @@ describe('KritzelAppStateMap', () => {
         expect.objectContaining({ workspaces: expect.anything() }),
         expect.any(Array), // APP_STATE_MIGRATIONS
         expect.any(Number), // CURRENT_APP_STATE_SCHEMA_VERSION
+        expect.objectContaining({ quiet: expect.any(Boolean) }),
       );
     });
 

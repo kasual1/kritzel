@@ -102,8 +102,8 @@ describe('ThemeHelper', () => {
 
     it('should return the expected number of variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      // The full theme structure generates 172 CSS variables
-      expect(variables.size).toBe(172);
+      // The full theme structure generates 200 CSS variables
+      expect(variables.size).toBe(200);
     });
   });
 
@@ -158,8 +158,8 @@ describe('ThemeHelper', () => {
     it('should apply all theme variables to the element', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      // Should have called setProperty for all 172 variables
-      expect(setPropertyMock).toHaveBeenCalledTimes(172);
+      // Should have called setProperty for all 200 variables
+      expect(setPropertyMock).toHaveBeenCalledTimes(200);
     });
 
     it('should apply specific theme values correctly', () => {

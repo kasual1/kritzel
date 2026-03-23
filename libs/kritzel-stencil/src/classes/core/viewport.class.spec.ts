@@ -59,6 +59,7 @@ describe('KritzelViewport', () => {
         filter: jest.fn().mockReturnValue([]),
         allObjects: jest.fn().mockReturnValue([]),
         query: jest.fn().mockReturnValue([]),
+        updateCursorPosition: jest.fn(),
       },
       activeWorkspace: { id: 'workspace-1' },
     };
