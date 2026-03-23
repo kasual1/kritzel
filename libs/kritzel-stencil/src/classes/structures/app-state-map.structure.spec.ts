@@ -61,6 +61,12 @@ jest.mock('../../helpers/object.helper', () => ({
   },
 }));
 
+// --- Mock migration helper ---
+const mockRunMigrations = jest.fn().mockReturnValue({ migrated: false, fromVersion: 1, toVersion: 1 });
+jest.mock('../../helpers/migration.helper', () => ({
+  runMigrations: (...args: unknown[]) => mockRunMigrations(...args),
+}));
+
 const localStorageData = new Map<string, string>();
 const mockLocalStorage = {
   getItem: jest.fn((key: string) => (localStorageData.has(key) ? localStorageData.get(key)! : null)),
@@ -85,7 +91,7 @@ const setTestLocalStorage = (storage: unknown): void => {
 };
 
 type MockCore = jest.Mocked<Pick<KritzelCore, 'rerender' | 'editorId' | 'getStorageKey'>> & {
-  store: { state: { workspaces: unknown[]; debugInfo: { showSyncProviderInfo: boolean } } };
+  store: { state: { workspaces: unknown[]; debugInfo: { showSyncProviderInfo: boolean; showMigrationInfo: boolean } } };
 };
 
 const createMockCore = (overrides: Partial<MockCore> = {}): MockCore => {
@@ -97,7 +103,7 @@ const createMockCore = (overrides: Partial<MockCore> = {}): MockCore => {
     store: {
       state: {
         workspaces: [],
-        debugInfo: { showSyncProviderInfo: false },
+        debugInfo: { showSyncProviderInfo: false, showMigrationInfo: false },
       },
     },
     editorId: undefined,
@@ -619,6 +625,61 @@ describe('KritzelAppStateMap', () => {
       });
 
       expect(mockCore.rerender).toHaveBeenCalled();
+    });
+
+    it('should skip processing for migration origin changes', () => {
+      appStateMap.insert(createMockWorkspace('ws-1') as any);
+      mockCore.rerender.mockClear();
+
+      observer({
+        transaction: { origin: 'migration' },
+        keysChanged: new Set(['ws-1']),
+        changes: { keys: new Map([['ws-1', { action: 'update' }]]) },
+      });
+
+      // Should not rerender or process changes
+      expect(mockCore.rerender).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('schema migrations', () => {
+    it('should call runMigrations during initialization', async () => {
+      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+
+      expect(mockRunMigrations).toHaveBeenCalledWith(
+        expect.anything(), // ydoc
+        expect.anything(), // metadataMap
+        expect.objectContaining({ workspaces: expect.anything() }),
+        expect.any(Array), // APP_STATE_MIGRATIONS
+        expect.any(Number), // CURRENT_APP_STATE_SCHEMA_VERSION
+      );
+    });
+
+    it('should set schemaVersion in metadata for new documents', async () => {
+      mockMapGet.mockReturnValue(undefined);
+
+      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+
+      // initializeMetadata should set schemaVersion
+      expect(mockMapSet).toHaveBeenCalledWith('schemaVersion', expect.any(Number));
+    });
+
+    it('should not overwrite schemaVersion if already set', async () => {
+      // Simulate schemaVersion already existing
+      mockMapGet.mockImplementation((key: string) => {
+        if (key === 'schemaVersion') return 1;
+        if (key === 'type') return 'state';
+        if (key === 'isPublic') return false;
+        return undefined;
+      });
+
+      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+
+      // schemaVersion should not be re-set if it already exists
+      const schemaVersionCalls = mockMapSet.mock.calls.filter(
+        (call: unknown[]) => call[0] === 'schemaVersion'
+      );
+      expect(schemaVersionCalls).toHaveLength(0);
     });
   });
 

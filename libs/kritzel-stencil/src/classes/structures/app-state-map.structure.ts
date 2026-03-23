@@ -6,7 +6,10 @@ import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { DEFAULT_SYNC_CONFIG } from '../../configs/default-sync.config';
 import { KritzelDocumentType } from '../../interfaces/document-metadata.interface';
 import { APP_STATE_INSTANCE_ID_STORAGE_KEY } from '../../constants/storage.constants';
+import { CURRENT_APP_STATE_SCHEMA_VERSION } from '../../constants/schema.constants';
 import { ObjectHelper } from '../../helpers/object.helper';
+import { runMigrations } from '../../helpers/migration.helper';
+import { APP_STATE_MIGRATIONS } from '../../migrations/app-state.migrations';
 
 /**
  * Manages the application state for workspaces with Yjs-based synchronization support.
@@ -101,6 +104,10 @@ export class KritzelAppStateMap {
     });
     this._isReady = true;
 
+    // Run any pending schema migrations before loading data
+    const quietMigrations = !core.store.state.debugInfo.showMigrationInfo;
+    runMigrations(this._ydoc, this._metadataMap, { workspaces: this._workspacesMap }, APP_STATE_MIGRATIONS, CURRENT_APP_STATE_SCHEMA_VERSION, { quiet: quietMigrations });
+
     // Initialize document metadata (only if not already set by a previous client)
     this.initializeMetadata('state');
 
@@ -156,6 +163,11 @@ export class KritzelAppStateMap {
     // Skip Map updates for local changes (already done), but still trigger re-render
     if (event.transaction.origin === 'local') {
       this._core?.rerender();
+      return;
+    }
+
+    // Skip migration transactions — data will be loaded fresh via loadFromYjs()
+    if (event.transaction.origin === 'migration') {
       return;
     }
 
@@ -234,6 +246,9 @@ export class KritzelAppStateMap {
       }
       if (this._metadataMap.get('isPublic') === undefined) {
         this._metadataMap.set('isPublic', false);
+      }
+      if (this._metadataMap.get('schemaVersion') === undefined) {
+        this._metadataMap.set('schemaVersion', CURRENT_APP_STATE_SCHEMA_VERSION);
       }
     }, 'metadata');
   }

@@ -98,6 +98,12 @@ jest.mock('../../configs/default-sync.config', () => ({
   DEFAULT_SYNC_CONFIG: { providers: [] },
 }));
 
+// --- Mock migration helper ---
+const mockRunMigrations = jest.fn().mockReturnValue({ migrated: false, fromVersion: 1, toVersion: 1 });
+jest.mock('../../helpers/migration.helper', () => ({
+  runMigrations: (...args: unknown[]) => mockRunMigrations(...args),
+}));
+
 // --- Mock barrel export for KritzelUndoState ---
 jest.mock('../..', () => ({}));
 
@@ -935,6 +941,61 @@ describe('KritzelObjectMap', () => {
       map2.destroy();
 
       expect(provider.destroy).toHaveBeenCalled();
+    });
+  });
+
+  describe('schema migrations', () => {
+    it('should call runMigrations during initialization', async () => {
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+
+      expect(mockRunMigrations).toHaveBeenCalledWith(
+        expect.anything(), // ydoc
+        expect.anything(), // metadataMap
+        expect.objectContaining({ objects: expect.anything() }),
+        expect.any(Array), // WORKSPACE_MIGRATIONS
+        expect.any(Number), // CURRENT_WORKSPACE_SCHEMA_VERSION
+      );
+    });
+
+    it('should set schemaVersion in metadata for new documents', async () => {
+      mockMapGet.mockReturnValue(undefined);
+
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+
+      expect(mockMapSet).toHaveBeenCalledWith('schemaVersion', expect.any(Number));
+    });
+
+    it('should not overwrite schemaVersion if already set', async () => {
+      mockMapGet.mockImplementation((key: string) => {
+        if (key === 'schemaVersion') return 1;
+        if (key === 'type') return 'workspace';
+        if (key === 'isPublic') return false;
+        return undefined;
+      });
+
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+
+      const schemaVersionCalls = mockMapSet.mock.calls.filter(
+        (call: unknown[]) => call[0] === 'schemaVersion'
+      );
+      expect(schemaVersionCalls).toHaveLength(0);
+    });
+
+    it('should skip processing for migration origin in handleObjectsChange', async () => {
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      const observerCallback = mockMapObserve.mock.calls[0][0];
+
+      mockCore.rerender.mockClear();
+      mockRevive.mockClear();
+
+      observerCallback({
+        transaction: { origin: 'migration' },
+        keysChanged: new Set(['obj-1']),
+        changes: { keys: new Map([['obj-1', { action: 'update' }]]) },
+      });
+
+      expect(mockCore.rerender).not.toHaveBeenCalled();
+      expect(mockRevive).not.toHaveBeenCalled();
     });
   });
 });
