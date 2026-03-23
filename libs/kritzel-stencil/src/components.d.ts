@@ -985,13 +985,8 @@ export namespace Components {
          */
         "iconSize": number;
         /**
-          * Whether the user is currently logged in. When true, a Logout item is appended to the menu.
-          * @default false
-         */
-        "isLoggedIn": boolean;
-        /**
-          * The menu items to display in the dropdown
-          * @default [     {       id: 'share',       label: 'Share',       icon: 'share',     },     {       id: 'export',       label: 'Export',       icon: 'upload',     },     {       id: 'import',       label: 'Import',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
+          * The menu items to display in the dropdown. Items with `isVisible` set to `false` will be filtered out. Items with an `action` will have that action invoked on selection.
+          * @default []
          */
         "items": IKritzelMenuItem[];
         /**
@@ -2724,13 +2719,8 @@ declare namespace LocalJSX {
          */
         "iconSize"?: number;
         /**
-          * Whether the user is currently logged in. When true, a Logout item is appended to the menu.
-          * @default false
-         */
-        "isLoggedIn"?: boolean;
-        /**
-          * The menu items to display in the dropdown
-          * @default [     {       id: 'share',       label: 'Share',       icon: 'share',     },     {       id: 'export',       label: 'Export',       icon: 'upload',     },     {       id: 'import',       label: 'Import',       icon: 'download',     },     {       id: 'settings',       label: 'Settings',       icon: 'settings',     },   ]
+          * The menu items to display in the dropdown. Items with `isVisible` set to `false` will be filtered out. Items with an `action` will have that action invoked on selection.
+          * @default []
          */
         "items"?: IKritzelMenuItem[];
         /**
@@ -3104,7 +3094,6 @@ declare namespace LocalJSX {
     interface KritzelMoreMenuAttributes {
         "icon": string;
         "iconSize": number;
-        "isLoggedIn": boolean;
         "offsetY": number;
     }
     interface KritzelNumericInputAttributes {

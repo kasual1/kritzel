@@ -708,27 +708,50 @@ export class KritzelEditor {
     this.themeChange.emit(event.detail.theme);
   }
 
-  async handleMoreMenuItemSelect(event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) {
-    const { item } = event.detail;
-    if (item.id === 'share') {
-      this.shareDialogRef.open();
-    }
-    if (item.id === 'settings') {
-      this.settingsRef.open();
-    }
-    if (item.id === 'export') {
-      const preview = await this.engineRef.getScreenshot('png');
-      this.exportRef.open(preview);
-    }
-    if (item.id === 'download') {
-      await this.engineRef.downloadAsJson();
-    }
-    if (item.id === 'import') {
-      await this.engineRef.importFromFile();
-    }
-    if (item.id === 'logout') {
-      this.logout.emit();
-    }
+  private get moreMenuItems(): IKritzelMenuItem[] {
+    return [
+      {
+        id: 'share',
+        label: 'Share',
+        icon: 'share',
+        action: () => {
+          if (!this.isLoggedIn && this.loginConfig) {
+            this.openLoginDialog();
+            return;
+          }
+          this.shareDialogRef.open();
+        },
+      },
+      {
+        id: 'export',
+        label: 'Export',
+        icon: 'upload',
+        action: async () => {
+          const preview = await this.engineRef.getScreenshot('png');
+          this.exportRef.open(preview);
+        },
+      },
+      {
+        id: 'import',
+        label: 'Import',
+        icon: 'download',
+        action: () => this.engineRef.importFromFile(),
+      },
+      {
+        id: 'settings',
+        label: 'Settings',
+        icon: 'settings',
+        action: () => this.settingsRef.open(),
+      },
+      {
+        id: 'logout',
+        label: 'Logout',
+        icon: 'log-out',
+        color: '#ff3b30',
+        isVisible: this.isLoggedIn,
+        action: () => this.logout.emit(),
+      },
+    ];
   }
 
   private handleToggleIsPublic = async (event: CustomEvent<boolean>): Promise<void> => {
@@ -752,6 +775,10 @@ export class KritzelEditor {
   private handleProviderLogin = (event: CustomEvent<LoginEvent>): void => {
     this.login.emit(event.detail);
   };
+
+  private get isLoggedIn(): boolean {
+    return !!this.user && !this.user.isGuest;
+  }
 
   @Method()
   async openLoginDialog(): Promise<void> {
@@ -856,6 +883,10 @@ export class KritzelEditor {
   }
 
   render() {
+    const isLoggedIn = this.isLoggedIn;
+    const shouldShowCurrentUser = isLoggedIn;
+    const shouldShowLoginButton = !!this.loginConfig && !isLoggedIn;
+
     return (
       <Host>
         <div class="top-left-buttons">
@@ -929,13 +960,13 @@ export class KritzelEditor {
 
           <kritzel-active-users users={this.activeUsers}></kritzel-active-users>
 
-          {this.user && !this.user.isGuest && (
+          {shouldShowCurrentUser && (
             <kritzel-current-user user={this.user}></kritzel-current-user>
           )}
 
-          {this.loginConfig && (!this.user || this.user.isGuest) && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>}
+          {shouldShowLoginButton && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>}
 
-          <kritzel-more-menu isLoggedIn={!!this.user && !this.user.isGuest} onItemSelect={event => this.handleMoreMenuItemSelect(event)}></kritzel-more-menu>
+          <kritzel-more-menu items={this.moreMenuItems}></kritzel-more-menu>
 
           <kritzel-share-dialog
             ref={el => (this.shareDialogRef = el)}

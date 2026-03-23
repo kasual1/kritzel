@@ -10,30 +10,11 @@ export class KritzelMoreMenu {
   @Element() host!: HTMLElement;
 
   /**
-   * The menu items to display in the dropdown
+   * The menu items to display in the dropdown.
+   * Items with `isVisible` set to `false` will be filtered out.
+   * Items with an `action` will have that action invoked on selection.
    */
-  @Prop() items: IKritzelMenuItem[] = [
-    {
-      id: 'share',
-      label: 'Share',
-      icon: 'share',
-    },
-    {
-      id: 'export',
-      label: 'Export',
-      icon: 'upload',
-    },
-    {
-      id: 'import',
-      label: 'Import',
-      icon: 'download',
-    },
-    {
-      id: 'settings',
-      label: 'Settings',
-      icon: 'settings',
-    },
-  ];
+  @Prop() items: IKritzelMenuItem[] = [];
 
   /**
    * The icon to display on the button
@@ -44,12 +25,6 @@ export class KritzelMoreMenu {
    * The size of the icon
    */
   @Prop() iconSize: number = 24;
-
-  /**
-   * Whether the user is currently logged in.
-   * When true, a Logout item is appended to the menu.
-   */
-  @Prop() isLoggedIn: boolean = false;
 
   /**
    * Offset Y for the portal positioning
@@ -77,19 +52,8 @@ export class KritzelMoreMenu {
     this.menuAnchor = null;
   };
 
-  private get computedItems(): IKritzelMenuItem[] {
-    if (!this.isLoggedIn) {
-      return this.items;
-    }
-    return [
-      ...this.items,
-      {
-        id: 'logout',
-        label: 'Logout',
-        icon: 'log-out',
-        color: '#ff3b30',
-      },
-    ];
+  private get visibleItems(): IKritzelMenuItem[] {
+    return this.items.filter(item => item.isVisible !== false);
   }
 
   private handleMenuItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>): void => {
@@ -114,7 +78,7 @@ export class KritzelMoreMenu {
 
         <kritzel-portal anchor={this.menuAnchor} offsetY={this.offsetY} onClose={this.closeMenu}>
           <kritzel-menu
-            items={this.computedItems}
+            items={this.visibleItems}
             onItemSelect={this.handleMenuItemSelect}
           ></kritzel-menu>
         </kritzel-portal>

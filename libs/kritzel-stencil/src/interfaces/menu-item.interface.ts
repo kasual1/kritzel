@@ -10,6 +10,7 @@ export interface IKritzelMenuItem<T = any> {
   isSelected?: boolean;
   isEditing?: boolean;
   isDisabled?: boolean;
+  isVisible?: boolean;
   isChildMenuOpen?: boolean;
   isNewItem?: boolean;
   childMenuAnchor?: HTMLElement;
