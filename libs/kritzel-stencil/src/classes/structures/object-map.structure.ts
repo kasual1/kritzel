@@ -10,8 +10,11 @@ import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { DEFAULT_SYNC_CONFIG } from '../../configs/default-sync.config';
 import { KritzelUndoState } from '../../interfaces/undo-state.interface';
 import { KritzelDocumentType } from '../../interfaces/document-metadata.interface';
+import { CURRENT_WORKSPACE_SCHEMA_VERSION } from '../../constants/schema.constants';
 import { KritzelQuadtree } from './quadtree.structure';
 import { IKritzelUser } from '../../interfaces/user.interface';
+import { runMigrations } from '../../helpers/migration.helper';
+import { WORKSPACE_MIGRATIONS } from '../../migrations/workspace.migrations';
 
 /**
  * A synchronized object map that stores and manages drawable objects on the canvas.
@@ -270,6 +273,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     const workspaceName = core.store?.state?.activeWorkspace?.name ?? '';
     this.initializeMetadata('workspace', workspaceId, workspaceName);
 
+    // Run any pending schema migrations before loading data
+    const quietMigrations = !core.store?.state?.debugInfo?.showMigrationInfo;
+    runMigrations(this._ydoc, this._metadataMap, { objects: this._objectsMap }, WORKSPACE_MIGRATIONS, CURRENT_WORKSPACE_SCHEMA_VERSION, { quiet: quietMigrations });
+
     // Load objects from Yjs
     this.loadFromYjs();
   }
@@ -286,6 +293,11 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     // 'temporary' is also a local change that shouldn't be re-deserialized
     if (event.transaction.origin === 'local' || event.transaction.origin === 'temporary') {
       this._core?.rerender();
+      return;
+    }
+
+    // Skip migration transactions — data will be loaded fresh via loadFromYjs()
+    if (event.transaction.origin === 'migration') {
       return;
     }
 
@@ -425,6 +437,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       }
       if (this._metadataMap.get('isPublic') === undefined) {
         this._metadataMap.set('isPublic', false);
+      }
+      if (this._metadataMap.get('schemaVersion') === undefined) {
+        this._metadataMap.set('schemaVersion', CURRENT_WORKSPACE_SCHEMA_VERSION);
       }
       this._metadataMap.set('workspaceId', workspaceId);
       this._metadataMap.set('workspaceName', workspaceName);
