@@ -2,6 +2,7 @@ import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop }
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '../../../interfaces/master-detail.interface';
 import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
 import { KRITZEL_VERSION } from '../../../constants/version';
+import { CURRENT_APP_STATE_SCHEMA_VERSION, CURRENT_WORKSPACE_SCHEMA_VERSION } from '../../../constants/schema.constants';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 
@@ -328,6 +329,8 @@ export class KritzelSettings {
             <h3>About</h3>
             <p>Kritzel - A drawing application</p>
             <p class="version-info">Version {KRITZEL_VERSION}</p>
+            <p class="version-info">App-State Schema v{CURRENT_APP_STATE_SCHEMA_VERSION}</p>
+            <p class="version-info">Workspace Schema v{CURRENT_WORKSPACE_SCHEMA_VERSION}</p>
           </div>
         );
       default:
