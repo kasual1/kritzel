@@ -215,14 +215,27 @@ export class KritzelAppStateMap {
   /**
    * Reconstructs a KritzelWorkspace instance from its serialized form.
    * Restores all properties including id, name, viewport, and timestamps.
+   * Handles both legacy { translateX, translateY } and new { centerWorldX, centerWorldY } viewport formats.
    * @param serialized - The serialized workspace data object.
    * @returns A fully reconstructed KritzelWorkspace instance.
    */
   private reviveWorkspace(serialized: any): KritzelWorkspace {
+    let viewport = serialized.viewport;
+
+    // Backward compatibility: convert legacy translateX/translateY to centerWorldX/centerWorldY
+    if (viewport && 'translateX' in viewport && !('centerWorldX' in viewport)) {
+      const scale = viewport.scale ?? 1;
+      viewport = {
+        centerWorldX: -(viewport.translateX ?? 0) / scale,
+        centerWorldY: -(viewport.translateY ?? 0) / scale,
+        scale,
+      };
+    }
+
     const workspace = new KritzelWorkspace(
       serialized.id,
       serialized.name,
-      serialized.viewport
+      viewport
     );
     workspace._core = this._core;
     workspace.createdAt = new Date(serialized.createdAt);
