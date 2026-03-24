@@ -973,9 +973,7 @@ export class KritzelEditor {
 
           <kritzel-active-users users={this.activeUsers}></kritzel-active-users>
 
-          {shouldShowCurrentUser && (
-            <kritzel-current-user user={this.user}></kritzel-current-user>
-          )}
+          {shouldShowCurrentUser && <kritzel-current-user user={this.user}></kritzel-current-user>}
 
           {shouldShowLoginButton && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>}
 
