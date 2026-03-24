@@ -120,6 +120,7 @@
   border: none;
   padding: 0 0 16px 0;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   color: var(--kritzel-master-detail-back-button-color, #333333);
   font-weight: 500;
   font-size: 14px;
