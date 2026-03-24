@@ -44,6 +44,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _stackItemPoppedHandler: ((event: any) => void) | null = null;
   private _awarenessChangeHandler: ((change: { added: number[]; updated: number[]; removed: number[] }, origin: string) => void) | null = null;
   private _awarenessChangeCallbacks: ((states: Map<number, Record<string, any>>) => void)[] = [];
+  private _lastAwarenessEmitTime: number = 0;
+  private _awarenessEmitTimeout: ReturnType<typeof setTimeout> | null = null;
+  private readonly AWARENESS_THROTTLE_INTERVAL = 100; // milliseconds
 
   /**
    * Indicates whether the object map has been initialized and is ready for use.
@@ -261,9 +264,33 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     // Subscribe to awareness changes
     if (this._awareness) {
       this._awarenessChangeHandler = () => {
-        const states = this._awareness!.getStates();
-        for (const callback of this._awarenessChangeCallbacks) {
-          callback(states);
+        const now = Date.now();
+        const timeSinceLastEmit = now - this._lastAwarenessEmitTime;
+
+        // Clear any pending timeout since we have a new event
+        if (this._awarenessEmitTimeout !== null) {
+          clearTimeout(this._awarenessEmitTimeout);
+          this._awarenessEmitTimeout = null;
+        }
+
+        if (timeSinceLastEmit >= this.AWARENESS_THROTTLE_INTERVAL) {
+          // Enough time has passed, emit immediately
+          this._lastAwarenessEmitTime = now;
+          const states = this._awareness!.getStates();
+          for (const callback of this._awarenessChangeCallbacks) {
+            callback(states);
+          }
+        } else {
+          // Schedule emission for the remaining time
+          const delayMs = this.AWARENESS_THROTTLE_INTERVAL - timeSinceLastEmit;
+          this._awarenessEmitTimeout = setTimeout(() => {
+            this._lastAwarenessEmitTime = Date.now();
+            this._awarenessEmitTimeout = null;
+            const states = this._awareness!.getStates();
+            for (const callback of this._awarenessChangeCallbacks) {
+              callback(states);
+            }
+          }, delayMs);
         }
       };
       this._awareness.on('change', this._awarenessChangeHandler);
@@ -859,6 +886,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     if (this._awareness && this._awarenessChangeHandler) {
       this._awareness.off('change', this._awarenessChangeHandler);
       this._awarenessChangeHandler = null;
+    }
+    if (this._awarenessEmitTimeout !== null) {
+      clearTimeout(this._awarenessEmitTimeout);
+      this._awarenessEmitTimeout = null;
     }
     this._awareness = null;
     this._awarenessChangeCallbacks = [];
