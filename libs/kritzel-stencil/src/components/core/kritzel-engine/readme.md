@@ -11,6 +11,7 @@
 | ------------------------ | -------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------- | -------------------- |
 | `activeWorkspaceId`      | `active-workspace-id`      | Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.          | `string`            | `undefined`          |
 | `cursorTarget`           | --                         | The HTML element to apply cursor styles to. Defaults to `document.body` if not set.                         | `HTMLElement`       | `undefined`          |
+| `debugInfo`              | --                         | Debug info display options controlling which debug overlays are visible                                     | `KritzelDebugInfo`  | `undefined`          |
 | `editorId`               | `editor-id`                | Optional unique identifier for namespacing storage keys across multiple editor instances.                   | `string`            | `undefined`          |
 | `globalContextMenuItems` | --                         | Context menu items shown when right-clicking the canvas background.                                         | `ContextMenuItem[]` | `undefined`          |
 | `lockDrawingScale`       | `lock-drawing-scale`       | When true, objects are drawn at a fixed visual size regardless of zoom level                                | `boolean`           | `true`               |
