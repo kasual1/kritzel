@@ -36,6 +36,7 @@ export class KritzelSplitButton {
   @Method()
   async open() {
     if (this.isMenuOpen) return;
+    window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
     this.isMenuOpen = true;
     this.anchorElement = this.host;
     this.menuOpen.emit();
@@ -64,6 +65,7 @@ export class KritzelSplitButton {
 
   private openMenu = (event: MouseEvent) => {
     event.stopPropagation();
+    window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
     this.isMenuOpen = true;
     this.anchorElement = this.host;
     this.menuOpen.emit();
