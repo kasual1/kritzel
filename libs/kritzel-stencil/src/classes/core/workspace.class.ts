@@ -96,6 +96,14 @@ export class KritzelWorkspace implements KritzelSerializable {
   }
 
   /**
+   * Creates a shallow clone of this workspace, preserving the prototype chain.
+   * Useful when Stencil needs a new object reference to detect property changes.
+   */
+  clone(): KritzelWorkspace {
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+  }
+
+  /**
    * Deserializes a plain object into this workspace instance.
    * Converts ISO string dates back to Date objects.
    * @param object - The plain object to deserialize from

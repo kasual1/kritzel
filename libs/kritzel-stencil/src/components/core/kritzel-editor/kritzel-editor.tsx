@@ -767,6 +767,7 @@ export class KritzelEditor {
     const activeWorkspace = await this.engineRef.getActiveWorkspace();
     activeWorkspace.isPublic = isPublic;
     await this.engineRef.updateWorkspace(activeWorkspace);
+    this.activeWorkspace = activeWorkspace.clone();
     this.isPublicChange.emit({ isPublic, workspaceId: this.activeWorkspace?.id });
   };
 
