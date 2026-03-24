@@ -390,13 +390,11 @@ export class KritzelCore {
    * @param workspace - The workspace to create
    */
   createWorkspace(workspace: KritzelWorkspace): void {
-    console.log('Creating workspace:', workspace);
     workspace._core = this;
     workspace.createdAt = new Date();
     workspace.updatedAt = new Date();
     this.saveWorkspaceToAppState(workspace);
     this._store.state.workspaces = this.loadWorkspacesFromAppState();
-    console.log('Current workspaces after creation:', this._store.state.workspaces);
   }
 
   /**

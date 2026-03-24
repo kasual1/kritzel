@@ -863,9 +863,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     this._awareness = null;
     this._awarenessChangeCallbacks = [];
 
-    // Disconnect and destroy providers
+    // Destroy providers (destroy handles disconnection internally)
     this._providers.forEach(p => {
-      p.disconnect();
       p.destroy();
     });
     this._providers = [];

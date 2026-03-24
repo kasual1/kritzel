@@ -108,6 +108,9 @@ export class HocuspocusSyncProvider implements ISyncProvider {
   private isConnected: boolean = false;
   private isSynced: boolean = false;
   private usesSharedSocket: boolean = false;
+  private isDestroyed: boolean = false;
+  private connectTimeout: ReturnType<typeof setTimeout> | null = null;
+  private pendingConnectReject: ((reason?: any) => void) | null = null;
 
   get awareness(): Awareness {
     return this.provider.awareness;
@@ -132,8 +135,13 @@ export class HocuspocusSyncProvider implements ISyncProvider {
         name,
         document: doc,
         token: options?.token || null,
+        onStatus: (data: { status: string }) => {
+          if (options?.onStatus) {
+            options.onStatus(data);
+          }
+        },
         onConnect: () => {
-          if (this.isConnected) {
+          if (this.isConnected || this.isDestroyed) {
             return;
           }
           this.isConnected = true;
@@ -145,7 +153,7 @@ export class HocuspocusSyncProvider implements ISyncProvider {
           }
         },
         onDisconnect: () => {
-          if (!this.isConnected && !this.isSynced) {
+          if (this.isDestroyed || (!this.isConnected && !this.isSynced)) {
             return;
           }
           this.isConnected = false;
@@ -158,7 +166,7 @@ export class HocuspocusSyncProvider implements ISyncProvider {
           }
         },
         onSynced: () => {
-          if (this.isSynced) {
+          if (this.isSynced || this.isDestroyed) {
             return;
           }
           this.isSynced = true;
@@ -178,10 +186,6 @@ export class HocuspocusSyncProvider implements ISyncProvider {
 
       if (options?.onAuthenticationFailed) {
         config.onAuthenticationFailed = options.onAuthenticationFailed;
-      }
-
-      if (options?.onStatus) {
-        config.onStatus = options.onStatus;
       }
 
       this.provider = new HocuspocusProvider(config);
@@ -201,8 +205,14 @@ export class HocuspocusSyncProvider implements ISyncProvider {
         name,
         document: doc,
         token: options?.token || null,
+        autoConnect: false,
+        onStatus: (data: { status: string }) => {
+          if (options?.onStatus) {
+            options.onStatus(data);
+          }
+        },
         onConnect: () => {
-          if (this.isConnected) {
+          if (this.isConnected || this.isDestroyed) {
             return;
           }
           this.isConnected = true;
@@ -214,7 +224,7 @@ export class HocuspocusSyncProvider implements ISyncProvider {
           }
         },
         onDisconnect: () => {
-          if (!this.isConnected && !this.isSynced) {
+          if (this.isDestroyed || (!this.isConnected && !this.isSynced)) {
             return;
           }
           this.isConnected = false;
@@ -227,7 +237,7 @@ export class HocuspocusSyncProvider implements ISyncProvider {
           }
         },
         onSynced: () => {
-          if (this.isSynced) {
+          if (this.isSynced || this.isDestroyed) {
             return;
           }
           this.isSynced = true;
@@ -247,10 +257,6 @@ export class HocuspocusSyncProvider implements ISyncProvider {
 
       if (options?.onAuthenticationFailed) {
         config.onAuthenticationFailed = options.onAuthenticationFailed;
-      }
-
-      if (options?.onStatus) {
-        config.onStatus = options.onStatus;
       }
 
       if (options?.WebSocketPolyfill) {
@@ -334,26 +340,41 @@ export class HocuspocusSyncProvider implements ISyncProvider {
   }
 
   async connect(): Promise<void> {
-    if (this.isSynced) {
+    if (this.isSynced || this.isDestroyed) {
       return;
     }
 
     return new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => {
+      // Store reject function so we can cancel the connection if destroyed
+      this.pendingConnectReject = reject;
+
+      this.connectTimeout = setTimeout(() => {
+        this.pendingConnectReject = null;
+        this.connectTimeout = null;
         reject(new Error('Hocuspocus connection timeout'));
       }, 10000); // 10 second timeout
 
       const syncHandler = () => {
-        clearTimeout(timeout);
+        if (this.connectTimeout) {
+          clearTimeout(this.connectTimeout);
+          this.connectTimeout = null;
+        }
+        this.pendingConnectReject = null;
         this.provider.off('synced', syncHandler);
-        resolve();
+        if (!this.isDestroyed) {
+          resolve();
+        }
       };
 
       this.provider.on('synced', syncHandler);
 
       // If already synced, resolve immediately
       if (this.provider.isSynced) {
-        clearTimeout(timeout);
+        if (this.connectTimeout) {
+          clearTimeout(this.connectTimeout);
+          this.connectTimeout = null;
+        }
+        this.pendingConnectReject = null;
         this.provider.off('synced', syncHandler);
         resolve();
         return;
@@ -367,6 +388,15 @@ export class HocuspocusSyncProvider implements ISyncProvider {
   }
 
   disconnect(): void {
+    // Cancel any pending connection attempt
+    if (this.connectTimeout) {
+      clearTimeout(this.connectTimeout);
+      this.connectTimeout = null;
+    }
+    if (this.pendingConnectReject) {
+      this.pendingConnectReject = null; // Don't reject, just abandon the promise
+    }
+
     if (this.provider) {
       if (this.usesSharedSocket) {
         // Detach from shared socket instead of disconnecting
@@ -380,6 +410,18 @@ export class HocuspocusSyncProvider implements ISyncProvider {
   }
 
   destroy(): void {
+    // Mark as destroyed first to prevent any callbacks from doing work
+    this.isDestroyed = true;
+
+    // Cancel any pending connection attempt
+    if (this.connectTimeout) {
+      clearTimeout(this.connectTimeout);
+      this.connectTimeout = null;
+    }
+    if (this.pendingConnectReject) {
+      this.pendingConnectReject = null; // Don't reject, just abandon the promise
+    }
+
     if (this.provider) {
       this.provider.destroy();
     }
