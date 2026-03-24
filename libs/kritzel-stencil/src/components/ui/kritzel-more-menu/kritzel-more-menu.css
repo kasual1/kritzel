@@ -7,6 +7,11 @@
   border: var(--kritzel-more-menu-border, 1px solid #ebebeb);
 }
 
+:host(.mobile) {
+  --kritzel-more-menu-button-hover-background-color: transparent;
+  --kritzel-more-menu-button-active-background-color: transparent;
+}
+
 .more-menu-button {
   display: flex;
   align-items: center;

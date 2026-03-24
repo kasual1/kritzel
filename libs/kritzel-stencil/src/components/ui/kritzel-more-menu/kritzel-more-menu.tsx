@@ -1,4 +1,5 @@
 import { Component, Host, h, Prop, State, Element, Event, EventEmitter } from '@stencil/core';
+import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 
 @Component({
@@ -37,6 +38,7 @@ export class KritzelMoreMenu {
   @Event() itemSelect: EventEmitter<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>;
 
   @State() menuAnchor: HTMLElement = null;
+  @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
 
   private toggleMenu = (event: MouseEvent): void => {
     event.stopPropagation();
@@ -68,7 +70,7 @@ export class KritzelMoreMenu {
 
   render() {
     return (
-      <Host>
+      <Host class={{ mobile: this.isTouchDevice }}>
         <button
           class="more-menu-button"
           onClick={this.toggleMenu}
