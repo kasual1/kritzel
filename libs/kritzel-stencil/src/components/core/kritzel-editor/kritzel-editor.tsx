@@ -19,6 +19,7 @@ import { DEFAULT_SHAPE_CONFIG } from '../../../configs/default-shape-tool.config
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
+import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
@@ -53,6 +54,12 @@ export class KritzelEditor {
   @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
   @Prop({ mutable: true }) viewportBoundaryBottom: number = Infinity;
   @Prop({ mutable: true }) wheelEnabled: boolean = true;
+  @Prop({ mutable: true }) debugInfo: KritzelDebugInfo = {
+    showViewportInfo: false,
+    showObjectInfo: false,
+    showSyncProviderInfo: true,
+    showMigrationInfo: true,
+  };
   @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
   @Prop() controls: KritzelToolbarControl[] = [
@@ -705,6 +712,7 @@ export class KritzelEditor {
     this.viewportBoundaryRight = event.detail.viewportBoundaryRight ?? Infinity;
     this.viewportBoundaryTop = event.detail.viewportBoundaryTop ?? -Infinity;
     this.viewportBoundaryBottom = event.detail.viewportBoundaryBottom ?? Infinity;
+    this.debugInfo = event.detail.debugInfo;
     this.themeChange.emit(event.detail.theme);
   }
 
@@ -823,6 +831,9 @@ export class KritzelEditor {
         if (typeof parsed.viewportBoundaryBottom === 'number') {
           this.viewportBoundaryBottom = parsed.viewportBoundaryBottom;
         }
+        if (parsed.debugInfo) {
+          this.debugInfo = { ...this.debugInfo, ...parsed.debugInfo };
+        }
       } catch {
         // Invalid JSON, use prop defaults
       }
@@ -916,6 +927,7 @@ export class KritzelEditor {
           viewportBoundaryBottom={this.viewportBoundaryBottom}
           wheelEnabled={this.wheelEnabled}
           theme={this.currentTheme}
+          debugInfo={this.debugInfo}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
           onIsEngineReady={event => this.onEngineReady(event)}

@@ -1,3 +1,4 @@
+import { KritzelDebugInfo } from './debug-info.interface';
 import { ThemeName } from './theme.interface';
 
 export interface KritzelSettingsConfig {
@@ -17,4 +18,6 @@ export interface KritzelSettingsConfig {
   viewportBoundaryTop: number;
   /** Bottom boundary of the viewport in world coordinates */
   viewportBoundaryBottom: number;
+  /** Debug info display options */
+  debugInfo: KritzelDebugInfo;
 }

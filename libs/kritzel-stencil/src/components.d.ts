@@ -15,6 +15,7 @@ import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelCore } from "./classes/core/core.class";
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
 import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
@@ -51,6 +52,7 @@ export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelCore } from "./classes/core/core.class";
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
 export { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
@@ -322,6 +324,10 @@ export namespace Components {
           * @default {}
          */
         "customSvgIcons": Record<string, string>;
+        /**
+          * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,   }
+         */
+        "debugInfo": KritzelDebugInfo;
         "delete": () => Promise<void>;
         "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "disable": () => Promise<void>;
@@ -495,6 +501,10 @@ export namespace Components {
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */
         "cursorTarget"?: HTMLElement;
+        /**
+          * Debug info display options controlling which debug overlays are visible
+         */
+        "debugInfo": KritzelDebugInfo;
         /**
           * Deletes the currently selected objects from the canvas.
          */
@@ -2326,6 +2336,10 @@ declare namespace LocalJSX {
          */
         "customSvgIcons"?: Record<string, string>;
         /**
+          * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,   }
+         */
+        "debugInfo"?: KritzelDebugInfo;
+        /**
           * Optional unique identifier for namespacing storage keys across multiple editor instances.
          */
         "editorId"?: string;
@@ -2409,6 +2423,10 @@ declare namespace LocalJSX {
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */
         "cursorTarget"?: HTMLElement;
+        /**
+          * Debug info display options controlling which debug overlays are visible
+         */
+        "debugInfo"?: KritzelDebugInfo;
         /**
           * Optional unique identifier for namespacing storage keys across multiple editor instances.
          */

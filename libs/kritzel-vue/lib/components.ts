@@ -72,6 +72,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'viewportBoundaryTop',
   'viewportBoundaryBottom',
   'wheelEnabled',
+  'debugInfo',
   'user',
   'activeUsers',
   'controls',

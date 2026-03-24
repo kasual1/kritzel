@@ -1,6 +1,7 @@
 import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop } from '@stencil/core';
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '../../../interfaces/master-detail.interface';
 import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
+import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
 import { KRITZEL_VERSION } from '../../../constants/version';
 import { CURRENT_APP_STATE_SCHEMA_VERSION, CURRENT_WORKSPACE_SCHEMA_VERSION } from '../../../constants/schema.constants';
 import { ThemeName } from '../../../interfaces/theme.interface';
@@ -15,10 +16,18 @@ const DEFAULT_VIEWPORT_BOUNDARY_RIGHT = Infinity;
 const DEFAULT_VIEWPORT_BOUNDARY_TOP = -Infinity;
 const DEFAULT_VIEWPORT_BOUNDARY_BOTTOM = Infinity;
 
+const DEFAULT_DEBUG_INFO: KritzelDebugInfo = {
+  showViewportInfo: false,
+  showObjectInfo: false,
+  showSyncProviderInfo: true,
+  showMigrationInfo: true,
+};
+
 const SETTINGS_CATEGORIES: IKritzelMasterDetailItem[] = [
   { id: 'general', label: 'General', icon: 'settings' },
   { id: 'viewport', label: 'Viewport', icon: 'viewport' },
   { id: 'shortcuts', label: 'Keyboard Shortcuts', icon: 'command' },
+  { id: 'developer', label: 'Developer Options', icon: 'braces' },
   { id: 'about', label: 'About', icon: 'info' },
 ];
 
@@ -46,6 +55,7 @@ export class KritzelSettings {
   @State() viewportBoundaryRight: number = DEFAULT_VIEWPORT_BOUNDARY_RIGHT;
   @State() viewportBoundaryTop: number = DEFAULT_VIEWPORT_BOUNDARY_TOP;
   @State() viewportBoundaryBottom: number = DEFAULT_VIEWPORT_BOUNDARY_BOTTOM;
+  @State() debugInfo: KritzelDebugInfo = { ...DEFAULT_DEBUG_INFO };
 
   /** Emitted when settings change */
   @Event() settingsChange: EventEmitter<KritzelSettingsConfig>;
@@ -87,6 +97,9 @@ export class KritzelSettings {
         if (typeof parsed.viewportBoundaryBottom === 'number') {
           this.viewportBoundaryBottom = parsed.viewportBoundaryBottom;
         }
+        if (parsed.debugInfo) {
+          this.debugInfo = { ...DEFAULT_DEBUG_INFO, ...parsed.debugInfo };
+        }
       } catch {
         // Invalid JSON, use defaults
       }
@@ -103,6 +116,7 @@ export class KritzelSettings {
       viewportBoundaryRight: this.viewportBoundaryRight,
       viewportBoundaryTop: this.viewportBoundaryTop,
       viewportBoundaryBottom: this.viewportBoundaryBottom,
+      debugInfo: this.debugInfo,
     };
     localStorage.setItem(this.storageKey, JSON.stringify(settings));
     this.settingsChange.emit(settings);
@@ -145,6 +159,11 @@ export class KritzelSettings {
 
   private handleViewportBoundaryBottomChange = (event: CustomEvent<number | undefined>): void => {
     this.viewportBoundaryBottom = event.detail ?? DEFAULT_VIEWPORT_BOUNDARY_BOTTOM;
+    this.saveSettings();
+  };
+
+  private handleDebugInfoChange = (key: keyof KritzelDebugInfo) => (event: CustomEvent<boolean>): void => {
+    this.debugInfo = { ...this.debugInfo, [key]: event.detail };
     this.saveSettings();
   };
 
@@ -320,6 +339,58 @@ export class KritzelSettings {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        );
+      case 'developer':
+        return (
+          <div class="settings-content">
+            <h3>Developer Options</h3>
+            <div class="settings-group">
+              <div class="settings-item">
+                <label class="settings-label">Show Viewport Info</label>
+                <p class="settings-description">
+                  Display viewport debug information such as position, zoom level, and boundaries.
+                </p>
+                <kritzel-slide-toggle
+                  checked={this.debugInfo.showViewportInfo}
+                  label="Show Viewport Info"
+                  onCheckedChange={this.handleDebugInfoChange('showViewportInfo')}
+                />
+              </div>
+              <div class="settings-item">
+                <label class="settings-label">Show Object Info</label>
+                <p class="settings-description">
+                  Display debug information about objects on the canvas.
+                </p>
+                <kritzel-slide-toggle
+                  checked={this.debugInfo.showObjectInfo}
+                  label="Show Object Info"
+                  onCheckedChange={this.handleDebugInfoChange('showObjectInfo')}
+                />
+              </div>
+              <div class="settings-item">
+                <label class="settings-label">Show Sync Provider Info</label>
+                <p class="settings-description">
+                  Display debug information about the sync provider connection status.
+                </p>
+                <kritzel-slide-toggle
+                  checked={this.debugInfo.showSyncProviderInfo}
+                  label="Show Sync Provider Info"
+                  onCheckedChange={this.handleDebugInfoChange('showSyncProviderInfo')}
+                />
+              </div>
+              <div class="settings-item">
+                <label class="settings-label">Show Migration Info</label>
+                <p class="settings-description">
+                  Display debug information about data migrations.
+                </p>
+                <kritzel-slide-toggle
+                  checked={this.debugInfo.showMigrationInfo}
+                  label="Show Migration Info"
+                  onCheckedChange={this.handleDebugInfoChange('showMigrationInfo')}
+                />
+              </div>
             </div>
           </div>
         );

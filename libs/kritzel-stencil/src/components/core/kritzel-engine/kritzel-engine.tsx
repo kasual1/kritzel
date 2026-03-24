@@ -25,6 +25,7 @@ import { KritzelCustomElement } from '../../../classes/objects/custom-element.cl
 import { KritzelWorkspace, WORKSPACE_EXPORT_VERSION } from '../../../classes/core/workspace.class';
 import { KritzelReviver } from '../../../classes/core/reviver.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
+import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
 import { KritzelCore } from '../../../classes/core/core.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
@@ -184,6 +185,15 @@ export class KritzelEngine {
   @Watch('viewportBoundaryBottom')
   onViewportBoundaryBottomChange(newValue: number) {
     this.core.store.state.viewportBoundaryBottom = newValue ?? Infinity;
+  }
+
+  /** Debug info display options controlling which debug overlays are visible */
+  @Prop() debugInfo: KritzelDebugInfo;
+  @Watch('debugInfo')
+  onDebugInfoChange(newValue: KritzelDebugInfo) {
+    if (newValue) {
+      this.core.store.state.debugInfo = newValue;
+    }
   }
 
   /** When false, wheel events will not trigger viewport pan/zoom. The event still propagates to parent elements. */
