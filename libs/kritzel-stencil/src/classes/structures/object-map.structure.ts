@@ -87,11 +87,21 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     if (!this._awareness || !user) {
       return;
     }
+    const displayName = user.displayName || user.firstName || 'Anonymous';
     this._awareness.setLocalStateField('user', {
       id: user.id,
-      name: user.displayName || user.firstName || 'Anonymous',
-      color: user.color,
+      displayName,
+      color: user.color || this.generateColorFromName(displayName),
     });
+  }
+
+  private generateColorFromName(name: string): string {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash % 360);
+    return `hsl(${hue}, 45%, 55%)`;
   }
 
   /**
