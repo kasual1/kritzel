@@ -64,6 +64,21 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   /**
+   * Whether a network awareness instance is available.
+   */
+  get hasAwareness(): boolean {
+    return !!this._awareness;
+  }
+
+  /**
+   * Returns the local client ID from the awareness instance.
+   * Used to filter out the local user when rendering remote cursors.
+   */
+  get localClientId(): number | null {
+    return this._awareness?.clientID ?? null;
+  }
+
+  /**
    * Sets the local user identity in the awareness state.
    * This broadcasts the user's identity to all connected peers.
    */

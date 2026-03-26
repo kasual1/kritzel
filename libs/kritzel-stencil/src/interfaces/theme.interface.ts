@@ -50,6 +50,14 @@ export interface KritzelTheme {
     initialsFontWeight?: string;
   };
 
+  /** Awareness variables */
+  awareness?: {
+    cursorLabelFontSize?: string;
+    cursorLabelTextColor?: string;
+    cursorTransitionDuration?: string;
+    edgeIndicatorSize?: string;
+  };
+
   /** Back to content variables */
   backToContent?: {
     activeBackgroundColor?: string;

@@ -51,6 +51,7 @@ const KNOWN_CATEGORIES = [
   'share-dialog',
   'login-dialog',
   'current-user-dialog',
+  'awareness'
 ];
 
 /**

@@ -135,6 +135,7 @@ interface MockProvider {
   connect: jest.Mock<Promise<void>>;
   disconnect: jest.Mock<void>;
   destroy: jest.Mock<void>;
+  awareness?: any;
 }
 
 const createMockProvider = (): MockProvider => ({
@@ -997,6 +998,54 @@ describe('KritzelObjectMap', () => {
 
       expect(mockCore.rerender).not.toHaveBeenCalled();
       expect(mockRevive).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('hasAwareness', () => {
+    it('should return false when no awareness is available', () => {
+      expect(objectMap.hasAwareness).toBe(false);
+    });
+
+    it('should return true when awareness is available', async () => {
+      const mockAwareness = {
+        clientID: 42,
+        on: jest.fn(),
+        off: jest.fn(),
+        getStates: jest.fn().mockReturnValue(new Map()),
+        setLocalStateField: jest.fn(),
+      };
+      const provider = createMockProvider();
+      provider.awareness = mockAwareness;
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      const map2 = new KritzelObjectMap();
+      await map2.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      expect(map2.hasAwareness).toBe(true);
+    });
+  });
+
+  describe('localClientId', () => {
+    it('should return null when no awareness is available', () => {
+      expect(objectMap.localClientId).toBeNull();
+    });
+
+    it('should return the awareness clientID when available', async () => {
+      const mockAwareness = {
+        clientID: 42,
+        on: jest.fn(),
+        off: jest.fn(),
+        getStates: jest.fn().mockReturnValue(new Map()),
+        setLocalStateField: jest.fn(),
+      };
+      const provider = createMockProvider();
+      provider.awareness = mockAwareness;
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      const map2 = new KritzelObjectMap();
+      await map2.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      expect(map2.localClientId).toBe(42);
     });
   });
 });

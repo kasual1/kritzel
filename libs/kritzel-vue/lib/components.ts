@@ -5,6 +5,7 @@ import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-t
 
 import type { JSX } from '../../kritzel-stencil/dist/components';
 
+import { defineCustomElement as defineKritzelAwarenessCursors } from '../../kritzel-stencil/dist/components/kritzel-awareness-cursors.js';
 import { defineCustomElement as defineKritzelBackToContent } from '../../kritzel-stencil/dist/components/kritzel-back-to-content.js';
 import { defineCustomElement as defineKritzelButton } from '../../kritzel-stencil/dist/components/kritzel-button.js';
 import { defineCustomElement as defineKritzelCurrentUserDialog } from '../../kritzel-stencil/dist/components/kritzel-current-user-dialog.js';
@@ -19,6 +20,13 @@ import { defineCustomElement as defineKritzelNumericInput } from '../../kritzel-
 import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelPillTabs } from '../../kritzel-stencil/dist/components/kritzel-pill-tabs.js';
 import { defineCustomElement as defineKritzelSettings } from '../../kritzel-stencil/dist/components/kritzel-settings.js';
+
+
+export const KritzelAwarenessCursors: StencilVueComponent<JSX.KritzelAwarenessCursors> = /*@__PURE__*/ defineContainer<JSX.KritzelAwarenessCursors>('kritzel-awareness-cursors', defineKritzelAwarenessCursors, [
+  'core',
+  'showEdgeIndicators',
+  'edgeIndicatorPadding'
+]);
 
 
 export const KritzelBackToContent: StencilVueComponent<JSX.KritzelBackToContent> = /*@__PURE__*/ defineContainer<JSX.KritzelBackToContent>('kritzel-back-to-content', defineKritzelBackToContent, [
