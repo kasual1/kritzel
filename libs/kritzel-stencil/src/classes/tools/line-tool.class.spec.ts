@@ -62,6 +62,7 @@ describe('KritzelLineTool', () => {
       insert: jest.fn(),
       update: jest.fn(),
       findById: jest.fn().mockReturnValue(undefined),
+      setActiveDrawingObject: jest.fn(),
     };
 
     mockState = {
@@ -185,6 +186,14 @@ describe('KritzelLineTool', () => {
       expect(mockCreatedLine.isCompleted).toBe(false);
     });
 
+    it('should broadcast activeObjectId on left click', () => {
+      const event = createMouseEvent({ clientX: 150, clientY: 250 });
+
+      tool.handlePointerDown(event);
+
+      expect(mockObjectsMap.setActiveDrawingObject).toHaveBeenCalledWith(mockCreatedLine.id);
+    });
+
     it('should not create a line on non-left click', () => {
       (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
       const event = createMouseEvent({ button: 2 });
@@ -278,6 +287,15 @@ describe('KritzelLineTool', () => {
       }));
       expect(mockObjectsMap.insert).toHaveBeenCalled();
       expect(mockState.isDrawing).toBe(true);
+    });
+
+    it('should broadcast activeObjectId on single touch', () => {
+      mockState.pointers.set(1, { clientX: 120, clientY: 220 });
+      const event = createTouchEvent();
+
+      tool.handlePointerDown(event);
+
+      expect(mockObjectsMap.setActiveDrawingObject).toHaveBeenCalledWith(mockCreatedLine.id);
     });
 
     it('should create a line when exactly one pointer is active (pen)', () => {
@@ -585,6 +603,15 @@ describe('KritzelLineTool', () => {
       expect(mockState.isDrawing).toBe(false);
     });
 
+    it('should clear activeObjectId on pointer up', () => {
+      tool.handlePointerDown(createMouseEvent());
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
+
+      tool.handlePointerUp(createMouseEvent());
+
+      expect(mockObjectsMap.setActiveDrawingObject).toHaveBeenCalledWith(null);
+    });
+
     it('should create selection group and switch to selection tool', () => {
       tool.handlePointerDown(createMouseEvent());
       mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
@@ -637,6 +664,16 @@ describe('KritzelLineTool', () => {
       expect(mockObjectsMap.update).toHaveBeenCalledWith(mockCreatedLine);
       expect(mockCore.engine.emitObjectsChange).toHaveBeenCalled();
       expect(mockState.isDrawing).toBe(false);
+    });
+
+    it('should clear activeObjectId on touch pointer up', () => {
+      mockState.pointers.set(1, { clientX: 50, clientY: 60 });
+      tool.handlePointerDown(createTouchEvent());
+      mockObjectsMap.findById.mockReturnValue(mockCreatedLine);
+
+      tool.handlePointerUp(createTouchEvent());
+
+      expect(mockObjectsMap.setActiveDrawingObject).toHaveBeenCalledWith(null);
     });
 
     it('should mark line as completed for pen', () => {

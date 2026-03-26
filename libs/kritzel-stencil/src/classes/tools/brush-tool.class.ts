@@ -66,6 +66,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
         this._currentPathId = path.id;
         this._core.store.state.objects.insert(path);
+        this._core.store.state.objects?.setActiveDrawingObject(path.id);
       }
     }
 
@@ -94,6 +95,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
         this._currentPathId = path.id;
         this._core.store.state.objects.insert(path);
+        this._core.store.state.objects?.setActiveDrawingObject(path.id);
       }
     }
   }
@@ -198,6 +200,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
             this._core.engine.emitObjectsChange();
             this._core.engine.emitObjectsAdded([currentPath]);
           }
+          this._core.store.state.objects?.setActiveDrawingObject(null);
           this._currentPathId = null;
         }
       }
@@ -216,6 +219,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
             this._core.engine.emitObjectsChange();
             this._core.engine.emitObjectsAdded([currentPath]);
           }
+          this._core.store.state.objects?.setActiveDrawingObject(null);
           this._currentPathId = null;
         }
       }

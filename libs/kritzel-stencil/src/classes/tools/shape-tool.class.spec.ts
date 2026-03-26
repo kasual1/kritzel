@@ -69,6 +69,7 @@ describe('KritzelShapeTool', () => {
       insert: jest.fn(),
       update: jest.fn(),
       remove: jest.fn(),
+      setActiveDrawingObject: jest.fn(),
     };
 
     mockState = {
@@ -213,6 +214,14 @@ describe('KritzelShapeTool', () => {
       expect(mockCore.rerender).toHaveBeenCalled();
     });
 
+    it('should broadcast activeObjectId on left click', () => {
+      const event = createMouseEvent({ clientX: 150, clientY: 250 });
+
+      tool.handlePointerDown(event);
+
+      expect(mockObjectsMap.setActiveDrawingObject).toHaveBeenCalledWith(mockCreatedShape.id);
+    });
+
     it('should not create a shape on non-left click', () => {
       (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(false);
       const event = createMouseEvent({ button: 2 });
@@ -353,6 +362,15 @@ describe('KritzelShapeTool', () => {
         height: 1,
       }));
       expect(mockObjectsMap.insert).toHaveBeenCalled();
+    });
+
+    it('should broadcast activeObjectId on single touch', () => {
+      mockState.pointers.set(1, { clientX: 120, clientY: 220 });
+      const event = createTouchEvent();
+
+      tool.handlePointerDown(event);
+
+      expect(mockObjectsMap.setActiveDrawingObject).toHaveBeenCalledWith(mockCreatedShape.id);
     });
 
     it('should create a shape when exactly one pointer is active (pen)', () => {
@@ -631,6 +649,18 @@ describe('KritzelShapeTool', () => {
       expect(mockCore.selectObjects).toHaveBeenCalledWith([mockCreatedShape]);
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockSelectionTool);
       expect(mockCore.rerender).toHaveBeenCalled();
+    });
+
+    it('should clear activeObjectId on pointer up', () => {
+      tool.handlePointerDown(createMouseEvent({ clientX: 100, clientY: 200 }));
+
+      mockCreatedShape.width = 100;
+      mockCreatedShape.height = 100;
+      tool.handlePointerMove(createMouseEvent({ clientX: 200, clientY: 300 }));
+
+      tool.handlePointerUp(createMouseEvent());
+
+      expect(mockObjectsMap.setActiveDrawingObject).toHaveBeenCalledWith(null);
     });
 
     it('should remove shape when too small (accidental click)', () => {

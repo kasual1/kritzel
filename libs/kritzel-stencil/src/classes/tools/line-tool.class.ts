@@ -86,6 +86,7 @@ export class KritzelLineTool extends KritzelBaseTool {
 
         this._currentLineId = line.id;
         this._core.store.state.objects.insert(line);
+        this._core.store.state.objects?.setActiveDrawingObject(line.id);
       }
     }
 
@@ -120,6 +121,7 @@ export class KritzelLineTool extends KritzelBaseTool {
 
         this._currentLineId = line.id;
         this._core.store.state.objects.insert(line);
+        this._core.store.state.objects?.setActiveDrawingObject(line.id);
       }
     }
   }
@@ -230,6 +232,7 @@ export class KritzelLineTool extends KritzelBaseTool {
             // Switch to selection tool and select the drawn line
             this.selectLineAndSwitchTool(currentLine);
           }
+          this._core.store.state.objects?.setActiveDrawingObject(null);
           this._currentLineId = null;
         }
       }
@@ -250,6 +253,7 @@ export class KritzelLineTool extends KritzelBaseTool {
             // Switch to selection tool and select the drawn line
             this.selectLineAndSwitchTool(currentLine);
           }
+          this._core.store.state.objects?.setActiveDrawingObject(null);
           this._currentLineId = null;
         }
       }

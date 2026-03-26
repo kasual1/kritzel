@@ -1048,4 +1048,59 @@ describe('KritzelObjectMap', () => {
       expect(map2.localClientId).toBe(42);
     });
   });
+
+  describe('setActiveDrawingObject', () => {
+    it('should do nothing when no awareness is available', () => {
+      // No awareness set up — should not throw
+      objectMap.setActiveDrawingObject('obj-1');
+    });
+
+    it('should call setLocalStateField with the objectId', async () => {
+      const mockAwareness = {
+        clientID: 42,
+        on: jest.fn(),
+        off: jest.fn(),
+        getStates: jest.fn().mockReturnValue(new Map()),
+        setLocalStateField: jest.fn(),
+      };
+      const provider = createMockProvider();
+      provider.awareness = mockAwareness;
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      const map2 = new KritzelObjectMap();
+      await map2.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      map2.setActiveDrawingObject('obj-123');
+
+      expect(mockAwareness.setLocalStateField).toHaveBeenCalledWith('activeObjectId', 'obj-123');
+    });
+
+    it('should call setLocalStateField with null to clear', async () => {
+      const mockAwareness = {
+        clientID: 42,
+        on: jest.fn(),
+        off: jest.fn(),
+        getStates: jest.fn().mockReturnValue(new Map()),
+        setLocalStateField: jest.fn(),
+      };
+      const provider = createMockProvider();
+      provider.awareness = mockAwareness;
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      const map2 = new KritzelObjectMap();
+      await map2.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      map2.setActiveDrawingObject(null);
+
+      expect(mockAwareness.setLocalStateField).toHaveBeenCalledWith('activeObjectId', null);
+    });
+  });
+
+  describe('onObjectsChange', () => {
+    it('should register a callback', () => {
+      const callback = jest.fn();
+      objectMap.onObjectsChange(callback);
+      // No error means it registered successfully
+    });
+  });
 });

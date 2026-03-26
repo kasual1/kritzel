@@ -44,6 +44,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _stackItemPoppedHandler: ((event: any) => void) | null = null;
   private _awarenessChangeHandler: ((change: { added: number[]; updated: number[]; removed: number[] }, origin: string) => void) | null = null;
   private _awarenessChangeCallbacks: ((states: Map<number, Record<string, any>>) => void)[] = [];
+  private _objectsChangeCallbacks: (() => void)[] = [];
   private _lastAwarenessEmitTime: number = 0;
   private _awarenessEmitTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly AWARENESS_THROTTLE_INTERVAL = 100; // milliseconds
@@ -115,11 +116,33 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   /**
+   * Sets the ID of the object currently being drawn by the local user.
+   * Remote clients use this to derive cursor position from the object's latest
+   * coordinates instead of the throttled awareness cursor, reducing desync.
+   * Pass `null` when drawing ends.
+   */
+  setActiveDrawingObject(objectId: string | null): void {
+    if (!this._awareness) {
+      return;
+    }
+    this._awareness.setLocalStateField('activeObjectId', objectId);
+  }
+
+  /**
    * Registers a callback to be invoked when the awareness state changes.
    * The callback receives the full awareness states map.
    */
   onAwarenessChange(callback: (states: Map<number, Record<string, any>>) => void): void {
     this._awarenessChangeCallbacks.push(callback);
+  }
+
+  /**
+   * Registers a callback to be invoked when remote object changes are received.
+   * Used by the awareness cursors component to re-derive cursor positions
+   * from the latest object data when a remote user is actively drawing.
+   */
+  onObjectsChange(callback: () => void): void {
+    this._objectsChangeCallbacks.push(callback);
   }
 
   /**
@@ -461,6 +484,11 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       this._core?.engine.emitObjectsUpdated(
         updatedObjects.map(obj => ({ object: obj, changedProperties: [] }))
       );
+    }
+
+    // Notify subscribers of remote object changes (e.g., awareness cursors)
+    for (const callback of this._objectsChangeCallbacks) {
+      callback();
     }
   }
 
