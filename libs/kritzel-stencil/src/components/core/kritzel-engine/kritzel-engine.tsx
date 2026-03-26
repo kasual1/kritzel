@@ -2641,6 +2641,10 @@ export class KritzelEngine {
           ></kritzel-context-menu>
         )}
 
+        {this.core.store.state.objects?.hasAwareness && (
+          <kritzel-awareness-cursors core={this.core}></kritzel-awareness-cursors>
+        )}
+
         {this.core.store.state?.activeTool instanceof KritzelEraserTool && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
       </Host>
     );

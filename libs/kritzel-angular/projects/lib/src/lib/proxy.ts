@@ -6,6 +6,7 @@ import { ProxyCmp } from './angular-component-lib/utils';
 
 import type { Components } from 'kritzel-stencil/dist/components';
 
+import { defineCustomElement as defineKritzelAwarenessCursors } from 'kritzel-stencil/dist/components/kritzel-awareness-cursors.js';
 import { defineCustomElement as defineKritzelBackToContent } from 'kritzel-stencil/dist/components/kritzel-back-to-content.js';
 import { defineCustomElement as defineKritzelButton } from 'kritzel-stencil/dist/components/kritzel-button.js';
 import { defineCustomElement as defineKritzelCurrentUserDialog } from 'kritzel-stencil/dist/components/kritzel-current-user-dialog.js';
@@ -20,6 +21,29 @@ import { defineCustomElement as defineKritzelNumericInput } from 'kritzel-stenci
 import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelPillTabs } from 'kritzel-stencil/dist/components/kritzel-pill-tabs.js';
 import { defineCustomElement as defineKritzelSettings } from 'kritzel-stencil/dist/components/kritzel-settings.js';
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelAwarenessCursors,
+  inputs: ['core', 'edgeIndicatorPadding', 'showEdgeIndicators']
+})
+@Component({
+  selector: 'kritzel-awareness-cursors',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['core', 'edgeIndicatorPadding', 'showEdgeIndicators'],
+})
+export class KritzelAwarenessCursors {
+  protected el: HTMLKritzelAwarenessCursorsElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelAwarenessCursors extends Components.KritzelAwarenessCursors {}
+
+
 @ProxyCmp({
   defineCustomElementFn: defineKritzelBackToContent,
   inputs: ['text', 'visible']

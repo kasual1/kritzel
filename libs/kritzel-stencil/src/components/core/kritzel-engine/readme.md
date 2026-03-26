@@ -898,12 +898,14 @@ Type: `Promise<void>`
 ### Depends on
 
 - [kritzel-context-menu](../../ui/kritzel-context-menu)
+- [kritzel-awareness-cursors](../kritzel-awareness-cursors)
 - [kritzel-cursor-trail](../kritzel-cursor-trail)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-engine --> kritzel-context-menu
+  kritzel-engine --> kritzel-awareness-cursors
   kritzel-engine --> kritzel-cursor-trail
   kritzel-context-menu --> kritzel-icon
   kritzel-editor --> kritzel-engine

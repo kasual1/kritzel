@@ -6,13 +6,13 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { IKritzelUser } from "./interfaces/user.interface";
+import { KritzelCore } from "./classes/core/core.class";
 import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 import { ThemeAwareColor, ThemeMode } from "./constants/color-palette.constants";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
-import { KritzelCore } from "./classes/core/core.class";
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
@@ -43,13 +43,13 @@ import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export { IKritzelUser } from "./interfaces/user.interface";
+export { KritzelCore } from "./classes/core/core.class";
 export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
 export { ThemeAwareColor, ThemeMode } from "./constants/color-palette.constants";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
-export { KritzelCore } from "./classes/core/core.class";
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
@@ -120,6 +120,17 @@ export namespace Components {
           * Full user object. If provided, individual props are ignored.
          */
         "user"?: IKritzelUser;
+    }
+    interface KritzelAwarenessCursors {
+        "core": KritzelCore;
+        /**
+          * @default 8
+         */
+        "edgeIndicatorPadding": number;
+        /**
+          * @default true
+         */
+        "showEdgeIndicators": boolean;
     }
     interface KritzelBackToContent {
         /**
@@ -403,7 +414,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default {     providers: [IndexedDBSyncProvider],   }
+          * @default {     providers: [HocuspocusSyncProvider, IndexedDBSyncProvider],   }
          */
         "syncConfig"?: KritzelSyncConfig;
         "triggerSelectionChange": () => Promise<void>;
@@ -411,6 +422,9 @@ export namespace Components {
         "ungroup": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        /**
+          * @default {     id: 'guest',     displayName: 'Guest',     isGuest: false   }
+         */
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -1364,6 +1378,12 @@ declare global {
         prototype: HTMLKritzelAvatarElement;
         new (): HTMLKritzelAvatarElement;
     };
+    interface HTMLKritzelAwarenessCursorsElement extends Components.KritzelAwarenessCursors, HTMLStencilElement {
+    }
+    var HTMLKritzelAwarenessCursorsElement: {
+        prototype: HTMLKritzelAwarenessCursorsElement;
+        new (): HTMLKritzelAwarenessCursorsElement;
+    };
     interface HTMLKritzelBackToContentElementEventMap {
         "backToContent": void;
     }
@@ -2043,6 +2063,7 @@ declare global {
     interface HTMLElementTagNameMap {
         "kritzel-active-users": HTMLKritzelActiveUsersElement;
         "kritzel-avatar": HTMLKritzelAvatarElement;
+        "kritzel-awareness-cursors": HTMLKritzelAwarenessCursorsElement;
         "kritzel-back-to-content": HTMLKritzelBackToContentElement;
         "kritzel-brush-style": HTMLKritzelBrushStyleElement;
         "kritzel-button": HTMLKritzelButtonElement;
@@ -2126,6 +2147,17 @@ declare namespace LocalJSX {
           * Full user object. If provided, individual props are ignored.
          */
         "user"?: IKritzelUser;
+    }
+    interface KritzelAwarenessCursors {
+        "core"?: KritzelCore;
+        /**
+          * @default 8
+         */
+        "edgeIndicatorPadding"?: number;
+        /**
+          * @default true
+         */
+        "showEdgeIndicators"?: boolean;
     }
     interface KritzelBackToContent {
         /**
@@ -2389,9 +2421,12 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         /**
-          * @default {     providers: [IndexedDBSyncProvider],   }
+          * @default {     providers: [HocuspocusSyncProvider, IndexedDBSyncProvider],   }
          */
         "syncConfig"?: KritzelSyncConfig;
+        /**
+          * @default {     id: 'guest',     displayName: 'Guest',     isGuest: false   }
+         */
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -3001,6 +3036,10 @@ declare namespace LocalJSX {
         "size": number;
         "color": string;
     }
+    interface KritzelAwarenessCursorsAttributes {
+        "showEdgeIndicators": boolean;
+        "edgeIndicatorPadding": number;
+    }
     interface KritzelBackToContentAttributes {
         "visible": boolean;
         "text": string;
@@ -3173,6 +3212,7 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "kritzel-active-users": Omit<KritzelActiveUsers, keyof KritzelActiveUsersAttributes> & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes]?: KritzelActiveUsers[K] } & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes as `attr:${K}`]?: KritzelActiveUsersAttributes[K] } & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes as `prop:${K}`]?: KritzelActiveUsers[K] };
         "kritzel-avatar": Omit<KritzelAvatar, keyof KritzelAvatarAttributes> & { [K in keyof KritzelAvatar & keyof KritzelAvatarAttributes]?: KritzelAvatar[K] } & { [K in keyof KritzelAvatar & keyof KritzelAvatarAttributes as `attr:${K}`]?: KritzelAvatarAttributes[K] } & { [K in keyof KritzelAvatar & keyof KritzelAvatarAttributes as `prop:${K}`]?: KritzelAvatar[K] };
+        "kritzel-awareness-cursors": Omit<KritzelAwarenessCursors, keyof KritzelAwarenessCursorsAttributes> & { [K in keyof KritzelAwarenessCursors & keyof KritzelAwarenessCursorsAttributes]?: KritzelAwarenessCursors[K] } & { [K in keyof KritzelAwarenessCursors & keyof KritzelAwarenessCursorsAttributes as `attr:${K}`]?: KritzelAwarenessCursorsAttributes[K] } & { [K in keyof KritzelAwarenessCursors & keyof KritzelAwarenessCursorsAttributes as `prop:${K}`]?: KritzelAwarenessCursors[K] };
         "kritzel-back-to-content": Omit<KritzelBackToContent, keyof KritzelBackToContentAttributes> & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes]?: KritzelBackToContent[K] } & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes as `attr:${K}`]?: KritzelBackToContentAttributes[K] } & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes as `prop:${K}`]?: KritzelBackToContent[K] };
         "kritzel-brush-style": Omit<KritzelBrushStyle, keyof KritzelBrushStyleAttributes> & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes]?: KritzelBrushStyle[K] } & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes as `attr:${K}`]?: KritzelBrushStyleAttributes[K] } & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes as `prop:${K}`]?: KritzelBrushStyle[K] };
         "kritzel-button": Omit<KritzelButton, keyof KritzelButtonAttributes> & { [K in keyof KritzelButton & keyof KritzelButtonAttributes]?: KritzelButton[K] } & { [K in keyof KritzelButton & keyof KritzelButtonAttributes as `attr:${K}`]?: KritzelButtonAttributes[K] } & { [K in keyof KritzelButton & keyof KritzelButtonAttributes as `prop:${K}`]?: KritzelButton[K] };
@@ -3221,6 +3261,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "kritzel-active-users": LocalJSX.IntrinsicElements["kritzel-active-users"] & JSXBase.HTMLAttributes<HTMLKritzelActiveUsersElement>;
             "kritzel-avatar": LocalJSX.IntrinsicElements["kritzel-avatar"] & JSXBase.HTMLAttributes<HTMLKritzelAvatarElement>;
+            "kritzel-awareness-cursors": LocalJSX.IntrinsicElements["kritzel-awareness-cursors"] & JSXBase.HTMLAttributes<HTMLKritzelAwarenessCursorsElement>;
             "kritzel-back-to-content": LocalJSX.IntrinsicElements["kritzel-back-to-content"] & JSXBase.HTMLAttributes<HTMLKritzelBackToContentElement>;
             "kritzel-brush-style": LocalJSX.IntrinsicElements["kritzel-brush-style"] & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
             "kritzel-button": LocalJSX.IntrinsicElements["kritzel-button"] & JSXBase.HTMLAttributes<HTMLKritzelButtonElement>;
