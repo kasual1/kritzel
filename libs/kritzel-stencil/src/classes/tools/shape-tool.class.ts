@@ -221,6 +221,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
     });
 
     this._core.store.state.objects.insert(this.currentShape);
+    this._core.store.state.objects?.setActiveDrawingObject(this.currentShape.id);
     this._core.rerender();
   }
 
@@ -289,6 +290,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
     }
 
     this.isDrawing = false;
+    this._core.store.state.objects?.setActiveDrawingObject(null);
     this.currentShape = null;
     this._core.rerender();
   }

@@ -1,3 +1,30 @@
+jest.mock('@stencil/core', () => ({
+  Component: () => (cls: any) => cls,
+  Prop: () => () => {},
+  State: () => () => {},
+  Host: 'Host',
+  h: jest.fn(),
+}));
+
+jest.mock('@stencil/core/testing', () => ({
+  resetPlatform: jest.fn(),
+  stopAutoApplyChanges: jest.fn(),
+}));
+
+class MockKritzelPath { }
+class MockKritzelLine { }
+class MockKritzelShape { }
+
+jest.mock('../../../classes/objects/path.class', () => ({
+  KritzelPath: MockKritzelPath,
+}));
+jest.mock('../../../classes/objects/line.class', () => ({
+  KritzelLine: MockKritzelLine,
+}));
+jest.mock('../../../classes/objects/shape.class', () => ({
+  KritzelShape: MockKritzelShape,
+}));
+
 import { KritzelAwarenessCursors } from './kritzel-awareness-cursors';
 import { KritzelCore } from '../../../classes/core/core.class';
 
@@ -35,6 +62,8 @@ describe('KritzelAwarenessCursors', () => {
             hasAwareness: true,
             localClientId: config.localClientId,
             onAwarenessChange: jest.fn(),
+            onObjectsChange: jest.fn(),
+            findById: jest.fn(),
           },
         },
       },
@@ -45,12 +74,14 @@ describe('KritzelAwarenessCursors', () => {
     clientId: number;
     user?: { id: string; name: string; color: string };
     cursor?: { x: number; y: number } | null;
+    activeObjectId?: string | null;
   }>): Map<number, Record<string, unknown>> => {
     const map = new Map<number, Record<string, unknown>>();
     for (const entry of entries) {
       map.set(entry.clientId, {
         user: entry.user,
         cursor: entry.cursor ?? null,
+        activeObjectId: entry.activeObjectId ?? null,
       });
     }
     return map;
@@ -292,6 +323,179 @@ describe('KritzelAwarenessCursors', () => {
       component.disconnectedCallback();
 
       expect(clearIntervalSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('componentDidLoad - objects change subscription', () => {
+    it('should subscribe to objects changes', () => {
+      component.componentDidLoad();
+
+      expect(mockCore.store.state.objects.onObjectsChange).toHaveBeenCalledTimes(1);
+      expect(mockCore.store.state.objects.onObjectsChange).toHaveBeenCalledWith(expect.any(Function));
+    });
+  });
+
+  describe('handleAwarenessChange - activeObjectId', () => {
+    it('should store activeObjectId from awareness state', () => {
+      component.componentDidLoad();
+
+      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const states = createAwarenessStates([
+        { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: { x: 200, y: 200 }, activeObjectId: 'path-42' },
+      ]);
+
+      callback(states);
+
+      expect(component.remoteCursors.get(2)?.activeObjectId).toBe('path-42');
+    });
+
+    it('should store null activeObjectId when not set', () => {
+      component.componentDidLoad();
+
+      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const states = createAwarenessStates([
+        { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: { x: 200, y: 200 } },
+      ]);
+
+      callback(states);
+
+      expect(component.remoteCursors.get(2)?.activeObjectId).toBeNull();
+    });
+  });
+
+  describe('getActiveObjectTip', () => {
+    it('should return null when object is not found', () => {
+      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(undefined);
+
+      const result = (component as any).getActiveObjectTip('nonexistent-id');
+
+      expect(result).toBeNull();
+    });
+
+    it('should return world coords for a KritzelPath last point', () => {
+      const mockPath = Object.create(MockKritzelPath.prototype);
+      Object.assign(mockPath, {
+        points: [[10, 20], [30, 40]],
+        x: 5,
+        y: 10,
+        translateX: 100,
+        translateY: 200,
+        scale: 2,
+        isCompleted: false,
+      });
+      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(mockPath);
+
+      const result = (component as any).getActiveObjectTip('path-1');
+
+      expect(result).toEqual({
+        x: (30 - 5) / 2 + 100,
+        y: (40 - 10) / 2 + 200,
+      });
+    });
+
+    it('should return null for a completed KritzelPath', () => {
+      const mockPath = Object.create(MockKritzelPath.prototype);
+      Object.assign(mockPath, {
+        points: [[10, 20]],
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+        isCompleted: true,
+      });
+      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(mockPath);
+
+      const result = (component as any).getActiveObjectTip('path-1');
+
+      expect(result).toBeNull();
+    });
+
+    it('should return world coords for a KritzelLine end point', () => {
+      const mockLine = Object.create(MockKritzelLine.prototype);
+      Object.assign(mockLine, {
+        endX: 50,
+        endY: 60,
+        x: 5,
+        y: 10,
+        translateX: 10,
+        translateY: 20,
+        scale: 2,
+        isCompleted: false,
+      });
+      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(mockLine);
+
+      const result = (component as any).getActiveObjectTip('line-1');
+
+      expect(result).toEqual({
+        x: (50 - 5) / 2 + 10,
+        y: (60 - 10) / 2 + 20,
+      });
+    });
+
+    it('should return null for a completed KritzelLine', () => {
+      const mockLine = Object.create(MockKritzelLine.prototype);
+      Object.assign(mockLine, {
+        endX: 50,
+        endY: 60,
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+        isCompleted: true,
+      });
+      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(mockLine);
+
+      const result = (component as any).getActiveObjectTip('line-1');
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null for a KritzelShape (falls back to awareness cursor)', () => {
+      const mockShape = Object.create(MockKritzelShape.prototype);
+      Object.assign(mockShape, {
+        x: 10,
+        y: 20,
+        width: 100,
+        height: 50,
+        scale: 2,
+        translateX: 300,
+        translateY: 400,
+      });
+      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(mockShape);
+
+      const result = (component as any).getActiveObjectTip('shape-1');
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null for an unrecognized object type', () => {
+      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue({ id: 'unknown', type: 'custom' });
+
+      const result = (component as any).getActiveObjectTip('unknown');
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('hasActiveDrawingCursors', () => {
+    it('should return false when no cursor has activeObjectId', () => {
+      component.componentDidLoad();
+
+      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      callback(createAwarenessStates([
+        { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: { x: 200, y: 200 } },
+      ]));
+
+      expect((component as any).hasActiveDrawingCursors()).toBe(false);
+    });
+
+    it('should return true when at least one cursor has activeObjectId', () => {
+      component.componentDidLoad();
+
+      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      callback(createAwarenessStates([
+        { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: { x: 200, y: 200 }, activeObjectId: 'path-1' },
+      ]));
+
+      expect((component as any).hasActiveDrawingCursors()).toBe(true);
     });
   });
 });

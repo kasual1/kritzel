@@ -1,5 +1,7 @@
 import { Component, Host, Prop, State, h } from '@stencil/core';
 import { KritzelCore } from '../../../classes/core/core.class';
+import { KritzelPath } from '../../../classes/objects/path.class';
+import { KritzelLine } from '../../../classes/objects/line.class';
 import { KritzelRemoteCursorState } from '../../../interfaces/remote-cursor.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
 
@@ -18,12 +20,18 @@ export class KritzelAwarenessCursors {
   @Prop() edgeIndicatorPadding: number = 8;
 
   @State() remoteCursors: Map<number, KritzelRemoteCursorState> = new Map();
+  @State() objectVersion: number = 0;
 
   private cleanupIntervalId: ReturnType<typeof setInterval>;
+  private objectChangeRafId: ReturnType<typeof requestAnimationFrame> | null = null;
 
   componentDidLoad() {
     this.core.store.state.objects?.onAwarenessChange(states => {
       this.handleAwarenessChange(states);
+    });
+
+    this.core.store.state.objects?.onObjectsChange(() => {
+      this.handleRemoteObjectChange();
     });
 
     this.cleanupIntervalId = setInterval(() => {
@@ -34,6 +42,9 @@ export class KritzelAwarenessCursors {
   disconnectedCallback() {
     if (this.cleanupIntervalId) {
       clearInterval(this.cleanupIntervalId);
+    }
+    if (this.objectChangeRafId !== null) {
+      cancelAnimationFrame(this.objectChangeRafId);
     }
   }
 
@@ -53,11 +64,13 @@ export class KritzelAwarenessCursors {
 
       const user = state.user as IKritzelUser;
       const cursor = state.cursor as { x: number; y: number } | null;
+      const activeObjectId = (state.activeObjectId as string) || null;
 
       updated.set(clientId, {
         clientId,
         user,
         cursor,
+        activeObjectId,
         lastUpdated: now,
       });
     });
@@ -91,6 +104,51 @@ export class KritzelAwarenessCursors {
 
   private isStale(cursor: KritzelRemoteCursorState): boolean {
     return Date.now() - cursor.lastUpdated > STALE_THRESHOLD_MS;
+  }
+
+  private hasActiveDrawingCursors(): boolean {
+    for (const cursor of this.remoteCursors.values()) {
+      if (cursor.activeObjectId) return true;
+    }
+    return false;
+  }
+
+  private handleRemoteObjectChange(): void {
+    if (!this.hasActiveDrawingCursors()) return;
+
+    // Debounce via rAF to batch multiple rapid Yjs updates into a single re-render
+    if (this.objectChangeRafId !== null) return;
+    this.objectChangeRafId = requestAnimationFrame(() => {
+      this.objectChangeRafId = null;
+      this.objectVersion++;
+    });
+  }
+
+  private getActiveObjectTip(objectId: string): { x: number; y: number } | null {
+    const obj = this.core.store.state.objects?.findById(objectId);
+    if (!obj) return null;
+
+    if (obj instanceof KritzelPath && !obj.isCompleted) {
+      const lastPoint = obj.points[obj.points.length - 1];
+      if (!lastPoint) return null;
+      return {
+        x: (lastPoint[0] - obj.x) / obj.scale + obj.translateX,
+        y: (lastPoint[1] - obj.y) / obj.scale + obj.translateY,
+      };
+    }
+
+    if (obj instanceof KritzelLine && !obj.isCompleted) {
+      return {
+        x: (obj.endX - obj.x) / obj.scale + obj.translateX,
+        y: (obj.endY - obj.y) / obj.scale + obj.translateY,
+      };
+    }
+
+    // Shapes normalize their bounding box (x/y always top-left, width/height
+    // always positive), so we can't determine which corner the user is actively
+    // dragging. Fall back to the throttled awareness cursor position instead.
+
+    return null;
   }
 
   private worldToScreen(worldX: number, worldY: number): { x: number; y: number } {
@@ -150,6 +208,7 @@ export class KritzelAwarenessCursors {
     void _scale;
     void _tx;
     void _ty;
+    void this.objectVersion;
 
     const cursors = Array.from(this.remoteCursors.values());
 
@@ -158,17 +217,33 @@ export class KritzelAwarenessCursors {
         {cursors.map(remoteCursor => {
           if (!remoteCursor.cursor) return null;
 
-          const screen = this.worldToScreen(remoteCursor.cursor.x, remoteCursor.cursor.y);
+          // When a remote user is actively drawing, derive cursor position from
+          // the object's latest coordinates (synced via Yjs) instead of the
+          // throttled awareness cursor position
+          let screen: { x: number; y: number };
+          let trackingObject = false;
+          if (remoteCursor.activeObjectId) {
+            const tip = this.getActiveObjectTip(remoteCursor.activeObjectId);
+            if (tip) {
+              trackingObject = true;
+              screen = this.worldToScreen(tip.x, tip.y);
+            } else {
+              screen = this.worldToScreen(remoteCursor.cursor.x, remoteCursor.cursor.y);
+            }
+          } else {
+            screen = this.worldToScreen(remoteCursor.cursor.x, remoteCursor.cursor.y);
+          }
+
           const inViewport = this.isInViewport(screen.x, screen.y);
           const stale = this.isStale(remoteCursor);
           const color = remoteCursor.user.color || '#6B7280';
 
           if (inViewport) {
-            return this.renderCursor(remoteCursor, screen.x, screen.y, color, stale);
+            return this.renderCursor(remoteCursor, screen.x, screen.y, color, stale, trackingObject);
           }
 
           if (this.showEdgeIndicators) {
-            return this.renderEdgeIndicator(remoteCursor, screen.x, screen.y, color, stale);
+            return this.renderEdgeIndicator(remoteCursor, screen.x, screen.y, color, stale, trackingObject);
           }
 
           return null;
@@ -183,11 +258,12 @@ export class KritzelAwarenessCursors {
     screenY: number,
     color: string,
     stale: boolean,
+    trackingObject: boolean,
   ) {
     return (
       <div
         key={`cursor-${cursor.clientId}`}
-        class={{ 'awareness-cursor': true, stale }}
+        class={{ 'awareness-cursor': true, stale, 'tracking-object': trackingObject }}
         style={{ transform: `translate(${screenX}px, ${screenY}px)` }}
       >
         <svg
@@ -222,6 +298,7 @@ export class KritzelAwarenessCursors {
     screenY: number,
     color: string,
     stale: boolean,
+    trackingObject: boolean,
   ) {
     const clamped = this.clampToEdge(screenX, screenY);
     const arrowDeg = (clamped.angle * 180) / Math.PI + 90;
@@ -248,7 +325,7 @@ export class KritzelAwarenessCursors {
     return (
       <div
         key={`edge-${cursor.clientId}`}
-        class={{ 'edge-indicator': true, stale }}
+        class={{ 'edge-indicator': true, stale, 'tracking-object': trackingObject }}
         style={{
           transform: `translate(${clamped.x}px, ${clamped.y}px)`,
         }}
