@@ -97,6 +97,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     object._core = core;
     object.id = object.generateId();
     object.workspaceId = core.store.state.activeWorkspace.id;
+    object.userId = core.user?.id;
     object.options = options;
     object.startX = options?.startX ?? 0;
     object.startY = options?.startY ?? 0;

@@ -38,6 +38,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   rotation: number = 0;
   markedForRemoval: boolean = false;
   zIndex: number = 0;
+  userId?: string;
 
   /** Whether the object is currently visible on the canvas */
   isVisible: boolean = true;
@@ -249,6 +250,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     object._core = core;
     object.zIndex = core.store.currentZIndex;
     object.workspaceId = core.store.state.activeWorkspace.id;
+    object.userId = core.user?.id;
 
     return object;
   }

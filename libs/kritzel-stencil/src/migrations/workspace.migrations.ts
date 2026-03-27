@@ -9,4 +9,13 @@ import { KritzelMigration } from '../interfaces/migration.interface';
  * 2. Append a new entry with fromVersion = old version, toVersion = new version
  * 3. Implement the migrate() function — it must be idempotent
  */
-export const WORKSPACE_MIGRATIONS: KritzelMigration[] = [];
+export const WORKSPACE_MIGRATIONS: KritzelMigration[] = [
+  {
+    fromVersion: 1,
+    toVersion: 2,
+    migrate(_ydoc, _maps) {
+      // No-op: adds optional userId property to objects.
+      // Existing objects without userId are valid (field is optional).
+    },
+  },
+];

@@ -75,6 +75,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     object._core = core;
     object.id = object.generateId();
     object.workspaceId = core.store.state.activeWorkspace.id;
+    object.userId = core.user?.id;
     object.options = options;
     object.points = options?.points ?? [];
     object.translateX = options?.translateX ?? 0;

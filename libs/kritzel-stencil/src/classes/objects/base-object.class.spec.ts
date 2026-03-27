@@ -32,6 +32,9 @@ describe('KritzelBaseObject', () => {
       anchorManager: {
         updateAnchorsForObject: mockAnchorManagerUpdate,
       },
+      user: {
+        id: 'user-123',
+      },
     } as unknown as jest.Mocked<KritzelCore>;
 
     baseObject = new KritzelBaseObject();
@@ -79,6 +82,17 @@ describe('KritzelBaseObject', () => {
       expect(obj._core).toBe(mockCore);
       expect(obj.zIndex).toBe(1);
       expect(obj.workspaceId).toBe('workspace-1');
+    });
+
+    it('should set userId from core.user', () => {
+      const obj = KritzelBaseObject.create(mockCore);
+      expect(obj.userId).toBe('user-123');
+    });
+
+    it('should set userId to undefined when core.user is undefined', () => {
+      const coreWithoutUser = { ...mockCore, user: undefined } as unknown as jest.Mocked<KritzelCore>;
+      const obj = KritzelBaseObject.create(coreWithoutUser);
+      expect(obj.userId).toBeUndefined();
     });
   });
 
@@ -521,6 +535,7 @@ describe('KritzelBaseObject', () => {
       baseObject.height = 150;
       baseObject.translateX = 50;
       baseObject.translateY = 75;
+      baseObject.userId = 'user-789';
 
       const copied = baseObject.copy();
 
@@ -528,6 +543,7 @@ describe('KritzelBaseObject', () => {
       expect(copied.height).toBe(150);
       expect(copied.translateX).toBe(50);
       expect(copied.translateY).toBe(75);
+      expect(copied.userId).toBe('user-789');
     });
   });
 
@@ -544,6 +560,7 @@ describe('KritzelBaseObject', () => {
       baseObject.height = 50;
       baseObject.translateX = 10;
       baseObject.translateY = 20;
+      baseObject.userId = 'user-123';
 
       const serialized = baseObject.serialize();
 
@@ -552,6 +569,7 @@ describe('KritzelBaseObject', () => {
       expect(serialized.translateX).toBe(10);
       expect(serialized.translateY).toBe(20);
       expect(serialized.id).toBe(baseObject.id);
+      expect(serialized.userId).toBe('user-123');
     });
 
     it('should exclude totalWidth and totalHeight getters', () => {
@@ -571,6 +589,7 @@ describe('KritzelBaseObject', () => {
         translateX: 30,
         translateY: 40,
         rotation: 0.5,
+        userId: 'user-456',
       };
 
       baseObject.deserialize(data);
@@ -581,6 +600,7 @@ describe('KritzelBaseObject', () => {
       expect(baseObject.translateX).toBe(30);
       expect(baseObject.translateY).toBe(40);
       expect(baseObject.rotation).toBe(0.5);
+      expect(baseObject.userId).toBe('user-456');
     });
 
     it('should return the object itself', () => {
