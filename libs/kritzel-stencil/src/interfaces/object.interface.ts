@@ -23,6 +23,7 @@ export interface KritzelObject<T = Element> {
   rotation: number;
   markedForRemoval: boolean;
   zIndex: number;
+  userId?: string;
 
   isVisible: boolean;
   isSelected: boolean;

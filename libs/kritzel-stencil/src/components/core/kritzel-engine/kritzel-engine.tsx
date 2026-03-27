@@ -2118,6 +2118,7 @@ export class KritzelEngine {
                     }}
                   >
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>Id: {object.id}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>userId: {object.userId}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>width: {object.width}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>height: {object.height}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>translateX: {object.translateX}</div>
