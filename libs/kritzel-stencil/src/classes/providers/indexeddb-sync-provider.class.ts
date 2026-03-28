@@ -16,6 +16,7 @@ export interface IndexedDBOptions {
  * IndexedDB sync provider for local persistence
  */
 export class IndexedDBSyncProvider implements ISyncProvider {
+  readonly type = 'local';
   private provider: IndexeddbPersistence;
   private isConnected: boolean = false;
 
@@ -40,6 +41,11 @@ export class IndexedDBSyncProvider implements ISyncProvider {
   disconnect(): void {
     // IndexedDB doesn't need explicit disconnect
     this.isConnected = false;
+  }
+
+  async reconnect(): Promise<void> {
+    this.disconnect();
+    return this.connect();
   }
 
   destroy(): void {

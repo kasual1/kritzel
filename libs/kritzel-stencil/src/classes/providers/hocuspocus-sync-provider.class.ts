@@ -34,7 +34,8 @@ export interface HocuspocusOptions {
   quiet?: boolean;
 
   /**
-   * Callback when connected (optional)
+   * Callback when connected (optional).
+   * Fires on every connection, including reconnections after a disconnect.
    */
   onConnect?: () => void;
 
@@ -67,6 +68,37 @@ export interface HocuspocusOptions {
    * WebSocket polyfill for Node.js environments (optional)
    */
   WebSocketPolyfill?: any;
+
+  /**
+   * Timeout in milliseconds for the initial connect() call (optional, defaults to 10000).
+   * Note: Even if the timeout fires, the underlying provider continues reconnecting in the background.
+   */
+  connectionTimeout?: number;
+
+  /**
+   * Base delay in milliseconds between reconnect attempts (optional, defaults to 1000)
+   */
+  delay?: number;
+
+  /**
+   * Exponential backoff multiplier for reconnect delay (optional, defaults to 2)
+   */
+  factor?: number;
+
+  /**
+   * Maximum number of reconnect attempts before giving up (optional, defaults to 0 = infinite)
+   */
+  maxAttempts?: number;
+
+  /**
+   * Minimum delay in milliseconds between reconnect attempts (optional)
+   */
+  minDelay?: number;
+
+  /**
+   * Maximum delay in milliseconds between reconnect attempts (optional)
+   */
+  maxDelay?: number;
 }
 
 /**
@@ -99,11 +131,14 @@ export interface HocuspocusWebSocketOptions {
   onStatus?: (data: { status: string }) => void;
 }
 
+export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'synced';
+
 /**
  * Hocuspocus sync provider for real-time collaboration
  * Supports multiplexing - multiple documents can share the same WebSocket connection
  */
 export class HocuspocusSyncProvider implements ISyncProvider {
+  readonly type = 'network';
   private provider: HocuspocusProvider;
   private isConnected: boolean = false;
   private isSynced: boolean = false;
@@ -111,9 +146,17 @@ export class HocuspocusSyncProvider implements ISyncProvider {
   private isDestroyed: boolean = false;
   private connectTimeout: ReturnType<typeof setTimeout> | null = null;
   private pendingConnectReject: ((reason?: any) => void) | null = null;
+  private connectionTimeoutMs: number;
+  private _connectionStatus: ConnectionStatus = 'disconnected';
+  private visibilityHandler: (() => void) | null = null;
+  private onlineHandler: (() => void) | null = null;
 
   get awareness(): Awareness {
     return this.provider.awareness;
+  }
+
+  get connectionStatus(): ConnectionStatus {
+    return this._connectionStatus;
   }
 
   // Static shared WebSocket instance for multiplexing
@@ -122,61 +165,88 @@ export class HocuspocusSyncProvider implements ISyncProvider {
   constructor(docName: string, doc: Y.Doc, options?: HocuspocusOptions) {
     const name = options?.name || docName;
     const url = options?.url || 'ws://localhost:1234';
+    this.connectionTimeoutMs = options?.connectionTimeout ?? 10000;
 
     // Use provided websocketProvider or the static shared one
     const websocketProvider = options?.websocketProvider || HocuspocusSyncProvider.sharedWebSocketProvider;
+
+    // Build reconnect config from options
+    const reconnectConfig: Record<string, unknown> = {};
+    if (options?.delay !== undefined) reconnectConfig.delay = options.delay;
+    if (options?.factor !== undefined) reconnectConfig.factor = options.factor;
+    if (options?.maxAttempts !== undefined) reconnectConfig.maxAttempts = options.maxAttempts;
+    if (options?.minDelay !== undefined) reconnectConfig.minDelay = options.minDelay;
+    if (options?.maxDelay !== undefined) reconnectConfig.maxDelay = options.maxDelay;
+
+    const onConnect = () => {
+      if (this.isDestroyed) {
+        return;
+      }
+      this.isConnected = true;
+      this._connectionStatus = 'connected';
+      if (!options?.quiet) {
+        console.info(`Hocuspocus connected: ${name}`);
+      }
+      if (options?.onConnect) {
+        options.onConnect();
+      }
+    };
+
+    const onDisconnect = () => {
+      if (this.isDestroyed) {
+        return;
+      }
+      this.isConnected = false;
+      this.isSynced = false;
+      this._connectionStatus = 'disconnected';
+      if (!options?.quiet) {
+        console.info(`Hocuspocus disconnected: ${name}`);
+      }
+      if (options?.onDisconnect) {
+        options.onDisconnect();
+      }
+    };
+
+    const onSynced = () => {
+      if (this.isDestroyed) {
+        return;
+      }
+      this.isSynced = true;
+      this._connectionStatus = 'synced';
+      if (!options?.quiet) {
+        console.info(`Hocuspocus synced: ${name}`);
+      }
+      if (options?.onSynced) {
+        options.onSynced();
+      }
+    };
+
+    const onStatus = (data: { status: string }) => {
+      if (this.isDestroyed) {
+        return;
+      }
+      if (data.status === 'connecting') {
+        this._connectionStatus = 'connecting';
+      }
+      if (options?.onStatus) {
+        options.onStatus(data);
+      }
+    };
 
     if (websocketProvider) {
       // Multiplexing mode - use shared WebSocket connection
       this.usesSharedSocket = true;
 
-      const config: any = {
+      const config: Record<string, unknown> = {
         websocketProvider,
         name,
         document: doc,
         token: options?.token || null,
-        onStatus: (data: { status: string }) => {
-          if (options?.onStatus) {
-            options.onStatus(data);
-          }
-        },
-        onConnect: () => {
-          if (this.isConnected || this.isDestroyed) {
-            return;
-          }
-          this.isConnected = true;
-          if (!options?.quiet) {
-            console.info(`Hocuspocus connected: ${name}`);
-          }
-          if (options?.onConnect) {
-            options.onConnect();
-          }
-        },
-        onDisconnect: () => {
-          if (this.isDestroyed || (!this.isConnected && !this.isSynced)) {
-            return;
-          }
-          this.isConnected = false;
-          this.isSynced = false;
-          if (!options?.quiet) {
-            console.info(`Hocuspocus disconnected: ${name}`);
-          }
-          if (options?.onDisconnect) {
-            options.onDisconnect();
-          }
-        },
-        onSynced: () => {
-          if (this.isSynced || this.isDestroyed) {
-            return;
-          }
-          this.isSynced = true;
-          if (!options?.quiet) {
-            console.info(`Hocuspocus synced: ${name}`);
-          }
-          if (options?.onSynced) {
-            options.onSynced();
-          }
-        },
+        onStatus,
+        onConnect,
+        onDisconnect,
+        onSynced,
+        ...reconnectConfig,
       };
 
       // Add optional settings
@@ -188,7 +258,7 @@ export class HocuspocusSyncProvider implements ISyncProvider {
         config.onAuthenticationFailed = options.onAuthenticationFailed;
       }
 
-      this.provider = new HocuspocusProvider(config);
+      this.provider = new HocuspocusProvider(config as any);
 
       // Must call attach() explicitly when using shared socket
       this.provider.attach();
@@ -200,54 +270,17 @@ export class HocuspocusSyncProvider implements ISyncProvider {
       // Standalone mode - create own WebSocket connection
       this.usesSharedSocket = false;
 
-      const config: any = {
+      const config: Record<string, unknown> = {
         url,
         name,
         document: doc,
         token: options?.token || null,
         autoConnect: false,
-        onStatus: (data: { status: string }) => {
-          if (options?.onStatus) {
-            options.onStatus(data);
-          }
-        },
-        onConnect: () => {
-          if (this.isConnected || this.isDestroyed) {
-            return;
-          }
-          this.isConnected = true;
-          if (!options?.quiet) {
-            console.info(`Hocuspocus connected: ${name}`);
-          }
-          if (options?.onConnect) {
-            options.onConnect();
-          }
-        },
-        onDisconnect: () => {
-          if (this.isDestroyed || (!this.isConnected && !this.isSynced)) {
-            return;
-          }
-          this.isConnected = false;
-          this.isSynced = false;
-          if (!options?.quiet) {
-            console.info(`Hocuspocus disconnected: ${name}`);
-          }
-          if (options?.onDisconnect) {
-            options.onDisconnect();
-          }
-        },
-        onSynced: () => {
-          if (this.isSynced || this.isDestroyed) {
-            return;
-          }
-          this.isSynced = true;
-          if (!options?.quiet) {
-            console.info(`Hocuspocus synced: ${name}`);
-          }
-          if (options?.onSynced) {
-            options.onSynced();
-          }
-        },
+        onStatus,
+        onConnect,
+        onDisconnect,
+        onSynced,
+        ...reconnectConfig,
       };
 
       // Add optional settings
@@ -263,11 +296,44 @@ export class HocuspocusSyncProvider implements ISyncProvider {
         config.WebSocketPolyfill = options.WebSocketPolyfill;
       }
 
-      this.provider = new HocuspocusProvider(config);
+      this.provider = new HocuspocusProvider(config as any);
 
       if (!options?.quiet) {
         console.info(`Hocuspocus Provider initialized: ${url}/${name}`);
       }
+    }
+
+    this.setupBrowserEventListeners();
+  }
+
+  private setupBrowserEventListeners(): void {
+    if (typeof document !== 'undefined') {
+      this.visibilityHandler = () => {
+        if (document.visibilityState === 'visible' && !this.isConnected && !this.isDestroyed) {
+          this.provider.connect();
+        }
+      };
+      document.addEventListener('visibilitychange', this.visibilityHandler);
+    }
+
+    if (typeof window !== 'undefined') {
+      this.onlineHandler = () => {
+        if (!this.isConnected && !this.isDestroyed) {
+          this.provider.connect();
+        }
+      };
+      window.addEventListener('online', this.onlineHandler);
+    }
+  }
+
+  private removeBrowserEventListeners(): void {
+    if (this.visibilityHandler && typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+      this.visibilityHandler = null;
+    }
+    if (this.onlineHandler && typeof window !== 'undefined') {
+      window.removeEventListener('online', this.onlineHandler);
+      this.onlineHandler = null;
     }
   }
 
@@ -344,6 +410,8 @@ export class HocuspocusSyncProvider implements ISyncProvider {
       return;
     }
 
+    this._connectionStatus = 'connecting';
+
     return new Promise<void>((resolve, reject) => {
       // Store reject function so we can cancel the connection if destroyed
       this.pendingConnectReject = reject;
@@ -352,7 +420,7 @@ export class HocuspocusSyncProvider implements ISyncProvider {
         this.pendingConnectReject = null;
         this.connectTimeout = null;
         reject(new Error('Hocuspocus connection timeout'));
-      }, 10000); // 10 second timeout
+      }, this.connectionTimeoutMs);
 
       const syncHandler = () => {
         if (this.connectTimeout) {
@@ -387,6 +455,11 @@ export class HocuspocusSyncProvider implements ISyncProvider {
     });
   }
 
+  async reconnect(): Promise<void> {
+    this.disconnect();
+    return this.connect();
+  }
+
   disconnect(): void {
     // Cancel any pending connection attempt
     if (this.connectTimeout) {
@@ -407,6 +480,7 @@ export class HocuspocusSyncProvider implements ISyncProvider {
     }
     this.isConnected = false;
     this.isSynced = false;
+    this._connectionStatus = 'disconnected';
   }
 
   destroy(): void {
@@ -422,10 +496,13 @@ export class HocuspocusSyncProvider implements ISyncProvider {
       this.pendingConnectReject = null; // Don't reject, just abandon the promise
     }
 
+    this.removeBrowserEventListeners();
+
     if (this.provider) {
       this.provider.destroy();
     }
     this.isConnected = false;
     this.isSynced = false;
+    this._connectionStatus = 'disconnected';
   }
 }

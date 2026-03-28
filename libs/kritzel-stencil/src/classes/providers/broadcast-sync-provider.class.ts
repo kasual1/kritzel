@@ -8,6 +8,7 @@ import { ISyncProvider } from '../../interfaces/sync-provider.interface';
  * This is a lightweight alternative to y-webrtc for browser-tab-only sync
  */
 export class BroadcastSyncProvider implements ISyncProvider {
+  readonly type = 'local';
   private readonly doc: Y.Doc;
   private readonly channel: BroadcastChannel;
   private _synced: boolean = false;
@@ -100,6 +101,11 @@ export class BroadcastSyncProvider implements ISyncProvider {
 
   disconnect(): void {
     // BroadcastChannel doesn't have explicit disconnect
+  }
+
+  async reconnect(): Promise<void> {
+    this.disconnect();
+    return this.connect();
   }
 
   destroy(): void {

@@ -313,17 +313,31 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     };
     this._objectsMap.observe(this._objectsObserver);
 
-    // Connect all providers in parallel (settle individually so one failure doesn't block the rest)
-    const results = await Promise.allSettled(this._providers.map(p => p.connect()));
-    results.forEach((result, i) => {
+    // Separate local providers (IndexedDB, BroadcastChannel) from network providers (Hocuspocus, WebSocket)
+    // Local providers are awaited so data is available immediately; network providers sync in the background
+    // via Yjs observers that are already registered above.
+    const localProviders = this._providers.filter(p => p.type === 'local');
+    const networkProviders = this._providers.filter(p => p.type === 'network');
+
+    // Await local providers for immediate data availability
+    const localResults = await Promise.allSettled(localProviders.map(p => p.connect()));
+    localResults.forEach((result, i) => {
       if (result.status === 'rejected') {
-        console.error(`[Kritzel] Sync provider "${this._providers[i]?.constructor.name}" failed to connect:`, result.reason);
+        console.error(`[Kritzel] Sync provider "${localProviders[i]?.constructor.name}" failed to connect:`, result.reason);
       }
     });
+
+    // Connect network providers in the background (remote data arrives via Yjs observers)
+    for (const provider of networkProviders) {
+      provider.connect().catch(err => {
+        console.error(`[Kritzel] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
+      });
+    }
     this._isReady = true;
 
     // Find the first provider that exposes awareness (network providers)
-    for (const provider of this._providers) {
+    // Awareness is available immediately after provider construction, before connect() resolves
+    for (const provider of networkProviders) {
       if (provider.awareness) {
         this._awareness = provider.awareness;
         break;

@@ -132,15 +132,19 @@ const createMockCore = (overrides: Partial<MockCore> = {}): MockCore => ({
 });
 
 interface MockProvider {
+  type: 'local';
   connect: jest.Mock<Promise<void>>;
   disconnect: jest.Mock<void>;
+  reconnect: jest.Mock<Promise<void>>;
   destroy: jest.Mock<void>;
   awareness?: any;
 }
 
 const createMockProvider = (): MockProvider => ({
+  type: 'local',
   connect: jest.fn().mockResolvedValue(undefined),
   disconnect: jest.fn(),
+  reconnect: jest.fn().mockResolvedValue(undefined),
   destroy: jest.fn(),
 });
 
