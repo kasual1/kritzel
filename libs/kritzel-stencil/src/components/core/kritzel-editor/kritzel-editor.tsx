@@ -27,7 +27,7 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, HocuspocusSyncProvider, IndexedDBSyncProvider, KritzelUndoState } from '../../..';
+import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, IndexedDBSyncProvider, KritzelUndoState } from '../../..';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
@@ -60,11 +60,7 @@ export class KritzelEditor {
     showSyncProviderInfo: true,
     showMigrationInfo: true,
   };
-  @Prop() user?: IKritzelUser = {
-    id: crypto.randomUUID(),
-    displayName: 'Guest' + Math.floor(Math.random() * 1000),
-    isGuest: false
-  }
+  @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
   @Prop() controls: KritzelToolbarControl[] = [
     {
@@ -212,8 +208,7 @@ export class KritzelEditor {
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() syncConfig?: KritzelSyncConfig = {
-    appStateId: 'kritzel-app',
-    providers: [HocuspocusSyncProvider, IndexedDBSyncProvider],
+    providers: [IndexedDBSyncProvider]
   };
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
