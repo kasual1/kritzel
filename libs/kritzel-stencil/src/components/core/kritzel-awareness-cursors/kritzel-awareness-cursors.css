@@ -95,3 +95,16 @@
 .edge-indicator:hover .edge-label {
   opacity: 1;
 }
+
+.remote-selection-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-width: 2px;
+  border-style: solid;
+  pointer-events: none;
+  will-change: transform, width, height;
+  transition: transform var(--kritzel-awareness-cursor-transition-duration, 100ms) ease-out,
+              width var(--kritzel-awareness-cursor-transition-duration, 100ms) ease-out,
+              height var(--kritzel-awareness-cursor-transition-duration, 100ms) ease-out;
+}

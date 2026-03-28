@@ -582,6 +582,7 @@ export class KritzelCore {
     if (selectionBox) {
       this._store.state.objects.remove(object => object.id === selectionBox.id);
       this._store.setSelectionBox(null);
+      this._store.state.objects.clearLocalSelectionBox();
     }
   }
 

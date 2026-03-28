@@ -602,6 +602,7 @@ export class KritzelEngine {
     this.core.store.state.isContextMenuVisible = false;
     this.core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
     this.core.store.setSelectionBox(null);
+    this.core.store.state.objects.clearLocalSelectionBox();
     this.core.store.state.isSelecting = false;
     this.core.store.state.isEnabled = true;
     this.core.rerender();
@@ -1732,6 +1733,7 @@ export class KritzelEngine {
       this.core.clearSelection();
       this.core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
       this.core.store.setSelectionBox(null);
+      this.core.store.state.objects.clearLocalSelectionBox();
       this.core.store.state.isSelecting = false;
       this.core.store.state.isResizeHandleSelected = false;
       this.core.store.state.isRotationHandleSelected = false;
