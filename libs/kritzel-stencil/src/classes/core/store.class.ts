@@ -25,6 +25,7 @@ export class KritzelStore {
   private _cachedSelectionGroup: KritzelSelectionGroup | null = null;
   private _selectionBoxCacheValid: boolean = false;
   private _selectionGroupCacheValid: boolean = false;
+  private _localUserId: string | null = null;
 
   /**
    * Gets the current engine state.
@@ -91,7 +92,7 @@ export class KritzelStore {
    * When viewport boundaries are set, returns only objects within those boundaries.
    * @returns Array of all canvas objects
    */
-  get allObjects(): KritzelBaseObject<Element>[]  {
+  get allObjects(): KritzelBaseObject<Element>[] {
     if (this.hasViewportBoundaries) {
       return this._state.objects.query(this.viewportBoundaryBounds);
     }
@@ -103,8 +104,8 @@ export class KritzelStore {
    * Uses spatial querying for efficient retrieval and sorts by z-index.
    * @returns Array of objects within the current viewport, sorted by z-index ascending
    */
-  get objectsInViewport(): KritzelBaseObject<Element>[]  {
-     const viewportBounds = {
+  get objectsInViewport(): KritzelBaseObject<Element>[] {
+    const viewportBounds = {
       x: -this._state.translateX / this._state.scale,
       y: -this._state.translateY / this._state.scale,
       z: this._state.scale,
@@ -113,16 +114,14 @@ export class KritzelStore {
       depth: 100,
     };
 
-    return this._state.objects
-      .query(viewportBounds)
-      .sort((a, b) => a.zIndex - b.zIndex);
+    return this._state.objects.query(viewportBounds).sort((a, b) => a.zIndex - b.zIndex);
   }
 
   /**
    * Gets all objects excluding selection-related objects (selection group and selection box).
    * @returns Array of all regular canvas objects
    */
-  get allNonSelectionObjects(): KritzelBaseObject<Element>[]  {
+  get allNonSelectionObjects(): KritzelBaseObject<Element>[] {
     return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
   }
 
@@ -150,16 +149,21 @@ export class KritzelStore {
   }
 
   /**
-   * Gets the current selection group if one exists.
+   * Gets the current local user's selection group if one exists.
+   * When a local user ID is set, returns only the selection group belonging to that user.
    * Uses caching for O(1) access after initial lookup.
-   * @returns The selection group or null if none exists
+   * @returns The local user's selection group or null if none exists
    */
   get selectionGroup(): KritzelSelectionGroup | null {
     if (this._selectionGroupCacheValid) {
       return this._cachedSelectionGroup;
     }
     const selectionGroups = this._state.objects.filter(o => o instanceof KritzelSelectionGroup);
-    this._cachedSelectionGroup = selectionGroups.length > 0 ? (selectionGroups[0] as KritzelSelectionGroup) : null;
+    if (this._localUserId) {
+      this._cachedSelectionGroup = (selectionGroups as KritzelSelectionGroup[]).find(sg => sg.userId === this._localUserId) ?? null;
+    } else {
+      this._cachedSelectionGroup = selectionGroups.length > 0 ? (selectionGroups[0] as KritzelSelectionGroup) : null;
+    }
     this._selectionGroupCacheValid = true;
     return this._cachedSelectionGroup;
   }
@@ -190,6 +194,16 @@ export class KritzelStore {
   setSelectionGroup(group: KritzelSelectionGroup | null): void {
     this._cachedSelectionGroup = group;
     this._selectionGroupCacheValid = true;
+  }
+
+  /**
+   * Sets the local user ID for scoping selection group lookups.
+   * When set, the selectionGroup getter returns only the group owned by this user.
+   * @param userId - The local user's ID, or null for non-collaborative mode
+   */
+  setLocalUserId(userId: string | null): void {
+    this._localUserId = userId;
+    this.invalidateSelectionCache();
   }
 
   /**

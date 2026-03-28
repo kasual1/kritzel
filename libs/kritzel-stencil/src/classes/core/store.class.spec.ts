@@ -422,6 +422,64 @@ describe('KritzelStore', () => {
 
       filterSpy.mockRestore();
     });
+
+    it('should return only the local user\'s selection group when localUserId is set', () => {
+      const localGroup = new KritzelSelectionGroup();
+      (localGroup as any).userId = 'user-a';
+
+      const remoteGroup = new KritzelSelectionGroup();
+      (remoteGroup as any).userId = 'user-b';
+
+      mockState.objects.insert(localGroup);
+      mockState.objects.insert(remoteGroup);
+
+      store.setLocalUserId('user-a');
+
+      expect(store.selectionGroup).toBe(localGroup);
+    });
+
+    it('should return null when no selection group matches localUserId', () => {
+      const remoteGroup = new KritzelSelectionGroup();
+      (remoteGroup as any).userId = 'user-b';
+
+      mockState.objects.insert(remoteGroup);
+
+      store.setLocalUserId('user-a');
+
+      expect(store.selectionGroup).toBeNull();
+    });
+
+    it('should fall back to first group when localUserId is null', () => {
+      const groupA = new KritzelSelectionGroup();
+      (groupA as any).userId = 'user-a';
+
+      const groupB = new KritzelSelectionGroup();
+      (groupB as any).userId = 'user-b';
+
+      mockState.objects.insert(groupA);
+      mockState.objects.insert(groupB);
+
+      store.setLocalUserId(null);
+
+      expect(store.selectionGroup).toBe(groupA);
+    });
+  });
+
+  describe('setLocalUserId', () => {
+    it('should invalidate selection cache when called', () => {
+      const selGroup = new KritzelSelectionGroup();
+      (selGroup as any).userId = 'user-a';
+      mockState.objects.insert(selGroup);
+
+      const filterSpy = jest.spyOn(mockState.objects, 'filter');
+
+      store.setLocalUserId('user-a');
+      store.selectionGroup; // should query with userId filter
+
+      expect(filterSpy).toHaveBeenCalled();
+
+      filterSpy.mockRestore();
+    });
   });
 
   describe('setSelectionBox', () => {
