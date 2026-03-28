@@ -65,12 +65,14 @@ export class KritzelAwarenessCursors {
       const user = state.user as IKritzelUser;
       const cursor = state.cursor as { x: number; y: number } | null;
       const activeObjectId = (state.activeObjectId as string) || null;
+      const selectionBox = (state.selectionBox as { x: number; y: number; width: number; height: number }) || null;
 
       updated.set(clientId, {
         clientId,
         user,
         cursor,
         activeObjectId,
+        selectionBox,
         lastUpdated: now,
       });
     });
@@ -247,6 +249,30 @@ export class KritzelAwarenessCursors {
           }
 
           return null;
+        })}
+        {cursors.map(remoteCursor => {
+          if (!remoteCursor.selectionBox) return null;
+
+          const color = remoteCursor.user.color || '#6B7280';
+          const box = remoteCursor.selectionBox;
+          const topLeft = this.worldToScreen(box.x, box.y);
+          const { scale } = this.core.store.state;
+          const screenWidth = box.width * scale;
+          const screenHeight = box.height * scale;
+
+          return (
+            <div
+              key={`selection-box-${remoteCursor.clientId}`}
+              class="remote-selection-box"
+              style={{
+                transform: `translate(${topLeft.x}px, ${topLeft.y}px)`,
+                width: `${screenWidth}px`,
+                height: `${screenHeight}px`,
+                backgroundColor: `color-mix(in srgb, ${color} 20%, transparent)`,
+                borderColor: `color-mix(in srgb, ${color} 50%, transparent)`,
+              }}
+            ></div>
+          );
         })}
       </Host>
     );

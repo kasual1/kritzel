@@ -139,6 +139,27 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   /**
+   * Broadcasts the local user's selection box bounds via awareness.
+   * Remote clients use this to render the selection rectangle in the user's color.
+   */
+  setLocalSelectionBox(box: { x: number; y: number; width: number; height: number }): void {
+    if (!this._awareness) {
+      return;
+    }
+    this._awareness.setLocalStateField('selectionBox', box);
+  }
+
+  /**
+   * Clears the local selection box from awareness (e.g., when selection completes or is cancelled).
+   */
+  clearLocalSelectionBox(): void {
+    if (!this._awareness) {
+      return;
+    }
+    this._awareness.setLocalStateField('selectionBox', null);
+  }
+
+  /**
    * Registers a callback to be invoked when the awareness state changes.
    * The callback receives the full awareness states map.
    */

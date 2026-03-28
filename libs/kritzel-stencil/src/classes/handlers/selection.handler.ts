@@ -188,6 +188,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     this._core.store.state.isSelecting = false;
     this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
     this._core.store.setSelectionBox(null);
+    this._core.store.state.objects.clearLocalSelectionBox();
   }
 
   /**
@@ -289,6 +290,13 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       selectionBox.translateX = Math.min(currentX, this.startX);
       selectionBox.translateY = Math.min(currentY, this.startY);
 
+      this._core.store.state.objects.setLocalSelectionBox({
+        x: selectionBox.translateX,
+        y: selectionBox.translateY,
+        width: width / selectionBox.scale,
+        height: height / selectionBox.scale,
+      });
+
       if (width > 0 || height > 0) {
         this.updateSelectedObjects();
       } else {
@@ -329,6 +337,13 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       selectionBox.height = height;
       selectionBox.translateX = Math.min(currentX, this.startX);
       selectionBox.translateY = Math.min(currentY, this.startY);
+
+      this._core.store.state.objects.setLocalSelectionBox({
+        x: selectionBox.translateX,
+        y: selectionBox.translateY,
+        width: width / selectionBox.scale,
+        height: height / selectionBox.scale,
+      });
 
       if (width > 0 || height > 0) {
         this.updateSelectedObjects();
