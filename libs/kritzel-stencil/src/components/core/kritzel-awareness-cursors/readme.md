@@ -10,7 +10,7 @@
 | Property               | Attribute                | Description | Type          | Default     |
 | ---------------------- | ------------------------ | ----------- | ------------- | ----------- |
 | `core`                 | --                       |             | `KritzelCore` | `undefined` |
-| `edgeIndicatorPadding` | `edge-indicator-padding` |             | `number`      | `40`        |
+| `edgeIndicatorPadding` | `edge-indicator-padding` |             | `number`      | `8`         |
 | `showEdgeIndicators`   | `show-edge-indicators`   |             | `boolean`     | `true`      |
 
 
