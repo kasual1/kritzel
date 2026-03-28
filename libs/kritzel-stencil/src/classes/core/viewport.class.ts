@@ -176,6 +176,8 @@ export class KritzelViewport {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 2) {
+        this._core.store.state.objects?.clearCursorPosition();
+
         const currentPath = this._core.store.currentPath;
         if (currentPath) {
           this._core.store.state.objects.remove(obj => obj.id === currentPath.id);
@@ -249,11 +251,15 @@ export class KritzelViewport {
       const xRelativeToHost = event.clientX - hostRect.left;
       const yRelativeToHost = event.clientY - hostRect.top;
 
-      this._core.store.state.pointerX = (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale;
-      this._core.store.state.pointerY = (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale;
-      this._core.store.state.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
-
       const activePointers = Array.from(this._core.store.state.pointers.values());
+
+      if (this._core.store.state.isScaling || activePointers.length > 1) {
+        this._core.store.state.objects?.clearCursorPosition();
+      } else {
+        this._core.store.state.pointerX = (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale;
+        this._core.store.state.pointerY = (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale;
+        this._core.store.state.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
+      }
 
       if (activePointers.length === 2) {
         const firstTouchX = activePointers[0].clientX - this._core.store.offsetX;
