@@ -2,10 +2,23 @@ import * as Y from 'yjs';
 import { Awareness } from 'y-protocols/awareness';
 
 /**
+ * Distinguishes local-only providers (IndexedDB, BroadcastChannel) from
+ * network providers (WebSocket, Hocuspocus) that require a server connection.
+ */
+export type SyncProviderType = 'local' | 'network';
+
+/**
  * Interface for sync providers that handle data synchronization across different mediums
  * (IndexedDB, BroadcastChannel, WebSocket, etc.)
  */
 export interface ISyncProvider {
+  /**
+   * Whether this provider operates locally or over the network.
+   * Local providers resolve quickly and are awaited during initialization.
+   * Network providers connect in the background so they don't block the editor.
+   */
+  readonly type: SyncProviderType;
+
   /**
    * The Yjs Awareness instance for this provider, if supported.
    * Network providers (WebSocket, Hocuspocus) return an Awareness instance;
@@ -22,6 +35,12 @@ export interface ISyncProvider {
    * Disconnect the provider (can be reconnected later)
    */
   disconnect(): void;
+
+  /**
+   * Disconnect and reconnect the provider.
+   * Useful for recovering from stale connections after network changes or tab visibility restore.
+   */
+  reconnect(): Promise<void>;
 
   /**
    * Destroy the provider and clean up all resources

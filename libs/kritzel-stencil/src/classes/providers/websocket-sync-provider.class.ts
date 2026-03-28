@@ -52,6 +52,7 @@ export interface WebSocketOptions {
  * WebSocket sync provider for real-time collaboration
  */
 export class WebSocketSyncProvider implements ISyncProvider {
+  readonly type = 'network';
   private provider: WebsocketProvider;
   private isConnected: boolean = false;
   private _quiet: boolean = false;
@@ -151,6 +152,11 @@ export class WebSocketSyncProvider implements ISyncProvider {
       this.provider.disconnect();
     }
     this.isConnected = false;
+  }
+
+  async reconnect(): Promise<void> {
+    this.disconnect();
+    return this.connect();
   }
 
   destroy(): void {
