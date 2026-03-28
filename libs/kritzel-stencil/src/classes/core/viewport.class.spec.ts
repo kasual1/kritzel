@@ -60,6 +60,7 @@ describe('KritzelViewport', () => {
         allObjects: jest.fn().mockReturnValue([]),
         query: jest.fn().mockReturnValue([]),
         updateCursorPosition: jest.fn(),
+        clearCursorPosition: jest.fn(),
       },
       activeWorkspace: { id: 'workspace-1' },
     };
@@ -407,6 +408,28 @@ describe('KritzelViewport', () => {
     });
 
     describe('touch pinch-to-zoom', () => {
+      it('should clear cursor awareness when two-finger scaling starts', () => {
+        const pointer1 = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 100,
+          clientY: 100,
+        });
+        const pointer2 = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 2,
+          clientX: 200,
+          clientY: 200,
+        });
+
+        mockState.pointers.set(1, pointer1);
+        mockState.pointers.set(2, pointer2);
+
+        viewport.handlePointerDown(pointer2);
+
+        expect(mockState.objects.clearCursorPosition).toHaveBeenCalled();
+      });
+
       it('should scale viewport during two-finger pinch', () => {
         mockState.host = mockHost;
         mockState.scale = 1;
@@ -455,6 +478,57 @@ describe('KritzelViewport', () => {
 
         expect(mockState.hasViewportChanged).toBe(true);
         expect(mockCore.rerender).toHaveBeenCalled();
+      });
+
+      it('should not broadcast cursor awareness during two-finger pinch', () => {
+        mockState.host = mockHost;
+
+        const pointer1 = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 100,
+          clientY: 200,
+        });
+        const pointer2 = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 2,
+          clientX: 300,
+          clientY: 400,
+        });
+
+        mockState.pointers.set(1, pointer1);
+        mockState.pointers.set(2, pointer2);
+        mockState.isScaling = true;
+        viewport.initialTouchDistance = Math.sqrt(
+          Math.pow(100 - 300, 2) + Math.pow(200 - 400, 2)
+        );
+        viewport.startX = 200;
+        viewport.startY = 300;
+
+        viewport.handlePointerMove(pointer2);
+
+        expect(mockState.objects.updateCursorPosition).not.toHaveBeenCalled();
+        expect(mockState.objects.clearCursorPosition).toHaveBeenCalled();
+      });
+
+      it('should continue broadcasting cursor awareness for single-touch moves when not scaling', () => {
+        mockState.host = mockHost;
+
+        const pointer = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 120,
+          clientY: 140,
+        });
+
+        mockState.pointers.set(1, pointer);
+
+        viewport.handlePointerMove(pointer);
+
+        expect(mockState.pointerX).toBe(120);
+        expect(mockState.pointerY).toBe(140);
+        expect(mockState.objects.updateCursorPosition).toHaveBeenCalledWith(120, 140);
+        expect(mockState.objects.clearCursorPosition).not.toHaveBeenCalled();
       });
 
       it('should not scale beyond scaleMax', () => {
