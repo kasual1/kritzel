@@ -363,17 +363,25 @@ export class KritzelAnchorManager {
 
 
 
-    const startAnchorViz = this.computeAnchorVisualization(line, 'start');
-    const endAnchorViz = this.computeAnchorVisualization(line, 'end');
+    const startAnchorVizRaw = this.computeAnchorVisualization(line, 'start');
+    const endAnchorVizRaw = this.computeAnchorVisualization(line, 'end');
+
+    const startAnchorViz = this.isFiniteAnchorVisualization(startAnchorVizRaw) ? startAnchorVizRaw : null;
+    const endAnchorViz = this.isFiniteAnchorVisualization(endAnchorVizRaw) ? endAnchorVizRaw : null;
 
     if (!startAnchorViz && !endAnchorViz) return null;
 
-    const scale = this._core.store.state.scale;
-    const lineStrokeWidth = line.strokeWidth / line.scale;
+    const scale = this.getSafeScale(this._core.store.state.scale);
+    const lineScale = this.getSafeScale(line.scale);
+    const lineStrokeWidth = line.strokeWidth / lineScale;
     const indicatorStrokeWidth = `${2 / scale}`;
     const dashLength = Math.max(lineStrokeWidth * 2, 4 / scale);
     const dashArray = `${dashLength} ${dashLength}`;
     const indicatorRadius = 8 / scale;
+
+    if (!this.areFiniteNumbers(lineStrokeWidth, dashLength, indicatorRadius)) {
+      return null;
+    }
 
     return {
       lineStrokeWidth,
@@ -397,35 +405,45 @@ export class KritzelAnchorManager {
     const snapCandidate = this.getSnapCandidate();
     if (!snapCandidate) return null;
 
-    const scale = this._core.store.state.scale;
+    if (!this.areFiniteNumbers(snapCandidate.centerX, snapCandidate.centerY, snapCandidate.lineEndpointX, snapCandidate.lineEndpointY)) {
+      return null;
+    }
+
+    const scale = this.getSafeScale(this._core.store.state.scale);
     const indicatorRadius = 8 / scale;
     const indicatorStrokeWidth = `${2 / scale}`;
-    const lineStrokeWidth = snapCandidate.lineStrokeWidth
-      ? `${snapCandidate.lineStrokeWidth}`
-      : `${4 / scale}`;
-    const lineStrokeWidthNum = snapCandidate.lineStrokeWidth || (4 / scale);
+    const lineStrokeWidthNum = this.areFiniteNumbers(snapCandidate.lineStrokeWidth) && (snapCandidate.lineStrokeWidth as number) > 0
+      ? (snapCandidate.lineStrokeWidth as number)
+      : (4 / scale);
+    const lineStrokeWidth = `${lineStrokeWidthNum}`;
     const dashLength = Math.max(lineStrokeWidthNum * 2, 4 / scale);
     const dashArray = `${dashLength} ${dashLength}`;
     const lineStroke = snapCandidate.lineStroke || '#000000';
 
-    let solidLineEndX = snapCandidate.edgeX;
-    let solidLineEndY = snapCandidate.edgeY;
+    let edgeX = this.areFiniteNumbers(snapCandidate.edgeX) ? snapCandidate.edgeX : undefined;
+    let edgeY = this.areFiniteNumbers(snapCandidate.edgeY) ? snapCandidate.edgeY : undefined;
+    let solidLineEndX = edgeX;
+    let solidLineEndY = edgeY;
     let arrowPoints: string | undefined;
 
-    if (snapCandidate.arrowOffset && snapCandidate.edgeX !== undefined && snapCandidate.edgeY !== undefined) {
-      const dx = snapCandidate.lineEndpointX - snapCandidate.edgeX;
-      const dy = snapCandidate.lineEndpointY - snapCandidate.edgeY;
+    const arrowOffset = this.areFiniteNumbers(snapCandidate.arrowOffset) && (snapCandidate.arrowOffset as number) > 0
+      ? (snapCandidate.arrowOffset as number)
+      : undefined;
+
+    if (arrowOffset !== undefined && edgeX !== undefined && edgeY !== undefined) {
+      const dx = snapCandidate.lineEndpointX - edgeX;
+      const dy = snapCandidate.lineEndpointY - edgeY;
       const length = Math.sqrt(dx * dx + dy * dy);
 
-      if (length > snapCandidate.arrowOffset) {
-        solidLineEndX = snapCandidate.edgeX + (dx / length) * snapCandidate.arrowOffset;
-        solidLineEndY = snapCandidate.edgeY + (dy / length) * snapCandidate.arrowOffset;
+      if (length > arrowOffset) {
+        solidLineEndX = edgeX + (dx / length) * arrowOffset;
+        solidLineEndY = edgeY + (dy / length) * arrowOffset;
       }
 
       // Calculate arrow head points
       // Direction from line endpoint to edge (arrow direction)
-      const arrowDx = snapCandidate.edgeX - snapCandidate.lineEndpointX;
-      const arrowDy = snapCandidate.edgeY - snapCandidate.lineEndpointY;
+      const arrowDx = edgeX - snapCandidate.lineEndpointX;
+      const arrowDy = edgeY - snapCandidate.lineEndpointY;
       const arrowLengthTotal = Math.sqrt(arrowDx * arrowDx + arrowDy * arrowDy);
 
       if (arrowLengthTotal > 0) {
@@ -436,12 +454,12 @@ export class KritzelAnchorManager {
         const py = ux;
 
         // Arrow dimensions
-        const arrowLength = snapCandidate.arrowOffset;
+        const arrowLength = arrowOffset;
         const arrowWidth = arrowLength; // 1:1 ratio
 
         // Arrow tip at edge
-        const tipX = snapCandidate.edgeX;
-        const tipY = snapCandidate.edgeY;
+        const tipX = edgeX;
+        const tipY = edgeY;
 
         // Arrow base
         const baseX = tipX - ux * arrowLength;
@@ -453,9 +471,45 @@ export class KritzelAnchorManager {
         const rightX = baseX - px * arrowWidth / 2;
         const rightY = baseY - py * arrowWidth / 2;
 
-        arrowPoints = `${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}`;
+        if (this.areFiniteNumbers(tipX, tipY, leftX, leftY, rightX, rightY)) {
+          arrowPoints = `${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}`;
+        }
       }
     }
+
+    if (!this.areFiniteNumbers(indicatorRadius, lineStrokeWidthNum, dashLength)) {
+      return null;
+    }
+
+    const snapLinePath = (() => {
+      if (
+        snapCandidate.controlX !== undefined &&
+        snapCandidate.controlY !== undefined &&
+        snapCandidate.t !== undefined &&
+        this.areFiniteNumbers(snapCandidate.controlX, snapCandidate.controlY, snapCandidate.t)
+      ) {
+        const startT = snapCandidate.endpoint === 'start' ? 1 - snapCandidate.t : snapCandidate.t;
+
+        // Ensure meaningful range
+        if (startT >= 1) return undefined;
+
+        const segment = this.extractQuadraticSegment(
+          { x: snapCandidate.lineEndpointX, y: snapCandidate.lineEndpointY },
+          { x: snapCandidate.controlX, y: snapCandidate.controlY },
+          { x: snapCandidate.centerX, y: snapCandidate.centerY },
+          startT,
+          1
+        );
+
+        if (!this.areFiniteNumbers(segment.start.x, segment.start.y, segment.control.x, segment.control.y, segment.end.x, segment.end.y)) {
+          return undefined;
+        }
+
+        return `M ${segment.start.x} ${segment.start.y} Q ${segment.control.x} ${segment.control.y} ${segment.end.x} ${segment.end.y}`;
+      }
+      return undefined;
+    })();
+
     return {
       indicatorRadius,
       indicatorStrokeWidth,
@@ -466,36 +520,15 @@ export class KritzelAnchorManager {
       centerY: snapCandidate.centerY,
       lineEndpointX: snapCandidate.lineEndpointX,
       lineEndpointY: snapCandidate.lineEndpointY,
-      edgeX: snapCandidate.edgeX,
-      edgeY: snapCandidate.edgeY,
-      arrowOffset: snapCandidate.arrowOffset,
+      edgeX,
+      edgeY,
+      arrowOffset,
       arrowStyle: snapCandidate.arrowStyle,
       arrowFill: snapCandidate.arrowFill,
       solidLineEndX,
       solidLineEndY,
       arrowPoints,
-      snapLinePath: (() => {
-        if (
-          snapCandidate.controlX !== undefined &&
-          snapCandidate.controlY !== undefined &&
-          snapCandidate.t !== undefined
-        ) {
-          const startT = snapCandidate.endpoint === 'start' ? 1 - snapCandidate.t : snapCandidate.t;
-
-          // Ensure meaningful range
-          if (startT >= 1) return undefined;
-
-          const segment = this.extractQuadraticSegment(
-            { x: snapCandidate.lineEndpointX, y: snapCandidate.lineEndpointY },
-            { x: snapCandidate.controlX, y: snapCandidate.controlY },
-            { x: snapCandidate.centerX, y: snapCandidate.centerY },
-            startT,
-            1
-          );
-          return `M ${segment.start.x} ${segment.start.y} Q ${segment.control.x} ${segment.control.y} ${segment.end.x} ${segment.end.y}`;
-        }
-        return undefined;
-      })(),
+      snapLinePath,
     };
   }
 
@@ -698,12 +731,21 @@ export class KritzelAnchorManager {
     const centerX = targetObject.centerX;
     const centerY = targetObject.centerY;
 
+    if (!this.areFiniteNumbers(clipInfo.worldX, clipInfo.worldY, centerX, centerY)) {
+      return null;
+    }
+
+    const pathD = this.buildAnchorPath(line, endpoint, clipInfo, targetObject) ?? undefined;
+    if (pathD && !this.isFinitePathData(pathD)) {
+      return null;
+    }
+
     return {
       edgeX: clipInfo.worldX,
       edgeY: clipInfo.worldY,
       centerX,
       centerY,
-      pathD: this.buildAnchorPath(line, endpoint, clipInfo, targetObject) ?? undefined,
+      pathD,
     };
   }
 
@@ -1566,9 +1608,11 @@ export class KritzelAnchorManager {
     const rotatedX = (px - cx) * cos - (py - cy) * sin + cx;
     const rotatedY = (px - cx) * sin + (py - cy) * cos + cy;
 
+    const safeLineScale = this.getSafeScale(line.scale);
+
     return {
-      x: rotatedX / line.scale + line.translateX,
-      y: rotatedY / line.scale + line.translateY,
+      x: rotatedX / safeLineScale + line.translateX,
+      y: rotatedY / safeLineScale + line.translateY,
     };
   }
 
@@ -1583,8 +1627,9 @@ export class KritzelAnchorManager {
    * @returns Object with x and y coordinates in the line's local SVG space.
    */
   private lineWorldToLocal(line: KritzelLine, worldX: number, worldY: number): { x: number; y: number } {
-    const dx = (worldX - line.translateX) * line.scale;
-    const dy = (worldY - line.translateY) * line.scale;
+    const safeLineScale = this.getSafeScale(line.scale);
+    const dx = (worldX - line.translateX) * safeLineScale;
+    const dy = (worldY - line.translateY) * safeLineScale;
 
     const cx = line.totalWidth / 2;
     const cy = line.totalHeight / 2;
@@ -1599,6 +1644,37 @@ export class KritzelAnchorManager {
       x: rotatedX + line.x,
       y: rotatedY + line.y,
     };
+  }
+
+  private getSafeScale(scale: number): number {
+    if (Number.isFinite(scale) && Math.abs(scale) > 1e-6) {
+      return scale;
+    }
+    return 1;
+  }
+
+  private areFiniteNumbers(...values: Array<number | undefined>): boolean {
+    return values.every(value => value !== undefined && Number.isFinite(value));
+  }
+
+  private isFiniteAnchorVisualization(visualization: AnchorVisualization | null): visualization is AnchorVisualization {
+    if (!visualization) {
+      return false;
+    }
+
+    if (!this.areFiniteNumbers(visualization.edgeX, visualization.edgeY, visualization.centerX, visualization.centerY)) {
+      return false;
+    }
+
+    if (visualization.pathD && !this.isFinitePathData(visualization.pathD)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private isFinitePathData(pathD: string): boolean {
+    return !pathD.includes('Infinity') && !pathD.includes('NaN');
   }
 
   /**
