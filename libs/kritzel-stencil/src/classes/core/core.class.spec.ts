@@ -165,6 +165,7 @@ describe('KritzelCore', () => {
       currentZIndex: 1,
       setSelectionBox: jest.fn(),
       setSelectionGroup: jest.fn(),
+      setLocalUserId: jest.fn(),
       setState: jest.fn(),
       getState: jest.fn(),
       onStateChange: jest.fn(),
@@ -1008,6 +1009,17 @@ describe('KritzelCore', () => {
       mockStore.selectionGroup = { objects: [rect] };
 
       expect(core.displaySelectionGroupUI(obj)).toBe(true);
+    });
+
+    it('should return true for a remote selection group regardless of content', () => {
+      const remoteGroup = Object.create(KritzelSelectionGroup.prototype);
+      remoteGroup.isSelected = true;
+      remoteGroup.userId = 'remote-user';
+      const line = Object.create(KritzelLine.prototype);
+      remoteGroup.objects = [line];
+      core.setUser({ id: 'local-user', displayName: 'Local' } as any);
+
+      expect(core.displaySelectionGroupUI(remoteGroup)).toBe(true);
     });
   });
 

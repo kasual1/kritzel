@@ -61,8 +61,8 @@ export class KritzelEditor {
     showMigrationInfo: true,
   };
   @Prop() user?: IKritzelUser = {
-    id: 'guest',
-    displayName: 'Guest',
+    id: crypto.randomUUID(),
+    displayName: 'Guest' + Math.floor(Math.random() * 1000),
     isGuest: false
   }
   @Prop() activeUsers?: IKritzelUser[];
@@ -212,6 +212,7 @@ export class KritzelEditor {
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() syncConfig?: KritzelSyncConfig = {
+    appStateId: 'kritzel-app',
     providers: [HocuspocusSyncProvider, IndexedDBSyncProvider],
   };
 

@@ -3,6 +3,7 @@ import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelGroup } from './group.class';
 import { KritzelClassHelper } from '../../helpers/class.helper';
+import { ThemeAwareColor } from '../../constants/color-palette.constants';
 
 /**
  * Represents a snapshot of an object's transform state at a specific point in time.
@@ -58,6 +59,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
   minY: number;
   maxY: number;
+
+  // Selection styling properties
+  handleColor?: ThemeAwareColor;
+  handleStrokeColor?: ThemeAwareColor;
+  handleSize: number = 6;
 
   /**
    * Gets the array of object IDs contained in this selection group.
@@ -119,6 +125,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   /**
    * Factory method to create a new KritzelSelectionGroup instance.
    * Initializes the selection group with default properties and associates it with the core instance.
+   * Default styling uses values from the theme system (selection section).
    * @param core - The KritzelCore instance to associate with this selection group
    * @returns A new KritzelSelectionGroup instance configured with default settings
    */
@@ -131,6 +138,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     object.userId = core.user?.id;
     object.scale = core.store.state.scale;
     object.zIndex = 99999;
+    
+    // Initialize styling with theme-aware defaults
+    object.borderColor = { light: '#007AFF', dark: '#0A84FF' } as ThemeAwareColor;
+    object.borderWidth = 2;
+    object.handleColor = { light: '#ffffff', dark: '#1a1a1a' } as ThemeAwareColor;
+    object.handleStrokeColor = { light: '#007AFF', dark: '#0A84FF' } as ThemeAwareColor;
+    object.handleSize = 6;
 
     return object;
   }
@@ -310,7 +324,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
    * @returns A serializable object representation of the selection group
    */
   override serialize() {
-    const { _core, _elementRef, element, totalWidth, totalHeight, unchangedObjectSnapshots, _cachedObjects, _cachedObjectIdsHash, snapshotWidth, snapshotHeight, snapshotTranslateX, snapshotTranslateY, ...remainingProps } = this as any;
+    const { _core, _elementRef, element, totalWidth, totalHeight, unchangedObjectSnapshots, _cachedObjects, _cachedObjectIdsHash, snapshotWidth, snapshotHeight, snapshotTranslateX, snapshotTranslateY, snapshotRotation, ...remainingProps } = this as any;
 
     const clonedProps = structuredClone(remainingProps);
 

@@ -133,6 +133,7 @@ export class KritzelCore {
    */
   setUser(user?: IKritzelUser): void {
     this._user = user;
+    this._store.setLocalUserId(user?.id ?? null);
     this._store.state.objects?.setLocalUser(user);
   }
 
@@ -1150,7 +1151,11 @@ export class KritzelCore {
   clearSelection() {
     this.removeSelectionGroup();
 
-    this._store.state.objects.remove(o => o instanceof KritzelSelectionBox || o instanceof KritzelSelectionGroup);
+    const localUserId = this._user?.id;
+    this._store.state.objects.remove(o =>
+      o instanceof KritzelSelectionBox ||
+      (o instanceof KritzelSelectionGroup && (localUserId == null || o.userId === localUserId || o.userId == null)),
+    );
     this._store.setSelectionBox(null);
     this._store.setSelectionGroup(null);
     this._store.state.isSelecting = false;
@@ -1330,6 +1335,11 @@ export class KritzelCore {
   displaySelectionGroupUI(object: KritzelBaseObject<any>): boolean {
     if (!object.isSelected) {
       return false;
+    }
+
+    // Remote selection groups always show group UI (border only, no handles)
+    if (object instanceof KritzelSelectionGroup && this._user?.id != null && object.userId != null && object.userId !== this._user.id) {
+      return true;
     }
 
     const selectionGroup = this._store.selectionGroup;
