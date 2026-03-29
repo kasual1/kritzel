@@ -7,4 +7,5 @@ export interface KritzelRemoteCursorState {
   activeObjectId: string | null;
   selectionBox: { x: number; y: number; width: number; height: number } | null;
   lastUpdated: number;
+  lastCursorMove: number;
 }
