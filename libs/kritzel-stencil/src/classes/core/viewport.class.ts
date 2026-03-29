@@ -27,6 +27,15 @@ export class KritzelViewport {
   /** Starting Y position for pan/zoom gestures */
   startY: number = 0;
 
+  /** Minimum movement distance (in screen pixels) before broadcasting touch cursor position */
+  private static readonly TOUCH_CURSOR_BROADCAST_THRESHOLD = 5;
+  /** Screen X position where the current touch interaction started */
+  private _touchStartScreenX: number = 0;
+  /** Screen Y position where the current touch interaction started */
+  private _touchStartScreenY: number = 0;
+  /** Whether the touch movement threshold has been exceeded for cursor broadcasting */
+  private _touchCursorBroadcastActive: boolean = false;
+
   /**
    * Creates a new KritzelViewport instance and initializes viewport state.
    * Sets up debounced handlers for viewport updates and scaling end events.
@@ -175,6 +184,12 @@ export class KritzelViewport {
     if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
+      if (activePointers.length === 1) {
+        this._touchStartScreenX = event.clientX;
+        this._touchStartScreenY = event.clientY;
+        this._touchCursorBroadcastActive = false;
+      }
+
       if (activePointers.length === 2) {
         this._core.store.state.objects?.clearCursorPosition();
 
@@ -258,7 +273,18 @@ export class KritzelViewport {
       } else {
         this._core.store.state.pointerX = (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale;
         this._core.store.state.pointerY = (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale;
-        this._core.store.state.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
+
+        if (!this._touchCursorBroadcastActive) {
+          const dx = event.clientX - this._touchStartScreenX;
+          const dy = event.clientY - this._touchStartScreenY;
+          if (Math.sqrt(dx * dx + dy * dy) >= KritzelViewport.TOUCH_CURSOR_BROADCAST_THRESHOLD) {
+            this._touchCursorBroadcastActive = true;
+          }
+        }
+
+        if (this._touchCursorBroadcastActive) {
+          this._core.store.state.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
+        }
       }
 
       if (activePointers.length === 2) {
@@ -323,6 +349,7 @@ export class KritzelViewport {
     }
 
     if (event.pointerType === 'touch' || event.pointerType === 'pen') {
+      this._touchCursorBroadcastActive = false;
 
       if (this._core.store.state.pointers.size === 0) {
         this._debounceEndScaling();

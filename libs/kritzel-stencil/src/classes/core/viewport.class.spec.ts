@@ -511,24 +511,144 @@ describe('KritzelViewport', () => {
         expect(mockState.objects.clearCursorPosition).toHaveBeenCalled();
       });
 
-      it('should continue broadcasting cursor awareness for single-touch moves when not scaling', () => {
+      it('should not broadcast cursor awareness for single-touch moves below threshold', () => {
         mockState.host = mockHost;
 
-        const pointer = createPointerEvent({
+        const pointerDown = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 100,
+          clientY: 100,
+        });
+
+        mockState.pointers.set(1, pointerDown);
+        viewport.handlePointerDown(pointerDown);
+
+        // Move only 3px — below the 5px threshold
+        const pointerMove = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 102,
+          clientY: 102,
+        });
+
+        viewport.handlePointerMove(pointerMove);
+
+        expect(mockState.pointerX).toBe(102);
+        expect(mockState.pointerY).toBe(102);
+        expect(mockState.objects.updateCursorPosition).not.toHaveBeenCalled();
+        expect(mockState.objects.clearCursorPosition).not.toHaveBeenCalled();
+      });
+
+      it('should broadcast cursor awareness for single-touch moves once threshold is exceeded', () => {
+        mockState.host = mockHost;
+
+        const pointerDown = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 100,
+          clientY: 100,
+        });
+
+        mockState.pointers.set(1, pointerDown);
+        viewport.handlePointerDown(pointerDown);
+
+        // Move 6px — above the 5px threshold
+        const pointerMove = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 105,
+          clientY: 103,
+        });
+
+        viewport.handlePointerMove(pointerMove);
+
+        expect(mockState.pointerX).toBe(105);
+        expect(mockState.pointerY).toBe(103);
+        expect(mockState.objects.updateCursorPosition).toHaveBeenCalledWith(105, 103);
+        expect(mockState.objects.clearCursorPosition).not.toHaveBeenCalled();
+      });
+
+      it('should keep broadcasting after threshold is exceeded on subsequent moves', () => {
+        mockState.host = mockHost;
+
+        const pointerDown = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 100,
+          clientY: 100,
+        });
+
+        mockState.pointers.set(1, pointerDown);
+        viewport.handlePointerDown(pointerDown);
+
+        // First move exceeds threshold
+        const pointerMove1 = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 110,
+          clientY: 100,
+        });
+        viewport.handlePointerMove(pointerMove1);
+        expect(mockState.objects.updateCursorPosition).toHaveBeenCalledTimes(1);
+
+        // Second move — still broadcasting even though it's close to the previous position
+        const pointerMove2 = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 111,
+          clientY: 100,
+        });
+        viewport.handlePointerMove(pointerMove2);
+        expect(mockState.objects.updateCursorPosition).toHaveBeenCalledTimes(2);
+      });
+
+      it('should reset touch cursor broadcast threshold on new touch interaction', () => {
+        mockState.host = mockHost;
+
+        // First touch: exceed threshold
+        const pointerDown1 = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 100,
+          clientY: 100,
+        });
+        mockState.pointers.set(1, pointerDown1);
+        viewport.handlePointerDown(pointerDown1);
+
+        const pointerMove1 = createPointerEvent({
           pointerType: 'touch',
           pointerId: 1,
           clientX: 120,
-          clientY: 140,
+          clientY: 100,
         });
+        viewport.handlePointerMove(pointerMove1);
+        expect(mockState.objects.updateCursorPosition).toHaveBeenCalledTimes(1);
 
-        mockState.pointers.set(1, pointer);
+        // Pointer up
+        mockState.pointers.clear();
+        viewport.handlePointerUp(createPointerEvent({ pointerType: 'touch', pointerId: 1 }));
 
-        viewport.handlePointerMove(pointer);
+        mockState.objects.updateCursorPosition.mockClear();
 
-        expect(mockState.pointerX).toBe(120);
-        expect(mockState.pointerY).toBe(140);
-        expect(mockState.objects.updateCursorPosition).toHaveBeenCalledWith(120, 140);
-        expect(mockState.objects.clearCursorPosition).not.toHaveBeenCalled();
+        // Second touch: below threshold again
+        const pointerDown2 = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 2,
+          clientX: 200,
+          clientY: 200,
+        });
+        mockState.pointers.set(2, pointerDown2);
+        viewport.handlePointerDown(pointerDown2);
+
+        const pointerMove2 = createPointerEvent({
+          pointerType: 'touch',
+          pointerId: 2,
+          clientX: 201,
+          clientY: 201,
+        });
+        viewport.handlePointerMove(pointerMove2);
+        expect(mockState.objects.updateCursorPosition).not.toHaveBeenCalled();
       });
 
       it('should not scale beyond scaleMax', () => {
