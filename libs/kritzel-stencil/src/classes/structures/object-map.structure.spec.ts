@@ -1107,4 +1107,220 @@ describe('KritzelObjectMap', () => {
       // No error means it registered successfully
     });
   });
+
+  describe('removeOrphanedSelectionGroups', () => {
+    const createMockAwareness = (states: Map<number, Record<string, unknown>> = new Map()) => ({
+      clientID: 1,
+      on: jest.fn(),
+      off: jest.fn(),
+      getStates: jest.fn().mockReturnValue(states),
+      setLocalStateField: jest.fn(),
+    });
+
+    const createMockSelectionGroup = (id: string, userId: string | null) => {
+      const { KritzelSelectionGroup } = require('../objects/selection-group.class');
+      const sg: any = {
+        id,
+        userId,
+        __class__: 'KritzelSelectionGroup',
+        rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 10, height: 10 },
+        serialize: jest.fn().mockReturnValue({ id, __class__: 'KritzelSelectionGroup' }),
+      };
+      Object.setPrototypeOf(sg, KritzelSelectionGroup.prototype);
+      return sg;
+    };
+
+    it('should do nothing when no awareness is available', async () => {
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+
+      objectMap.removeOrphanedSelectionGroups();
+
+      expect(mockQuadtreeFilter).not.toHaveBeenCalled();
+    });
+
+    it('should remove selection groups whose userId is not in awareness', async () => {
+      const states = new Map<number, Record<string, unknown>>([
+        [1, { user: { id: 'local-user' } }],
+      ]);
+      const mockAwareness = createMockAwareness(states);
+      const provider = createMockProvider();
+      provider.awareness = mockAwareness;
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      const coreWithUser = {
+        ...createMockCore(),
+        user: { id: 'local-user' },
+        store: { invalidateSelectionCache: jest.fn() },
+      };
+
+      const map2 = new KritzelObjectMap();
+      await map2.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      const orphanedGroup = createMockSelectionGroup('sg-remote', 'disconnected-user');
+      mockQuadtreeFilter.mockReturnValueOnce([orphanedGroup]);
+      mockYdocTransact.mockClear();
+
+      map2.removeOrphanedSelectionGroups();
+
+      expect(mockQuadtreeRemove).toHaveBeenCalled();
+      expect(mockMapDelete).toHaveBeenCalledWith('sg-remote');
+      expect(coreWithUser.store.invalidateSelectionCache).toHaveBeenCalled();
+      expect(coreWithUser.rerender).toHaveBeenCalled();
+    });
+
+    it('should not remove the local user selection group', async () => {
+      const states = new Map<number, Record<string, unknown>>([
+        [1, { user: { id: 'local-user' } }],
+      ]);
+      const mockAwareness = createMockAwareness(states);
+      const provider = createMockProvider();
+      provider.awareness = mockAwareness;
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      const coreWithUser = {
+        ...createMockCore(),
+        user: { id: 'local-user' },
+        store: { invalidateSelectionCache: jest.fn() },
+      };
+
+      const map2 = new KritzelObjectMap();
+      await map2.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      // The filter should receive a predicate that excludes the local user's group
+      mockQuadtreeFilter.mockReturnValueOnce([]);
+
+      map2.removeOrphanedSelectionGroups();
+
+      expect(mockQuadtreeRemove).not.toHaveBeenCalled();
+      expect(coreWithUser.store.invalidateSelectionCache).not.toHaveBeenCalled();
+    });
+
+    it('should not remove selection groups for users still in awareness', async () => {
+      const states = new Map<number, Record<string, unknown>>([
+        [1, { user: { id: 'local-user' } }],
+        [2, { user: { id: 'remote-user' } }],
+      ]);
+      const mockAwareness = createMockAwareness(states);
+      const provider = createMockProvider();
+      provider.awareness = mockAwareness;
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      const coreWithUser = {
+        ...createMockCore(),
+        user: { id: 'local-user' },
+        store: { invalidateSelectionCache: jest.fn() },
+      };
+
+      const map2 = new KritzelObjectMap();
+      await map2.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      // The filter should return nothing since no groups are orphaned
+      mockQuadtreeFilter.mockReturnValueOnce([]);
+
+      map2.removeOrphanedSelectionGroups();
+
+      expect(mockQuadtreeRemove).not.toHaveBeenCalled();
+    });
+
+    it('should be triggered when awareness reports removed clients', async () => {
+      const states = new Map<number, Record<string, unknown>>([
+        [1, { user: { id: 'local-user' } }],
+      ]);
+      const mockAwareness = createMockAwareness(states);
+      const provider = createMockProvider();
+      provider.awareness = mockAwareness;
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      const coreWithUser = {
+        ...createMockCore(),
+        user: { id: 'local-user' },
+        store: { invalidateSelectionCache: jest.fn() },
+      };
+
+      const map2 = new KritzelObjectMap();
+      await map2.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      // Get the awareness change handler that was registered
+      const awarenessHandler = mockAwareness.on.mock.calls.find(
+        (call: unknown[]) => call[0] === 'change',
+      )?.[1];
+      expect(awarenessHandler).toBeDefined();
+
+      const orphanedGroup = createMockSelectionGroup('sg-orphan', 'gone-user');
+      mockQuadtreeFilter.mockReturnValueOnce([orphanedGroup]);
+
+      // Simulate a client disconnect
+      awarenessHandler({ added: [], updated: [], removed: [2] });
+
+      expect(mockQuadtreeRemove).toHaveBeenCalled();
+      expect(mockMapDelete).toHaveBeenCalledWith('sg-orphan');
+    });
+  });
+
+  describe('loadFromYjs - stale selection group cleanup', () => {
+    it('should skip remote selection groups during load', async () => {
+      const { KritzelSelectionGroup } = require('../objects/selection-group.class');
+
+      const normalObject = createMockObject('obj-1');
+      const remoteSelGroup: any = {
+        id: 'sg-remote',
+        userId: 'other-user',
+        __class__: 'KritzelSelectionGroup',
+        rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 10, height: 10 },
+        serialize: jest.fn(),
+      };
+      Object.setPrototypeOf(remoteSelGroup, KritzelSelectionGroup.prototype);
+
+      let callIndex = 0;
+      mockRevive.mockImplementation(() => {
+        return callIndex++ === 0 ? normalObject : remoteSelGroup;
+      });
+
+      mockMapForEach.mockImplementation((cb: (val: any, key: string) => void) => {
+        cb({ id: 'obj-1', type: 'path' }, 'obj-1');
+        cb({ id: 'sg-remote', __class__: 'KritzelSelectionGroup' }, 'sg-remote');
+      });
+
+      const coreWithUser = {
+        ...createMockCore(),
+        user: { id: 'local-user' },
+      };
+
+      await objectMap.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [] });
+
+      // Normal object should be inserted
+      expect(mockQuadtreeInsert).toHaveBeenCalledWith(normalObject);
+      // Remote selection group should be deleted from Yjs
+      expect(mockMapDelete).toHaveBeenCalledWith('sg-remote');
+    });
+
+    it('should keep the local user selection group during load', async () => {
+      const { KritzelSelectionGroup } = require('../objects/selection-group.class');
+
+      const localSelGroup: any = {
+        id: 'sg-local',
+        userId: 'local-user',
+        __class__: 'KritzelSelectionGroup',
+        rotatedBoundingBox: { x: 0, y: 0, z: 0, width: 10, height: 10 },
+        serialize: jest.fn().mockReturnValue({ id: 'sg-local', __class__: 'KritzelSelectionGroup' }),
+      };
+      Object.setPrototypeOf(localSelGroup, KritzelSelectionGroup.prototype);
+
+      mockRevive.mockReturnValue(localSelGroup);
+      mockMapForEach.mockImplementation((cb: (val: any, key: string) => void) => {
+        cb({ id: 'sg-local', __class__: 'KritzelSelectionGroup' }, 'sg-local');
+      });
+
+      const coreWithUser = {
+        ...createMockCore(),
+        user: { id: 'local-user' },
+      };
+
+      await objectMap.initialize(coreWithUser as unknown as KritzelCore, 'ws-1', { providers: [] });
+
+      // Local user's selection group should be inserted, not deleted
+      expect(mockQuadtreeInsert).toHaveBeenCalledWith(localSelGroup);
+      expect(mockMapDelete).not.toHaveBeenCalledWith('sg-local');
+    });
+  });
 });
