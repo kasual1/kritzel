@@ -160,6 +160,51 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   /**
+   * Removes selection groups whose owner is no longer present in awareness.
+   * Called when remote clients disconnect to prevent orphaned selection groups
+   * from persisting in the workspace state.
+   */
+  removeOrphanedSelectionGroups(): void {
+    if (!this._awareness) {
+      return;
+    }
+
+    const states = this._awareness.getStates();
+    const activeUserIds = new Set<string>();
+    states.forEach(state => {
+      const userId = (state.user as { id?: string } | undefined)?.id;
+      if (userId) {
+        activeUserIds.add(userId);
+      }
+    });
+
+    const localUserId = this._core?.user?.id;
+
+    const orphanedGroups = this.quadtree.filter(
+      o => o instanceof KritzelSelectionGroup
+        && o.userId != null
+        && o.userId !== localUserId
+        && !activeUserIds.has(o.userId),
+    );
+
+    for (const group of orphanedGroups) {
+      this.quadtree.remove(o => o.id === group.id);
+      this._idMap.delete(group.id);
+
+      if (this._objectsMap) {
+        this._ydoc!.transact(() => {
+          this._objectsMap!.delete(group.id);
+        }, 'local');
+      }
+    }
+
+    if (orphanedGroups.length > 0) {
+      this._core?.store.invalidateSelectionCache();
+      this._core?.rerender();
+    }
+  }
+
+  /**
    * Registers a callback to be invoked when the awareness state changes.
    * The callback receives the full awareness states map.
    */
@@ -346,7 +391,12 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     // Subscribe to awareness changes
     if (this._awareness) {
-      this._awarenessChangeHandler = () => {
+      this._awarenessChangeHandler = (change: { added: number[]; updated: number[]; removed: number[] }) => {
+        // Clean up selection groups belonging to disconnected users
+        if (change.removed.length > 0) {
+          this.removeOrphanedSelectionGroups();
+        }
+
         const now = Date.now();
         const timeSinceLastEmit = now - this._lastAwarenessEmitTime;
 
@@ -644,11 +694,32 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     this.quadtree.reset();
     this._idMap.clear();
-    this._objectsMap.forEach(serialized => {
+
+    const localUserId = this._core?.user?.id;
+    const staleSelectionGroupIds: string[] = [];
+
+    this._objectsMap.forEach((serialized, key) => {
       const object = this._reviver.revive<T>(serialized);
+
+      // Remove remote selection groups on startup — they are transient UI state
+      // that should not survive an app restart. The owning user's session is gone.
+      if (object instanceof KritzelSelectionGroup && object.userId != null && object.userId !== localUserId) {
+        staleSelectionGroupIds.push(key);
+        return;
+      }
+
       this.quadtree.insert(object);
       this._idMap.set(object.id, object);
     });
+
+    // Clean up stale remote selection groups from Yjs
+    if (staleSelectionGroupIds.length > 0) {
+      this._ydoc!.transact(() => {
+        for (const id of staleSelectionGroupIds) {
+          this._objectsMap!.delete(id);
+        }
+      }, 'local');
+    }
   }
 
   /**
