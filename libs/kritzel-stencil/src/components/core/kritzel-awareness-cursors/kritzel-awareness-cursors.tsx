@@ -67,6 +67,12 @@ export class KritzelAwarenessCursors {
       const activeObjectId = (state.activeObjectId as string) || null;
       const selectionBox = (state.selectionBox as { x: number; y: number; width: number; height: number }) || null;
 
+      const existing = updated.get(clientId);
+      const cursorMoved =
+        !existing ||
+        !existing.cursor !== !cursor ||
+        (cursor && existing.cursor && (cursor.x !== existing.cursor.x || cursor.y !== existing.cursor.y));
+
       updated.set(clientId, {
         clientId,
         user,
@@ -74,6 +80,7 @@ export class KritzelAwarenessCursors {
         activeObjectId,
         selectionBox,
         lastUpdated: now,
+        lastCursorMove: cursorMoved ? now : (existing?.lastCursorMove ?? now),
       });
     });
 
@@ -105,7 +112,7 @@ export class KritzelAwarenessCursors {
   }
 
   private isStale(cursor: KritzelRemoteCursorState): boolean {
-    return Date.now() - cursor.lastUpdated > STALE_THRESHOLD_MS;
+    return Date.now() - cursor.lastCursorMove > STALE_THRESHOLD_MS;
   }
 
   private hasActiveDrawingCursors(): boolean {

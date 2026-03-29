@@ -19,7 +19,7 @@
 }
 
 .awareness-cursor.stale {
-  opacity: 0.3;
+  opacity: 0;
 }
 
 .awareness-cursor.tracking-object {
@@ -64,7 +64,7 @@
 }
 
 .edge-indicator.stale {
-  opacity: 0.3;
+  opacity: 0;
 }
 
 .edge-indicator.tracking-object {
