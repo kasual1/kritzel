@@ -414,7 +414,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default {     providers: [IndexedDBSyncProvider]   }
+          * @default {     appStateId: 'kritzel-app-test',     providers: [HocuspocusSyncProvider, IndexedDBSyncProvider]   }
          */
         "syncConfig"?: KritzelSyncConfig;
         "triggerSelectionChange": () => Promise<void>;
@@ -422,6 +422,9 @@ export namespace Components {
         "ungroup": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        /**
+          * @default {     id: `guest-${Math.random().toString(36).substr(2, 9)}`,     displayName: 'Guest',     isGuest: false,   }
+         */
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -2418,9 +2421,12 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         /**
-          * @default {     providers: [IndexedDBSyncProvider]   }
+          * @default {     appStateId: 'kritzel-app-test',     providers: [HocuspocusSyncProvider, IndexedDBSyncProvider]   }
          */
         "syncConfig"?: KritzelSyncConfig;
+        /**
+          * @default {     id: `guest-${Math.random().toString(36).substr(2, 9)}`,     displayName: 'Guest',     isGuest: false,   }
+         */
         "user"?: IKritzelUser;
         /**
           * @default Infinity
