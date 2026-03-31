@@ -423,7 +423,7 @@ export namespace Components {
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         /**
-          * @default {     id: `guest-${Math.random().toString(36).substr(2, 9)}`,     displayName: 'Guest',     isGuest: false,   }
+          * @default {     id: `guest-1`,     displayName: 'Guest',     isGuest: false,   }
          */
         "user"?: IKritzelUser;
         /**
@@ -2425,7 +2425,7 @@ declare namespace LocalJSX {
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
-          * @default {     id: `guest-${Math.random().toString(36).substr(2, 9)}`,     displayName: 'Guest',     isGuest: false,   }
+          * @default {     id: `guest-1`,     displayName: 'Guest',     isGuest: false,   }
          */
         "user"?: IKritzelUser;
         /**

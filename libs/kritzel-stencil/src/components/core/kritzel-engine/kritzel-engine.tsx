@@ -2132,20 +2132,31 @@ export class KritzelEngine {
 
                 {(this.core.displaySelectionGroupUI(object) || this.core.displaySelectionLineUI(object)) &&
                   (() => {
-                    const isRemoteSelection =
-                      KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') &&
-                      object.userId != null &&
-                      this.core.user?.id != null &&
-                      object.userId !== this.core.user.id;
+                    const isSelectionGroup = KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup');
+                    const localClientId = this.core.store.state.objects?.localClientId;
+
+                    const isRemoteSelection = isSelectionGroup && (
+                      // Different user
+                      (object.userId != null && this.core.user?.id != null && object.userId !== this.core.user.id) ||
+                      // Same user but different client (e.g. same account in two browser tabs)
+                      (object.clientId != null && localClientId != null && object.clientId !== localClientId)
+                    );
 
                     let remoteUserColor: string | undefined;
                     if (isRemoteSelection) {
                       const awarenessStates = this.core.store.state.objects?.awareness?.getStates();
                       if (awarenessStates) {
-                        for (const state of awarenessStates.values()) {
-                          if (state.user?.id === object.userId) {
-                            remoteUserColor = state.user.color;
-                            break;
+                        // Try direct lookup by clientId first (most precise)
+                        if (isSelectionGroup && object.clientId != null) {
+                          remoteUserColor = (awarenessStates.get(object.clientId) as any)?.user?.color;
+                        }
+                        // Fall back to userId match (for selection groups without clientId)
+                        if (!remoteUserColor) {
+                          for (const state of awarenessStates.values()) {
+                            if ((state.user as any)?.id === object.userId) {
+                              remoteUserColor = (state.user as any).color;
+                              break;
+                            }
                           }
                         }
                       }

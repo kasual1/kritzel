@@ -61,7 +61,7 @@ export class KritzelEditor {
     showMigrationInfo: true,
   };
   @Prop() user?: IKritzelUser = {
-    id: `guest-${Math.random().toString(36).substr(2, 9)}`,
+    id: `guest-1`,
     displayName: 'Guest',
     isGuest: false,
   }
