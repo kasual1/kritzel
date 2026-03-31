@@ -74,6 +74,11 @@
 .edge-arrow {
   position: absolute;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+  transition: opacity 300ms ease;
+}
+
+.edge-arrow.stale {
+  opacity: 0;
 }
 
 .edge-label {

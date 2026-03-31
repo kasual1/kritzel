@@ -103,6 +103,8 @@ export class KritzelAwarenessCursors {
       if (now - cursor.lastUpdated > REMOVE_THRESHOLD_MS) {
         updated.delete(clientId);
         changed = true;
+      } else if (!changed && now - cursor.lastCursorMove > STALE_THRESHOLD_MS) {
+        changed = true;
       }
     }
 
@@ -364,7 +366,7 @@ export class KritzelAwarenessCursors {
         }}
       >
         <svg
-          class="edge-arrow"
+          class={{ 'edge-arrow': true, stale }}
           width="16"
           height="16"
           viewBox="0 0 16 16"
