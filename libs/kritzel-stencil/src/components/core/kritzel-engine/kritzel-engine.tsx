@@ -110,10 +110,10 @@ export class KritzelEngine {
   }
 
   /** Context menu items shown when right-clicking the canvas background. */
-  @Prop() globalContextMenuItems: ContextMenuItem[];
+  @Prop() globalContextMenuItems!: ContextMenuItem[];
 
   /** Context menu items shown when right-clicking a selected object. */
-  @Prop() objectContextMenuItems: ContextMenuItem[];
+  @Prop() objectContextMenuItems!: ContextMenuItem[];
   /** Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine. */
   @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
   @Watch('scaleMax')
@@ -188,7 +188,7 @@ export class KritzelEngine {
   }
 
   /** Debug info display options controlling which debug overlays are visible */
-  @Prop() debugInfo: KritzelDebugInfo;
+  @Prop() debugInfo!: KritzelDebugInfo;
   @Watch('debugInfo')
   onDebugInfoChange(newValue: KritzelDebugInfo) {
     if (newValue) {
@@ -199,47 +199,54 @@ export class KritzelEngine {
   /** When false, wheel events will not trigger viewport pan/zoom. The event still propagates to parent elements. */
   @Prop() wheelEnabled: boolean = true;
 
+  /** External loading state. Combined with internal workspace-loading state to drive the overlay. */
+  @Prop() isLoading: boolean = false;
+  @Watch('isLoading')
+  onIsLoadingChange() {
+    this.syncLoadingState();
+  }
+
   /** Emitted when the engine has fully initialized and is ready for interaction. */
-  @Event() isEngineReady: EventEmitter<KritzelEngineState>;
+  @Event() isEngineReady!: EventEmitter<KritzelEngineState>;
 
   /** Emitted when the active drawing tool changes. */
-  @Event() activeToolChange: EventEmitter<KritzelBaseTool>;
+  @Event() activeToolChange!: EventEmitter<KritzelBaseTool>;
 
   /** Emitted when the set of selected objects changes. */
-  @Event() objectsSelectionChange: EventEmitter<void>;
+  @Event() objectsSelectionChange!: EventEmitter<void>;
 
   /** Emitted when workspaces are created, updated, or deleted. */
-  @Event() workspacesChange: EventEmitter<KritzelWorkspace[]>;
+  @Event() workspacesChange!: EventEmitter<KritzelWorkspace[]>;
 
   /** Emitted when the active workspace changes (e.g., after import). */
-  @Event() activeWorkspaceChange: EventEmitter<KritzelWorkspace>;
+  @Event() activeWorkspaceChange!: EventEmitter<KritzelWorkspace>;
 
   /** Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile. */
-  @Event() longpress: EventEmitter<PointerEvent>;
+  @Event() longpress!: EventEmitter<PointerEvent>;
 
   /** Emitted when objects on the canvas are added, removed, or modified. */
-  @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
+  @Event() objectsChange!: EventEmitter<KritzelBaseObject[]>;
 
   /** Emitted when one or more objects are added to the canvas. */
-  @Event() objectsAdded: EventEmitter<ObjectsAddedEvent>;
+  @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
 
   /** Emitted when one or more objects are removed from the canvas. */
-  @Event() objectsRemoved: EventEmitter<ObjectsRemovedEvent>;
+  @Event() objectsRemoved!: EventEmitter<ObjectsRemovedEvent>;
 
   /** Emitted when one or more objects are updated on the canvas. */
-  @Event() objectsUpdated: EventEmitter<ObjectsUpdatedEvent>;
+  @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
 
   /** Emitted when the undo/redo state changes, providing current undo availability. */
-  @Event() undoStateChange: EventEmitter<KritzelUndoState>;
+  @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
 
   /** Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom). */
-  @Event() objectsInViewportChange: EventEmitter<KritzelBaseObject<Element>[]>;
+  @Event() objectsInViewportChange!: EventEmitter<KritzelBaseObject<Element>[]>;
 
   /** Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize). */
-  @Event() viewportChange: EventEmitter<KritzelViewportState>;
+  @Event() viewportChange!: EventEmitter<KritzelViewportState>;
 
   /** Emitted when the awareness state changes (remote user cursors, presence). */
-  @Event() awarenessChange: EventEmitter<Map<number, Record<string, any>>>;
+  @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
 
   @State() forceUpdate: number = 0;
 
@@ -250,7 +257,7 @@ export class KritzelEngine {
   }
 
   @Listen('wheel', { passive: true })
-  handleWheel(ev) {
+  handleWheel(ev: WheelEvent) {
     if (this.core.store.isDisabled) {
       return;
     }
@@ -457,7 +464,7 @@ export class KritzelEngine {
     toolName: string,
     toolClass: any,
     toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
-  ): Promise<KritzelBaseTool> {
+  ): Promise<KritzelBaseTool | null> {
     if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return null;
@@ -467,7 +474,7 @@ export class KritzelEngine {
 
     if (toolConfig) {
       Object.entries(toolConfig).forEach(([key, value]) => {
-        registeredTool[key] = value;
+        (registeredTool as unknown as Record<string, unknown>)[key] = value;
       });
     }
 
@@ -600,9 +607,9 @@ export class KritzelEngine {
   async hideContextMenu() {
     this.core.store.state.pointers.clear();
     this.core.store.state.isContextMenuVisible = false;
-    this.core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
+    this.core.store.state.objects?.remove(o => o instanceof KritzelSelectionBox);
     this.core.store.setSelectionBox(null);
-    this.core.store.state.objects.clearLocalSelectionBox();
+    this.core.store.state.objects?.clearLocalSelectionBox();
     this.core.store.state.isSelecting = false;
     this.core.store.state.isEnabled = true;
     this.core.rerender();
@@ -644,7 +651,7 @@ export class KritzelEngine {
    * ```
    */
   @Method()
-  async findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean): Promise<T[]> {
+  async findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean): Promise<T[]> {
     return this.core.store.allNonSelectionObjects.filter(predicate) as T[];
   }
 
@@ -667,7 +674,7 @@ export class KritzelEngine {
     object._core = this.core;
     object.scale = this.core.store.state.scale;
     object.zIndex = this.core.store.currentZIndex;
-    object.workspaceId = this.core.store.state.activeWorkspace.id;
+    object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
     // Handle KritzelText: recreate the editor now that _core is available
     // The editor's dispatchTransaction callback needs _core for persisting changes
@@ -692,7 +699,7 @@ export class KritzelEngine {
         child._core = this.core;
         child.scale = this.core.store.state.scale;
         child.zIndex = this.core.store.currentZIndex;
-        child.workspaceId = this.core.store.state.activeWorkspace.id;
+        child.workspaceId = this.core.store.state.activeWorkspace!.id;
 
         idRemapping.set(oldId, child.id);
         object.childIds.push(child.id);
@@ -702,10 +709,10 @@ export class KritzelEngine {
       object._pendingChildren.forEach(child => {
         if (KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
           if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
-            child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId) };
+            child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
           }
           if (child.endAnchor && idRemapping.has(child.endAnchor.objectId)) {
-            child.endAnchor = { objectId: idRemapping.get(child.endAnchor.objectId) };
+            child.endAnchor = { objectId: idRemapping.get(child.endAnchor.objectId)! };
           }
         }
       });
@@ -761,9 +768,14 @@ export class KritzelEngine {
    */
   @Method()
   async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
+    const objectsMap = this.core.store.state.objects;
+    if (!objectsMap) {
+      return null;
+    }
+
     this.core.deselectAllObjects();
 
-    this.core.store.state.objects.remove(o => o.id === object.id);
+    objectsMap.remove(o => o.id === object.id);
     this.core.rerender();
     this.emitObjectsRemoved([object]);
 
@@ -789,8 +801,13 @@ export class KritzelEngine {
    */
   @Method()
   async selectObjects(objects: KritzelBaseObject[]) {
+    const selectionTool = KritzelToolRegistry.getTool('selection');
+    if (!selectionTool) {
+      return;
+    }
+
     this.core.store.state.activeTool?.onDeactivate();
-    this.core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this.core.store.setState('activeTool', selectionTool);
     this.core.deselectAllObjects();
     this.core.selectObjects(objects);
   }
@@ -798,8 +815,13 @@ export class KritzelEngine {
   /** Selects all objects currently visible in the viewport. Switches to the selection tool automatically. */
   @Method()
   async selectAllObjectsInViewport() {
+    const selectionTool = KritzelToolRegistry.getTool('selection');
+    if (!selectionTool) {
+      return;
+    }
+
     this.core.store.state.activeTool?.onDeactivate();
-    this.core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this.core.store.setState('activeTool', selectionTool);
     this.core.deselectAllObjects();
     this.core.selectAllObjectsInViewport();
   }
@@ -928,7 +950,7 @@ export class KritzelEngine {
    * @returns A data URL string of the captured image.
    */
   @Method()
-  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string> {
+  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string | null> {
     if (!this.host) return null;
 
     // Save critical state before screenshot to restore after
@@ -989,6 +1011,10 @@ export class KritzelEngine {
       const filename = `${activeWorkspaceName}-${timestamp}.png`;
 
       const dataUrl = await this.getScreenshot('png');
+      if (!dataUrl) {
+        console.error('Failed to export viewport as PNG: screenshot could not be generated');
+        return;
+      }
 
       const link = document.createElement('a');
       link.download = filename;
@@ -1009,6 +1035,10 @@ export class KritzelEngine {
       const filename = `${activeWorkspaceName}-${timestamp}.svg`;
 
       const dataUrl = await this.getScreenshot('svg');
+      if (!dataUrl) {
+        console.error('Failed to export viewport as SVG: screenshot could not be generated');
+        return;
+      }
 
       const link = document.createElement('a');
       link.download = filename;
@@ -1156,6 +1186,10 @@ export class KritzelEngine {
   @Method()
   async exportAsJson(): Promise<string> {
     const workspace = this.core.store.state.activeWorkspace;
+    if (!workspace) {
+      throw new Error('Cannot export workspace: no active workspace is loaded');
+    }
+
     const serialized = workspace.serialize({ includeObjects: true });
     return JSON.stringify(serialized, null, 2);
   }
@@ -1245,7 +1279,12 @@ export class KritzelEngine {
       console.warn(`Workspace version mismatch: expected ${WORKSPACE_EXPORT_VERSION}, got ${data.version}`);
     }
 
-    const currentWorkspaceId = this.core.store.state.activeWorkspace.id;
+    const activeWorkspace = this.core.store.state.activeWorkspace;
+    if (!activeWorkspace) {
+      throw new Error('Cannot load objects: no active workspace is loaded');
+    }
+
+    const currentWorkspaceId = activeWorkspace.id;
     let loadedCount = 0;
 
     // Revive and add objects to the current workspace
@@ -1404,7 +1443,12 @@ export class KritzelEngine {
   /** Returns the currently active workspace. */
   @Method()
   async getActiveWorkspace(): Promise<KritzelWorkspace> {
-    return this.core.store.state.activeWorkspace;
+    const activeWorkspace = this.core.store.state.activeWorkspace;
+    if (!activeWorkspace) {
+      throw new Error('No active workspace is loaded');
+    }
+
+    return activeWorkspace;
   }
 
   /**
@@ -1460,9 +1504,9 @@ export class KritzelEngine {
   }
 
   core: KritzelCore;
-  viewport: KritzelViewport;
-  contextMenuHandler: KritzelContextMenuHandler;
-  keyHandler: KritzelKeyHandler;
+  viewport!: KritzelViewport;
+  contextMenuHandler!: KritzelContextMenuHandler;
+  keyHandler!: KritzelKeyHandler;
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
 
   private _lastHadSelectionGroup: boolean = false;
@@ -1473,6 +1517,17 @@ export class KritzelEngine {
   private _workspaceInitializationTargetKey: string | null = null;
   private _syncInitPromise: Promise<void> | null = null;
   private _syncConfigRevision: number = 0;
+  private _isWorkspaceLoading: boolean = false;
+  private readonly _defaultUndoState: KritzelUndoState = {
+    canUndo: false,
+    canRedo: false,
+    undoStackSize: 0,
+    redoStackSize: 0,
+  };
+
+  private syncLoadingState(): void {
+    this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
+  }
 
   get isSelecting() {
     return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
@@ -1515,6 +1570,7 @@ export class KritzelEngine {
     this.core.store.state.viewportBoundaryRight = this.viewportBoundaryRight;
     this.core.store.state.viewportBoundaryTop = this.viewportBoundaryTop;
     this.core.store.state.viewportBoundaryBottom = this.viewportBoundaryBottom;
+    this.syncLoadingState();
   }
 
   async componentDidLoad() {
@@ -1525,7 +1581,9 @@ export class KritzelEngine {
 
       // Initialize cursor manager with target element and shadow root
       this.core.cursorManager.setTargetElement(this.cursorTarget || document.body);
-      this.core.cursorManager.setShadowRoot(this.host.shadowRoot);
+      if (this.host.shadowRoot) {
+        this.core.cursorManager.setShadowRoot(this.host.shadowRoot);
+      }
 
       // Initialize theme manager with kritzel-editor as target element
       const editorElement = this.host.closest('kritzel-editor') as HTMLElement;
@@ -1675,7 +1733,8 @@ export class KritzelEngine {
       return;
     }
 
-    this.core.store.state.isWorkspaceLoading = true;
+    this._isWorkspaceLoading = true;
+    this.syncLoadingState();
 
     const initializationPromise = this.core.initializeWorkspace(workspace, options);
     this._workspaceInitializationPromise = initializationPromise;
@@ -1688,13 +1747,27 @@ export class KritzelEngine {
         this._workspaceInitializationPromise = null;
         this._workspaceInitializationTargetKey = null;
       }
-      this.core.store.state.isWorkspaceLoading = false;
+      this._isWorkspaceLoading = false;
+      this.syncLoadingState();
     }
   }
 
   emitObjectsChange() {
+    const objectsMap = this.core.store.state.objects;
+    if (!objectsMap) {
+      this.objectsChange.emit([]);
+      this.undoStateChange.emit(this._defaultUndoState);
+
+      if (this._lastHadSelectionGroup) {
+        this._lastHadSelectionGroup = false;
+        this.objectsSelectionChange.emit();
+      }
+
+      return;
+    }
+
     const objects = this.core.store.allObjects as KritzelBaseObject<HTMLElement | SVGElement>[];
-    const undoState = this.core.store.state.objects.undoState;
+    const undoState = objectsMap.undoState;
     const hasSelectionGroup = this.core.store.selectionGroup !== null;
 
     this.objectsChange.emit(objects);
@@ -1731,20 +1804,22 @@ export class KritzelEngine {
     this.core.store.onStateChange('activeTool', this._handleActiveToolChange.bind(this));
   }
 
-  private _handleActiveToolChange(activeTool: KritzelBaseTool) {
+  private _handleActiveToolChange(activeTool: KritzelBaseTool | null) {
     if (!(activeTool instanceof KritzelSelectionTool)) {
       this.core.clearSelection();
-      this.core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
+      this.core.store.state.objects?.remove(o => o instanceof KritzelSelectionBox);
       this.core.store.setSelectionBox(null);
-      this.core.store.state.objects.clearLocalSelectionBox();
+      this.core.store.state.objects?.clearLocalSelectionBox();
       this.core.store.state.isSelecting = false;
       this.core.store.state.isResizeHandleSelected = false;
       this.core.store.state.isRotationHandleSelected = false;
     }
 
     this.core.store.state.skipContextMenu = false;
-    this.core.store.state.copiedObjects = null;
-    this.activeToolChange.emit(activeTool);
+    this.core.store.state.copiedObjects = undefined;
+    if (activeTool) {
+      this.activeToolChange.emit(activeTool);
+    }
     KritzelKeyboardHelper.forceHideKeyboard();
 
     this.core.rerender();
@@ -1775,7 +1850,7 @@ export class KritzelEngine {
 
     return (
       <Host>
-        {this.core.store.state.isWorkspaceLoading && (
+        {this.core.store.state.isLoading && (
           <div class="workspace-loading-overlay">Loading...</div>
         )}
         {this.core.store.state.debugInfo.showViewportInfo && (
@@ -1835,7 +1910,7 @@ export class KritzelEngine {
               >
                 {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
                   <svg
-                    ref={el => object.mount(el)}
+                    ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
                     style={{
                       height: object?.totalHeight + 'px',
@@ -1862,7 +1937,7 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
                   <svg
-                    ref={el => object.mount(el)}
+                    ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
                     style={{
                       height: object?.totalHeight + 'px',
@@ -1933,7 +2008,7 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                   <img
-                    ref={el => object.mount(el)}
+                    ref={el => el && object.mount(el)}
                     src={object.src}
                     style={{
                       position: 'absolute',
@@ -1961,7 +2036,7 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
                   <div
-                    ref={el => object.mount(el)}
+                    ref={el => el && object.mount(el)}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -1985,7 +2060,7 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && !this.core.displaySelectionLineUI(object) && (
                   <div
-                    ref={el => object.mount(el)}
+                    ref={el => el && object.mount(el)}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -2002,7 +2077,7 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelSelectionBox>(object, 'KritzelSelectionBox') && (
                   <div
-                    ref={el => object.mount(el)}
+                    ref={el => el && object.mount(el)}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -2037,7 +2112,7 @@ export class KritzelEngine {
                   >
                     <div
                       id="text-object"
-                      ref={el => object.mount(el)}
+                      ref={el => el && object.mount(el)}
                       onPointerDown={e => object.handlePointerDown(e)}
                       onPointerMove={e => object.handlePointerMove(e)}
                       onPointerUp={e => object.handlePointerUp(e)}
@@ -2058,7 +2133,7 @@ export class KritzelEngine {
 
                 {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') && (
                   <div
-                    ref={el => object.mount(el)}
+                    ref={el => el && object.mount(el)}
                     onPointerDown={e => object.handlePointerDown(e)}
                     onPointerMove={e => object.handlePointerMove(e)}
                     onPointerUp={e => object.handlePointerUp(e)}
@@ -2097,7 +2172,7 @@ export class KritzelEngine {
                       />
                     </svg>
                     <div
-                      ref={el => object.mountTextEditor(el)}
+                      ref={el => el && object.mountTextEditor(el)}
                       style={{
                         position: 'absolute',
                         top: '0',
@@ -2696,7 +2771,7 @@ export class KritzelEngine {
         {this.core.store.state.isContextMenuVisible && (
           <kritzel-context-menu
             class="context-menu"
-            ref={el => (this.contextMenuElement = el)}
+            ref={el => (this.contextMenuElement = el ?? null)}
             items={this.core.store.state.contextMenuItems}
             objects={this.core.store.selectionGroup?.objects || []}
             style={{
@@ -2706,13 +2781,15 @@ export class KritzelEngine {
               zIndex: '10002',
             }}
             onActionSelected={event => {
-              event.detail.action(
-                {
-                  x: (-this.core.store.state.translateX + this.core.store.state.contextMenuX) / this.core.store.state.scale,
-                  y: (-this.core.store.state.translateY + this.core.store.state.contextMenuY) / this.core.store.state.scale,
-                },
-                this.core.store.selectionGroup?.objects,
-              );
+              if (event.detail.action) {
+                event.detail.action(
+                  {
+                    x: (-this.core.store.state.translateX + this.core.store.state.contextMenuX) / this.core.store.state.scale,
+                    y: (-this.core.store.state.translateY + this.core.store.state.contextMenuY) / this.core.store.state.scale,
+                  },
+                  this.core.store.selectionGroup?.objects || [],
+                );
+              }
               this.hideContextMenu();
             }}
             onClose={() => this.hideContextMenu()}

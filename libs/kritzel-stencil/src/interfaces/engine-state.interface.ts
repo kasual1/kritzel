@@ -9,15 +9,15 @@ import { LineHandleType } from "../classes/handlers/line-handle.handler";
 import { SnapCandidate } from "./anchor.interface";
 
 export interface KritzelEngineState {
-  activeWorkspace: KritzelWorkspace;
-  activeTool: KritzelBaseTool;
-  copiedObjects?: KritzelBaseObject<any>[];
+  activeWorkspace: KritzelWorkspace | undefined;
+  activeTool: KritzelBaseTool | null;
+  copiedObjects?: KritzelBaseObject<any>[] | null;
   /** Maps copied object IDs to their original source object IDs (for anchor remapping during paste) */
-  copiedObjectIdMapping?: Map<string, string>;
-  objects: KritzelObjectMap<KritzelBaseObject<Element>>;
+  copiedObjectIdMapping?: Map<string, string> | null;
+  objects: KritzelObjectMap<KritzelBaseObject<Element>> | null;
   snapCandidate?: SnapCandidate | null;
-  resizeHandleType: KritzelHandleType;
-  lineHandleType: LineHandleType;
+  resizeHandleType: KritzelHandleType | null;
+  lineHandleType: LineHandleType | null;
   hasViewportChanged: boolean;
   hasObjectsChanged: boolean;
   isReady: boolean;
@@ -37,7 +37,7 @@ export interface KritzelEngineState {
   isDrawing: boolean;
   isErasing: boolean;
   isWriting: boolean;
-  isWorkspaceLoading: boolean;
+  isLoading: boolean;
   isCtrlKeyPressed: boolean;
   isContextMenuVisible: boolean;
   contextMenuItems: ContextMenuItem[];
@@ -45,7 +45,7 @@ export interface KritzelEngineState {
   contextMenuY: number;
   skipContextMenu: boolean;
   debugInfo: KritzelDebugInfo;
-  host: HTMLElement;
+  host: HTMLElement | null;
   pointerX: number;
   pointerY: number;
   scale: number;
@@ -61,7 +61,7 @@ export interface KritzelEngineState {
   translateYMin: number;
   viewportWidth: number;
   viewportHeight: number;
-  longTouchTimeout: number;
+  longTouchTimeout: number | null;
   longTouchDelay: number;
   pointers: Map<number, PointerEvent>;
   workspaces: KritzelWorkspace[];

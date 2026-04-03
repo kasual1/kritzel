@@ -1,7 +1,7 @@
 import { KritzelEngineState } from "../interfaces/engine-state.interface";
 
 export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
-  activeWorkspace: null,
+  activeWorkspace: undefined,
   activeTool: null,
   copiedObjects: null,
   objects: null,
@@ -27,7 +27,7 @@ export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   isDrawing: false,
   isErasing: false,
   isWriting: false,
-  isWorkspaceLoading: false,
+  isLoading: false,
   isCtrlKeyPressed: false,
   isContextMenuVisible: false,
   contextMenuItems: [],
