@@ -43,7 +43,9 @@
     "docs:serve": "cd website && npm run serve"
   },
   "overrides": {
-    "axios": "^0.30.0"
+    "axios": "^0.30.0",
+    "picomatch": "^4.0.4",
+    "undici": "^6.19.8"
   },
   "dependencies": {
     "prosemirror-commands": "^1.7.1",
