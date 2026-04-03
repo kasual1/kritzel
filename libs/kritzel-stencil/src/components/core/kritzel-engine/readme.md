@@ -14,6 +14,7 @@
 | `debugInfo`              | --                         | Debug info display options controlling which debug overlays are visible                                     | `KritzelDebugInfo`  | `undefined`          |
 | `editorId`               | `editor-id`                | Optional unique identifier for namespacing storage keys across multiple editor instances.                   | `string`            | `undefined`          |
 | `globalContextMenuItems` | --                         | Context menu items shown when right-clicking the canvas background.                                         | `ContextMenuItem[]` | `undefined`          |
+| `isLoading`              | `is-loading`               | External loading state. Combined with internal workspace-loading state to drive the overlay.                | `boolean`           | `false`              |
 | `lockDrawingScale`       | `lock-drawing-scale`       | When true, objects are drawn at a fixed visual size regardless of zoom level                                | `boolean`           | `true`               |
 | `objectContextMenuItems` | --                         | Context menu items shown when right-clicking a selected object.                                             | `ContextMenuItem[]` | `undefined`          |
 | `scaleMax`               | `scale-max`                | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.                          | `number`            | `ABSOLUTE_SCALE_MAX` |

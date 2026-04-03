@@ -663,6 +663,11 @@ export namespace Components {
          */
         "importFromJson": (json: string) => Promise<void>;
         /**
+          * External loading state. Combined with internal workspace-loading state to drive the overlay.
+          * @default false
+         */
+        "isLoading": boolean;
+        /**
           * Loads objects from a workspace JSON string into the current workspace. Unlike importFromJson, this does not create a new workspace - it adds objects to the existing one. Useful for initializing a workspace with pre-existing content after the editor is ready.
           * @param json - A JSON string containing workspace data (from exportAsJson).
           * @returns The number of objects loaded.
@@ -2467,6 +2472,11 @@ declare namespace LocalJSX {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
+          * External loading state. Combined with internal workspace-loading state to drive the overlay.
+          * @default false
+         */
+        "isLoading"?: boolean;
+        /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
          */
@@ -3108,6 +3118,7 @@ declare namespace LocalJSX {
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
         "wheelEnabled": boolean;
+        "isLoading": boolean;
     }
     interface KritzelExportAttributes {
         "workspaceName": string;
