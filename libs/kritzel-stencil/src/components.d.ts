@@ -27,9 +27,9 @@ import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
+import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
-import { Element, Event } from "@stencil/core";
 import { KritzelText } from "./classes/objects/text.class";
 import { KritzelGroup } from "./classes/objects/group.class";
 import { KritzelLine } from "./classes/objects/line.class";
@@ -64,9 +64,9 @@ export { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
+export { Element, Event } from "@stencil/core";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
-export { Element, Event } from "@stencil/core";
 export { KritzelText } from "./classes/objects/text.class";
 export { KritzelGroup } from "./classes/objects/group.class";
 export { KritzelLine } from "./classes/objects/line.class";
@@ -350,7 +350,7 @@ export namespace Components {
         "enable": () => Promise<void>;
         "exportViewportAsPng": () => Promise<void>;
         "exportViewportAsSvg": () => Promise<void>;
-        "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean) => Promise<T[]>;
+        "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>;
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
         "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
@@ -358,7 +358,7 @@ export namespace Components {
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
         "getObjectsTotalCount": () => Promise<number>;
-        "getScreenshot": (format?: "png" | "svg") => Promise<string>;
+        "getScreenshot": (format?: "png" | "svg") => Promise<string | null>;
         "getSelectedObjects": () => Promise<KritzelBaseObject[]>;
         "getViewport": () => Promise<KritzelViewportState>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
@@ -396,7 +396,7 @@ export namespace Components {
         "panTo": (x: number, y: number) => Promise<void>;
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
-        "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool>;
+        "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>;
         "reinitSync": () => Promise<void>;
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         /**
@@ -572,7 +572,7 @@ export namespace Components {
           * @returns An array of matching objects.
           * @example ```ts // Find all text objects const texts = await engine.findObjects(obj => obj.__class__ === 'KritzelText');  // Find objects at a point const hits = await engine.findObjects(obj => obj.hitTest(100, 200));  // Combine criteria const filtered = await engine.findObjects(obj => obj.__class__ === 'KritzelPath' && obj.opacity < 0.5); ```
          */
-        "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean) => Promise<T[]>;
+        "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>;
         /**
           * Returns the currently active workspace.
          */
@@ -613,7 +613,7 @@ export namespace Components {
           * @param format - The image format: `'png'` (default) or `'svg'`.
           * @returns A data URL string of the captured image.
          */
-        "getScreenshot": (format?: "png" | "svg") => Promise<string>;
+        "getScreenshot": (format?: "png" | "svg") => Promise<string | null>;
         /**
           * Returns the currently selected objects. Returns an empty array if nothing is selected.
          */
@@ -711,7 +711,7 @@ export namespace Components {
           * @param toolConfig - Optional initial configuration to apply to the tool instance.
           * @returns The registered tool instance, or `null` if registration failed.
          */
-        "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool>;
+        "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>;
         /**
           * Reinitializes sync by performing a full teardown and re-initialization. Destroys the current Yjs documents and providers, then rebuilds everything from the current syncConfig. Data reloads from IndexedDB nearly instantly. Call this after updating the syncConfig prop (e.g. after authentication state changes).
          */
@@ -2462,7 +2462,7 @@ declare namespace LocalJSX {
         /**
           * Debug info display options controlling which debug overlays are visible
          */
-        "debugInfo"?: KritzelDebugInfo;
+        "debugInfo": KritzelDebugInfo;
         /**
           * Optional unique identifier for namespacing storage keys across multiple editor instances.
          */
@@ -2470,7 +2470,7 @@ declare namespace LocalJSX {
         /**
           * Context menu items shown when right-clicking the canvas background.
          */
-        "globalContextMenuItems"?: ContextMenuItem[];
+        "globalContextMenuItems": ContextMenuItem[];
         /**
           * External loading state. Combined with internal workspace-loading state to drive the overlay.
           * @default false
@@ -2484,7 +2484,7 @@ declare namespace LocalJSX {
         /**
           * Context menu items shown when right-clicking a selected object.
          */
-        "objectContextMenuItems"?: ContextMenuItem[];
+        "objectContextMenuItems": ContextMenuItem[];
         /**
           * Emitted when the active drawing tool changes.
          */
