@@ -88,6 +88,9 @@ kritzel-dialog {
 .spinner {
   width: 20px;
   height: 20px;
+  box-sizing: border-box;
+  display: block;
+  flex-shrink: 0;
   border: 2px solid var(--kritzel-login-dialog-spinner-color, #cccccc);
   border-top-color: var(--kritzel-login-dialog-spinner-active-color, #333333);
   border-radius: 50%;

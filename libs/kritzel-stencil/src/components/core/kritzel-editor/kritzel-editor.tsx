@@ -60,11 +60,7 @@ export class KritzelEditor {
     showSyncProviderInfo: true,
     showMigrationInfo: true,
   };
-  @Prop() user?: IKritzelUser = {
-    id: `guest-1`,
-    displayName: 'Guest',
-    isGuest: false,
-  }
+  @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
   @Prop() controls: KritzelToolbarControl[] = [
     {
@@ -217,7 +213,15 @@ export class KritzelEditor {
   };
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
-  @Prop() loginConfig?: KritzelLoginConfig;
+  @Prop() loginConfig?: KritzelLoginConfig = {
+    providers: [
+      {
+        label: 'Sign in with Google',
+        icon: 'google',
+        name: 'Google',
+      }
+    ]
+  }
 
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
   @Prop() editorId?: string;

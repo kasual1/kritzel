@@ -385,6 +385,7 @@ export namespace Components {
         "lockDrawingScale": boolean;
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
+          * @default {     providers: [       {         label: 'Sign in with Google',         icon: 'google',         name: 'Google',       }     ]   }
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
@@ -422,9 +423,6 @@ export namespace Components {
         "ungroup": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
-        /**
-          * @default {     id: `guest-1`,     displayName: 'Guest',     isGuest: false,   }
-         */
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -2393,6 +2391,7 @@ declare namespace LocalJSX {
         "lockDrawingScale"?: boolean;
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
+          * @default {     providers: [       {         label: 'Sign in with Google',         icon: 'google',         name: 'Google',       }     ]   }
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
@@ -2424,9 +2423,6 @@ declare namespace LocalJSX {
           * @default {     appStateId: 'kritzel-app-test',     providers: [HocuspocusSyncProvider, IndexedDBSyncProvider]   }
          */
         "syncConfig"?: KritzelSyncConfig;
-        /**
-          * @default {     id: `guest-1`,     displayName: 'Guest',     isGuest: false,   }
-         */
         "user"?: IKritzelUser;
         /**
           * @default Infinity
