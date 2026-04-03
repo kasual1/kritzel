@@ -1675,6 +1675,8 @@ export class KritzelEngine {
       return;
     }
 
+    this.core.store.state.isWorkspaceLoading = true;
+
     const initializationPromise = this.core.initializeWorkspace(workspace, options);
     this._workspaceInitializationPromise = initializationPromise;
     this._workspaceInitializationTargetKey = targetKey;
@@ -1686,6 +1688,7 @@ export class KritzelEngine {
         this._workspaceInitializationPromise = null;
         this._workspaceInitializationTargetKey = null;
       }
+      this.core.store.state.isWorkspaceLoading = false;
     }
   }
 
@@ -1772,6 +1775,9 @@ export class KritzelEngine {
 
     return (
       <Host>
+        {this.core.store.state.isWorkspaceLoading && (
+          <div class="workspace-loading-overlay">Loading...</div>
+        )}
         {this.core.store.state.debugInfo.showViewportInfo && (
           <div class="debug-panel">
             <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>

@@ -37,6 +37,7 @@ export interface KritzelEngineState {
   isDrawing: boolean;
   isErasing: boolean;
   isWriting: boolean;
+  isWorkspaceLoading: boolean;
   isCtrlKeyPressed: boolean;
   isContextMenuVisible: boolean;
   contextMenuItems: ContextMenuItem[];

@@ -27,6 +27,7 @@ export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   isDrawing: false,
   isErasing: false,
   isWriting: false,
+  isWorkspaceLoading: false,
   isCtrlKeyPressed: false,
   isContextMenuVisible: false,
   contextMenuItems: [],
