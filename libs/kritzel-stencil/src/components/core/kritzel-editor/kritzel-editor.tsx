@@ -229,27 +229,27 @@ export class KritzelEditor {
   /** Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID. */
   @Prop() activeWorkspaceId?: string;
 
-  @Event() isReady: EventEmitter<EditorIsReadyEvent>;
-  @Event() activeWorkspaceChange: EventEmitter<ActiveWorkspaceChangeEvent>;
-  @Event() objectsChange: EventEmitter<KritzelBaseObject[]>;
-  @Event() objectsAdded: EventEmitter<ObjectsAddedEvent>;
-  @Event() objectsRemoved: EventEmitter<ObjectsRemovedEvent>;
-  @Event() objectsUpdated: EventEmitter<ObjectsUpdatedEvent>;
-  @Event() undoStateChange: EventEmitter<KritzelUndoState>;
-  @Event() themeChange: EventEmitter<ThemeName>;
-  @Event() viewportChange: EventEmitter<KritzelViewportState>;
-  @Event() logout: EventEmitter<void>;
-  @Event() login: EventEmitter<LoginEvent>;
-  @Event() isPublicChange: EventEmitter<IKritzelIsPublicChangedEvent>;
-  @Event() awarenessChange: EventEmitter<Map<number, Record<string, any>>>;
+  @Event() isReady!: EventEmitter<EditorIsReadyEvent>;
+  @Event() activeWorkspaceChange!: EventEmitter<ActiveWorkspaceChangeEvent>;
+  @Event() objectsChange!: EventEmitter<KritzelBaseObject[]>;
+  @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
+  @Event() objectsRemoved!: EventEmitter<ObjectsRemovedEvent>;
+  @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
+  @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
+  @Event() themeChange!: EventEmitter<ThemeName>;
+  @Event() viewportChange!: EventEmitter<KritzelViewportState>;
+  @Event() logout!: EventEmitter<void>;
+  @Event() login!: EventEmitter<LoginEvent>;
+  @Event() isPublicChange!: EventEmitter<IKritzelIsPublicChangedEvent>;
+  @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
 
   @State() isEngineReady: boolean = false;
   @State() isControlsReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
   @State() workspaces: KritzelWorkspace[] = [];
-  @State() activeWorkspace: KritzelWorkspace;
+  @State() activeWorkspace?: KritzelWorkspace;
   @State() isVirtualKeyboardOpen: boolean = false;
-  @State() undoState: KritzelUndoState = null;
+  @State() undoState: KritzelUndoState | null = null;
   @State() isBackToContentButtonVisible: boolean = false;
   @State() currentTheme: ThemeName = 'light';
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
@@ -271,9 +271,11 @@ export class KritzelEditor {
 
   @Watch('workspaces')
   onWorkspacesChange(newWorkspaces: KritzelWorkspace[]) {
-    if (this.activeWorkspace) {
-      const updatedActiveWorkspace = newWorkspaces.find(ws => ws.id === this.activeWorkspace.id);
-      if (updatedActiveWorkspace && updatedActiveWorkspace !== this.activeWorkspace) {
+    const activeWorkspace = this.activeWorkspace;
+
+    if (activeWorkspace) {
+      const updatedActiveWorkspace = newWorkspaces.find(ws => ws.id === activeWorkspace.id);
+      if (updatedActiveWorkspace && updatedActiveWorkspace !== activeWorkspace) {
         this.activeWorkspace = updatedActiveWorkspace;
       }
     }
@@ -452,7 +454,7 @@ export class KritzelEditor {
     toolName: string,
     toolClass: any,
     toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
-  ): Promise<KritzelBaseTool> {
+  ): Promise<KritzelBaseTool | null> {
     return this.engineRef.registerTool(toolName, toolClass, toolConfig);
   }
 
@@ -532,7 +534,7 @@ export class KritzelEditor {
   }
 
   @Method()
-  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string> {
+  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string | null> {
     return this.engineRef.getScreenshot(format);
   }
 
@@ -572,7 +574,7 @@ export class KritzelEditor {
   }
 
   @Method()
-  async findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean): Promise<T[]> {
+  async findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean): Promise<T[]> {
     return this.engineRef.findObjects(predicate);
   }
 
@@ -625,7 +627,7 @@ export class KritzelEditor {
     await customElements.whenDefined('kritzel-controls');
     await customElements.whenDefined('kritzel-engine');
 
-    if (!this.isEngineReady || !this.isControlsReady || !this.isWorkspaceManagerReady) {
+    if (!this.isEngineReady || !this.isControlsReady || !this.isWorkspaceManagerReady || !this.activeWorkspace) {
       return;
     }
 
@@ -647,6 +649,10 @@ export class KritzelEditor {
 
   async onEngineReady(event: CustomEvent<KritzelEngineState>) {
     this.isEngineReady = true;
+    if (!event.detail.activeWorkspace) {
+      return;
+    }
+
     this.activeWorkspace = event.detail.activeWorkspace;
     this.workspaces = event.detail.workspaces;
     this.currentIsPublic = await this.engineRef.getIsPublic();
@@ -745,7 +751,7 @@ export class KritzelEditor {
         icon: 'upload',
         action: async () => {
           const preview = await this.engineRef.getScreenshot('png');
-          this.exportRef.open(preview);
+          this.exportRef.open(preview ?? undefined);
         },
       },
       {
@@ -777,7 +783,7 @@ export class KritzelEditor {
     activeWorkspace.isPublic = isPublic;
     await this.engineRef.updateWorkspace(activeWorkspace);
     this.activeWorkspace = activeWorkspace.clone();
-    this.isPublicChange.emit({ isPublic, workspaceId: this.activeWorkspace?.id });
+    this.isPublicChange.emit({ isPublic, workspaceId: activeWorkspace.id });
   };
 
   /**
@@ -787,6 +793,11 @@ export class KritzelEditor {
     const isPublic = this.activeWorkspace?.isPublic ?? false;
     const workspaceId = this.activeWorkspace?.id;
     this.currentIsPublic = isPublic;
+
+    if (!workspaceId) {
+      return;
+    }
+
     this.isPublicChange.emit({ isPublic, workspaceId });
   }
 
@@ -922,7 +933,11 @@ export class KritzelEditor {
         </div>
 
         <kritzel-engine
-          ref={el => (this.engineRef = el)}
+          ref={el => {
+            if (el) {
+              this.engineRef = el;
+            }
+          }}
           workspace={this.activeWorkspace}
           activeWorkspaceId={this.activeWorkspaceId}
           editorId={this.editorId}
@@ -931,6 +946,7 @@ export class KritzelEditor {
           scaleMax={this.scaleMax}
           lockDrawingScale={this.lockDrawingScale}
           scaleMin={this.scaleMin}
+          isLoading={true}
           viewportBoundaryLeft={this.viewportBoundaryLeft}
           viewportBoundaryRight={this.viewportBoundaryRight}
           viewportBoundaryTop={this.viewportBoundaryTop}
@@ -956,24 +972,36 @@ export class KritzelEditor {
         <kritzel-controls
           class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
           style={{ display: this.isControlsVisible ? 'flex' : 'none' }}
-          ref={el => (this.controlsRef = el)}
+          ref={el => {
+            if (el) {
+              this.controlsRef = el;
+            }
+          }}
           controls={this.controls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}
-          undoState={this.undoState}
+          undoState={this.undoState ?? undefined}
           theme={this.currentTheme}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
 
         <div class="top-right-buttons">
           <kritzel-settings
-            ref={el => (this.settingsRef = el)}
+            ref={el => {
+              if (el) {
+                this.settingsRef = el;
+              }
+            }}
             shortcuts={this.shortcuts}
             editorId={this.editorId}
             onSettingsChange={event => this.handleSettingsChange(event)}
           ></kritzel-settings>
 
           <kritzel-export
-            ref={el => (this.exportRef = el)}
+            ref={el => {
+              if (el) {
+                this.exportRef = el;
+              }
+            }}
             workspaceName={this.activeWorkspace?.name || 'workspace'}
             onExportPng={() => this.engineRef.exportViewportAsPng()}
             onExportSvg={() => this.engineRef.exportViewportAsSvg()}
@@ -989,7 +1017,11 @@ export class KritzelEditor {
           <kritzel-more-menu items={this.moreMenuItems}></kritzel-more-menu>
 
           <kritzel-share-dialog
-            ref={el => (this.shareDialogRef = el)}
+            ref={el => {
+              if (el) {
+                this.shareDialogRef = el;
+              }
+            }}
             isPublic={this.currentIsPublic}
             workspaceId={this.activeWorkspace?.id}
             onToggleIsPublic={this.handleToggleIsPublic}
@@ -997,7 +1029,11 @@ export class KritzelEditor {
 
           {this.loginConfig && (
             <kritzel-login-dialog
-              ref={el => (this.loginDialogRef = el)}
+              ref={el => {
+                if (el) {
+                  this.loginDialogRef = el;
+                }
+              }}
               providers={this.loginConfig.providers}
               dialogTitle={this.loginConfig.title}
               subtitle={this.loginConfig.subtitle}

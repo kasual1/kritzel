@@ -7,27 +7,27 @@
 
 ## Properties
 
-| Property                 | Attribute                  | Description                                                                                                 | Type                | Default              |
-| ------------------------ | -------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------- | -------------------- |
-| `activeWorkspaceId`      | `active-workspace-id`      | Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.          | `string`            | `undefined`          |
-| `cursorTarget`           | --                         | The HTML element to apply cursor styles to. Defaults to `document.body` if not set.                         | `HTMLElement`       | `undefined`          |
-| `debugInfo`              | --                         | Debug info display options controlling which debug overlays are visible                                     | `KritzelDebugInfo`  | `undefined`          |
-| `editorId`               | `editor-id`                | Optional unique identifier for namespacing storage keys across multiple editor instances.                   | `string`            | `undefined`          |
-| `globalContextMenuItems` | --                         | Context menu items shown when right-clicking the canvas background.                                         | `ContextMenuItem[]` | `undefined`          |
-| `isLoading`              | `is-loading`               | External loading state. Combined with internal workspace-loading state to drive the overlay.                | `boolean`           | `false`              |
-| `lockDrawingScale`       | `lock-drawing-scale`       | When true, objects are drawn at a fixed visual size regardless of zoom level                                | `boolean`           | `true`               |
-| `objectContextMenuItems` | --                         | Context menu items shown when right-clicking a selected object.                                             | `ContextMenuItem[]` | `undefined`          |
-| `scaleMax`               | `scale-max`                | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.                          | `number`            | `ABSOLUTE_SCALE_MAX` |
-| `scaleMin`               | `scale-min`                | Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.                          | `number`            | `ABSOLUTE_SCALE_MIN` |
-| `syncConfig`             | --                         | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).                         | `KritzelSyncConfig` | `undefined`          |
-| `theme`                  | `theme`                    | The current theme to apply to the editor                                                                    | `"dark" \| "light"` | `'light'`            |
-| `user`                   | --                         | The current user for awareness broadcasting (name, id, cursor position).                                    | `IKritzelUser`      | `undefined`          |
-| `viewportBoundaryBottom` | `viewport-boundary-bottom` | Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.   | `number`            | `Infinity`           |
-| `viewportBoundaryLeft`   | `viewport-boundary-left`   | Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.     | `number`            | `-Infinity`          |
-| `viewportBoundaryRight`  | `viewport-boundary-right`  | Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.    | `number`            | `Infinity`           |
-| `viewportBoundaryTop`    | `viewport-boundary-top`    | Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.      | `number`            | `-Infinity`          |
-| `wheelEnabled`           | `wheel-enabled`            | When false, wheel events will not trigger viewport pan/zoom. The event still propagates to parent elements. | `boolean`           | `true`               |
-| `workspace`              | --                         | The workspace to load and display. Changing this prop switches the active workspace.                        | `KritzelWorkspace`  | `undefined`          |
+| Property                              | Attribute                  | Description                                                                                                 | Type                | Default              |
+| ------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------- | -------------------- |
+| `activeWorkspaceId`                   | `active-workspace-id`      | Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.          | `string`            | `undefined`          |
+| `cursorTarget`                        | --                         | The HTML element to apply cursor styles to. Defaults to `document.body` if not set.                         | `HTMLElement`       | `undefined`          |
+| `debugInfo` _(required)_              | --                         | Debug info display options controlling which debug overlays are visible                                     | `KritzelDebugInfo`  | `undefined`          |
+| `editorId`                            | `editor-id`                | Optional unique identifier for namespacing storage keys across multiple editor instances.                   | `string`            | `undefined`          |
+| `globalContextMenuItems` _(required)_ | --                         | Context menu items shown when right-clicking the canvas background.                                         | `ContextMenuItem[]` | `undefined`          |
+| `isLoading`                           | `is-loading`               | External loading state. Combined with internal workspace-loading state to drive the overlay.                | `boolean`           | `false`              |
+| `lockDrawingScale`                    | `lock-drawing-scale`       | When true, objects are drawn at a fixed visual size regardless of zoom level                                | `boolean`           | `true`               |
+| `objectContextMenuItems` _(required)_ | --                         | Context menu items shown when right-clicking a selected object.                                             | `ContextMenuItem[]` | `undefined`          |
+| `scaleMax`                            | `scale-max`                | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.                          | `number`            | `ABSOLUTE_SCALE_MAX` |
+| `scaleMin`                            | `scale-min`                | Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.                          | `number`            | `ABSOLUTE_SCALE_MIN` |
+| `syncConfig`                          | --                         | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).                         | `KritzelSyncConfig` | `undefined`          |
+| `theme`                               | `theme`                    | The current theme to apply to the editor                                                                    | `"dark" \| "light"` | `'light'`            |
+| `user`                                | --                         | The current user for awareness broadcasting (name, id, cursor position).                                    | `IKritzelUser`      | `undefined`          |
+| `viewportBoundaryBottom`              | `viewport-boundary-bottom` | Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.   | `number`            | `Infinity`           |
+| `viewportBoundaryLeft`                | `viewport-boundary-left`   | Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.     | `number`            | `-Infinity`          |
+| `viewportBoundaryRight`               | `viewport-boundary-right`  | Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.    | `number`            | `Infinity`           |
+| `viewportBoundaryTop`                 | `viewport-boundary-top`    | Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.      | `number`            | `-Infinity`          |
+| `wheelEnabled`                        | `wheel-enabled`            | When false, wheel events will not trigger viewport pan/zoom. The event still propagates to parent elements. | `boolean`           | `true`               |
+| `workspace`                           | --                         | The workspace to load and display. Changing this prop switches the active workspace.                        | `KritzelWorkspace`  | `undefined`          |
 
 
 ## Events
@@ -338,16 +338,16 @@ Type: `Promise<void>`
 
 
 
-### `findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean) => Promise<T[]>`
+### `findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>`
 
 Returns all objects that match the given predicate function.
 Excludes internal selection-related objects (selection groups and selection boxes).
 
 #### Parameters
 
-| Name        | Type                                                             | Description                                                           |
-| ----------- | ---------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `predicate` | `(obj: KritzelBaseObject<HTMLElement \| SVGElement>) => boolean` | - A filter function called for each object. Return `true` to include. |
+| Name        | Type                                           | Description                                                           |
+| ----------- | ---------------------------------------------- | --------------------------------------------------------------------- |
+| `predicate` | `(obj: KritzelBaseObject<Element>) => boolean` | - A filter function called for each object. Return `true` to include. |
 
 #### Returns
 
@@ -441,7 +441,7 @@ Type: `Promise<number>`
 
 
 
-### `getScreenshot(format?: "png" | "svg") => Promise<string>`
+### `getScreenshot(format?: "png" | "svg") => Promise<string | null>`
 
 Captures a screenshot of the current viewport as a data URL.
 
@@ -650,7 +650,7 @@ Type: `Promise<void>`
 
 
 
-### `registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool>`
+### `registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>`
 
 Registers a new drawing tool with the engine.
 
