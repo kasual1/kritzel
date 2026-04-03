@@ -2135,16 +2135,18 @@ export class KritzelEngine {
                     const isSelectionGroup = KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup');
                     const localClientId = this.core.store.state.objects?.localClientId;
 
+                    const awarenessStates = this.core.store.state.objects?.awareness?.getStates();
                     const isRemoteSelection = isSelectionGroup && (
                       // Different user
                       (object.userId != null && this.core.user?.id != null && object.userId !== this.core.user.id) ||
-                      // Same user but different client (e.g. same account in two browser tabs)
-                      (object.clientId != null && localClientId != null && object.clientId !== localClientId)
+                      // Same user but different client that is still actively connected (e.g. same account on another device)
+                      (object.userId != null && this.core.user?.id != null && object.userId === this.core.user.id &&
+                        object.clientId != null && localClientId != null && object.clientId !== localClientId &&
+                        awarenessStates?.has(object.clientId) === true)
                     );
 
                     let remoteUserColor: string | undefined;
                     if (isRemoteSelection) {
-                      const awarenessStates = this.core.store.state.objects?.awareness?.getStates();
                       if (awarenessStates) {
                         // Try direct lookup by clientId first (most precise)
                         if (isSelectionGroup && object.clientId != null) {
