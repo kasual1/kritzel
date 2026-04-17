@@ -53,7 +53,7 @@ describe('KritzelKeyboardHelper', () => {
 
       requestAnimationFrame(() => {
         KritzelKeyboardHelper.enableInteractiveWidget();
-        expect(viewportMeta.content).toContain('interactive-widget=resizes-content');
+        expect(viewportMeta!.content).toContain('interactive-widget=resizes-content');
       });
     });
 
