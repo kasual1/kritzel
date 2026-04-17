@@ -13,8 +13,8 @@ import { KritzelCore } from '../core/core.class';
  * via shift/ctrl modifiers.
  */
 export class KritzelSelectionHandler extends KritzelBaseHandler {
-  startX: number;
-  startY: number;
+  startX: number = 0;
+  startY: number = 0;
 
   touchStartX: number = 0;
   touchStartY: number = 0;
@@ -107,7 +107,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       if ((moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) && this._core.store.state.isSelecting) {
         this.updateTouchSelection();
 
-        clearTimeout(this._core.store.state.longTouchTimeout);
+        const timeout = this._core.store.state.longTouchTimeout;
+
+        if (timeout) {
+          globalThis.clearTimeout?.(timeout);
+        }
       }
     }
   }
@@ -186,9 +190,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
    */
   private removeSelectionBox(): void {
     this._core.store.state.isSelecting = false;
-    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox);
+    this._core.store.objects.remove(o => o instanceof KritzelSelectionBox);
     this._core.store.setSelectionBox(null);
-    this._core.store.state.objects.clearLocalSelectionBox();
+    this._core.store.objects.clearLocalSelectionBox();
   }
 
   /**
@@ -214,12 +218,14 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.state.isSelecting = true;
 
-    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || (!isAdditive && o instanceof KritzelSelectionGroup && (o.userId == null || o.userId === this._core.user?.id)));
+    this._core.store.objects.remove(
+      o => o instanceof KritzelSelectionBox || (!isAdditive && o instanceof KritzelSelectionGroup && (o.userId == null || o.userId === this._core.user?.id)),
+    );
     this._core.store.setSelectionBox(null);
     if (!isAdditive) {
       this._core.store.setSelectionGroup(null);
     }
-    this._core.store.state.objects.insert(selectionBox);
+    this._core.store.objects.insert(selectionBox);
     this._core.store.setSelectionBox(selectionBox);
   }
 
@@ -255,12 +261,14 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.state.isSelecting = true;
 
-    this._core.store.state.objects.remove(o => o instanceof KritzelSelectionBox || (!isAdditive && o instanceof KritzelSelectionGroup && (o.userId == null || o.userId === this._core.user?.id)));
+    this._core.store.objects.remove(
+      o => o instanceof KritzelSelectionBox || (!isAdditive && o instanceof KritzelSelectionGroup && (o.userId == null || o.userId === this._core.user?.id)),
+    );
     this._core.store.setSelectionBox(null);
     if (!isAdditive) {
       this._core.store.setSelectionGroup(null);
     }
-    this._core.store.state.objects.insert(selectionBox);
+    this._core.store.objects.insert(selectionBox);
     this._core.store.setSelectionBox(selectionBox);
   }
 
@@ -290,7 +298,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       selectionBox.translateX = Math.min(currentX, this.startX);
       selectionBox.translateY = Math.min(currentY, this.startY);
 
-      this._core.store.state.objects.setLocalSelectionBox({
+      this._core.store.objects.setLocalSelectionBox({
         x: selectionBox.translateX,
         y: selectionBox.translateY,
         width: width / selectionBox.scale,
@@ -338,7 +346,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       selectionBox.translateX = Math.min(currentX, this.startX);
       selectionBox.translateY = Math.min(currentY, this.startY);
 
-      this._core.store.state.objects.setLocalSelectionBox({
+      this._core.store.objects.setLocalSelectionBox({
         x: selectionBox.translateX,
         y: selectionBox.translateY,
         width: width / selectionBox.scale,
@@ -381,10 +389,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       y: minY,
       z: selectionBox.scale,
       width: maxX - minX,
-      height: maxY - minY
+      height: maxY - minY,
     };
 
-    const candidates = this._core.store.state.objects.query(selectionBounds);
+    const candidates = this._core.store.objects.query(selectionBounds);
 
     // Track newly selected objects for efficient comparison
     const newlySelectedObjects = new Set<KritzelBaseObject<any>>();
@@ -422,7 +430,10 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this.clearSelectionPreview();
 
-    this.addObjectToSelectionGroup(selectedObject, isAdditive);
+    if(selectedObject){
+      this.addObjectToSelectionGroup(selectedObject, isAdditive);
+    }
+
     this.removeSelectionBox();
   }
 
@@ -514,9 +525,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     }
 
     // Build parent group lookup map ONCE - O(g * c) instead of O(n * g * c)
-    const allGroups = this._core.store.state.objects.filter(
-      obj => obj.__class__ === 'KritzelGroup',
-    ) as KritzelGroup[];
+    const allGroups = this._core.store.objects.filter(obj => obj.__class__ === 'KritzelGroup') as KritzelGroup[];
     const childToParentMap = new Map<string, KritzelGroup>();
     for (const group of allGroups) {
       for (const childId of group.childIds) {

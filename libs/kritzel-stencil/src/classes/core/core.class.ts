@@ -134,7 +134,7 @@ export class KritzelCore {
   setUser(user?: IKritzelUser): void {
     this._user = user;
     this._store.setLocalUserId(user?.id ?? null);
-    this._store.state.objects?.setLocalUser(user);
+    this._store.objects?.setLocalUser(user);
   }
 
   /**
@@ -262,8 +262,8 @@ export class KritzelCore {
     localStorage.setItem(this.getStorageKey('kritzel-active-workspace-id'), activeWorkspace.id);
 
     // Destroy old ObjectMap if switching workspaces
-    if (this._store.state.objects && this._store.state.objects.isReady) {
-      this._store.state.objects.destroy();
+    if (this._store.objects && this._store.objects.isReady) {
+      this._store.objects.destroy();
     }
 
     // Create new ObjectMap with its own Y.Doc for this workspace
@@ -347,7 +347,11 @@ export class KritzelCore {
       depth: 100,
     };
 
-    return this._store.state.objects
+    if(!this._store.objects) {
+      return [];
+    }
+
+    return this._store.objects
       .query(viewportBounds)
       .filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox))
       .sort((a, b) => a.zIndex - b.zIndex);
@@ -408,8 +412,8 @@ export class KritzelCore {
     this.saveWorkspaceToAppState(workspace);
 
     // Keep metadata map in sync when the active workspace's name changes
-    if (this._store.state.activeWorkspace?.id === workspace.id) {
-      this._store.state.objects?.setWorkspaceName(workspace.name);
+    if (this._store.activeWorkspace?.id === workspace.id) {
+      this._store.objects?.setWorkspaceName(workspace.name);
     }
 
     const workspaces = this._store.state.workspaces;
@@ -429,9 +433,9 @@ export class KritzelCore {
    */
   deleteWorkspace(workspace: KritzelWorkspace): void {
     // If deleting the active workspace, need to handle ObjectMap cleanup
-    if (this._store.state.activeWorkspace?.id === workspace.id) {
+    if (this._store.activeWorkspace?.id === workspace.id) {
       this.engine.viewport?.cancelPendingUpdates();
-      this._store.state.objects?.destroy();
+      this._store.objects?.destroy();
     }
 
     this.deleteWorkspaceFromAppState(workspace.id);
@@ -453,7 +457,7 @@ export class KritzelCore {
    * @param scale - The zoom scale of the viewport
    */
   updateWorkspaceViewport(translateX: number, translateY: number, scale: number): void {
-    const activeWorkspace = this._store.state.activeWorkspace;
+    const activeWorkspace = this._store.activeWorkspace;
     if (!activeWorkspace) {
       return;
     }
@@ -480,7 +484,7 @@ export class KritzelCore {
    * @returns True if the workspace is public, false otherwise
    */
   getIsPublic(): boolean {
-    return this._store.state.activeWorkspace?.isPublic ?? false;
+    return this._store.activeWorkspace?.isPublic ?? false;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -492,7 +496,7 @@ export class KritzelCore {
    * @param object - The object to add to the canvas
    */
   addObject(object: KritzelBaseObject<any>): void {
-    this._store.state.objects.insert(object);
+    this._store.objects.insert(object);
   }
 
   /**
@@ -522,7 +526,7 @@ export class KritzelCore {
     }
 
     object.isMounted = false;
-    this._store.state.objects.remove(o => o.id === object.id);
+    this._store.objects.remove(o => o.id === object.id);
   }
 
   /**
@@ -537,13 +541,16 @@ export class KritzelCore {
 
     for (const key in updatedProperties) {
       if (updatedProperties.hasOwnProperty(key)) {
-        object[key] = updatedProperties[key];
-        changedKeys.push(key);
+        const value = updatedProperties[key as keyof T];
+        if (value !== undefined) {
+          (object as any)[key] = value;
+          changedKeys.push(key);
+        }
       }
     }
 
     object.onAfterUpdate(changedKeys);
-    this._store.state.objects.update(object);
+    this._store.objects.update(object);
   }
 
   /**
@@ -555,7 +562,7 @@ export class KritzelCore {
   addSelectionGroup(selectionGroup: KritzelSelectionGroup): void {
     this.removeSelectionGroup();
     this.removeSelectionBox();
-    this._store.state.objects.insert(selectionGroup);
+    this._store.objects.insert(selectionGroup);
     this._store.setSelectionGroup(selectionGroup);
     this._kritzelEngine.triggerSelectionChange();
   }
@@ -567,7 +574,7 @@ export class KritzelCore {
   removeSelectionGroup(): void {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
-      this._store.state.objects.remove(object => object.id === selectionGroup.id);
+      this._store.objects.remove(object => object.id === selectionGroup.id);
       this._store.setSelectionGroup(null);
       this._kritzelEngine.triggerSelectionChange();
     }
@@ -580,9 +587,9 @@ export class KritzelCore {
   removeSelectionBox(): void {
     const selectionBox = this._store.selectionBox;
     if (selectionBox) {
-      this._store.state.objects.remove(object => object.id === selectionBox.id);
+      this._store.objects.remove(object => object.id === selectionBox.id);
       this._store.setSelectionBox(null);
-      this._store.state.objects.clearLocalSelectionBox();
+      this._store.objects.clearLocalSelectionBox();
     }
   }
 
@@ -616,14 +623,14 @@ export class KritzelCore {
    * Undoes the last action in the history stack.
    */
   undo(): void {
-    this._store.state.objects?.undo();
+    this._store.objects?.undo();
   }
 
   /**
    * Redoes the last undone action from the history stack.
    */
   redo(): void {
-    this._store.state.objects?.redo();
+    this._store.objects?.redo();
   }
 
   /**
@@ -692,7 +699,7 @@ export class KritzelCore {
       return;
     }
 
-    const activeWorkspace = this._store.state.activeWorkspace;
+    const activeWorkspace = this._store.activeWorkspace;
     const originalIdMapping = this._store.state.copiedObjectIdMapping;
 
     // Check if we're pasting from a different workspace
@@ -745,7 +752,7 @@ export class KritzelCore {
 
     // Batch all inserts and updates in a single Y.js transaction to avoid
     // N separate observer callbacks and N rerenders (fires only once at commit)
-    this._store.state.objects.transaction(() => {
+    this._store.objects.transaction(() => {
       // First add all copied objects to the objectsMap with updated positions
       copiedObjects.forEach((obj, i) => {
         // Update workspace if pasting to a different workspace
@@ -811,7 +818,7 @@ export class KritzelCore {
 
           // If anchors were updated, rebuild the anchor index and persist the change
           if (updated) {
-            this._store.state.objects.update(obj);
+            this._store.objects.update(obj);
           }
         }
       });
@@ -958,7 +965,7 @@ export class KritzelCore {
     const objects = selectionGroup.objects;
     const alignedPositions = AlignmentHelper.calculateAlignedPositions(objects, alignment);
 
-    this._store.state.objects.transaction(() => {
+    this._store.objects.transaction(() => {
       for (const obj of objects) {
         const newPosition = alignedPositions.get(obj.id);
         if (newPosition) {
@@ -1077,7 +1084,7 @@ export class KritzelCore {
    * Switches to selection tool.
    */
   selectAllObjects() {
-    const allObjects = this._store.state.objects
+    const allObjects = this._store.objects
       .allObjects()
       .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox) && !(o instanceof KritzelContextMenu));
 
@@ -1118,7 +1125,7 @@ export class KritzelCore {
       depth: 100,
     };
 
-    const objectsInViewport = this._store.state.objects
+    const objectsInViewport = this._store.objects
       .query(viewportBounds)
       .filter(o => o.isInViewport())
       .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox) && !(o instanceof KritzelContextMenu));
@@ -1153,7 +1160,7 @@ export class KritzelCore {
     this.removeSelectionGroup();
 
     const localUserId = this._user?.id;
-    this._store.state.objects.remove(o =>
+    this._store.objects.remove(o =>
       o instanceof KritzelSelectionBox ||
       (o instanceof KritzelSelectionGroup && (localUserId == null || o.userId === localUserId || o.userId == null)),
     );
@@ -1164,7 +1171,7 @@ export class KritzelCore {
     this._store.state.isRotationHandleSelected = false;
     this._store.state.isLineHandleSelected = false;
     this._store.state.isLineHandleDragging = false;
-    this._store.state.lineHandleType = null;
+    this._store.state.lineHandleType = undefined;
 
     this.rerender();
   }
@@ -1215,7 +1222,10 @@ export class KritzelCore {
 
     if (selectedObject) {
       const foundObject = this._store.allObjects.find(object => selectedObject.id === object.id);
-      const isHit = foundObject?.hitTest(clientX, clientY);
+
+      if (!foundObject) return null;
+
+      const isHit = foundObject.hitTest(clientX, clientY);
       return isHit ? foundObject : null;
     }
 
@@ -1313,7 +1323,7 @@ export class KritzelCore {
     this._kritzelEngine.viewport?.cancelPendingUpdates();
 
     // Immediately save the current workspace's viewport before switching
-    const currentWorkspace = this._store.state.activeWorkspace;
+    const currentWorkspace = this._store.activeWorkspace;
     if (currentWorkspace) {
       this.updateWorkspaceViewport(
         this._store.state.translateX,

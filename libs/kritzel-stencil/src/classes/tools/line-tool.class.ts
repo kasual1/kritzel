@@ -85,8 +85,8 @@ export class KritzelLineTool extends KritzelBaseTool {
         line.isCompleted = false;
 
         this._currentLineId = line.id;
-        this._core.store.state.objects.insert(line);
-        this._core.store.state.objects?.setActiveDrawingObject(line.id);
+        this._core.store.objects.insert(line);
+        this._core.store.objects?.setActiveDrawingObject(line.id);
       }
     }
 
@@ -120,8 +120,8 @@ export class KritzelLineTool extends KritzelBaseTool {
         line.isCompleted = false;
 
         this._currentLineId = line.id;
-        this._core.store.state.objects.insert(line);
-        this._core.store.state.objects?.setActiveDrawingObject(line.id);
+        this._core.store.objects.insert(line);
+        this._core.store.objects?.setActiveDrawingObject(line.id);
       }
     }
   }
@@ -139,7 +139,7 @@ export class KritzelLineTool extends KritzelBaseTool {
 
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDrawing && this._currentLineId) {
-        const currentLine = this._core.store.state.objects.findById(this._currentLineId) as KritzelLine | undefined;
+        const currentLine = this._core.store.objects.findById(this._currentLineId) as KritzelLine | undefined;
         if (currentLine) {
           const viewportScale = this._core.store.state.scale;
           const lockScale = this._core.store.state.lockDrawingScale;
@@ -165,7 +165,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           updatedLine.zIndex = currentLine.zIndex;
           updatedLine.isCompleted = false;
 
-          this._core.store.state.objects.update(updatedLine);
+          this._core.store.objects.update(updatedLine);
         }
       }
     }
@@ -174,7 +174,7 @@ export class KritzelLineTool extends KritzelBaseTool {
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (activePointers.length === 1 && this._currentLineId) {
-        const currentLine = this._core.store.state.objects.findById(this._currentLineId) as KritzelLine | undefined;
+        const currentLine = this._core.store.objects.findById(this._currentLineId) as KritzelLine | undefined;
         if (currentLine) {
           const viewportScale = this._core.store.state.scale;
           const lockScale = this._core.store.state.lockDrawingScale;
@@ -200,7 +200,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           updatedLine.zIndex = currentLine.zIndex;
           updatedLine.isCompleted = false;
 
-          this._core.store.state.objects.update(updatedLine);
+          this._core.store.objects.update(updatedLine);
         }
       }
     }
@@ -222,17 +222,17 @@ export class KritzelLineTool extends KritzelBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentLineId) {
-          const currentLine = this._core.store.state.objects.findById(this._currentLineId) as KritzelLine | undefined;
+          const currentLine = this._core.store.objects.findById(this._currentLineId) as KritzelLine | undefined;
           if (currentLine) {
             currentLine.isCompleted = true;
-            this._core.store.state.objects.update(currentLine);
+            this._core.store.objects.update(currentLine);
             this._core.engine.emitObjectsChange();
             this._core.engine.emitObjectsAdded([currentLine]);
 
             // Switch to selection tool and select the drawn line
             this.selectLineAndSwitchTool(currentLine);
           }
-          this._core.store.state.objects?.setActiveDrawingObject(null);
+          this._core.store.objects?.setActiveDrawingObject(null);
           this._currentLineId = null;
         }
       }
@@ -243,17 +243,17 @@ export class KritzelLineTool extends KritzelBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentLineId) {
-          const currentLine = this._core.store.state.objects.findById(this._currentLineId) as KritzelLine | undefined;
+          const currentLine = this._core.store.objects.findById(this._currentLineId) as KritzelLine | undefined;
           if (currentLine) {
             currentLine.isCompleted = true;
-            this._core.store.state.objects.update(currentLine);
+            this._core.store.objects.update(currentLine);
             this._core.engine.emitObjectsChange();
             this._core.engine.emitObjectsAdded([currentLine]);
 
             // Switch to selection tool and select the drawn line
             this.selectLineAndSwitchTool(currentLine);
           }
-          this._core.store.state.objects?.setActiveDrawingObject(null);
+          this._core.store.objects?.setActiveDrawingObject(null);
           this._currentLineId = null;
         }
       }

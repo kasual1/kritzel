@@ -119,7 +119,7 @@ export class KritzelReviver {
         return revivedObj;
       }
 
-      const newObj = Array.isArray(obj) ? [] : {};
+      const newObj: any = Array.isArray(obj) ? [] : {};
       for (const key in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           newObj[key] = this.revive(obj[key]);

@@ -88,7 +88,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       text.translateY = (clientY - this._core.store.state.translateY) / viewportScale;
       text.zIndex = this._core.store.currentZIndex;
 
-      this._core.store.state.objects.insert(text);
+      this._core.store.objects.insert(text);
 
       this._core.rerender();
 
@@ -137,7 +137,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       text.translateY = (clientY - this._core.store.state.translateY) / viewportScale;
       text.zIndex = this._core.store.currentZIndex;
 
-      this._core.store.state.objects.insert(text);
+      this._core.store.objects.insert(text);
 
       this._core.rerender();
 

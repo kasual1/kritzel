@@ -462,9 +462,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
 
     const changedKeys = Array.from(event.keysChanged);
-    const objectsToUpdate = [];
+    const objectsToUpdate: any[] = [];
     const selectionGroupsToUpdate: KritzelSelectionGroup[] = [];
-    const objectsToDelete = [];
+    const objectsToDelete: any[] = [];
 
     changedKeys.forEach(key => {
       const change = event.changes.keys.get(key);
@@ -472,9 +472,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       if (change && change.action === 'delete') {
         objectsToDelete.push(key);
       } else {
-        const serialized = this._objectsMap.get(key);
+        const serialized = this._objectsMap?.get(key);
         if (serialized) {
-          const object = this._reviver.revive(serialized);
+          const object = this._reviver?.revive(serialized);
 
           // Separate SelectionGroups to process them after regular objects
           if (object instanceof KritzelSelectionGroup) {
@@ -597,17 +597,17 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
 
     this._ydoc.transact(() => {
-      if (!this._metadataMap.get('type')) {
-        this._metadataMap.set('type', type);
+      if (!this._metadataMap?.get('type')) {
+        this._metadataMap?.set('type', type);
       }
-      if (this._metadataMap.get('isPublic') === undefined) {
-        this._metadataMap.set('isPublic', false);
+      if (this._metadataMap?.get('isPublic') === undefined) {
+        this._metadataMap?.set('isPublic', false);
       }
-      if (this._metadataMap.get('schemaVersion') === undefined) {
-        this._metadataMap.set('schemaVersion', CURRENT_WORKSPACE_SCHEMA_VERSION);
+      if (this._metadataMap?.get('schemaVersion') === undefined) {
+        this._metadataMap?.set('schemaVersion', CURRENT_WORKSPACE_SCHEMA_VERSION);
       }
-      this._metadataMap.set('workspaceId', workspaceId);
-      this._metadataMap.set('workspaceName', workspaceName);
+      this._metadataMap?.set('workspaceId', workspaceId);
+      this._metadataMap?.set('workspaceName', workspaceName);
     }, 'metadata');
   }
 
@@ -628,8 +628,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       return;
     }
 
-    this._ydoc.transact(() => {
-      this._metadataMap.set('isPublic', isPublic);
+    this._ydoc?.transact(() => {
+      this._metadataMap?.set('isPublic', isPublic);
     }, 'metadata');
   }
 
@@ -657,8 +657,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       return;
     }
 
-    this._ydoc.transact(() => {
-      this._metadataMap.set('workspaceName', name);
+    this._ydoc?.transact(() => {
+      this._metadataMap?.set('workspaceName', name);
     }, 'metadata');
   }
 
@@ -699,12 +699,16 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     const staleSelectionGroupIds: string[] = [];
 
     this._objectsMap.forEach((serialized, key) => {
-      const object = this._reviver.revive<T>(serialized);
+      const object = this._reviver?.revive<T>(serialized);
 
       // Remove remote selection groups on startup — they are transient UI state
       // that should not survive an app restart. The owning user's session is gone.
       if (object instanceof KritzelSelectionGroup && object.userId != null && object.userId !== localUserId) {
         staleSelectionGroupIds.push(key);
+        return;
+      }
+
+      if(!object) {
         return;
       }
 
@@ -730,8 +734,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   reset(): void {
     this.quadtree.reset();
     this._idMap.clear();
-    this._ydoc.transact(() => {
-      this._objectsMap.clear();
+    this._ydoc?.transact(() => {
+      this._objectsMap?.clear();
     }, 'local');
   }
 
@@ -752,8 +756,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     if (this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
-      this._ydoc.transact(() => {
-        this._objectsMap.set(object.id, serialized);
+      this._ydoc?.transact(() => {
+        this._objectsMap?.set(object.id, serialized);
       }, 'local');
     }
 
@@ -787,8 +791,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
       const origin = options.temporary ? 'temporary' : 'local';
 
-      this._ydoc.transact(() => {
-        this._objectsMap.set(object.id, serialized);
+      this._ydoc?.transact(() => {
+        this._objectsMap?.set(object.id, serialized);
       }, origin);
     }
 
@@ -808,8 +812,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       this._idMap.delete(object.id);
 
       if (this._objectsMap && this.isPersistable(object)) {
-        this._ydoc.transact(() => {
-          this._objectsMap.delete(object.id);
+        this._ydoc?.transact(() => {
+          this._objectsMap?.delete(object.id);
         }, 'local');
       }
     }
@@ -873,7 +877,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   undo(): void {
     if (this._undoManager && this._undoManager.canUndo()) {
       this._undoManager.undo();
-      this._core.engine.emitObjectsChange();
+      this._core?.engine.emitObjectsChange();
     }
   }
 
@@ -884,7 +888,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   redo(): void {
     if (this._undoManager && this._undoManager.canRedo()) {
       this._undoManager.redo();
-      this._core.engine.emitObjectsChange();
+      this._core?.engine.emitObjectsChange();
     }
   }
 
@@ -967,9 +971,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
       // Now redo them all as a single 'local' transaction
       // This will consolidate them into one undo item
-      this._ydoc.transact(() => {
+      this._ydoc?.transact(() => {
         for (let i = itemsToConsolidate - 1; i >= 0; i--) {
-          if (this._undoManager.canRedo()) {
+          if (this._undoManager?.canRedo()) {
             this._undoManager.redo();
           }
         }

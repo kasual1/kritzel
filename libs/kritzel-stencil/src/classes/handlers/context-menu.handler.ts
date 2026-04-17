@@ -14,12 +14,12 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
    * Menu items to display when the context menu is opened on the canvas background
    * (i.e., when no object is selected).
    */
-  globalContextMenuItems = [];
+  globalContextMenuItems: any[] = [];
 
   /**
    * Menu items to display when the context menu is opened on a selected object.
    */
-  objectContextMenuItems = [];
+  objectContextMenuItems: any[] = [];
 
   /**
    * Creates a new instance of the context menu handler.
@@ -61,7 +61,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     selectionTool?.moveHandler?.cancelPendingDrag();
 
     if (this._core.store.selectionBox) {
-      this._core.store.state.objects.remove(object => object instanceof KritzelSelectionBox);
+      this._core.store.objects.remove(object => object instanceof KritzelSelectionBox);
       this._core.store.setSelectionBox(null);
       this._core.store.state.isSelecting = false;
     }

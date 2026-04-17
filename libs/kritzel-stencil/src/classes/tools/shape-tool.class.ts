@@ -220,8 +220,8 @@ export class KritzelShapeTool extends KritzelBaseTool {
       scale: lockScale ? 1 : viewportScale,
     });
 
-    this._core.store.state.objects.insert(this.currentShape);
-    this._core.store.state.objects?.setActiveDrawingObject(this.currentShape.id);
+    this._core.store.objects.insert(this.currentShape);
+    this._core.store.objects?.setActiveDrawingObject(this.currentShape.id);
     this._core.rerender();
   }
 
@@ -261,7 +261,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
     this.currentShape.translateY = -this._core.store.state.translateY / divider;
     this.currentShape.updateDimensions();
 
-    this._core.store.state.objects.update(this.currentShape);
+    this._core.store.objects.update(this.currentShape);
   }
 
   /**
@@ -279,10 +279,10 @@ export class KritzelShapeTool extends KritzelBaseTool {
     // Compare in screen space
     if (this.currentShape.width < 10 && this.currentShape.height < 10) {
       const shapeId = this.currentShape.id;
-      this._core.store.state.objects.remove(o => o.id === shapeId);
+      this._core.store.objects.remove(o => o.id === shapeId);
     } else {
       this.currentShape.zIndex = this._core.store.currentZIndex;
-      this._core.store.state.objects.update(this.currentShape);
+      this._core.store.objects.update(this.currentShape);
       this._core.engine.emitObjectsChange();
       this._core.engine.emitObjectsAdded([this.currentShape]);
       this._core.selectObjects([this.currentShape]);
@@ -290,7 +290,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
     }
 
     this.isDrawing = false;
-    this._core.store.state.objects?.setActiveDrawingObject(null);
+    this._core.store.objects?.setActiveDrawingObject(null);
     this.currentShape = null;
     this._core.rerender();
   }

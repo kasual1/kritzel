@@ -234,7 +234,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   get arrows(): LineArrowConfig {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
-      if (obj instanceof KritzelLine) return obj.arrows;
+      if (obj instanceof KritzelLine) return obj.arrows ?? { start: { enabled: false }, end: { enabled: false } };
     }
     return { start: { enabled: false }, end: { enabled: false } };
   }
@@ -514,7 +514,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   private getSelectedObject(event: PointerEvent): KritzelSelectionGroup | null {
     const path = event.composedPath().slice(1) as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
-    const object = this._core.findObjectById(objectElement?.id);
+    const object = objectElement?.id ? this._core.findObjectById(objectElement.id) : null;
 
     if (!object) {
       return null;

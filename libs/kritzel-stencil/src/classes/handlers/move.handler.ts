@@ -14,19 +14,19 @@ const ANCHOR_DISCONNECT_THRESHOLD = 30;
  */
 export class KritzelMoveHandler extends KritzelBaseHandler {
   /** X coordinate where the drag started (updates during drag for incremental movement) */
-  dragStartX: number;
+  dragStartX: number = 0;
   /** Y coordinate where the drag started (updates during drag for incremental movement) */
-  dragStartY: number;
+  dragStartY: number = 0;
 
   /** Initial X coordinate when starting interaction (remains constant during drag) */
-  startX: number;
+  startX: number = 0;
   /** Initial Y coordinate when starting interaction (remains constant during drag) */
-  startY: number;
+  startY: number = 0;
 
   /** Current X coordinate during move operation */
-  endX: number;
+  endX: number = 0;
   /** Current Y coordinate during move operation */
-  endY: number;
+  endY: number = 0;
 
   /** Initial position when drag started (for calculating total accumulated distance) */
   private initialDragX: number = 0;
@@ -207,7 +207,11 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         const moveThreshold = 5;
 
         if (this.hasMoved || moveDeltaX > moveThreshold || moveDeltaY > moveThreshold) {
-          globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
+          const timeout = this._core.store.state.longTouchTimeout;
+
+          if(timeout) {
+            globalThis.clearTimeout?.(timeout);
+          }
 
           // Check for anchor disconnect threshold on lines
           this.checkAndDisconnectAnchors(x, y);
@@ -241,7 +245,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
-          this._core.store.selectionGroup.update();
+          this._core.store.selectionGroup!.update();
           this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
         }
@@ -253,7 +257,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
-          this._core.store.selectionGroup.update();
+          this._core.store.selectionGroup!.update();
           this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
         }
@@ -324,7 +328,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
           this.disconnectedLineIds.add(line.id);
 
           // Update the line to persist the change
-          this._core.store.state.objects.update(line);
+          this._core.store.objects.update(line);
         }
       }
     }

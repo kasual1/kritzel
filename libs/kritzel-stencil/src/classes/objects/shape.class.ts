@@ -58,6 +58,13 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
+  private get _editor(): EditorView {
+    if (!this.editor) {
+      throw new Error('KritzelShape: editor is not initialized');
+    }
+    return this.editor;
+  }
+
   /**
    * Creates a new KritzelShape instance with optional configuration.
    * This constructor initializes the shape with default values that can be
@@ -152,7 +159,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.store.state.activeWorkspace.id;
+    object.workspaceId = core.store.activeWorkspace.id;
     object.userId = core.user?.id;
     object.x = config?.x ?? 0;
     object.y = config?.y ?? 0;
@@ -209,7 +216,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    if (this.isMounted && this.elementRef === element && this.editor.dom.parentElement === element) {
+    if (this.isMounted && this.elementRef === element && this._editor.dom.parentElement === element) {
       return;
     }
 
@@ -227,7 +234,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * @returns void
    */
   mountTextEditor(element: HTMLDivElement): void {
-    if (element === null) {
+    if (element === null || !this.editor) {
       return;
     }
 
@@ -263,15 +270,15 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       }),
       editable: () => false,
       dispatchTransaction: transaction => {
-        const newState = this.editor.state.apply(transaction);
+        const newState = this._editor.state.apply(transaction);
 
-        this.editor.updateState(newState);
+        this._editor.updateState(newState);
 
         if (transaction.docChanged) {
           this.content = newState.doc.toJSON();
 
           if (!transaction.getMeta('fromRemote')) {
-            this._core.store.state.objects.update(this, { temporary: true });
+            this._core.store.objects.update(this, { temporary: true });
           }
         }
       },
@@ -321,7 +328,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     this.translateX = x;
     this.translateY = y;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -336,29 +343,27 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * @returns void
    */
   focus(coords?: { x: number; y: number }): void {
-    if (this.editor) {
-      const doc = this.editor.state.doc;
+    const doc = this._editor.state.doc;
 
-      if (coords?.x && coords?.y) {
-        const pos = this.editor.posAtCoords({ left: coords.x, top: coords.y });
-        if (pos) {
-          this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
-          this.editor.focus();
+    if (coords?.x && coords?.y) {
+      const pos = this._editor.posAtCoords({ left: coords.x, top: coords.y });
+      if (pos) {
+        this._editor.dispatch(this._editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
+        this._editor.focus();
 
-          if (KritzelDevicesHelper.isIOS()) {
-            this.scrollIntoViewOnIOS();
-          }
-          return;
+        if (KritzelDevicesHelper.isIOS()) {
+          this.scrollIntoViewOnIOS();
         }
+        return;
       }
+    }
 
-      const end = Math.max(1, doc.content.size - 1);
-      this.editor.dispatch(this.editor.state.tr.setSelection(TextSelection.create(doc, end)));
-      this.editor.focus();
+    const end = Math.max(1, doc.content.size - 1);
+    this._editor.dispatch(this._editor.state.tr.setSelection(TextSelection.create(doc, end)));
+    this._editor.focus();
 
-      if (KritzelDevicesHelper.isIOS()) {
-        this.scrollIntoViewOnIOS();
-      }
+    if (KritzelDevicesHelper.isIOS()) {
+      this.scrollIntoViewOnIOS();
     }
   }
 
@@ -399,13 +404,15 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('shape'));
 
-    this.editor.setProps({ editable: () => true });
+    this._editor.setProps({ editable: () => true });
 
     this.isEditing = true;
 
     this._core.rerender();
 
-    this.focus({ x: event?.clientX, y: event?.clientY });
+    if(event?.clientX && event?.clientY) {
+      this.focus({ x: event.clientX, y: event.clientY });
+    }
 
     KritzelKeyboardHelper.enableInteractiveWidget();
   }
@@ -419,17 +426,17 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * @returns void
    */
   save(): void {
-    this.content = this.editor.state.doc.toJSON();
+    this.content = this._editor.state.doc.toJSON();
 
-    this.editor.setProps({ editable: () => false });
+    this._editor.setProps({ editable: () => false });
 
-    this.editor.dom.blur();
+    this._editor.dom.blur();
 
     this.isEditing = false;
 
-    this._core.store.state.objects.consolidateTemporaryItems();
+    this._core.store.objects.consolidateTemporaryItems();
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
 
     this._core.engine.emitObjectsChange();
   }

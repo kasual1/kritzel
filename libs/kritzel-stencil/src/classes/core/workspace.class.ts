@@ -31,7 +31,7 @@ export class KritzelWorkspace implements KritzelSerializable {
   isPublic: boolean;
 
   /** Reference to the KritzelCore instance managing this workspace */
-  _core: KritzelCore;
+  _core!: KritzelCore;
 
   /**
    * Creates a new KritzelWorkspace instance.
@@ -54,7 +54,7 @@ export class KritzelWorkspace implements KritzelSerializable {
    * @param obj - Object containing workspace properties (id, name, viewport)
    * @returns A new KritzelWorkspace instance with the core reference set
    */
-  static create(core: KritzelCore, obj): KritzelWorkspace {
+  static create(core: KritzelCore, obj: any): KritzelWorkspace {
     const workspace = new KritzelWorkspace(obj.id, obj.name, obj.viewport);
     workspace._core = core;
     return workspace;

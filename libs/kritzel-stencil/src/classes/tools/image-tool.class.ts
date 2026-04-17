@@ -44,7 +44,7 @@ export class KritzelImageTool extends KritzelBaseTool {
       return;
     }
 
-    this.fileInput.click();
+    this.fileInput?.click();
   }
 
   /**

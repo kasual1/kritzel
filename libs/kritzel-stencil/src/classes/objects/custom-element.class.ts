@@ -63,7 +63,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.store.state.activeWorkspace.id;
+    object.workspaceId = core.store.activeWorkspace.id;
     object.userId = core.user?.id;
 
 
@@ -119,7 +119,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     }
 
     // Update to sync changes to y.js and propagate to other tabs
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**

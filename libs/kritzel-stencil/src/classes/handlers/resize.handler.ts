@@ -99,7 +99,11 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           this.initialSize.x = selectionGroup.translateX;
           this.initialSize.y = selectionGroup.translateY;
 
-          globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
+          const timeout = this._core.store.state.longTouchTimeout;
+
+          if (timeout) {
+            globalThis.clearTimeout?.(timeout);
+          }
         }
       }
     }
@@ -213,7 +217,12 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         const resizeThreshold = 5;
 
         if (resizeDeltaX > resizeThreshold || resizeDeltaY > resizeThreshold) {
-          globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
+          const timeout = this._core.store.state.longTouchTimeout;
+
+          if (timeout) {
+            globalThis.clearTimeout?.(timeout);
+          }
+
           this.hasResized = true;
         }
 
@@ -320,7 +329,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.store.state.isResizing = false;
 
         if (this.hasResized) {
-          this._core.store.selectionGroup.update();
+          this._core.store.selectionGroup!.update();
           this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
         }
@@ -334,14 +343,18 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this._core.store.state.isResizing = false;
 
         if (this.hasResized) {
-          this._core.store.selectionGroup.update();
+          this._core.store.selectionGroup!.update();
           this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
         }
 
         this.reset();
 
-        globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
+        const timeout = this._core.store.state.longTouchTimeout;
+
+        if (timeout) {
+          globalThis.clearTimeout?.(timeout);
+        }
       }
     }
   }

@@ -395,7 +395,7 @@ describe('KritzelCore', () => {
   describe('deleteWorkspace', () => {
     it('should remove workspace from app state', () => {
       const ws = new KritzelWorkspace('ws-del', 'Delete Me');
-      mockStore.state.activeWorkspace = { id: 'ws-other' };
+      mockStore.activeWorkspace = { id: 'ws-other' };
 
       core.deleteWorkspace(ws);
 
@@ -404,7 +404,7 @@ describe('KritzelCore', () => {
 
     it('should destroy objects and cancel updates when deleting the active workspace', () => {
       const ws = new KritzelWorkspace('ws-1', 'Active WS');
-      mockStore.state.activeWorkspace = { id: 'ws-1' };
+      mockStore.activeWorkspace = { id: 'ws-1' };
 
       core.deleteWorkspace(ws);
 
@@ -414,7 +414,7 @@ describe('KritzelCore', () => {
 
     it('should delete the IndexedDB database for the workspace', () => {
       const ws = new KritzelWorkspace('ws-db', 'DB Test');
-      mockStore.state.activeWorkspace = { id: 'ws-other' };
+      mockStore.activeWorkspace = { id: 'ws-other' };
 
       core.deleteWorkspace(ws);
 
@@ -425,7 +425,7 @@ describe('KritzelCore', () => {
       const coreWithId = new KritzelCore(mockEngine, 'homepage');
       // Point the new core at the same mock store
       (coreWithId as any)._store = mockStore;
-      mockStore.state.activeWorkspace = { id: 'ws-other' };
+      mockStore.activeWorkspace = { id: 'ws-other' };
 
       const ws = new KritzelWorkspace('ws-db', 'DB Test');
       coreWithId.deleteWorkspace(ws);
@@ -437,7 +437,7 @@ describe('KritzelCore', () => {
   describe('updateWorkspaceViewport', () => {
     it('should convert translate to world-space center and update viewport on active workspace', () => {
       const activeWs = { id: 'ws-1', viewport: null, updatedAt: null } as any;
-      mockStore.state.activeWorkspace = activeWs;
+      mockStore.activeWorkspace = activeWs;
       mockStore.state.workspaces = [activeWs];
       mockStore.state.viewportWidth = 1000;
       mockStore.state.viewportHeight = 800;
@@ -451,7 +451,7 @@ describe('KritzelCore', () => {
     });
 
     it('should do nothing if no active workspace', () => {
-      mockStore.state.activeWorkspace = null;
+      mockStore.activeWorkspace = null;
 
       core.updateWorkspaceViewport(100, 200, 2);
 
@@ -461,7 +461,7 @@ describe('KritzelCore', () => {
     });
 
     it('should do nothing if workspace was deleted', () => {
-      mockStore.state.activeWorkspace = { id: 'ws-deleted' };
+      mockStore.activeWorkspace = { id: 'ws-deleted' };
       mockStore.state.workspaces = [];
 
       core.updateWorkspaceViewport(100, 200, 2);
@@ -1084,8 +1084,8 @@ describe('KritzelCore', () => {
     });
 
     it('should save current workspace viewport', () => {
-      mockStore.state.activeWorkspace = { id: 'ws-1', viewport: null, updatedAt: null };
-      mockStore.state.workspaces = [mockStore.state.activeWorkspace];
+      mockStore.activeWorkspace = { id: 'ws-1', viewport: null, updatedAt: null };
+      mockStore.state.workspaces = [mockStore.activeWorkspace];
       mockStore.state.translateX = 50;
       mockStore.state.translateY = 100;
       mockStore.state.scale = 2;
@@ -1096,7 +1096,7 @@ describe('KritzelCore', () => {
 
       // centerWorldX = (1000/2 - 50) / 2 = 225
       // centerWorldY = (800/2 - 100) / 2 = 150
-      expect(mockStore.state.activeWorkspace.viewport).toEqual({
+      expect(mockStore.activeWorkspace.viewport).toEqual({
         centerWorldX: 225,
         centerWorldY: 150,
         scale: 2,
@@ -1290,7 +1290,7 @@ describe('KritzelCore', () => {
 
       await core.initializeWorkspace(ws);
 
-      expect(mockStore.state.activeWorkspace).toBe(ws);
+      expect(mockStore.activeWorkspace).toBe(ws);
     });
 
     it('should use last-active workspace from localStorage when no workspace argument is given', async () => {
@@ -1301,7 +1301,7 @@ describe('KritzelCore', () => {
 
       await core.initializeWorkspace();
 
-      expect(mockStore.state.activeWorkspace).toBe(wsOld);
+      expect(mockStore.activeWorkspace).toBe(wsOld);
     });
 
     it('should prefer newest createdAt when last-active is absent', async () => {
@@ -1311,7 +1311,7 @@ describe('KritzelCore', () => {
 
       await core.initializeWorkspace();
 
-      expect(mockStore.state.activeWorkspace).toBe(wsNew);
+      expect(mockStore.activeWorkspace).toBe(wsNew);
     });
 
     it('should use updatedAt as tie-breaker when createdAt is identical', async () => {
@@ -1322,7 +1322,7 @@ describe('KritzelCore', () => {
 
       await core.initializeWorkspace();
 
-      expect(mockStore.state.activeWorkspace).toBe(wsB);
+      expect(mockStore.activeWorkspace).toBe(wsB);
     });
 
     it('should select the single existing workspace when exactly one exists', async () => {
@@ -1331,7 +1331,7 @@ describe('KritzelCore', () => {
 
       await core.initializeWorkspace();
 
-      expect(mockStore.state.activeWorkspace).toBe(ws);
+      expect(mockStore.activeWorkspace).toBe(ws);
     });
 
     it('should create a new workspace when none exist', async () => {
@@ -1340,8 +1340,8 @@ describe('KritzelCore', () => {
 
       await core.initializeWorkspace();
 
-      expect(mockStore.state.activeWorkspace).toBeDefined();
-      expect(mockStore.state.activeWorkspace).not.toBeNull();
+      expect(mockStore.activeWorkspace).toBeDefined();
+      expect(mockStore.activeWorkspace).not.toBeNull();
       expect(mockAppStateMap.insert).toHaveBeenCalled();
     });
 
@@ -1350,7 +1350,7 @@ describe('KritzelCore', () => {
 
       await core.initializeWorkspace(undefined, { skipFallbackCreation: true });
 
-      expect(mockStore.state.activeWorkspace).toBeNull();
+      expect(mockStore.activeWorkspace).toBeNull();
     });
 
     it('should persist active workspace id to localStorage', async () => {

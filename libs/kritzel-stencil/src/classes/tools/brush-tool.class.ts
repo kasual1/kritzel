@@ -65,8 +65,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
         path.isCompleted = false;
 
         this._currentPathId = path.id;
-        this._core.store.state.objects.insert(path);
-        this._core.store.state.objects?.setActiveDrawingObject(path.id);
+        this._core.store.objects.insert(path);
+        this._core.store.objects?.setActiveDrawingObject(path.id);
       }
     }
 
@@ -94,8 +94,8 @@ export class KritzelBrushTool extends KritzelBaseTool {
         path.isCompleted = false;
 
         this._currentPathId = path.id;
-        this._core.store.state.objects.insert(path);
-        this._core.store.state.objects?.setActiveDrawingObject(path.id);
+        this._core.store.objects.insert(path);
+        this._core.store.objects?.setActiveDrawingObject(path.id);
       }
     }
   }
@@ -113,7 +113,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isDrawing && this._currentPathId) {
-        const currentPath = this._core.store.state.objects.findById(this._currentPathId) as KritzelPath | undefined;
+        const currentPath = this._core.store.objects.findById(this._currentPathId) as KritzelPath | undefined;
 
         if (currentPath) {
           const viewportScale = this._core.store.state.scale;
@@ -136,7 +136,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
           updatedPath.zIndex = currentPath.zIndex;
           updatedPath.isCompleted = false;
 
-          this._core.store.state.objects.update(updatedPath);
+          this._core.store.objects.update(updatedPath);
         }
       }
     }
@@ -146,7 +146,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
       if (activePointers.length === 1) {
         if (this._currentPathId) {
-          const currentPath = this._core.store.state.objects.findById(this._currentPathId) as KritzelPath | undefined;
+          const currentPath = this._core.store.objects.findById(this._currentPathId) as KritzelPath | undefined;
 
           if (currentPath) {
             const viewportScale = this._core.store.state.scale;
@@ -169,7 +169,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
             updatedPath.zIndex = currentPath.zIndex;
             updatedPath.isCompleted = false;
 
-            this._core.store.state.objects.update(updatedPath);
+            this._core.store.objects.update(updatedPath);
           }
         }
       }
@@ -192,15 +192,15 @@ export class KritzelBrushTool extends KritzelBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentPathId) {
-          const currentPath = this._core.store.state.objects.findById(this._currentPathId) as KritzelPath | undefined;
+          const currentPath = this._core.store.objects.findById(this._currentPathId) as KritzelPath | undefined;
 
           if (currentPath) {
             currentPath.isCompleted = true;
-            this._core.store.state.objects.update(currentPath);
+            this._core.store.objects.update(currentPath);
             this._core.engine.emitObjectsChange();
             this._core.engine.emitObjectsAdded([currentPath]);
           }
-          this._core.store.state.objects?.setActiveDrawingObject(null);
+          this._core.store.objects?.setActiveDrawingObject(null);
           this._currentPathId = null;
         }
       }
@@ -211,15 +211,15 @@ export class KritzelBrushTool extends KritzelBaseTool {
         this._core.store.state.isDrawing = false;
 
         if (this._currentPathId) {
-          const currentPath = this._core.store.state.objects.findById(this._currentPathId) as KritzelPath | undefined;
+          const currentPath = this._core.store.objects.findById(this._currentPathId) as KritzelPath | undefined;
 
           if (currentPath) {
             currentPath.isCompleted = true;
-            this._core.store.state.objects.update(currentPath);
+            this._core.store.objects.update(currentPath);
             this._core.engine.emitObjectsChange();
             this._core.engine.emitObjectsAdded([currentPath]);
           }
-          this._core.store.state.objects?.setActiveDrawingObject(null);
+          this._core.store.objects?.setActiveDrawingObject(null);
           this._currentPathId = null;
         }
       }

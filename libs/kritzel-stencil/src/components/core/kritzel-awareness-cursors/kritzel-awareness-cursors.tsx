@@ -15,22 +15,22 @@ const CLEANUP_INTERVAL_MS = 3_000;
   shadow: true,
 })
 export class KritzelAwarenessCursors {
-  @Prop() core: KritzelCore;
+  @Prop() core!: KritzelCore;
   @Prop() showEdgeIndicators: boolean = true;
   @Prop() edgeIndicatorPadding: number = 8;
 
   @State() remoteCursors: Map<number, KritzelRemoteCursorState> = new Map();
   @State() objectVersion: number = 0;
 
-  private cleanupIntervalId: ReturnType<typeof setInterval>;
+  private cleanupIntervalId: ReturnType<typeof setInterval> | undefined;
   private objectChangeRafId: ReturnType<typeof requestAnimationFrame> | null = null;
 
   componentDidLoad() {
-    this.core.store.state.objects?.onAwarenessChange(states => {
+    this.core.store.objects?.onAwarenessChange(states => {
       this.handleAwarenessChange(states);
     });
 
-    this.core.store.state.objects?.onObjectsChange(() => {
+    this.core.store.objects?.onObjectsChange(() => {
       this.handleRemoteObjectChange();
     });
 
@@ -49,7 +49,7 @@ export class KritzelAwarenessCursors {
   }
 
   private handleAwarenessChange(states: Map<number, Record<string, unknown>>) {
-    const localClientId = this.core.store.state.objects?.localClientId;
+    const localClientId = this.core.store.objects?.localClientId;
     const now = Date.now();
     const updated = new Map(this.remoteCursors);
 
@@ -136,7 +136,7 @@ export class KritzelAwarenessCursors {
   }
 
   private getActiveObjectTip(objectId: string): { x: number; y: number } | null {
-    const obj = this.core.store.state.objects?.findById(objectId);
+    const obj = this.core.store.objects?.findById(objectId);
     if (!obj) return null;
 
     if (obj instanceof KritzelPath && !obj.isCompleted) {

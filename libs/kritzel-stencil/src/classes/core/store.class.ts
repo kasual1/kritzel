@@ -8,6 +8,7 @@ import { KritzelLine } from '../objects/line.class';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../objects/base-object.class';
+import { KritzelWorkspace } from './workspace.class';
 
 /**
  * Central state management store for the Kritzel engine.
@@ -35,13 +36,56 @@ export class KritzelStore {
     return this._state;
   }
 
+
+  /**
+   *  Gets the map of all objects in the workspace.
+   *  Throws an error if the objects map is not initialized, as it is required for all object management.
+   *  @returns The KritzelObjectMap containing all objects
+   *  @throws Error if the objects map is not initialized in the state
+   */
+  get objects(): KritzelObjectMap<KritzelBaseObject<Element>> {
+    if (!this._state.objects) {
+      throw new Error('Objects map is not initialized.');
+    }
+    return this._state.objects;
+  }
+
+ 
+  /**
+   * Gets the currently active workspace.
+   * Throws an error if no active workspace is set, as it is required for workspace-bound operations.
+   * @returns The current active KritzelWorkspace
+   * @throws Error if no active workspace is set in the state
+   */
+  get activeWorkspace(): KritzelWorkspace {
+    if (!this._state.activeWorkspace) {
+      throw new Error('Active workspace is not set.');
+    }
+    return this._state.activeWorkspace;
+  }
+
+
+  /**
+   * Gets the host element for the Kritzel editor.
+   * Throws an error if the host is not set, as it is required for many operations.
+   * @returns The host HTMLElement
+   * @throws Error if the host element is not set in the state
+   */
+  get host(): HTMLElement {
+    if (!this._state.host) {
+      throw new Error('Host element is not set.');
+    }
+
+    return this._state.host;
+  }
+
   /**
    * Gets the next available z-index for new objects.
    * Calculates the maximum z-index among all non-selection objects and adds 1.
    * @returns The next z-index value to use for new objects
    */
   get currentZIndex() {
-    return Math.max(0, ...this._state.objects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).map(o => o.zIndex)) + 1;
+    return Math.max(0, ...this.objects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).map(o => o.zIndex)) + 1;
   }
 
   /**
@@ -84,7 +128,7 @@ export class KritzelStore {
     if (this.hasViewportBoundaries) {
       return this.allObjects.length;
     }
-    return this._state.objects.totalCount;
+    return this.objects.totalCount;
   }
 
   /**
@@ -94,9 +138,9 @@ export class KritzelStore {
    */
   get allObjects(): KritzelBaseObject<Element>[] {
     if (this.hasViewportBoundaries) {
-      return this._state.objects.query(this.viewportBoundaryBounds);
+      return this.objects.query(this.viewportBoundaryBounds);
     }
-    return this._state.objects.allObjects();
+    return this.objects.allObjects();
   }
 
   /**
@@ -114,7 +158,7 @@ export class KritzelStore {
       depth: 100,
     };
 
-    return this._state.objects.query(viewportBounds).sort((a, b) => a.zIndex - b.zIndex);
+    return this.objects.query(viewportBounds).sort((a, b) => a.zIndex - b.zIndex);
   }
 
   /**
@@ -142,7 +186,7 @@ export class KritzelStore {
     if (this._selectionBoxCacheValid) {
       return this._cachedSelectionBox;
     }
-    const selectionBoxes = this._state.objects.filter(o => o instanceof KritzelSelectionBox);
+    const selectionBoxes = this.objects.filter(o => o instanceof KritzelSelectionBox);
     this._cachedSelectionBox = selectionBoxes.length > 0 ? (selectionBoxes[0] as KritzelSelectionBox) : null;
     this._selectionBoxCacheValid = true;
     return this._cachedSelectionBox;
@@ -158,7 +202,7 @@ export class KritzelStore {
     if (this._selectionGroupCacheValid) {
       return this._cachedSelectionGroup;
     }
-    const selectionGroups = this._state.objects.filter(o => o instanceof KritzelSelectionGroup);
+    const selectionGroups = this.objects.filter(o => o instanceof KritzelSelectionGroup);
     if (this._localUserId) {
       this._cachedSelectionGroup = (selectionGroups as KritzelSelectionGroup[]).find(sg => sg.userId === this._localUserId) ?? null;
     } else {
@@ -211,7 +255,7 @@ export class KritzelStore {
    * @returns The text object in editing mode, or null if none
    */
   get activeText(): KritzelText | null {
-    const activeTexts = this._state.objects.filter(o => o instanceof KritzelText && (o as KritzelText).isEditing);
+    const activeTexts = this.objects.filter(o => o instanceof KritzelText && (o as KritzelText).isEditing);
     return activeTexts.length > 0 ? (activeTexts[0] as KritzelText) : null;
   }
 
@@ -220,7 +264,7 @@ export class KritzelStore {
    * @returns The shape object in editing mode, or null if none
    */
   get activeShape(): KritzelShape | null {
-    const activeShapes = this._state.objects.filter(o => o instanceof KritzelShape && (o as KritzelShape).isEditing);
+    const activeShapes = this.objects.filter(o => o instanceof KritzelShape && (o as KritzelShape).isEditing);
     return activeShapes.length > 0 ? (activeShapes[0] as KritzelShape) : null;
   }
 
@@ -229,7 +273,7 @@ export class KritzelStore {
    * @returns The incomplete path object, or null if no path is being drawn
    */
   get currentPath(): KritzelPath | null {
-    const drawingPaths = this._state.objects.filter(o => o instanceof KritzelPath && (o as KritzelPath).isCompleted === false);
+    const drawingPaths = this.objects.filter(o => o instanceof KritzelPath && (o as KritzelPath).isCompleted === false);
     return drawingPaths.length > 0 ? (drawingPaths[0] as KritzelPath) : null;
   }
 
@@ -238,7 +282,7 @@ export class KritzelStore {
    * @returns The incomplete line object, or null if no line is being drawn
    */
   get currentLine(): KritzelLine | null {
-    const drawingLines = this._state.objects.filter(o => o instanceof KritzelLine && (o as KritzelLine).isCompleted === false);
+    const drawingLines = this.objects.filter(o => o instanceof KritzelLine && (o as KritzelLine).isCompleted === false);
     return drawingLines.length > 0 ? (drawingLines[0] as KritzelLine) : null;
   }
 
@@ -247,7 +291,7 @@ export class KritzelStore {
    * @returns The left position of the host element in client coordinates
    */
   get offsetX() {
-    return this._state.host.getBoundingClientRect().left;
+    return this.host.getBoundingClientRect().left;
   }
 
   /**
@@ -255,7 +299,7 @@ export class KritzelStore {
    * @returns The top position of the host element in client coordinates
    */
   get offsetY() {
-    return this._state.host.getBoundingClientRect().top;
+    return this.host.getBoundingClientRect().top;
   }
 
   /**
@@ -295,7 +339,14 @@ export class KritzelStore {
     if (!this._listeners.has(property)) {
       this._listeners.set(property, new Set());
     }
-    this._listeners.get(property).add(listener);
+
+    const listenersForProperty = this._listeners.get(property);
+
+    if(!listenersForProperty) {
+      throw new Error(`Listeners set for property ${String(property)} was not initialized.`);
+    }
+
+    listenersForProperty.add(listener);
   }
 
   /**
@@ -321,8 +372,10 @@ export class KritzelStore {
     if (oldValue !== value) {
       this._state[property] = value;
 
-      if (this._listeners.has(property)) {
-        this._listeners.get(property).forEach(listener => listener(value, oldValue, String(property)));
+      const listenersForProperty = this._listeners.get(property);
+
+      if (listenersForProperty) {
+        listenersForProperty.forEach(listener => listener(value, oldValue, String(property)));
       }
     }
   }

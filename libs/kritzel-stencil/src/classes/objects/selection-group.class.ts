@@ -56,11 +56,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
   clientId?: number;
 
-  minX: number;
-  maxX: number;
+  minX: number = 0;
+  maxX: number = 0;
 
-  minY: number;
-  maxY: number;
+  minY: number = 0;
+  maxY: number = 0;
 
   // Selection styling properties
   handleColor?: ThemeAwareColor;
@@ -106,7 +106,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     const idSet = new Set(this._objectIds);
-    const foundObjects = this._core.store.state.objects.filter(obj => idSet.has(obj.id));
+    const foundObjects = this._core.store.objects.filter(obj => idSet.has(obj.id));
     // Preserve the original order from objectIds
     const objectMap = new Map(foundObjects.map(obj => [obj.id, obj]));
     this._cachedObjects = this._objectIds
@@ -136,9 +136,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.store.state.activeWorkspace.id;
+    object.workspaceId = core.store.activeWorkspace.id;
     object.userId = core.user?.id;
-    object.clientId = core.store.state.objects?.localClientId ?? undefined;
+    object.clientId = core.store.objects?.localClientId ?? undefined;
     object.scale = core.store.state.scale;
     object.zIndex = 99999;
     
@@ -290,7 +290,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.translateX = x;
     this.translateY = y;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -379,7 +379,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     // Only update the selection group itself
     // Child objects are already updated during move/resize/rotate operations
     // Updating them again here would create redundant y.js updates
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -398,8 +398,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.translateX += deltaX;
     this.translateY += deltaY;
 
-    this._core.store.state.objects.transaction(() => {
-      this._core.store.state.objects.update(this);
+    this._core.store.objects.transaction(() => {
+      this._core.store.objects.update(this);
 
       const children = this.objects;
       for (const obj of children) {
@@ -450,7 +450,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const cosR = Math.cos(rotation);
     const sinR = Math.sin(rotation);
 
-    this._core.store.state.objects.transaction(() => {
+    this._core.store.objects.transaction(() => {
       // Cache objects once to avoid repeated getter calls during resize
       const children = this.objects;
 
@@ -519,7 +519,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       // Note: Don't capture new snapshots here - we need to preserve the original snapshots
       // until the transform operation is complete to avoid compounding errors during drag
       this.refreshObjectDimensions(children);
-      this._core.store.state.objects.update(this);
+      this._core.store.objects.update(this);
     });
   }
 
@@ -542,9 +542,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     // Cache objects once to avoid repeated getter calls during rotation
     const children = this.objects;
 
-    this._core.store.state.objects.transaction(() => {
+    this._core.store.objects.transaction(() => {
       // Update the SelectionGroup itself to propagate rotation to other tabs
-      this._core.store.state.objects.update(this);
+      this._core.store.objects.update(this);
 
       const childCount = children.length;
       for (const child of children) {
@@ -659,7 +659,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     if (!skipPersist) {
-      this._core.store.state.objects.update(this);
+      this._core.store.objects.update(this);
     }
   }
 

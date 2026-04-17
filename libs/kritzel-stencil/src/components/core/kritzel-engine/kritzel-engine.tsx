@@ -63,14 +63,14 @@ export class KritzelEngine {
     // Let batched prop updates settle, then perform an idempotent re-check.
     await Promise.resolve();
 
-    const currentWorkspaceId = this.core.store.state.activeWorkspace?.id;
+    const currentWorkspaceId = this.core.store.activeWorkspace?.id;
     if (currentWorkspaceId === newWorkspaceId) {
       return;
     }
 
     this.core.beforeWorkspaceChange();
     await this.initializeWorkspaceIfNeeded(newWorkspace);
-    this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace);
+    this.activeWorkspaceChange.emit(this.core.store.activeWorkspace);
   }
 
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
@@ -359,7 +359,7 @@ export class KritzelEngine {
 
   @Listen('pointerleave')
   handlePointerLeave() {
-    this.core.store.state.objects?.clearCursorPosition();
+    this.core.store.objects?.clearCursorPosition();
   }
 
   @Listen('longpress', { passive: true })
@@ -607,9 +607,9 @@ export class KritzelEngine {
   async hideContextMenu() {
     this.core.store.state.pointers.clear();
     this.core.store.state.isContextMenuVisible = false;
-    this.core.store.state.objects?.remove(o => o instanceof KritzelSelectionBox);
+    this.core.store.objects?.remove(o => o instanceof KritzelSelectionBox);
     this.core.store.setSelectionBox(null);
-    this.core.store.state.objects?.clearLocalSelectionBox();
+    this.core.store.objects?.clearLocalSelectionBox();
     this.core.store.state.isSelecting = false;
     this.core.store.state.isEnabled = true;
     this.core.rerender();
@@ -674,7 +674,7 @@ export class KritzelEngine {
     object._core = this.core;
     object.scale = this.core.store.state.scale;
     object.zIndex = this.core.store.currentZIndex;
-    object.workspaceId = this.core.store.state.activeWorkspace!.id;
+    object.workspaceId = this.core.store.activeWorkspace!.id;
 
     // Handle KritzelText: recreate the editor now that _core is available
     // The editor's dispatchTransaction callback needs _core for persisting changes
@@ -699,7 +699,7 @@ export class KritzelEngine {
         child._core = this.core;
         child.scale = this.core.store.state.scale;
         child.zIndex = this.core.store.currentZIndex;
-        child.workspaceId = this.core.store.state.activeWorkspace!.id;
+        child.workspaceId = this.core.store.activeWorkspace!.id;
 
         idRemapping.set(oldId, child.id);
         object.childIds.push(child.id);
@@ -768,7 +768,7 @@ export class KritzelEngine {
    */
   @Method()
   async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
-    const objectsMap = this.core.store.state.objects;
+    const objectsMap = this.core.store.objects;
     if (!objectsMap) {
       return null;
     }
@@ -955,8 +955,8 @@ export class KritzelEngine {
 
     // Save critical state before screenshot to restore after
     const savedState = {
-      objects: this.core.store.state.objects,
-      activeWorkspace: this.core.store.state.activeWorkspace,
+      objects: this.core.store.objects,
+      activeWorkspace: this.core.store.activeWorkspace,
       workspaces: this.core.store.state.workspaces,
       activeTool: this.core.store.state.activeTool,
       isReady: this.core.store.state.isReady,
@@ -1185,7 +1185,7 @@ export class KritzelEngine {
    */
   @Method()
   async exportAsJson(): Promise<string> {
-    const workspace = this.core.store.state.activeWorkspace;
+    const workspace = this.core.store.activeWorkspace;
     if (!workspace) {
       throw new Error('Cannot export workspace: no active workspace is loaded');
     }
@@ -1279,7 +1279,7 @@ export class KritzelEngine {
       console.warn(`Workspace version mismatch: expected ${WORKSPACE_EXPORT_VERSION}, got ${data.version}`);
     }
 
-    const activeWorkspace = this.core.store.state.activeWorkspace;
+    const activeWorkspace = this.core.store.activeWorkspace;
     if (!activeWorkspace) {
       throw new Error('Cannot load objects: no active workspace is loaded');
     }
@@ -1443,7 +1443,7 @@ export class KritzelEngine {
   /** Returns the currently active workspace. */
   @Method()
   async getActiveWorkspace(): Promise<KritzelWorkspace> {
-    const activeWorkspace = this.core.store.state.activeWorkspace;
+    const activeWorkspace = this.core.store.activeWorkspace;
     if (!activeWorkspace) {
       throw new Error('No active workspace is loaded');
     }
@@ -1484,7 +1484,7 @@ export class KritzelEngine {
 
     this.core.beforeWorkspaceChange();
     await this.initializeWorkspaceIfNeeded(workspace);
-    this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace);
+    this.activeWorkspaceChange.emit(this.core.store.activeWorkspace);
   }
 
   /**
@@ -1496,8 +1496,8 @@ export class KritzelEngine {
   @Method()
   async reinitSync(): Promise<void> {
     this.core.setSyncConfig(this.syncConfig);
-    this.core.store.state.objects?.clearCursorPosition();
-    this.core.store.state.objects?.destroy();
+    this.core.store.objects?.clearCursorPosition();
+    this.core.store.objects?.destroy();
     this.core.appStateMap.destroy();
     this._isYjsInitialized = false;
     await this.initializeSyncAndWorkspace();
@@ -1545,11 +1545,11 @@ export class KritzelEngine {
     this.throttledPointerMoveMulti.cancel();
 
     // Clear cursor position in awareness before destroying
-    this.core.store.state.objects?.clearCursorPosition();
+    this.core.store.objects?.clearCursorPosition();
 
     // Clean up current workspace's ObjectMap
-    if (this.core.store.state.objects) {
-      this.core.store.state.objects.destroy();
+    if (this.core.store.objects) {
+      this.core.store.objects.destroy();
     }
 
     // Clean up AppStateMap (workspaces Y.Doc)
@@ -1656,7 +1656,7 @@ export class KritzelEngine {
     }
 
     // Emit initial active workspace once startup initialization has completed
-    const initialActiveWorkspace = this.core.store.state.activeWorkspace;
+    const initialActiveWorkspace = this.core.store.activeWorkspace;
     if (initialActiveWorkspace) {
       this.activeWorkspaceChange.emit(initialActiveWorkspace);
     }
@@ -1693,7 +1693,7 @@ export class KritzelEngine {
       return;
     }
 
-    if (this.core.store.state.activeWorkspace?.id === this.activeWorkspaceId) {
+    if (this.core.store.activeWorkspace?.id === this.activeWorkspaceId) {
       return;
     }
 
@@ -1712,20 +1712,20 @@ export class KritzelEngine {
       return;
     }
 
-    if (this.core.store.state.activeWorkspace?.id === workspace.id) {
+    if (this.core.store.activeWorkspace?.id === workspace.id) {
       return;
     }
 
     this.core.beforeWorkspaceChange();
     await this.initializeWorkspaceIfNeeded(workspace);
-    this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace);
+    this.activeWorkspaceChange.emit(this.core.store.activeWorkspace);
   }
 
   private async initializeWorkspaceIfNeeded(workspace?: KritzelWorkspace, options?: { skipFallbackCreation?: boolean }): Promise<void> {
     const targetWorkspaceId = workspace?.id ?? null;
     const targetKey = targetWorkspaceId ?? (options?.skipFallbackCreation ? '__NO_FALLBACK__' : '__AUTO__');
 
-    if (targetWorkspaceId && this.core.store.state.activeWorkspace?.id === targetWorkspaceId) {
+    if (targetWorkspaceId && this.core.store.activeWorkspace?.id === targetWorkspaceId) {
       return;
     }
 
@@ -1754,7 +1754,7 @@ export class KritzelEngine {
   }
 
   emitObjectsChange() {
-    const objectsMap = this.core.store.state.objects;
+    const objectsMap = this.core.store.objects;
     if (!objectsMap) {
       this.objectsChange.emit([]);
       this.undoStateChange.emit(this._defaultUndoState);
@@ -1808,9 +1808,9 @@ export class KritzelEngine {
   private _handleActiveToolChange(activeTool: KritzelBaseTool | null) {
     if (!(activeTool instanceof KritzelSelectionTool)) {
       this.core.clearSelection();
-      this.core.store.state.objects?.remove(o => o instanceof KritzelSelectionBox);
+      this.core.store.objects?.remove(o => o instanceof KritzelSelectionBox);
       this.core.store.setSelectionBox(null);
-      this.core.store.state.objects?.clearLocalSelectionBox();
+      this.core.store.objects?.clearLocalSelectionBox();
       this.core.store.state.isSelecting = false;
       this.core.store.state.isResizeHandleSelected = false;
       this.core.store.state.isRotationHandleSelected = false;
@@ -2227,9 +2227,9 @@ export class KritzelEngine {
                 {(this.core.displaySelectionGroupUI(object) || this.core.displaySelectionLineUI(object)) &&
                   (() => {
                     const isSelectionGroup = KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup');
-                    const localClientId = this.core.store.state.objects?.localClientId;
+                    const localClientId = this.core.store.objects?.localClientId;
 
-                    const awarenessStates = this.core.store.state.objects?.awareness?.getStates();
+                    const awarenessStates = this.core.store.objects?.awareness?.getStates();
                     const isRemoteSelection = isSelectionGroup && (
                       // Different user
                       (object.userId != null && this.core.user?.id != null && object.userId !== this.core.user.id) ||
@@ -2809,7 +2809,7 @@ export class KritzelEngine {
           ></kritzel-context-menu>
         )}
 
-        {this.core.store.state.objects?.hasAwareness && <kritzel-awareness-cursors core={this.core}></kritzel-awareness-cursors>}
+        {this.core.store.objects?.hasAwareness && <kritzel-awareness-cursors core={this.core}></kritzel-awareness-cursors>}
 
         {this.core.store.state?.activeTool instanceof KritzelEraserTool && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
       </Host>

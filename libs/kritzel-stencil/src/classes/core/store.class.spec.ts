@@ -8,9 +8,11 @@ import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 
+type TestState = Omit<KritzelEngineState, 'objects'> & { objects: NonNullable<KritzelEngineState['objects']> };
+
 describe('KritzelStore', () => {
   let store: KritzelStore;
-  let mockState: KritzelEngineState;
+  let mockState: TestState;
 
   const createMockState = (): KritzelEngineState => {
     return {
@@ -31,8 +33,9 @@ describe('KritzelStore', () => {
   };
 
   beforeEach(() => {
-    mockState = createMockState();
-    store = new KritzelStore(mockState);
+    const state = createMockState();
+    store = new KritzelStore(state);
+    mockState = state as TestState;
   });
 
   afterEach(() => {
