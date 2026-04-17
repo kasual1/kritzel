@@ -2157,7 +2157,7 @@ declare namespace LocalJSX {
         "user"?: IKritzelUser;
     }
     interface KritzelAwarenessCursors {
-        "core"?: KritzelCore;
+        "core": KritzelCore;
         /**
           * @default 8
          */
@@ -2288,7 +2288,7 @@ declare namespace LocalJSX {
         "user"?: IKritzelUser;
     }
     interface KritzelCursorTrail {
-        "core"?: KritzelCore;
+        "core": KritzelCore;
     }
     interface KritzelDialog {
         /**

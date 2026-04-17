@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type          | Default     |
-| -------- | --------- | ----------- | ------------- | ----------- |
-| `core`   | --        |             | `KritzelCore` | `undefined` |
+| Property            | Attribute | Description | Type          | Default     |
+| ------------------- | --------- | ----------- | ------------- | ----------- |
+| `core` _(required)_ | --        |             | `KritzelCore` | `undefined` |
 
 
 ## Dependencies
