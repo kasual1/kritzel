@@ -1,12 +1,12 @@
 name: Deploy to github pages
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+#   workflow_dispatch:
 jobs:
   # --- Build Stencil Library ---
   build-stencil:
