@@ -8,7 +8,6 @@
       "dom",
       "es2022"
     ],
-    "ignoreDeprecations": "6.0",
     "moduleResolution": "node",
     "module": "esnext",
     "target": "es2022",
