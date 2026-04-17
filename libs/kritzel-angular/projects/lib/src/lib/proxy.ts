@@ -30,7 +30,7 @@ import { defineCustomElement as defineKritzelSettings } from 'kritzel-stencil/di
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['core', 'edgeIndicatorPadding', 'showEdgeIndicators'],
+  inputs: [{ name: 'core', required: true }, 'edgeIndicatorPadding', 'showEdgeIndicators'],
 })
 export class KritzelAwarenessCursors {
   protected el: HTMLKritzelAwarenessCursorsElement;

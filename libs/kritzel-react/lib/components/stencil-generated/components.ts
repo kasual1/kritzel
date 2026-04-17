@@ -10,7 +10,9 @@
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
+
 import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelDialogCloseEvent, type IKritzelIsPublicChangedEvent, type IKritzelMasterDetailSelectEvent, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelButtonCustomEvent, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelExportCustomEvent, type KritzelInputCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelLoginDialogCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelPillTabsCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelUndoState, type KritzelViewportState, type LineArrowConfig, type LoginEvent, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ThemeName } from "../../../../kritzel-stencil";
+import type { Components } from "../../../../kritzel-stencil/dist/components";
 import { KritzelAwarenessCursors as KritzelAwarenessCursorsElement, defineCustomElement as defineKritzelAwarenessCursors } from "../../../../kritzel-stencil/dist/components/kritzel-awareness-cursors.js";
 import { KritzelBackToContent as KritzelBackToContentElement, defineCustomElement as defineKritzelBackToContent } from "../../../../kritzel-stencil/dist/components/kritzel-back-to-content.js";
 import { KritzelButton as KritzelButtonElement, defineCustomElement as defineKritzelButton } from "../../../../kritzel-stencil/dist/components/kritzel-button.js";
@@ -29,7 +31,7 @@ import { KritzelSettings as KritzelSettingsElement, defineCustomElement as defin
 
 export type KritzelAwarenessCursorsEvents = NonNullable<unknown>;
 
-export const KritzelAwarenessCursors: StencilReactComponent<KritzelAwarenessCursorsElement, KritzelAwarenessCursorsEvents> = /*@__PURE__*/ createComponent<KritzelAwarenessCursorsElement, KritzelAwarenessCursorsEvents>({
+export const KritzelAwarenessCursors: StencilReactComponent<KritzelAwarenessCursorsElement, KritzelAwarenessCursorsEvents, Components.KritzelAwarenessCursors> = /*@__PURE__*/ createComponent<KritzelAwarenessCursorsElement, KritzelAwarenessCursorsEvents, Components.KritzelAwarenessCursors>({
     tagName: 'kritzel-awareness-cursors',
     elementClass: KritzelAwarenessCursorsElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -40,7 +42,7 @@ export const KritzelAwarenessCursors: StencilReactComponent<KritzelAwarenessCurs
 
 export type KritzelBackToContentEvents = { onBackToContent: EventName<KritzelBackToContentCustomEvent<void>> };
 
-export const KritzelBackToContent: StencilReactComponent<KritzelBackToContentElement, KritzelBackToContentEvents> = /*@__PURE__*/ createComponent<KritzelBackToContentElement, KritzelBackToContentEvents>({
+export const KritzelBackToContent: StencilReactComponent<KritzelBackToContentElement, KritzelBackToContentEvents, Components.KritzelBackToContent> = /*@__PURE__*/ createComponent<KritzelBackToContentElement, KritzelBackToContentEvents, Components.KritzelBackToContent>({
     tagName: 'kritzel-back-to-content',
     elementClass: KritzelBackToContentElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -51,7 +53,7 @@ export const KritzelBackToContent: StencilReactComponent<KritzelBackToContentEle
 
 export type KritzelButtonEvents = { onButtonClick: EventName<KritzelButtonCustomEvent<void>> };
 
-export const KritzelButton: StencilReactComponent<KritzelButtonElement, KritzelButtonEvents> = /*@__PURE__*/ createComponent<KritzelButtonElement, KritzelButtonEvents>({
+export const KritzelButton: StencilReactComponent<KritzelButtonElement, KritzelButtonEvents, Components.KritzelButton> = /*@__PURE__*/ createComponent<KritzelButtonElement, KritzelButtonEvents, Components.KritzelButton>({
     tagName: 'kritzel-button',
     elementClass: KritzelButtonElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -62,7 +64,7 @@ export const KritzelButton: StencilReactComponent<KritzelButtonElement, KritzelB
 
 export type KritzelCurrentUserDialogEvents = NonNullable<unknown>;
 
-export const KritzelCurrentUserDialog: StencilReactComponent<KritzelCurrentUserDialogElement, KritzelCurrentUserDialogEvents> = /*@__PURE__*/ createComponent<KritzelCurrentUserDialogElement, KritzelCurrentUserDialogEvents>({
+export const KritzelCurrentUserDialog: StencilReactComponent<KritzelCurrentUserDialogElement, KritzelCurrentUserDialogEvents, Components.KritzelCurrentUserDialog> = /*@__PURE__*/ createComponent<KritzelCurrentUserDialogElement, KritzelCurrentUserDialogEvents, Components.KritzelCurrentUserDialog>({
     tagName: 'kritzel-current-user-dialog',
     elementClass: KritzelCurrentUserDialogElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -76,7 +78,7 @@ export type KritzelDialogEvents = {
     onDialogClose: EventName<KritzelDialogCustomEvent<IKritzelDialogCloseEvent>>
 };
 
-export const KritzelDialog: StencilReactComponent<KritzelDialogElement, KritzelDialogEvents> = /*@__PURE__*/ createComponent<KritzelDialogElement, KritzelDialogEvents>({
+export const KritzelDialog: StencilReactComponent<KritzelDialogElement, KritzelDialogEvents, Components.KritzelDialog> = /*@__PURE__*/ createComponent<KritzelDialogElement, KritzelDialogEvents, Components.KritzelDialog>({
     tagName: 'kritzel-dialog',
     elementClass: KritzelDialogElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -104,7 +106,7 @@ export type KritzelEditorEvents = {
     onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>
 };
 
-export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents>({
+export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor>({
     tagName: 'kritzel-editor',
     elementClass: KritzelEditorElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -133,7 +135,7 @@ export type KritzelExportEvents = {
     onExportJson: EventName<KritzelExportCustomEvent<string>>
 };
 
-export const KritzelExport: StencilReactComponent<KritzelExportElement, KritzelExportEvents> = /*@__PURE__*/ createComponent<KritzelExportElement, KritzelExportEvents>({
+export const KritzelExport: StencilReactComponent<KritzelExportElement, KritzelExportEvents, Components.KritzelExport> = /*@__PURE__*/ createComponent<KritzelExportElement, KritzelExportEvents, Components.KritzelExport>({
     tagName: 'kritzel-export',
     elementClass: KritzelExportElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -148,7 +150,7 @@ export const KritzelExport: StencilReactComponent<KritzelExportElement, KritzelE
 
 export type KritzelInputEvents = { onValueChange: EventName<KritzelInputCustomEvent<string>> };
 
-export const KritzelInput: StencilReactComponent<KritzelInputElement, KritzelInputEvents> = /*@__PURE__*/ createComponent<KritzelInputElement, KritzelInputEvents>({
+export const KritzelInput: StencilReactComponent<KritzelInputElement, KritzelInputEvents, Components.KritzelInput> = /*@__PURE__*/ createComponent<KritzelInputElement, KritzelInputEvents, Components.KritzelInput>({
     tagName: 'kritzel-input',
     elementClass: KritzelInputElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -159,7 +161,7 @@ export const KritzelInput: StencilReactComponent<KritzelInputElement, KritzelInp
 
 export type KritzelLineEndingsEvents = { onValueChange: EventName<KritzelLineEndingsCustomEvent<LineArrowConfig>> };
 
-export const KritzelLineEndings: StencilReactComponent<KritzelLineEndingsElement, KritzelLineEndingsEvents> = /*@__PURE__*/ createComponent<KritzelLineEndingsElement, KritzelLineEndingsEvents>({
+export const KritzelLineEndings: StencilReactComponent<KritzelLineEndingsElement, KritzelLineEndingsEvents, Components.KritzelLineEndings> = /*@__PURE__*/ createComponent<KritzelLineEndingsElement, KritzelLineEndingsEvents, Components.KritzelLineEndings>({
     tagName: 'kritzel-line-endings',
     elementClass: KritzelLineEndingsElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -173,7 +175,7 @@ export type KritzelLoginDialogEvents = {
     onDialogClosed: EventName<KritzelLoginDialogCustomEvent<void>>
 };
 
-export const KritzelLoginDialog: StencilReactComponent<KritzelLoginDialogElement, KritzelLoginDialogEvents> = /*@__PURE__*/ createComponent<KritzelLoginDialogElement, KritzelLoginDialogEvents>({
+export const KritzelLoginDialog: StencilReactComponent<KritzelLoginDialogElement, KritzelLoginDialogEvents, Components.KritzelLoginDialog> = /*@__PURE__*/ createComponent<KritzelLoginDialogElement, KritzelLoginDialogEvents, Components.KritzelLoginDialog>({
     tagName: 'kritzel-login-dialog',
     elementClass: KritzelLoginDialogElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -187,7 +189,7 @@ export const KritzelLoginDialog: StencilReactComponent<KritzelLoginDialogElement
 
 export type KritzelMasterDetailEvents = { onItemSelect: EventName<KritzelMasterDetailCustomEvent<IKritzelMasterDetailSelectEvent>> };
 
-export const KritzelMasterDetail: StencilReactComponent<KritzelMasterDetailElement, KritzelMasterDetailEvents> = /*@__PURE__*/ createComponent<KritzelMasterDetailElement, KritzelMasterDetailEvents>({
+export const KritzelMasterDetail: StencilReactComponent<KritzelMasterDetailElement, KritzelMasterDetailEvents, Components.KritzelMasterDetail> = /*@__PURE__*/ createComponent<KritzelMasterDetailElement, KritzelMasterDetailEvents, Components.KritzelMasterDetail>({
     tagName: 'kritzel-master-detail',
     elementClass: KritzelMasterDetailElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -198,7 +200,7 @@ export const KritzelMasterDetail: StencilReactComponent<KritzelMasterDetailEleme
 
 export type KritzelNumericInputEvents = { onValueChange: EventName<KritzelNumericInputCustomEvent<number | undefined>> };
 
-export const KritzelNumericInput: StencilReactComponent<KritzelNumericInputElement, KritzelNumericInputEvents> = /*@__PURE__*/ createComponent<KritzelNumericInputElement, KritzelNumericInputEvents>({
+export const KritzelNumericInput: StencilReactComponent<KritzelNumericInputElement, KritzelNumericInputEvents, Components.KritzelNumericInput> = /*@__PURE__*/ createComponent<KritzelNumericInputElement, KritzelNumericInputEvents, Components.KritzelNumericInput>({
     tagName: 'kritzel-numeric-input',
     elementClass: KritzelNumericInputElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -209,7 +211,7 @@ export const KritzelNumericInput: StencilReactComponent<KritzelNumericInputEleme
 
 export type KritzelOpacitySliderEvents = { onValueChange: EventName<KritzelOpacitySliderCustomEvent<number>> };
 
-export const KritzelOpacitySlider: StencilReactComponent<KritzelOpacitySliderElement, KritzelOpacitySliderEvents> = /*@__PURE__*/ createComponent<KritzelOpacitySliderElement, KritzelOpacitySliderEvents>({
+export const KritzelOpacitySlider: StencilReactComponent<KritzelOpacitySliderElement, KritzelOpacitySliderEvents, Components.KritzelOpacitySlider> = /*@__PURE__*/ createComponent<KritzelOpacitySliderElement, KritzelOpacitySliderEvents, Components.KritzelOpacitySlider>({
     tagName: 'kritzel-opacity-slider',
     elementClass: KritzelOpacitySliderElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -220,7 +222,7 @@ export const KritzelOpacitySlider: StencilReactComponent<KritzelOpacitySliderEle
 
 export type KritzelPillTabsEvents = { onValueChange: EventName<KritzelPillTabsCustomEvent<string>> };
 
-export const KritzelPillTabs: StencilReactComponent<KritzelPillTabsElement, KritzelPillTabsEvents> = /*@__PURE__*/ createComponent<KritzelPillTabsElement, KritzelPillTabsEvents>({
+export const KritzelPillTabs: StencilReactComponent<KritzelPillTabsElement, KritzelPillTabsEvents, Components.KritzelPillTabs> = /*@__PURE__*/ createComponent<KritzelPillTabsElement, KritzelPillTabsEvents, Components.KritzelPillTabs>({
     tagName: 'kritzel-pill-tabs',
     elementClass: KritzelPillTabsElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -231,7 +233,7 @@ export const KritzelPillTabs: StencilReactComponent<KritzelPillTabsElement, Krit
 
 export type KritzelSettingsEvents = { onSettingsChange: EventName<KritzelSettingsCustomEvent<KritzelSettingsConfig>> };
 
-export const KritzelSettings: StencilReactComponent<KritzelSettingsElement, KritzelSettingsEvents> = /*@__PURE__*/ createComponent<KritzelSettingsElement, KritzelSettingsEvents>({
+export const KritzelSettings: StencilReactComponent<KritzelSettingsElement, KritzelSettingsEvents, Components.KritzelSettings> = /*@__PURE__*/ createComponent<KritzelSettingsElement, KritzelSettingsEvents, Components.KritzelSettings>({
     tagName: 'kritzel-settings',
     elementClass: KritzelSettingsElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
