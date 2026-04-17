@@ -50,6 +50,13 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private readonly AWARENESS_THROTTLE_INTERVAL = 100; // milliseconds
 
   /**
+   * When true, update() only modifies local state (quadtree + idMap)
+   * without writing to Yjs. Used during drag operations to avoid
+   * redundant full serializations of every child object per frame.
+   */
+  private _localOnlyMode = false;
+
+  /**
    * Indicates whether the object map has been initialized and is ready for use.
    * @returns `true` if providers are connected and the map is operational
    */
@@ -683,6 +690,25 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   /**
+   * Executes a callback where all update() calls only modify local state
+   * (quadtree + idMap) without writing to Yjs. This avoids expensive full
+   * serializations during continuous operations like dragging many objects.
+   *
+   * Objects updated inside this callback must be persisted later
+   * (e.g., via a normal update() call at drag end).
+   *
+   * @param callback - The function containing operations to execute locally
+   */
+  withLocalUpdatesOnly(callback: () => void): void {
+    this._localOnlyMode = true;
+    try {
+      callback();
+    } finally {
+      this._localOnlyMode = false;
+    }
+  }
+
+  /**
    * Loads all objects from the Yjs objects map into the local quadtree.
    * Clears the existing quadtree and repopulates it by deserializing each
    * object stored in the Yjs map.
@@ -786,7 +812,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     this.quadtree.update(object);
     this._idMap.set(object.id, object);
 
-    if (this._objectsMap && this.isPersistable(object)) {
+    if (!this._localOnlyMode && this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
 
       const origin = options.temporary ? 'temporary' : 'local';

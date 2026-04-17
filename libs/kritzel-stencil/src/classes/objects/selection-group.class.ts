@@ -67,6 +67,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   handleStrokeColor?: ThemeAwareColor;
   handleSize: number = 6;
 
+  /** Timestamp of the last Yjs persist for children during a drag */
+  private _lastChildPersistTime: number = 0;
+  /** Minimum interval (ms) between child Yjs persists during drag */
+  private static readonly CHILD_PERSIST_THROTTLE_MS = 100;
+
   /**
    * Gets the array of object IDs contained in this selection group.
    * @returns Array of string IDs for the selected objects
@@ -385,7 +390,11 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   /**
    * Moves the selection group and all its contained objects by calculating the delta from drag coordinates.
    * Updates anchor points for any lines connected to the moved objects.
-   * Uses a transaction to batch all object updates for performance.
+   *
+   * Child objects are moved locally without writing to Yjs during the drag to avoid
+   * N+1 full serializations per frame, which can overwhelm the WebSocket server.
+   * Children must be persisted at drag end via {@link persistChildren}.
+   *
    * @param startX - The starting x-coordinate of the drag operation (in screen space)
    * @param startY - The starting y-coordinate of the drag operation (in screen space)
    * @param endX - The ending x-coordinate of the drag operation (in screen space)
@@ -398,22 +407,53 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     this.translateX += deltaX;
     this.translateY += deltaY;
 
-    this._core.store.objects.transaction(() => {
+    const now = Date.now();
+    const shouldPersistChildren = now - this._lastChildPersistTime >= KritzelSelectionGroup.CHILD_PERSIST_THROTTLE_MS;
+
+    if (shouldPersistChildren) {
+      // Periodically persist children to Yjs so remote peers see movement in real-time
+      this._core.store.objects.transaction(() => {
+        this._core.store.objects.update(this);
+
+        const children = this.objects;
+        for (const obj of children) {
+          obj.move(startX, startY, endX, endY);
+          this._core.anchorManager.updateAnchorsForObject(obj.id);
+        }
+      });
+      this._lastChildPersistTime = now;
+    } else {
+      // Between throttle intervals, only persist the selection group itself.
+      // Children are moved locally for smooth local rendering.
       this._core.store.objects.update(this);
 
-      const children = this.objects;
-      for (const obj of children) {
-        obj.move(startX, startY, endX, endY);
-
-        // Update any lines that are anchored to this object
-        this._core.anchorManager.updateAnchorsForObject(obj.id);
-      }
-    });
+      this._core.store.objects.withLocalUpdatesOnly(() => {
+        const children = this.objects;
+        for (const obj of children) {
+          obj.move(startX, startY, endX, endY);
+          this._core.anchorManager.updateAnchorsForObject(obj.id);
+        }
+      });
+    }
 
     // Update snapshots
     this.unchangedObjectSnapshots.forEach(snapshot => {
       snapshot.translateX += deltaX;
       snapshot.translateY += deltaY;
+    });
+  }
+
+  /**
+   * Persists all child objects to Yjs in a single transaction.
+   * Must be called after a drag operation completes to sync the final
+   * positions of children that were only updated locally during the drag.
+   */
+  persistChildren(): void {
+    this._core.store.objects.transaction(() => {
+      const children = this.objects;
+      for (const obj of children) {
+        this._core.store.objects.update(obj);
+      }
     });
   }
 
