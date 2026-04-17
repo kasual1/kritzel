@@ -1,4 +1,4 @@
-name: Deploy Docusaurus Docs and Angular App to GitHub Pages
+name: Deploy to github pages
 on:
   push:
     branches:
