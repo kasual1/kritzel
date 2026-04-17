@@ -58,13 +58,6 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     return `${this.x} ${this.y} ${this.width} ${this.height}`;
   }
 
-  private get _editor(): EditorView {
-    if (!this.editor) {
-      throw new Error('KritzelShape: editor is not initialized');
-    }
-    return this.editor;
-  }
-
   /**
    * Creates a new KritzelShape instance with optional configuration.
    * This constructor initializes the shape with default values that can be
@@ -216,7 +209,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    if (this.isMounted && this.elementRef === element && this._editor.dom.parentElement === element) {
+    if (this.isMounted && this.elementRef === element && this.editor!!.dom.parentElement === element) {
       return;
     }
 
@@ -234,7 +227,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * @returns void
    */
   mountTextEditor(element: HTMLDivElement): void {
-    if (element === null || !this.editor) {
+    if (element === null) {
       return;
     }
 
@@ -244,12 +237,12 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     element.style.whiteSpace = 'pre-wrap';
     element.style.wordWrap = 'break-word';
 
-    if (this.editor.dom.parentElement === element) {
+    if (this.editor!.dom.parentElement === element) {
       return;
     }
 
     element.innerHTML = '';
-    element.appendChild(this.editor.dom);
+    element.appendChild(this.editor!.dom);
   }
 
   /**
@@ -270,9 +263,9 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       }),
       editable: () => false,
       dispatchTransaction: transaction => {
-        const newState = this._editor.state.apply(transaction);
+        const newState = this.editor!.state.apply(transaction);
 
-        this._editor.updateState(newState);
+        this.editor!.updateState(newState);
 
         if (transaction.docChanged) {
           this.content = newState.doc.toJSON();
@@ -297,12 +290,12 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   public setContent(content: any): void {
     this.content = content;
 
-    if (this.editor && content) {
-      const newDoc = this.editor.state.schema.nodeFromJSON(content);
-      const tr = this.editor.state.tr.replaceWith(0, this.editor.state.doc.content.size, newDoc.content);
+    if (this.editor! && content) {
+      const newDoc = this.editor!.state.schema.nodeFromJSON(content);
+      const tr = this.editor!.state.tr.replaceWith(0, this.editor!.state.doc.content.size, newDoc.content);
 
       tr.setMeta('fromRemote', true);
-      this.editor.dispatch(tr);
+      this.editor!.dispatch(tr);
     }
   }
 
@@ -343,13 +336,13 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * @returns void
    */
   focus(coords?: { x: number; y: number }): void {
-    const doc = this._editor.state.doc;
+    const doc = this.editor!.state.doc;
 
     if (coords?.x && coords?.y) {
-      const pos = this._editor.posAtCoords({ left: coords.x, top: coords.y });
+      const pos = this.editor!.posAtCoords({ left: coords.x, top: coords.y });
       if (pos) {
-        this._editor.dispatch(this._editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
-        this._editor.focus();
+        this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
+        this.editor!.focus();
 
         if (KritzelDevicesHelper.isIOS()) {
           this.scrollIntoViewOnIOS();
@@ -359,8 +352,8 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     }
 
     const end = Math.max(1, doc.content.size - 1);
-    this._editor.dispatch(this._editor.state.tr.setSelection(TextSelection.create(doc, end)));
-    this._editor.focus();
+    this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, end)));
+    this.editor!.focus();
 
     if (KritzelDevicesHelper.isIOS()) {
       this.scrollIntoViewOnIOS();
@@ -377,8 +370,8 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    */
   private scrollIntoViewOnIOS(): void {
     setTimeout(() => {
-      if (this.editor && this.editor.dom) {
-        this.editor.dom.scrollIntoView({
+      if (this.editor! && this.editor!.dom) {
+        this.editor!.dom.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
           inline: 'nearest',
@@ -404,7 +397,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('shape'));
 
-    this._editor.setProps({ editable: () => true });
+    this.editor!.setProps({ editable: () => true });
 
     this.isEditing = true;
 
@@ -426,11 +419,11 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * @returns void
    */
   save(): void {
-    this.content = this._editor.state.doc.toJSON();
+    this.content = this.editor!.state.doc.toJSON();
 
-    this._editor.setProps({ editable: () => false });
+    this.editor!.setProps({ editable: () => false });
 
-    this._editor.dom.blur();
+    this.editor!.dom.blur();
 
     this.isEditing = false;
 
@@ -566,13 +559,13 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     if (changedProperties.includes('fillColor')) {
       this.fontColor = KritzelColorHelper.determineTextColor(this.fillColor);
       // Update the editor's text color immediately
-      if (this.editor?.dom?.parentElement) {
-        this.editor.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
+      if (this.editor!?.dom?.parentElement) {
+        this.editor!.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
       }
     } else if (changedProperties.includes('fontColor')) {
       // Also update editor when fontColor changes directly
-      if (this.editor?.dom?.parentElement) {
-        this.editor.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
+      if (this.editor!?.dom?.parentElement) {
+        this.editor!.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
       }
     }
   }
