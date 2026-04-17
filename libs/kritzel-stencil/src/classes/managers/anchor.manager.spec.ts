@@ -131,6 +131,7 @@ describe('KritzelAnchorManager', () => {
     mockCore = {
       store: {
         get state() { return mockState; },
+        get objects() { return mockState.objects; },
         allObjects: [],
         allNonSelectionObjects: [],
         selectionGroup: null,

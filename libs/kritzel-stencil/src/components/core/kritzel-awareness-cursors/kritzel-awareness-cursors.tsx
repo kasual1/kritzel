@@ -209,6 +209,17 @@ export class KritzelAwarenessCursors {
     return 'Unknown';
   }
 
+  private getInitials(name: string): string {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 0 || (parts.length === 1 && parts[0].length <= 1)) {
+      return name;
+    }
+    if (parts.length === 1) {
+      return parts[0][0].toUpperCase();
+    }
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
   render() {
     // Read reactive viewport state so Stencil re-renders on pan/zoom
     const _scale = this.core.store.state.scale;
@@ -387,7 +398,7 @@ export class KritzelAwarenessCursors {
             transform: `translate(${labelX}px, ${labelY}px)`,
           }}
         >
-          {displayName}
+          {this.getInitials(displayName)}
         </span>
       </div>
     );

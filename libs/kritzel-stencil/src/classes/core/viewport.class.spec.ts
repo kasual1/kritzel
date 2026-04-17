@@ -70,6 +70,12 @@ describe('KritzelViewport', () => {
         get state() {
           return mockState;
         },
+        get objects() {
+          return mockState.objects;
+        },
+        get host() {
+          return mockState.host;
+        },
         offsetX: 0,
         offsetY: 0,
         currentPath: null,

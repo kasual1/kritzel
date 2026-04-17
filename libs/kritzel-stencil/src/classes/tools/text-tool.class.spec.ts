@@ -96,6 +96,7 @@ describe('KritzelTextTool', () => {
     mockCore = {
       store: {
         get state() { return mockState; },
+        get objects() { return mockState.objects; },
         offsetX: 0,
         offsetY: 0,
         activeText: null as any,

@@ -26,6 +26,7 @@ describe('KritzelPath', () => {
             id: 'workspace-1',
           },
         },
+        get objects() { return this.state.objects; },
         currentZIndex: 1,
       },
       anchorManager: {

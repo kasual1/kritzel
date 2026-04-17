@@ -161,6 +161,7 @@ describe('KritzelShape', () => {
           },
           pointers: new Map(),
         },
+        get objects() { return this.state.objects; },
         currentZIndex: 1,
         setState: jest.fn(),
       },

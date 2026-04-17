@@ -25,6 +25,7 @@ describe('KritzelImage', () => {
             id: 'workspace-1',
           },
         },
+        get objects() { return this.state.objects; },
         currentZIndex: 5,
       },
       anchorManager: {

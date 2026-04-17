@@ -24,6 +24,7 @@ describe('KritzelCustomElement', () => {
             id: 'workspace-1',
           },
         },
+        get objects() { return this.state.objects; },
         currentZIndex: 5,
       },
     } as unknown as jest.Mocked<KritzelCore>;
