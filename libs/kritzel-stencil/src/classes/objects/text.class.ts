@@ -36,13 +36,6 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   editor: EditorView | null = null;
   content: any = null;
 
-  private get _editor(): EditorView {
-    if (!this._editor) {
-      throw new Error('KritzelShape: editor is not initialized');
-    }
-    return this._editor;
-  }
-
   private readonly _schema: Schema = new Schema({
     nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
     marks: schema.spec.marks,
@@ -57,11 +50,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    * @returns `true` if the editor is empty or contains only whitespace, `false` otherwise.
    */
   get isEmpty(): boolean {
-    if (!this._editor) {
+    if (!this.editor) {
       return true;
     }
 
-    const doc = this._editor.state.doc;
+    const doc = this.editor!.state.doc;
 
     if (doc.content.size === 0) {
       return true;
@@ -196,7 +189,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     element.style.fontSize = `${this.fontSize}pt`;
     element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
 
-    if (this.isMounted && this.elementRef === element && this._editor.dom.parentElement === element) {
+    if (this.isMounted && this.elementRef === element && this.editor!.dom.parentElement === element) {
       if (!this._core.store.state.isScaling && !this._core.store.state.isPanning) {
         requestAnimationFrame(() => this.adjustSizeOnInput());
       }
@@ -207,7 +200,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this.elementRef.style.whiteSpace = 'pre-wrap';
     this.elementRef.style.wordWrap = 'break-word';
     this.elementRef.innerHTML = '';
-    this.elementRef.appendChild(this._editor.dom);
+    this.elementRef.appendChild(this.editor!.dom);
 
     this.isMounted = true;
 
@@ -229,9 +222,9 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       }),
       editable: () => false,
       dispatchTransaction: transaction => {
-        const newState = this._editor.state.apply(transaction);
+        const newState = this.editor!.state.apply(transaction);
 
-        this._editor.updateState(newState);
+        this.editor!.updateState(newState);
 
         if (transaction.docChanged) {
           this.content = newState.doc.toJSON();
@@ -253,12 +246,12 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   public setContent(content: any): void {
     this.content = content;
 
-    if (this._editor && content) {
-      const newDoc = this._editor.state.schema.nodeFromJSON(content);
-      const tr = this._editor.state.tr.replaceWith(0, this._editor.state.doc.content.size, newDoc.content);
+    if (this.editor! && content) {
+      const newDoc = this.editor!.state.schema.nodeFromJSON(content);
+      const tr = this.editor!.state.tr.replaceWith(0, this.editor!.state.doc.content.size, newDoc.content);
 
       tr.setMeta('fromRemote', true);
-      this._editor.dispatch(tr);
+      this.editor!.dispatch(tr);
     }
   }
 
@@ -340,14 +333,14 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    * @param coords.y - Y coordinate for cursor placement.
    */
   focus(coords?: { x: number; y: number }): void {
-    if (this._editor) {
-      const doc = this._editor.state.doc;
+    if (this.editor!) {
+      const doc = this.editor!.state.doc;
 
       if (coords!.x && coords!.y && !this.isEmpty) {
-        const pos = this._editor.posAtCoords({ left: coords!.x, top: coords!.y });
+        const pos = this.editor!.posAtCoords({ left: coords!.x, top: coords!.y });
         if (pos) {
-          this._editor.dispatch(this._editor.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
-          this._editor.focus();
+          this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
+          this.editor!.focus();
 
           if (KritzelDevicesHelper.isIOS()) {
             this.scrollIntoViewOnIOS();
@@ -357,8 +350,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       }
 
       const end = Math.max(1, doc.content.size - 1);
-      this._editor.dispatch(this._editor.state.tr.setSelection(TextSelection.create(doc, end)));
-      this._editor.focus();
+      this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, end)));
+      this.editor!.focus();
 
       if (KritzelDevicesHelper.isIOS()) {
         this.scrollIntoViewOnIOS();
@@ -372,8 +365,8 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    */
   private scrollIntoViewOnIOS(): void {
     setTimeout(() => {
-      if (this._editor && this._editor.dom) {
-        this._editor.dom.scrollIntoView({
+      if (this.editor! && this.editor!.dom) {
+        this.editor!.dom.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
           inline: 'nearest',
@@ -395,7 +388,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
 
-    this._editor.setProps({ editable: () => true });
+    this.editor!.setProps({ editable: () => true });
 
     this.isEditing = true;
 
@@ -418,11 +411,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   save(): void {
     requestAnimationFrame(() => this.adjustSizeOnInput());
 
-    this.content = this._editor.state.doc.toJSON();
+    this.content = this.editor!.state.doc.toJSON();
 
-    this._editor.setProps({ editable: () => false });
+    this.editor!.setProps({ editable: () => false });
 
-    this._editor.dom.blur();
+    this.editor!.dom.blur();
 
     this.isEditing = false;
 
