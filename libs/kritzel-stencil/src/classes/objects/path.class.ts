@@ -74,7 +74,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.store.state.activeWorkspace.id;
+    object.workspaceId = core.store.activeWorkspace.id;
     object.userId = core.user?.id;
     object.options = options;
     object.points = options?.points ?? [];
@@ -145,7 +145,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     this._adjustedPoints = null;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -157,7 +157,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.rotation = value;
     this._adjustedPoints = null;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -177,7 +177,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
     this._adjustedPoints = null;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -293,7 +293,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.translateX = x;
     this.translateY = y;
     this._adjustedPoints = null;
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**

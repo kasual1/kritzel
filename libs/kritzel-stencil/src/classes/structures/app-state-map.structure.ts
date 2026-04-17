@@ -185,8 +185,8 @@ export class KritzelAppStateMap {
     }
 
     const changedKeys = Array.from(event.keysChanged);
-    const workspacesToUpdate = [];
-    const workspacesToDelete = [];
+    const workspacesToUpdate: any[] = [];
+    const workspacesToDelete: any[] = [];
 
     changedKeys.forEach(key => {
       const change = event.changes.keys.get(key);
@@ -194,7 +194,7 @@ export class KritzelAppStateMap {
       if (change && change.action === 'delete') {
         workspacesToDelete.push(key);
       } else {
-        const serialized = this._workspacesMap.get(key);
+        const serialized = this._workspacesMap!.get(key);
         if (serialized) {
           const workspace = this.reviveWorkspace(serialized);
           workspacesToUpdate.push(workspace);
@@ -250,7 +250,9 @@ export class KritzelAppStateMap {
       serialized.name,
       viewport
     );
-    workspace._core = this._core;
+    if (this._core) {
+      workspace._core = this._core;
+    }
     workspace.createdAt = new Date(serialized.createdAt);
     workspace.updatedAt = new Date(serialized.updatedAt);
     workspace.isPublic = serialized.isPublic ?? false;
@@ -267,14 +269,14 @@ export class KritzelAppStateMap {
     }
 
     this._ydoc.transact(() => {
-      if (!this._metadataMap.get('type')) {
-        this._metadataMap.set('type', type);
+      if (!this._metadataMap?.get('type')) {
+        this._metadataMap?.set('type', type);
       }
-      if (this._metadataMap.get('isPublic') === undefined) {
-        this._metadataMap.set('isPublic', false);
+      if (this._metadataMap?.get('isPublic') === undefined) {
+        this._metadataMap?.set('isPublic', false);
       }
-      if (this._metadataMap.get('schemaVersion') === undefined) {
-        this._metadataMap.set('schemaVersion', CURRENT_APP_STATE_SCHEMA_VERSION);
+      if (this._metadataMap?.get('schemaVersion') === undefined) {
+        this._metadataMap?.set('schemaVersion', CURRENT_APP_STATE_SCHEMA_VERSION);
       }
     }, 'metadata');
   }
@@ -296,7 +298,7 @@ export class KritzelAppStateMap {
     }
 
     this._ydoc.transact(() => {
-      this._metadataMap.set('isPublic', isPublic);
+      this._metadataMap?.set('isPublic', isPublic);
     }, 'metadata');
   }
 
@@ -341,8 +343,8 @@ export class KritzelAppStateMap {
    */
   reset(): void {
     this.map.clear();
-    this._ydoc.transact(() => {
-      this._workspacesMap.clear();
+    this._ydoc?.transact(() => {
+      this._workspacesMap?.clear();
     }, 'local');
   }
 
@@ -360,8 +362,8 @@ export class KritzelAppStateMap {
 
     if (this._workspacesMap) {
       const serialized = workspace.serialize();
-      this._ydoc.transact(() => {
-        this._workspacesMap.set(workspace.id, serialized);
+      this._ydoc?.transact(() => {
+        this._workspacesMap?.set(workspace.id, serialized);
       }, 'local');
     }
 
@@ -383,8 +385,8 @@ export class KritzelAppStateMap {
 
     if (this._workspacesMap) {
       const serialized = workspace.serialize();
-      this._ydoc.transact(() => {
-        this._workspacesMap.set(workspace.id, serialized);
+      this._ydoc?.transact(() => {
+        this._workspacesMap?.set(workspace.id, serialized);
       }, 'local');
     }
 
@@ -407,8 +409,8 @@ export class KritzelAppStateMap {
     this.map.delete(workspaceToRemove.id);
 
     if (this._workspacesMap) {
-      this._ydoc.transact(() => {
-        this._workspacesMap.delete(workspaceToRemove.id);
+      this._ydoc?.transact(() => {
+        this._workspacesMap?.delete(workspaceToRemove.id);
       }, 'local');
     }
 

@@ -94,7 +94,7 @@ export class KritzelAnchorManager {
     this.snapEndpointToObject(line, endpoint, targetObjectId);
 
     // Persist the change
-    this._core.store.state.objects.update(line);
+    this._core.store.objects.update(line);
   }
 
   /**
@@ -552,7 +552,7 @@ export class KritzelAnchorManager {
       // Update the line to persist the change
       const line = this.getLineById(entry.lineId);
       if (line) {
-        this._core.store.state.objects.update(line);
+        this._core.store.objects.update(line);
       }
     }
 
@@ -670,7 +670,7 @@ export class KritzelAnchorManager {
    * @returns The KritzelLine object if found and is a line, null otherwise.
    */
   private getLineById(lineId: string): KritzelLine | null {
-    const objects = this._core.store.state.objects.filter(o => o.id === lineId);
+    const objects = this._core.store.objects.filter(o => o.id === lineId);
     if (objects.length === 0) {
       return null;
     }
@@ -685,7 +685,7 @@ export class KritzelAnchorManager {
    * @returns The KritzelBaseObject if found, null otherwise.
    */
   private getObjectById(objectId: string): KritzelBaseObject<Element> | null {
-    const objects = this._core.store.state.objects.filter(o => o.id === objectId);
+    const objects = this._core.store.objects.filter(o => o.id === objectId);
     return objects.length > 0 ? objects[0] : null;
   }
 

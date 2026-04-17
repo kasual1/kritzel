@@ -17,23 +17,23 @@ import { ThemeAwareColor } from '../../constants/color-palette.constants';
 export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> implements KritzelObject<T>, KritzelSerializable, KritzelClonable<KritzelBaseObject<T>> {
   __class__: string = 'KritzelBaseObject';
 
-  _core: KritzelCore;
-  _elementRef: T;
+  _core!: KritzelCore;
+  _elementRef!: T;
 
   id: string;
-  workspaceId: string;
-  x: number;
-  y: number;
-  translateX: number;
-  translateY: number;
-  height: number;
-  width: number;
+  workspaceId!: string;
+  x!: number;
+  y!: number;
+  translateX!: number;
+  translateY!: number;
+  height!: number;
+  width!: number;
   backgroundColor?: ThemeAwareColor;
   borderColor?: ThemeAwareColor;
   borderWidth: number = 0;
   opacity: number = 1;
   padding: number = 0;
-  scale: number;
+  scale!: number;
   resizing: boolean = false;
   rotation: number = 0;
   markedForRemoval: boolean = false;
@@ -249,7 +249,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
 
     object._core = core;
     object.zIndex = core.store.currentZIndex;
-    object.workspaceId = core.store.state.activeWorkspace.id;
+    object.workspaceId = core.store.activeWorkspace.id;
     object.userId = core.user?.id;
 
     return object;
@@ -335,7 +335,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
    * Triggers a re-render of the object in the canvas.
    */
   update(): void {
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -353,7 +353,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.translateX += deltaX;
     this.translateY += deltaY;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -375,7 +375,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.translateX = x;
     this.translateY = y;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
 
     // Update any lines that are anchored to this object (after position is updated)
     this._core.anchorManager.updateAnchorsForObject(this.id);
@@ -388,7 +388,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   rotate(value: number): void {
     this.rotation = value;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -506,6 +506,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   updatePosition(x: number, y: number): void {
     this.translateX = x;
     this.translateY = y;
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 }

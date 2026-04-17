@@ -93,7 +93,11 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           this.initialSelectionGroupRotation = selectionGroup.rotation;
           this.initialRotation = Math.atan2(centerY - cursorY, centerX - cursorX) - selectionGroup.rotation;
 
-          globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
+          const timeout = this._core.store.state.longTouchTimeout;
+
+          if(timeout) {
+            globalThis.clearTimeout?.(timeout);
+          }
         }
       }
     }
@@ -153,7 +157,11 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
         selectionGroup.rotate(this.rotation);
 
-        globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
+        const timeout = this._core.store.state.longTouchTimeout;
+
+        if (timeout) {
+          globalThis.clearTimeout?.(timeout);
+        }
       }
     }
   }
@@ -167,7 +175,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   handlePointerUp(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
       if (this._core.store.state.isRotating) {
-        this._core.store.selectionGroup.update();
+        this._core.store.selectionGroup!.update();
         this._core.engine.emitObjectsChange();
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
@@ -178,14 +186,18 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
     if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isRotating) {
-        this._core.store.selectionGroup.update();
+        this._core.store.selectionGroup!.update();
         this._core.engine.emitObjectsChange();
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
 
         this.reset();
 
-        globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
+        const timeout = this._core.store.state.longTouchTimeout;
+
+        if (timeout) {
+          globalThis.clearTimeout?.(timeout);
+        }
       }
     }
   }

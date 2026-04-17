@@ -56,7 +56,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
         return this.childIds
             .map(id => {
-                const found = this._core.store.state.objects.filter(obj => obj.id === id);
+                const found = this._core.store.objects.filter(obj => obj.id === id);
                 return found.length > 0 ? found[0] : null;
             })
             .filter((obj): obj is KritzelBaseObject<any> => obj !== null);
@@ -81,7 +81,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
         group._core = core;
         group.id = group.generateId();
-        group.workspaceId = core.store.state.activeWorkspace.id;
+        group.workspaceId = core.store.activeWorkspace.id;
         group.userId = core.user?.id;
         group.scale = core.store.state.scale;
         group.zIndex = core.store.currentZIndex;
@@ -120,7 +120,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * @returns The parent KritzelGroup if found, or null if the object is not a child of any group.
      */
     static findParentGroup(core: KritzelCore, objectId: string): KritzelGroup | null {
-        const allGroups = core.store.state.objects
+        const allGroups = core.store.objects
             .filter(obj => obj.__class__ === 'KritzelGroup') as KritzelGroup[];
 
         for (const group of allGroups) {
@@ -337,8 +337,8 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         this.translateX += deltaX;
         this.translateY += deltaY;
 
-        this._core.store.state.objects.transaction(() => {
-            this._core.store.state.objects.update(this);
+        this._core.store.objects.transaction(() => {
+            this._core.store.objects.update(this);
 
             this.children.forEach(child => {
                 child.move(startX, startY, endX, endY);
@@ -384,7 +384,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         const cosR = Math.cos(rotation);
         const sinR = Math.sin(rotation);
 
-        this._core.store.state.objects.transaction(() => {
+        this._core.store.objects.transaction(() => {
             this.children.forEach(child => {
                 // Calculate child center
                 const childCenterX = child.translateX + child.totalWidth / 2 / child.scale;
@@ -438,7 +438,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
             this.refreshBoundingBox();
             this.captureChildSnapshots();
-            this._core.store.state.objects.update(this);
+            this._core.store.objects.update(this);
         });
     }
 
@@ -458,8 +458,8 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
 
-        this._core.store.state.objects.transaction(() => {
-            this._core.store.state.objects.update(this);
+        this._core.store.objects.transaction(() => {
+            this._core.store.objects.update(this);
 
             this.children.forEach(child => {
                 const unchangedSnapshot = this.unchangedChildSnapshots.get(child.id);
@@ -609,7 +609,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * Triggers synchronization with y.js for collaborative editing.
      */
     override update(): void {
-        this._core.store.state.objects.update(this);
+        this._core.store.objects.update(this);
     }
 
     /**

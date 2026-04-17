@@ -8,7 +8,7 @@ import { KritzelCore } from '../../../classes/core/core.class';
   shadow: true,
 })
 export class KritzelCursorTrail {
-  @Prop() core: KritzelCore;
+  @Prop() core!: KritzelCore;
 
   @State() cursorTrailPoints: Array<{ x: number; y: number; timestamp: number }> = [];
   @State() isLeftButtonDown: boolean = false;
@@ -61,7 +61,7 @@ export class KritzelCursorTrail {
     }
   }
 
-  private trailCleanupIntervalId: number;
+  private trailCleanupIntervalId: number | undefined;
 
   private readonly TRAIL_DURATION_MS = 100;
 

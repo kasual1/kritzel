@@ -96,7 +96,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.store.state.activeWorkspace.id;
+    object.workspaceId = core.store.activeWorkspace.id;
     object.userId = core.user?.id;
     object.options = options;
     object.startX = options?.startX ?? 0;
@@ -162,7 +162,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._adjustedPoints = null;
     this._clipInfo = null;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
 
     // Update anchors after the line is updated
     this._core.anchorManager.updateAnchorsForObject(this.id);
@@ -185,7 +185,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._adjustedPoints = null;
     this._clipInfo = null;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -214,7 +214,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._adjustedPoints = null;
     this._clipInfo = null;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -368,7 +368,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.translateY = y;
     this._adjustedPoints = null;
     this._clipInfo = null;
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -441,7 +441,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._adjustedPoints = null;
     this._clipInfo = null;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**
@@ -507,7 +507,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this._adjustedPoints = null;
     this._clipInfo = null;
 
-    this._core.store.state.objects.update(this);
+    this._core.store.objects.update(this);
   }
 
   /**

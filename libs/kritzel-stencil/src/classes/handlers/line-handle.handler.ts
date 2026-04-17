@@ -118,7 +118,11 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       this._core.anchorManager.removeAnchor(line.id, handleType);
     }
 
-    globalThis.clearTimeout?.(this._core.store.state.longTouchTimeout);
+    const timeout = this._core.store.state.longTouchTimeout;
+
+    if (timeout) {
+      globalThis.clearTimeout?.(timeout);
+    }
   }
 
   /**
@@ -435,15 +439,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
    */
   private updateLineEndpoint(line: KritzelLine, startX: number, startY: number, endX: number, endY: number): void {
     // Calculate new bounding box using the static method that accounts for curve extrema
-    const { minX, minY, maxX, maxY } = KritzelLine.calculateBoundingBox(
-      startX,
-      startY,
-      endX,
-      endY,
-      line.controlX,
-      line.controlY,
-      line.strokeWidth,
-    );
+    const { minX, minY, maxX, maxY } = KritzelLine.calculateBoundingBox(startX, startY, endX, endY, line.controlX, line.controlY, line.strokeWidth);
 
     const newWidth = maxX - minX;
     const newHeight = maxY - minY;
@@ -454,15 +450,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       minY: oldMinY,
       maxX: oldMaxX,
       maxY: oldMaxY,
-    } = KritzelLine.calculateBoundingBox(
-      this.initialStartX,
-      this.initialStartY,
-      this.initialEndX,
-      this.initialEndY,
-      this.initialControlX,
-      this.initialControlY,
-      line.strokeWidth,
-    );
+    } = KritzelLine.calculateBoundingBox(this.initialStartX, this.initialStartY, this.initialEndX, this.initialEndY, this.initialControlX, this.initialControlY, line.strokeWidth);
 
     const oldWidth = oldMaxX - oldMinX;
     const oldHeight = oldMaxY - oldMinY;
@@ -484,8 +472,8 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     const rotatedDeltaCy = deltaCx * sin + deltaCy * cos;
 
     // Calculate new translate
-    const newTranslateX = this.initialTranslateX + scale * (oldWidth - newWidth) / 2 + scale * rotatedDeltaCx;
-    const newTranslateY = this.initialTranslateY + scale * (oldHeight - newHeight) / 2 + scale * rotatedDeltaCy;
+    const newTranslateX = this.initialTranslateX + (scale * (oldWidth - newWidth)) / 2 + scale * rotatedDeltaCx;
+    const newTranslateY = this.initialTranslateY + (scale * (oldHeight - newHeight)) / 2 + scale * rotatedDeltaCy;
 
     // Update the line properties
     line.startX = startX;
@@ -504,7 +492,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     // Clear cached adjusted points
     (line as unknown as { _adjustedPoints: number[][] | null })._adjustedPoints = null;
 
-    this._core.store.state.objects.update(line);
+    this._core.store.objects.update(line);
   }
 
   /**

@@ -151,7 +151,7 @@ export class HocuspocusSyncProvider implements ISyncProvider {
   private visibilityHandler: (() => void) | null = null;
   private onlineHandler: (() => void) | null = null;
 
-  get awareness(): Awareness {
+  get awareness(): Awareness | null {
     return this.provider.awareness;
   }
 

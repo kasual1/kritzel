@@ -153,8 +153,8 @@ export class KritzelViewport {
    * Updates the stored viewport dimensions and triggers a rerender.
    */
   handleResize(): void {
-    this._core.store.state.viewportWidth = this._core.store.state.host.clientWidth;
-    this._core.store.state.viewportHeight = this._core.store.state.host.clientHeight;
+    this._core.store.state.viewportWidth = this._core.store.host.clientWidth;
+    this._core.store.state.viewportHeight = this._core.store.host.clientHeight;
     this._core.store.state.hasViewportChanged = true;
     this._core.rerender();
   }
@@ -191,17 +191,17 @@ export class KritzelViewport {
       }
 
       if (activePointers.length === 2) {
-        this._core.store.state.objects?.clearCursorPosition();
+        this._core.store.objects?.clearCursorPosition();
 
         const currentPath = this._core.store.currentPath;
         if (currentPath) {
-          this._core.store.state.objects.remove(obj => obj.id === currentPath.id);
+          this._core.store.objects.remove(obj => obj.id === currentPath.id);
         }
 
         // Clear selection box when scaling starts to prevent it from remaining on screen
         if (this._core.store.state.isSelecting) {
           this._core.store.state.isSelecting = false;
-          this._core.store.state.objects.remove(obj => obj instanceof KritzelSelectionBox);
+          this._core.store.objects.remove(obj => obj instanceof KritzelSelectionBox);
           this._core.store.setSelectionBox(null);
           // Clear selection preview state from objects - use selectedObjects for efficiency
           this._core.store.selectedObjects.forEach(object => {
@@ -234,13 +234,13 @@ export class KritzelViewport {
    */
   handlePointerMove(event: PointerEvent): void {
     if (event.pointerType === 'mouse') {
-      const hostRect = this._core.store.state.host.getBoundingClientRect();
+      const hostRect = this._core.store.host.getBoundingClientRect();
       const xRelativeToHost = event.clientX - hostRect.left;
       const yRelativeToHost = event.clientY - hostRect.top;
 
       this._core.store.state.pointerX = (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale;
       this._core.store.state.pointerY = (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale;
-      this._core.store.state.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
+      this._core.store.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
 
       if (this._core.store.state.isPanning) {
         const dx = xRelativeToHost - this._core.store.state.startX;
@@ -262,14 +262,14 @@ export class KritzelViewport {
     }
 
     if (event.pointerType === 'touch' || event.pointerType === 'pen') {
-      const hostRect = this._core.store.state.host.getBoundingClientRect();
+      const hostRect = this._core.store.host.getBoundingClientRect();
       const xRelativeToHost = event.clientX - hostRect.left;
       const yRelativeToHost = event.clientY - hostRect.top;
 
       const activePointers = Array.from(this._core.store.state.pointers.values());
 
       if (this._core.store.state.isScaling || activePointers.length > 1) {
-        this._core.store.state.objects?.clearCursorPosition();
+        this._core.store.objects?.clearCursorPosition();
       } else {
         this._core.store.state.pointerX = (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale;
         this._core.store.state.pointerY = (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale;
@@ -283,7 +283,7 @@ export class KritzelViewport {
         }
 
         if (this._touchCursorBroadcastActive) {
-          this._core.store.state.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
+          this._core.store.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
         }
       }
 
@@ -508,13 +508,13 @@ export class KritzelViewport {
    */
   private handleZoom(event: WheelEvent): void {
     this._core.store.state.isScaling = true;
-    const rect = this._core.store.state.host.getBoundingClientRect();
+    const rect = this._core.store.host.getBoundingClientRect();
     const xRelativeToHost = event.clientX - rect.left;
     const yRelativeToHost = event.clientY - rect.top;
 
     this._core.store.state.pointerX = (xRelativeToHost - this._core.store.state.translateX) / this._core.store.state.scale;
     this._core.store.state.pointerY = (yRelativeToHost - this._core.store.state.translateY) / this._core.store.state.scale;
-    this._core.store.state.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
+    this._core.store.objects?.updateCursorPosition(this._core.store.state.pointerX, this._core.store.state.pointerY);
 
     const rawScaleFactor = 1 + (event.deltaY * -0.012);
     const scaleFactor = Math.max(0.8, Math.min(1.2, rawScaleFactor));

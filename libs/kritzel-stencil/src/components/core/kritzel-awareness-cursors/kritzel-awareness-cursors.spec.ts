@@ -104,8 +104,8 @@ describe('KritzelAwarenessCursors', () => {
     it('should subscribe to awareness changes', () => {
       component.componentDidLoad();
 
-      expect(mockCore.store.state.objects.onAwarenessChange).toHaveBeenCalledTimes(1);
-      expect(mockCore.store.state.objects.onAwarenessChange).toHaveBeenCalledWith(expect.any(Function));
+      expect(mockCore.store.objects.onAwarenessChange).toHaveBeenCalledTimes(1);
+      expect(mockCore.store.objects.onAwarenessChange).toHaveBeenCalledWith(expect.any(Function));
     });
   });
 
@@ -113,7 +113,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should exclude local client cursor', () => {
       component.componentDidLoad();
 
-      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const callback = (mockCore.store.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
       const states = createAwarenessStates([
         { clientId: 1, user: { id: 'self', name: 'Me', color: '#ff0000' }, cursor: { x: 100, y: 100 } },
         { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: { x: 200, y: 200 } },
@@ -129,7 +129,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should skip entries without user data', () => {
       component.componentDidLoad();
 
-      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const callback = (mockCore.store.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
       const states = createAwarenessStates([
         { clientId: 2, cursor: { x: 200, y: 200 } },
       ]);
@@ -142,7 +142,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should store remote cursors with null cursor position', () => {
       component.componentDidLoad();
 
-      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const callback = (mockCore.store.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
       const states = createAwarenessStates([
         { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: null },
       ]);
@@ -156,7 +156,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should remove cursors for disconnected clients', () => {
       component.componentDidLoad();
 
-      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const callback = (mockCore.store.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
 
       // First update with two clients
       callback(createAwarenessStates([
@@ -181,7 +181,7 @@ describe('KritzelAwarenessCursors', () => {
       jest.useFakeTimers();
       component.componentDidLoad();
 
-      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const callback = (mockCore.store.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
       callback(createAwarenessStates([
         { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: { x: 100, y: 100 } },
       ]));
@@ -330,8 +330,8 @@ describe('KritzelAwarenessCursors', () => {
     it('should subscribe to objects changes', () => {
       component.componentDidLoad();
 
-      expect(mockCore.store.state.objects.onObjectsChange).toHaveBeenCalledTimes(1);
-      expect(mockCore.store.state.objects.onObjectsChange).toHaveBeenCalledWith(expect.any(Function));
+      expect(mockCore.store.objects.onObjectsChange).toHaveBeenCalledTimes(1);
+      expect(mockCore.store.objects.onObjectsChange).toHaveBeenCalledWith(expect.any(Function));
     });
   });
 
@@ -339,7 +339,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should store activeObjectId from awareness state', () => {
       component.componentDidLoad();
 
-      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const callback = (mockCore.store.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
       const states = createAwarenessStates([
         { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: { x: 200, y: 200 }, activeObjectId: 'path-42' },
       ]);
@@ -352,7 +352,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should store null activeObjectId when not set', () => {
       component.componentDidLoad();
 
-      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const callback = (mockCore.store.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
       const states = createAwarenessStates([
         { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: { x: 200, y: 200 } },
       ]);
@@ -365,7 +365,7 @@ describe('KritzelAwarenessCursors', () => {
 
   describe('getActiveObjectTip', () => {
     it('should return null when object is not found', () => {
-      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(undefined);
+      (mockCore.store.objects.findById as jest.Mock).mockReturnValue(undefined);
 
       const result = (component as any).getActiveObjectTip('nonexistent-id');
 
@@ -383,7 +383,7 @@ describe('KritzelAwarenessCursors', () => {
         scale: 2,
         isCompleted: false,
       });
-      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(mockPath);
+      (mockCore.store.objects.findById as jest.Mock).mockReturnValue(mockPath);
 
       const result = (component as any).getActiveObjectTip('path-1');
 
@@ -402,7 +402,7 @@ describe('KritzelAwarenessCursors', () => {
         scale: 1,
         isCompleted: true,
       });
-      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(mockPath);
+      (mockCore.store.objects.findById as jest.Mock).mockReturnValue(mockPath);
 
       const result = (component as any).getActiveObjectTip('path-1');
 
@@ -421,7 +421,7 @@ describe('KritzelAwarenessCursors', () => {
         scale: 2,
         isCompleted: false,
       });
-      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(mockLine);
+      (mockCore.store.objects.findById as jest.Mock).mockReturnValue(mockLine);
 
       const result = (component as any).getActiveObjectTip('line-1');
 
@@ -441,7 +441,7 @@ describe('KritzelAwarenessCursors', () => {
         scale: 1,
         isCompleted: true,
       });
-      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(mockLine);
+      (mockCore.store.objects.findById as jest.Mock).mockReturnValue(mockLine);
 
       const result = (component as any).getActiveObjectTip('line-1');
 
@@ -459,7 +459,7 @@ describe('KritzelAwarenessCursors', () => {
         translateX: 300,
         translateY: 400,
       });
-      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue(mockShape);
+      (mockCore.store.objects.findById as jest.Mock).mockReturnValue(mockShape);
 
       const result = (component as any).getActiveObjectTip('shape-1');
 
@@ -467,7 +467,7 @@ describe('KritzelAwarenessCursors', () => {
     });
 
     it('should return null for an unrecognized object type', () => {
-      (mockCore.store.state.objects.findById as jest.Mock).mockReturnValue({ id: 'unknown', type: 'custom' });
+      (mockCore.store.objects.findById as jest.Mock).mockReturnValue({ id: 'unknown', type: 'custom' });
 
       const result = (component as any).getActiveObjectTip('unknown');
 
@@ -479,7 +479,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should return false when no cursor has activeObjectId', () => {
       component.componentDidLoad();
 
-      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const callback = (mockCore.store.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
       callback(createAwarenessStates([
         { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: { x: 200, y: 200 } },
       ]));
@@ -490,7 +490,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should return true when at least one cursor has activeObjectId', () => {
       component.componentDidLoad();
 
-      const callback = (mockCore.store.state.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
+      const callback = (mockCore.store.objects.onAwarenessChange as jest.Mock).mock.calls[0][0];
       callback(createAwarenessStates([
         { clientId: 2, user: { id: 'other', name: 'Other', color: '#00ff00' }, cursor: { x: 200, y: 200 }, activeObjectId: 'path-1' },
       ]));
