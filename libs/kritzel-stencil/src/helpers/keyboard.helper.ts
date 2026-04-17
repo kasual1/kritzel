@@ -11,10 +11,13 @@ export class KritzelKeyboardHelper {
     const meta = document.querySelector('meta[name="viewport"][content*="interactive-widget=resizes-content"]');
     if (meta) {
       let currentContent = meta.getAttribute('content');
-      if (!currentContent.includes('interactive-widget=resizes-content')) {
+      if (!currentContent?.includes('interactive-widget=resizes-content')) {
         currentContent += ', interactive-widget=resizes-content';
       }
-      meta.setAttribute('content', currentContent);
+
+      if (currentContent) {
+        meta.setAttribute('content', currentContent);
+      }
     }
   }
 
@@ -22,13 +25,17 @@ export class KritzelKeyboardHelper {
     const meta = document.querySelector('meta[name="viewport"][content*="interactive-widget=resizes-content"]');
     if (meta) {
       let currentContent = meta.getAttribute('content');
-      let newContent = currentContent.replace(/\s*interactive-widget=resizes-content\s*[,;]?/g, '');
-      newContent = newContent
-        .replace(/,(\s*,)+/g, ',')
-        .replace(/^,/, '')
-        .replace(/,$/, '')
-        .trim();
-      meta.setAttribute('content', newContent);
+      let newContent = currentContent?.replace(/\s*interactive-widget=resizes-content\s*[,;]?/g, '');
+      if(newContent !== undefined){
+        newContent = newContent
+          .replace(/,(\s*,)+/g, ',')
+          .replace(/^,/, '')
+          .replace(/,$/, '')
+          .trim();
+  
+  
+        meta.setAttribute('content', newContent);
+      }
     }
   }
 
@@ -43,8 +50,8 @@ export class KritzelKeyboardHelper {
         callback(isOpen);
       };
 
-      window.visualViewport.addEventListener('resize', onResize);
-      return () => window.visualViewport.removeEventListener('resize', onResize);
+      window.visualViewport?.addEventListener('resize', onResize);
+      return () => window.visualViewport?.removeEventListener('resize', onResize);
     } else {
       // Fallback for older browsers does not provide a reliable event-based mechanism.
       console.warn('Listening for keyboard visibility changes is not reliably supported in this browser.');

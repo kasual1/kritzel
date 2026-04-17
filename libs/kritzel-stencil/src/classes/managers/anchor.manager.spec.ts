@@ -110,9 +110,8 @@ describe('KritzelAnchorManager', () => {
           bottomLeft: { x: this.translateX, y: this.translateY + this.totalHeight / this.scale },
         };
       },
-      ...overrides,
-    } as unknown as KritzelBaseObject<Element>;
-    return obj;
+    };
+    return Object.assign(obj, overrides) as unknown as KritzelBaseObject<Element>;
   };
 
   beforeEach(() => {

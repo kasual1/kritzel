@@ -241,20 +241,20 @@ describe('KritzelText', () => {
     });
 
     it('should return true when document content size is 0', () => {
-      Object.defineProperty(textObject.editor.state.doc.content, 'size', { value: 0, writable: true });
+      Object.defineProperty(textObject.editor!.state.doc.content, 'size', { value: 0, writable: true });
 
       expect(textObject.isEmpty).toBe(true);
     });
 
     it('should return true when text content is empty', () => {
-      Object.defineProperty(textObject.editor.state.doc, 'textContent', { value: '   ', writable: true });
+      Object.defineProperty(textObject.editor!.state.doc, 'textContent', { value: '   ', writable: true });
 
       expect(textObject.isEmpty).toBe(true);
     });
 
     it('should return false when there is text content', () => {
-      Object.defineProperty(textObject.editor.state.doc.content, 'size', { value: 10, writable: true });
-      Object.defineProperty(textObject.editor.state.doc, 'textContent', { value: 'Hello World', writable: true });
+      Object.defineProperty(textObject.editor!.state.doc.content, 'size', { value: 10, writable: true });
+      Object.defineProperty(textObject.editor!.state.doc, 'textContent', { value: 'Hello World', writable: true });
 
       expect(textObject.isEmpty).toBe(false);
     });
@@ -312,7 +312,7 @@ describe('KritzelText', () => {
       textObject.mount(mockElement);
 
       expect(mockElement.children.length).toBe(1);
-      expect(mockElement.children[0]).toBe(textObject.editor.dom);
+      expect(mockElement.children[0]).toBe(textObject.editor!.dom);
     });
 
     it('should not remount if already mounted with same element', () => {
@@ -340,13 +340,13 @@ describe('KritzelText', () => {
       const content = { type: 'doc', content: [{ type: 'paragraph' }] };
       textObject.setContent(content);
 
-      expect(textObject.editor.dispatch).toHaveBeenCalled();
+      expect(textObject.editor!.dispatch).toHaveBeenCalled();
     });
 
     it('should not dispatch if content is null', () => {
       textObject.setContent(null);
 
-      expect(textObject.editor.dispatch).not.toHaveBeenCalled();
+      expect(textObject.editor!.dispatch).not.toHaveBeenCalled();
     });
 
     it('should not dispatch if editor is null', () => {
@@ -450,17 +450,17 @@ describe('KritzelText', () => {
 
   describe('focus', () => {
     it('should dispatch selection and focus editor', () => {
-      textObject.focus({ x: undefined, y: undefined });
+      textObject.focus({ x: 0, y: 0 });
 
-      expect(textObject.editor.dispatch).toHaveBeenCalled();
-      expect(textObject.editor.focus).toHaveBeenCalled();
+      expect(textObject.editor!.dispatch).toHaveBeenCalled();
+      expect(textObject.editor!.focus).toHaveBeenCalled();
     });
 
     it('should use coordinates when provided', () => {
       textObject.focus({ x: 100, y: 200 });
 
-      expect(textObject.editor.posAtCoords).toHaveBeenCalledWith({ left: 100, top: 200 });
-      expect(textObject.editor.focus).toHaveBeenCalled();
+      expect(textObject.editor!.posAtCoords).toHaveBeenCalledWith({ left: 100, top: 200 });
+      expect(textObject.editor!.focus).toHaveBeenCalled();
     });
 
     it('should scroll into view on iOS', () => {
@@ -468,7 +468,7 @@ describe('KritzelText', () => {
       (KritzelDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
 
       const scrollIntoViewMock = jest.fn();
-      textObject.editor.dom.scrollIntoView = scrollIntoViewMock;
+      textObject.editor!.dom.scrollIntoView = scrollIntoViewMock;
 
       textObject.focus({ x: 100, y: 200 });
 
@@ -508,7 +508,7 @@ describe('KritzelText', () => {
     it('should set editor to editable', () => {
       textObject.edit();
 
-      expect(textObject.editor.setProps).toHaveBeenCalled();
+      expect(textObject.editor!.setProps).toHaveBeenCalled();
     });
 
     it('should set isEditing to true', () => {
@@ -550,7 +550,7 @@ describe('KritzelText', () => {
     it('should set editor to non-editable', () => {
       textObject.save();
 
-      expect(textObject.editor.setProps).toHaveBeenCalled();
+      expect(textObject.editor!.setProps).toHaveBeenCalled();
     });
 
     it('should set isEditing to false', () => {
@@ -681,7 +681,7 @@ describe('KritzelText', () => {
       const copied = textObject.copy();
 
       // setContent should have been called on the copied editor
-      expect(copied.editor.dispatch).toHaveBeenCalled();
+      expect(copied.editor!.dispatch).toHaveBeenCalled();
     });
 
     it('should preserve font properties', () => {

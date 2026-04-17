@@ -1072,7 +1072,7 @@ describe('KritzelViewport', () => {
     });
 
     it('should update state when animation callback executes', () => {
-      let animateCallback: (time: number) => void;
+      let animateCallback!: (time: number) => void;
       (global.requestAnimationFrame as jest.Mock).mockImplementation((cb) => {
         animateCallback = cb;
         return 1;
@@ -1097,7 +1097,7 @@ describe('KritzelViewport', () => {
     });
 
     it('should continue animation when progress < 1', () => {
-      let animateCallback: (time: number) => void;
+      let animateCallback!: (time: number) => void;
       (global.requestAnimationFrame as jest.Mock).mockImplementation((cb) => {
         animateCallback = cb;
         return 1;

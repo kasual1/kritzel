@@ -411,7 +411,7 @@ describe('KritzelShape', () => {
       shapeObject.mountTextEditor(mockElement);
 
       expect(mockElement.children.length).toBe(1);
-      expect(mockElement.children[0]).toBe(shapeObject.editor.dom);
+      expect(mockElement.children[0]).toBe(shapeObject.editor?.dom);
     });
 
     it('should not mount if element is null', () => {
@@ -444,13 +444,13 @@ describe('KritzelShape', () => {
       const content = { type: 'doc', content: [{ type: 'paragraph' }] };
       shapeObject.setContent(content);
 
-      expect(shapeObject.editor.dispatch).toHaveBeenCalled();
+      expect(shapeObject.editor?.dispatch).toHaveBeenCalled();
     });
 
     it('should not dispatch if content is null', () => {
       shapeObject.setContent(null);
 
-      expect(shapeObject.editor.dispatch).not.toHaveBeenCalled();
+      expect(shapeObject.editor?.dispatch).not.toHaveBeenCalled();
     });
 
     it('should not dispatch if editor is null', () => {
@@ -503,15 +503,15 @@ describe('KritzelShape', () => {
     it('should dispatch selection and focus editor', () => {
       shapeObject.focus();
 
-      expect(shapeObject.editor.dispatch).toHaveBeenCalled();
-      expect(shapeObject.editor.focus).toHaveBeenCalled();
+      expect(shapeObject.editor?.dispatch).toHaveBeenCalled();
+      expect(shapeObject.editor?.focus).toHaveBeenCalled();
     });
 
     it('should use coordinates when provided', () => {
       shapeObject.focus({ x: 100, y: 200 });
 
-      expect(shapeObject.editor.posAtCoords).toHaveBeenCalledWith({ left: 100, top: 200 });
-      expect(shapeObject.editor.focus).toHaveBeenCalled();
+      expect(shapeObject.editor?.posAtCoords).toHaveBeenCalledWith({ left: 100, top: 200 });
+      expect(shapeObject.editor?.focus).toHaveBeenCalled();
     });
 
     it('should scroll into view on iOS', () => {
@@ -519,7 +519,7 @@ describe('KritzelShape', () => {
       (KritzelDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
 
       const scrollIntoViewMock = jest.fn();
-      shapeObject.editor.dom.scrollIntoView = scrollIntoViewMock;
+      shapeObject.editor!.dom.scrollIntoView = scrollIntoViewMock;
 
       shapeObject.focus({ x: 100, y: 200 });
 
@@ -605,7 +605,7 @@ describe('KritzelShape', () => {
     it('should set editor to non-editable', () => {
       shapeObject.save();
 
-      expect(shapeObject.editor.setProps).toHaveBeenCalled();
+      expect(shapeObject.editor?.setProps).toHaveBeenCalled();
     });
 
     it('should set isEditing to false', () => {
@@ -753,7 +753,7 @@ describe('KritzelShape', () => {
 
       const copiedShape = shapeObject.copy();
 
-      expect(copiedShape.editor.dispatch).toHaveBeenCalled();
+      expect(copiedShape.editor!.dispatch).toHaveBeenCalled();
     });
   });
 
@@ -862,7 +862,7 @@ describe('KritzelShape', () => {
       const polygon = shapeObject.getClipPolygon();
 
       expect(polygon).toBeDefined();
-      expect(polygon.length).toBe(3);
+      expect(polygon?.length).toBe(3);
     });
 
     it('should apply rotation for triangle shape', () => {
@@ -872,7 +872,7 @@ describe('KritzelShape', () => {
       const polygon = shapeObject.getClipPolygon();
 
       expect(polygon).toBeDefined();
-      expect(polygon.length).toBe(3);
+      expect(polygon?.length).toBe(3);
       // With rotation, the points should be rotated around center
     });
   });

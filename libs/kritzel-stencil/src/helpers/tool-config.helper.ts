@@ -6,7 +6,7 @@ import { KritzelSelectionTool } from '../classes/tools/selection-tool.class';
 import { ConfigurableTool, ToolConfigDefinition } from '../interfaces/tool-config.interface';
 
 export class KritzelToolConfigHelper {
-  static getToolConfig(tool: ConfigurableTool): ToolConfigDefinition {
+  static getToolConfig(tool: ConfigurableTool): ToolConfigDefinition | null {
     if (tool instanceof KritzelSelectionTool) {
       return tool.getToolConfig();
     }
