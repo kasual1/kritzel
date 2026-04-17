@@ -245,6 +245,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
+          this._core.store.selectionGroup!.persistChildren();
           this._core.store.selectionGroup!.update();
           this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
@@ -257,6 +258,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
         this._core.store.state.isDragging = false;
 
         if (this.hasMoved) {
+          this._core.store.selectionGroup!.persistChildren();
           this._core.store.selectionGroup!.update();
           this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
