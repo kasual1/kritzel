@@ -159,7 +159,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.store.activeWorkspace.id;
+    object.workspaceId = core.store.state.activeWorkspace!.id;
     object.userId = core.user?.id;
     object.x = config?.x ?? 0;
     object.y = config?.y ?? 0;

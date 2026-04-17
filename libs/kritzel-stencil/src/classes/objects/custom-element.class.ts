@@ -63,7 +63,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.store.activeWorkspace.id;
+    object.workspaceId = core.store.state.activeWorkspace!.id;
     object.userId = core.user?.id;
 
 

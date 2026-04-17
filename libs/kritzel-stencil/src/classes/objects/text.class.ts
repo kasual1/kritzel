@@ -158,7 +158,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     object._core = core;
     object.id = object.generateId();
-    object.workspaceId = core.store.activeWorkspace.id;
+    object.workspaceId = core.store.state.activeWorkspace!.id;
     object.userId = core.user?.id;
     object.fontSize = fontSize || 8;
     object.fontFamily = fontFamily || 'Arial';

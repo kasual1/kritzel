@@ -412,7 +412,7 @@ export class KritzelCore {
     this.saveWorkspaceToAppState(workspace);
 
     // Keep metadata map in sync when the active workspace's name changes
-    if (this._store.activeWorkspace?.id === workspace.id) {
+    if (this._store.state.activeWorkspace?.id === workspace.id) {
       this._store.objects?.setWorkspaceName(workspace.name);
     }
 
@@ -433,7 +433,7 @@ export class KritzelCore {
    */
   deleteWorkspace(workspace: KritzelWorkspace): void {
     // If deleting the active workspace, need to handle ObjectMap cleanup
-    if (this._store.activeWorkspace?.id === workspace.id) {
+    if (this._store.state.activeWorkspace?.id === workspace.id) {
       this.engine.viewport?.cancelPendingUpdates();
       this._store.objects?.destroy();
     }
@@ -457,7 +457,7 @@ export class KritzelCore {
    * @param scale - The zoom scale of the viewport
    */
   updateWorkspaceViewport(translateX: number, translateY: number, scale: number): void {
-    const activeWorkspace = this._store.activeWorkspace;
+    const activeWorkspace = this._store.state.activeWorkspace;
     if (!activeWorkspace) {
       return;
     }
@@ -484,7 +484,7 @@ export class KritzelCore {
    * @returns True if the workspace is public, false otherwise
    */
   getIsPublic(): boolean {
-    return this._store.activeWorkspace?.isPublic ?? false;
+    return this._store.state.activeWorkspace?.isPublic ?? false;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -699,11 +699,11 @@ export class KritzelCore {
       return;
     }
 
-    const activeWorkspace = this._store.activeWorkspace;
+    const activeWorkspace = this._store.state.activeWorkspace;
     const originalIdMapping = this._store.state.copiedObjectIdMapping;
 
     // Check if we're pasting from a different workspace
-    const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
+    const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace!.id);
 
     // Calculate the bounding box of all copied objects
     const minX = Math.min(...copiedObjects.map(obj => obj.translateX));
@@ -756,8 +756,8 @@ export class KritzelCore {
       // First add all copied objects to the objectsMap with updated positions
       copiedObjects.forEach((obj, i) => {
         // Update workspace if pasting to a different workspace
-        if (obj.workspaceId !== activeWorkspace.id) {
-          obj.workspaceId = activeWorkspace.id;
+        if (obj.workspaceId !== activeWorkspace!.id) {
+          obj.workspaceId = activeWorkspace!.id;
         }
 
         // Update position
@@ -771,8 +771,8 @@ export class KritzelCore {
           if (obj._pendingChildren.length > 0) {
             obj._pendingChildren.forEach((child, childIndex) => {
               // Update workspace
-              if (child.workspaceId !== activeWorkspace.id) {
-                child.workspaceId = activeWorkspace.id;
+              if (child.workspaceId !== activeWorkspace!.id) {
+                child.workspaceId = activeWorkspace!.id;
               }
 
               // Update position with offset
@@ -1323,7 +1323,7 @@ export class KritzelCore {
     this._kritzelEngine.viewport?.cancelPendingUpdates();
 
     // Immediately save the current workspace's viewport before switching
-    const currentWorkspace = this._store.activeWorkspace;
+    const currentWorkspace = this._store.state.activeWorkspace;
     if (currentWorkspace) {
       this.updateWorkspaceViewport(
         this._store.state.translateX,

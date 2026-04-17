@@ -81,7 +81,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
         group._core = core;
         group.id = group.generateId();
-        group.workspaceId = core.store.activeWorkspace.id;
+        group.workspaceId = core.store.state.activeWorkspace!.id;
         group.userId = core.user?.id;
         group.scale = core.store.state.scale;
         group.zIndex = core.store.currentZIndex;
