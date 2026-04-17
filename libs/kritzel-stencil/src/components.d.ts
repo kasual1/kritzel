@@ -374,6 +374,11 @@ export namespace Components {
          */
         "isControlsVisible": boolean;
         /**
+          * Whether the editor is in a loading state. When true, a loading overlay is displayed.
+          * @default false
+         */
+        "isLoading": boolean;
+        /**
           * @default true
          */
         "isUtilityPanelVisible": boolean;
@@ -2387,6 +2392,11 @@ declare namespace LocalJSX {
          */
         "isControlsVisible"?: boolean;
         /**
+          * Whether the editor is in a loading state. When true, a loading overlay is displayed.
+          * @default false
+         */
+        "isLoading"?: boolean;
+        /**
           * @default true
          */
         "isUtilityPanelVisible"?: boolean;
@@ -3103,6 +3113,7 @@ declare namespace LocalJSX {
         "wheelEnabled": boolean;
         "isControlsVisible": boolean;
         "isUtilityPanelVisible": boolean;
+        "isLoading": boolean;
         "editorId": string;
         "activeWorkspaceId": string;
     }
