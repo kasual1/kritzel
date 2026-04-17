@@ -29,12 +29,32 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   background-color: var(--kritzel-loading-overlay-background, rgba(255, 255, 255, 0.6));
   color: var(--kritzel-loading-overlay-color, #333);
+  font-family: var(--kritzel-font-family, sans-serif);
   font-size: 1.25rem;
   pointer-events: all;
-  animation: workspace-loading-fade-in var(--kritzel-loading-overlay-delay, 300ms) ease-out forwards;
+  animation: workspace-loading-fade-in 200ms ease-out var(--kritzel-loading-overlay-delay, 300ms) forwards;
   opacity: 0;
+}
+
+.workspace-loading-spinner {
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  display: block;
+  flex-shrink: 0;
+  border: 2px solid var(--kritzel-loading-overlay-spinner-color, #cccccc);
+  border-top-color: var(--kritzel-loading-overlay-spinner-active-color, #333333);
+  border-radius: 50%;
+  animation: workspace-loading-spin 0.6s linear infinite;
+}
+
+@keyframes workspace-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes workspace-loading-fade-in {

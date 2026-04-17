@@ -1570,6 +1570,7 @@ export class KritzelEngine {
     this.core.store.state.viewportBoundaryRight = this.viewportBoundaryRight;
     this.core.store.state.viewportBoundaryTop = this.viewportBoundaryTop;
     this.core.store.state.viewportBoundaryBottom = this.viewportBoundaryBottom;
+    this._isWorkspaceLoading = true;
     this.syncLoadingState();
   }
 
@@ -1827,7 +1828,16 @@ export class KritzelEngine {
 
   render() {
     if (!this.viewport) {
-      return null;
+      return (
+        <Host>
+          {this.core.store.state.isLoading && (
+            <div class="workspace-loading-overlay">
+              <span class="workspace-loading-spinner"></span>
+              Loading...
+            </div>
+          )}
+        </Host>
+      );
     }
 
     const currentTheme = this.core.themeManager.getStoredTheme();
@@ -1851,7 +1861,10 @@ export class KritzelEngine {
     return (
       <Host>
         {this.core.store.state.isLoading && (
-          <div class="workspace-loading-overlay">Loading...</div>
+          <div class="workspace-loading-overlay">
+            <span class="workspace-loading-spinner"></span>
+            Loading...
+          </div>
         )}
         {this.core.store.state.debugInfo.showViewportInfo && (
           <div class="debug-panel">

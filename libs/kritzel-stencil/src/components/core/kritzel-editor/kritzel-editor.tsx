@@ -223,6 +223,9 @@ export class KritzelEditor {
     ]
   }
 
+  /** Whether the editor is in a loading state. When true, a loading overlay is displayed. */
+  @Prop() isLoading: boolean = false;
+
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
   @Prop() editorId?: string;
 
@@ -946,7 +949,7 @@ export class KritzelEditor {
           scaleMax={this.scaleMax}
           lockDrawingScale={this.lockDrawingScale}
           scaleMin={this.scaleMin}
-          isLoading={true}
+          isLoading={this.isLoading}
           viewportBoundaryLeft={this.viewportBoundaryLeft}
           viewportBoundaryRight={this.viewportBoundaryRight}
           viewportBoundaryTop={this.viewportBoundaryTop}
