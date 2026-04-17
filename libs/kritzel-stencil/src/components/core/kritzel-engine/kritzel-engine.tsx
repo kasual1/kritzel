@@ -63,14 +63,14 @@ export class KritzelEngine {
     // Let batched prop updates settle, then perform an idempotent re-check.
     await Promise.resolve();
 
-    const currentWorkspaceId = this.core.store.activeWorkspace?.id;
+    const currentWorkspaceId = this.core.store.state.activeWorkspace?.id;
     if (currentWorkspaceId === newWorkspaceId) {
       return;
     }
 
     this.core.beforeWorkspaceChange();
     await this.initializeWorkspaceIfNeeded(newWorkspace);
-    this.activeWorkspaceChange.emit(this.core.store.activeWorkspace);
+    this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace!);
   }
 
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
@@ -96,8 +96,11 @@ export class KritzelEngine {
     // Keep core config in sync immediately so late prop updates are not lost.
     this.core.setSyncConfig(newValue);
 
-    // If syncConfig arrives after componentDidLoad, initialize Yjs now
-    if (newValue && !this._isYjsInitialized) {
+    // If syncConfig arrives after componentDidLoad, initialize Yjs now.
+    // Guard on _isViewportReady to avoid restoring viewport state before
+    // viewportWidth/viewportHeight are set (they default to 0 until the
+    // KritzelViewport constructor runs inside componentDidLoad's timeout).
+    if (newValue && !this._isYjsInitialized && this._isViewportReady) {
       await this.initializeSyncAndWorkspace();
     }
   }
@@ -674,7 +677,7 @@ export class KritzelEngine {
     object._core = this.core;
     object.scale = this.core.store.state.scale;
     object.zIndex = this.core.store.currentZIndex;
-    object.workspaceId = this.core.store.activeWorkspace!.id;
+    object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
     // Handle KritzelText: recreate the editor now that _core is available
     // The editor's dispatchTransaction callback needs _core for persisting changes
@@ -699,7 +702,7 @@ export class KritzelEngine {
         child._core = this.core;
         child.scale = this.core.store.state.scale;
         child.zIndex = this.core.store.currentZIndex;
-        child.workspaceId = this.core.store.activeWorkspace!.id;
+        child.workspaceId = this.core.store.state.activeWorkspace!.id;
 
         idRemapping.set(oldId, child.id);
         object.childIds.push(child.id);
@@ -956,7 +959,7 @@ export class KritzelEngine {
     // Save critical state before screenshot to restore after
     const savedState = {
       objects: this.core.store.objects,
-      activeWorkspace: this.core.store.activeWorkspace,
+      activeWorkspace: this.core.store.state.activeWorkspace,
       workspaces: this.core.store.state.workspaces,
       activeTool: this.core.store.state.activeTool,
       isReady: this.core.store.state.isReady,
@@ -1185,7 +1188,7 @@ export class KritzelEngine {
    */
   @Method()
   async exportAsJson(): Promise<string> {
-    const workspace = this.core.store.activeWorkspace;
+    const workspace = this.core.store.state.activeWorkspace;
     if (!workspace) {
       throw new Error('Cannot export workspace: no active workspace is loaded');
     }
@@ -1279,7 +1282,7 @@ export class KritzelEngine {
       console.warn(`Workspace version mismatch: expected ${WORKSPACE_EXPORT_VERSION}, got ${data.version}`);
     }
 
-    const activeWorkspace = this.core.store.activeWorkspace;
+    const activeWorkspace = this.core.store.state.activeWorkspace;
     if (!activeWorkspace) {
       throw new Error('Cannot load objects: no active workspace is loaded');
     }
@@ -1443,7 +1446,7 @@ export class KritzelEngine {
   /** Returns the currently active workspace. */
   @Method()
   async getActiveWorkspace(): Promise<KritzelWorkspace> {
-    const activeWorkspace = this.core.store.activeWorkspace;
+    const activeWorkspace = this.core.store.state.activeWorkspace;
     if (!activeWorkspace) {
       throw new Error('No active workspace is loaded');
     }
@@ -1484,7 +1487,7 @@ export class KritzelEngine {
 
     this.core.beforeWorkspaceChange();
     await this.initializeWorkspaceIfNeeded(workspace);
-    this.activeWorkspaceChange.emit(this.core.store.activeWorkspace);
+    this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace!);
   }
 
   /**
@@ -1510,6 +1513,7 @@ export class KritzelEngine {
   contextMenuElement: HTMLKritzelContextMenuElement | null = null;
 
   private _lastHadSelectionGroup: boolean = false;
+  private _isViewportReady: boolean = false;
   private _isYjsInitialized: boolean = false;
   private _isResolvingActiveWorkspaceId: boolean = false;
   private _stateChangeListenersRegistered: boolean = false;
@@ -1579,6 +1583,7 @@ export class KritzelEngine {
       this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems, this.objectContextMenuItems);
       this.keyHandler = new KritzelKeyHandler(this.core);
       this.viewport = new KritzelViewport(this.core, this.host);
+      this._isViewportReady = true;
 
       // Initialize cursor manager with target element and shadow root
       this.core.cursorManager.setTargetElement(this.cursorTarget || document.body);
@@ -1656,7 +1661,7 @@ export class KritzelEngine {
     }
 
     // Emit initial active workspace once startup initialization has completed
-    const initialActiveWorkspace = this.core.store.activeWorkspace;
+    const initialActiveWorkspace = this.core.store.state.activeWorkspace;
     if (initialActiveWorkspace) {
       this.activeWorkspaceChange.emit(initialActiveWorkspace);
     }
@@ -1693,7 +1698,7 @@ export class KritzelEngine {
       return;
     }
 
-    if (this.core.store.activeWorkspace?.id === this.activeWorkspaceId) {
+    if (this.core.store.state.activeWorkspace?.id === this.activeWorkspaceId) {
       return;
     }
 
@@ -1712,20 +1717,20 @@ export class KritzelEngine {
       return;
     }
 
-    if (this.core.store.activeWorkspace?.id === workspace.id) {
+    if (this.core.store.state.activeWorkspace?.id === workspace.id) {
       return;
     }
 
     this.core.beforeWorkspaceChange();
     await this.initializeWorkspaceIfNeeded(workspace);
-    this.activeWorkspaceChange.emit(this.core.store.activeWorkspace);
+    this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace!);
   }
 
   private async initializeWorkspaceIfNeeded(workspace?: KritzelWorkspace, options?: { skipFallbackCreation?: boolean }): Promise<void> {
     const targetWorkspaceId = workspace?.id ?? null;
     const targetKey = targetWorkspaceId ?? (options?.skipFallbackCreation ? '__NO_FALLBACK__' : '__AUTO__');
 
-    if (targetWorkspaceId && this.core.store.activeWorkspace?.id === targetWorkspaceId) {
+    if (targetWorkspaceId && this.core.store.state.activeWorkspace?.id === targetWorkspaceId) {
       return;
     }
 
