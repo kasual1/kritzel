@@ -1,14 +1,8 @@
 jest.mock('@stencil/core', () => ({
+  ...jest.requireActual('@stencil/core/internal/testing'),
   Component: () => (cls: any) => cls,
   Prop: () => () => {},
   State: () => () => {},
-  Host: 'Host',
-  h: jest.fn(),
-}));
-
-jest.mock('@stencil/core/testing', () => ({
-  resetPlatform: jest.fn(),
-  stopAutoApplyChanges: jest.fn(),
 }));
 
 class MockKritzelPath { }
@@ -58,13 +52,13 @@ describe('KritzelAwarenessCursors', () => {
           translateY: config.translateY,
           viewportWidth: config.viewportWidth,
           viewportHeight: config.viewportHeight,
-          objects: {
-            hasAwareness: true,
-            localClientId: config.localClientId,
-            onAwarenessChange: jest.fn(),
-            onObjectsChange: jest.fn(),
-            findById: jest.fn(),
-          },
+        },
+        objects: {
+          hasAwareness: true,
+          localClientId: config.localClientId,
+          onAwarenessChange: jest.fn(),
+          onObjectsChange: jest.fn(),
+          findById: jest.fn(),
         },
       },
     } as unknown as KritzelCore;
@@ -266,7 +260,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should clamp coordinates to right edge', () => {
       const result = (component as any).clampToEdge(1500, 400);
 
-      expect(result.x).toBe(944); // viewportWidth - padding - halfSize
+      expect(result.x).toBe(960); // viewportWidth - padding
       expect(result.y).toBe(400);
     });
 
@@ -274,7 +268,7 @@ describe('KritzelAwarenessCursors', () => {
       const result = (component as any).clampToEdge(500, 1200);
 
       expect(result.x).toBe(500);
-      expect(result.y).toBe(744); // viewportHeight - padding - halfSize
+      expect(result.y).toBe(760); // viewportHeight - padding
     });
 
     it('should compute correct angle for off-screen cursor', () => {

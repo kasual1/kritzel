@@ -151,6 +151,7 @@ describe('KritzelText', () => {
           },
           pointers: new Map(),
         },
+        get objects() { return this.state.objects; },
         currentZIndex: 1,
         setState: setState,
       },

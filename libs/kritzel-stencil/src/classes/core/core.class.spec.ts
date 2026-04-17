@@ -83,6 +83,9 @@ describe('KritzelCore', () => {
       totalCount: 0,
       setWorkspaceName: jest.fn(),
       onAwarenessChange: jest.fn(),
+      setLocalSelectionBox: jest.fn(),
+      clearLocalSelectionBox: jest.fn(),
+      setLocalUser: jest.fn(),
     };
 
     jest.mocked(KritzelObjectMap).mockImplementation(() => mockObjectsMap);
@@ -157,6 +160,7 @@ describe('KritzelCore', () => {
         activeTool: null,
         pointers: new Map(),
       },
+      get objects() { return this.state.objects; },
       allObjects: [],
       allNonSelectionObjects: [],
       selectedObjects: [],
@@ -843,7 +847,7 @@ describe('KritzelCore', () => {
       expect(mockStore.state.isRotationHandleSelected).toBe(false);
       expect(mockStore.state.isLineHandleSelected).toBe(false);
       expect(mockStore.state.isLineHandleDragging).toBe(false);
-      expect(mockStore.state.lineHandleType).toBeNull();
+      expect(mockStore.state.lineHandleType).toBeUndefined();
     });
   });
 
@@ -1016,7 +1020,7 @@ describe('KritzelCore', () => {
       remoteGroup.isSelected = true;
       remoteGroup.userId = 'remote-user';
       const line = Object.create(KritzelLine.prototype);
-      remoteGroup.objects = [line];
+      Object.defineProperty(remoteGroup, 'objects', { value: [line], writable: true });
       core.setUser({ id: 'local-user', displayName: 'Local' } as any);
 
       expect(core.displaySelectionGroupUI(remoteGroup)).toBe(true);

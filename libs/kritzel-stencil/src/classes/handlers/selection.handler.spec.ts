@@ -52,6 +52,8 @@ describe('KritzelSelectionHandler', () => {
       remove: jest.Mock;
       query: jest.Mock;
       filter: jest.Mock;
+      setLocalSelectionBox: jest.Mock;
+      clearLocalSelectionBox: jest.Mock;
     };
     activeWorkspace: { id: string };
   };
@@ -128,6 +130,8 @@ describe('KritzelSelectionHandler', () => {
         remove: jest.fn(),
         query: jest.fn().mockReturnValue([]),
         filter: jest.fn().mockReturnValue([]),
+        setLocalSelectionBox: jest.fn(),
+        clearLocalSelectionBox: jest.fn(),
       },
       activeWorkspace: { id: 'workspace-1' },
     };
@@ -136,6 +140,9 @@ describe('KritzelSelectionHandler', () => {
       store: {
         get state() {
           return mockState;
+        },
+        get objects() {
+          return mockState.objects;
         },
         get selectionBox() {
           return mockSelectionBox;

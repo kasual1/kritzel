@@ -77,6 +77,9 @@ describe('KritzelContextMenuHandler', () => {
         get state() {
           return mockState;
         },
+        get objects() {
+          return mockState.objects;
+        },
         get selectionGroup() {
           return mockSelectionGroup;
         },

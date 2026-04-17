@@ -336,7 +336,11 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * @returns void
    */
   focus(coords?: { x: number; y: number }): void {
-    const doc = this.editor!.state.doc;
+    if (!this.editor) {
+      return;
+    }
+
+    const doc = this.editor.state.doc;
 
     if (coords?.x && coords?.y) {
       const pos = this.editor!.posAtCoords({ left: coords.x, top: coords.y });

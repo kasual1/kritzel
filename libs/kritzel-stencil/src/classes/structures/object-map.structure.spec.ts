@@ -132,7 +132,7 @@ const createMockCore = (overrides: Partial<MockCore> = {}): MockCore => ({
 });
 
 interface MockProvider {
-  type: 'local';
+  type: 'local' | 'network';
   connect: jest.Mock<Promise<void>>;
   disconnect: jest.Mock<void>;
   reconnect: jest.Mock<Promise<void>>;
@@ -140,8 +140,8 @@ interface MockProvider {
   awareness?: any;
 }
 
-const createMockProvider = (): MockProvider => ({
-  type: 'local',
+const createMockProvider = (type: 'local' | 'network' = 'local'): MockProvider => ({
+  type,
   connect: jest.fn().mockResolvedValue(undefined),
   disconnect: jest.fn(),
   reconnect: jest.fn().mockResolvedValue(undefined),
@@ -1018,7 +1018,7 @@ describe('KritzelObjectMap', () => {
         getStates: jest.fn().mockReturnValue(new Map()),
         setLocalStateField: jest.fn(),
       };
-      const provider = createMockProvider();
+      const provider = createMockProvider('network');
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
@@ -1042,7 +1042,7 @@ describe('KritzelObjectMap', () => {
         getStates: jest.fn().mockReturnValue(new Map()),
         setLocalStateField: jest.fn(),
       };
-      const provider = createMockProvider();
+      const provider = createMockProvider('network');
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
@@ -1067,7 +1067,7 @@ describe('KritzelObjectMap', () => {
         getStates: jest.fn().mockReturnValue(new Map()),
         setLocalStateField: jest.fn(),
       };
-      const provider = createMockProvider();
+      const provider = createMockProvider('network');
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
@@ -1087,7 +1087,7 @@ describe('KritzelObjectMap', () => {
         getStates: jest.fn().mockReturnValue(new Map()),
         setLocalStateField: jest.fn(),
       };
-      const provider = createMockProvider();
+      const provider = createMockProvider('network');
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
@@ -1143,7 +1143,7 @@ describe('KritzelObjectMap', () => {
         [1, { user: { id: 'local-user' } }],
       ]);
       const mockAwareness = createMockAwareness(states);
-      const provider = createMockProvider();
+      const provider = createMockProvider('network');
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
@@ -1173,7 +1173,7 @@ describe('KritzelObjectMap', () => {
         [1, { user: { id: 'local-user' } }],
       ]);
       const mockAwareness = createMockAwareness(states);
-      const provider = createMockProvider();
+      const provider = createMockProvider('network');
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
@@ -1201,7 +1201,7 @@ describe('KritzelObjectMap', () => {
         [2, { user: { id: 'remote-user' } }],
       ]);
       const mockAwareness = createMockAwareness(states);
-      const provider = createMockProvider();
+      const provider = createMockProvider('network');
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
@@ -1227,7 +1227,7 @@ describe('KritzelObjectMap', () => {
         [1, { user: { id: 'local-user' } }],
       ]);
       const mockAwareness = createMockAwareness(states);
-      const provider = createMockProvider();
+      const provider = createMockProvider('network');
       provider.awareness = mockAwareness;
       const factory = { create: jest.fn().mockReturnValue(provider) };
 
