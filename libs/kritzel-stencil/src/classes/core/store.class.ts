@@ -8,7 +8,6 @@ import { KritzelLine } from '../objects/line.class';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../objects/base-object.class';
-import { KritzelWorkspace } from './workspace.class';
 
 /**
  * Central state management store for the Kritzel engine.
@@ -51,20 +50,6 @@ export class KritzelStore {
   }
 
  
-  /**
-   * Gets the currently active workspace.
-   * Throws an error if no active workspace is set, as it is required for workspace-bound operations.
-   * @returns The current active KritzelWorkspace
-   * @throws Error if no active workspace is set in the state
-   */
-  get activeWorkspace(): KritzelWorkspace {
-    if (!this._state.activeWorkspace) {
-      throw new Error('Active workspace is not set.');
-    }
-    return this._state.activeWorkspace;
-  }
-
-
   /**
    * Gets the host element for the Kritzel editor.
    * Throws an error if the host is not set, as it is required for many operations.
