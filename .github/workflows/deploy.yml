@@ -134,6 +134,9 @@ jobs:
       - name: Build Kritzel Vue library
         run: npm run build -w libs/kritzel-vue
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Run e2e tests
         run: npm run e2e
 
