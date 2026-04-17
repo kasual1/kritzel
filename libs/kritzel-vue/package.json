@@ -1,7 +1,7 @@
 {
   "name": "kritzel-vue",
   "version": "0.1.83",
-  "homepage": "https://gitlab.com/kasual1/kritzel#readme",
+  "homepage": "https://github.com/kasual1/kritzel#readme",
   "license": "ISC",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/kasual1/kritzel.git"
+    "url": "https://github.com/kasual1/kritzel.git"
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
@@ -25,7 +25,7 @@
     "release": "npm publish"
   },
   "bugs": {
-    "url": "https://gitlab.com/kasual1/kritzel/issues"
+    "url": "https://github.com/kasual1/kritzel/issues"
   },
   "publishConfig": {
     "access": "public"
