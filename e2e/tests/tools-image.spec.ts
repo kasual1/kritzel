@@ -153,22 +153,17 @@ test.describe('Image tool', () => {
 
     const objects = await editorPage.getAllObjects<any>();
     const image = objects[0];
-    const viewport = await editorPage.getViewport();
 
-    // Get the engine bounding box to determine viewport dimensions in world coords
+    // Convert the screen-space viewport center to world coordinates
     const bbox = await editorPage.getEngineBoundingBox();
-    const viewportWorldWidth = bbox.width / viewport.scale;
-    const viewportWorldHeight = bbox.height / viewport.scale;
-
-    const viewportCenterX = viewport.translateX + viewportWorldWidth / 2;
-    const viewportCenterY = viewport.translateY + viewportWorldHeight / 2;
+    const viewportCenter = await editorPage.screenToWorld(bbox.width / 2, bbox.height / 2);
 
     const imageCenterX = image.translateX + image.width / 2;
     const imageCenterY = image.translateY + image.height / 2;
 
     // Allow tolerance — compression may resize, and centering is approximate
-    expect(imageCenterX).toBeCloseTo(viewportCenterX, -1);
-    expect(imageCenterY).toBeCloseTo(viewportCenterY, -1);
+    expect(imageCenterX).toBeCloseTo(viewportCenter.x, -1);
+    expect(imageCenterY).toBeCloseTo(viewportCenter.y, -1);
   });
 
   test('should switch to selection tool after image placement', async ({ editorPage }) => {
