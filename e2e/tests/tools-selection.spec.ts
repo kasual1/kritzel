@@ -52,7 +52,7 @@ test.describe('Selection tool', () => {
       expect(await editorPage.getSelectedObjects()).toHaveLength(1);
 
       // Click on empty canvas far from the shape
-      await editorPage.clickAtWorld(500, 500);
+      await editorPage.clickAtWorld(0, 0);
       await waitForRender(editorPage.page);
 
       const selected = await editorPage.getSelectedObjects();
