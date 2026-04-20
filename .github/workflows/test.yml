@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22.14.0"
 
@@ -29,7 +29,7 @@ jobs:
         run: npm run build -w libs/kritzel-angular
 
       - name: Upload Stencil and Angular dist
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: stencil-dist
           path: |
@@ -43,15 +43,15 @@ jobs:
     needs: build-stencil
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22.14.0"
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: stencil-dist
           path: libs
@@ -72,15 +72,15 @@ jobs:
         project: [angular, react, vue]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22.14.0"
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: stencil-dist
           path: libs
@@ -104,7 +104,7 @@ jobs:
 
       - name: Upload screenshot comparison results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: screenshot-comparison-${{ matrix.project }}
           path: |

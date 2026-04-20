@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22.14.0"
 
@@ -30,7 +30,7 @@ jobs:
         run: npm run build -w libs/kritzel-angular
 
       - name: Upload Stencil and Angular dist
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: stencil-dist
           path: |
@@ -44,15 +44,15 @@ jobs:
     needs: build-stencil
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22.14.0"
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: stencil-dist
           path: libs
@@ -76,7 +76,7 @@ jobs:
           Docusaurus_BASE_URL: /${{ github.event.repository.name }}/
 
       - name: Upload docs artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: docs-build
           path: website/build
@@ -87,15 +87,15 @@ jobs:
     needs: build-stencil
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22.14.0"
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: stencil-dist
           path: libs
@@ -114,7 +114,7 @@ jobs:
           npm run build-app -- --base-href=/${{ github.event.repository.name }}/demo/
 
       - name: Upload Angular artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: angular-build
           path: demos/angular/dist/angular/browser
@@ -133,25 +133,25 @@ jobs:
     needs: [build-docs, build-angular]
     steps:
       - name: Download docs artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: docs-build
           path: _site
 
       - name: Download Angular artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: angular-build
           path: _site/demo
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "_site"
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
