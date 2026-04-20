@@ -1,6 +1,9 @@
 name: Deploy to github pages
 on:
-  push:
+  workflow_run:
+    workflows: ["test"]
+    types:
+      - completed
     branches:
       - main
   workflow_dispatch:
@@ -118,7 +121,7 @@ jobs:
 
   # --- Assemble and Deploy ---
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    if: (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       pages: write
