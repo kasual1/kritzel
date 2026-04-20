@@ -11,7 +11,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   outputDir: './test-results',
-  reporter: [['html', { open: 'never', outputFolder: './playwright-report' }]],
+  reporter: [['line'], ['html', { open: 'never', outputFolder: './playwright-report' }]],
   snapshotPathTemplate: '{testDir}/../screenshots/{projectName}/{testFilePath}/{arg}{ext}',
   expect: {
     toHaveScreenshot: { maxDiffPixelRatio: 0.01 }, // Screenshots will always have some minor pixel differences, so we set a small tolerance to avoid false positives
