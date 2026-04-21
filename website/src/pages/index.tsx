@@ -82,7 +82,7 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      <KritzelEditor editorId="homepage" ref={editorRef} wheelEnabled={false} cursorTarget={containerEl} onIsReady={handleReady} />
+      <KritzelEditor editorId="homepage" ref={editorRef} wheelEnabled={false} cursorTarget={containerEl} onIsReady={handleReady} loginConfig={null}/>
     </div>
   );
 }
