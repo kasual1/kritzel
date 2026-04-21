@@ -23,7 +23,9 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
   const editorRef = React.useRef<any>(null);
   const observerRef = React.useRef<ResizeObserver | null>(null);
   const prevWidthRef = React.useRef<number>(0);
+  const [containerEl, setContainerEl] = React.useState<HTMLDivElement | null>(null);
   const containerRef = React.useCallback((el: HTMLDivElement | null) => {
+    setContainerEl(el);
     if (observerRef.current) {
       observerRef.current.disconnect();
       observerRef.current = null;
@@ -80,7 +82,7 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      <KritzelEditor editorId="homepage" ref={editorRef} wheelEnabled={false} onIsReady={handleReady} />
+      <KritzelEditor editorId="homepage" ref={editorRef} wheelEnabled={false} cursorTarget={containerEl} onIsReady={handleReady} />
     </div>
   );
 }
