@@ -2,7 +2,7 @@ import { KritzelSyncConfig } from '../interfaces/sync-config.interface';
 import { IndexedDBSyncProvider } from '../classes/providers/indexeddb-sync-provider.class';
 
 /**
- * Default sync configuration - IndexedDB + BroadcastChannel
+ * Default sync configuration - IndexedDB
  */
 export const DEFAULT_SYNC_CONFIG: KritzelSyncConfig = {
   providers: [

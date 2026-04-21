@@ -27,7 +27,8 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, HocuspocusSyncProvider, IndexedDBSyncProvider, KritzelUndoState } from '../../..';
+import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState } from '../../..';
+import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
@@ -207,10 +208,7 @@ export class KritzelEditor {
   @Prop() customSvgIcons: Record<string, string> = {};
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
-  @Prop() syncConfig?: KritzelSyncConfig = {
-    appStateId: 'kritzel-app-test',
-    providers: [HocuspocusSyncProvider, IndexedDBSyncProvider]
-  };
+  @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
   @Prop() loginConfig?: KritzelLoginConfig = {

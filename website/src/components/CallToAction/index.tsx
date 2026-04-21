@@ -15,14 +15,12 @@ interface CallToActionProps {
   title?: string;
   description?: string;
   primaryButton?: CallToActionButton;
-  secondaryButton?: CallToActionButton;
 }
 
 export default function CallToAction({
   title = "Ready to create something amazing?",
   description = "Start building your infinite canvas experience today. It's free, open-source, and ready to use with your favorite framework.",
   primaryButton = { label: "Get Started", to: "/docs/angular/overview", showArrow: true },
-  secondaryButton = { label: "View on GitHub", to: "https://github.com/kasual1/kritzel" },
 }: CallToActionProps): ReactNode {
   return (
     <section className={styles.ctaSection}>
@@ -44,14 +42,6 @@ export default function CallToAction({
               </span>
             )}
           </Link>
-          {secondaryButton && (
-            <Link
-              to={secondaryButton.to}
-              className="button button--secondary button--lg"
-            >
-              {secondaryButton.label}
-            </Link>
-          )}
         </div>
       </div>
     </section>

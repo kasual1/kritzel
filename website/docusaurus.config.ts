@@ -211,14 +211,6 @@ const config: Config = {
           title: 'Community',
           items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/kasual1/kritzel',
-            },
-            {
-              label: 'Discord',
-              href: '#', // Placeholder
-            },
-            {
               label: 'Twitter',
               href: '#', // Placeholder
             },
@@ -229,7 +221,7 @@ const config: Config = {
           items: [
             {
               label: 'Demo',
-              href: 'https://kasual1.github.io/kritzel/demo/',
+              href: 'https://app.kritzel.io',
             },
             {
               label: 'Blog',
