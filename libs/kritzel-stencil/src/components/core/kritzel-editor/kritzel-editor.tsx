@@ -209,6 +209,8 @@ export class KritzelEditor {
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
+  @Prop() cursorTarget?: HTMLElement;
+
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
   @Prop() loginConfig?: KritzelLoginConfig = {
@@ -947,6 +949,7 @@ export class KritzelEditor {
           scaleMax={this.scaleMax}
           lockDrawingScale={this.lockDrawingScale}
           scaleMin={this.scaleMin}
+          cursorTarget={this.cursorTarget}
           isLoading={this.isLoading}
           viewportBoundaryLeft={this.viewportBoundaryLeft}
           viewportBoundaryRight={this.viewportBoundaryRight}
