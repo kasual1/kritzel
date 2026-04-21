@@ -420,7 +420,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default {     appStateId: 'kritzel-app-test',     providers: [HocuspocusSyncProvider, IndexedDBSyncProvider]   }
+          * @default DEFAULT_SYNC_CONFIG
          */
         "syncConfig"?: KritzelSyncConfig;
         "triggerSelectionChange": () => Promise<void>;
@@ -2435,7 +2435,7 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         /**
-          * @default {     appStateId: 'kritzel-app-test',     providers: [HocuspocusSyncProvider, IndexedDBSyncProvider]   }
+          * @default DEFAULT_SYNC_CONFIG
          */
         "syncConfig"?: KritzelSyncConfig;
         "user"?: IKritzelUser;

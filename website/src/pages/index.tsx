@@ -124,7 +124,7 @@ function HomepageHeader() {
           unbound creativity.
         </Heading>
         <p className={clsx("hero__subtitle", styles.heroSubtitle)}>
-          Kritzel is a free and framework-agnostic infinite canvas library
+          Kritzel is a framework-agnostic infinite canvas library
           <br />
           for creating endless creative experiences.
         </p>
@@ -135,7 +135,7 @@ function HomepageHeader() {
         </div>
         <div className={styles.buttons}>
           <Link
-            to="/demo"
+            href="https://app.kritzel.io"
             className="button button--primary button--lg"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
           >

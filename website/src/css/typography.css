@@ -1,4 +1,4 @@
-* {
+*:not(kritzel-button) {
   font-family: "Schoolbell", cursive !important;
 }
 

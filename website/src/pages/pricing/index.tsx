@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
+import Link from "@docusaurus/Link";
 import CallToAction from "@site/src/components/CallToAction";
 
 import styles from "./pricing.module.css";
@@ -86,12 +87,12 @@ function PricingCard({ tier }: { tier: PricingTier }): ReactNode {
           </li>
         ))}
       </ul>
-      <a
-        href={tier.buttonLink}
+      <Link
+        to={tier.buttonLink}
         className={`button button--lg ${tier.highlighted ? "button--primary" : "button--secondary"} ${styles.tierButton}`}
       >
         {tier.buttonLabel}
-      </a>
+      </Link>
     </div>
   );
 }
