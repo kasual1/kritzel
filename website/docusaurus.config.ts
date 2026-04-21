@@ -5,7 +5,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "Kritzel - Free Infinite Canvas Library",
   tagline: "Kritzel is a open-source infinite canvas editor",
-  favicon: "img/logo.svg",
+  favicon: "img/favicon.svg",
   future: {
     v4: true,
   },
