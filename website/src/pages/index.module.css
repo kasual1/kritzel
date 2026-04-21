@@ -60,6 +60,10 @@
     font-size: 1rem;
     /* Adjust for smaller screens */
   }
+
+  .buttons {
+    flex-direction: column;
+  }
 }
 
 .buttons {
