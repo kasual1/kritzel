@@ -21,12 +21,11 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: "Open Source",
+    title: "Realtime Collaboration",
     Svg: require("@site/static/img/lock.svg").default,
     description: (
       <>
-        Kritzel is free, open source, and community-driven. Contribute,
-        suggest features, or just use it in your projects.
+        Collaborate with others in real-time, making it easy to work together on projects, share ideas, and get feedback instantly.
       </>
     ),
   },
