@@ -2,8 +2,8 @@
   display: none !important;
 }
 
-div[class*='announcementBar'] {
-  padding: 1.25rem 0;
+.theme-announcement-bar {
+  padding: 16px 0 !important;
 }
 
 ::selection {
