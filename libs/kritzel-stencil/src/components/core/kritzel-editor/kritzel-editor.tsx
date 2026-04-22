@@ -210,6 +210,8 @@ export class KritzelEditor {
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
+
+  /** The element to use as the target for the cursor. Defaults to the editor container if not set. */
   @Prop() cursorTarget?: HTMLElement;
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
