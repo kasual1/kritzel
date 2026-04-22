@@ -25,6 +25,7 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
   const observerRef = React.useRef<ResizeObserver | null>(null);
   const prevWidthRef = React.useRef<number>(0);
   const [containerEl, setContainerEl] = React.useState<HTMLDivElement | null>(null);
+  const [shouldLoadInitialWorkspace, setShouldLoadInitialWorkspace] = React.useState<boolean | null>(null);
   const containerRef = React.useCallback((el: HTMLDivElement | null) => {
     setContainerEl(el);
     if (observerRef.current) {
@@ -44,21 +45,40 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
     }
   }, []);
 
+  // Check if an IndexedDB workspace already exists before the editor initializes
+  React.useEffect(() => {
+    const checkDatabase = async () => {
+      try {
+        const databases = await indexedDB.databases();
+        const hasKritzelWorkspace = databases.some(db =>
+          db.name?.startsWith('kritzel-workspace-homepage')
+        );
+        setShouldLoadInitialWorkspace(!hasKritzelWorkspace);
+      } catch {
+        setShouldLoadInitialWorkspace(false);
+      }
+    };
+    checkDatabase();
+  }, []);
+
   const handleReady = React.useCallback(async () => {
     if (editorRef.current && !isLoadedRef.current) {
       isLoadedRef.current = true;
       try {
-        const response = await fetch(initialWorkspaceUrl);
-        const json = await response.text();
-        await editorRef.current.loadObjectsFromJson(json);
+        if (shouldLoadInitialWorkspace) {
+          const response = await fetch(initialWorkspaceUrl);
+          const json = await response.text();
+          await editorRef.current.loadObjectsFromJson(json);
+        }
         await editorRef.current.centerAllObjects(false);
       } catch (error) {
         console.error('Failed to load initial workspace:', error);
       }
     }
-  }, [initialWorkspaceUrl]);
+  }, [initialWorkspaceUrl, shouldLoadInitialWorkspace]);
 
   React.useEffect(() => {
+    if (shouldLoadInitialWorkspace === null) return;
     let mounted = true;
     const checkInit = async () => {
       // Small delay to allow the editor to initialize in case it's remounting
@@ -78,11 +98,16 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
     return () => {
       mounted = false;
     };
-  }, [handleReady]);
+  }, [handleReady, shouldLoadInitialWorkspace]);
+
+  // Wait for database check before rendering editor
+  if (shouldLoadInitialWorkspace === null) {
+    return <div style={{ width: '100%', height: '100%' }} />;
+  }
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      <KritzelEditor editorId="homepage" ref={editorRef} wheelEnabled={false} cursorTarget={containerEl} onIsReady={handleReady} loginConfig={null} syncConfig={{providers: []}} isWorkspaceManagerVisible={false} isMoreMenuVisible={false} />
+      <KritzelEditor editorId="homepage" ref={editorRef} wheelEnabled={false} cursorTarget={containerEl} onIsReady={handleReady} loginConfig={null} isWorkspaceManagerVisible={false} isMoreMenuVisible={false} />
     </div>
   );
 }
