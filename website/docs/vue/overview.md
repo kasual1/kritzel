@@ -1,5 +1,13 @@
 ---
 sidebar_label: Overview
+title: Kritzel for Vue Overview
+description: Integrate Kritzel into Vue applications to build infinite canvas and collaborative whiteboard features with framework-friendly components.
+keywords:
+  - vue whiteboard
+  - vue infinite canvas
+  - kritzel
+  - collaborative canvas
+  - drawing tools
 ---
 
 # Overview

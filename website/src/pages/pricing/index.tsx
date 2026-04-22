@@ -33,7 +33,7 @@ const pricingTiers: PricingTier[] = [
     buttonLink: "/docs/angular/overview",
   },
   {
-    name: "Statup",
+    name: "Startup",
     price: "$249",
     description: "For teams building commercial applications.",
     features: [
@@ -45,8 +45,8 @@ const pricingTiers: PricingTier[] = [
       "Commercial license",
     ],
     highlighted: true,
-    buttonLabel: "Coming Soon",
-    buttonLink: "#",
+    buttonLabel: "Join Waitlist",
+    buttonLink: "mailto:contact@kritzel.dev?subject=Kritzel%20Startup%20Plan%20Waitlist",
   },
   {
     name: "Enterprise",
