@@ -194,7 +194,7 @@ const config: Config = {
             },
             {
               label: 'API Reference',
-              to: '/docs/general/index',
+              to: '/docs/react/api-reference',
             },
             {
               label: 'Examples',
