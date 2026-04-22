@@ -51,7 +51,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: stencil-dist
-          path: libs
+          path: libs/kritzel-stencil
 
       - name: Install dependencies
         run: npm install
