@@ -65,7 +65,7 @@ jobs:
           cd website
           npm run build
         env:
-          Docusaurus_BASE_URL: /${{ github.event.repository.name }}/
+          Docusaurus_BASE_URL: /
 
       - name: Upload docs artifact
         uses: actions/upload-artifact@v5
