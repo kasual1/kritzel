@@ -103,6 +103,8 @@ jobs:
 
       - name: Run e2e tests (${{ matrix.project }})
         run: npx playwright test --config=e2e/playwright.config.ts --project=${{ matrix.project }}
+        env:
+          E2E_PROJECT: ${{ matrix.project }}
 
       - name: Upload screenshot comparison results
         if: always()

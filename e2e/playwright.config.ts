@@ -4,6 +4,8 @@ const ANGULAR_PORT = 4200;
 const REACT_PORT = 5173;
 const VUE_PORT = 5174;
 
+const E2E_PROJECT = process.env.E2E_PROJECT;
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -53,22 +55,26 @@ export default defineConfig({
 
   webServer: [
     {
+      project: 'angular',
       command: 'npm run demo:angular',
       port: ANGULAR_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
     {
+      project: 'react',
       command: 'npm run demo:react',
       port: REACT_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
     {
+      project: 'vue',
       command: 'npm run demo:vue',
       port: VUE_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
-  ],
+  ].filter(({ project }) => !E2E_PROJECT || project === E2E_PROJECT)
+   .map(({ project: _, ...server }) => server),
 });
