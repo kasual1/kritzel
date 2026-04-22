@@ -26,17 +26,13 @@ jobs:
       - name: Build Kritzel Stencil components
         run: npm run build -w libs/kritzel-stencil
 
-      - name: Build Kritzel Angular library
-        run: npm run build -w libs/kritzel-angular
-
-      - name: Upload Stencil and Angular dist
+      - name: Upload Stencil dist
         uses: actions/upload-artifact@v5
         with:
           name: stencil-dist
           path: |
             libs/kritzel-stencil/dist
             libs/kritzel-stencil/loader
-            libs/kritzel-angular/dist/lib
 
   # --- Build Docusaurus (after Stencil build, needs kritzel-react) ---
   build-docs:
@@ -81,44 +77,6 @@ jobs:
           name: docs-build
           path: website/build
 
-  # --- Build Angular Application (after Stencil build) ---
-  build-angular:
-    runs-on: ubuntu-latest
-    needs: build-stencil
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: "22.14.0"
-
-      - name: Download Stencil dist
-        uses: actions/download-artifact@v5
-        with:
-          name: stencil-dist
-          path: libs
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install Angular app dependencies
-        run: |
-          cd demos/angular
-          npm install
-
-      - name: Build Angular application
-        run: |
-          cd demos/angular
-          npm run build-app -- --base-href=/${{ github.event.repository.name }}/demo/
-
-      - name: Upload Angular artifact
-        uses: actions/upload-artifact@v5
-        with:
-          name: angular-build
-          path: demos/angular/dist/angular/browser
-
   # --- Assemble and Deploy ---
   deploy:
     if: (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch'
@@ -130,19 +88,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: [build-docs, build-angular]
+    needs: build-docs
     steps:
       - name: Download docs artifact
         uses: actions/download-artifact@v5
         with:
           name: docs-build
           path: _site
-
-      - name: Download Angular artifact
-        uses: actions/download-artifact@v5
-        with:
-          name: angular-build
-          path: _site/demo
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
