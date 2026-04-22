@@ -383,11 +383,15 @@ export namespace Components {
          */
         "isLoading": boolean;
         /**
+          * @default false
+         */
+        "isMoreMenuVisible": boolean;
+        /**
           * @default true
          */
         "isUtilityPanelVisible": boolean;
         /**
-          * @default true
+          * @default false
          */
         "isWorkspaceManagerVisible": boolean;
         "loadObjectsFromJson": (json: string) => Promise<number>;
@@ -406,10 +410,6 @@ export namespace Components {
          */
         "objectContextMenuItems": ContextMenuItem[];
         "openLoginDialog": () => Promise<void>;
-        /**
-          * The element to use as the container for dialogs and portals. Defaults to `document.body` if not set.
-         */
-        "overlayContainer"?: HTMLElement;
         "panTo": (x: number, y: number) => Promise<void>;
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
@@ -1038,6 +1038,11 @@ export namespace Components {
           * @default 4
          */
         "offsetY": number;
+        /**
+          * Whether the menu button is visible
+          * @default false
+         */
+        "visible": boolean;
     }
     interface KritzelNumericInput {
         /**
@@ -2418,11 +2423,15 @@ declare namespace LocalJSX {
          */
         "isLoading"?: boolean;
         /**
+          * @default false
+         */
+        "isMoreMenuVisible"?: boolean;
+        /**
           * @default true
          */
         "isUtilityPanelVisible"?: boolean;
         /**
-          * @default true
+          * @default false
          */
         "isWorkspaceManagerVisible"?: boolean;
         /**
@@ -2451,10 +2460,6 @@ declare namespace LocalJSX {
         "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState1>) => void;
         "onViewportChange"?: (event: KritzelEditorCustomEvent<KritzelViewportState>) => void;
-        /**
-          * The element to use as the container for dialogs and portals. Defaults to `document.body` if not set.
-         */
-        "overlayContainer"?: HTMLElement;
         /**
           * @default ABSOLUTE_SCALE_MAX
          */
@@ -2830,6 +2835,11 @@ declare namespace LocalJSX {
           * Emitted when a menu item is selected
          */
         "onItemSelect"?: (event: KritzelMoreMenuCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => void;
+        /**
+          * Whether the menu button is visible
+          * @default false
+         */
+        "visible"?: boolean;
     }
     interface KritzelNumericInput {
         /**
@@ -3148,6 +3158,7 @@ declare namespace LocalJSX {
         "isControlsVisible": boolean;
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
+        "isMoreMenuVisible": boolean;
         "isLoading": boolean;
         "editorId": string;
         "activeWorkspaceId": string;
@@ -3202,6 +3213,7 @@ declare namespace LocalJSX {
         "selectedItemId": string;
     }
     interface KritzelMoreMenuAttributes {
+        "visible": boolean;
         "icon": string;
         "iconSize": number;
         "offsetY": number;

@@ -208,7 +208,8 @@ export class KritzelEditor {
   @Prop() customSvgIcons: Record<string, string> = {};
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
-  @Prop() isWorkspaceManagerVisible: boolean = true;
+  @Prop() isWorkspaceManagerVisible: boolean = false;
+  @Prop() isMoreMenuVisible: boolean = false;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
 
   /** The element to use as the target for the cursor. Defaults to the editor container if not set. */
@@ -1021,7 +1022,10 @@ export class KritzelEditor {
 
           {shouldShowLoginButton && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>}
 
-          <kritzel-more-menu items={this.moreMenuItems}></kritzel-more-menu>
+          <kritzel-more-menu
+            items={this.moreMenuItems}
+            visible={this.isMoreMenuVisible}
+          ></kritzel-more-menu>
 
           <kritzel-share-dialog
             ref={el => {

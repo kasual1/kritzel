@@ -11,6 +11,11 @@ export class KritzelMoreMenu {
   @Element() host!: HTMLElement;
 
   /**
+   * Whether the menu button is visible
+   */
+  @Prop() visible: boolean = false;
+
+  /**
    * The menu items to display in the dropdown.
    * Items with `isVisible` set to `false` will be filtered out.
    * Items with an `action` will have that action invoked on selection.
@@ -71,19 +76,21 @@ export class KritzelMoreMenu {
   render() {
     return (
       <Host class={{ mobile: this.isTouchDevice }}>
-        <button
-          class="more-menu-button"
-          onClick={this.toggleMenu}
-        >
-          <kritzel-icon name={this.icon} size={this.iconSize}></kritzel-icon>
-        </button>
+        <div class={{ 'more-menu-wrapper': true, visible: this.visible }}>
+          <button
+            class="more-menu-button"
+            onClick={this.toggleMenu}
+          >
+            <kritzel-icon name={this.icon} size={this.iconSize}></kritzel-icon>
+          </button>
 
-        <kritzel-portal anchor={this.menuAnchor} offsetY={this.offsetY} onClose={this.closeMenu}>
-          <kritzel-menu
-            items={this.visibleItems}
-            onItemSelect={this.handleMenuItemSelect}
-          ></kritzel-menu>
-        </kritzel-portal>
+          <kritzel-portal anchor={this.menuAnchor} offsetY={this.offsetY} onClose={this.closeMenu}>
+            <kritzel-menu
+              items={this.visibleItems}
+              onItemSelect={this.handleMenuItemSelect}
+            ></kritzel-menu>
+          </kritzel-portal>
+        </div>
       </Host>
     );
   }
