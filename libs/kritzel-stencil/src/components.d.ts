@@ -383,7 +383,7 @@ export namespace Components {
          */
         "isLoading": boolean;
         /**
-          * @default false
+          * @default true
          */
         "isMoreMenuVisible": boolean;
         /**
@@ -391,7 +391,7 @@ export namespace Components {
          */
         "isUtilityPanelVisible": boolean;
         /**
-          * @default false
+          * @default true
          */
         "isWorkspaceManagerVisible": boolean;
         "loadObjectsFromJson": (json: string) => Promise<number>;
@@ -2423,7 +2423,7 @@ declare namespace LocalJSX {
          */
         "isLoading"?: boolean;
         /**
-          * @default false
+          * @default true
          */
         "isMoreMenuVisible"?: boolean;
         /**
@@ -2431,7 +2431,7 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         /**
-          * @default false
+          * @default true
          */
         "isWorkspaceManagerVisible"?: boolean;
         /**
