@@ -208,8 +208,8 @@ export class KritzelEditor {
   @Prop() customSvgIcons: Record<string, string> = {};
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
-  @Prop() isWorkspaceManagerVisible: boolean = false;
-  @Prop() isMoreMenuVisible: boolean = false;
+  @Prop() isWorkspaceManagerVisible: boolean = true;
+  @Prop() isMoreMenuVisible: boolean = true;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
 
   /** The element to use as the target for the cursor. Defaults to the editor container if not set. */
