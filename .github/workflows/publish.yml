@@ -1,4 +1,4 @@
-# Publishes a new version of the library to npm, and pushes a new git tag
+# Publishes a new version of the library to npm, and pushes a new git tag.
 name: Publish library
 
 on:
@@ -17,6 +17,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
     steps:
