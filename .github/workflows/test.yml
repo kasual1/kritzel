@@ -1,4 +1,6 @@
-name: test
+# Builds the Stencil library, then runs unit tests and e2e tests in parallel
+name: Run tests
+
 on:
   push:
     branches:
