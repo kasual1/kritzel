@@ -11,6 +11,11 @@ import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen }
 export class KritzelWorkspaceManager {
   @Element() host!: HTMLElement;
 
+  /**
+   * Whether the workspace manager is visible
+   */
+  @Prop() visible: boolean = false;
+
   @Prop({ mutable: true }) activeWorkspace: KritzelWorkspace;
   @Prop() workspaces: KritzelWorkspace[] = [];
 
@@ -168,19 +173,21 @@ export class KritzelWorkspaceManager {
 
     return (
       <Host>
-        <kritzel-split-button
-          ref={el => (this.splitButtonRef = el)}
-          items={menuItems}
-          mainButtonDisabled={this.editingItemId != null}
-          onMainButtonClick={() => this.add()}
-          onItemSelect={event => this.select(event.detail.item, event.detail.parent)}
-          onItemToggleChildMenu={event => this.toggleChildMenu(event.detail.item, event.detail.childMenuAnchor)}
-          onItemSave={event => this.save(event.detail)}
-          onItemCancel={() => this.cancel()}
-          onItemCloseChildMenu={() => this.closeChildMenu()}
-          onMenuOpen={() => this.handleMenuOpen()}
-          onMenuClose={() => this.handleMenuClose()}
-        ></kritzel-split-button>
+        <div class={{ manager: true, visible: this.visible }}>
+          <kritzel-split-button
+            ref={el => (this.splitButtonRef = el)}
+            items={menuItems}
+            mainButtonDisabled={this.editingItemId != null}
+            onMainButtonClick={() => this.add()}
+            onItemSelect={event => this.select(event.detail.item, event.detail.parent)}
+            onItemToggleChildMenu={event => this.toggleChildMenu(event.detail.item, event.detail.childMenuAnchor)}
+            onItemSave={event => this.save(event.detail)}
+            onItemCancel={() => this.cancel()}
+            onItemCloseChildMenu={() => this.closeChildMenu()}
+            onMenuOpen={() => this.handleMenuOpen()}
+            onMenuClose={() => this.handleMenuClose()}
+          ></kritzel-split-button>
+        </div>
       </Host>
     );
   }

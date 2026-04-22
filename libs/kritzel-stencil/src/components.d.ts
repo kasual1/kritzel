@@ -383,6 +383,10 @@ export namespace Components {
           * @default true
          */
         "isUtilityPanelVisible": boolean;
+        /**
+          * @default true
+         */
+        "isWorkspaceManagerVisible": boolean;
         "loadObjectsFromJson": (json: string) => Promise<number>;
         "loadSharedWorkspace": (token: string) => Promise<void>;
         /**
@@ -391,7 +395,7 @@ export namespace Components {
         "lockDrawingScale": boolean;
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
-          * @default {     providers: [       {         label: 'Sign in with Google',         icon: 'google',         name: 'Google',       }     ]   }
+          * @default {     providers: [       {         label: 'Sign in with Google',         icon: 'google',         name: 'Google',       },     ],   }
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
@@ -1232,6 +1236,11 @@ export namespace Components {
     }
     interface KritzelWorkspaceManager {
         "activeWorkspace": KritzelWorkspace;
+        /**
+          * Whether the workspace manager is visible
+          * @default false
+         */
+        "visible": boolean;
         /**
           * @default []
          */
@@ -2405,10 +2414,14 @@ declare namespace LocalJSX {
         /**
           * @default true
          */
+        "isWorkspaceManagerVisible"?: boolean;
+        /**
+          * @default true
+         */
         "lockDrawingScale"?: boolean;
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
-          * @default {     providers: [       {         label: 'Sign in with Google',         icon: 'google',         name: 'Google',       }     ]   }
+          * @default {     providers: [       {         label: 'Sign in with Google',         icon: 'google',         name: 'Google',       },     ],   }
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
@@ -3039,6 +3052,11 @@ declare namespace LocalJSX {
         "onIsWorkspaceManagerReady"?: (event: KritzelWorkspaceManagerCustomEvent<void>) => void;
         "onWorkspaceChange"?: (event: KritzelWorkspaceManagerCustomEvent<KritzelWorkspace>) => void;
         /**
+          * Whether the workspace manager is visible
+          * @default false
+         */
+        "visible"?: boolean;
+        /**
           * @default []
          */
         "workspaces"?: KritzelWorkspace[];
@@ -3115,6 +3133,7 @@ declare namespace LocalJSX {
         "wheelEnabled": boolean;
         "isControlsVisible": boolean;
         "isUtilityPanelVisible": boolean;
+        "isWorkspaceManagerVisible": boolean;
         "isLoading": boolean;
         "editorId": string;
         "activeWorkspaceId": string;
@@ -3228,6 +3247,9 @@ declare namespace LocalJSX {
         "isVisible": boolean;
         "offsetY": number;
     }
+    interface KritzelWorkspaceManagerAttributes {
+        "visible": boolean;
+    }
 
     interface IntrinsicElements {
         "kritzel-active-users": Omit<KritzelActiveUsers, keyof KritzelActiveUsersAttributes> & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes]?: KritzelActiveUsers[K] } & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes as `attr:${K}`]?: KritzelActiveUsersAttributes[K] } & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes as `prop:${K}`]?: KritzelActiveUsers[K] };
@@ -3272,7 +3294,7 @@ declare namespace LocalJSX {
         "kritzel-tool-config": Omit<KritzelToolConfig, keyof KritzelToolConfigAttributes> & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes]?: KritzelToolConfig[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `attr:${K}`]?: KritzelToolConfigAttributes[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `prop:${K}`]?: KritzelToolConfig[K] };
         "kritzel-tooltip": Omit<KritzelTooltip, keyof KritzelTooltipAttributes> & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes]?: KritzelTooltip[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `attr:${K}`]?: KritzelTooltipAttributes[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `prop:${K}`]?: KritzelTooltip[K] };
         "kritzel-utility-panel": KritzelUtilityPanel;
-        "kritzel-workspace-manager": KritzelWorkspaceManager;
+        "kritzel-workspace-manager": Omit<KritzelWorkspaceManager, keyof KritzelWorkspaceManagerAttributes> & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes]?: KritzelWorkspaceManager[K] } & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes as `attr:${K}`]?: KritzelWorkspaceManagerAttributes[K] } & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes as `prop:${K}`]?: KritzelWorkspaceManager[K] };
     }
 }
 export { LocalJSX as JSX };

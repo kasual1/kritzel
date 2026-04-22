@@ -19,7 +19,7 @@ export class KritzelBackToContent {
   /**
    * Emitted when the button is clicked
    */
-  @Event() backToContent: EventEmitter<void>;
+  @Event() backToContent!: EventEmitter<void>;
 
   private handleClick = (): void => {
     this.backToContent.emit();

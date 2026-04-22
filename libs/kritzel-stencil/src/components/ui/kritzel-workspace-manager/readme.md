@@ -7,10 +7,11 @@
 
 ## Properties
 
-| Property          | Attribute | Description | Type                 | Default     |
-| ----------------- | --------- | ----------- | -------------------- | ----------- |
-| `activeWorkspace` | --        |             | `KritzelWorkspace`   | `undefined` |
-| `workspaces`      | --        |             | `KritzelWorkspace[]` | `[]`        |
+| Property          | Attribute | Description                              | Type                 | Default     |
+| ----------------- | --------- | ---------------------------------------- | -------------------- | ----------- |
+| `activeWorkspace` | --        |                                          | `KritzelWorkspace`   | `undefined` |
+| `visible`         | `visible` | Whether the workspace manager is visible | `boolean`            | `false`     |
+| `workspaces`      | --        |                                          | `KritzelWorkspace[]` | `[]`        |
 
 
 ## Events
