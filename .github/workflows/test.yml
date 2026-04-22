@@ -31,7 +31,7 @@ jobs:
         run: npm run build -w libs/kritzel-angular
 
       - name: Upload Stencil and Angular dist
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: stencil-dist
           path: |
@@ -53,7 +53,7 @@ jobs:
           node-version: "22.14.0"
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: stencil-dist
           path: libs
@@ -82,7 +82,7 @@ jobs:
           node-version: "22.14.0"
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: stencil-dist
           path: libs
@@ -106,7 +106,7 @@ jobs:
 
       - name: Upload screenshot comparison results
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: screenshot-comparison-${{ matrix.project }}
           path: |
