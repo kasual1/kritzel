@@ -15,9 +15,9 @@
       "require": "./dist/index.cjs.js"
     },
     "./loader": {
+      "types": "./loader/index.d.ts",
       "import": "./loader/index.js",
-      "require": "./loader/index.cjs",
-      "types": "./loader/index.d.ts"
+      "require": "./loader/index.cjs"
     },
     "./dist/components": {
       "types": "./dist/types/components.d.ts",
