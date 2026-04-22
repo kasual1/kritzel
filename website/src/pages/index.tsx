@@ -42,43 +42,18 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
       observerRef.current.observe(el);
     }
   }, []);
-  const [shouldLoadInitialWorkspace, setShouldLoadInitialWorkspace] = React.useState<boolean | null>(null);
-
-  // Check if database exists BEFORE editor initializes
-  React.useEffect(() => {
-    const checkDatabase = async () => {
-      try {
-        const databases = await indexedDB.databases();
-        const hasKritzelWorkspace = databases.some(db =>
-          db.name?.startsWith('kritzel-workspace-homepage')
-        );
-        setShouldLoadInitialWorkspace(!hasKritzelWorkspace);
-      } catch {
-        setShouldLoadInitialWorkspace(false);
-      }
-    };
-    checkDatabase();
-  }, []);
-
   const handleReady = async () => {
     if (editorRef.current) {
       try {
-        if (shouldLoadInitialWorkspace) {
-          const response = await fetch(initialWorkspaceUrl);
-          const json = await response.text();
-          await editorRef.current.loadObjectsFromJson(json);
-        }
-        await editorRef.current.centerAllObjects(false); // Center without animation on initial load
+        const response = await fetch(initialWorkspaceUrl);
+        const json = await response.text();
+        await editorRef.current.loadObjectsFromJson(json);
+        await editorRef.current.centerAllObjects(false);
       } catch (error) {
         console.error('Failed to load initial workspace:', error);
       }
     }
   };
-
-  // Wait for database check before rendering editor
-  if (shouldLoadInitialWorkspace === null) {
-    return <div style={{ width: '100%', height: '100%' }} />;
-  }
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
