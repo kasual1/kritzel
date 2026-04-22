@@ -89,6 +89,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'customSvgIcons',
   'isControlsVisible',
   'isUtilityPanelVisible',
+  'isWorkspaceManagerVisible',
   'syncConfig',
   'cursorTarget',
   'loginConfig',

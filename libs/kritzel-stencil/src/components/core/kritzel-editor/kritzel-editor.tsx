@@ -208,9 +208,9 @@ export class KritzelEditor {
   @Prop() customSvgIcons: Record<string, string> = {};
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
+  @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
   @Prop() cursorTarget?: HTMLElement;
-
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
   @Prop() loginConfig?: KritzelLoginConfig = {
@@ -219,9 +219,9 @@ export class KritzelEditor {
         label: 'Sign in with Google',
         icon: 'google',
         name: 'Google',
-      }
-    ]
-  }
+      },
+    ],
+  };
 
   /** Whether the editor is in a loading state. When true, a loading overlay is displayed. */
   @Prop() isLoading: boolean = false;
@@ -926,6 +926,7 @@ export class KritzelEditor {
       <Host>
         <div class="top-left-buttons">
           <kritzel-workspace-manager
+            visible={this.isWorkspaceManagerVisible}
             workspaces={this.workspaces}
             activeWorkspace={this.activeWorkspace}
             onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
