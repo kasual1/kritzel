@@ -331,6 +331,9 @@ export namespace Components {
         "controls": KritzelToolbarControl[];
         "copy": () => Promise<void>;
         "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
+        /**
+          * The element to use as the target for the cursor. Defaults to the editor container if not set.
+         */
         "cursorTarget"?: HTMLElement;
         /**
           * @default {}
@@ -403,6 +406,10 @@ export namespace Components {
          */
         "objectContextMenuItems": ContextMenuItem[];
         "openLoginDialog": () => Promise<void>;
+        /**
+          * The element to use as the container for dialogs and portals. Defaults to `document.body` if not set.
+         */
+        "overlayContainer"?: HTMLElement;
         "panTo": (x: number, y: number) => Promise<void>;
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
@@ -2381,6 +2388,9 @@ declare namespace LocalJSX {
           * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
          */
         "controls"?: KritzelToolbarControl[];
+        /**
+          * The element to use as the target for the cursor. Defaults to the editor container if not set.
+         */
         "cursorTarget"?: HTMLElement;
         /**
           * @default {}
@@ -2441,6 +2451,10 @@ declare namespace LocalJSX {
         "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState1>) => void;
         "onViewportChange"?: (event: KritzelEditorCustomEvent<KritzelViewportState>) => void;
+        /**
+          * The element to use as the container for dialogs and portals. Defaults to `document.body` if not set.
+         */
+        "overlayContainer"?: HTMLElement;
         /**
           * @default ABSOLUTE_SCALE_MAX
          */
