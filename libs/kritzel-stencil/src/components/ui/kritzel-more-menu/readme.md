@@ -47,6 +47,7 @@ A button component that displays a dropdown menu when clicked. Commonly used for
 | `iconSize` | `icon-size` | The size of the icon                                                                                                                                                      | `number`                  | `24`                  |
 | `items`    | --          | The menu items to display in the dropdown. Items with `isVisible` set to `false` will be filtered out. Items with an `action` will have that action invoked on selection. | `IKritzelMenuItem<any>[]` | `[]`                  |
 | `offsetY`  | `offset-y`  | Offset Y for the portal positioning                                                                                                                                       | `number`                  | `4`                   |
+| `visible`  | `visible`   | Whether the menu button is visible                                                                                                                                        | `boolean`                 | `false`               |
 
 
 ## Events
