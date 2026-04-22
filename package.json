@@ -40,9 +40,7 @@
     "e2e:report": "npx playwright show-report e2e/playwright-report",
     "docs:start": "cd website && npm run start",
     "docs:build": "cd website && npm run build",
-    "docs:serve": "cd website && npm run serve",
-    "cf:build": "npm ci && npm run build -w libs/kritzel-stencil && npm run build -w libs/kritzel-react && npm ci --prefix website && Docusaurus_BASE_URL=/ npm run build --prefix website",
-    "cf:deploy": "npx wrangler pages deploy website/build --project-name kritzel"
+    "docs:serve": "cd website && npm run serve"
   },
   "overrides": {
     "axios": "^0.30.0",
