@@ -21,6 +21,7 @@ import React from "react";
 function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }) {
   const { KritzelEditor } = require("kritzel-react");
   const editorRef = React.useRef<any>(null);
+  const isLoadedRef = React.useRef(false);
   const observerRef = React.useRef<ResizeObserver | null>(null);
   const prevWidthRef = React.useRef<number>(0);
   const [containerEl, setContainerEl] = React.useState<HTMLDivElement | null>(null);
@@ -42,8 +43,10 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
       observerRef.current.observe(el);
     }
   }, []);
-  const handleReady = async () => {
-    if (editorRef.current) {
+
+  const handleReady = React.useCallback(async () => {
+    if (editorRef.current && !isLoadedRef.current) {
+      isLoadedRef.current = true;
       try {
         const response = await fetch(initialWorkspaceUrl);
         const json = await response.text();
@@ -53,7 +56,29 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
         console.error('Failed to load initial workspace:', error);
       }
     }
-  };
+  }, [initialWorkspaceUrl]);
+
+  React.useEffect(() => {
+    let mounted = true;
+    const checkInit = async () => {
+      // Small delay to allow the editor to initialize in case it's remounting
+      await new Promise((r) => setTimeout(r, 100));
+      if (!mounted || !editorRef.current || isLoadedRef.current) return;
+
+      try {
+        const ws = await editorRef.current.getActiveWorkspace();
+        if (ws) {
+          handleReady();
+        }
+      } catch (err) {
+        // Not ready yet, wait for the onIsReady event
+      }
+    };
+    checkInit();
+    return () => {
+      mounted = false;
+    };
+  }, [handleReady]);
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
