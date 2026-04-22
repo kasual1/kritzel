@@ -61,6 +61,12 @@ const config: Config = {
             infrastructureLogging: {
               level: "error",
             },
+            ignoreWarnings: [
+              {
+                module: /vscode-languageserver-types/,
+                message: /Critical dependency/,
+              },
+            ],
           };
         },
       };
