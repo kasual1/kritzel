@@ -4,7 +4,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
   title: "Kritzel - Free Infinite Canvas Library",
-  tagline: "Kritzel is a open-source infinite canvas editor",
+  tagline: "Kritzel is a framework agnostic infinite canvas library for building endless creative experiences.",
   favicon: "img/favicon.svg",
   future: {
     v4: true,
@@ -31,6 +31,11 @@ const config: Config = {
       {
         docs: false,
         blog: false,
+        sitemap: {
+          changefreq: "weekly",
+          priority: 0.5,
+          filename: "sitemap.xml",
+        },
         theme: {
           customCss: [
             require.resolve("./src/css/theming.css"),
@@ -218,8 +223,8 @@ const config: Config = {
           title: 'Community',
           items: [
             {
-              label: 'Twitter',
-              href: '#', // Placeholder
+              label: 'GitHub Discussions',
+              href: 'https://github.com/kasual1/kritzel/discussions',
             },
           ],
         },
@@ -232,11 +237,11 @@ const config: Config = {
             },
             {
               label: 'Blog',
-              to: '#', // Placeholder
+              href: 'https://github.com/kasual1/kritzel/discussions',
             },
             {
               label: 'Changelog',
-              to: '#', // Placeholder
+              href: 'https://github.com/kasual1/kritzel/releases',
             },
             {
               label: 'License',

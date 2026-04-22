@@ -218,7 +218,10 @@ function InfoGraphicsSection() {
 
 export default function Home(): ReactNode {
   return (
-    <Layout>
+    <Layout
+      title="Infinite Canvas Library for Angular, React, and Vue"
+      description="Kritzel is a framework-agnostic infinite canvas library for creating endless creative experiences."
+    >
       <HomepageHeader />
       <main>
         <HomepageFeatures />
