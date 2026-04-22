@@ -36,7 +36,7 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
       prevWidthRef.current = el.getBoundingClientRect().width;
       observerRef.current = new ResizeObserver((entries) => {
         const newWidth = entries[0].contentRect.width;
-        if (newWidth !== prevWidthRef.current) {
+        if (newWidth !== prevWidthRef.current && isLoadedRef.current) {
           prevWidthRef.current = newWidth;
           editorRef.current?.centerAllObjects(false);
         }
