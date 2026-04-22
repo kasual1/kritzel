@@ -1,10 +1,22 @@
 :host {
   display: inline-flex;
+}
+
+.more-menu-wrapper {
+  display: inline-flex;
   padding: var(--kritzel-more-menu-padding, 4px);
   background-color: var(--kritzel-more-menu-background-color, #ffffff);
   border-radius: var(--kritzel-more-menu-border-radius, 12px);
   box-shadow: var(--kritzel-more-menu-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
   border: var(--kritzel-more-menu-border, 1px solid #ebebeb);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+}
+
+.more-menu-wrapper.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 :host(.mobile) {
