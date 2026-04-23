@@ -36,6 +36,15 @@ export class KritzelAppStateMap {
   }
 
   /**
+   * Indicates whether any configured sync provider replicates over the network.
+   * Used by the engine to warn when a matching remote asset storage
+   * provider is missing (images would otherwise only exist locally).
+   */
+  get hasNetworkSyncProvider(): boolean {
+    return this._providers.some(p => p.type === 'network');
+  }
+
+  /**
    * Creates a new KritzelAppStateMap instance with an empty workspace map.
    */
   constructor() {

@@ -308,6 +308,15 @@ export class KritzelSvgExportHelper {
 
   /**
    * Converts a KritzelImage to SVG.
+   *
+   * Uses `resolvedSrc` when available (populated by the renderer via the
+   * asset resolver), falling back to the legacy inline `src` field for
+   * documents persisted before the asset layer existed.
+   *
+   * Note: SVG export is synchronous and cannot await asset bytes from a
+   * remote provider. Callers that need the fully rasterized image bytes
+   * embedded in the exported SVG should pre-resolve assets via
+   * `core.assetResolver.fetchBlob` and inline them as data URLs.
    * @param image - The image object
    * @returns SVG element string
    */
@@ -319,8 +328,10 @@ export class KritzelSvgExportHelper {
     const width = image.totalWidth / image.scale;
     const height = image.totalHeight / image.scale;
 
+    const href = image.resolvedSrc || image.src || '';
+
     return `<g transform="${transform}"${opacity}>
-    <image href="${image.src}" x="0" y="0" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/>
+    <image href="${href}" x="0" y="0" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/>
   </g>`;
   }
 

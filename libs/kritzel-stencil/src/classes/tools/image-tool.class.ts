@@ -6,9 +6,16 @@ import { KritzelCore } from '../core/core.class';
 
 /**
  * Image tool for importing and placing images on the canvas.
- * Opens a file picker when activated, compresses the selected image,
- * and places it centered in the viewport. Automatically switches to
- * selection tool after image placement.
+ *
+ * Flow:
+ *   1. User picks a file.
+ *   2. Image is compressed via `browser-image-compression` (bandwidth win).
+ *   3. Intrinsic dimensions are measured from a temporary object URL.
+ *   4. Bytes are uploaded through the asset resolver (write-through:
+ *      local IndexedDB immediately, remote providers in the background).
+ *   5. A `KritzelImage` is created carrying only the resulting asset id
+ *      and MIME type, then added to the canvas. The renderer resolves
+ *      the id to a URL via the asset resolver.
  */
 export class KritzelImageTool extends KritzelBaseTool {
   /** Hidden file input element for image selection */
@@ -70,14 +77,12 @@ export class KritzelImageTool extends KritzelBaseTool {
    */
   private handleFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
+    const file = input.files && input.files[0];
+    if (file) {
       imageCompression(file, {
         maxWidthOrHeight: this.maxCompressionSize,
       })
-        .then(compressedFile => {
-          this.readFile(compressedFile);
-        })
+        .then(compressedFile => this.uploadAndPlace(compressedFile))
         .catch(error => {
           console.error('Error during image compression or processing:', error);
           this.handleCancel();
@@ -93,37 +98,69 @@ export class KritzelImageTool extends KritzelBaseTool {
   }
 
   /**
-   * Reads the compressed image file and creates an HTMLImageElement.
-   * Triggers createKritzelImage once the image is loaded.
-   * @param file - The compressed image file to read
+   * Uploads the image blob through the asset resolver and places the
+   * resulting `KritzelImage` on the canvas. Intrinsic image dimensions
+   * are measured locally before upload so layout is correct immediately.
+   *
+   * @param blob - Compressed image bytes to store and render
    */
-  private readFile(file: File): void {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.src = e.target?.result as string;
-      img.onload = () => this.createKritzelImage(img);
-    };
-    reader.readAsDataURL(file);
+  private async uploadAndPlace(blob: Blob): Promise<void> {
+    let tempUrl: string | null = null;
+    try {
+      const mimeType = blob.type || 'image/png';
+      tempUrl = URL.createObjectURL(blob);
+
+      const dimensions = await this.measureImage(tempUrl);
+
+      const asset = await this._core.assetResolver.put(blob, {
+        mimeType,
+        kind: 'image',
+        width: dimensions.naturalWidth,
+        height: dimensions.naturalHeight,
+      });
+
+      const image = KritzelImage.create(this._core);
+      image.assetId = asset.id;
+      image.mimeType = asset.mimeType;
+      const { scaledWidth, scaledHeight } = image.calculateScaledDimensions({
+        width: dimensions.naturalWidth,
+        height: dimensions.naturalHeight,
+      } as HTMLImageElement);
+      image.width = scaledWidth;
+      image.height = scaledHeight;
+      image.zIndex = this._core.store.currentZIndex;
+      // Seed the resolved URL so the renderer can display the image
+      // without waiting for a resolver round-trip.
+      image.resolvedSrc = await this._core.assetResolver.resolve(asset.id);
+      image.loadState = 'ready';
+      image.centerInViewport();
+      this.addImageToStore(image);
+    } catch (error) {
+      console.error('Error uploading image to asset storage:', error);
+      this.handleCancel();
+    } finally {
+      if (tempUrl) {
+        try {
+          URL.revokeObjectURL(tempUrl);
+        } catch {
+          /* ignore */
+        }
+      }
+    }
   }
 
-
   /**
-   * Creates a KritzelImage object from the loaded HTMLImageElement.
-   * Calculates scaled dimensions, sets the image source, and centers it in the viewport.
-   * @param img - The loaded HTMLImageElement containing the image data
-   * @returns The created KritzelImage object
+   * Measures the natural dimensions of an image from a URL. Used to
+   * provide width/height hints when uploading and to compute the
+   * scaled canvas dimensions.
    */
-  private createKritzelImage(img: HTMLImageElement): KritzelImage {
-    const image = KritzelImage.create(this._core);
-    const { scaledWidth, scaledHeight } = image.calculateScaledDimensions(img);
-    image.src = img.src;
-    image.width = scaledWidth;
-    image.height = scaledHeight;
-    image.zIndex = this._core.store.currentZIndex;
-    image.centerInViewport();
-    this.addImageToStore(image);
-    return image;
+  private measureImage(url: string): Promise<{ naturalWidth: number; naturalHeight: number }> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve({ naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight });
+      img.onerror = err => reject(err);
+      img.src = url;
+    });
   }
 
   /**
