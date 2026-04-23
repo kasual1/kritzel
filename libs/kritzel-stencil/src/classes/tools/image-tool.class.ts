@@ -24,6 +24,9 @@ export class KritzelImageTool extends KritzelBaseTool {
   /** Maximum dimension (width or height) for image compression in pixels */
   maxCompressionSize: number = 300;
 
+  /** Diagonal offset (in world units) applied between images when multiple are imported at once */
+  multiImportOffset: number = 20;
+
   /**
    * Creates a new instance of KritzelImageTool.
    * Sets up the hidden file input element for image selection.
@@ -62,6 +65,7 @@ export class KritzelImageTool extends KritzelBaseTool {
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
     this.fileInput.accept = 'image/*';
+    this.fileInput.multiple = true;
     this.fileInput.style.display = 'none';
 
     this.fileInput.addEventListener('change', this.handleFileSelect.bind(this));
@@ -71,26 +75,45 @@ export class KritzelImageTool extends KritzelBaseTool {
 
   /**
    * Handles the file selection event from the file input.
-   * Compresses the selected image and processes it for canvas placement.
+   * Compresses each selected image and places them as a batch on the canvas.
    * Resets the file input value after processing.
    * @param event - The change event from the file input element
    */
   private handleFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files && input.files[0];
-    if (file) {
-      imageCompression(file, {
-        maxWidthOrHeight: this.maxCompressionSize,
-      })
-        .then(compressedFile => this.uploadAndPlace(compressedFile))
-        .catch(error => {
-          console.error('Error during image compression or processing:', error);
-          this.handleCancel();
-        });
-    } else {
+    const files = input.files ? Array.from(input.files) : [];
+
+    if (files.length === 0) {
       console.info('File selection cancelled by user.');
       this.handleCancel();
+      if (input) {
+        input.value = '';
+      }
+      return;
     }
+
+    const prepared = files.map(file =>
+      imageCompression(file, { maxWidthOrHeight: this.maxCompressionSize }).then(compressedFile => this.prepareImage(compressedFile))
+    );
+
+    Promise.allSettled(prepared)
+      .then(results => {
+        const images: KritzelImage[] = [];
+        for (const result of results) {
+          if (result.status === 'fulfilled') {
+            images.push(result.value);
+          } else {
+            console.error('Error during image compression or processing:', result.reason);
+          }
+        }
+
+        if (images.length === 0) {
+          this.handleCancel();
+          return;
+        }
+
+        this.addImagesToStore(images);
+      });
 
     if (input) {
       input.value = '';
@@ -98,13 +121,13 @@ export class KritzelImageTool extends KritzelBaseTool {
   }
 
   /**
-   * Uploads the image blob through the asset resolver and places the
-   * resulting `KritzelImage` on the canvas. Intrinsic image dimensions
-   * are measured locally before upload so layout is correct immediately.
+   * Compresses-then-measures an already compressed blob, uploads it
+   * through the asset resolver, and returns a fully configured
+   * `KritzelImage` that has not yet been added to the canvas.
    *
    * @param blob - Compressed image bytes to store and render
    */
-  private async uploadAndPlace(blob: Blob): Promise<void> {
+  private async prepareImage(blob: Blob): Promise<KritzelImage> {
     let tempUrl: string | null = null;
     try {
       const mimeType = blob.type || 'image/png';
@@ -128,16 +151,11 @@ export class KritzelImageTool extends KritzelBaseTool {
       } as HTMLImageElement);
       image.width = scaledWidth;
       image.height = scaledHeight;
-      image.zIndex = this._core.store.currentZIndex;
       // Seed the resolved URL so the renderer can display the image
       // without waiting for a resolver round-trip.
       image.resolvedSrc = await this._core.assetResolver.resolve(asset.id);
       image.loadState = 'ready';
-      image.centerInViewport();
-      this.addImageToStore(image);
-    } catch (error) {
-      console.error('Error uploading image to asset storage:', error);
-      this.handleCancel();
+      return image;
     } finally {
       if (tempUrl) {
         try {
@@ -164,16 +182,31 @@ export class KritzelImageTool extends KritzelBaseTool {
   }
 
   /**
-   * Adds the created image to the canvas store and switches to selection tool.
-   * Selects the newly added image and emits an objects change event.
-   * @param image - The KritzelImage object to add to the canvas
+   * Adds a batch of prepared images to the canvas store and switches
+   * to the selection tool. The first image is centered in the viewport;
+   * each subsequent image is offset diagonally so multiple imports do
+   * not fully overlap. All images are selected together and a single
+   * batch change/added event is emitted.
+   *
+   * @param images - The prepared `KritzelImage` objects to add
    */
-  private addImageToStore(image: KritzelImage): void {
-    this._core.addObject(image);
+  private addImagesToStore(images: KritzelImage[]): void {
+    const baseZIndex = this._core.store.currentZIndex;
+
+    images.forEach((image, index) => {
+      image.zIndex = baseZIndex + index;
+      image.centerInViewport();
+      if (index > 0) {
+        const offset = index * this.multiImportOffset;
+        image.updatePosition(image.translateX + offset, image.translateY + offset);
+      }
+      this._core.addObject(image);
+    });
+
     this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
-    this._core.selectObjects([image]);
+    this._core.selectObjects(images);
     this._core.engine.emitObjectsChange();
-    this._core.engine.emitObjectsAdded([image]);
+    this._core.engine.emitObjectsAdded(images);
   }
 
   /**
