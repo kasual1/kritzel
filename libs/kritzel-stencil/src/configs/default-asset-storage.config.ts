@@ -1,4 +1,4 @@
-import { IndexedDBAssetProvider } from "../classes/assets/indexeddb-asset-provider.class";
+import { IndexedDBAssetProvider } from "../classes/providers/assets/indexeddb-asset-provider.class";
 import { KritzelAssetStorageConfig } from "../interfaces/asset-storage-config.interface";
 
 /**

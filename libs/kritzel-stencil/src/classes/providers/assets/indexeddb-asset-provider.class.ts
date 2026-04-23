@@ -1,5 +1,5 @@
-import { KritzelAsset } from '../../interfaces/asset.interface';
-import { IAssetStorageProvider, KritzelAssetPutMetadata } from '../../interfaces/asset-provider.interface';
+import { KritzelAsset } from '../../../interfaces/asset.interface';
+import { IAssetStorageProvider, KritzelAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
 
 /** Default database name used by IndexedDBAssetProvider. */
 const DEFAULT_DB_NAME = 'kritzel-assets';

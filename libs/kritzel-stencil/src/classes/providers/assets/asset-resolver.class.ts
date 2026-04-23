@@ -1,11 +1,11 @@
-import { KritzelAsset } from '../../interfaces/asset.interface';
+import { KritzelAsset } from '../../../interfaces/asset.interface';
 import {
   AssetProviderConfig,
   AssetProviderFactory,
   IAssetStorageProvider,
   KritzelAssetPutMetadata,
-} from '../../interfaces/asset-provider.interface';
-import { KritzelAssetStorageConfig } from '../../interfaces/asset-storage-config.interface';
+} from '../../../interfaces/asset-provider.interface';
+import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { IndexedDBAssetProvider } from './indexeddb-asset-provider.class';
 
 /** In-memory retry state for a pending remote upload. */
