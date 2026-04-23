@@ -1,6 +1,6 @@
 import * as Y from 'yjs';
 import { IndexeddbPersistence } from 'y-indexeddb';
-import { ISyncProvider } from '../../interfaces/sync-provider.interface';
+import { ISyncProvider } from '../../../interfaces/sync-provider.interface';
 
 /**
  * Options for IndexedDB sync provider
