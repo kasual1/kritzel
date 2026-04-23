@@ -1,7 +1,7 @@
 import * as Y from 'yjs';
 import * as encoding from 'lib0/encoding';
 import * as decoding from 'lib0/decoding';
-import { ISyncProvider } from '../../interfaces/sync-provider.interface';
+import { ISyncProvider } from '../../../interfaces/sync-provider.interface';
 
 /**
  * BroadcastChannel sync provider for cross-tab synchronization

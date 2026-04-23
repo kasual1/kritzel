@@ -115,9 +115,9 @@ export class KritzelEngine {
    * (Hocuspocus, WebSocket), configure at least one remote asset provider
    * such as `HttpAssetProvider` or `PresignedAssetProvider`.
    */
-  @Prop() assetStorage?: KritzelAssetStorageConfig;
-  @Watch('assetStorage')
-  onAssetStorageChange(newValue: KritzelAssetStorageConfig | undefined) {
+  @Prop() assetStorageConfig?: KritzelAssetStorageConfig;
+  @Watch('assetStorageConfig')
+  onAssetStorageConfigChange(newValue: KritzelAssetStorageConfig | undefined) {
     // Forward to core so initializeYjs picks up the latest value. The
     // resolver itself is only initialized once per engine; swapping
     // providers at runtime requires reinitSync().
@@ -1518,7 +1518,7 @@ export class KritzelEngine {
   @Method()
   async reinitSync(): Promise<void> {
     this.core.setSyncConfig(this.syncConfig);
-    this.core.setAssetStorageConfig(this.assetStorage);
+    this.core.setAssetStorageConfig(this.assetStorageConfig);
     this.core.store.objects?.clearCursorPosition();
     this.core.store.objects?.destroy();
     this.core.appStateMap.destroy();
@@ -1648,7 +1648,7 @@ export class KritzelEngine {
 
     // Always apply the latest sync and asset storage configs (including undefined).
     this.core.setSyncConfig(this.syncConfig);
-    this.core.setAssetStorageConfig(this.assetStorage);
+    this.core.setAssetStorageConfig(this.assetStorageConfig);
 
     // Initialize Yjs document and persistence layer (only once)
     if (!this._isYjsInitialized) {
@@ -1659,7 +1659,7 @@ export class KritzelEngine {
       if (syncConfigRevisionAtStart !== this._syncConfigRevision) {
         this.core.appStateMap.destroy();
         this.core.setSyncConfig(this.syncConfig);
-        this.core.setAssetStorageConfig(this.assetStorage);
+        this.core.setAssetStorageConfig(this.assetStorageConfig);
         await this.core.initializeYjs();
       }
 
@@ -2248,6 +2248,13 @@ export class KritzelEngine {
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>translateY: {object.translateY}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>rotationDegrees: {object.rotationDegrees}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
+                    
+                    {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
+                      <div>
+                        <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>assetId: {object.assetId}</div>
+                        <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>mimeType: {object.mimeType}</div>
+                      </div>
+                    )}
                   </div>
                 )}
 

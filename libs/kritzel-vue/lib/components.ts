@@ -92,6 +92,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'isWorkspaceManagerVisible',
   'isMoreMenuVisible',
   'syncConfig',
+  'assetStorageConfig',
   'cursorTarget',
   'loginConfig',
   'isLoading',

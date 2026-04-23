@@ -15,7 +15,7 @@ import { KritzelWorkspace } from './workspace.class';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { KritzelAssetStorageConfig } from '../../interfaces/asset-storage-config.interface';
-import { KritzelAssetResolver } from '../assets/asset-resolver.class';
+import { KritzelAssetResolver } from '../providers/assets/asset-resolver.class';
 import { KritzelAppStateMap } from '../structures/app-state-map.structure';
 import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelCursorManager } from '../managers/cursor.manager';

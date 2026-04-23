@@ -17,6 +17,7 @@ import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
+import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
 import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
@@ -29,7 +30,6 @@ import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
 import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
-import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelText } from "./classes/objects/text.class";
 import { KritzelGroup } from "./classes/objects/group.class";
@@ -55,6 +55,7 @@ export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
+export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
 export { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
 export { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
@@ -67,7 +68,6 @@ export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
 export { Element, Event } from "@stencil/core";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
-export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelText } from "./classes/objects/text.class";
 export { KritzelGroup } from "./classes/objects/group.class";
@@ -320,6 +320,10 @@ export namespace Components {
         "activeWorkspaceId"?: string;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
+        /**
+          * @default DEFAULT_ASSET_STORAGE_CONFIG
+         */
+        "assetStorageConfig"?: KritzelAssetStorageConfig;
         "backToContent": () => Promise<boolean>;
         "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
@@ -485,7 +489,7 @@ export namespace Components {
         /**
           * Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`.
          */
-        "assetStorage"?: KritzelAssetStorageConfig;
+        "assetStorageConfig"?: KritzelAssetStorageConfig;
         /**
           * Pans and zooms the viewport to fit the nearest content, with padding. Useful when the user has panned away from all objects.
           * @returns `true` if content was found and the viewport was adjusted, `false` otherwise.
@@ -2396,6 +2400,10 @@ declare namespace LocalJSX {
          */
         "activeWorkspaceId"?: string;
         /**
+          * @default DEFAULT_ASSET_STORAGE_CONFIG
+         */
+        "assetStorageConfig"?: KritzelAssetStorageConfig;
+        /**
           * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
          */
         "controls"?: KritzelToolbarControl[];
@@ -2508,7 +2516,7 @@ declare namespace LocalJSX {
         /**
           * Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`.
          */
-        "assetStorage"?: KritzelAssetStorageConfig;
+        "assetStorageConfig"?: KritzelAssetStorageConfig;
         /**
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */

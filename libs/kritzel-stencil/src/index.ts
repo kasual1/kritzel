@@ -27,15 +27,15 @@ export * from './classes/tools/shape-tool.class';
 export * from './helpers/cursor.helper';
 export * from './classes/tools/selection-tool.class';
 
-export * from './classes/providers/broadcast-sync-provider.class';
-export * from './classes/providers/indexeddb-sync-provider.class';
-export * from './classes/providers/websocket-sync-provider.class';
-export * from './classes/providers/hocuspocus-sync-provider.class';
+export * from './classes/providers/sync/broadcast-sync-provider.class';
+export * from './classes/providers/sync/indexeddb-sync-provider.class';
+export * from './classes/providers/sync/websocket-sync-provider.class';
+export * from './classes/providers/sync/hocuspocus-sync-provider.class';
 
-export * from './classes/assets/asset-resolver.class';
-export * from './classes/assets/indexeddb-asset-provider.class';
-export * from './classes/assets/http-asset-provider.class';
-export * from './classes/assets/presigned-asset-provider.class';
+export * from './classes/providers/assets/asset-resolver.class';
+export * from './classes/providers/assets/indexeddb-asset-provider.class';
+export * from './classes/providers/assets/http-asset-provider.class';
+export * from './classes/providers/assets/presigned-asset-provider.class';
 
 export * from './classes/core/workspace.class';
 
