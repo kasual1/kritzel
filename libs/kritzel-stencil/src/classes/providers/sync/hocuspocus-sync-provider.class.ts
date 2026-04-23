@@ -1,7 +1,7 @@
 import * as Y from 'yjs';
 import { Awareness } from 'y-protocols/awareness';
 import { HocuspocusProvider, HocuspocusProviderWebsocket } from '@hocuspocus/provider';
-import { ISyncProvider, ProviderFactory } from '../../interfaces/sync-provider.interface';
+import { ISyncProvider, ProviderFactory } from '../../../interfaces/sync-provider.interface';
 
 /**
  * Options for Hocuspocus sync provider

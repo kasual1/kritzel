@@ -1,5 +1,5 @@
-import { KritzelAsset } from '../../interfaces/asset.interface';
-import { IAssetStorageProvider, KritzelAssetPutMetadata } from '../../interfaces/asset-provider.interface';
+import { KritzelAsset } from '../../../interfaces/asset.interface';
+import { IAssetStorageProvider, KritzelAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
 
 /**
  * Response shape expected from the upload endpoint. Fields are optional

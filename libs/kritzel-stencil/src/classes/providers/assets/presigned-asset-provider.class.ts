@@ -1,5 +1,5 @@
-import { KritzelAsset } from '../../interfaces/asset.interface';
-import { IAssetStorageProvider, KritzelAssetPutMetadata } from '../../interfaces/asset-provider.interface';
+import { KritzelAsset } from '../../../interfaces/asset.interface';
+import { IAssetStorageProvider, KritzelAssetPutMetadata } from '../../../interfaces/asset-provider.interface';
 
 /**
  * Pre-signed upload descriptor returned by the host application.
