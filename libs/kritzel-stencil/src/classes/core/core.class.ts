@@ -14,6 +14,8 @@ import { KritzelStore } from './store.class';
 import { KritzelWorkspace } from './workspace.class';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
+import { KritzelAssetStorageConfig } from '../../interfaces/asset-storage-config.interface';
+import { KritzelAssetResolver } from '../assets/asset-resolver.class';
 import { KritzelAppStateMap } from '../structures/app-state-map.structure';
 import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelCursorManager } from '../managers/cursor.manager';
@@ -41,6 +43,10 @@ export class KritzelCore {
   private readonly _store: KritzelStore;
   /** Optional sync configuration for collaborative features */
   private _syncConfig?: KritzelSyncConfig;
+  /** Optional asset storage configuration for image / binary payloads */
+  private _assetStorageConfig?: KritzelAssetStorageConfig;
+  /** Resolves and stores binary assets referenced by canvas objects */
+  private readonly _assetResolver: KritzelAssetResolver;
   /** App state map for persistent workspace storage */
   private readonly _appStateMap: KritzelAppStateMap;
   /** Manager for line anchor points and connections */
@@ -151,6 +157,15 @@ export class KritzelCore {
     this._anchorManager = new KritzelAnchorManager(this);
     this._cursorManager = new KritzelCursorManager(this);
     this._themeManager = new KritzelThemeManager(this);
+    this._assetResolver = new KritzelAssetResolver();
+  }
+
+  /**
+   * Gets the asset resolver responsible for storing and resolving
+   * binary payloads (images, etc.) referenced by canvas objects.
+   */
+  get assetResolver(): KritzelAssetResolver {
+    return this._assetResolver;
   }
 
   /**
@@ -159,6 +174,15 @@ export class KritzelCore {
    */
   setSyncConfig(config?: KritzelSyncConfig): void {
     this._syncConfig = config;
+  }
+
+  /**
+   * Sets the asset storage configuration used for image / binary payloads.
+   * Takes effect on the next `initializeYjs` call (or on explicit
+   * `initializeAssets` if invoked directly).
+   */
+  setAssetStorageConfig(config?: KritzelAssetStorageConfig): void {
+    this._assetStorageConfig = config;
   }
 
   /**
@@ -175,10 +199,30 @@ export class KritzelCore {
 
   /**
    * Initializes the Yjs document for collaborative editing.
-   * Sets up the app state map with the current sync configuration.
+   * Sets up the app state map with the current sync configuration and
+   * initializes the asset storage layer.
    */
   async initializeYjs(): Promise<void> {
+    await this._assetResolver.init(this._assetStorageConfig);
     await this._appStateMap.initialize(this, this._syncConfig);
+    this.warnIfAssetStorageMismatched();
+  }
+
+  /**
+   * Emits a single warning when the sync config declares at least one
+   * network provider but the asset storage config has none. In that
+   * scenario images added on this device will not be available to
+   * other devices, yielding a broken cross-device experience.
+   */
+  private warnIfAssetStorageMismatched(): void {
+    if (!this._appStateMap.hasNetworkSyncProvider) return;
+    if (this._assetResolver.hasRemoteProvider) return;
+    console.warn(
+      '[Kritzel] A network sync provider is configured, but no remote asset storage provider ' +
+        'was found. Images added on this device will only be available locally and will appear ' +
+        'broken on other devices. Configure a remote asset provider (e.g. HttpAssetProvider) ' +
+        'via the `assetStorage` prop to enable cross-device image sync.',
+    );
   }
 
   /**

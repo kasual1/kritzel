@@ -1,14 +1,44 @@
 import { KritzelCore } from '../core/core.class';
+import { KritzelAssetLoadState } from '../../interfaces/asset.interface';
 import { KritzelBaseObject } from './base-object.class';
 
 /**
  * Represents an image object on the canvas.
- * Extends KritzelBaseObject to provide image-specific functionality
- * including scaling and dimension calculations.
+ *
+ * Image bytes are NOT stored on this object or inside the Yjs document.
+ * Instead, the image is identified by a stable `assetId`; the actual
+ * bytes live in the asset storage layer (see `KritzelAssetResolver`).
+ * This keeps the CRDT small and lets images be served from pluggable
+ * storage (IndexedDB, HTTP, pre-signed S3, ...).
+ *
+ * Legacy images persisted before the asset layer existed may still carry
+ * a `src` data URL; the renderer and migration path treat `src` as a
+ * read-only fallback that is upgraded to an `assetId` on first load.
  */
 export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   override __class__: string = 'KritzelImage';
 
+  /**
+   * Stable asset identifier (uuid) persisted in the Yjs document.
+   * Used by the asset resolver to locate the image bytes across
+   * devices and storage backends.
+   */
+  assetId: string = '';
+
+  /**
+   * MIME type of the referenced asset (e.g. `image/png`). Persisted in
+   * the Yjs document alongside `assetId` so the renderer can hint
+   * browsers and the exporter can produce correct data URLs.
+   */
+  mimeType: string = '';
+
+  /**
+   * Legacy inline source (typically a `data:` URL). Preserved only for
+   * backward compatibility with documents that were created before the
+   * asset storage layer existed. New images should use `assetId`.
+   *
+   * @deprecated Use `assetId` with an asset storage provider instead.
+   */
   src: string = '';
 
   maxWidth: number = 300;
@@ -18,13 +48,29 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 
   override isDebugInfoVisible: boolean = true;
 
+  // --- Transient (not persisted to Yjs) ---
+
+  /**
+   * URL resolved from the asset storage layer (e.g. a `blob:` or https URL).
+   * Not serialized into the Yjs document.
+   */
+  resolvedSrc?: string;
+
+  /**
+   * Current load state for the referenced asset.
+   * Not serialized into the Yjs document.
+   */
+  loadState: KritzelAssetLoadState = 'idle';
+
   /**
    * Creates a new KritzelImage instance.
    * @param config - Optional partial configuration object to initialize image properties
-   *                 including src, position (x, y), translation, and scale.
+   *                 including assetId, src, position (x, y), translation, and scale.
    */
   constructor(config?: Partial<KritzelImage>) {
     super();
+    this.assetId = config?.assetId || '';
+    this.mimeType = config?.mimeType || '';
     this.src = config?.src || '';
     this.x = config?.x || 0;
     this.y = config?.y || 0;
@@ -86,9 +132,95 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   }
 
   /**
+   * Serializes the image, excluding transient rendering state so the
+   * Yjs document never persists blob URLs or load lifecycle flags.
+   */
+  override serialize() {
+    const plain = super.serialize();
+    // Strip transient, non-persistent rendering state.
+    delete plain.resolvedSrc;
+    delete plain.loadState;
+    return plain;
+  }
+
+  /**
+   * Triggers (idempotent) resolution of the referenced asset. Updates
+   * `resolvedSrc` and `loadState` as the resolution progresses and
+   * schedules a re-render when the URL is available.
+   */
+  ensureResolved(): void {
+    if (this.loadState === 'loading' || this.loadState === 'ready') return;
+    if (!this.assetId) return;
+    if (!this._core?.assetResolver) return;
+
+    this.loadState = 'loading';
+    this._core.assetResolver
+      .resolve(this.assetId)
+      .then(url => {
+        this.resolvedSrc = url;
+        this.loadState = 'ready';
+        this._core?.rerender();
+      })
+      .catch(err => {
+        this.loadState = 'error';
+        console.warn(`[KritzelImage] Failed to resolve asset ${this.assetId}:`, err);
+        this._core?.rerender();
+      });
+  }
+
+  /**
+   * One-shot migration for legacy images that were persisted with an
+   * inline `src` data URL. Uploads the bytes to the asset resolver and
+   * swaps the image to use the resulting `assetId`, clearing `src` so
+   * the Yjs document no longer carries the raw payload.
+   */
+  private migrateLegacyDataUrlIfNeeded(): void {
+    if (this.assetId) return;
+    if (!this.src || !this.src.startsWith('data:')) return;
+    if (!this._core?.assetResolver) return;
+
+    const legacySrc = this.src;
+    // Render the legacy data URL directly until migration completes.
+    this.resolvedSrc = legacySrc;
+    this.loadState = 'ready';
+
+    this._core.assetResolver
+      .putDataUrl(legacySrc, { kind: 'image' })
+      .then(asset => {
+        this.assetId = asset.id;
+        this.mimeType = asset.mimeType;
+        this.src = '';
+        // Persist the migrated reference back into Yjs.
+        this._core?.store.objects?.update(this);
+      })
+      .catch(err => {
+        console.warn('[KritzelImage] Failed to migrate legacy data URL to asset storage:', err);
+      });
+  }
+
+  /**
+   * Overrides base mount to kick off asset resolution the first time
+   * the image is attached to the DOM. Legacy images persisted with an
+   * inline `src` data URL are opportunistically migrated to the asset
+   * storage layer on first mount.
+   */
+  override mount(element: HTMLImageElement): void {
+    super.mount(element);
+    if (this.assetId && !this.resolvedSrc) {
+      this.ensureResolved();
+    } else if (!this.assetId && this.src?.startsWith('data:')) {
+      this.migrateLegacyDataUrlIfNeeded();
+    }
+  }
+
+  /**
    * Creates a KritzelImage from a URL, handling image loading and dimension calculation.
    * Loads the image, calculates scaled dimensions respecting maxWidth/maxHeight constraints,
    * and returns a fully configured KritzelImage instance.
+   *
+   * Intended for legacy / data-URL code paths only. New callers should
+   * upload through the asset resolver and construct the image from the
+   * resulting asset descriptor.
    * @param src - The image URL or data URI to load.
    * @param config - Optional partial configuration to pass to the KritzelImage constructor.
    * @returns A promise resolving to a fully configured KritzelImage with correct dimensions.
@@ -127,6 +259,5 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
       scaledHeight = img.height * scaleRatio;
     }
 
-    return { scaledWidth, scaledHeight };
-  }
+    return { scaledWidth, scaledHeight };  }
 }
