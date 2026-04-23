@@ -29,6 +29,7 @@ import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
 import { KritzelCore } from '../../../classes/core/core.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
+import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { throttle } from 'lodash';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
 import { KritzelSvgExportHelper } from '../../../helpers/svg-export.helper';
@@ -103,6 +104,24 @@ export class KritzelEngine {
     if (newValue && !this._isYjsInitialized && this._isViewportReady) {
       await this.initializeSyncAndWorkspace();
     }
+  }
+
+  /**
+   * Configuration for binary asset storage (e.g., images).
+   *
+   * The Yjs document only persists asset ids; the actual bytes are stored
+   * by the providers listed here. Defaults to IndexedDB-only storage. To
+   * support cross-device image sync alongside a networked sync provider
+   * (Hocuspocus, WebSocket), configure at least one remote asset provider
+   * such as `HttpAssetProvider` or `PresignedAssetProvider`.
+   */
+  @Prop() assetStorage?: KritzelAssetStorageConfig;
+  @Watch('assetStorage')
+  onAssetStorageChange(newValue: KritzelAssetStorageConfig | undefined) {
+    // Forward to core so initializeYjs picks up the latest value. The
+    // resolver itself is only initialized once per engine; swapping
+    // providers at runtime requires reinitSync().
+    this.core.setAssetStorageConfig(newValue);
   }
 
   /** The current user for awareness broadcasting (name, id, cursor position). */
@@ -1499,6 +1518,7 @@ export class KritzelEngine {
   @Method()
   async reinitSync(): Promise<void> {
     this.core.setSyncConfig(this.syncConfig);
+    this.core.setAssetStorageConfig(this.assetStorage);
     this.core.store.objects?.clearCursorPosition();
     this.core.store.objects?.destroy();
     this.core.appStateMap.destroy();
@@ -1626,8 +1646,9 @@ export class KritzelEngine {
     // initialization is in-flight.
     const syncConfigRevisionAtStart = this._syncConfigRevision;
 
-    // Always apply the latest sync config (including undefined).
+    // Always apply the latest sync and asset storage configs (including undefined).
     this.core.setSyncConfig(this.syncConfig);
+    this.core.setAssetStorageConfig(this.assetStorage);
 
     // Initialize Yjs document and persistence layer (only once)
     if (!this._isYjsInitialized) {
@@ -1638,6 +1659,7 @@ export class KritzelEngine {
       if (syncConfigRevisionAtStart !== this._syncConfigRevision) {
         this.core.appStateMap.destroy();
         this.core.setSyncConfig(this.syncConfig);
+        this.core.setAssetStorageConfig(this.assetStorage);
         await this.core.initializeYjs();
       }
 
@@ -2027,7 +2049,7 @@ export class KritzelEngine {
                 {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                   <img
                     ref={el => el && object.mount(el)}
-                    src={object.src}
+                    src={object.resolvedSrc || object.src}
                     style={{
                       position: 'absolute',
                       left: '0',

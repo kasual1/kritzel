@@ -13,7 +13,9 @@ import { KritzelAppStateMap } from '../structures/app-state-map.structure';
 import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelCursorManager } from '../managers/cursor.manager';
 import { KritzelThemeManager } from '../managers/theme.manager';
-
+// Mock the asset resolver so `initializeYjs` doesn't hit the real IndexedDB
+// provider during unit tests (jsdom does not expose a global `indexedDB`).
+jest.mock('../assets/asset-resolver.class');
 jest.mock('../../components/core/kritzel-engine/kritzel-engine', () => ({
   KritzelEngine: jest.fn(),
 }));
