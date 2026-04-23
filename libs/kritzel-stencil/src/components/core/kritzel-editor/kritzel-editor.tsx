@@ -25,9 +25,10 @@ import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
+import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState } from '../../..';
+import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelUndoState } from '../../..';
 import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
@@ -211,6 +212,7 @@ export class KritzelEditor {
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
+  @Prop() assetStorageConfig?: KritzelAssetStorageConfig = DEFAULT_ASSET_STORAGE_CONFIG;
 
   /** The element to use as the target for the cursor. Defaults to the editor container if not set. */
   @Prop() cursorTarget?: HTMLElement;
@@ -649,6 +651,7 @@ export class KritzelEditor {
         updatedAt,
       },
       syncConfig: this.syncConfig,
+      assetStorageConfig: this.assetStorageConfig,
       loginConfig: this.loginConfig,
     });
   }
@@ -949,6 +952,7 @@ export class KritzelEditor {
           activeWorkspaceId={this.activeWorkspaceId}
           editorId={this.editorId}
           syncConfig={this.syncConfig}
+          assetStorageConfig={this.assetStorageConfig}
           user={this.user}
           scaleMax={this.scaleMax}
           lockDrawingScale={this.lockDrawingScale}
