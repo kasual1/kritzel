@@ -116,6 +116,25 @@ async function selectImageFile(editorPage: any) {
   await editorPage.waitForObjectsAdded();
 }
 
+/** Activate image tool, intercept file chooser, and provide multiple test PNG files */
+async function selectMultipleImageFiles(editorPage: any, count: number) {
+  await editorPage.prepareWaitForObjectsAdded();
+
+  const fileChooserPromise = editorPage.page.waitForEvent('filechooser');
+  await editorPage.activateTool('image');
+  const fileChooser = await fileChooserPromise;
+
+  await fileChooser.setFiles(
+    Array.from({ length: count }, (_, i) => ({
+      name: `test-image-${i + 1}.png`,
+      mimeType: 'image/png',
+      buffer: TEST_PNG,
+    }))
+  );
+
+  await editorPage.waitForObjectsAdded();
+}
+
 test.describe('Image tool', () => {
   test.beforeEach(async ({ editorPage }) => {
     await editorPage.goto();
@@ -129,7 +148,7 @@ test.describe('Image tool', () => {
     const fileChooser = await fileChooserPromise;
 
     expect(fileChooser).toBeDefined();
-    expect(fileChooser.isMultiple()).toBe(false);
+    expect(fileChooser.isMultiple()).toBe(true);
   });
 
   test('should add an image by selecting a file via the file chooser', async ({ editorPage }) => {
@@ -147,6 +166,25 @@ test.describe('Image tool', () => {
     expect(objects[0].assetId).toBeTruthy();
     expect(typeof objects[0].assetId).toBe('string');
     expect(objects[0].mimeType).toMatch(/^image\//);
+  });
+
+  test('should add multiple images by selecting multiple files via the file chooser', async ({ editorPage }) => {
+    await selectMultipleImageFiles(editorPage, 3);
+
+    // Clear selection to exclude the KritzelSelectionGroup from getAllObjects
+    await editorPage.clearSelection();
+
+    const count = await editorPage.getObjectsTotalCount();
+    expect(count).toBe(3);
+
+    const objects = await editorPage.getAllObjects<any>();
+    expect(objects).toHaveLength(3);
+    for (const obj of objects) {
+      expect(obj.__class__).toBe('KritzelImage');
+      expect(obj.assetId).toBeTruthy();
+      expect(typeof obj.assetId).toBe('string');
+      expect(obj.mimeType).toMatch(/^image\//);
+    }
   });
 
   test('should center the image in the viewport', async ({ editorPage }) => {
