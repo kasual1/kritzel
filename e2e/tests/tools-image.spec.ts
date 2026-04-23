@@ -143,8 +143,10 @@ test.describe('Image tool', () => {
 
     const objects = await editorPage.getAllObjects<any>();
     expect(objects).toHaveLength(1);
-    expect(objects[0].src).toBeDefined();
-    expect(objects[0].src).toContain('data:image/');
+    expect(objects[0].__class__).toBe('KritzelImage');
+    expect(objects[0].assetId).toBeTruthy();
+    expect(typeof objects[0].assetId).toBe('string');
+    expect(objects[0].mimeType).toMatch(/^image\//);
   });
 
   test('should center the image in the viewport', async ({ editorPage }) => {

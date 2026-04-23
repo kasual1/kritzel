@@ -29,6 +29,7 @@ import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
 import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
+import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelText } from "./classes/objects/text.class";
 import { KritzelGroup } from "./classes/objects/group.class";
@@ -66,6 +67,7 @@ export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
 export { Element, Event } from "@stencil/core";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
+export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelText } from "./classes/objects/text.class";
 export { KritzelGroup } from "./classes/objects/group.class";
@@ -480,6 +482,10 @@ export namespace Components {
           * @param alignment - The alignment direction (e.g., `CenterHorizontal`, `StartVertical`).
          */
         "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
+        /**
+          * Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`.
+         */
+        "assetStorage"?: KritzelAssetStorageConfig;
         /**
           * Pans and zooms the viewport to fit the nearest content, with padding. Useful when the user has panned away from all objects.
           * @returns `true` if content was found and the viewport was adjusted, `false` otherwise.
@@ -2499,6 +2505,10 @@ declare namespace LocalJSX {
           * Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.
          */
         "activeWorkspaceId"?: string;
+        /**
+          * Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`.
+         */
+        "assetStorage"?: KritzelAssetStorageConfig;
         /**
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */
