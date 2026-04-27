@@ -89,11 +89,34 @@ export class KritzelAssetResolver {
       providers.unshift(new IndexedDBAssetProvider());
     }
 
+    // Normalize order: local providers first so resolution always
+    // hits the local cache before making network requests.
+    providers.sort((a, b) => {
+      if (a.type === 'local' && b.type !== 'local') return -1;
+      if (a.type !== 'local' && b.type === 'local') return 1;
+      return 0;
+    });
+
     this._providers = providers;
     this._local = (providers.find(p => p instanceof IndexedDBAssetProvider) as IndexedDBAssetProvider) ?? null;
     this._remoteProviders = providers.filter(p => p.type === 'remote');
 
-    await Promise.all(this._providers.map(p => p.init()));
+    // Initialize the local provider first (must succeed), then remote
+    // providers individually so a failing remote does not block init.
+    if (this._local) {
+      await this._local.init();
+    }
+    for (const provider of this._remoteProviders) {
+      try {
+        await provider.init();
+      } catch (err) {
+        console.warn(
+          `[KritzelAssetResolver] Remote provider "${provider.name}" failed to initialize. ` +
+            `Assets will be served from the local provider until the remote becomes available.`,
+          err,
+        );
+      }
+    }
 
     // Re-enqueue any uploads that were interrupted before completing.
     await this.recoverPendingUploads();
@@ -101,8 +124,7 @@ export class KritzelAssetResolver {
     this._initialized = true;
 
     if (!this._quiet) {
-      const names = this._providers.map(p => p.name).join(', ');
-      console.info(`Asset resolver initialized with ${this._providers.length} provider(s): ${names}`);
+      this.logProviderConfiguration();
     }
 
     if (this._pending.size > 0) {
@@ -279,6 +301,26 @@ export class KritzelAssetResolver {
   // ------------------------------------------------------------------
   // Internals
   // ------------------------------------------------------------------
+
+  private logProviderConfiguration(): void {
+    const lines: string[] = [
+      `Asset resolver initialized with ${this._providers.length} provider(s):`,
+    ];
+    for (const provider of this._providers) {
+      const role = provider === this._local ? 'local (primary write target)' : provider.type;
+      lines.push(`  - ${provider.name} [${role}]`);
+    }
+    if (this._local) {
+      lines.push(`Write strategy: local-first (${this._local.name} → immediate, remote → background queue)`);
+    }
+    if (this._remoteProviders.length > 0) {
+      lines.push(`Remote replication: ${this._remoteProviders.map(p => p.name).join(', ')}`);
+    }
+    if (this._pending.size > 0) {
+      lines.push(`Pending uploads recovered: ${this._pending.size}`);
+    }
+    console.info(lines.join('\n'));
+  }
 
   private instantiateProviders(configs: AssetProviderConfig[]): IAssetStorageProvider[] {
     return configs.map(config => {
