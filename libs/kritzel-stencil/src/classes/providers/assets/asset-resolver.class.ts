@@ -51,6 +51,7 @@ export class KritzelAssetResolver {
   private _pending = new Map<string, PendingUpload>();
   private _flushTimer: ReturnType<typeof setTimeout> | null = null;
   private _destroyed = false;
+  private _quiet = false;
   /** Dedupes concurrent resolves of the same id. */
   private _resolvePromises = new Map<string, Promise<string>>();
 
@@ -78,6 +79,7 @@ export class KritzelAssetResolver {
   async init(config?: KritzelAssetStorageConfig): Promise<void> {
     if (this._initialized) return;
 
+    this._quiet = config?.quiet ?? false;
     const providers = this.instantiateProviders(config?.providers ?? []);
 
     // Ensure a local provider always exists so uploads can be optimistic
@@ -98,6 +100,11 @@ export class KritzelAssetResolver {
 
     this._initialized = true;
 
+    if (!this._quiet) {
+      const names = this._providers.map(p => p.name).join(', ');
+      console.info(`Asset resolver initialized with ${this._providers.length} provider(s): ${names}`);
+    }
+
     if (this._pending.size > 0) {
       this.scheduleFlush(0);
     }
@@ -105,6 +112,9 @@ export class KritzelAssetResolver {
 
   /** Tears down the resolver and all providers. */
   destroy(): void {
+    if (!this._quiet) {
+      console.info('Asset resolver destroyed');
+    }
     this._destroyed = true;
     if (this._flushTimer) {
       clearTimeout(this._flushTimer);
@@ -296,6 +306,7 @@ export class KritzelAssetResolver {
     const pending = await this._local.listAssetsWithPendingRemotes();
     const configured = new Set(this._remoteProviders.map(p => p.name));
     const now = Date.now();
+    let recoveredCount = 0;
 
     for (const asset of pending) {
       const names = (asset.pendingRemotes ?? []).filter(n => configured.has(n));
@@ -311,7 +322,12 @@ export class KritzelAssetResolver {
           attempts: 0,
           nextAttemptAt: now,
         });
+        recoveredCount++;
       }
+    }
+
+    if (!this._quiet && recoveredCount > 0) {
+      console.info(`Asset resolver: recovered ${recoveredCount} pending upload(s)`);
     }
   }
 
@@ -368,6 +384,9 @@ export class KritzelAssetResolver {
         });
         this._pending.delete(key);
         await this.clearPendingRemote(job.id, job.providerName);
+        if (!this._quiet) {
+          console.info(`Asset resolver: uploaded ${job.id} to ${provider.name}`);
+        }
       } catch (err) {
         job.attempts += 1;
         const delay = Math.min(

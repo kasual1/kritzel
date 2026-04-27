@@ -43,6 +43,11 @@ export interface PresignedAssetProviderOptions {
    * dispatches a DELETE to the underlying storage. Omit to disable.
    */
   deleteAsset?: (id: string) => Promise<void>;
+
+  /**
+   * Quiet mode - suppress console output (optional, defaults to false)
+   */
+  quiet?: boolean;
 }
 
 /**
@@ -67,7 +72,9 @@ export class PresignedAssetProvider implements IAssetStorageProvider {
   }
 
   async init(): Promise<void> {
-    // Stateless provider.
+    if (!this._options.quiet) {
+      console.info('PresignedAssetProvider initialized');
+    }
   }
 
   destroy(): void {
@@ -135,5 +142,8 @@ export class PresignedAssetProvider implements IAssetStorageProvider {
   async delete(id: string): Promise<void> {
     if (!this._options.deleteAsset) return;
     await this._options.deleteAsset(id);
+    if (!this._options.quiet) {
+      console.info(`PresignedAssetProvider: deleted asset ${id}`);
+    }
   }
 }
