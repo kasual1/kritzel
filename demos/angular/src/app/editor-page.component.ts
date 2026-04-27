@@ -12,7 +12,15 @@ import {
   KritzelEditor,
   KritzelSyncConfig,
 } from 'kritzel-angular';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, HocuspocusSyncProvider, LoginEvent } from 'kritzel-stencil';
+import {
+  ActiveWorkspaceChangeEvent,
+  EditorIsReadyEvent,
+  HocuspocusSyncProvider,
+  HttpAssetProvider,
+  IndexedDBAssetProvider,
+  KritzelAssetStorageConfig,
+  LoginEvent,
+} from 'kritzel-stencil';
 import { UserData } from './user.resolver';
 
 @Component({
@@ -22,6 +30,7 @@ import { UserData } from './user.resolver';
   template: `
     <kritzel-editor
       [syncConfig]="syncConfig"
+      [assetStorageConfig]="assetStorageConfig"
       [loginConfig]="loginConfig"
       [activeWorkspaceId]="activeWorkspaceId"
       (isReady)="onIsReady($event)"
@@ -51,6 +60,18 @@ export class EditorPageComponent implements OnInit {
     title: 'Welcome to Kritzel',
   };
 
+  apiOrigin = 'http://localhost:3333';
+  assetStorageConfig?: KritzelAssetStorageConfig = {
+    providers: [
+      IndexedDBAssetProvider,
+      HttpAssetProvider.with({
+        uploadUrl: () => `${this.apiOrigin}/api/assets`,
+        resolveUrl: (id) => `${this.apiOrigin}/users/randomId/${id}`,
+        deleteUrl: (id) => `${this.apiOrigin}/api/assets/${id}`,
+      }),
+    ],
+  };
+
   ngOnInit(): void {
     const user = this.route.snapshot.data['user'] as UserData;
 
@@ -68,7 +89,7 @@ export class EditorPageComponent implements OnInit {
     const editorState = event.detail;
     console.log('Editor is ready with state:', editorState);
 
-    if(this.isShared && this.activeWorkspaceId) {
+    if (this.isShared && this.activeWorkspaceId) {
       await this.editor.loadSharedWorkspace(this.activeWorkspaceId);
       return;
     }
@@ -93,5 +114,4 @@ export class EditorPageComponent implements OnInit {
   onLogout() {
     console.log('Logout event');
   }
-
 }

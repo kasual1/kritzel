@@ -38,4 +38,9 @@ export interface KritzelAssetStorageConfig {
    * providers are written via a persistent background queue.
    */
   providers: AssetProviderConfig[];
+
+  /**
+   * Quiet mode - suppress console output (optional, defaults to false)
+   */
+  quiet?: boolean;
 }

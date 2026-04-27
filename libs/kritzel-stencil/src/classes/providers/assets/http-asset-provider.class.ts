@@ -38,6 +38,11 @@ export interface HttpAssetProviderOptions {
   headers?: () => Record<string, string> | Promise<Record<string, string>>;
 
   /**
+   * Quiet mode - suppress console output (optional, defaults to false)
+   */
+  quiet?: boolean;
+
+  /**
    * Upload transport. Defaults to a single `POST` carrying a
    * `multipart/form-data` body with the file and metadata as JSON.
    * Override when the backend expects a different shape.
@@ -81,7 +86,9 @@ export class HttpAssetProvider implements IAssetStorageProvider {
   }
 
   async init(): Promise<void> {
-    // No initialization needed for a stateless HTTP provider.
+    if (!this._options.quiet) {
+      console.info('HttpAssetProvider initialized');
+    }
   }
 
   destroy(): void {
@@ -136,6 +143,9 @@ export class HttpAssetProvider implements IAssetStorageProvider {
     const res = await fetch(url, { method: 'DELETE', headers });
     if (!res.ok) {
       throw new Error(`[HttpAssetProvider] Failed to delete asset ${id}: ${res.status} ${res.statusText}`);
+    }
+    if (!this._options.quiet) {
+      console.info(`HttpAssetProvider: deleted asset ${id}`);
     }
   }
 
