@@ -507,6 +507,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     objectsToUpdate.forEach(object => {
       const existed = this._idMap.has(object.id);
       if (existed) {
+        const previous = this._idMap.get(object.id);
+        if (previous && typeof object.adoptTransientStateFrom === 'function') {
+          object.adoptTransientStateFrom(previous);
+        }
         this.quadtree.update(object);
         this._idMap.set(object.id, object);
         updatedObjects.push(object);
@@ -522,6 +526,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     selectionGroupsToUpdate.forEach(object => {
       const existed = this._idMap.has(object.id);
       if (existed) {
+        const previous = this._idMap.get(object.id);
+        if (previous && typeof (object as any).adoptTransientStateFrom === 'function') {
+          (object as any).adoptTransientStateFrom(previous);
+        }
         this.quadtree.update(object as unknown as T);
         this._idMap.set(object.id, object as unknown as T);
       } else {

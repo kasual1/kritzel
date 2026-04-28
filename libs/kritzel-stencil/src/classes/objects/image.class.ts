@@ -162,6 +162,25 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   }
 
   /**
+   * Carries transient asset-loading state (resolved URL, load lifecycle,
+   * retry counters) over from the previous local instance when a remote
+   * Yjs update produces a freshly-revived replacement. Without this,
+   * frequent remote updates (e.g. another user dragging the image)
+   * would reset `loadState` to `'idle'` on every tick and cause the
+   * skeleton to flicker between renders.
+   */
+  override adoptTransientStateFrom(previous: KritzelBaseObject<any>): void {
+    if (!(previous instanceof KritzelImage)) return;
+    // Only carry over the resolved URL when the asset reference itself
+    // hasn't changed; otherwise the new asset must be re-resolved.
+    if (previous.assetId === this.assetId) {
+      this.resolvedSrc = previous.resolvedSrc;
+      this.loadState = previous.loadState;
+      this.loadAttempts = previous.loadAttempts;
+    }
+  }
+
+  /**
    * Triggers (idempotent) resolution of the referenced asset. Updates
    * `resolvedSrc` and `loadState` as the resolution progresses and
    * schedules a re-render when the URL is available.
