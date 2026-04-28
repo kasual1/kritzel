@@ -199,12 +199,25 @@ export class KritzelCore {
 
   /**
    * Initializes the Yjs document for collaborative editing.
-   * Sets up the app state map with the current sync configuration and
-   * initializes the asset storage layer.
+   * Sets up the app state map with the current sync configuration.
+   *
+   * Asset storage is initialized separately via {@link initializeAssetStorage}
+   * so that it can be deferred until the `assetStorageConfig` prop arrives,
+   * mirroring the lazy-init pattern used for sync config.
    */
   async initializeYjs(): Promise<void> {
-    await this._assetResolver.init(this._assetStorageConfig);
     await this._appStateMap.initialize(this, this._syncConfig);
+  }
+
+  /**
+   * Initializes the asset storage layer with the current asset storage
+   * configuration. Safe to call multiple times: subsequent calls are
+   * no-ops because {@link KritzelAssetResolver.init} is idempotent.
+   * To apply a new configuration after initialization, destroy the
+   * resolver first or use {@link KritzelEngine.reinitSync}.
+   */
+  async initializeAssetStorage(): Promise<void> {
+    await this._assetResolver.init(this._assetStorageConfig);
     this.warnIfAssetStorageMismatched();
   }
 
