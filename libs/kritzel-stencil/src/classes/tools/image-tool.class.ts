@@ -22,7 +22,7 @@ export class KritzelImageTool extends KritzelBaseTool {
   fileInput: HTMLInputElement | null = null;
 
   /** Maximum dimension (width or height) for image compression in pixels */
-  maxCompressionSize: number = 300;
+  maxCompressionSize: number = 1200;
 
   /** Diagonal offset (in world units) applied between images when multiple are imported at once */
   multiImportOffset: number = 20;

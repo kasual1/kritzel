@@ -41,10 +41,10 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
    */
   src: string = '';
 
-  maxWidth: number = 300;
-  maxHeight: number = 300;
+  maxWidth: number = 1200;
+  maxHeight: number = 1200;
 
-  maxCompressionSize: number = 300;
+  maxCompressionSize: number = 1200;
 
   override isDebugInfoVisible: boolean = true;
 
