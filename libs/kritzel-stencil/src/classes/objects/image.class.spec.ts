@@ -54,9 +54,9 @@ describe('KritzelImage', () => {
       expect(defaultImage.translateX).toBe(0);
       expect(defaultImage.translateY).toBe(0);
       expect(defaultImage.scale).toBe(1);
-      expect(defaultImage.maxWidth).toBe(300);
-      expect(defaultImage.maxHeight).toBe(300);
-      expect(defaultImage.maxCompressionSize).toBe(300);
+      expect(defaultImage.maxWidth).toBe(1200);
+      expect(defaultImage.maxHeight).toBe(1200);
+      expect(defaultImage.maxCompressionSize).toBe(1200);
       expect(defaultImage.isDebugInfoVisible).toBe(true);
     });
 
@@ -219,6 +219,15 @@ describe('KritzelImage', () => {
   });
 
   describe('calculateScaledDimensions', () => {
+    beforeEach(() => {
+      // Tests in this block assert behavior of the scale-down branch,
+      // which only triggers when image dimensions exceed the configured
+      // max. Pin the maxes to 300 so the existing fixtures remain
+      // representative of the scale-down logic.
+      imageObject.maxWidth = 300;
+      imageObject.maxHeight = 300;
+    });
+
     it('should return original dimensions when within max limits', () => {
       const mockImg = { width: 200, height: 200 } as HTMLImageElement;
 
