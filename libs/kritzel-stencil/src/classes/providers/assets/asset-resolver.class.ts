@@ -98,7 +98,12 @@ export class KritzelAssetResolver {
     });
 
     this._providers = providers;
-    this._local = (providers.find(p => p instanceof IndexedDBAssetProvider) as IndexedDBAssetProvider) ?? null;
+    // Use type + name instead of `instanceof` to find the local provider.
+    // `instanceof` can fail across module boundaries when the external app
+    // bundles its own copy of IndexedDBAssetProvider.
+    this._local = (providers.find(
+      p => p.type === 'local' && p.name === 'IndexedDBAssetProvider',
+    ) as IndexedDBAssetProvider) ?? null;
     this._remoteProviders = providers.filter(p => p.type === 'remote');
 
     // Initialize the local provider first (must succeed), then remote
