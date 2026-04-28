@@ -1,5 +1,6 @@
 import { KritzelCore } from '../core/core.class';
 import { KritzelAssetLoadState } from '../../interfaces/asset.interface';
+import { AssetNotFoundError } from '../providers/assets/asset-resolver.class';
 import { KritzelBaseObject } from './base-object.class';
 
 /**
@@ -66,6 +67,12 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
    * Maximum number of resolution attempts per page load before the
    * image is considered permanently failed. Defaults to 3.
    *
+   * Only attempts that fail with a definitive "asset not found"
+   * (i.e. {@link AssetNotFoundError}) consume this budget. Transient
+   * failures (network blips, remote temporarily unreachable) do not
+   * count against the budget; they are bounded by
+   * {@link maxTransientRetryDurationMs} instead.
+   *
    * The counter is transient (not persisted to Yjs) and resets every
    * time a fresh `KritzelImage` instance is constructed, so a full page
    * reload always grants a fresh budget.
@@ -73,10 +80,31 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   maxLoadAttempts: number = 3;
 
   /**
-   * Number of resolution attempts that have been issued so far for the
-   * current page load. Not serialized into the Yjs document.
+   * Number of resolution attempts that have failed with a definitive
+   * "asset not found" so far for the current page load. Only updates
+   * for {@link AssetNotFoundError} rejections; transient failures do
+   * not increment this counter. Not serialized into the Yjs document.
    */
   loadAttempts: number = 0;
+
+  /**
+   * Maximum wall-clock duration (in milliseconds) the image will keep
+   * retrying transient resolution failures before giving up and
+   * surfacing the error placeholder. Defaults to 30 seconds.
+   *
+   * This bound exists so that a permanently-broken backend eventually
+   * surfaces UX feedback even when failures look "transient" (and
+   * therefore do not consume {@link maxLoadAttempts}).
+   */
+  maxTransientRetryDurationMs: number = 30_000;
+
+  /**
+   * Wall-clock timestamp (ms since epoch) of the first transient
+   * failure in the current retry chain. `null` when no transient
+   * retries are in flight. Reset on success and on definitive miss.
+   * Not serialized into the Yjs document.
+   */
+  transientRetryStartedAt: number | null = null;
 
   /**
    * Creates a new KritzelImage instance.
@@ -95,8 +123,8 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     this.scale = config?.scale || 1;
     this.width = config?.width || 0;
     this.height = config?.height || 0;
-    this.maxWidth = config?.maxWidth ?? 300;
-    this.maxHeight = config?.maxHeight ?? 300;
+    this.maxWidth = config?.maxWidth ?? 1200;
+    this.maxHeight = config?.maxHeight ?? 1200;
     this.maxLoadAttempts = config?.maxLoadAttempts ?? 3;
   }
 
@@ -158,6 +186,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     delete plain.resolvedSrc;
     delete plain.loadState;
     delete plain.loadAttempts;
+    delete plain.transientRetryStartedAt;
     return plain;
   }
 
@@ -177,6 +206,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
       this.resolvedSrc = previous.resolvedSrc;
       this.loadState = previous.loadState;
       this.loadAttempts = previous.loadAttempts;
+      this.transientRetryStartedAt = previous.transientRetryStartedAt;
     }
   }
 
@@ -185,12 +215,17 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
    * `resolvedSrc` and `loadState` as the resolution progresses and
    * schedules a re-render when the URL is available.
    *
-   * On failure, retries automatically up to {@link maxLoadAttempts}
-   * times per page load with a short exponential backoff. Once the
-   * budget is exhausted, the image is marked permanently `'error'` for
-   * the remainder of the page load to avoid hammering an unavailable
-   * backend; a full reload (which constructs a fresh instance) grants
-   * a new budget.
+   * Failure handling distinguishes two cases:
+   *  - Definitive miss ({@link AssetNotFoundError}): consumes one slot
+   *    of the {@link maxLoadAttempts} budget. Once exhausted, the
+   *    image is marked permanently `'error'` for the remainder of the
+   *    page load to avoid hammering an unavailable backend; a full
+   *    reload (which constructs a fresh instance) grants a new budget.
+   *  - Transient failure (network blip, resolver init in flight, ...):
+   *    does NOT consume the attempt budget. Retries continue with the
+   *    same exponential backoff up to
+   *    {@link maxTransientRetryDurationMs} of wall-clock time, after
+   *    which the image is marked `'error'`.
    */
   ensureResolved(): void {
     if (this.loadState === 'loading' || this.loadState === 'ready') return;
@@ -203,38 +238,79 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     }
 
     this.loadState = 'loading';
-    this.loadAttempts += 1;
-    const attempt = this.loadAttempts;
+    const attemptIndex = this.loadAttempts; // backoff base only; bumped on real misses
     this._core.assetResolver
       .resolve(this.assetId)
       .then(url => {
         this.resolvedSrc = url;
         this.loadState = 'ready';
+        // Reset transient retry tracking on success.
+        this.transientRetryStartedAt = null;
         this._core?.rerender();
       })
       .catch(err => {
-        const attemptsExhausted = this.loadAttempts >= this.maxLoadAttempts;
+        const isDefinitiveMiss = err instanceof AssetNotFoundError;
+        if (isDefinitiveMiss) {
+          this.loadAttempts += 1;
+          // Definitive miss resets the transient deadline so a later
+          // transient retry chain (post-recovery) starts fresh.
+          this.transientRetryStartedAt = null;
+          const attemptsExhausted = this.loadAttempts >= this.maxLoadAttempts;
+          console.warn(
+            `[KritzelImage] Asset ${this.assetId} not found ` +
+              `(attempt ${this.loadAttempts}/${this.maxLoadAttempts}):`,
+            err,
+          );
+          if (attemptsExhausted) {
+            this.loadState = 'error';
+            this._core?.rerender();
+            return;
+          }
+          this.scheduleRetry(this.loadAttempts);
+          return;
+        }
+
+        // Transient failure: do not burn the per-page-load budget, but
+        // bound retries by a wall-clock deadline so a permanently broken
+        // backend still surfaces feedback eventually.
+        const now = Date.now();
+        if (this.transientRetryStartedAt === null) {
+          this.transientRetryStartedAt = now;
+        }
+        const elapsed = now - this.transientRetryStartedAt;
+        const deadlineExceeded = elapsed >= this.maxTransientRetryDurationMs;
         console.warn(
-          `[KritzelImage] Failed to resolve asset ${this.assetId} ` +
-            `(attempt ${attempt}/${this.maxLoadAttempts}):`,
+          `[KritzelImage] Transient resolve failure for asset ${this.assetId} ` +
+            `(elapsed ${Math.round(elapsed / 1000)}s/${Math.round(this.maxTransientRetryDurationMs / 1000)}s):`,
           err,
         );
-        if (attemptsExhausted) {
+        if (deadlineExceeded) {
           this.loadState = 'error';
           this._core?.rerender();
           return;
         }
-        // Schedule a retry with a small exponential backoff. Reset to
-        // 'idle' so the next call (or scheduled tick) is allowed to
-        // proceed past the early-return guard.
-        this.loadState = 'idle';
-        const backoffMs = Math.min(2000, 250 * Math.pow(2, attempt - 1));
-        setTimeout(() => {
-          if (this.loadState === 'idle') {
-            this.ensureResolved();
-          }
-        }, backoffMs);
+        // Use the existing attempt count as the backoff base. Transient
+        // retries do not increment loadAttempts, so the backoff remains
+        // bounded at the first step (250ms) until a real miss happens.
+        this.scheduleRetry(attemptIndex + 1);
       });
+  }
+
+  /**
+   * Schedules a retry of {@link ensureResolved} with a small exponential
+   * backoff. The backoff base is the current attempt index so successive
+   * definitive misses ramp up gradually.
+   */
+  private scheduleRetry(attemptBase: number): void {
+    // Reset to 'idle' so the next call (or scheduled tick) is allowed to
+    // proceed past the early-return guard in ensureResolved().
+    this.loadState = 'idle';
+    const backoffMs = Math.min(2000, 250 * Math.pow(2, Math.max(0, attemptBase - 1)));
+    setTimeout(() => {
+      if (this.loadState === 'idle') {
+        this.ensureResolved();
+      }
+    }, backoffMs);
   }
 
   /**

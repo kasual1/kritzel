@@ -22,6 +22,24 @@ const BASE_RETRY_DELAY_MS = 2_000;
 const MAX_RETRY_DELAY_MS = 5 * 60_000; // 5 minutes
 
 /**
+ * Thrown when an asset id cannot be located in any configured provider.
+ *
+ * This is distinct from transport / network errors: callers (e.g.
+ * {@link KritzelImage.ensureResolved}) use the type to decide whether a
+ * failure is permanent (asset truly missing) or transient (network blip,
+ * remote temporarily unreachable) and should be retried without
+ * burning the per-page-load attempt budget.
+ */
+export class AssetNotFoundError extends Error {
+  readonly assetId: string;
+  constructor(assetId: string, message?: string) {
+    super(message ?? `[KritzelAssetResolver] Asset ${assetId} not found in any configured provider.`);
+    this.name = 'AssetNotFoundError';
+    this.assetId = assetId;
+  }
+}
+
+/**
  * Orchestrates asset storage across one or more providers.
  *
  * Responsibilities:
@@ -47,6 +65,18 @@ export class KritzelAssetResolver {
   /** Remote providers ordered as configured. */
   private _remoteProviders: IAssetStorageProvider[] = [];
   private _initialized = false;
+  /**
+   * Promise that resolves when the resolver is ready to serve requests.
+   *
+   * Created lazily so that callers issuing `resolve()` / `fetchBlob()` /
+   * `put()` before {@link init} has been invoked are queued instead of
+   * rejected. This eliminates a race on reload where the renderer
+   * triggers `KritzelImage.ensureResolved()` before the engine has
+   * finished wiring up the asset storage layer.
+   */
+  private _readyPromise: Promise<void> | null = null;
+  private _resolveReady: (() => void) | null = null;
+  private _rejectReady: ((err: Error) => void) | null = null;
   /** In-memory retry state keyed by `${id}::${providerName}`. */
   private _pending = new Map<string, PendingUpload>();
   private _flushTimer: ReturnType<typeof setTimeout> | null = null;
@@ -78,6 +108,9 @@ export class KritzelAssetResolver {
    */
   async init(config?: KritzelAssetStorageConfig): Promise<void> {
     if (this._initialized) return;
+    // Ensure the deferred ready promise exists before any async work so
+    // concurrent callers awaiting `ensureReady()` are unblocked together.
+    this.getReadyPromise();
 
     this._quiet = config?.quiet ?? false;
     const providers = this.instantiateProviders(config?.providers ?? []);
@@ -127,6 +160,12 @@ export class KritzelAssetResolver {
     await this.recoverPendingUploads();
 
     this._initialized = true;
+    // Release any callers that were queued behind init.
+    if (this._resolveReady) {
+      this._resolveReady();
+      this._resolveReady = null;
+      this._rejectReady = null;
+    }
 
     if (!this._quiet) {
       this.logProviderConfiguration();
@@ -160,6 +199,13 @@ export class KritzelAssetResolver {
     this._pending.clear();
     this._resolvePromises.clear();
     this._initialized = false;
+    // Reject any callers still waiting on init so they don't hang forever.
+    if (this._rejectReady) {
+      this._rejectReady(new Error('[KritzelAssetResolver] Destroyed before initialization completed.'));
+    }
+    this._readyPromise = null;
+    this._resolveReady = null;
+    this._rejectReady = null;
   }
 
   /**
@@ -173,7 +219,7 @@ export class KritzelAssetResolver {
    * write completes; remote replication happens in the background.
    */
   async put(blob: Blob, metadata: KritzelAssetPutMetadata): Promise<KritzelAsset> {
-    this.assertInitialized();
+    await this.ensureReady();
 
     const id = metadata.id ?? this.generateUuid();
     const fullMetadata: KritzelAssetPutMetadata = { ...metadata, id };
@@ -221,7 +267,7 @@ export class KritzelAssetResolver {
    * Remote hits are cached into the local provider for future offline use.
    */
   async resolve(id: string): Promise<string> {
-    this.assertInitialized();
+    await this.ensureReady();
 
     const inflight = this._resolvePromises.get(id);
     if (inflight) return inflight;
@@ -234,8 +280,10 @@ export class KritzelAssetResolver {
 
       // Walk remote providers.
       let lastError: unknown;
+      let remoteAttempts = 0;
       for (const provider of this._providers) {
         if (provider === this._local) continue;
+        remoteAttempts++;
         try {
           // Prefer `fetch` so we can cache the bytes locally; fall back
           // to `resolve` if fetch is unavailable or rejects.
@@ -259,6 +307,17 @@ export class KritzelAssetResolver {
         }
       }
 
+      // No remote providers were tried (only local exists and missed):
+      // the asset is definitively absent locally and nowhere else to
+      // look. Surface a typed error so callers can distinguish a true
+      // miss from a transient network failure.
+      if (remoteAttempts === 0) {
+        throw new AssetNotFoundError(id);
+      }
+
+      // Remotes were tried and all failed. Without HTTP-status visibility
+      // we cannot tell "truly missing" from "network blip", so surface a
+      // generic error and let the caller treat it as transient.
       throw new Error(`[KritzelAssetResolver] Failed to resolve asset ${id}: ${String(lastError)}`);
     })();
 
@@ -275,18 +334,34 @@ export class KritzelAssetResolver {
    * the bytes inline (e.g. SVG export).
    */
   async fetchBlob(id: string): Promise<Blob> {
-    this.assertInitialized();
+    await this.ensureReady();
     let lastError: unknown;
+    let localTried = false;
+    let localMissed = false;
+    let remoteAttempts = 0;
     // Prefer local to avoid network round-trips.
     const ordered = this._local
       ? [this._local, ...this._providers.filter(p => p !== this._local)]
       : this._providers;
     for (const provider of ordered) {
+      if (provider === this._local) {
+        localTried = true;
+      } else {
+        remoteAttempts++;
+      }
       try {
         return await provider.fetch(id);
       } catch (err) {
+        if (provider === this._local) {
+          localMissed = true;
+        }
         lastError = err;
       }
+    }
+    // Same logic as resolve(): only flag as definitively missing when no
+    // remote providers were available to mask a transient failure.
+    if (remoteAttempts === 0 && (localTried ? localMissed : true)) {
+      throw new AssetNotFoundError(id);
     }
     throw new Error(`[KritzelAssetResolver] Failed to fetch blob for ${id}: ${String(lastError)}`);
   }
@@ -467,10 +542,29 @@ export class KritzelAssetResolver {
     await this._local.setPendingRemotes(id, remaining);
   }
 
-  private assertInitialized(): void {
-    if (!this._initialized) {
-      throw new Error('[KritzelAssetResolver] Not initialized. Call init() first.');
+  /**
+   * Returns a promise that resolves once {@link init} has completed.
+   *
+   * Callers issuing requests before initialization are queued via this
+   * promise instead of being rejected. If the resolver is destroyed
+   * before init completes, the promise rejects so callers do not hang.
+   */
+  private ensureReady(): Promise<void> {
+    if (this._initialized) return Promise.resolve();
+    if (this._destroyed) {
+      return Promise.reject(new Error('[KritzelAssetResolver] Resolver was destroyed.'));
     }
+    return this.getReadyPromise();
+  }
+
+  private getReadyPromise(): Promise<void> {
+    if (!this._readyPromise) {
+      this._readyPromise = new Promise<void>((resolve, reject) => {
+        this._resolveReady = resolve;
+        this._rejectReady = reject;
+      });
+    }
+    return this._readyPromise;
   }
 
   private generateUuid(): string {
