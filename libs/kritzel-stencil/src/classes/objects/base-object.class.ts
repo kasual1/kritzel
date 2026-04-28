@@ -448,6 +448,21 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   /**
+   * Copies transient (non-persisted) state from a previous local instance
+   * onto this freshly-revived instance. Called when a remote Yjs update
+   * replaces an existing object so that local-only fields (e.g. asset
+   * load state, resolved blob URLs) survive across remote position
+   * updates and don't visually flicker.
+   *
+   * Default implementation is a no-op; subclasses with transient fields
+   * should override.
+   * @param previous - The previous local instance being replaced.
+   */
+  adoptTransientStateFrom(_previous: KritzelBaseObject<any>): void {
+    // no-op by default
+  }
+
+  /**
    * Type guard to check if this object is of a specific class type.
    * Compares against the __class__ property.
    * @template T - The expected class type extending KritzelBaseObject
