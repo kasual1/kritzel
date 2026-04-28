@@ -54,8 +54,8 @@ describe('KritzelImage', () => {
       expect(defaultImage.translateX).toBe(0);
       expect(defaultImage.translateY).toBe(0);
       expect(defaultImage.scale).toBe(1);
-      expect(defaultImage.maxWidth).toBe(1200);
-      expect(defaultImage.maxHeight).toBe(1200);
+      expect(defaultImage.maxWidth).toBe(300);
+      expect(defaultImage.maxHeight).toBe(300);
       expect(defaultImage.maxCompressionSize).toBe(1200);
       expect(defaultImage.isDebugInfoVisible).toBe(true);
     });

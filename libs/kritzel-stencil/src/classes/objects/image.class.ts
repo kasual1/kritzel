@@ -42,8 +42,8 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
    */
   src: string = '';
 
-  maxWidth: number = 1200;
-  maxHeight: number = 1200;
+  maxWidth: number = 300;
+  maxHeight: number = 300;
 
   maxCompressionSize: number = 1200;
 
@@ -123,8 +123,8 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     this.scale = config?.scale || 1;
     this.width = config?.width || 0;
     this.height = config?.height || 0;
-    this.maxWidth = config?.maxWidth ?? 1200;
-    this.maxHeight = config?.maxHeight ?? 1200;
+    this.maxWidth = config?.maxWidth ?? 300;
+    this.maxHeight = config?.maxHeight ?? 300;
     this.maxLoadAttempts = config?.maxLoadAttempts ?? 3;
   }
 
