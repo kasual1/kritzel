@@ -899,6 +899,7 @@ Type: `Promise<void>`
 
 ### Depends on
 
+- [kritzel-icon](../../shared/kritzel-icon)
 - [kritzel-context-menu](../../ui/kritzel-context-menu)
 - [kritzel-awareness-cursors](../kritzel-awareness-cursors)
 - [kritzel-cursor-trail](../kritzel-cursor-trail)
@@ -906,6 +907,7 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-engine --> kritzel-icon
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-awareness-cursors
   kritzel-engine --> kritzel-cursor-trail

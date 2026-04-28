@@ -2092,7 +2092,7 @@ export class KritzelEngine {
                   </svg>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
+                {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && object.loadState === 'ready' && (
                   <img
                     ref={el => el && object.mount(el)}
                     src={object.resolvedSrc || object.src}
@@ -2118,6 +2118,47 @@ export class KritzelEngine {
                     draggable={false}
                     onDragStart={e => e.preventDefault()}
                   />
+                )}
+
+                {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && object.loadState !== 'ready' && (
+                  <div
+                    ref={() => object.ensureLoaded()}
+                    style={{
+                      position: 'absolute',
+                      left: '0',
+                      top: '0',
+                      width: object.totalWidth + 'px',
+                      height: object.totalHeight + 'px',
+                      transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
+                      transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
+                      opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
+                      pointerEvents: object.markedForRemoval ? 'none' : 'auto',
+                      backgroundColor: KritzelColorHelper.resolveThemeColor(
+                        { light: '#e5e7eb', dark: '#2a2a2a' },
+                        currentTheme,
+                      ),
+                      borderColor:
+                        object.loadState === 'error'
+                          ? KritzelColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme)
+                          : KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                      borderWidth: object.loadState === 'error' ? '1px' : object.borderWidth + 'px',
+                      borderStyle: 'solid',
+                      padding: object.padding + 'px',
+                      overflow: 'hidden',
+                      userSelect: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <kritzel-icon
+                      name={object.loadState === 'error' ? 'image-off' : 'image'}
+                      size={Math.max(16, Math.min(object.totalWidth, object.totalHeight) * 0.3)}
+                      style={{
+                        color: KritzelColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme),
+                      }}
+                    ></kritzel-icon>
+                  </div>
                 )}
 
                 {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (

@@ -845,6 +845,7 @@ graph TD;
   kritzel-menu-item --> kritzel-portal
   kritzel-menu-item --> kritzel-menu
   kritzel-back-to-content --> kritzel-icon
+  kritzel-engine --> kritzel-icon
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-awareness-cursors
   kritzel-engine --> kritzel-cursor-trail
