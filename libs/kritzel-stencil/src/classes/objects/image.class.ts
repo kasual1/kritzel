@@ -63,6 +63,22 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   loadState: KritzelAssetLoadState = 'idle';
 
   /**
+   * Maximum number of resolution attempts per page load before the
+   * image is considered permanently failed. Defaults to 3.
+   *
+   * The counter is transient (not persisted to Yjs) and resets every
+   * time a fresh `KritzelImage` instance is constructed, so a full page
+   * reload always grants a fresh budget.
+   */
+  maxLoadAttempts: number = 3;
+
+  /**
+   * Number of resolution attempts that have been issued so far for the
+   * current page load. Not serialized into the Yjs document.
+   */
+  loadAttempts: number = 0;
+
+  /**
    * Creates a new KritzelImage instance.
    * @param config - Optional partial configuration object to initialize image properties
    *                 including assetId, src, position (x, y), translation, and scale.
@@ -81,6 +97,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     this.height = config?.height || 0;
     this.maxWidth = config?.maxWidth ?? 300;
     this.maxHeight = config?.maxHeight ?? 300;
+    this.maxLoadAttempts = config?.maxLoadAttempts ?? 3;
   }
 
   /**
@@ -140,6 +157,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     // Strip transient, non-persistent rendering state.
     delete plain.resolvedSrc;
     delete plain.loadState;
+    delete plain.loadAttempts;
     return plain;
   }
 
@@ -147,13 +165,27 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
    * Triggers (idempotent) resolution of the referenced asset. Updates
    * `resolvedSrc` and `loadState` as the resolution progresses and
    * schedules a re-render when the URL is available.
+   *
+   * On failure, retries automatically up to {@link maxLoadAttempts}
+   * times per page load with a short exponential backoff. Once the
+   * budget is exhausted, the image is marked permanently `'error'` for
+   * the remainder of the page load to avoid hammering an unavailable
+   * backend; a full reload (which constructs a fresh instance) grants
+   * a new budget.
    */
   ensureResolved(): void {
     if (this.loadState === 'loading' || this.loadState === 'ready') return;
+    if (this.loadState === 'error') return;
     if (!this.assetId) return;
     if (!this._core?.assetResolver) return;
+    if (this.loadAttempts >= this.maxLoadAttempts) {
+      this.loadState = 'error';
+      return;
+    }
 
     this.loadState = 'loading';
+    this.loadAttempts += 1;
+    const attempt = this.loadAttempts;
     this._core.assetResolver
       .resolve(this.assetId)
       .then(url => {
@@ -162,9 +194,27 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
         this._core?.rerender();
       })
       .catch(err => {
-        this.loadState = 'error';
-        console.warn(`[KritzelImage] Failed to resolve asset ${this.assetId}:`, err);
-        this._core?.rerender();
+        const attemptsExhausted = this.loadAttempts >= this.maxLoadAttempts;
+        console.warn(
+          `[KritzelImage] Failed to resolve asset ${this.assetId} ` +
+            `(attempt ${attempt}/${this.maxLoadAttempts}):`,
+          err,
+        );
+        if (attemptsExhausted) {
+          this.loadState = 'error';
+          this._core?.rerender();
+          return;
+        }
+        // Schedule a retry with a small exponential backoff. Reset to
+        // 'idle' so the next call (or scheduled tick) is allowed to
+        // proceed past the early-return guard.
+        this.loadState = 'idle';
+        const backoffMs = Math.min(2000, 250 * Math.pow(2, attempt - 1));
+        setTimeout(() => {
+          if (this.loadState === 'idle') {
+            this.ensureResolved();
+          }
+        }, backoffMs);
       });
   }
 
@@ -199,6 +249,23 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   }
 
   /**
+   * Kicks off asset resolution (or legacy data-URL migration) without
+   * requiring the `<img>` element to be mounted. Safe to call multiple
+   * times; both underlying paths are idempotent.
+   *
+   * Useful for the renderer's loading-skeleton path, where the actual
+   * `<img>` is not in the DOM yet but the asset bytes still need to
+   * start loading.
+   */
+  ensureLoaded(): void {
+    if (this.assetId && !this.resolvedSrc) {
+      this.ensureResolved();
+    } else if (!this.assetId && this.src?.startsWith('data:')) {
+      this.migrateLegacyDataUrlIfNeeded();
+    }
+  }
+
+  /**
    * Overrides base mount to kick off asset resolution the first time
    * the image is attached to the DOM. Legacy images persisted with an
    * inline `src` data URL are opportunistically migrated to the asset
@@ -206,11 +273,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
    */
   override mount(element: HTMLImageElement): void {
     super.mount(element);
-    if (this.assetId && !this.resolvedSrc) {
-      this.ensureResolved();
-    } else if (!this.assetId && this.src?.startsWith('data:')) {
-      this.migrateLegacyDataUrlIfNeeded();
-    }
+    this.ensureLoaded();
   }
 
   /**
