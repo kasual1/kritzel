@@ -117,11 +117,20 @@ export class KritzelEngine {
    */
   @Prop() assetStorageConfig?: KritzelAssetStorageConfig;
   @Watch('assetStorageConfig')
-  onAssetStorageConfigChange(newValue: KritzelAssetStorageConfig | undefined) {
-    // Forward to core so initializeYjs picks up the latest value. The
-    // resolver itself is only initialized once per engine; swapping
-    // providers at runtime requires reinitSync().
+  async onAssetStorageConfigChange(newValue: KritzelAssetStorageConfig | undefined) {
+    this._assetStorageConfigRevision++;
+
+    // Keep core config in sync immediately so late prop updates are not lost.
     this.core.setAssetStorageConfig(newValue);
+
+    // If assetStorageConfig arrives after componentDidLoad, initialize the
+    // asset storage layer now. Mirrors the syncConfig watcher: the resolver
+    // is only initialized once, when a non-undefined config first becomes
+    // available. Subsequent changes after initialization require
+    // `reinitSync()`, identical to syncConfig semantics.
+    if (newValue && !this._isAssetStorageInitialized && this._isViewportReady) {
+      await this.initializeAssetStorage();
+    }
   }
 
   /** The current user for awareness broadcasting (name, id, cursor position). */
@@ -1522,7 +1531,9 @@ export class KritzelEngine {
     this.core.store.objects?.clearCursorPosition();
     this.core.store.objects?.destroy();
     this.core.appStateMap.destroy();
+    this.core.assetResolver.destroy();
     this._isYjsInitialized = false;
+    this._isAssetStorageInitialized = false;
     await this.initializeSyncAndWorkspace();
   }
 
@@ -1535,12 +1546,14 @@ export class KritzelEngine {
   private _lastHadSelectionGroup: boolean = false;
   private _isViewportReady: boolean = false;
   private _isYjsInitialized: boolean = false;
+  private _isAssetStorageInitialized: boolean = false;
   private _isResolvingActiveWorkspaceId: boolean = false;
   private _stateChangeListenersRegistered: boolean = false;
   private _workspaceInitializationPromise: Promise<void> | null = null;
   private _workspaceInitializationTargetKey: string | null = null;
   private _syncInitPromise: Promise<void> | null = null;
   private _syncConfigRevision: number = 0;
+  private _assetStorageConfigRevision: number = 0;
   private _isWorkspaceLoading: boolean = false;
   private readonly _defaultUndoState: KritzelUndoState = {
     canUndo: false,
@@ -1641,6 +1654,32 @@ export class KritzelEngine {
     }
   }
 
+  /**
+   * Initializes the asset storage layer with the latest config. Mirrors
+   * the in-flight replay logic of {@link doInitializeSyncAndWorkspace} for
+   * `assetStorageConfig` prop updates that arrive while init is running.
+   */
+  private async initializeAssetStorage() {
+    if (this._isAssetStorageInitialized) {
+      return;
+    }
+
+    const revisionAtStart = this._assetStorageConfigRevision;
+
+    this.core.setAssetStorageConfig(this.assetStorageConfig);
+    await this.core.initializeAssetStorage();
+
+    // If assetStorageConfig changed mid-flight, replay once with the latest
+    // value so late prop updates are not lost.
+    if (revisionAtStart !== this._assetStorageConfigRevision) {
+      this.core.assetResolver.destroy();
+      this.core.setAssetStorageConfig(this.assetStorageConfig);
+      await this.core.initializeAssetStorage();
+    }
+
+    this._isAssetStorageInitialized = true;
+  }
+
   private async doInitializeSyncAndWorkspace() {
     // Capture sync config revision to detect prop updates that happen while
     // initialization is in-flight.
@@ -1664,6 +1703,13 @@ export class KritzelEngine {
       }
 
       this._isYjsInitialized = true;
+    }
+
+    // Initialize the asset storage layer if a config has been provided.
+    // When the prop arrives later, the @Watch('assetStorageConfig') handler
+    // will trigger initializeAssetStorage() instead.
+    if (!this._isAssetStorageInitialized && this.assetStorageConfig) {
+      await this.initializeAssetStorage();
     }
 
     if (this.activeWorkspaceId) {
