@@ -116,8 +116,8 @@ describe('KritzelImageTool', () => {
       expect(tool.fileInput).toBe(mockFileInput);
     });
 
-    it('should have default maxCompressionSize of 300', () => {
-      expect(tool.maxCompressionSize).toBe(300);
+    it('should have default maxCompressionSize of 1200', () => {
+      expect(tool.maxCompressionSize).toBe(1200);
     });
   });
 
@@ -164,7 +164,7 @@ describe('KritzelImageTool', () => {
       handleFileSelect(event);
 
       expect(mockImageCompression).toHaveBeenCalledWith(mockFile, {
-        maxWidthOrHeight: 300,
+        maxWidthOrHeight: 1200,
       });
     });
 
