@@ -12,15 +12,7 @@ import {
   KritzelEditor,
   KritzelSyncConfig,
 } from 'kritzel-angular';
-import {
-  ActiveWorkspaceChangeEvent,
-  EditorIsReadyEvent,
-  HocuspocusSyncProvider,
-  HttpAssetProvider,
-  IndexedDBAssetProvider,
-  KritzelAssetStorageConfig,
-  LoginEvent,
-} from 'kritzel-stencil';
+import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, HocuspocusSyncProvider, LoginEvent } from 'kritzel-stencil';
 import { UserData } from './user.resolver';
 
 @Component({
@@ -30,7 +22,6 @@ import { UserData } from './user.resolver';
   template: `
     <kritzel-editor
       [syncConfig]="syncConfig"
-      [assetStorageConfig]="assetStorageConfig"
       [loginConfig]="loginConfig"
       [activeWorkspaceId]="activeWorkspaceId"
       (isReady)="onIsReady($event)"
@@ -50,22 +41,6 @@ export class EditorPageComponent implements OnInit {
   isShared = false;
 
   syncConfig!: KritzelSyncConfig;
-
-  /**
-   * Demo asset storage config that points the remote provider at a
-   * non-existent host. Uploads still cache locally via IndexedDB, but
-   * cross-device / cache-miss resolution will fail — useful for
-   * exercising the image-loading skeleton and its error state.
-   */
-  assetStorageConfig: KritzelAssetStorageConfig = {
-    providers: [
-      HttpAssetProvider.with({
-        uploadUrl: () => 'https://kritzel-broken-asset-host.invalid/api/assets',
-        resolveUrl: (id) =>
-          `https://kritzel-broken-asset-host.invalid/api/assets/${id}`,
-      }),
-    ],
-  };
 
   loginConfig = {
     providers: [
