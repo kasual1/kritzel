@@ -3,6 +3,8 @@ import { KritzelViewport } from '../../../classes/core/viewport.class';
 import { KritzelPath } from '../../../classes/objects/path.class';
 import { KritzelLine } from '../../../classes/objects/line.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
+import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
+import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
 import { KritzelImage } from '../../../classes/objects/image.class';
 import { KritzelText } from '../../../classes/objects/text.class';
 import { KritzelShape } from '../../../classes/objects/shape.class';
@@ -1893,6 +1895,14 @@ export class KritzelEngine {
       this.core.store.state.isSelecting = false;
       this.core.store.state.isResizeHandleSelected = false;
       this.core.store.state.isRotationHandleSelected = false;
+    }
+
+    if (!(activeTool instanceof KritzelTextTool)) {
+      this.core.resetActiveText();
+    }
+
+    if (!(activeTool instanceof KritzelShapeTool)) {
+      this.core.resetActiveShape();
     }
 
     this.core.store.state.skipContextMenu = false;
