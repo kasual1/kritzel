@@ -53,6 +53,21 @@ export class KritzelPortal {
     }
   }
 
+  @Listen('pointerdown', { target: 'document', capture: true, passive: false })
+  handleOutsidePointerDown(event: PointerEvent) {
+    if (!this.portal) return;
+    const isLastPortal = this.lastAddedPortal === this.portal;
+    if (!isLastPortal) return;
+
+    const target = event.target as HTMLElement;
+    if (!this.host.contains(target)) {
+      event.stopPropagation();
+      event.preventDefault();
+      this.close.emit();
+      this.closePortal();
+    }
+  }
+
   @Listen('keydown', { target: 'window' })
   handleKeyDown(event: KeyboardEvent) {
     const isLastPortal = this.lastAddedPortal === this.portal;
