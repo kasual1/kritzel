@@ -113,6 +113,133 @@ test.describe('Clipboard', () => {
     });
   });
 
+  test.describe('cut and paste', () => {
+    test('should copy a selected object to the clipboard and remove it from the canvas', async ({ editorPage }) => {
+      const shape = await editorPage.addShape({
+        shapeType: 'rectangle',
+        translateX: 100,
+        translateY: 100,
+        width: 200,
+        height: 150,
+        fillColor: { light: '#ff0000', dark: '#ff0000' },
+      });
+
+      await editorPage.selectObjects([shape]);
+      await editorPage.cut();
+
+      const copied = await editorPage.getCopiedObjects<any>();
+      expect(copied).toHaveLength(1);
+      expect(copied[0].id).not.toBe(shape.id);
+      expect(copied[0].shapeType).toBe('rectangle');
+
+      const allObjects = await editorPage.getAllObjects();
+      expect(allObjects).toHaveLength(0);
+    });
+
+    test('should cut multiple selected objects', async ({ editorPage }) => {
+      const shape1 = await editorPage.addShape({
+        shapeType: 'rectangle',
+        translateX: 0,
+        translateY: 0,
+        width: 100,
+        height: 100,
+      });
+      const shape2 = await editorPage.addShape({
+        shapeType: 'ellipse',
+        translateX: 200,
+        translateY: 0,
+        width: 100,
+        height: 100,
+      });
+      await editorPage.addText({
+        text: 'Keep me',
+        translateX: 400,
+        translateY: 0,
+      });
+
+      await editorPage.selectObjects([shape1, shape2]);
+      await editorPage.cut();
+
+      const copied = await editorPage.getCopiedObjects<any>();
+      expect(copied).toHaveLength(2);
+      const copiedIds = copied.map((o: any) => o.id);
+      expect(copiedIds).not.toContain(shape1.id);
+      expect(copiedIds).not.toContain(shape2.id);
+
+      const allObjects = await editorPage.getAllObjects();
+      expect(allObjects).toHaveLength(1);
+    });
+
+    test('should do nothing when there is no selection', async ({ editorPage }) => {
+      await editorPage.addShape({
+        shapeType: 'rectangle',
+        translateX: 100,
+        translateY: 100,
+        width: 200,
+        height: 150,
+      });
+
+      await editorPage.clearSelection();
+      await editorPage.cut();
+
+      const copied = await editorPage.getCopiedObjects<any>();
+      expect(copied ?? []).toHaveLength(0);
+
+      const allObjects = await editorPage.getAllObjects();
+      expect(allObjects).toHaveLength(1);
+    });
+
+    test('should paste a previously cut object at specified coordinates', async ({ editorPage }) => {
+      const shape = await editorPage.addShape({
+        shapeType: 'rectangle',
+        translateX: 100,
+        translateY: 100,
+        width: 200,
+        height: 150,
+      });
+
+      await editorPage.selectObjects([shape]);
+      await editorPage.cut();
+
+      expect(await editorPage.getAllObjects()).toHaveLength(0);
+
+      await editorPage.paste(400, 400);
+      await editorPage.clearSelection();
+
+      const allObjects = await editorPage.getAllObjects<any>();
+      expect(allObjects).toHaveLength(1);
+
+      const pasted = allObjects[0];
+      expect(pasted.id).not.toBe(shape.id);
+      expect(pasted.translateX).toBeCloseTo(400, -1);
+      expect(pasted.translateY).toBeCloseTo(400, -1);
+    });
+
+    test('object count should decrease after cut', async ({ editorPage }) => {
+      const shape = await editorPage.addShape({
+        shapeType: 'rectangle',
+        translateX: 0,
+        translateY: 0,
+        width: 100,
+        height: 100,
+      });
+      await editorPage.addShape({
+        shapeType: 'ellipse',
+        translateX: 200,
+        translateY: 0,
+        width: 100,
+        height: 100,
+      });
+
+      expect(await editorPage.getObjectsTotalCount()).toBe(2);
+
+      await editorPage.selectObjects([shape]);
+      await editorPage.cut();
+
+      expect(await editorPage.getObjectsTotalCount()).toBe(1);
+    });
+  });
+
   test.describe('delete', () => {
     test('should delete the selected object', async ({ editorPage }) => {
       const shape = await editorPage.addShape({

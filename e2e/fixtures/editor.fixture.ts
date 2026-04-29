@@ -601,6 +601,11 @@ export class EditorPage {
     return this.callMethod('copy');
   }
 
+  /** Cut selected objects (copy then delete). */
+  async cut() {
+    return this.callMethod('cut');
+  }
+
   /** Paste at world coordinates. */
   async paste(x: number, y: number) {
     return this.callMethod('paste', x, y);
