@@ -736,6 +736,39 @@ describe('KritzelCore', () => {
     });
   });
 
+  describe('cut', () => {
+    it('should do nothing if no selection group exists', () => {
+      const copySpy = jest.spyOn(core, 'copy');
+      const deleteSpy = jest.spyOn(core, 'delete');
+      mockStore.selectionGroup = null;
+
+      core.cut();
+
+      expect(copySpy).not.toHaveBeenCalled();
+      expect(deleteSpy).not.toHaveBeenCalled();
+    });
+
+    it('should copy selected objects and then delete them', () => {
+      const copiedObj = { id: 'copy-1' };
+      const obj1 = { id: 'obj-1', zIndex: 1, isMounted: true, copy: jest.fn().mockReturnValue(copiedObj) } as any;
+      const sg = { id: 'sg-1', objects: [obj1] } as any;
+      mockStore.selectionGroup = sg;
+
+      const copySpy = jest.spyOn(core, 'copy');
+      const deleteSpy = jest.spyOn(core, 'delete');
+
+      core.cut();
+
+      expect(copySpy).toHaveBeenCalledTimes(1);
+      expect(deleteSpy).toHaveBeenCalledTimes(1);
+      expect(copySpy.mock.invocationCallOrder[0]).toBeLessThan(deleteSpy.mock.invocationCallOrder[0]);
+      expect(obj1.copy).toHaveBeenCalledTimes(1);
+      expect(mockStore.state.copiedObjects).toHaveLength(1);
+      expect(mockStore.state.copiedObjectIdMapping).toBeInstanceOf(Map);
+      expect(obj1.isMounted).toBe(false);
+    });
+  });
+
   describe('bringForward', () => {
     it('should increment zIndex of selected objects', () => {
       const obj = { id: 'obj-1', zIndex: 3, onAfterUpdate: jest.fn() } as any;

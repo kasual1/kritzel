@@ -140,6 +140,7 @@ export class KritzelEditor {
 
   @Prop() objectContextMenuItems: ContextMenuItem[] = [
     { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },
+    { label: 'Cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },
     {
       label: 'Paste',
       icon: 'paste',
@@ -484,6 +485,11 @@ export class KritzelEditor {
   @Method()
   async copy() {
     return this.engineRef.copy();
+  }
+
+  @Method()
+  async cut() {
+    return this.engineRef.cut();
   }
 
   @Method()
