@@ -12,17 +12,45 @@ import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-pa
  * Supports configurable font family, size, color, and opacity.
  */
 export class KritzelTextTool extends KritzelBaseTool {
-  /** The font family for new text objects */
-  fontFamily: string = 'Arial';
-  
-  /** The font size for new text objects in pixels */
-  fontSize: number = 16;
-  
-  /** The font color for new text objects (supports theme-aware light/dark colors) */
-  fontColor: ThemeAwareColor = DEFAULT_COLOR_PALETTE[0];
-  
-  /** The opacity of new text objects (0-1) */
-  opacity: number = 1;
+  /** Backing field for {@link fontFamily}. */
+  private _fontFamily: string = 'Arial';
+
+  /** Backing field for {@link fontSize}. */
+  private _fontSize: number = 16;
+
+  /** Backing field for {@link fontColor}. */
+  private _fontColor: ThemeAwareColor = DEFAULT_COLOR_PALETTE[0];
+
+  /** Backing field for {@link opacity}. */
+  private _opacity: number = 1;
+
+  /** The font family for new text objects. */
+  get fontFamily(): string { return this._fontFamily; }
+  set fontFamily(value: string) {
+    this._fontFamily = value;
+    this.applyToActiveText({ fontFamily: value });
+  }
+
+  /** The font size for new text objects in pixels. */
+  get fontSize(): number { return this._fontSize; }
+  set fontSize(value: number) {
+    this._fontSize = value;
+    this.applyToActiveText({ fontSize: value });
+  }
+
+  /** The font color for new text objects (supports theme-aware light/dark colors). */
+  get fontColor(): ThemeAwareColor { return this._fontColor; }
+  set fontColor(value: ThemeAwareColor) {
+    this._fontColor = value;
+    this.applyToActiveText({ fontColor: value });
+  }
+
+  /** The opacity of new text objects (0-1). */
+  get opacity(): number { return this._opacity; }
+  set opacity(value: number) {
+    this._opacity = value;
+    this.applyToActiveText({ opacity: value });
+  }
 
   /** Available color palette for the text tool */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
@@ -33,6 +61,19 @@ export class KritzelTextTool extends KritzelBaseTool {
    */
   constructor(core: KritzelCore) {
     super(core);
+  }
+
+  /**
+   * Propagates a property change to the text object that is currently being edited, if any.
+   * Mirrors the selection tool pattern of pushing tool-config changes down to live objects,
+   * but scoped to the single text in edit mode rather than the current selection.
+   */
+  private applyToActiveText(updatedProperties: Partial<KritzelText>): void {
+    const activeText = this._core?.store?.activeText;
+    if (!activeText) return;
+
+    this._core.updateObject(activeText, updatedProperties);
+    this._core.rerender();
   }
 
   /**
