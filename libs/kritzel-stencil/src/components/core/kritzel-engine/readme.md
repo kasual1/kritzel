@@ -213,6 +213,16 @@ Type: `Promise<KritzelWorkspace>`
 
 The created workspace.
 
+### `cut() => Promise<void>`
+
+Cuts the currently selected objects to the internal clipboard (deletes them from the canvas).
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `delete() => Promise<void>`
 
 Deletes the currently selected objects from the canvas.
