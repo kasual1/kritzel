@@ -106,6 +106,7 @@ describe('KritzelTextTool', () => {
       rerender: jest.fn(),
       findObjectById: jest.fn().mockReturnValue(undefined),
       resetActiveText: jest.fn(),
+      updateObject: jest.fn(),
     } as unknown as jest.Mocked<KritzelCore>;
 
     tool = new KritzelTextTool(mockCore);
@@ -517,6 +518,76 @@ describe('KritzelTextTool', () => {
       tool.handlePointerUp(event);
 
       expect(activeText.focus).toHaveBeenCalledWith({ x: 200, y: 300 });
+    });
+  });
+
+  // ============================================
+  // Live propagation of style changes to the active text
+  // ============================================
+
+  describe('style property setters propagate to active text', () => {
+    let activeText: any;
+
+    beforeEach(() => {
+      activeText = Object.create(KritzelText.prototype);
+      activeText.id = 'active-text';
+      mockCore.store.activeText = activeText;
+    });
+
+    it('should update active text when fontFamily changes', () => {
+      tool.fontFamily = 'Courier';
+
+      expect(tool.fontFamily).toBe('Courier');
+      expect(mockCore.updateObject).toHaveBeenCalledWith(activeText, { fontFamily: 'Courier' });
+      expect(mockCore.rerender).toHaveBeenCalled();
+    });
+
+    it('should update active text when fontSize changes', () => {
+      tool.fontSize = 24;
+
+      expect(tool.fontSize).toBe(24);
+      expect(mockCore.updateObject).toHaveBeenCalledWith(activeText, { fontSize: 24 });
+      expect(mockCore.rerender).toHaveBeenCalled();
+    });
+
+    it('should update active text when fontColor changes', () => {
+      const newColor = { light: '#ff0000', dark: '#ff0000' };
+
+      tool.fontColor = newColor;
+
+      expect(tool.fontColor).toEqual(newColor);
+      expect(mockCore.updateObject).toHaveBeenCalledWith(activeText, { fontColor: newColor });
+      expect(mockCore.rerender).toHaveBeenCalled();
+    });
+
+    it('should update active text when opacity changes', () => {
+      tool.opacity = 0.5;
+
+      expect(tool.opacity).toBe(0.5);
+      expect(mockCore.updateObject).toHaveBeenCalledWith(activeText, { opacity: 0.5 });
+      expect(mockCore.rerender).toHaveBeenCalled();
+    });
+
+    it('should not call updateObject when there is no active text', () => {
+      mockCore.store.activeText = null;
+
+      tool.fontFamily = 'Courier';
+      tool.fontSize = 24;
+      tool.fontColor = { light: '#ff0000', dark: '#ff0000' };
+      tool.opacity = 0.5;
+
+      expect(mockCore.updateObject).not.toHaveBeenCalled();
+      expect(mockCore.rerender).not.toHaveBeenCalled();
+    });
+
+    it('should still persist the value on the tool when there is no active text', () => {
+      mockCore.store.activeText = null;
+
+      tool.fontFamily = 'Courier';
+      tool.fontSize = 24;
+
+      expect(tool.fontFamily).toBe('Courier');
+      expect(tool.fontSize).toBe(24);
     });
   });
 });
