@@ -2116,6 +2116,8 @@ export class KritzelEngine {
                       imageRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'pixelated' : 'auto',
                     }}
                     draggable={false}
+                    decoding="async"
+                    loading="eager"
                     onDragStart={e => e.preventDefault()}
                   />
                 )}
