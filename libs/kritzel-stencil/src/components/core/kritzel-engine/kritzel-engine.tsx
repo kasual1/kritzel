@@ -554,6 +554,12 @@ export class KritzelEngine {
     this.core.copy();
   }
 
+  /** Cuts the currently selected objects to the internal clipboard (deletes them from the canvas). */
+  @Method()
+  async cut() {
+    this.core.cut();
+  }
+
   /**
    * Pastes previously copied objects at the specified world coordinates.
    * @param x - X position in world coordinates.
