@@ -42,6 +42,9 @@ describe('KritzelKeyHandler', () => {
         get activeText() {
           return mockActiveText;
         },
+        get activeShape() {
+          return null;
+        },
         setState: jest.fn(),
       },
       clearSelection: jest.fn(),
@@ -365,6 +368,86 @@ describe('KritzelKeyHandler', () => {
         keyHandler.handleKeyDown(event);
 
         expect(mockCore.ungroup).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('Active text editing', () => {
+      it('should not execute Select All shortcut when a text object is being edited', () => {
+        mockActiveText = { isEditing: true };
+        const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
+        const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+        keyHandler.handleKeyDown(event);
+
+        expect(preventDefaultSpy).not.toHaveBeenCalled();
+        expect(mockCore.selectAllObjectsInViewport).not.toHaveBeenCalled();
+      });
+
+      it('should not execute Delete shortcut when a text object is being edited', () => {
+        mockActiveText = { isEditing: true };
+        mockSelectionGroup = { objects: [] };
+        const event = new KeyboardEvent('keydown', { key: 'Delete' });
+        const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+        keyHandler.handleKeyDown(event);
+
+        expect(preventDefaultSpy).not.toHaveBeenCalled();
+        expect(mockCore.delete).not.toHaveBeenCalled();
+      });
+
+      it('should not execute Copy shortcut when a text object is being edited', () => {
+        mockActiveText = { isEditing: true };
+        mockSelectionGroup = { objects: [] };
+        const event = new KeyboardEvent('keydown', { key: 'c', ctrlKey: true });
+
+        keyHandler.handleKeyDown(event);
+
+        expect(mockCore.copy).not.toHaveBeenCalled();
+      });
+
+      it('should not execute arrow key movement when a text object is being edited', () => {
+        mockActiveText = { isEditing: true };
+        mockSelectionGroup = { objects: [] };
+        const event = new KeyboardEvent('keydown', { key: 'ArrowUp' });
+        const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+        keyHandler.handleKeyDown(event);
+
+        expect(preventDefaultSpy).not.toHaveBeenCalled();
+        expect(mockCore.rerender).not.toHaveBeenCalled();
+      });
+
+      it('should still update isCtrlKeyPressed state when a text object is being edited', () => {
+        mockActiveText = { isEditing: true };
+        const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
+
+        keyHandler.handleKeyDown(event);
+
+        expect(mockCore.store.state.isCtrlKeyPressed).toBe(true);
+      });
+
+      it('should execute shortcuts normally when no text object is being edited', () => {
+        mockActiveText = null;
+        const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
+        const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+        keyHandler.handleKeyDown(event);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(mockCore.selectAllObjectsInViewport).toHaveBeenCalled();
+      });
+
+      it('should clear text selection when Escape is pressed while editing', () => {
+        const handleEscape = jest.fn();
+        mockActiveText = { isEditing: true, handleEscape };
+        const event = new KeyboardEvent('keydown', { key: 'Escape' });
+        const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+        keyHandler.handleKeyDown(event);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(handleEscape).toHaveBeenCalled();
+        expect(mockCore.clearSelection).not.toHaveBeenCalled();
       });
     });
 
