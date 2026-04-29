@@ -59,8 +59,11 @@ export class KritzelPortal {
     const isLastPortal = this.lastAddedPortal === this.portal;
     if (!isLastPortal) return;
 
-    const target = event.target as HTMLElement;
-    if (!this.host.contains(target)) {
+    const path = event.composedPath();
+    const isInsidePortal = path.some(el => el === this.host);
+    const isOnAnchor = this.anchor && path.some(el => el === this.anchor);
+
+    if (!isInsidePortal && !isOnAnchor) {
       event.stopPropagation();
       event.preventDefault();
       this.close.emit();
