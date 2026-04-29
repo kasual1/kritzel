@@ -593,6 +593,8 @@ export class KritzelViewport {
     const startScale = this._core.store.state.scale;
     const startTime = performance.now();
 
+    this._core.store.state.isScaling = true;
+
     const animate = (currentTime: number): void => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
@@ -612,6 +614,8 @@ export class KritzelViewport {
         this._animationFrameId = requestAnimationFrame(animate);
       } else {
         this._animationFrameId = null;
+        this._core.store.state.isScaling = false;
+        this._core.rerender();
         this._debounceUpdate();
       }
     };
