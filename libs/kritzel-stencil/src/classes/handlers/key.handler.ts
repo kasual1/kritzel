@@ -12,14 +12,31 @@ const NUDGE_AMOUNT = 10;
  * undo/redo, and navigation via keyboard input.
  */
 export class KritzelKeyHandler extends KritzelBaseHandler {
-
   /**
    * Array of registered keyboard shortcuts with their associated actions.
    * Each shortcut defines the key combination, display label, category, optional condition, and action to execute.
    */
   private shortcuts: KritzelShortcut[] = [
     // General
-    { key: 'Escape', label: 'Clear Selection', category: 'General', condition: c => !!c.store.selectionGroup, action: c => c.clearSelection() },
+    {
+      key: 'Escape',
+      label: 'Clear Selection',
+      category: 'General',
+      condition: c => !!c.store.activeText || !!c.store.activeShape || !!c.store.selectionGroup,
+      action: c => {
+        if (c.store.activeText) {
+          c.store.activeText.handleEscape();
+          return;
+        }
+
+        if (c.store.activeShape) {
+          c.store.activeShape.handleEscape();
+          return;
+        }
+
+        c.clearSelection();
+      },
+    },
     { key: 'Delete', label: 'Delete Selected', category: 'General', condition: c => !!c.store.selectionGroup, action: c => c.delete() },
     { key: 'a', ctrl: true, label: 'Select All in Viewport', category: 'General', action: c => c.selectAllObjectsInViewport() },
     { key: 'A', ctrl: true, shift: true, label: 'Select All Objects', category: 'General', action: c => c.selectAllObjects() },
@@ -52,7 +69,14 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
       },
     },
     { key: 'x', ctrl: true, label: 'Cut', category: 'Clipboard', condition: c => !!c.store.selectionGroup, action: c => c.cut() },
-    { key: 'v', ctrl: true, label: 'Paste', category: 'Clipboard', condition: c => !!c.store.state.copiedObjects && !c.store.activeText, action: c => c.paste() },
+    {
+      key: 'v',
+      ctrl: true,
+      label: 'Paste',
+      category: 'Clipboard',
+      condition: c => !!c.store.state.copiedObjects && !c.store.activeText && !c.store.activeShape,
+      action: c => c.paste(),
+    },
 
     // Object layering
     { key: '+', ctrl: true, label: 'Bring Forward', category: 'Object Layering', condition: c => !!c.store.selectionGroup, action: c => c.bringForward() },
@@ -65,10 +89,46 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     { key: 'G', ctrl: true, shift: true, label: 'Ungroup', category: 'Grouping', condition: c => !!c.store.selectionGroup, action: c => c.ungroup() },
 
     // Movement
-    { key: 'ArrowUp', label: 'Move Object Up', category: 'Movement', condition: c => !!c.store.selectionGroup, action: c => { c.store.selectionGroup!.move(0, 0, 0, NUDGE_AMOUNT); c.rerender(); } },
-    { key: 'ArrowDown', label: 'Move Object Down', category: 'Movement', condition: c => !!c.store.selectionGroup, action: c => { c.store.selectionGroup!.move(0, NUDGE_AMOUNT, 0, 0); c.rerender(); } },
-    { key: 'ArrowLeft', label: 'Move Object Left', category: 'Movement', condition: c => !!c.store.selectionGroup, action: c => { c.store.selectionGroup!.move(0, 0, NUDGE_AMOUNT, 0); c.rerender(); } },
-    { key: 'ArrowRight', label: 'Move Object Right', category: 'Movement', condition: c => !!c.store.selectionGroup, action: c => { c.store.selectionGroup!.move(NUDGE_AMOUNT, 0, 0, 0); c.rerender(); } },
+    {
+      key: 'ArrowUp',
+      label: 'Move Object Up',
+      category: 'Movement',
+      condition: c => !!c.store.selectionGroup,
+      action: c => {
+        c.store.selectionGroup!.move(0, 0, 0, NUDGE_AMOUNT);
+        c.rerender();
+      },
+    },
+    {
+      key: 'ArrowDown',
+      label: 'Move Object Down',
+      category: 'Movement',
+      condition: c => !!c.store.selectionGroup,
+      action: c => {
+        c.store.selectionGroup!.move(0, NUDGE_AMOUNT, 0, 0);
+        c.rerender();
+      },
+    },
+    {
+      key: 'ArrowLeft',
+      label: 'Move Object Left',
+      category: 'Movement',
+      condition: c => !!c.store.selectionGroup,
+      action: c => {
+        c.store.selectionGroup!.move(0, 0, NUDGE_AMOUNT, 0);
+        c.rerender();
+      },
+    },
+    {
+      key: 'ArrowRight',
+      label: 'Move Object Right',
+      category: 'Movement',
+      condition: c => !!c.store.selectionGroup,
+      action: c => {
+        c.store.selectionGroup!.move(NUDGE_AMOUNT, 0, 0, 0);
+        c.rerender();
+      },
+    },
   ];
 
   /**
@@ -101,6 +161,15 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
    */
   handleKeyDown(event: KeyboardEvent): void {
     this._core.store.state.isCtrlKeyPressed = event.ctrlKey;
+
+    // While a text or shape's text editor is being edited, let ProseMirror /
+    // the browser handle keys natively (Ctrl+A, Ctrl+C, arrows, etc.) instead
+    // of running global canvas shortcuts. Escape is the one exception — it
+    // still runs through the shortcut system so it can collapse the text
+    // selection (handled inside the shortcut's action).
+    if ((this._core.store.activeText || this._core.store.activeShape) && event.key !== 'Escape') {
+      return;
+    }
 
     const shortcut = this.shortcuts.find(s => s.key === event.key && !!s.ctrl === event.ctrlKey && !!s.shift === event.shiftKey && (!s.condition || s.condition(this._core)));
 
