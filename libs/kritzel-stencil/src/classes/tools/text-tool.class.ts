@@ -51,7 +51,7 @@ export class KritzelTextTool extends KritzelBaseTool {
     if (event.pointerType === 'mouse') {
       const path = event.composedPath().slice(1) as HTMLElement[];
       const objectElement = path.find(element => element.classList && element.classList.contains('object'));
-      const object = this._core.findObjectById(objectElement?.id);
+      const object = objectElement?.id ? this._core.findObjectById(objectElement.id) : null;
 
       const activeText = this._core.store.activeText;
 
@@ -100,7 +100,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       const path = event.composedPath().slice(1) as HTMLElement[];
       const objectElement = path.find(element => element.classList && element.classList.contains('object'));
-      const object = this._core.findObjectById(objectElement?.id);
+      const object = objectElement?.id ? this._core.findObjectById(objectElement.id) : null;
 
       const activeText = this._core.store.activeText;
 
