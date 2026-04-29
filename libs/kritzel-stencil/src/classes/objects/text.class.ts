@@ -427,6 +427,33 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   }
 
   /**
+   * Handles the Escape key while the text object is in edit mode.
+   * Implements a two-stage behavior: if the editor currently has a non-empty
+   * text selection, the selection is collapsed to a caret without exiting
+   * edit mode. If the selection is already collapsed, edit mode is exited
+   * (saving the current content or deleting the object if it is empty) and
+   * the canvas selection is cleared so subsequent tool actions start fresh.
+   */
+  handleEscape(): void {
+    if (!this.editor || !this.isEditing) {
+      return;
+    }
+
+    const { state } = this.editor;
+
+    if (!state.selection.empty) {
+      const pos = state.selection.head;
+      this.editor.dispatch(state.tr.setSelection(TextSelection.create(state.doc, pos)));
+      this.editor.focus();
+      return;
+    }
+
+    this._core.resetActiveText();
+    this._core.clearSelection();
+    this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+  }
+
+  /**
    * Handles pointer down events during text editing.
    * Stops event propagation to prevent canvas interaction while editing.
    * @param event - The pointer down event.
