@@ -494,6 +494,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     const existingGroup = this._core.store.selectionGroup;
     if (shiftKey && existingGroup) {
       existingGroup.addOrRemove(objectToSelect);
+      this.removeDescendantsOfSelectedGroups(existingGroup);
       if (existingGroup.objects.length === 0) {
         this._core.removeSelectionGroup();
       } else {
@@ -543,15 +544,17 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     }
 
     const unrolledObjects = Array.from(resolvedObjects.values());
+    const filteredObjects = this.filterDescendantsOfSelectedGroups(unrolledObjects);
     const existingGroup = this._core.store.selectionGroup;
 
     if (shiftKey && existingGroup) {
-      existingGroup.addObjects(unrolledObjects);
+      existingGroup.addObjects(filteredObjects);
+      this.removeDescendantsOfSelectedGroups(existingGroup);
       this._core.rerender();
     } else {
       // Create selection group and set all IDs at once (no per-item refresh)
       const selectionGroup = KritzelSelectionGroup.create(this._core);
-      selectionGroup.objectIds = Array.from(resolvedObjects.keys());
+      selectionGroup.objectIds = filteredObjects.map(o => o.id);
 
       // Only refresh dimensions and capture snapshots ONCE at the end - O(n) instead of O(n²)
       if (selectionGroup.length === 1) {
@@ -563,6 +566,39 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
       this._core.addSelectionGroup(selectionGroup);
       this._core.rerender();
+    }
+  }
+
+  /**
+   * Removes objects that are descendants of any KritzelGroup also present in the list.
+   * Prevents an ancestor group and one of its descendants from coexisting in a selection,
+   * which would otherwise cause the descendant to be transformed twice (once via the
+   * ancestor group, and once directly).
+   * @param objects - The candidate objects for the selection.
+   * @returns A new array with descendants of selected groups removed.
+   */
+  private filterDescendantsOfSelectedGroups(objects: KritzelBaseObject<any>[]): KritzelBaseObject<any>[] {
+    const descendantIds = new Set<string>();
+    for (const obj of objects) {
+      if (obj instanceof KritzelGroup) {
+        KritzelGroup.collectDescendantIds(obj, descendantIds);
+      }
+    }
+    if (descendantIds.size === 0) {
+      return objects;
+    }
+    return objects.filter(o => !descendantIds.has(o.id));
+  }
+
+  /**
+   * Mutates an existing selection group to remove any descendants of groups
+   * already present in it. See {@link filterDescendantsOfSelectedGroups}.
+   * @param selectionGroup - The selection group to clean up in place.
+   */
+  private removeDescendantsOfSelectedGroups(selectionGroup: KritzelSelectionGroup): void {
+    const filtered = this.filterDescendantsOfSelectedGroups(selectionGroup.objects);
+    if (filtered.length !== selectionGroup.objects.length) {
+      selectionGroup.objectIds = filtered.map(o => o.id);
     }
   }
 }
