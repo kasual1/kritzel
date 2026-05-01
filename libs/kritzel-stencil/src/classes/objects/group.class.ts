@@ -133,6 +133,24 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     }
 
     /**
+     * Recursively collects the IDs of all descendants of the given group (children,
+     * grandchildren, etc.). Useful for detecting when a selection contains both an
+     * ancestor group and one of its descendants — a configuration that would otherwise
+     * cause the descendant to be transformed twice (once via the ancestor, once directly).
+     * @param group - The group whose descendants should be collected.
+     * @param out - A set that will be populated with all descendant object IDs.
+     */
+    static collectDescendantIds(group: KritzelGroup, out: Set<string> = new Set()): Set<string> {
+        for (const child of group.children) {
+            out.add(child.id);
+            if (child instanceof KritzelGroup) {
+                KritzelGroup.collectDescendantIds(child, out);
+            }
+        }
+        return out;
+    }
+
+    /**
      * Adds a child object to this group.
      * If the object is already a child, no action is taken.
      * Automatically refreshes the bounding box and captures child snapshots.
@@ -180,8 +198,19 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * Finalizes the group after children have been positioned (e.g., after paste).
      * Refreshes the bounding box to encompass all children and captures
      * child snapshots for subsequent transformation operations.
+     *
+     * Recursively finalizes nested child groups first, so that when a transform
+     * (rotate/resize) cascades through nested groups, every group's snapshots are
+     * aligned with the current visual state. Without this, a nested group's
+     * `snapshotRotation` could be stale, causing the inner group to be offset
+     * relative to its parent during rotation.
      */
     finalize(): void {
+        for (const child of this.children) {
+            if (child instanceof KritzelGroup) {
+                child.finalize();
+            }
+        }
         this.refreshBoundingBox();
         this.captureChildSnapshots();
     }
