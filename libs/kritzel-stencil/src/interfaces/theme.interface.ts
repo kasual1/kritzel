@@ -16,6 +16,7 @@ export interface KritzelTheme {
     cursorTrailOpacity?: string;
     dividerColor?: string;
     focusColor?: string;
+    fontFamily?: string;
     borderColor?: string;
     focusRingColor?: string;
     pointerCursor?: string;
@@ -26,9 +27,11 @@ export interface KritzelTheme {
     textPrimary?: string;
     textSecondary?: string;
     iconColor?: string;
-    snapIndicatorFill?: string;
-    snapIndicatorStroke?: string;
-    snapLineStroke?: string;
+    loadingOverlayBackground?: string;
+    loadingOverlayColor?: string;
+    loadingOverlayDelay?: string;
+    loadingOverlaySpinnerActiveColor?: string;
+    loadingOverlaySpinnerColor?: string;
   };
 
   /** Active users variables */
@@ -55,7 +58,6 @@ export interface KritzelTheme {
     cursorLabelFontSize?: string;
     cursorLabelTextColor?: string;
     cursorTransitionDuration?: string;
-    edgeIndicatorSize?: string;
   };
 
   /** Back to content variables */
@@ -425,6 +427,13 @@ export interface KritzelTheme {
     trackColor?: string;
     transitionDuration?: string;
     width?: string;
+  };
+
+  /** Snap variables */
+  snap?: {
+    indicatorFill?: string;
+    indicatorStroke?: string;
+    lineStroke?: string;
   };
 
   /** Split button variables */
