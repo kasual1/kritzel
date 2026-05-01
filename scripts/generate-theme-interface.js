@@ -17,6 +17,7 @@ const CSS_VARIABLE_PATTERN = /--kritzel-([a-zA-Z0-9-]+)/g;
 // Known categories based on component structure
 const KNOWN_CATEGORIES = [
   'engine',
+  'snap',
   'controls',
   'tooltip',
   'context-menu',
