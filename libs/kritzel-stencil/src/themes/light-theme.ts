@@ -135,6 +135,12 @@ export const lightTheme: KritzelTheme = {
     backgroundColor: '#ffffff',
   },
 
+  snap: {
+    indicatorFill: 'rgba(59, 130, 246, 0.3)',
+    indicatorStroke: '#007bff',
+    lineStroke: 'rgba(0, 0, 0, 0.2)',
+  },
+
   fontSize: {
     hoverBackgroundColor: '#ebebeb',
     selectedBackgroundColor: '#ebebeb',
