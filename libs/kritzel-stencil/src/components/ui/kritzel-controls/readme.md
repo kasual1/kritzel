@@ -48,7 +48,6 @@ Type: `Promise<void>`
 - [kritzel-icon](../../shared/kritzel-icon)
 - [kritzel-tooltip](../../shared/kritzel-tooltip)
 - [kritzel-tool-config](../kritzel-tool-config)
-- [kritzel-font](../../shared/kritzel-font)
 - [kritzel-color](../../shared/kritzel-color)
 
 ### Graph
@@ -58,7 +57,6 @@ graph TD;
   kritzel-controls --> kritzel-icon
   kritzel-controls --> kritzel-tooltip
   kritzel-controls --> kritzel-tool-config
-  kritzel-controls --> kritzel-font
   kritzel-controls --> kritzel-color
   kritzel-utility-panel --> kritzel-icon
   kritzel-tool-config --> kritzel-stroke-size

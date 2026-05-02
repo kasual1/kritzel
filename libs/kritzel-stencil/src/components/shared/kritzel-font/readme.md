@@ -18,13 +18,11 @@
 
 ### Used by
 
- - [kritzel-controls](../../ui/kritzel-controls)
  - [kritzel-font-size](../kritzel-font-size)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-controls --> kritzel-font
   kritzel-font-size --> kritzel-font
   style kritzel-font fill:#f9f,stroke:#333,stroke-width:4px
 ```

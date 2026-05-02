@@ -864,7 +864,6 @@ graph TD;
   kritzel-controls --> kritzel-icon
   kritzel-controls --> kritzel-tooltip
   kritzel-controls --> kritzel-tool-config
-  kritzel-controls --> kritzel-font
   kritzel-controls --> kritzel-color
   kritzel-utility-panel --> kritzel-icon
   kritzel-tool-config --> kritzel-stroke-size
