@@ -133,6 +133,10 @@ export const lightTheme: KritzelTheme = {
 
   engine: {
     backgroundColor: '#ffffff',
+    loadingOverlayBackground: 'rgba(255, 255, 255, 0.85)',
+    loadingOverlayColor: '#333333',
+    loadingOverlaySpinnerActiveColor: '#333333',
+    loadingOverlaySpinnerColor: '#cccccc',
   },
 
   snap: {
