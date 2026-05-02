@@ -134,8 +134,9 @@ export class KritzelDialog {
   }
 
   private lockMobileViewportHeight() {
-    // Only lock height on mobile when fullscreenOnMobile is enabled
-    if (!this.fullscreenOnMobile || window.innerWidth > 576) {
+    // Only lock height on mobile when fullscreenOnMobile is enabled.
+    // Use the smaller dimension so landscape phones (wide but short) are also detected.
+    if (!this.fullscreenOnMobile || Math.min(window.innerWidth, window.innerHeight) > 576) {
       this.mobileLockedHeight = null;
       return;
     }
