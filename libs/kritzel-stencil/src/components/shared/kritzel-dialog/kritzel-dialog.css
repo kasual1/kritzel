@@ -71,8 +71,9 @@
   border-radius: 0;
 }
 
-/* Responsive: auto fullscreen on mobile when enabled */
-@media (max-width: 576px) {
+/* Responsive: auto fullscreen on mobile when enabled (portrait) */
+@media (max-width: 576px),
+  (max-height: 576px) and (orientation: landscape) {
   .backdrop:has(.fullscreen-on-mobile) {
     background-color: transparent;
   }
