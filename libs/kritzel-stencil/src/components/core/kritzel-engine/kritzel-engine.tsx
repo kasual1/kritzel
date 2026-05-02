@@ -725,27 +725,46 @@ export class KritzelEngine {
       }
     }
 
-    // Handle KritzelGroup: flush pending children into the store
+    // Handle KritzelGroup: flush pending children (recursively for nested groups) into the store
     if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') && object._pendingChildren.length > 0) {
-      object.childIds = [];
-
-      // Build a map of old ID → new ID so we can remap anchor references
+      // Build a map of old ID → new ID across all nesting levels so we can
+      // remap anchor references regardless of how deeply nested the line is.
       const idRemapping = new Map<string, string>();
+      const allFlushedChildren: KritzelBaseObject<any>[] = [];
 
-      object._pendingChildren.forEach(child => {
-        const oldId = child.id;
-        child.id = child.generateId();
-        child._core = this.core;
-        child.scale = this.core.store.state.scale;
-        child.zIndex = this.core.store.currentZIndex;
-        child.workspaceId = this.core.store.state.activeWorkspace!.id;
+      const flushGroup = (group: KritzelGroup): void => {
+        if (group._pendingChildren.length === 0) {
+          return;
+        }
 
-        idRemapping.set(oldId, child.id);
-        object.childIds.push(child.id);
-      });
+        const pending = group._pendingChildren;
+        group._pendingChildren = [];
+        group.childIds = [];
 
-      // Remap anchor references in lines before inserting into the store
-      object._pendingChildren.forEach(child => {
+        pending.forEach(child => {
+          const oldId = child.id;
+          child.id = child.generateId();
+          child._core = this.core;
+          child.scale = this.core.store.state.scale;
+          child.zIndex = this.core.store.currentZIndex;
+          child.workspaceId = this.core.store.state.activeWorkspace!.id;
+
+          idRemapping.set(oldId, child.id);
+          group.childIds.push(child.id);
+          allFlushedChildren.push(child);
+
+          // Recurse into nested groups before inserting so grandchildren get
+          // proper IDs and `childIds` references before the parent is added.
+          if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
+            flushGroup(child);
+          }
+        });
+      };
+
+      flushGroup(object);
+
+      // Remap anchor references in lines across all flushed descendants
+      allFlushedChildren.forEach(child => {
         if (KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
           if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
             child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
@@ -756,11 +775,12 @@ export class KritzelEngine {
         }
       });
 
-      object._pendingChildren.forEach(child => {
+      // Insert all flushed descendants into the store
+      allFlushedChildren.forEach(child => {
         this.core.addObject(child);
       });
 
-      object._pendingChildren = [];
+      // finalize() recurses into nested groups so all bounding boxes/snapshots align
       object.finalize();
 
       // Rebuild anchor index so anchored lines are tracked
