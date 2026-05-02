@@ -394,12 +394,25 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * @param height - The new height of the group's content area.
      */
     override resize(x: number, y: number, width: number, height: number): void {
-        const widthScaleFactor = width / this.width;
-        const heightScaleFactor = height / this.height;
+        // Use snapshot dimensions (stable across the gesture) instead of `this.*`,
+        // which mutates each frame and gets distorted by descendants like KritzelText
+        // that clamp to a uniform scale, causing the cascade factor to drift.
+        const baseWidth = this.snapshotTotalWidth > 0
+            ? this.snapshotTotalWidth - this.padding * 2
+            : this.width;
+        const baseHeight = this.snapshotTotalHeight > 0
+            ? this.snapshotTotalHeight - this.padding * 2
+            : this.height;
+        const baseScale = this.snapshotScale || this.scale || 1;
 
-        // Calculate old center
-        const oldCenterX = this.translateX + this.totalWidth / 2 / this.scale;
-        const oldCenterY = this.translateY + this.totalHeight / 2 / this.scale;
+        const widthScaleFactor = baseWidth !== 0 ? width / baseWidth : 1;
+        const heightScaleFactor = baseHeight !== 0 ? height / baseHeight : 1;
+
+        // Calculate old center from snapshot (stable across the gesture)
+        const snapshotTotalWidth = this.snapshotTotalWidth || (this.width + this.padding * 2);
+        const snapshotTotalHeight = this.snapshotTotalHeight || (this.height + this.padding * 2);
+        const oldCenterX = this.snapshotTranslateX + snapshotTotalWidth / 2 / baseScale;
+        const oldCenterY = this.snapshotTranslateY + snapshotTotalHeight / 2 / baseScale;
 
         // Calculate new center
         const newTotalWidth = width + this.padding * 2;
@@ -415,9 +428,21 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
         this._core.store.objects.transaction(() => {
             this.children.forEach(child => {
-                // Calculate child center
-                const childCenterX = child.translateX + child.totalWidth / 2 / child.scale;
-                const childCenterY = child.translateY + child.totalHeight / 2 / child.scale;
+                // Use snapshot values for the child to avoid compounding distortions caused
+                // by descendants like text that cannot honour requested aspect ratios.
+                const snapshot = this.unchangedChildSnapshots.get(child.id);
+                const childTranslateX = snapshot ? snapshot.translateX : child.translateX;
+                const childTranslateY = snapshot ? snapshot.translateY : child.translateY;
+                const childTotalWidth = snapshot ? snapshot.totalWidth : child.totalWidth;
+                const childTotalHeight = snapshot ? snapshot.totalHeight : child.totalHeight;
+                const childWidth = snapshot ? snapshot.width : child.width;
+                const childHeight = snapshot ? snapshot.height : child.height;
+                const childRotation = snapshot ? snapshot.rotation : child.rotation;
+                const childScale = (snapshot ? snapshot.scale : child.scale) || 1;
+
+                // Calculate child center from snapshot
+                const childCenterX = childTranslateX + childTotalWidth / 2 / childScale;
+                const childCenterY = childTranslateY + childTotalHeight / 2 / childScale;
 
                 // Vector from old group center to child center
                 const dx = childCenterX - oldCenterX;
@@ -440,7 +465,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
                 const newChildCenterY = newCenterY + rotatedY;
 
                 // Calculate relative rotation for scaling
-                const relativeRotation = child.rotation - rotation;
+                const relativeRotation = childRotation - rotation;
                 const cosRel = Math.cos(relativeRotation);
                 const sinRel = Math.sin(relativeRotation);
 
@@ -451,8 +476,8 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
                     Math.pow(widthScaleFactor * sinRel, 2) + Math.pow(heightScaleFactor * cosRel, 2)
                 );
 
-                const updatedWidth = child.width * newChildWidthScale;
-                const updatedHeight = child.height * newChildHeightScale;
+                const updatedWidth = childWidth * newChildWidthScale;
+                const updatedHeight = childHeight * newChildHeightScale;
                 const updatedTotalWidth = updatedWidth + child.padding * 2;
                 const updatedTotalHeight = updatedHeight + child.padding * 2;
 
@@ -466,7 +491,15 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
             });
 
             this.refreshBoundingBox();
-            this.captureChildSnapshots();
+
+            // Don't recapture snapshots while an interactive resize is in progress —
+            // recapturing each frame would defeat the purpose of using stable snapshots
+            // and re-introduce the compounding distortion described above. Snapshots are
+            // refreshed at the start of the next gesture via beginTransform/finalize.
+            if (!this._core.store.state.isResizing) {
+                this.captureChildSnapshots();
+            }
+
             this._core.store.objects.update(this);
         });
     }

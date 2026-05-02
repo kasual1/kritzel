@@ -812,4 +812,245 @@ describe('KritzelGroup', () => {
       expect(boundingBox.height).toBe(50);
     });
   });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Nested-group regressions — see conversation history for the bugs these
+  // tests guard against:
+  //  - Multi-level selection containing both ancestor + descendant groups
+  //  - finalize() must recurse so nested snapshots are aligned
+  //  - copy() must cascade into nested groups via _pendingChildren
+  //  - resize() must be snapshot-stable across a drag, even when descendants
+  //    distort the requested size (e.g. text clamping width/height)
+  //  - rotate() must use stable snapshots through the nesting chain
+  // ───────────────────────────────────────────────────────────────────────────
+  describe('nested groups', () => {
+    /**
+     * Builds a KritzelGroup wrapping the provided children, registers it in
+     * the mock store, and finalizes it so snapshots match the children.
+     */
+    const buildGroup = (children: KritzelBaseObject<HTMLElement>[]): KritzelGroup => {
+      const group = KritzelGroup.create(mockCore);
+      group.__class__ = 'KritzelGroup';
+      group.padding = 0;
+      group.scale = 1;
+      group.rotation = 0;
+      children.forEach(c => group.childIds.push(c.id));
+      mockObjectsStore.push(group as unknown as KritzelBaseObject<HTMLElement>);
+      return group;
+    };
+
+    describe('static collectDescendantIds', () => {
+      it('should collect direct children of a group', () => {
+        const c1 = createMockChildObject({ id: 'c-1' });
+        const c2 = createMockChildObject({ id: 'c-2' });
+        const group = buildGroup([c1, c2]);
+
+        const ids = KritzelGroup.collectDescendantIds(group);
+
+        expect(ids.has('c-1')).toBe(true);
+        expect(ids.has('c-2')).toBe(true);
+        expect(ids.size).toBe(2);
+      });
+
+      it('should recursively collect grandchildren through nested groups', () => {
+        const grandchild = createMockChildObject({ id: 'gc-1' });
+        const inner = buildGroup([grandchild]);
+        const outerSibling = createMockChildObject({ id: 's-1' });
+        const outer = buildGroup([inner as unknown as KritzelBaseObject<HTMLElement>, outerSibling]);
+
+        const ids = KritzelGroup.collectDescendantIds(outer);
+
+        expect(ids.has(inner.id)).toBe(true);
+        expect(ids.has('gc-1')).toBe(true);
+        expect(ids.has('s-1')).toBe(true);
+        expect(ids.size).toBe(3);
+      });
+
+      it('should return empty set for a group with no children', () => {
+        const group = buildGroup([]);
+
+        const ids = KritzelGroup.collectDescendantIds(group);
+
+        expect(ids.size).toBe(0);
+      });
+
+      it('should populate the provided output set in place', () => {
+        const c1 = createMockChildObject({ id: 'c-1' });
+        const group = buildGroup([c1]);
+        const out = new Set<string>(['preexisting']);
+
+        const result = KritzelGroup.collectDescendantIds(group, out);
+
+        expect(result).toBe(out);
+        expect(out.has('preexisting')).toBe(true);
+        expect(out.has('c-1')).toBe(true);
+      });
+    });
+
+    describe('finalize() recursion', () => {
+      it('should align snapshots on nested groups before the parent', () => {
+        // Build inner group whose snapshotRotation is intentionally stale
+        const grandchild = createMockChildObject({
+          id: 'gc-1',
+          translateX: 0,
+          translateY: 0,
+          width: 50,
+          height: 50,
+        });
+        const inner = buildGroup([grandchild]);
+        inner.refreshBoundingBox();
+        inner.rotation = Math.PI / 3;
+        // Force stale snapshot on the inner group so we can detect re-capture
+        (inner as any).snapshotRotation = 0;
+
+        const outer = buildGroup([inner as unknown as KritzelBaseObject<HTMLElement>]);
+
+        outer.finalize();
+
+        // After recursive finalize, the inner group's snapshot should reflect
+        // its current rotation — proving the recursion happened.
+        expect((inner as any).snapshotRotation).toBe(Math.PI / 3);
+      });
+    });
+
+    describe('copy() with nested groups', () => {
+      it('should populate _pendingChildren on every level of the hierarchy', () => {
+        const grandchild = createMockChildObject({ id: 'gc-1' });
+        const copiedGrandchild = createMockChildObject({ id: 'copied-gc-1' });
+        grandchild.copy = jest.fn(() => copiedGrandchild);
+
+        const inner = buildGroup([grandchild]);
+        // KritzelGroup.copy() relies on the actual class behavior — keep it real
+        const outer = buildGroup([inner as unknown as KritzelBaseObject<HTMLElement>]);
+
+        const copiedOuter = outer.copy();
+        const copiedInner = (copiedOuter as any)._pendingChildren[0] as KritzelGroup;
+
+        expect(copiedOuter._pendingChildren).toHaveLength(1);
+        expect(copiedInner).toBeInstanceOf(KritzelGroup);
+        // Critical: the inner group's grandchildren must also be pending,
+        // otherwise paste would strand them and they'd never be inserted.
+        expect((copiedInner as any)._pendingChildren).toContain(copiedGrandchild);
+      });
+    });
+
+    describe('resize() snapshot stability (interactive drag)', () => {
+      /**
+       * Create a real child whose `resize()` mutates state (so cascading
+       * through a nested group reflects the resize chain), and a nested
+       * group structure: outer → inner → child.
+       */
+      const setupNestedResizeFixture = () => {
+        const child = createMockChildObject({
+          id: 'leaf-1',
+          translateX: 0,
+          translateY: 0,
+          width: 100,
+          height: 100,
+        });
+        child.resize = jest.fn((cx: number, cy: number, cw: number, ch: number) => {
+          child.translateX = cx;
+          child.translateY = cy;
+          child.width = cw;
+          child.height = ch;
+        });
+
+        const inner = buildGroup([child]);
+        inner.refreshBoundingBox();
+
+        const outer = buildGroup([inner as unknown as KritzelBaseObject<HTMLElement>]);
+        outer.finalize();
+
+        return { outer, inner, child };
+      };
+
+      it('should not recapture child snapshots during an interactive resize', () => {
+        const { outer } = setupNestedResizeFixture();
+        const initialSnapshotWidth = (outer as any).snapshotTotalWidth;
+
+        (mockCore.store.state as any).isResizing = true;
+        outer.resize(0, 0, 50, 50);
+
+        // Snapshot must remain stable mid-gesture so cascade factors stay correct
+        expect((outer as any).snapshotTotalWidth).toBe(initialSnapshotWidth);
+      });
+
+      it('should recapture child snapshots when resize completes', () => {
+        const { outer } = setupNestedResizeFixture();
+        const initialSnapshotWidth = (outer as any).snapshotTotalWidth;
+
+        (mockCore.store.state as any).isResizing = false;
+        outer.resize(0, 0, 50, 50);
+
+        expect((outer as any).snapshotTotalWidth).not.toBe(initialSnapshotWidth);
+      });
+
+      it('should restore the original child size when an interactive resize returns to the original dimensions', () => {
+        // This is the regression test for the "text keeps shrinking" bug.
+        // During a drag we should be able to shrink and grow without drift.
+        const { outer, child } = setupNestedResizeFixture();
+        const originalWidth = child.width;
+        const originalHeight = child.height;
+
+        (mockCore.store.state as any).isResizing = true;
+
+        // Simulate drag: shrink, shrink more, grow back to original
+        outer.resize(0, 0, 60, 60);
+        outer.resize(0, 0, 30, 30);
+        outer.resize(0, 0, 100, 100);
+
+        // Without snapshot-based cascade the final restore would not produce the
+        // original size because each call would have used a mutated denominator.
+        expect(child.width).toBeCloseTo(originalWidth, 5);
+        expect(child.height).toBeCloseTo(originalHeight, 5);
+      });
+
+      it('should compute cascade factor from snapshots (not mutated current values)', () => {
+        const { outer, child } = setupNestedResizeFixture();
+        (mockCore.store.state as any).isResizing = true;
+
+        // First call: half size — cascade factor 0.5
+        outer.resize(0, 0, 50, 50);
+        expect(child.width).toBeCloseTo(50, 5);
+        expect(child.height).toBeCloseTo(50, 5);
+
+        // Second call from the same snapshot: 0.75 — should produce 75, not
+        // (50 * 1.5 = 75 by coincidence) but explicitly via the snapshot. To
+        // distinguish, request 0.5x again — snapshot-based gives 50, mutated
+        // would give 25 (half of half).
+        outer.resize(0, 0, 50, 50);
+        expect(child.width).toBeCloseTo(50, 5);
+        expect(child.height).toBeCloseTo(50, 5);
+      });
+    });
+
+    describe('rotate() with nested groups', () => {
+      it('should rotate using snapshot offsets so nested children stay anchored', () => {
+        const grandchild = createMockChildObject({
+          id: 'gc-1',
+          translateX: 0,
+          translateY: 0,
+          width: 50,
+          height: 50,
+        });
+        grandchild.rotate = jest.fn();
+
+        const inner = buildGroup([grandchild]);
+        inner.refreshBoundingBox();
+
+        const outer = buildGroup([inner as unknown as KritzelBaseObject<HTMLElement>]);
+        outer.finalize();
+
+        // Spy on the inner group's rotate to verify it's called with a value
+        // derived from a fresh (post-finalize) snapshotRotation.
+        const innerRotateSpy = jest.spyOn(inner, 'rotate');
+
+        outer.rotate(Math.PI / 4);
+
+        expect(innerRotateSpy).toHaveBeenCalled();
+        // Single child of outer → outer passes its own value verbatim
+        expect(innerRotateSpy.mock.calls[0][0]).toBeCloseTo(Math.PI / 4, 5);
+      });
+    });
+  });
 });

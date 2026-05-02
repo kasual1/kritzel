@@ -810,6 +810,38 @@ export class KritzelCore {
     // Batch all inserts and updates in a single Y.js transaction to avoid
     // N separate observer callbacks and N rerenders (fires only once at commit)
     this._store.objects.transaction(() => {
+      // Recursively flush a group's pending children (and any nested groups'
+      // pending children) into the store. Without recursion, nested groups
+      // would have their grandchildren stranded in `_pendingChildren` and they
+      // would never appear on the canvas, even though the parent group's
+      // bounding box looks correct.
+      const flushPendingChildren = (group: KritzelGroup, parentZIndex: number): void => {
+        if (group._pendingChildren.length === 0) {
+          return;
+        }
+
+        const pendingChildren = group._pendingChildren;
+        group._pendingChildren = [];
+
+        pendingChildren.forEach((child, childIndex) => {
+          if (child.workspaceId !== activeWorkspace!.id) {
+            child.workspaceId = activeWorkspace!.id;
+          }
+
+          child.updatePosition(child.translateX + offsetX, child.translateY + offsetY);
+          child.zIndex = parentZIndex + childIndex + 1;
+
+          // Recurse before adding so grandchildren are inserted as well
+          if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
+            flushPendingChildren(child, child.zIndex);
+          }
+
+          this.addObject(child);
+        });
+
+        group.finalize();
+      };
+
       // First add all copied objects to the objectsMap with updated positions
       copiedObjects.forEach((obj, i) => {
         // Update workspace if pasting to a different workspace
@@ -823,31 +855,9 @@ export class KritzelCore {
         // Update z-index
         obj.zIndex = baseZIndex + i;
 
-        // Handle KritzelGroup: also add pending children with offset
+        // Handle KritzelGroup: also add pending children (and grandchildren) with offset
         if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
-          if (obj._pendingChildren.length > 0) {
-            obj._pendingChildren.forEach((child, childIndex) => {
-              // Update workspace
-              if (child.workspaceId !== activeWorkspace!.id) {
-                child.workspaceId = activeWorkspace!.id;
-              }
-
-              // Update position with offset
-              child.updatePosition(child.translateX + offsetX, child.translateY + offsetY);
-
-              // Update z-index
-              child.zIndex = baseZIndex + i + childIndex;
-
-              // Add child to store
-              this.addObject(child);
-            });
-
-            // Clear pending children
-            obj._pendingChildren = [];
-
-            // Finalize the group's bounding box and snapshots
-            obj.finalize();
-          }
+          flushPendingChildren(obj, obj.zIndex);
         }
 
         // Add to objectsMap
