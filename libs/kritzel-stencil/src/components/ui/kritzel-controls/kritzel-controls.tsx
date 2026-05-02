@@ -52,6 +52,7 @@ export class KritzelControls {
   @Listen('activeToolChange', { target: 'document' })
   async handleActiveToolChange(event: CustomEvent) {
     this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
+
     if (this.activeControl?.tool) {
       this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
     }
@@ -99,12 +100,7 @@ export class KritzelControls {
 
   private handleDisplayValuesChange = (event: CustomEvent<ToolDisplayValues>) => {
     const newVal = event.detail;
-    if (
-      this.displayValues &&
-      this.displayValues.color === newVal.color &&
-      this.displayValues.size === newVal.size &&
-      this.displayValues.fontFamily === newVal.fontFamily
-    ) {
+    if (this.displayValues && this.displayValues.color === newVal.color && this.displayValues.size === newVal.size && this.displayValues.fontFamily === newVal.fontFamily) {
       return;
     }
     this.displayValues = newVal;
@@ -252,11 +248,12 @@ export class KritzelControls {
   }
 
   render() {
-    const hasConfigUI = this.activeControl?.tool instanceof KritzelBrushTool ||
-                        this.activeControl?.tool instanceof KritzelTextTool ||
-                        this.activeControl?.tool instanceof KritzelLineTool ||
-                        this.activeControl?.tool instanceof KritzelShapeTool ||
-                        (this.activeControl?.tool instanceof KritzelSelectionTool && this.activeControl.tool.hasSelection());
+    const hasConfigUI =
+      this.activeControl?.tool instanceof KritzelBrushTool ||
+      this.activeControl?.tool instanceof KritzelTextTool ||
+      this.activeControl?.tool instanceof KritzelLineTool ||
+      this.activeControl?.tool instanceof KritzelShapeTool ||
+      (this.activeControl?.tool instanceof KritzelSelectionTool && this.activeControl.tool.hasSelection());
 
     // Separate tool controls from config control
     const toolControls = this.controls.filter(c => c.type === 'tool' || c.type === 'separator');
@@ -287,11 +284,7 @@ export class KritzelControls {
           <div class={{ 'scroll-indicator-left': true, 'visible': this.canScrollLeft }}></div>
 
           {/* Scrollable tool controls container */}
-          <div
-            class="kritzel-tools-scroll"
-            ref={el => this.toolsScrollRef = el}
-            onScroll={this.handleToolsScroll}
-          >
+          <div class="kritzel-tools-scroll" ref={el => (this.toolsScrollRef = el)} onScroll={this.handleToolsScroll}>
             {toolControls.map(control => {
               // Check if this control has sub-options (split-button)
               if (control.subOptions?.length) {
@@ -306,7 +299,9 @@ export class KritzelControls {
                     }}
                     key={control.name}
                     data-testid={`tool-${control.name}`}
-                    ref={el => { if (el) (control as any)._anchorRef = el; }}
+                    ref={el => {
+                      if (el) (control as any)._anchorRef = el;
+                    }}
                   >
                     <button
                       class="kritzel-control-main"
@@ -321,7 +316,9 @@ export class KritzelControls {
                         'kritzel-control-dropdown': true,
                         'visible': isActive,
                       }}
-                      ref={el => { if (el) (control as any)._triggerRef = el; }}
+                      ref={el => {
+                        if (el) (control as any)._triggerRef = el;
+                      }}
                       aria-label="Select shape type"
                       data-testid={`tool-${control.name}-dropdown`}
                       tabIndex={isActive ? 0 : -1}
@@ -329,10 +326,7 @@ export class KritzelControls {
                       <kritzel-icon name="chevron-down" size={12}></kritzel-icon>
                     </button>
 
-                    <kritzel-tooltip
-                      anchorElement={(control as any)._anchorRef}
-                      triggerElement={(control as any)._triggerRef}
-                    >
+                    <kritzel-tooltip anchorElement={(control as any)._anchorRef} triggerElement={(control as any)._triggerRef}>
                       <div class="kritzel-submenu-content">
                         {control.subOptions.map(option => (
                           <button
@@ -390,10 +384,7 @@ export class KritzelControls {
               {/* Left gradient on config control */}
               <div class={{ 'config-gradient-left': true, 'visible': this.needsScrolling }}></div>
 
-              <kritzel-tooltip
-                anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement}
-                triggerElement={this.configTriggerRef}
-              >
+              <kritzel-tooltip anchorElement={this.host.shadowRoot?.querySelector('.kritzel-config-container') as HTMLElement} triggerElement={this.configTriggerRef}>
                 <kritzel-tool-config
                   tool={this.activeControl.tool as any}
                   theme={this.theme}
@@ -407,7 +398,9 @@ export class KritzelControls {
                 tabIndex={hasConfigUI ? 0 : -1}
                 class="kritzel-config"
                 data-testid="tool-config"
-                ref={el => { if (el) this.configTriggerRef = el; }}
+                ref={el => {
+                  if (el) this.configTriggerRef = el;
+                }}
                 onKeyDown={event => {
                   if (event.key === 'Enter') {
                     (event.target as HTMLElement).click();
@@ -417,20 +410,12 @@ export class KritzelControls {
                   cursor: 'pointer',
                 }}
               >
-                {this.activeControl.tool instanceof KritzelTextTool && this.displayValues ? (
-                  <div class="font-container">
-                    <kritzel-font
-                      fontFamily={this.displayValues.fontFamily}
-                      size={this.displayValues.size}
-                      color={this.displayValues.color}
-                    ></kritzel-font>
-                  </div>
-                ) : this.displayValues && (
+                {this.displayValues && (
                   <div class="color-container">
                     <kritzel-color
                       value={this.displayValues.color}
                       theme={this.theme}
-                      size={this.displayValues.size}
+                      size={18}
                       style={{
                         borderRadius: '50%',
                         border: 'none',
