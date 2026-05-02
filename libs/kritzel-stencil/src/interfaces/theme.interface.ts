@@ -27,11 +27,6 @@ export interface KritzelTheme {
     textPrimary?: string;
     textSecondary?: string;
     iconColor?: string;
-    loadingOverlayBackground?: string;
-    loadingOverlayColor?: string;
-    loadingOverlayDelay?: string;
-    loadingOverlaySpinnerActiveColor?: string;
-    loadingOverlaySpinnerColor?: string;
   };
 
   /** Active users variables */
@@ -214,6 +209,11 @@ export interface KritzelTheme {
   /** Engine variables */
   engine?: {
     backgroundColor?: string;
+    loadingOverlayBackground?: string;
+    loadingOverlayColor?: string;
+    loadingOverlayDelay?: string;
+    loadingOverlaySpinnerActiveColor?: string;
+    loadingOverlaySpinnerColor?: string;
   };
 
   /** Font size variables */
