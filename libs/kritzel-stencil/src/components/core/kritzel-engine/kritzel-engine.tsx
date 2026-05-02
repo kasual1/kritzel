@@ -356,6 +356,8 @@ export class KritzelEngine {
       return;
     }
 
+    const wasTracked = this.core.store.state.pointers.has(ev.pointerId);
+
     this.core.store.state.pointers.delete(ev.pointerId);
     if (this.host.hasPointerCapture(ev.pointerId)) {
       this.host.releasePointerCapture(ev.pointerId);
@@ -364,6 +366,13 @@ export class KritzelEngine {
     // Reset cursor to default when all pointers are released
     if (this.core.store.state.pointers.size === 0) {
       this.core.cursorManager.resetToDefault();
+    }
+
+    // If the corresponding pointerdown was never processed (e.g. consumed by a capture-phase
+    // listener like a tooltip close handler), skip tool logic to avoid spurious interactions
+    // such as a selected text object entering edit mode when clicking to dismiss a popup.
+    if (!wasTracked) {
+      return;
     }
 
     this.viewport.handlePointerUp(ev);
