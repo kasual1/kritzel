@@ -292,6 +292,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
     this.isDrawing = false;
     this._core.store.objects?.setActiveDrawingObject(null);
     this.currentShape = null;
+    this._core.store.objects?.stopUndoCapturing();
     this._core.rerender();
   }
 }

@@ -75,6 +75,9 @@ describe('KritzelRotationHandler', () => {
         },
         offsetX: 0,
         offsetY: 0,
+        objects: {
+          stopUndoCapturing: jest.fn(),
+        },
       },
       engine: {
         emitObjectsChange: jest.fn(),

@@ -57,6 +57,13 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _localOnlyMode = false;
 
   /**
+   * Tracks whether we're currently executing inside a `transaction()`
+   * callback. While true, `markUndoBoundary()` is a no-op so nested
+   * insert/remove calls don't split the in-progress undo step.
+   */
+  private _inTransaction = false;
+
+  /**
    * Indicates whether the object map has been initialized and is ready for use.
    * @returns `true` if providers are connected and the map is operational
    */
@@ -330,9 +337,12 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       this._providers.push(provider);
     }
 
-    // Set up undo/redo manager for this workspace
+    // captureTimeout is effectively infinite — undo-step boundaries are
+    // marked explicitly via markUndoBoundary() in insert/remove/reset and
+    // at stroke/gesture boundaries in the tools. This prevents a single
+    // brush stroke from being split when the user pauses after pointerdown.
     this._undoManager = new Y.UndoManager([this._objectsMap], {
-      captureTimeout: 200,
+      captureTimeout: Number.MAX_SAFE_INTEGER,
       trackedOrigins: new Set(['local', 'temporary']),
       ignoreRemoteMapChanges: true,
     });
@@ -693,8 +703,35 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
      */
   transaction(callback: () => void): void {
     if (this._ydoc) {
-      this._ydoc.transact(callback, 'local');
+      this._inTransaction = true;
+      try {
+        this._ydoc.transact(callback, 'local');
+      } finally {
+        this._inTransaction = false;
+      }
     }
+  }
+
+  /**
+   * Closes the current undo stack item so the next tracked change starts
+   * a new one. Call at gesture/stroke boundaries (e.g. drag/resize/rotate
+   * end, brush/line/shape stroke end).
+   *
+   * No-op while a transaction() is open.
+   */
+  stopUndoCapturing(): void {
+    this.markUndoBoundary();
+  }
+
+  /**
+   * Internal: closes the current undo stack item. No-op while inside a
+   * transaction() so wrapped multi-op work stays a single undo step.
+   */
+  private markUndoBoundary(): void {
+    if (this._inTransaction) {
+      return;
+    }
+    this._undoManager?.stopCapturing();
   }
 
   /**
@@ -768,6 +805,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   reset(): void {
     this.quadtree.reset();
     this._idMap.clear();
+    this.markUndoBoundary();
     this._ydoc?.transact(() => {
       this._objectsMap?.clear();
     }, 'local');
@@ -790,6 +828,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     if (this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
+      this.markUndoBoundary();
       this._ydoc?.transact(() => {
         this._objectsMap?.set(object.id, serialized);
       }, 'local');
@@ -841,6 +880,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    */
   remove(predicate: (object: T) => boolean): void {
     const objectsToRemove = this.quadtree.filter(predicate);
+    if (objectsToRemove.length === 0) {
+      return;
+    }
+    this.markUndoBoundary();
     for (const object of objectsToRemove) {
       this.quadtree.remove(o => o.id === object.id);
       this._idMap.delete(object.id);
