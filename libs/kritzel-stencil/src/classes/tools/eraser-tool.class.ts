@@ -98,6 +98,9 @@ export class KritzelEraserTool extends KritzelBaseTool {
         const objectsToRemove = this._core.store.allObjects.filter(object => object.markedForRemoval);
 
         if (objectsToRemove.length > 0) {
+          // Seal the previous undo step so create+delete of the same object
+          // (e.g. just-drawn shape) don't collapse into a no-op on undo.
+          this._core.store.objects.stopUndoCapturing();
           // Group all removals from this sweep into a single undo step.
           this._core.store.objects.transaction(() => {
             objectsToRemove.forEach(object => {
@@ -125,6 +128,9 @@ export class KritzelEraserTool extends KritzelBaseTool {
         const objectsToRemove = this._core.store.allObjects.filter(object => object.markedForRemoval);
 
         if (objectsToRemove.length > 0) {
+          // Seal the previous undo step so create+delete of the same object
+          // (e.g. just-drawn shape) don't collapse into a no-op on undo.
+          this._core.store.objects.stopUndoCapturing();
           // Group all removals from this sweep into a single undo step.
           this._core.store.objects.transaction(() => {
             objectsToRemove.forEach(object => {

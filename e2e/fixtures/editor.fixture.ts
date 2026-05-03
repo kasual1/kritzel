@@ -333,12 +333,18 @@ export class EditorPage {
   }
 
   /**
-   * Wait long enough for the Yjs UndoManager to finalize the current capture group.
-   * The UndoManager uses a 200 ms captureTimeout to merge rapid transactions into
-   * a single undo step. Call this between actions that must end up in separate undo steps.
+   * Force the Yjs UndoManager to seal the current capture group so the next
+   * tracked change starts a new undo step. Call this between actions that
+   * must end up in separate undo steps.
+   *
+   * The UndoManager uses an effectively-infinite captureTimeout, so undo
+   * step boundaries are explicit; sleeping is not enough.
    */
   async waitForUndoCapture() {
-    await this.page.waitForTimeout(250);
+    await this.page.evaluate(() => {
+      const engine = document.querySelector('kritzel-engine') as any;
+      engine?.core?.store?.objects?.stopUndoCapturing?.();
+    });
   }
 
   /** Undo the last action. */
