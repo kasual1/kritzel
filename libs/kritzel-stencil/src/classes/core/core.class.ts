@@ -669,9 +669,18 @@ export class KritzelCore {
       return;
     }
 
-    selectionGroup.objects.forEach(obj => this.removeObject(obj));
+    // Seal the selection group's creation into its own undo step so Yjs
+    // doesn't collapse create+delete of the SG into a no-op on undo.
+    this._store.objects.stopUndoCapturing();
 
-    this.removeSelectionGroup();
+    this._store.objects.transaction(() => {
+      selectionGroup.objects.forEach(obj => this.removeObject(obj));
+      this.removeSelectionGroup();
+    });
+
+    // Close the deletion step so subsequent unrelated changes start a new step.
+    this._store.objects.stopUndoCapturing();
+
     this.engine.emitObjectsInViewportChange();
     this.rerender();
   }
