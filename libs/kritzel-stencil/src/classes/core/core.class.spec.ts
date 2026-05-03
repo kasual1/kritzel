@@ -79,6 +79,7 @@ describe('KritzelCore', () => {
       allObjects: jest.fn().mockReturnValue([]),
       query: jest.fn().mockReturnValue([]),
       transaction: jest.fn((cb: () => void) => cb()),
+      stopUndoCapturing: jest.fn(),
       undo: jest.fn(),
       redo: jest.fn(),
       destroy: jest.fn(),

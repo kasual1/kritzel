@@ -70,6 +70,8 @@ describe('KritzelShapeTool', () => {
       update: jest.fn(),
       remove: jest.fn(),
       setActiveDrawingObject: jest.fn(),
+      stopUndoCapturing: jest.fn(),
+      transaction: jest.fn((cb: () => void) => cb()),
     };
 
     mockState = {

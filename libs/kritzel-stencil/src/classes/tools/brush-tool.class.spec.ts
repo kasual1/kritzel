@@ -57,6 +57,8 @@ describe('KritzelBrushTool', () => {
       update: jest.fn(),
       findById: jest.fn().mockReturnValue(undefined),
       setActiveDrawingObject: jest.fn(),
+      stopUndoCapturing: jest.fn(),
+      transaction: jest.fn((cb: () => void) => cb()),
     };
 
     mockState = {
@@ -487,6 +489,25 @@ describe('KritzelBrushTool', () => {
 
       expect(mockState.isDrawing).toBe(false);
       expect(mockCore.engine.emitObjectsChange).not.toHaveBeenCalled();
+    });
+
+    it('should call stopUndoCapturing once at the end of the stroke', () => {
+      // Regression: a brush stroke must close its undo step on pointerup so
+      // that a long pointerdown→pause→pointermove→pointerup gesture results
+      // in exactly one undo step (preventing the "ghost dot" bug).
+      tool.handlePointerDown(createMouseEvent());
+      mockObjectsMap.findById.mockReturnValue(mockCreatedPath);
+
+      tool.handlePointerUp(createMouseEvent());
+
+      expect(mockObjectsMap.stopUndoCapturing).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not call stopUndoCapturing when no stroke was active', () => {
+      // No pointerdown — pointerup with isDrawing=false should not mark a boundary.
+      tool.handlePointerUp(createMouseEvent());
+
+      expect(mockObjectsMap.stopUndoCapturing).not.toHaveBeenCalled();
     });
   });
 

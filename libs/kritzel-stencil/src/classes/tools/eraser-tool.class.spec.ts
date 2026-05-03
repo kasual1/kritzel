@@ -61,6 +61,10 @@ describe('KritzelEraserTool', () => {
       store: {
         get state() { return mockState; },
         allObjects: [],
+        objects: {
+          transaction: jest.fn((cb: () => void) => cb()),
+          stopUndoCapturing: jest.fn(),
+        },
       },
       getObjectsFromPointerEvent: jest.fn().mockReturnValue([]),
       removeObject: jest.fn(),

@@ -29,7 +29,7 @@ describe('KritzelLineHandleHandler', () => {
     pointers: Map<number, { clientX: number; clientY: number }>;
     longTouchTimeout: ReturnType<typeof setTimeout> | undefined;
     hasObjectsChanged: boolean;
-    objects: { update: jest.Mock };
+    objects: { update: jest.Mock; stopUndoCapturing: jest.Mock };
   };
 
   const createPointerEvent = (
@@ -105,7 +105,7 @@ describe('KritzelLineHandleHandler', () => {
       pointers: new Map(),
       longTouchTimeout: undefined,
       hasObjectsChanged: false,
-      objects: { update: jest.fn() },
+      objects: { update: jest.fn(), stopUndoCapturing: jest.fn() },
     };
 
     mockCore = {

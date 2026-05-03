@@ -234,6 +234,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           }
           this._core.store.objects?.setActiveDrawingObject(null);
           this._currentLineId = null;
+          this._core.store.objects?.stopUndoCapturing();
         }
       }
     }
@@ -255,6 +256,7 @@ export class KritzelLineTool extends KritzelBaseTool {
           }
           this._core.store.objects?.setActiveDrawingObject(null);
           this._currentLineId = null;
+          this._core.store.objects?.stopUndoCapturing();
         }
       }
     }

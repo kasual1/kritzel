@@ -522,6 +522,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
           this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
         }
+        this._core.store.objects.stopUndoCapturing();
       }
 
       this._core.store.state.isLineHandleDragging = false;
