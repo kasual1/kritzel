@@ -96,6 +96,12 @@ kritzel-icon {
   height: 100%;
 }
 
+.menu-item-content span {
+  display: flex;
+  align-items: center;
+  line-height: 0;
+}
+
 .left {
   justify-content: flex-start;
   flex: 1;
