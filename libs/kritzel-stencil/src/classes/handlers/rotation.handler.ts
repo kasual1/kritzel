@@ -179,6 +179,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
         this._core.engine.emitObjectsChange();
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
+        this._core.store.objects.stopUndoCapturing();
 
         this.reset();
       }
@@ -190,6 +191,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
         this._core.engine.emitObjectsChange();
         this._core.store.state.isRotating = false;
         this._core.store.state.hasObjectsChanged = true;
+        this._core.store.objects.stopUndoCapturing();
 
         this.reset();
 

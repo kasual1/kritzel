@@ -332,6 +332,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           this._core.store.selectionGroup!.update();
           this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
+          this._core.store.objects.stopUndoCapturing();
         }
 
         this.reset();
@@ -346,6 +347,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
           this._core.store.selectionGroup!.update();
           this._core.engine.emitObjectsChange();
           this._core.store.state.hasObjectsChanged = true;
+          this._core.store.objects.stopUndoCapturing();
         }
 
         this.reset();

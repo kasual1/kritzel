@@ -63,6 +63,8 @@ describe('KritzelLineTool', () => {
       update: jest.fn(),
       findById: jest.fn().mockReturnValue(undefined),
       setActiveDrawingObject: jest.fn(),
+      stopUndoCapturing: jest.fn(),
+      transaction: jest.fn((cb: () => void) => cb()),
     };
 
     mockState = {
