@@ -2039,7 +2039,9 @@ export class KritzelEngine {
                   pointerEvents: this.core.store.state.isScaling ? 'none' : 'auto',
                 }}
               >
-                {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
+                {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (() => {
+                  const effectiveOpacity = (object.markedForRemoval ? 0.5 : 1) * object.opacity;
+                  return (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -2051,7 +2053,6 @@ export class KritzelEngine {
                       position: 'absolute',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                       overflow: 'visible',
                     }}
@@ -2059,14 +2060,17 @@ export class KritzelEngine {
                   >
                     <path
                       d={object?.d}
-                      fill={KritzelColorHelper.resolveThemeColor(object.fill, currentTheme)}
-                      stroke={KritzelColorHelper.resolveThemeColor(object?.stroke, currentTheme)}
+                      fill={KritzelColorHelper.applyOpacity(object.fill, effectiveOpacity, currentTheme)}
+                      stroke={KritzelColorHelper.applyOpacity(object?.stroke, effectiveOpacity, currentTheme)}
                       shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'}
                     />
                   </svg>
-                )}
+                  );
+                })()}
 
-                {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
+                {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (() => {
+                  const effectiveOpacity = (object.markedForRemoval ? 0.5 : 1) * object.opacity;
+                  return (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -2078,7 +2082,6 @@ export class KritzelEngine {
                       position: 'absolute',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                       overflow: 'visible',
                     }}
@@ -2098,7 +2101,7 @@ export class KritzelEngine {
                           >
                             <path
                               d={object.getArrowPath(object.arrows?.start?.style)}
-                              fill={object.getArrowFill('start')}
+                              fill={KritzelColorHelper.applyOpacity(object.getArrowFill('start'), effectiveOpacity)}
                               transform={`scale(${object.getArrowSize('start') / 10})`}
                             />
                           </marker>
@@ -2113,7 +2116,7 @@ export class KritzelEngine {
                             orient="auto"
                             markerUnits="userSpaceOnUse"
                           >
-                            <path d={object.getArrowPath(object.arrows?.end?.style)} fill={object.getArrowFill('end')} transform={`scale(${object.getArrowSize('end') / 10})`} />
+                            <path d={object.getArrowPath(object.arrows?.end?.style)} fill={KritzelColorHelper.applyOpacity(object.getArrowFill('end'), effectiveOpacity)} transform={`scale(${object.getArrowSize('end') / 10})`} />
                           </marker>
                         )}
                       </defs>
@@ -2128,14 +2131,15 @@ export class KritzelEngine {
                     <path
                       d={this.core.anchorManager.computeClippedLinePath(object)}
                       fill="none"
-                      stroke={KritzelColorHelper.resolveThemeColor(object?.stroke, currentTheme)}
+                      stroke={KritzelColorHelper.applyOpacity(object?.stroke, effectiveOpacity, currentTheme)}
                       stroke-width={object?.strokeWidth}
                       stroke-linecap="round"
                       marker-start={object.hasStartArrow ? `url(#${object.startMarkerId})` : undefined}
                       marker-end={object.hasEndArrow ? `url(#${object.endMarkerId})` : undefined}
                     />
                   </svg>
-                )}
+                  );
+                })()}
 
                 {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && object.loadState === 'ready' && (
                   <img
@@ -2305,7 +2309,11 @@ export class KritzelEngine {
                   </div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') && (
+                {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') && (() => {
+                  
+                  const effectiveOpacity = (object.markedForRemoval ? 0.5 : 1) * object.opacity;
+                  
+                  return (
                   <div
                     ref={el => el && object.mount(el)}
                     onPointerDown={e => object.handlePointerDown(e)}
@@ -2319,7 +2327,6 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                       overflow: 'visible',
                     }}
@@ -2340,8 +2347,8 @@ export class KritzelEngine {
                     >
                       <path
                         d={object.getSvgPath()}
-                        fill={KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme)}
-                        stroke={KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme)}
+                        fill={KritzelColorHelper.applyOpacity(object.fillColor, effectiveOpacity, currentTheme)}
+                        stroke={KritzelColorHelper.applyOpacity(object.strokeColor, effectiveOpacity, currentTheme)}
                         stroke-width={object.strokeWidth}
                       />
                     </svg>
@@ -2362,7 +2369,8 @@ export class KritzelEngine {
                       }}
                     ></div>
                   </div>
-                )}
+                  );
+                })()}
 
                 {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
                   <div
