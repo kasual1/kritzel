@@ -97,12 +97,14 @@ export class KritzelEraserTool extends KritzelBaseTool {
       if (this._core.store.state.isErasing) {
         const objectsToRemove = this._core.store.allObjects.filter(object => object.markedForRemoval);
 
-        objectsToRemove.forEach(object => {
-          object.markedForRemoval = false;
-          this._core.removeObject(object);
-        });
-
         if (objectsToRemove.length > 0) {
+          // Group all removals from this sweep into a single undo step.
+          this._core.store.objects.transaction(() => {
+            objectsToRemove.forEach(object => {
+              object.markedForRemoval = false;
+              this._core.removeObject(object);
+            });
+          });
           this._core.rerender();
         }
 
@@ -111,6 +113,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
         this._core.engine.emitObjectsChange();
         if (objectsToRemove.length > 0) {
           this._core.engine.emitObjectsRemoved(objectsToRemove);
+          this._core.store.objects.stopUndoCapturing();
         }
       }
     }
@@ -121,12 +124,14 @@ export class KritzelEraserTool extends KritzelBaseTool {
       if (this._core.store.state.isErasing) {
         const objectsToRemove = this._core.store.allObjects.filter(object => object.markedForRemoval);
 
-        objectsToRemove.forEach(object => {
-          object.markedForRemoval = false;
-          this._core.removeObject(object);
-        });
-
         if (objectsToRemove.length > 0) {
+          // Group all removals from this sweep into a single undo step.
+          this._core.store.objects.transaction(() => {
+            objectsToRemove.forEach(object => {
+              object.markedForRemoval = false;
+              this._core.removeObject(object);
+            });
+          });
           this._core.rerender();
         }
 
@@ -135,6 +140,7 @@ export class KritzelEraserTool extends KritzelBaseTool {
         this._core.engine.emitObjectsChange();
         if (objectsToRemove.length > 0) {
           this._core.engine.emitObjectsRemoved(objectsToRemove);
+          this._core.store.objects.stopUndoCapturing();
         }
       }
     }
