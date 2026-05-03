@@ -124,6 +124,31 @@ describe('KritzelColorHelper', () => {
 
       expect(result).toBe('');
     });
+
+    it('should accept an already-resolved hex string', () => {
+      const result = KritzelColorHelper.applyOpacity('#ff5252', 0.5);
+
+      expect(result).toBe('rgba(255, 82, 82, 0.5)');
+    });
+
+    it('should pass through string input unchanged when opacity >= 1', () => {
+      const result = KritzelColorHelper.applyOpacity('#ff5252', 1);
+
+      expect(result).toBe('#ff5252');
+    });
+
+    it('should pass through transparent string input unchanged', () => {
+      const result = KritzelColorHelper.applyOpacity('transparent', 0.5);
+
+      expect(result).toBe('transparent');
+    });
+
+    it('should ignore the theme parameter when input is a string', () => {
+      const result = KritzelColorHelper.applyOpacity('#ff5252', 0.5, 'dark');
+
+      expect(result).toBe('rgba(255, 82, 82, 0.5)');
+      expect(mockedGetStoredTheme).not.toHaveBeenCalled();
+    });
   });
 
   describe('getContrastColor', () => {

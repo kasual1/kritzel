@@ -20,13 +20,13 @@ export class KritzelColorHelper {
 
   /**
    * Applies opacity to a theme-aware color and returns an rgba string.
-   * @param color - The theme-aware color object
+   * @param color - The theme-aware color object or a hex color string
    * @param opacity - The opacity value between 0 and 1
    * @param theme - Optional theme to use. If not provided, uses current theme from ThemeManager
    * @returns The color as an rgba string, or the resolved hex if opacity is 1
    */
-  static applyOpacity(color: ThemeAwareColor, opacity: number, theme?: ThemeMode): string {
-    const hexColor = this.resolveThemeColor(color, theme);
+  static applyOpacity(color: ThemeAwareColor | string | undefined, opacity: number, theme?: ThemeMode): string {
+    const hexColor = typeof color === 'string' ? color : this.resolveThemeColor(color, theme);
     if (!hexColor || opacity >= 1) return hexColor;
 
     const sanitizedHex = hexColor.startsWith('#') ? hexColor.slice(1) : hexColor;
