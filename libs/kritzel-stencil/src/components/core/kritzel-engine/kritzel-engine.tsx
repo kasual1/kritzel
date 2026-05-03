@@ -2312,7 +2312,12 @@ export class KritzelEngine {
                 {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') && (() => {
                   
                   const effectiveOpacity = (object.markedForRemoval ? 0.5 : 1) * object.opacity;
-                  
+
+                  const fillResolved = KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme);
+                  const strokeResolved = KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme);
+                  const isFilled = !!fillResolved && fillResolved !== 'transparent';
+                  const strokeMatchesFill = isFilled && strokeResolved === fillResolved;
+
                   return (
                   <div
                     ref={el => el && object.mount(el)}
@@ -2348,8 +2353,8 @@ export class KritzelEngine {
                       <path
                         d={object.getSvgPath()}
                         fill={KritzelColorHelper.applyOpacity(object.fillColor, effectiveOpacity, currentTheme)}
-                        stroke={KritzelColorHelper.applyOpacity(object.strokeColor, effectiveOpacity, currentTheme)}
-                        stroke-width={object.strokeWidth}
+                        stroke={strokeMatchesFill ? 'none' : KritzelColorHelper.applyOpacity(object.strokeColor, effectiveOpacity, currentTheme)}
+                        stroke-width={strokeMatchesFill ? 0 : object.strokeWidth}
                       />
                     </svg>
                     <div
