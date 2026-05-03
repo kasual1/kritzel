@@ -283,4 +283,54 @@ test.describe('Shape objects', () => {
 
     await expect(editorPage.engine).toHaveScreenshot();
   });
+
+  test('visual: filled shapes with opacity overlapping near origin', async ({ editorPage }) => {
+    await editorPage.prepareWaitForObjectsAdded();
+
+    const rect = await editorPage.addShape({
+      shapeType: 'rectangle',
+      translateX: 0,
+      translateY: 0,
+      width: 160,
+      height: 120,
+      fillColor: { light: '#ff3030', dark: '#ff3030' },
+      strokeColor: { light: '#ff3030', dark: '#ff3030' },
+      strokeWidth: 4,
+    });
+
+    await editorPage.waitForObjectsAdded();
+    await editorPage.updateObject(rect, { opacity: 0.5 });
+    await editorPage.prepareWaitForObjectsAdded();
+
+    const ellipse = await editorPage.addShape({
+      shapeType: 'ellipse',
+      translateX: 60,
+      translateY: 30,
+      width: 160,
+      height: 120,
+      fillColor: { light: '#30c030', dark: '#30c030' },
+      strokeColor: { light: '#30c030', dark: '#30c030' },
+      strokeWidth: 4,
+    });
+
+    await editorPage.waitForObjectsAdded();
+    await editorPage.updateObject(ellipse, { opacity: 0.5 });
+    await editorPage.prepareWaitForObjectsAdded();
+
+    const triangle = await editorPage.addShape({
+      shapeType: 'triangle',
+      translateX: 120,
+      translateY: 60,
+      width: 160,
+      height: 120,
+      fillColor: { light: '#3060ff', dark: '#3060ff' },
+      strokeColor: { light: '#3060ff', dark: '#3060ff' },
+      strokeWidth: 4,
+    });
+
+    await editorPage.waitForObjectsAdded();
+    await editorPage.updateObject(triangle, { opacity: 0.5 });
+
+    await expect(editorPage.engine).toHaveScreenshot();
+  });
 });
