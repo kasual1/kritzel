@@ -164,6 +164,20 @@ export class EditorPage {
         customElements.get('kritzel-editor') !== undefined &&
         customElements.get('kritzel-engine') !== undefined
     );
+
+    // In CI the custom element can be defined before workspace initialization completes.
+    // addObject() depends on an active workspace being present.
+    await this.page.waitForFunction(() => {
+      const editor = document.querySelector('kritzel-editor') as any;
+      const engine = document.querySelector('kritzel-engine') as any;
+
+      if (!editor || !engine) return false;
+      const hasEditorApi = typeof editor.getActiveWorkspace === 'function';
+      const isEngineReady = engine?.core?.store?.state?.isReady === true;
+      const hasActiveWorkspace = !!engine?.core?.store?.state?.activeWorkspace;
+
+      return hasEditorApi && isEngineReady && hasActiveWorkspace;
+    }, { timeout: 15_000 });
   }
 
   /** Wait for the engine's drawing origin to be attached. */
@@ -243,6 +257,9 @@ export class EditorPage {
       const k = (window as any).__kritzel__;
       if (!k) throw new Error('Kritzel classes not loaded. Call loadKritzelClasses() first.');
       const el = document.querySelector('kritzel-editor') as any;
+      if (!el?.engineRef?.core?.store?.state?.activeWorkspace) {
+        throw new Error('kritzel-editor is not ready yet (no active workspace). Call waitForReady() first.');
+      }
       const shape = new k.KritzelShape(cfg);
       return el.addObject(shape);
     }, config);
@@ -254,6 +271,9 @@ export class EditorPage {
       const k = (window as any).__kritzel__;
       if (!k) throw new Error('Kritzel classes not loaded. Call loadKritzelClasses() first.');
       const el = document.querySelector('kritzel-editor') as any;
+      if (!el?.engineRef?.core?.store?.state?.activeWorkspace) {
+        throw new Error('kritzel-editor is not ready yet (no active workspace). Call waitForReady() first.');
+      }
       const path = new k.KritzelPath(cfg);
       return el.addObject(path);
     }, config);
@@ -265,6 +285,9 @@ export class EditorPage {
       const k = (window as any).__kritzel__;
       if (!k) throw new Error('Kritzel classes not loaded. Call loadKritzelClasses() first.');
       const el = document.querySelector('kritzel-editor') as any;
+      if (!el?.engineRef?.core?.store?.state?.activeWorkspace) {
+        throw new Error('kritzel-editor is not ready yet (no active workspace). Call waitForReady() first.');
+      }
       const text = new k.KritzelText(cfg);
       return el.addObject(text);
     }, config);
@@ -276,6 +299,9 @@ export class EditorPage {
       const k = (window as any).__kritzel__;
       if (!k) throw new Error('Kritzel classes not loaded. Call loadKritzelClasses() first.');
       const el = document.querySelector('kritzel-editor') as any;
+      if (!el?.engineRef?.core?.store?.state?.activeWorkspace) {
+        throw new Error('kritzel-editor is not ready yet (no active workspace). Call waitForReady() first.');
+      }
       const line = new k.KritzelLine(cfg);
       return el.addObject(line);
     }, config);
@@ -287,6 +313,9 @@ export class EditorPage {
       const k = (window as any).__kritzel__;
       if (!k) throw new Error('Kritzel classes not loaded. Call loadKritzelClasses() first.');
       const el = document.querySelector('kritzel-editor') as any;
+      if (!el?.engineRef?.core?.store?.state?.activeWorkspace) {
+        throw new Error('kritzel-editor is not ready yet (no active workspace). Call waitForReady() first.');
+      }
       const image = await k.KritzelImage.fromUrl(cfg.src, cfg);
       return el.addObject(image);
     }, config);
