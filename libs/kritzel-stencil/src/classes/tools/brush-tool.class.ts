@@ -238,7 +238,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
             this._core.store.objects.update(currentPath);
             this._core.engine.emitObjectsChange();
             this._core.engine.emitObjectsAdded([currentPath]);
-            console.log(`[KritzelBrushTool] Path ${currentPath.id} completed with ${currentPath.points.length} points`);
           }
           this._core.store.objects?.setActiveDrawingObject(null);
           this._currentPathId = null;
@@ -259,7 +258,6 @@ export class KritzelBrushTool extends KritzelBaseTool {
             this._core.store.objects.update(currentPath);
             this._core.engine.emitObjectsChange();
             this._core.engine.emitObjectsAdded([currentPath]);
-            console.log(`[KritzelBrushTool] Path ${currentPath.id} completed with ${currentPath.points.length} points`);
           }
           this._core.store.objects?.setActiveDrawingObject(null);
           this._currentPathId = null;
