@@ -370,6 +370,97 @@ describe('KritzelBrushTool', () => {
 
       expect(mockObjectsMap.update).not.toHaveBeenCalled();
     });
+
+    // ============================================
+    // Min-distance point filter
+    // ============================================
+
+    describe('min-distance point filter', () => {
+      it('should not append a point when delta is below 1 screen pixel', () => {
+        tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
+
+        const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
+        mockObjectsMap.findById.mockReturnValue(existingPath);
+        (KritzelPath.create as jest.Mock).mockClear();
+
+        // Sub-pixel delta (0.5 px) — should be filtered out.
+        tool.handlePointerMove(createMouseEvent({ clientX: 50.5, clientY: 60 }));
+
+        expect(KritzelPath.create).not.toHaveBeenCalled();
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+      });
+
+      it('should append a point when delta is at or above 1 screen pixel', () => {
+        tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
+
+        const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
+        mockObjectsMap.findById.mockReturnValue(existingPath);
+        (KritzelPath.create as jest.Mock).mockClear();
+
+        // Exactly 1 px delta — should pass.
+        tool.handlePointerMove(createMouseEvent({ clientX: 51, clientY: 60 }));
+
+        expect(KritzelPath.create).toHaveBeenCalledTimes(1);
+        expect(mockObjectsMap.update).toHaveBeenCalledTimes(1);
+      });
+
+      it('should drop multiple sub-threshold moves but accept the first above-threshold move', () => {
+        tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
+
+        const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
+        mockObjectsMap.findById.mockReturnValue(existingPath);
+        (KritzelPath.create as jest.Mock).mockClear();
+
+        // Five sub-pixel jitters at the same effective position.
+        tool.handlePointerMove(createMouseEvent({ clientX: 50.1, clientY: 60.1 }));
+        tool.handlePointerMove(createMouseEvent({ clientX: 50.2, clientY: 60.2 }));
+        tool.handlePointerMove(createMouseEvent({ clientX: 50.3, clientY: 60.3 }));
+        tool.handlePointerMove(createMouseEvent({ clientX: 50.4, clientY: 60.4 }));
+        tool.handlePointerMove(createMouseEvent({ clientX: 50.5, clientY: 60.5 }));
+
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+
+        // Then a real move ≥ 1 px away.
+        tool.handlePointerMove(createMouseEvent({ clientX: 60, clientY: 60 }));
+
+        expect(mockObjectsMap.update).toHaveBeenCalledTimes(1);
+      });
+
+      it('should treat threshold as ~1 screen pixel when zoomed in (lockDrawingScale=true)', () => {
+        // At scale 4 with lockDrawingScale=true, points are stored in world units
+        // (screen / 4), so a 0.5 world-unit gap = 2 screen pixels → must append.
+        mockState.scale = 4;
+        mockState.lockDrawingScale = true;
+
+        tool.handlePointerDown(createMouseEvent({ clientX: 200, clientY: 240 }));
+        // Point recorded as [200/4, 240/4] = [50, 60]
+
+        const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
+        mockObjectsMap.findById.mockReturnValue(existingPath);
+        (KritzelPath.create as jest.Mock).mockClear();
+
+        // Move by 2 screen pixels: clientX 202 → world 50.5 (delta 0.5 world units).
+        tool.handlePointerMove(createMouseEvent({ clientX: 202, clientY: 240 }));
+
+        expect(mockObjectsMap.update).toHaveBeenCalledTimes(1);
+      });
+
+      it('should drop a sub-pixel screen move when zoomed in (lockDrawingScale=true)', () => {
+        // At scale 4, a 0.2 screen px move = 0.05 world units → below threshold.
+        mockState.scale = 4;
+        mockState.lockDrawingScale = true;
+
+        tool.handlePointerDown(createMouseEvent({ clientX: 200, clientY: 240 }));
+
+        const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
+        mockObjectsMap.findById.mockReturnValue(existingPath);
+        (KritzelPath.create as jest.Mock).mockClear();
+
+        tool.handlePointerMove(createMouseEvent({ clientX: 200.2, clientY: 240 }));
+
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+      });
+    });
   });
 
   // ============================================
