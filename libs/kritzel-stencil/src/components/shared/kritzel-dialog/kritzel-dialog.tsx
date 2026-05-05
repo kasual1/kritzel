@@ -48,6 +48,7 @@ export class KritzelDialog {
 
   private previousOverflow: string = '';
   private previousActiveElement: HTMLElement | null = null;
+  private visualViewportListenersAttached = false;
 
   @Watch('isOpen')
   handleIsOpenChange(newValue: boolean) {
@@ -71,6 +72,19 @@ export class KritzelDialog {
     if (event.key === 'Tab' && this.trapFocus) {
       this.handleTabKey(event);
     }
+  }
+
+  @Listen('resize', { target: 'window' })
+  handleWindowResize() {
+    if (!this.isOpen) return;
+    this.lockMobileViewportHeight();
+  }
+
+  @Listen('orientationchange', { target: 'window' })
+  handleOrientationChange() {
+    if (!this.isOpen) return;
+    // Let viewport metrics settle before recalculating after orientation flips.
+    requestAnimationFrame(() => this.lockMobileViewportHeight());
   }
 
   @Method()
@@ -97,6 +111,7 @@ export class KritzelDialog {
   }
 
   disconnectedCallback() {
+    this.removeVisualViewportListeners();
     this.restoreBodyScroll();
   }
 
@@ -104,6 +119,7 @@ export class KritzelDialog {
     this.isAnimating = true;
     this.previousActiveElement = document.activeElement as HTMLElement;
     this.lockBodyScroll();
+    this.addVisualViewportListeners();
     this.lockMobileViewportHeight();
     this.dialogOpen.emit();
 
@@ -120,6 +136,7 @@ export class KritzelDialog {
 
   private closeDialog() {
     this.restoreBodyScroll();
+    this.removeVisualViewportListeners();
     this.mobileLockedHeight = null;
     this.returnFocusToPreviousElement();
   }
@@ -136,12 +153,46 @@ export class KritzelDialog {
   private lockMobileViewportHeight() {
     // Only lock height on mobile when fullscreenOnMobile is enabled.
     // Use the smaller dimension so landscape phones (wide but short) are also detected.
-    if (!this.fullscreenOnMobile || Math.min(window.innerWidth, window.innerHeight) > 576) {
+    const viewportWidth = this.getViewportWidth();
+    const viewportHeight = this.getViewportHeight();
+
+    if (!this.fullscreenOnMobile || Math.min(viewportWidth, viewportHeight) > 576) {
       this.mobileLockedHeight = null;
       return;
     }
-    // Capture the current viewport height before keyboard can affect it
-    this.mobileLockedHeight = `${window.innerHeight}px`;
+
+    this.mobileLockedHeight = `${viewportHeight}px`;
+  }
+
+  private getViewportWidth() {
+    return Math.round(window.visualViewport?.width ?? window.innerWidth);
+  }
+
+  private getViewportHeight() {
+    return Math.round(window.visualViewport?.height ?? window.innerHeight);
+  }
+
+  private addVisualViewportListeners() {
+    const viewport = window.visualViewport;
+    if (!viewport || this.visualViewportListenersAttached) return;
+
+    viewport.addEventListener('resize', this.handleVisualViewportChange);
+    viewport.addEventListener('scroll', this.handleVisualViewportChange);
+    this.visualViewportListenersAttached = true;
+  }
+
+  private removeVisualViewportListeners() {
+    const viewport = window.visualViewport;
+    if (!viewport || !this.visualViewportListenersAttached) return;
+
+    viewport.removeEventListener('resize', this.handleVisualViewportChange);
+    viewport.removeEventListener('scroll', this.handleVisualViewportChange);
+    this.visualViewportListenersAttached = false;
+  }
+
+  private handleVisualViewportChange = () => {
+    if (!this.isOpen) return;
+    this.lockMobileViewportHeight();
   }
 
   private restoreBodyScroll() {
