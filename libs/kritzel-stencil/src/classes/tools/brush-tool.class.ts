@@ -22,8 +22,39 @@ export class KritzelBrushTool extends KritzelBaseTool {
   /** Available color palette for the brush tool */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
 
+  /**
+   * Minimum distance in screen pixels between two consecutive stored points.
+   * Pointer-move samples closer than this to the previously stored point are
+   * dropped. This shrinks the path's `points` array (which is fully
+   * re-serialized on every Yjs update during a stroke), reducing per-stroke
+   * websocket traffic without visible quality loss — `perfect-freehand`
+   * already smooths the rendered stroke.
+   */
+  static readonly MIN_POINT_DISTANCE_PX = 5;
+
   /** Tracks the ID of the path currently being drawn */
   private _currentPathId: string | null = null;
+
+  /**
+   * Returns true if (x, y) is far enough from the last stored point on
+   * `currentPath` to be appended. Distance is measured in the same coordinate
+   * system the points themselves are stored in (world units when
+   * lockDrawingScale is true, screen units otherwise), with the threshold
+   * scaled by `divider` so the filter is always ~1 screen pixel.
+   *
+   * Uses squared distance to avoid a per-move `Math.sqrt`.
+   */
+  private shouldAppendPoint(currentPath: KritzelPath, x: number, y: number, divider: number): boolean {
+    const points = currentPath.points;
+    if (!points || points.length === 0) {
+      return true;
+    }
+    const last = points[points.length - 1];
+    const dx = x - last[0];
+    const dy = y - last[1];
+    const threshold = KritzelBrushTool.MIN_POINT_DISTANCE_PX / divider;
+    return dx * dx + dy * dy >= threshold * threshold;
+  }
 
   /**
    * Creates a new instance of KritzelBrushTool.
@@ -122,6 +153,10 @@ export class KritzelBrushTool extends KritzelBaseTool {
           const x = (event.clientX - this._core.store.offsetX) / divider;
           const y = (event.clientY - this._core.store.offsetY) / divider;
 
+          if (!this.shouldAppendPoint(currentPath, x, y, divider)) {
+            return;
+          }
+
           const updatedPath = KritzelPath.create(this._core, {
             points: [...currentPath.points, [x, y]],
             translateX: -this._core.store.state.translateX / divider,
@@ -154,6 +189,10 @@ export class KritzelBrushTool extends KritzelBaseTool {
             const divider = lockScale ? viewportScale : 1;
             const x = Math.round((activePointers[0].clientX - this._core.store.offsetX) / divider);
             const y = Math.round((activePointers[0].clientY - this._core.store.offsetY) / divider);
+
+            if (!this.shouldAppendPoint(currentPath, x, y, divider)) {
+              return;
+            }
 
             const updatedPath = KritzelPath.create(this._core, {
               points: [...currentPath.points, [x, y]],

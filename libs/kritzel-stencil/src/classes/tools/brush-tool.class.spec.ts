@@ -370,6 +370,96 @@ describe('KritzelBrushTool', () => {
 
       expect(mockObjectsMap.update).not.toHaveBeenCalled();
     });
+
+    // ============================================
+    // Min-distance point filter
+    // ============================================
+
+    describe('min-distance point filter', () => {
+      it('should not append a point when delta is below 5 screen pixels', () => {
+        tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
+
+        const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
+        mockObjectsMap.findById.mockReturnValue(existingPath);
+        (KritzelPath.create as jest.Mock).mockClear();
+
+        // Sub-threshold delta (4 px) — should be filtered out.
+        tool.handlePointerMove(createMouseEvent({ clientX: 54, clientY: 60 }));
+
+        expect(KritzelPath.create).not.toHaveBeenCalled();
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+      });
+
+      it('should append a point when delta is at or above 5 screen pixels', () => {
+        tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
+
+        const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
+        mockObjectsMap.findById.mockReturnValue(existingPath);
+        (KritzelPath.create as jest.Mock).mockClear();
+
+        // Exactly 5 px delta — should pass.
+        tool.handlePointerMove(createMouseEvent({ clientX: 55, clientY: 60 }));
+
+        expect(KritzelPath.create).toHaveBeenCalledTimes(1);
+        expect(mockObjectsMap.update).toHaveBeenCalledTimes(1);
+      });
+
+      it('should drop multiple sub-threshold moves but accept the first above-threshold move', () => {
+        tool.handlePointerDown(createMouseEvent({ clientX: 50, clientY: 60 }));
+
+        const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
+        mockObjectsMap.findById.mockReturnValue(existingPath);
+        (KritzelPath.create as jest.Mock).mockClear();
+
+        // Sub-threshold jitters (each < 5 px from origin).
+        tool.handlePointerMove(createMouseEvent({ clientX: 51, clientY: 60 }));
+        tool.handlePointerMove(createMouseEvent({ clientX: 52, clientY: 60 }));
+        tool.handlePointerMove(createMouseEvent({ clientX: 53, clientY: 60 }));
+        tool.handlePointerMove(createMouseEvent({ clientX: 54, clientY: 60 }));
+
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+
+        // Then a real move ≥ 5 px away.
+        tool.handlePointerMove(createMouseEvent({ clientX: 55, clientY: 60 }));
+
+        expect(mockObjectsMap.update).toHaveBeenCalledTimes(1);
+      });
+
+      it('should treat threshold as ~5 screen pixels when zoomed in (lockDrawingScale=true)', () => {
+        // At scale 4 with lockDrawingScale=true, points are stored in world units
+        // (screen / 4), so 6 screen px = 1.5 world units > threshold 5/4=1.25 → must append.
+        mockState.scale = 4;
+        mockState.lockDrawingScale = true;
+
+        tool.handlePointerDown(createMouseEvent({ clientX: 200, clientY: 240 }));
+
+        const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
+        mockObjectsMap.findById.mockReturnValue(existingPath);
+        (KritzelPath.create as jest.Mock).mockClear();
+
+        // Move by 6 screen pixels: clientX 206 → world 51.5 (delta 1.5 world units > 1.25 threshold).
+        tool.handlePointerMove(createMouseEvent({ clientX: 206, clientY: 240 }));
+
+        expect(mockObjectsMap.update).toHaveBeenCalledTimes(1);
+      });
+
+      it('should drop a sub-threshold screen move when zoomed in (lockDrawingScale=true)', () => {
+        // At scale 4, threshold = 5/4 = 1.25 world units. A 4 screen px move = 1 world unit → below threshold.
+        mockState.scale = 4;
+        mockState.lockDrawingScale = true;
+
+        tool.handlePointerDown(createMouseEvent({ clientX: 200, clientY: 240 }));
+
+        const existingPath = { ...mockCreatedPath, points: [[50, 60]] };
+        mockObjectsMap.findById.mockReturnValue(existingPath);
+        (KritzelPath.create as jest.Mock).mockClear();
+
+        // 4 screen px = 1 world unit, which is < 1.25 threshold → should be dropped.
+        tool.handlePointerMove(createMouseEvent({ clientX: 204, clientY: 240 }));
+
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+      });
+    });
   });
 
   // ============================================
