@@ -1035,8 +1035,11 @@ export class KritzelEngine {
 
     const options = {
       filter: (node: HTMLElement) => {
-        // Exclude the context menu and debug panel from the screenshot
+        // Exclude the context menu, debug panel, and awareness cursors from the screenshot
         if (node.tagName === 'KRITZEL-CONTEXT-MENU') {
+          return false;
+        }
+        if (node.tagName === 'KRITZEL-AWARENESS-CURSORS') {
           return false;
         }
         if (node.classList && node.classList.contains('debug-panel')) {
