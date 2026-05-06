@@ -50,6 +50,13 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
 
   /**
+   * Stores a selection group that was cleared on the first finger-down of a
+   * potential pinch-zoom gesture, so it can be restored when the second finger
+   * arrives. Cleared when the touch interaction ends.
+   */
+  private _savedSelectionGroupForPinch: KritzelSelectionGroup | null = null;
+
+  /**
    * Checks if there are any objects currently selected.
    * @returns True if there are objects in the selection group, false otherwise
    */
@@ -391,6 +398,14 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isScaling === true) {
+        // A second finger has arrived to start a pinch-zoom gesture. If we
+        // cleared a selection group on the first finger-down, restore it now
+        // so the user's selection is preserved while zooming.
+        if (this._savedSelectionGroupForPinch && !this._core.store.selectionGroup) {
+          this._core.addSelectionGroup(this._savedSelectionGroupForPinch);
+          this._savedSelectionGroupForPinch = null;
+          this._core.rerender();
+        }
         return;
       }
 
@@ -418,6 +433,9 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           !this._core.store.state.isLineHandleSelected &&
           !isAdditive
         ) {
+          // Save the selection group before removing it, so we can restore it
+          // if the user adds a second finger to start a pinch-zoom gesture.
+          this._savedSelectionGroupForPinch = selectionGroup;
           this._core.removeSelectionGroup();
           this._core.rerender();
         }
@@ -494,6 +512,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       if (this._core.store.state.isScaling === true) {
         return;
       }
+
+      // The single-finger gesture has ended without becoming a pinch-zoom,
+      // so discard any selection group we had saved for potential restoration.
+      this._savedSelectionGroupForPinch = null;
 
       this.lineHandleHandler.handlePointerUp(event);
       this.rotationHandler.handlePointerUp(event);
