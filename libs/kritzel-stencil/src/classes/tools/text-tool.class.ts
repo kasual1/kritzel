@@ -25,28 +25,36 @@ export class KritzelTextTool extends KritzelBaseTool {
   private _opacity: number = 1;
 
   /** The font family for new text objects. */
-  get fontFamily(): string { return this._fontFamily; }
+  get fontFamily(): string {
+    return this._core?.store?.activeText?.fontFamily ?? this._fontFamily;
+  }
   set fontFamily(value: string) {
     this._fontFamily = value;
     this.applyToActiveText({ fontFamily: value });
   }
 
   /** The font size for new text objects in pixels. */
-  get fontSize(): number { return this._fontSize; }
+  get fontSize(): number {
+    return this._core?.store?.activeText?.fontSize ?? this._fontSize;
+  }
   set fontSize(value: number) {
     this._fontSize = value;
     this.applyToActiveText({ fontSize: value });
   }
 
   /** The font color for new text objects (supports theme-aware light/dark colors). */
-  get fontColor(): ThemeAwareColor { return this._fontColor; }
+  get fontColor(): ThemeAwareColor {
+    return this._core?.store?.activeText?.fontColor ?? this._fontColor;
+  }
   set fontColor(value: ThemeAwareColor) {
     this._fontColor = value;
     this.applyToActiveText({ fontColor: value });
   }
 
   /** The opacity of new text objects (0-1). */
-  get opacity(): number { return this._opacity; }
+  get opacity(): number {
+    return this._core?.store?.activeText?.opacity ?? this._opacity;
+  }
   set opacity(value: number) {
     this._opacity = value;
     this.applyToActiveText({ opacity: value });
