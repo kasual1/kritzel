@@ -109,4 +109,59 @@ test.describe('Text tool', () => {
 
     await expect(editorPage.engine).toHaveScreenshot();
   });
+
+  test('visual: font family should persist after re-selecting and entering edit mode', async ({ editorPage }) => {
+    await editorPage.prepareWaitForObjectsAdded();
+
+    await createTextObject(editorPage, 200, 150, 'Font test');
+
+    // Get the created text object
+    const objects = await editorPage.getAllObjects<any>();
+    expect(objects).toHaveLength(1);
+    const textObj = objects[0];
+
+    // Select it via the selection tool and change its font family
+    await editorPage.activateTool('selection');
+    await editorPage.selectObjects([textObj]);
+    await editorPage.updateObject(textObj, { fontFamily: 'Courier New' });
+
+    // Wait for render
+    await editorPage.page.evaluate(() =>
+      new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    );
+
+    // Deselect
+    await editorPage.clearSelection();
+    await editorPage.page.evaluate(() =>
+      new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    );
+
+    // Re-select
+    await editorPage.selectObjects([textObj]);
+    await editorPage.page.evaluate(() =>
+      new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    );
+
+    // Enter edit mode by clicking on the text object
+    const { pageX, pageY } = await editorPage.worldToPage(textObj.translateX + 10, textObj.translateY + 5);
+    await editorPage.page.mouse.move(pageX, pageY);
+    await editorPage.page.mouse.down();
+    await editorPage.page.waitForTimeout(100);
+    await editorPage.page.mouse.up();
+
+    // Wait for edit mode render
+    await editorPage.page.evaluate(() =>
+      new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    );
+
+    // Verify the font family is still Courier New (not reverted to Arial)
+    const updatedObj = await editorPage.page.evaluate(async (id) => {
+      const el = document.querySelector('kritzel-editor') as any;
+      const obj = await el.getObjectById(id);
+      return { fontFamily: obj?.fontFamily };
+    }, textObj.id);
+    expect(updatedObj.fontFamily).toBe('Courier New');
+
+    await expect(editorPage.engine).toHaveScreenshot();
+  });
 });
