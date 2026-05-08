@@ -599,6 +599,16 @@ Type: `Promise<number>`
 
 The number of objects loaded.
 
+### `loadSettings() => Promise<Partial<KritzelSettingsConfig> | null>`
+
+Loads the persisted settings object from localStorage.
+
+#### Returns
+
+Type: `Promise<Partial<KritzelSettingsConfig>>`
+
+The stored settings, or null if nothing is stored or the value is invalid.
+
 ### `loadSharedWorkspace(token: string) => Promise<void>`
 
 Loads a shared workspace by token.
@@ -707,6 +717,22 @@ Removes an object from the canvas.
 Type: `Promise<T>`
 
 The removed object.
+
+### `saveSettings(settings: KritzelSettingsConfig) => Promise<void>`
+
+Persists the given settings object to localStorage using the namespaced storage key.
+
+#### Parameters
+
+| Name       | Type                    | Description                              |
+| ---------- | ----------------------- | ---------------------------------------- |
+| `settings` | `KritzelSettingsConfig` | - The settings configuration to persist. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 ### `screenToWorld(x: number, y: number) => Promise<{ x: number; y: number; }>`
 
