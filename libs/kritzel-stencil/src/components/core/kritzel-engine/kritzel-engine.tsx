@@ -28,6 +28,7 @@ import { KritzelWorkspace, WORKSPACE_EXPORT_VERSION } from '../../../classes/cor
 import { KritzelReviver } from '../../../classes/core/reviver.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
+import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
 import { KritzelCore } from '../../../classes/core/core.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
@@ -1575,6 +1576,34 @@ export class KritzelEngine {
     this._isYjsInitialized = false;
     this._isAssetStorageInitialized = false;
     await this.initializeSyncAndWorkspace();
+  }
+
+  /**
+   * Persists the given settings object to localStorage using the namespaced storage key.
+   * @param settings - The settings configuration to persist.
+   */
+  @Method()
+  async saveSettings(settings: KritzelSettingsConfig): Promise<void> {
+    const key = this.core.getStorageKey('kritzel-settings');
+    localStorage.setItem(key, JSON.stringify(settings));
+  }
+
+  /**
+   * Loads the persisted settings object from localStorage.
+   * @returns The stored settings, or null if nothing is stored or the value is invalid.
+   */
+  @Method()
+  async loadSettings(): Promise<Partial<KritzelSettingsConfig> | null> {
+    const key = this.core.getStorageKey('kritzel-settings');
+    const stored = localStorage.getItem(key);
+    if (!stored) {
+      return null;
+    }
+    try {
+      return JSON.parse(stored) as Partial<KritzelSettingsConfig>;
+    } catch {
+      return null;
+    }
   }
 
   core: KritzelCore;

@@ -327,6 +327,9 @@ export class KritzelEditor {
   @Watch('currentTheme')
   onCurrentThemeChange() {
     setTimeout(() => this.setOsSpecificCssVariables(), 0);
+    if (this.engineRef) {
+      this.engineRef.saveSettings(this.currentSettingsConfig);
+    }
   }
 
   @Listen('dblclick', { passive: false })
@@ -744,6 +747,10 @@ export class KritzelEditor {
     this.viewportBoundaryBottom = event.detail.viewportBoundaryBottom ?? Infinity;
     this.debugInfo = event.detail.debugInfo;
     this.themeChange.emit(event.detail.theme);
+
+    if (this.engineRef) {
+      this.engineRef.saveSettings(event.detail);
+    }
   }
 
   private get moreMenuItems(): IKritzelMenuItem[] {
@@ -880,6 +887,20 @@ export class KritzelEditor {
     this.shortcuts = await this.engineRef.getDisplayableShortcuts();
   }
 
+  private get currentSettingsConfig(): KritzelSettingsConfig {
+    return {
+      scaleMin: this.scaleMin,
+      scaleMax: this.scaleMax,
+      lockDrawingScale: this.lockDrawingScale,
+      theme: this.currentTheme,
+      viewportBoundaryLeft: this.viewportBoundaryLeft,
+      viewportBoundaryRight: this.viewportBoundaryRight,
+      viewportBoundaryTop: this.viewportBoundaryTop,
+      viewportBoundaryBottom: this.viewportBoundaryBottom,
+      debugInfo: this.debugInfo,
+    };
+  }
+
   private getContentObjects(objects: KritzelBaseObject<Element>[]): KritzelBaseObject<Element>[] {
     return objects.filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox));
   }
@@ -1010,7 +1031,7 @@ export class KritzelEditor {
               }
             }}
             shortcuts={this.shortcuts}
-            editorId={this.editorId}
+            settings={this.currentSettingsConfig}
             onSettingsChange={event => this.handleSettingsChange(event)}
           ></kritzel-settings>
 

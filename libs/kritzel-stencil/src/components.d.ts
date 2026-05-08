@@ -34,13 +34,13 @@ import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelText } from "./classes/objects/text.class";
 import { KritzelGroup } from "./classes/objects/group.class";
 import { KritzelLine } from "./classes/objects/line.class";
+import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 import { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
-import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 import { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export { IKritzelUser } from "./interfaces/user.interface";
@@ -72,13 +72,13 @@ export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelText } from "./classes/objects/text.class";
 export { KritzelGroup } from "./classes/objects/group.class";
 export { KritzelLine } from "./classes/objects/line.class";
+export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
 export { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
-export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
 export { ConfigurableTool, ToolDisplayValues } from "./interfaces/tool-config.interface";
 export namespace Components {
@@ -707,6 +707,11 @@ export namespace Components {
          */
         "loadObjectsFromJson": (json: string) => Promise<number>;
         /**
+          * Loads the persisted settings object from localStorage.
+          * @returns The stored settings, or null if nothing is stored or the value is invalid.
+         */
+        "loadSettings": () => Promise<Partial<KritzelSettingsConfig> | null>;
+        /**
           * Loads a shared workspace by token. If the workspace exists locally, it switches to it. If it doesn't exist, it adds it to the local workspaces list and then switches to it.
           * @param token - The connection token identifying the shared workspace
          */
@@ -754,6 +759,11 @@ export namespace Components {
           * @returns The removed object.
          */
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        /**
+          * Persists the given settings object to localStorage using the namespaced storage key.
+          * @param settings - The settings configuration to persist.
+         */
+        "saveSettings": (settings: KritzelSettingsConfig) => Promise<void>;
         /**
           * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
           * @default ABSOLUTE_SCALE_MAX
@@ -1138,11 +1148,11 @@ export namespace Components {
         "offsetY": number;
     }
     interface KritzelSettings {
-        /**
-          * Optional unique identifier for namespacing storage keys
-         */
-        "editorId"?: string;
         "open": () => Promise<void>;
+        /**
+          * Current settings values. Used to initialize and sync the component's internal state.
+         */
+        "settings"?: Partial<KritzelSettingsConfig>;
         /**
           * Keyboard shortcuts to display in the settings dialog
           * @default []
@@ -2954,13 +2964,13 @@ declare namespace LocalJSX {
     }
     interface KritzelSettings {
         /**
-          * Optional unique identifier for namespacing storage keys
-         */
-        "editorId"?: string;
-        /**
           * Emitted when settings change
          */
         "onSettingsChange"?: (event: KritzelSettingsCustomEvent<KritzelSettingsConfig>) => void;
+        /**
+          * Current settings values. Used to initialize and sync the component's internal state.
+         */
+        "settings"?: Partial<KritzelSettingsConfig>;
         /**
           * Keyboard shortcuts to display in the settings dialog
           * @default []
@@ -3264,9 +3274,6 @@ declare namespace LocalJSX {
         "offsetY": number;
         "autoFocus": boolean;
     }
-    interface KritzelSettingsAttributes {
-        "editorId": string;
-    }
     interface KritzelShapeFillAttributes {
         "value": ShapeFillType;
     }
@@ -3334,7 +3341,7 @@ declare namespace LocalJSX {
         "kritzel-opacity-slider": Omit<KritzelOpacitySlider, keyof KritzelOpacitySliderAttributes> & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes]?: KritzelOpacitySlider[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `attr:${K}`]?: KritzelOpacitySliderAttributes[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `prop:${K}`]?: KritzelOpacitySlider[K] };
         "kritzel-pill-tabs": Omit<KritzelPillTabs, keyof KritzelPillTabsAttributes> & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes]?: KritzelPillTabs[K] } & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes as `attr:${K}`]?: KritzelPillTabsAttributes[K] } & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes as `prop:${K}`]?: KritzelPillTabs[K] };
         "kritzel-portal": Omit<KritzelPortal, keyof KritzelPortalAttributes> & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes]?: KritzelPortal[K] } & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes as `attr:${K}`]?: KritzelPortalAttributes[K] } & { [K in keyof KritzelPortal & keyof KritzelPortalAttributes as `prop:${K}`]?: KritzelPortal[K] };
-        "kritzel-settings": Omit<KritzelSettings, keyof KritzelSettingsAttributes> & { [K in keyof KritzelSettings & keyof KritzelSettingsAttributes]?: KritzelSettings[K] } & { [K in keyof KritzelSettings & keyof KritzelSettingsAttributes as `attr:${K}`]?: KritzelSettingsAttributes[K] } & { [K in keyof KritzelSettings & keyof KritzelSettingsAttributes as `prop:${K}`]?: KritzelSettings[K] };
+        "kritzel-settings": KritzelSettings;
         "kritzel-shape-fill": Omit<KritzelShapeFill, keyof KritzelShapeFillAttributes> & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes]?: KritzelShapeFill[K] } & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes as `attr:${K}`]?: KritzelShapeFillAttributes[K] } & { [K in keyof KritzelShapeFill & keyof KritzelShapeFillAttributes as `prop:${K}`]?: KritzelShapeFill[K] };
         "kritzel-share-dialog": Omit<KritzelShareDialog, keyof KritzelShareDialogAttributes> & { [K in keyof KritzelShareDialog & keyof KritzelShareDialogAttributes]?: KritzelShareDialog[K] } & { [K in keyof KritzelShareDialog & keyof KritzelShareDialogAttributes as `attr:${K}`]?: KritzelShareDialogAttributes[K] } & { [K in keyof KritzelShareDialog & keyof KritzelShareDialogAttributes as `prop:${K}`]?: KritzelShareDialog[K] };
         "kritzel-slide-toggle": Omit<KritzelSlideToggle, keyof KritzelSlideToggleAttributes> & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes]?: KritzelSlideToggle[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `attr:${K}`]?: KritzelSlideToggleAttributes[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `prop:${K}`]?: KritzelSlideToggle[K] };
