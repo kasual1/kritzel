@@ -43,16 +43,32 @@ describe('KritzelThemeManager', () => {
       expect(manager.currentTheme).toBe('light');
     });
 
-    it('should restore stored theme from localStorage', () => {
-      localStorage.setItem('kritzel-theme', 'dark');
+    it('should restore stored theme from settings object', () => {
+      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'dark' }));
 
       const freshManager = new KritzelThemeManager(mockCore);
 
       expect(freshManager.currentTheme).toBe('dark');
     });
 
-    it('should default to light when stored value is invalid', () => {
-      localStorage.setItem('kritzel-theme', 'neon');
+    it('should default to light when settings object has invalid theme', () => {
+      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'neon' }));
+
+      const freshManager = new KritzelThemeManager(mockCore);
+
+      expect(freshManager.currentTheme).toBe('light');
+    });
+
+    it('should default to light when settings object has no theme', () => {
+      localStorage.setItem('kritzel-settings', JSON.stringify({ scaleMin: 0.1 }));
+
+      const freshManager = new KritzelThemeManager(mockCore);
+
+      expect(freshManager.currentTheme).toBe('light');
+    });
+
+    it('should default to light when settings value is invalid JSON', () => {
+      localStorage.setItem('kritzel-settings', 'not-json');
 
       const freshManager = new KritzelThemeManager(mockCore);
 
@@ -65,23 +81,14 @@ describe('KritzelThemeManager', () => {
   // ============================================
 
   describe('editorId namespacing', () => {
-    let editorManager: KritzelThemeManager;
     let mockCoreWithId: any;
 
     beforeEach(() => {
       mockCoreWithId = { editorId: 'homepage' } as unknown as jest.Mocked<KritzelCore>;
-      editorManager = new KritzelThemeManager(mockCoreWithId);
     });
 
-    it('should use namespaced storage key when editorId is set', () => {
-      editorManager.saveTheme('dark');
-
-      expect(localStorage.getItem('kritzel-theme-homepage')).toBe('dark');
-      expect(localStorage.getItem('kritzel-theme')).toBeNull();
-    });
-
-    it('should restore theme from namespaced key', () => {
-      localStorage.setItem('kritzel-theme-homepage', 'dark');
+    it('should restore theme from namespaced settings key', () => {
+      localStorage.setItem('kritzel-settings-homepage', JSON.stringify({ theme: 'dark' }));
 
       const freshManager = new KritzelThemeManager(mockCoreWithId);
 
@@ -89,7 +96,7 @@ describe('KritzelThemeManager', () => {
     });
 
     it('should not read from the non-namespaced key when editorId is set', () => {
-      localStorage.setItem('kritzel-theme', 'dark');
+      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'dark' }));
 
       const freshManager = new KritzelThemeManager(mockCoreWithId);
 
@@ -100,25 +107,23 @@ describe('KritzelThemeManager', () => {
       const mockCoreA = { editorId: 'editor-a' } as unknown as jest.Mocked<KritzelCore>;
       const mockCoreB = { editorId: 'editor-b' } as unknown as jest.Mocked<KritzelCore>;
 
+      localStorage.setItem('kritzel-settings-editor-a', JSON.stringify({ theme: 'dark' }));
+      localStorage.setItem('kritzel-settings-editor-b', JSON.stringify({ theme: 'light' }));
+
       const managerA = new KritzelThemeManager(mockCoreA);
       const managerB = new KritzelThemeManager(mockCoreB);
 
-      managerA.setTheme('dark');
-      managerB.setTheme('light');
-
       expect(managerA.currentTheme).toBe('dark');
       expect(managerB.currentTheme).toBe('light');
-      expect(localStorage.getItem('kritzel-theme-editor-a')).toBe('dark');
-      expect(localStorage.getItem('kritzel-theme-editor-b')).toBe('light');
     });
 
     it('should use default key when editorId is undefined', () => {
+      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'dark' }));
       const noIdCore = { editorId: undefined } as unknown as jest.Mocked<KritzelCore>;
+
       const noIdManager = new KritzelThemeManager(noIdCore);
 
-      noIdManager.saveTheme('dark');
-
-      expect(localStorage.getItem('kritzel-theme')).toBe('dark');
+      expect(noIdManager.currentTheme).toBe('dark');
     });
   });
 
@@ -144,7 +149,7 @@ describe('KritzelThemeManager', () => {
     });
 
     it('should apply dark theme when current theme is dark', () => {
-      localStorage.setItem('kritzel-theme', 'dark');
+      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'dark' }));
       const darkManager = new KritzelThemeManager(mockCore);
       const element = createMockElement();
 
@@ -201,40 +206,28 @@ describe('KritzelThemeManager', () => {
       expect(KritzelThemeManager.getStoredTheme()).toBe('light');
     });
 
-    it('should return dark when dark is stored', () => {
-      localStorage.setItem('kritzel-theme', 'dark');
+    it('should return dark when dark is stored in settings', () => {
+      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'dark' }));
 
       expect(KritzelThemeManager.getStoredTheme()).toBe('dark');
     });
 
-    it('should return light when light is stored', () => {
-      localStorage.setItem('kritzel-theme', 'light');
+    it('should return light when light is stored in settings', () => {
+      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'light' }));
 
       expect(KritzelThemeManager.getStoredTheme()).toBe('light');
     });
 
-    it('should return light for invalid stored values', () => {
-      localStorage.setItem('kritzel-theme', 'invalid');
+    it('should return light for invalid theme in settings', () => {
+      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'invalid' }));
 
       expect(KritzelThemeManager.getStoredTheme()).toBe('light');
     });
-  });
 
-  // ============================================
-  // saveTheme
-  // ============================================
+    it('should return light for invalid JSON', () => {
+      localStorage.setItem('kritzel-settings', 'not-json');
 
-  describe('saveTheme', () => {
-    it('should save light theme to localStorage', () => {
-      manager.saveTheme('light');
-
-      expect(localStorage.getItem('kritzel-theme')).toBe('light');
-    });
-
-    it('should save dark theme to localStorage', () => {
-      manager.saveTheme('dark');
-
-      expect(localStorage.getItem('kritzel-theme')).toBe('dark');
+      expect(KritzelThemeManager.getStoredTheme()).toBe('light');
     });
   });
 
@@ -249,10 +242,10 @@ describe('KritzelThemeManager', () => {
       expect(manager.currentTheme).toBe('dark');
     });
 
-    it('should persist the theme to localStorage', () => {
+    it('should not persist the theme to localStorage', () => {
       manager.setTheme('dark');
 
-      expect(localStorage.getItem('kritzel-theme')).toBe('dark');
+      expect(localStorage.getItem('kritzel-settings')).toBeNull();
     });
 
     it('should apply theme to target element when one is set', () => {
@@ -276,7 +269,6 @@ describe('KritzelThemeManager', () => {
       manager.setTheme('light');
 
       expect(manager.currentTheme).toBe('light');
-      expect(localStorage.getItem('kritzel-theme')).toBe('light');
     });
   });
 
