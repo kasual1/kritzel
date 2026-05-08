@@ -79,8 +79,6 @@ export class EditorPageComponent implements OnInit {
 
   onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
     const workspace = event.detail;
-    console.log('Active workspace changed:', workspace);
-
     this.activeWorkspaceId = workspace.id;
     window.history.replaceState(null, '', `/${workspace.id}`);
   }

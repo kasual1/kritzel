@@ -4,20 +4,21 @@ import { darkTheme } from '../../themes/dark-theme';
 import { KritzelCore } from '../core/core.class';
 import { ThemeHelper } from '../../helpers/theme.helper';
 
-/** Key used to store the theme preference in localStorage. */
-const THEME_STORAGE_KEY = 'kritzel-theme';
+/** Key used to store the settings object in localStorage. */
+const SETTINGS_STORAGE_KEY = 'kritzel-settings';
 
 /** Default theme used when no stored preference exists. */
 const DEFAULT_THEME: ThemeName = 'light';
 
 /**
  * Manages theme state and application across the Kritzel editor.
- * Handles theme persistence, retrieval, and CSS variable application.
+ * Reads the persisted theme from the settings object in localStorage but does not write to it.
+ * Persistence is handled exclusively by the KritzelSettings component.
  *
  * The theme manager is responsible for:
- * - Storing and retrieving user theme preferences from localStorage
+ * - Reading the stored theme preference from the settings object
  * - Applying CSS custom properties to target elements
- * - Switching between light and dark themes
+ * - Switching between light and dark themes at runtime
  */
 export class KritzelThemeManager {
   private readonly _core: KritzelCore;
@@ -27,13 +28,13 @@ export class KritzelThemeManager {
 
   /**
    * Creates a new KritzelThemeManager instance.
-   * Initializes the current theme from localStorage or uses the default theme.
+   * Initializes the current theme from the settings object in localStorage or uses the default theme.
    *
    * @param core - The KritzelCore instance this manager belongs to
    */
   constructor(core: KritzelCore) {
     this._core = core;
-    this._storageKey = core.editorId ? `${THEME_STORAGE_KEY}-${core.editorId}` : THEME_STORAGE_KEY;
+    this._storageKey = core.editorId ? `${SETTINGS_STORAGE_KEY}-${core.editorId}` : SETTINGS_STORAGE_KEY;
     this._currentTheme = this.getStoredTheme();
     void this._core;
   }
@@ -82,7 +83,7 @@ export class KritzelThemeManager {
   }
 
   /**
-   * Gets the stored theme name from localStorage using this instance's namespaced key.
+   * Gets the stored theme name from the settings object in localStorage using this instance's namespaced key.
    *
    * @returns The stored theme name if valid, or 'light' as the default
    */
@@ -91,14 +92,22 @@ export class KritzelThemeManager {
       return DEFAULT_THEME;
     }
     const stored = localStorage.getItem(this._storageKey);
-    if (stored === 'dark' || stored === 'light') {
-      return stored;
+    if (!stored) {
+      return DEFAULT_THEME;
+    }
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed?.theme === 'dark' || parsed?.theme === 'light') {
+        return parsed.theme;
+      }
+    } catch {
+      // Invalid JSON, use default
     }
     return DEFAULT_THEME;
   }
 
   /**
-   * Gets the stored theme from the default (non-namespaced) localStorage key.
+   * Gets the stored theme from the default (non-namespaced) settings object in localStorage.
    * Used by static utility helpers that don't have access to a core instance.
    *
    * @returns The stored theme name if valid, or 'light' as the default
@@ -107,35 +116,29 @@ export class KritzelThemeManager {
     if (typeof localStorage === 'undefined') {
       return DEFAULT_THEME;
     }
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === 'dark' || stored === 'light') {
-      return stored;
+    const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (!stored) {
+      return DEFAULT_THEME;
+    }
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed?.theme === 'dark' || parsed?.theme === 'light') {
+        return parsed.theme;
+      }
+    } catch {
+      // Invalid JSON, use default
     }
     return DEFAULT_THEME;
   }
 
   /**
-   * Saves the theme name to localStorage for persistence across sessions.
-   * Does nothing if localStorage is not available (e.g., in SSR environments).
-   *
-   * @param themeName - The theme name to save ('light' or 'dark')
-   */
-  saveTheme(themeName: ThemeName): void {
-    if (typeof localStorage === 'undefined') {
-      return;
-    }
-    localStorage.setItem(this._storageKey, themeName);
-  }
-
-  /**
-   * Sets the current theme, persists it to storage, and applies it to the target element.
-   * This is the primary method for changing themes at runtime.
+   * Sets the current theme and applies it to the target element.
+   * Does not persist the theme — persistence is handled by the KritzelSettings component.
    *
    * @param themeName - The theme name to set ('light' or 'dark')
    */
   setTheme(themeName: ThemeName): void {
     this._currentTheme = themeName;
-    this.saveTheme(themeName);
 
     if (this._targetElement) {
       this.applyTheme(themeName);
@@ -175,4 +178,5 @@ export class KritzelThemeManager {
   cleanup(): void {
     this._targetElement = null;
   }
+
 }

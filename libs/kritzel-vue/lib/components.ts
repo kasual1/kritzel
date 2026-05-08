@@ -219,7 +219,7 @@ export const KritzelPillTabs: StencilVueComponent<JSX.KritzelPillTabs> = /*@__PU
 
 export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PURE__*/ defineContainer<JSX.KritzelSettings>('kritzel-settings', defineKritzelSettings, [
   'shortcuts',
-  'editorId',
+  'settings',
   'settingsChange'
 ], [
   'settingsChange'

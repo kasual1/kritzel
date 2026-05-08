@@ -1,4 +1,4 @@
-import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop } from '@stencil/core';
+import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop, Watch } from '@stencil/core';
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '../../../interfaces/master-detail.interface';
 import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
 import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
@@ -6,8 +6,6 @@ import { KRITZEL_VERSION } from '../../../constants/version';
 import { CURRENT_APP_STATE_SCHEMA_VERSION, CURRENT_WORKSPACE_SCHEMA_VERSION } from '../../../constants/schema.constants';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
-
-const SETTINGS_STORAGE_KEY = 'kritzel-settings';
 const DEFAULT_SCALE_MIN = 0.0001;
 const DEFAULT_SCALE_MAX = 1000;
 const DEFAULT_LOCK_DRAWING_SCALE = true;
@@ -42,8 +40,14 @@ export class KritzelSettings {
   /** Keyboard shortcuts to display in the settings dialog */
   @Prop() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
 
-  /** Optional unique identifier for namespacing storage keys */
-  @Prop() editorId?: string;
+  /** Current settings values. Used to initialize and sync the component's internal state. */
+  @Prop() settings?: Partial<KritzelSettingsConfig>;
+  @Watch('settings')
+  onSettingsPropChange(newSettings?: Partial<KritzelSettingsConfig>) {
+    if (newSettings) {
+      this.applySettings(newSettings);
+    }
+  }
 
   @State() isDialogOpen: boolean = false;
   @State() selectedCategoryId: string = SETTINGS_CATEGORIES[0].id;
@@ -61,52 +65,42 @@ export class KritzelSettings {
   @Event() settingsChange: EventEmitter<KritzelSettingsConfig>;
 
   componentWillLoad(): void {
-    this.loadSettings();
-  }
-
-  private get storageKey(): string {
-    return this.editorId ? `${SETTINGS_STORAGE_KEY}-${this.editorId}` : SETTINGS_STORAGE_KEY;
-  }
-
-  private loadSettings(): void {
-    const stored = localStorage.getItem(this.storageKey);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as Partial<KritzelSettingsConfig>;
-        if (typeof parsed.scaleMin === 'number') {
-          this.scaleMin = parsed.scaleMin;
-        }
-        if (typeof parsed.scaleMax === 'number') {
-          this.scaleMax = parsed.scaleMax;
-        }
-        if (typeof parsed.lockDrawingScale === 'boolean') {
-          this.lockDrawingScale = parsed.lockDrawingScale;
-        }
-        if (parsed.theme === 'light' || parsed.theme === 'dark') {
-          this.currentTheme = parsed.theme;
-        }
-        if (typeof parsed.viewportBoundaryLeft === 'number') {
-          this.viewportBoundaryLeft = parsed.viewportBoundaryLeft;
-        }
-        if (typeof parsed.viewportBoundaryRight === 'number') {
-          this.viewportBoundaryRight = parsed.viewportBoundaryRight;
-        }
-        if (typeof parsed.viewportBoundaryTop === 'number') {
-          this.viewportBoundaryTop = parsed.viewportBoundaryTop;
-        }
-        if (typeof parsed.viewportBoundaryBottom === 'number') {
-          this.viewportBoundaryBottom = parsed.viewportBoundaryBottom;
-        }
-        if (parsed.debugInfo) {
-          this.debugInfo = { ...DEFAULT_DEBUG_INFO, ...parsed.debugInfo };
-        }
-      } catch {
-        // Invalid JSON, use defaults
-      }
+    if (this.settings) {
+      this.applySettings(this.settings);
     }
   }
 
-  private saveSettings(): void {
+  private applySettings(settings: Partial<KritzelSettingsConfig>): void {
+    if (typeof settings.scaleMin === 'number') {
+      this.scaleMin = settings.scaleMin;
+    }
+    if (typeof settings.scaleMax === 'number') {
+      this.scaleMax = settings.scaleMax;
+    }
+    if (typeof settings.lockDrawingScale === 'boolean') {
+      this.lockDrawingScale = settings.lockDrawingScale;
+    }
+    if (settings.theme === 'light' || settings.theme === 'dark') {
+      this.currentTheme = settings.theme;
+    }
+    if (typeof settings.viewportBoundaryLeft === 'number') {
+      this.viewportBoundaryLeft = settings.viewportBoundaryLeft;
+    }
+    if (typeof settings.viewportBoundaryRight === 'number') {
+      this.viewportBoundaryRight = settings.viewportBoundaryRight;
+    }
+    if (typeof settings.viewportBoundaryTop === 'number') {
+      this.viewportBoundaryTop = settings.viewportBoundaryTop;
+    }
+    if (typeof settings.viewportBoundaryBottom === 'number') {
+      this.viewportBoundaryBottom = settings.viewportBoundaryBottom;
+    }
+    if (settings.debugInfo) {
+      this.debugInfo = { ...DEFAULT_DEBUG_INFO, ...settings.debugInfo };
+    }
+  }
+
+  private emitSettings(): void {
     const settings: KritzelSettingsConfig = {
       scaleMin: this.scaleMin,
       scaleMax: this.scaleMax,
@@ -118,53 +112,52 @@ export class KritzelSettings {
       viewportBoundaryBottom: this.viewportBoundaryBottom,
       debugInfo: this.debugInfo,
     };
-    localStorage.setItem(this.storageKey, JSON.stringify(settings));
     this.settingsChange.emit(settings);
   }
 
   private handleScaleMinChange = (event: CustomEvent<number>): void => {
     this.scaleMin = event.detail;
-    this.saveSettings();
+    this.emitSettings();
   };
 
   private handleScaleMaxChange = (event: CustomEvent<number>): void => {
     this.scaleMax = event.detail;
-    this.saveSettings();
+    this.emitSettings();
   };
 
   private handleLockDrawingScaleChange = (event: CustomEvent<boolean>): void => {
     this.lockDrawingScale = event.detail;
-    this.saveSettings();
+    this.emitSettings();
   };
 
   private handleThemeChange = (event: CustomEvent<boolean>): void => {
     this.currentTheme = event.detail ? 'dark' : 'light';
-    this.saveSettings();
+    this.emitSettings();
   };
 
   private handleViewportBoundaryLeftChange = (event: CustomEvent<number | undefined>): void => {
     this.viewportBoundaryLeft = event.detail ?? DEFAULT_VIEWPORT_BOUNDARY_LEFT;
-    this.saveSettings();
+    this.emitSettings();
   };
 
   private handleViewportBoundaryRightChange = (event: CustomEvent<number | undefined>): void => {
     this.viewportBoundaryRight = event.detail ?? DEFAULT_VIEWPORT_BOUNDARY_RIGHT;
-    this.saveSettings();
+    this.emitSettings();
   };
 
   private handleViewportBoundaryTopChange = (event: CustomEvent<number | undefined>): void => {
     this.viewportBoundaryTop = event.detail ?? DEFAULT_VIEWPORT_BOUNDARY_TOP;
-    this.saveSettings();
+    this.emitSettings();
   };
 
   private handleViewportBoundaryBottomChange = (event: CustomEvent<number | undefined>): void => {
     this.viewportBoundaryBottom = event.detail ?? DEFAULT_VIEWPORT_BOUNDARY_BOTTOM;
-    this.saveSettings();
+    this.emitSettings();
   };
 
   private handleDebugInfoChange = (key: keyof KritzelDebugInfo) => (event: CustomEvent<boolean>): void => {
     this.debugInfo = { ...this.debugInfo, [key]: event.detail };
-    this.saveSettings();
+    this.emitSettings();
   };
 
   @Method()
