@@ -498,7 +498,7 @@ export declare interface KritzelPillTabs extends Components.KritzelPillTabs {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelSettings,
-  inputs: ['editorId', 'shortcuts'],
+  inputs: ['settings', 'shortcuts'],
   methods: ['open']
 })
 @Component({
@@ -506,7 +506,7 @@ export declare interface KritzelPillTabs extends Components.KritzelPillTabs {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['editorId', 'shortcuts'],
+  inputs: ['settings', 'shortcuts'],
   outputs: ['settingsChange'],
 })
 export class KritzelSettings {
