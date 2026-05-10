@@ -19,6 +19,11 @@ kritzel-editor{
 
 kritzel-controls {
   position: absolute;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: max-content;
+  max-width: calc(100% - 16px);
   bottom: var(--kritzel-editor-controls-bottom, 14px);
   transition: transform var(--kritzel-editor-controls-transition-duration, 0.1s) var(--kritzel-editor-controls-transition, ease-in-out);
 }
