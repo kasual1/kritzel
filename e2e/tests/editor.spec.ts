@@ -136,7 +136,7 @@ test.describe('Editor', () => {
     expect(controlsBox!.x).toBeGreaterThanOrEqual(editorBox!.x);
     expect(controlsBox!.x + controlsBox!.width).toBeLessThanOrEqual(editorBox!.x + editorBox!.width + 1);
 
-    await expect(page).toHaveScreenshot('controls-fullscreen.png', { fullPage: true });
+    await expect(page).toHaveScreenshot('Editor-controls-fullscreen.png', { fullPage: true });
   });
 
   test('controls fit inside the editor when wrapped in a narrow container', async ({ editorPage, page }) => {
@@ -209,6 +209,6 @@ test.describe('Editor', () => {
     expect(controlsBox!.x).toBeGreaterThanOrEqual(editorBox!.x - 1);
     expect(controlsBox!.x + controlsBox!.width).toBeLessThanOrEqual(editorBox!.x + editorBox!.width + 1);
 
-    await expect(page).toHaveScreenshot('controls-wrapped.png', { fullPage: true });
+    await expect(page).toHaveScreenshot('Editor-controls-wrapped.png', { fullPage: true });
   });
 });
