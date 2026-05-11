@@ -130,7 +130,7 @@ export declare interface KritzelCurrentUserDialog extends Components.KritzelCurr
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelDialog,
-  inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'dialogTitle', 'fullscreenOnMobile', 'isOpen', 'size', 'trapFocus'],
+  inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'contained', 'dialogTitle', 'fullscreenOnMobile', 'isOpen', 'size', 'trapFocus'],
   methods: ['open', 'close', 'focusFirstElement']
 })
 @Component({
@@ -138,7 +138,7 @@ export declare interface KritzelCurrentUserDialog extends Components.KritzelCurr
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'dialogTitle', 'fullscreenOnMobile', 'isOpen', 'size', 'trapFocus'],
+  inputs: ['autoFocus', 'closable', 'closeOnBackdrop', 'closeOnEscape', 'contained', 'dialogTitle', 'fullscreenOnMobile', 'isOpen', 'size', 'trapFocus'],
   outputs: ['dialogOpen', 'dialogClose'],
 })
 export class KritzelDialog {

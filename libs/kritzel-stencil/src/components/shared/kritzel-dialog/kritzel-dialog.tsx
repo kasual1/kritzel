@@ -37,8 +37,12 @@ export class KritzelDialog {
   /** Whether to automatically go fullscreen on mobile viewports */
   @Prop() fullscreenOnMobile: boolean = true;
 
+  /** Constrain the dialog to its nearest editor/container ancestor instead of the viewport. */
+  @Prop({ reflect: true }) contained: boolean = false;
+
   @State() isAnimating: boolean = false;
   @State() mobileLockedHeight: string | null = null;
+  @State() containerRect: { top: number; left: number; width: number; height: number } | null = null;
 
   /** Emitted when the dialog opens */
   @Event() dialogOpen: EventEmitter<void>;
@@ -49,6 +53,9 @@ export class KritzelDialog {
   private previousOverflow: string = '';
   private previousActiveElement: HTMLElement | null = null;
   private visualViewportListenersAttached = false;
+  private containerElement: HTMLElement | null = null;
+  private containerResizeObserver: ResizeObserver | null = null;
+  private containerTrackingFrame: number | null = null;
 
   @Watch('isOpen')
   handleIsOpenChange(newValue: boolean) {
@@ -112,14 +119,19 @@ export class KritzelDialog {
 
   disconnectedCallback() {
     this.removeVisualViewportListeners();
+    this.stopContainerTracking();
     this.restoreBodyScroll();
   }
 
   private openDialog() {
     this.isAnimating = true;
     this.previousActiveElement = document.activeElement as HTMLElement;
-    this.lockBodyScroll();
-    this.addVisualViewportListeners();
+    if (this.contained) {
+      this.startContainerTracking();
+    } else {
+      this.lockBodyScroll();
+      this.addVisualViewportListeners();
+    }
     this.lockMobileViewportHeight();
     this.dialogOpen.emit();
 
@@ -137,8 +149,85 @@ export class KritzelDialog {
   private closeDialog() {
     this.restoreBodyScroll();
     this.removeVisualViewportListeners();
+    this.stopContainerTracking();
     this.mobileLockedHeight = null;
     this.returnFocusToPreviousElement();
+  }
+
+  private findContainerElement(): HTMLElement | null {
+    // Walk up the composed DOM (crossing shadow roots) and return the first
+    // ancestor that opts into containing dialogs. We accept either an explicit
+    // [data-kritzel-dialog-container] marker or the kritzel-editor host so any
+    // consumer can opt in without modifying the editor itself.
+    let node: Node | null = this.host;
+    while (node) {
+      if (node instanceof HTMLElement) {
+        if (node.hasAttribute('data-kritzel-dialog-container') || node.tagName === 'KRITZEL-EDITOR') {
+          return node;
+        }
+      }
+      const parent: Node | null = node.parentNode;
+      if (parent) {
+        node = parent;
+      } else if (node instanceof ShadowRoot) {
+        node = node.host;
+      } else {
+        node = null;
+      }
+    }
+    return null;
+  }
+
+  private startContainerTracking() {
+    this.containerElement = this.findContainerElement();
+    if (!this.containerElement) {
+      // No container found — fall back to viewport behavior.
+      this.containerRect = null;
+      return;
+    }
+
+    this.updateContainerRect();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      this.containerResizeObserver = new ResizeObserver(() => this.updateContainerRect());
+      this.containerResizeObserver.observe(this.containerElement);
+    }
+
+    window.addEventListener('resize', this.handleContainerTrackingEvent, { passive: true });
+    window.addEventListener('scroll', this.handleContainerTrackingEvent, { capture: true, passive: true });
+  }
+
+  private stopContainerTracking() {
+    if (this.containerResizeObserver) {
+      this.containerResizeObserver.disconnect();
+      this.containerResizeObserver = null;
+    }
+    window.removeEventListener('resize', this.handleContainerTrackingEvent);
+    window.removeEventListener('scroll', this.handleContainerTrackingEvent, { capture: true } as any);
+    if (this.containerTrackingFrame !== null) {
+      cancelAnimationFrame(this.containerTrackingFrame);
+      this.containerTrackingFrame = null;
+    }
+    this.containerElement = null;
+    this.containerRect = null;
+  }
+
+  private handleContainerTrackingEvent = () => {
+    if (this.containerTrackingFrame !== null) return;
+    this.containerTrackingFrame = requestAnimationFrame(() => {
+      this.containerTrackingFrame = null;
+      this.updateContainerRect();
+    });
+  };
+
+  private updateContainerRect() {
+    if (!this.containerElement) return;
+    const rect = this.containerElement.getBoundingClientRect();
+    const next = { top: rect.top, left: rect.left, width: rect.width, height: rect.height };
+    const prev = this.containerRect;
+    if (!prev || prev.top !== next.top || prev.left !== next.left || prev.width !== next.width || prev.height !== next.height) {
+      this.containerRect = next;
+    }
   }
 
   private emitClose(reason: KritzelDialogCloseReason) {
@@ -151,6 +240,13 @@ export class KritzelDialog {
   }
 
   private lockMobileViewportHeight() {
+    // Skip mobile viewport height locking when contained — the dialog is sized
+    // by its wrapper, not the viewport.
+    if (this.contained) {
+      this.mobileLockedHeight = null;
+      return;
+    }
+
     // Only lock height on mobile when fullscreenOnMobile is enabled.
     // Use the smaller dimension so landscape phones (wide but short) are also detected.
     const viewportWidth = this.getViewportWidth();
@@ -329,20 +425,80 @@ export class KritzelDialog {
     );
   }
 
+  private getBackdropStyle(): { [key: string]: string } | undefined {
+    if (!this.contained || !this.containerRect) return undefined;
+    const { top, left, width, height } = this.containerRect;
+    return {
+      top: `${top}px`,
+      left: `${left}px`,
+      right: 'auto',
+      bottom: 'auto',
+      width: `${width}px`,
+      height: `${height}px`,
+    };
+  }
+
+  private getDialogContentStyle(): { [key: string]: string } | undefined {
+    const style: { [key: string]: string } = {};
+
+    // In contained mode, cap the dialog dimensions to the container so the
+    // declared widths/heights of size variants cannot overflow the wrapper.
+    if (this.contained && this.containerRect) {
+      const { width, height } = this.containerRect;
+      if (this.isContainerMobile()) {
+        // Mobile-sized container: behave like fullscreen-on-mobile but scoped
+        // to the container instead of the viewport (works in any orientation).
+        style.width = `${width}px`;
+        style.height = `${height}px`;
+        style.maxWidth = `${width}px`;
+        style.maxHeight = `${height}px`;
+        style.borderRadius = '0';
+      } else {
+        // Leave a small margin so the dialog visibly sits within the container.
+        const maxWidth = Math.max(0, width - 32);
+        const maxHeight = Math.max(0, height - 32);
+        style.maxWidth = `${maxWidth}px`;
+        style.maxHeight = `${maxHeight}px`;
+      }
+    }
+
+    if (this.mobileLockedHeight) {
+      style.height = this.mobileLockedHeight;
+      style.maxHeight = this.mobileLockedHeight;
+    }
+
+    return Object.keys(style).length > 0 ? style : undefined;
+  }
+
+  private isContainerMobile(): boolean {
+    if (!this.fullscreenOnMobile || !this.containerRect) return false;
+    // Match the existing viewport media-query threshold: container is "mobile"
+    // when its smaller dimension is <= 576px. This handles both portrait and
+    // landscape wrappers symmetrically.
+    return Math.min(this.containerRect.width, this.containerRect.height) <= 576;
+  }
+
   render() {
     if (!this.isOpen) return null;
 
+    const containerFullscreen = this.contained && this.isContainerMobile();
+
     return (
       <Host>
-        <div class={{ backdrop: true, 'is-animating': this.isAnimating }} onClick={this.handleBackdropClick}>
+        <div
+          class={{ backdrop: true, 'is-animating': this.isAnimating, 'contained-fullscreen': containerFullscreen }}
+          style={this.getBackdropStyle()}
+          onClick={this.handleBackdropClick}
+        >
           <div
             class={{
               'dialog-content': true,
               'is-animating': this.isAnimating,
               [`size-${this.size}`]: true,
               'fullscreen-on-mobile': this.fullscreenOnMobile,
+              'contained-fullscreen': containerFullscreen,
             }}
-            style={this.mobileLockedHeight ? { height: this.mobileLockedHeight, maxHeight: this.mobileLockedHeight } : undefined}
+            style={this.getDialogContentStyle()}
             role="dialog"
             aria-modal="true"
             aria-labelledby={this.dialogTitle ? 'dialog-title' : undefined}

@@ -71,6 +71,30 @@
   border-radius: 0;
 }
 
+/*
+ * Contained-mobile: when the wrapping container itself is mobile-sized, the
+ * dialog fills the container fully (mirrors the viewport fullscreen-on-mobile
+ * behavior). The actual sizing is set inline by JS based on the container
+ * rect; here we just remove decorations and ensure body flex layout.
+ */
+.backdrop.contained-fullscreen {
+  background-color: transparent;
+}
+
+.dialog-content.contained-fullscreen {
+  border-radius: 0;
+}
+
+.dialog-content.contained-fullscreen .dialog-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-content.contained-fullscreen .dialog-body ::slotted(*) {
+  flex: 1;
+  min-height: 0;
+}
+
 /* Responsive: auto fullscreen on mobile when enabled (portrait) */
 @media (max-width: 576px),
   (max-height: 576px) and (orientation: landscape) {
