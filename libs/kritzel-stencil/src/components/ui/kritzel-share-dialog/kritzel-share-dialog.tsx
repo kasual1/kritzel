@@ -111,9 +111,10 @@ export class KritzelShareDialog {
       <Host>
         <kritzel-dialog
           dialogTitle="Share Workspace"
+          size="small"
           isOpen={this.isDialogOpen}
           onDialogClose={this.closeDialog}
-          size="small"
+          contained={true}
         >
           <div class="share-content">
             {/* Link Sharing Toggle */}

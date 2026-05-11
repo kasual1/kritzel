@@ -129,6 +129,7 @@ export class KritzelExport {
           isOpen={this.isDialogOpen}
           dialogTitle="Export"
           closable={true}
+          contained={true}
           onDialogClose={this.closeDialog}
         >
           <div class="export-content">

@@ -270,6 +270,11 @@ export namespace Components {
          */
         "closeOnEscape": boolean;
         /**
+          * Constrain the dialog to its nearest editor/container ancestor instead of the viewport.
+          * @default false
+         */
+        "contained": boolean;
+        /**
           * Optional title displayed in the header
          */
         "dialogTitle"?: string;
@@ -2359,6 +2364,11 @@ declare namespace LocalJSX {
          */
         "closeOnEscape"?: boolean;
         /**
+          * Constrain the dialog to its nearest editor/container ancestor instead of the viewport.
+          * @default false
+         */
+        "contained"?: boolean;
+        /**
           * Optional title displayed in the header
          */
         "dialogTitle"?: string;
@@ -3173,6 +3183,7 @@ declare namespace LocalJSX {
         "trapFocus": boolean;
         "size": 'small' | 'medium' | 'large' | 'fullscreen';
         "fullscreenOnMobile": boolean;
+        "contained": boolean;
     }
     interface KritzelDropdownAttributes {
         "value": string;

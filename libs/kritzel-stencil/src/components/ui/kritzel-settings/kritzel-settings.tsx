@@ -409,6 +409,7 @@ export class KritzelSettings {
           isOpen={this.isDialogOpen}
           dialogTitle="Settings"
           size="large"
+          contained={true}
           onDialogClose={this.closeDialog}
         >
           <kritzel-master-detail
