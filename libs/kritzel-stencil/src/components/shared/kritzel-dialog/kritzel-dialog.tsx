@@ -43,6 +43,7 @@ export class KritzelDialog {
   @State() isAnimating: boolean = false;
   @State() mobileLockedHeight: string | null = null;
   @State() containerRect: { top: number; left: number; width: number; height: number } | null = null;
+  @State() containerBorderRadius: string | null = null;
 
   /** Emitted when the dialog opens */
   @Event() dialogOpen: EventEmitter<void>;
@@ -210,6 +211,7 @@ export class KritzelDialog {
     }
     this.containerElement = null;
     this.containerRect = null;
+    this.containerBorderRadius = null;
   }
 
   private handleContainerTrackingEvent = () => {
@@ -228,6 +230,31 @@ export class KritzelDialog {
     if (!prev || prev.top !== next.top || prev.left !== next.left || prev.width !== next.width || prev.height !== next.height) {
       this.containerRect = next;
     }
+
+    // Look for the nearest visually-rounded ancestor (the container itself or
+    // any ancestor up to the document) so the backdrop matches wrappers that
+    // round their corners around the editor.
+    const radius = this.findVisualBorderRadius(this.containerElement);
+    if (this.containerBorderRadius !== radius) {
+      this.containerBorderRadius = radius;
+    }
+  }
+
+  private findVisualBorderRadius(start: HTMLElement): string | null {
+    let node: HTMLElement | null = start;
+    while (node && node !== document.body && node !== document.documentElement) {
+      const computed = window.getComputedStyle(node);
+      const tl = computed.borderTopLeftRadius;
+      const tr = computed.borderTopRightRadius;
+      const br = computed.borderBottomRightRadius;
+      const bl = computed.borderBottomLeftRadius;
+      const isZero = (v: string) => !v || v === '0px' || v === '0%';
+      if (!(isZero(tl) && isZero(tr) && isZero(br) && isZero(bl))) {
+        return `${tl} ${tr} ${br} ${bl}`;
+      }
+      node = node.parentElement;
+    }
+    return null;
   }
 
   private emitClose(reason: KritzelDialogCloseReason) {
@@ -428,7 +455,7 @@ export class KritzelDialog {
   private getBackdropStyle(): { [key: string]: string } | undefined {
     if (!this.contained || !this.containerRect) return undefined;
     const { top, left, width, height } = this.containerRect;
-    return {
+    const style: { [key: string]: string } = {
       top: `${top}px`,
       left: `${left}px`,
       right: 'auto',
@@ -436,6 +463,12 @@ export class KritzelDialog {
       width: `${width}px`,
       height: `${height}px`,
     };
+    if (this.containerBorderRadius) {
+      style.borderRadius = this.containerBorderRadius;
+      // Ensure rounded corners actually clip the inner dialog content.
+      style.overflow = 'hidden';
+    }
+    return style;
   }
 
   private getDialogContentStyle(): { [key: string]: string } | undefined {
