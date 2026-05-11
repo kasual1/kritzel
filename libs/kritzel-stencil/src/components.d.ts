@@ -270,7 +270,7 @@ export namespace Components {
          */
         "closeOnEscape": boolean;
         /**
-          * When true, the dialog is constrained to its nearest positioned ancestor instead of covering the full viewport. Useful when the dialog is embedded inside a wrapper (e.g. kritzel-editor) and should not escape its bounds. In contained mode the body scroll is not locked and mobile fullscreen height locking is disabled.
+          * Constrain the dialog to its nearest editor/container ancestor instead of the viewport.
           * @default false
          */
         "contained": boolean;
@@ -2364,7 +2364,7 @@ declare namespace LocalJSX {
          */
         "closeOnEscape"?: boolean;
         /**
-          * When true, the dialog is constrained to its nearest positioned ancestor instead of covering the full viewport. Useful when the dialog is embedded inside a wrapper (e.g. kritzel-editor) and should not escape its bounds. In contained mode the body scroll is not locked and mobile fullscreen height locking is disabled.
+          * Constrain the dialog to its nearest editor/container ancestor instead of the viewport.
           * @default false
          */
         "contained"?: boolean;

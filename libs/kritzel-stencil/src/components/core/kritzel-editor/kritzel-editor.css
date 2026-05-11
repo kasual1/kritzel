@@ -14,7 +14,9 @@ kritzel-editor{
   -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  user-select: none;           
+  user-select: none;
+  text-align: start;
+  line-height: normal;
 }
 
 kritzel-controls {

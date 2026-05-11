@@ -2,6 +2,11 @@
   display: contents;
 }
 
+.dialog-content {
+  text-align: start;
+  line-height: normal;
+}
+
 .backdrop {
   position: fixed;
   top: 0;
