@@ -46,6 +46,7 @@ export class KritzelCurrentUserDialog {
           isOpen={this.isDialogOpen}
           onDialogClose={this.closeDialog}
           size="small"
+          contained={true}
         >
           <div class="user-info">
             <kritzel-avatar user={this.user} size={80}></kritzel-avatar>

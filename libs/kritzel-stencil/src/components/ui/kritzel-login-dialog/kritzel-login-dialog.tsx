@@ -73,6 +73,7 @@ export class KritzelLoginDialog {
           isOpen={this.isDialogOpen}
           onDialogClose={this.closeDialog}
           size="small"
+          contained={true}
         >
           <div class="login-content">
             {this.subtitle && (

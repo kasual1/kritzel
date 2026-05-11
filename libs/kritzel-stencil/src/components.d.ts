@@ -270,6 +270,11 @@ export namespace Components {
          */
         "closeOnEscape": boolean;
         /**
+          * When true, the dialog is constrained to its nearest positioned ancestor instead of covering the full viewport. Useful when the dialog is embedded inside a wrapper (e.g. kritzel-editor) and should not escape its bounds. In contained mode the body scroll is not locked and mobile fullscreen height locking is disabled.
+          * @default false
+         */
+        "contained": boolean;
+        /**
           * Optional title displayed in the header
          */
         "dialogTitle"?: string;
@@ -2359,6 +2364,11 @@ declare namespace LocalJSX {
          */
         "closeOnEscape"?: boolean;
         /**
+          * When true, the dialog is constrained to its nearest positioned ancestor instead of covering the full viewport. Useful when the dialog is embedded inside a wrapper (e.g. kritzel-editor) and should not escape its bounds. In contained mode the body scroll is not locked and mobile fullscreen height locking is disabled.
+          * @default false
+         */
+        "contained"?: boolean;
+        /**
           * Optional title displayed in the header
          */
         "dialogTitle"?: string;
@@ -3173,6 +3183,7 @@ declare namespace LocalJSX {
         "trapFocus": boolean;
         "size": 'small' | 'medium' | 'large' | 'fullscreen';
         "fullscreenOnMobile": boolean;
+        "contained": boolean;
     }
     interface KritzelDropdownAttributes {
         "value": string;
