@@ -911,21 +911,27 @@ export class KritzelCore {
       selectionGroup.rotation = copiedObjects[0].rotation;
     }
 
-    // Add the selection group
-    this.addSelectionGroup(selectionGroup);
-
-    // Handle cross-workspace paste: center objects in viewport
+    // For cross-workspace paste, set the selection group's position before inserting
+    // it into the store. This mirrors the existing pattern where objects have
+    // updatePosition called before addObject, so the correct position is captured
+    // in the single initial insert with no separate Yjs update (and no extra undo step).
     if (isDifferentWorkspace) {
       if (x !== undefined && y !== undefined) {
-        // Position was explicitly provided, use it
+        // Explicit cursor position provided (e.g. right-click paste)
         selectionGroup.updatePosition(x, y);
       } else {
-        // Center the selection group in the viewport
+        // Ctrl+V paste: center objects in the current viewport
         selectionGroup.centerInViewport();
       }
-      // Fit the viewport to show the pasted objects
-      this.engine.viewport.centerFitInViewport(selectionGroup);
     }
+
+    // Add the selection group (inserts with the already-adjusted position)
+    this.addSelectionGroup(selectionGroup);
+
+    // Bring pasted objects into view with a smooth animation if they are not
+    // fully visible. These only mutate in-memory viewport state (scale, translateX/Y)
+    // and do not produce any Yjs writes, so they have no impact on the undo history.
+    this.engine.viewport.bringIntoViewIfNeeded(selectionGroup);
 
     this._store.state.isSelecting = false;
 

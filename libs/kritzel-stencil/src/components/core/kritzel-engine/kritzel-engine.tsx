@@ -3010,8 +3010,8 @@ export class KritzelEngine {
               if (event.detail.action) {
                 event.detail.action(
                   {
-                    x: (-this.core.store.state.translateX + this.core.store.state.contextMenuX) / this.core.store.state.scale,
-                    y: (-this.core.store.state.translateY + this.core.store.state.contextMenuY) / this.core.store.state.scale,
+                    x: this.core.store.state.contextMenuWorldX,
+                    y: this.core.store.state.contextMenuWorldY,
                   },
                   this.core.store.selectionGroup?.objects || [],
                 );

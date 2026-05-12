@@ -437,6 +437,49 @@ test.describe('Clipboard', () => {
 
       const shape1 = await editorPage.addShape({
         shapeType: 'rectangle',
+        translateX: -300,
+        translateY: -300,
+        width: 120,
+        height: 100,
+        fillColor: { light: '#4a90d9', dark: '#4a90d9' },
+      });
+
+      await editorPage.waitForObjectsAdded();
+      await editorPage.prepareWaitForObjectsAdded();
+
+      const shape2 = await editorPage.addShape({
+        shapeType: 'ellipse',
+        translateX: -120,
+        translateY: -300,
+        width: 120,
+        height: 100,
+        fillColor: { light: '#d94a4a', dark: '#d94a4a' },
+      });
+
+      await editorPage.waitForObjectsAdded();
+
+      await editorPage.selectObjects([shape1, shape2]);
+      await editorPage.copy();
+      await editorPage.clearSelection();
+      await editorPage.paste(0, 0);
+
+      // Wait for pasted objects to render
+      await editorPage.page.evaluate(
+        () =>
+          new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+          )
+      );
+
+      await expect(editorPage.engine).toHaveScreenshot();
+    });
+
+    test('canvas after copy-pasting multiple objects at the edge of the viewport', async ({ editorPage }) => {
+      // This tests that objects copied near the edge of the viewport are pasted correctly and scrolled into view
+      await editorPage.prepareWaitForObjectsAdded();
+
+      const shape1 = await editorPage.addShape({
+        shapeType: 'rectangle',
         translateX: 100,
         translateY: 100,
         width: 120,
@@ -461,7 +504,7 @@ test.describe('Clipboard', () => {
       await editorPage.selectObjects([shape1, shape2]);
       await editorPage.copy();
       await editorPage.clearSelection();
-      await editorPage.paste(100, 300);
+      await editorPage.paste(400, 300);
 
       // Wait for pasted objects to render
       await editorPage.page.evaluate(
