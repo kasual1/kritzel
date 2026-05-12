@@ -43,6 +43,8 @@ export interface KritzelEngineState {
   contextMenuItems: ContextMenuItem[];
   contextMenuX: number;
   contextMenuY: number;
+  contextMenuWorldX: number;
+  contextMenuWorldY: number;
   skipContextMenu: boolean;
   debugInfo: KritzelDebugInfo;
   host: HTMLElement | null;
