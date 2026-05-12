@@ -501,6 +501,42 @@ export class KritzelViewport {
   }
 
   /**
+   * Centers the viewport on a given object and zooms out only if the object
+   * does not fit at the current scale. Never zooms in — if the object already
+   * fits, the scale is left unchanged.
+   * @param object - The object to fit in the viewport
+   */
+  centerFitInViewportIfNeeded(object: KritzelBaseObject): void {
+    const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
+    const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
+    const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
+    const clampedScale = Math.max(newScale, this.getEffectiveMinScale());
+
+    if (clampedScale < this._core.store.state.scale) {
+      this._core.store.state.scale = clampedScale;
+    }
+    this.centerInViewport(object);
+  }
+
+  /**
+   * Zooms out and centers the viewport on a given object only if the object
+   * does not fit at the current scale. If the object already fits, the
+   * viewport is left completely unchanged.
+   * @param object - The object to check and fit in the viewport
+   */
+  fitInViewportIfNeeded(object: KritzelBaseObject): void {
+    const scaleX = this._core.store.state.viewportWidth / (object.rotatedBoundingBox.width * 1.1);
+    const scaleY = this._core.store.state.viewportHeight / (object.rotatedBoundingBox.height * 1.1);
+    const newScale = Math.min(scaleX, scaleY, this._core.store.state.scaleMax);
+    const clampedScale = Math.max(newScale, this.getEffectiveMinScale());
+
+    if (clampedScale < this._core.store.state.scale) {
+      this._core.store.state.scale = clampedScale;
+      this.centerInViewport(object);
+    }
+  }
+
+  /**
    * Handles zoom operations triggered by wheel events with Ctrl key.
    * Zooms around the cursor position, respecting scale limits.
    * Also handles horizontal pan from trackpad pinch+drag gestures.
