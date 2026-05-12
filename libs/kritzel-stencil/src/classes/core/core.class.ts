@@ -928,19 +928,10 @@ export class KritzelCore {
     // Add the selection group (inserts with the already-adjusted position)
     this.addSelectionGroup(selectionGroup);
 
-    // Viewport adjustments for cross-workspace paste.
-    // These only mutate in-memory viewport state (scale, translateX/Y) and do not
-    // produce any Yjs writes, so they have no impact on the undo history.
-    if (isDifferentWorkspace) {
-      if (x !== undefined && y !== undefined) {
-        // Zoom out only if the pasted objects are too large to fit at the current scale.
-        // If they fit, the viewport is left completely unchanged.
-        this.engine.viewport.fitInViewportIfNeeded(selectionGroup);
-      } else {
-        // Zoom out only if needed; never zoom in on small objects.
-        this.engine.viewport.centerFitInViewportIfNeeded(selectionGroup);
-      }
-    }
+    // Bring pasted objects into view with a smooth animation if they are not
+    // fully visible. These only mutate in-memory viewport state (scale, translateX/Y)
+    // and do not produce any Yjs writes, so they have no impact on the undo history.
+    this.engine.viewport.bringIntoViewIfNeeded(selectionGroup);
 
     this._store.state.isSelecting = false;
 
