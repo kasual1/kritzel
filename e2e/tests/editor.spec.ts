@@ -211,4 +211,158 @@ test.describe('Editor', () => {
 
     await expect(page).toHaveScreenshot('Editor-controls-wrapped.png', { fullPage: true });
   });
+
+  test('settings dialog opens within the full-viewport editor', async ({ editorPage, page }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    // Open the more-menu (⋮ button) inside the editor's shadow DOM.
+    await page.getByTestId('more-menu-button').click();
+
+    // Click the Settings item in the dropdown.
+    await page.getByTestId('menu-item-settings').click();
+
+    // Wait for the settings dialog to be visible inside the editor.
+    const settingsDialog = page.locator('kritzel-settings kritzel-dialog[is-open]');
+    await settingsDialog.waitFor({ state: 'attached' });
+
+    // The backdrop must be positioned within the editor bounds.
+    const editorBox = await editorPage.editor.boundingBox();
+    expect(editorBox).not.toBeNull();
+
+    await expect(page).toHaveScreenshot('Editor-settings-dialog-fullscreen.png', { fullPage: true });
+  });
+
+  test('settings dialog stays within a wrapped editor container', async ({ editorPage, page }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    const WRAPPER_WIDTH = 600;
+    const WRAPPER_HEIGHT = 500;
+
+    await page.evaluate(({ w, h }) => {
+      const editor = document.querySelector('kritzel-editor') as HTMLElement | null;
+      if (!editor) throw new Error('kritzel-editor not found');
+
+      const wrapper = document.createElement('div');
+      wrapper.id = 'e2e-dialog-wrapper';
+      wrapper.setAttribute(
+        'style',
+        [
+          `width: ${w}px`,
+          `height: ${h}px`,
+          'box-sizing: border-box',
+          'border: 4px solid #ff0080',
+          'border-radius: 16px',
+          'background: #fafafa',
+          'position: relative',
+          'overflow: hidden',
+          'margin: 24px',
+        ].join('; ')
+      );
+
+      editor.parentElement!.insertBefore(wrapper, editor);
+      wrapper.appendChild(editor);
+
+      editor.setAttribute(
+        'style',
+        'width: 100% !important; height: 100% !important; flex: 0 0 auto !important;'
+      );
+    }, { w: WRAPPER_WIDTH, h: WRAPPER_HEIGHT });
+
+    await page.waitForFunction(
+      (expectedWidth) => {
+        const editor = document.querySelector('kritzel-editor') as HTMLElement | null;
+        if (!editor) return false;
+        return Math.round(editor.getBoundingClientRect().width) === expectedWidth - 8;
+      },
+      WRAPPER_WIDTH
+    );
+
+    // Open the more-menu and click Settings.
+   // Open the more-menu (⋮ button) inside the editor's shadow DOM.
+    await page.getByTestId('more-menu-button').click();
+
+    // Click the Settings item in the dropdown.
+    await page.getByTestId('menu-item-settings').click();
+
+    // Wait for the settings dialog to be attached.
+    const settingsDialog = page.locator('kritzel-settings kritzel-dialog[is-open]');
+    await settingsDialog.waitFor({ state: 'attached' });
+
+    // Allow the contained-dialog's ResizeObserver to compute the container rect.
+    await page.waitForTimeout(100);
+
+    // The dialog backdrop must stay within the editor / wrapper bounds.
+    const editorBox = await editorPage.editor.boundingBox();
+    expect(editorBox).not.toBeNull();
+
+    await expect(page).toHaveScreenshot('Editor-settings-dialog-wrapped.png', { fullPage: true });
+  });
+
+  test('settings dialog stays within a large wrapped editor container', async ({ editorPage, page }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    const WRAPPER_WIDTH = 1000;
+    const WRAPPER_HEIGHT = 600;
+
+    await page.evaluate(({ w, h }) => {
+      const editor = document.querySelector('kritzel-editor') as HTMLElement | null;
+      if (!editor) throw new Error('kritzel-editor not found');
+
+      const wrapper = document.createElement('div');
+      wrapper.id = 'e2e-dialog-wrapper-large';
+      wrapper.setAttribute(
+        'style',
+        [
+          `width: ${w}px`,
+          `height: ${h}px`,
+          'box-sizing: border-box',
+          'border: 4px solid #ff0080',
+          'border-radius: 16px',
+          'background: #fafafa',
+          'position: relative',
+          'overflow: hidden',
+          'margin: 24px',
+        ].join('; ')
+      );
+
+      editor.parentElement!.insertBefore(wrapper, editor);
+      wrapper.appendChild(editor);
+
+      editor.setAttribute(
+        'style',
+        'width: 100% !important; height: 100% !important; flex: 0 0 auto !important;'
+      );
+    }, { w: WRAPPER_WIDTH, h: WRAPPER_HEIGHT });
+
+    await page.waitForFunction(
+      (expectedWidth) => {
+        const editor = document.querySelector('kritzel-editor') as HTMLElement | null;
+        if (!editor) return false;
+        return Math.round(editor.getBoundingClientRect().width) === expectedWidth - 8;
+      },
+      WRAPPER_WIDTH
+    );
+
+    // Open the more-menu (⋮ button) inside the editor's shadow DOM.
+    await page.getByTestId('more-menu-button').click();
+
+    // Click the Settings item in the dropdown.
+    await page.getByTestId('menu-item-settings').click();
+
+    // Wait for the settings dialog to be attached.
+    const settingsDialog = page.locator('kritzel-settings kritzel-dialog[is-open]');
+    await settingsDialog.waitFor({ state: 'attached' });
+
+    // Allow the contained-dialog's ResizeObserver to compute the container rect.
+    await page.waitForTimeout(100);
+
+    // The dialog backdrop must stay within the editor / wrapper bounds.
+    const editorBox = await editorPage.editor.boundingBox();
+    expect(editorBox).not.toBeNull();
+
+    await expect(page).toHaveScreenshot('Editor-settings-dialog-wrapped-large.png', { fullPage: true });
+  });
 });

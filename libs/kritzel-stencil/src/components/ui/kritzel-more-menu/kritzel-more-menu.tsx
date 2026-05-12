@@ -79,6 +79,7 @@ export class KritzelMoreMenu {
         <div class={{ 'more-menu-wrapper': true, visible: this.visible }}>
           <button
             class="more-menu-button"
+            data-testid="more-menu-button"
             onClick={this.toggleMenu}
           >
             <kritzel-icon name={this.icon} size={this.iconSize}></kritzel-icon>
