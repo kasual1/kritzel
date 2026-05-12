@@ -86,8 +86,15 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
 
     this._core.store.state.contextMenuItems = this._core.store.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
 
-    let x: number = event.clientX - this._core.store.offsetX;
-    let y: number = event.clientY - this._core.store.offsetY;
+    const clickX: number = event.clientX - this._core.store.offsetX;
+    const clickY: number = event.clientY - this._core.store.offsetY;
+
+    const { translateX, translateY, scale } = this._core.store.state;
+    this._core.store.state.contextMenuWorldX = (clickX - translateX) / scale;
+    this._core.store.state.contextMenuWorldY = (clickY - translateY) / scale;
+
+    let x = clickX;
+    let y = clickY;
 
     const menuWidthEstimate = 150;
     const menuHeightEstimate = 200;
