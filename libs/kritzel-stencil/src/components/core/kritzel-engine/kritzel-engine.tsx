@@ -477,10 +477,10 @@ export class KritzelEngine {
       return false;
     }
 
-    const target = ev.target as HTMLElement;
+    const target = path[0] as HTMLElement;
 
     // Don't handle if target is an interactive element that needs keyboard input
-    if (target.matches?.('input, textarea, select, [contenteditable="true"], [contenteditable=""]')) {
+    if (target instanceof HTMLElement && target.matches?.('input, textarea, select, [contenteditable="true"], [contenteditable=""]')) {
       return false;
     }
 
