@@ -410,15 +410,15 @@ describe('KritzelContextMenuHandler', () => {
         expect(mockState.contextMenuX).toBe(864);
       });
 
-      it('should adjust position when menu would overflow bottom edge', () => {
-        // Menu height estimate is 200, margin is 10
-        // If y + 200 > 768 - 10, adjust
+      it('should NOT pre-clamp y when near bottom edge (actual height is unknown at handler time)', () => {
+        // Vertical clamping is delegated to the component's adjustPositionToViewport(),
+        // which uses the actual rendered height instead of a fixed estimate.
         const event = createPointerEvent({ clientX: 100, clientY: 600 });
 
         contextMenuHandler.handleContextMenu(event);
 
-        // Should be clamped to 768 - 200 - 10 = 558
-        expect(mockState.contextMenuY).toBe(558);
+        // y should be the raw click position, not pre-clamped
+        expect(mockState.contextMenuY).toBe(600);
       });
 
       it('should clamp position to minimum margin on left', () => {

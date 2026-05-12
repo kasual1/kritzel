@@ -97,15 +97,10 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     let y = clickY;
 
     const menuWidthEstimate = 150;
-    const menuHeightEstimate = 200;
     const margin = 10;
 
     if (x + menuWidthEstimate > window.innerWidth - margin) {
       x = window.innerWidth - menuWidthEstimate - margin;
-    }
-
-    if (y + menuHeightEstimate > window.innerHeight - margin) {
-      y = window.innerHeight - menuHeightEstimate - margin;
     }
 
     x = Math.max(margin, x);
