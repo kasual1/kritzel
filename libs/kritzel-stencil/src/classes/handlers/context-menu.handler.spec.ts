@@ -25,6 +25,11 @@ describe('KritzelContextMenuHandler', () => {
     contextMenuItems: unknown[];
     contextMenuX: number;
     contextMenuY: number;
+    contextMenuWorldX: number;
+    contextMenuWorldY: number;
+    translateX: number;
+    translateY: number;
+    scale: number;
     isContextMenuVisible: boolean;
     isEnabled: boolean;
     objects: { remove: jest.Mock };
@@ -34,7 +39,7 @@ describe('KritzelContextMenuHandler', () => {
     options: {
       clientX?: number;
       clientY?: number;
-    } = {}
+    } = {},
   ): PointerEvent => {
     return {
       clientX: options.clientX ?? 100,
@@ -67,6 +72,11 @@ describe('KritzelContextMenuHandler', () => {
       contextMenuItems: [],
       contextMenuX: 0,
       contextMenuY: 0,
+      contextMenuWorldX: 0,
+      contextMenuWorldY: 0,
+      translateX: 0,
+      translateY: 0,
+      scale: 1,
       isContextMenuVisible: false,
       isEnabled: true,
       objects: { remove: jest.fn() },
@@ -106,11 +116,7 @@ describe('KritzelContextMenuHandler', () => {
       return group;
     });
 
-    contextMenuHandler = new KritzelContextMenuHandler(
-      mockCore,
-      globalContextMenuItems,
-      objectContextMenuItems
-    );
+    contextMenuHandler = new KritzelContextMenuHandler(mockCore, globalContextMenuItems, objectContextMenuItems);
   });
 
   describe('constructor', () => {
@@ -444,30 +450,99 @@ describe('KritzelContextMenuHandler', () => {
       });
     });
 
-    describe('state updates', () => {
-      it('should set context menu visible', () => {
-        const event = createPointerEvent();
+    describe('world coordinate calculation', () => {
+      beforeEach(() => {
+        Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
+        Object.defineProperty(window, 'innerHeight', { value: 768, configurable: true });
+      });
+
+      it('should store world coordinates at the click position', () => {
+        mockState.translateX = 0;
+        mockState.translateY = 0;
+        mockState.scale = 1;
+        const event = createPointerEvent({ clientX: 300, clientY: 200 });
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(mockState.isContextMenuVisible).toBe(true);
+        expect(mockState.contextMenuWorldX).toBe(300);
+        expect(mockState.contextMenuWorldY).toBe(200);
       });
 
-      it('should disable core', () => {
-        const event = createPointerEvent();
+      it('should account for translate when computing world coordinates', () => {
+        mockState.translateX = 100;
+        mockState.translateY = 50;
+        mockState.scale = 1;
+        const event = createPointerEvent({ clientX: 300, clientY: 200 });
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(mockState.isEnabled).toBe(false);
+        expect(mockState.contextMenuWorldX).toBe(200);
+        expect(mockState.contextMenuWorldY).toBe(150);
       });
 
-      it('should trigger rerender at end', () => {
-        const event = createPointerEvent();
+      it('should account for scale when computing world coordinates', () => {
+        mockState.translateX = 0;
+        mockState.translateY = 0;
+        mockState.scale = 0.5;
+        const event = createPointerEvent({ clientX: 300, clientY: 200 });
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(mockCore.rerender).toHaveBeenCalled();
+        expect(mockState.contextMenuWorldX).toBe(600);
+        expect(mockState.contextMenuWorldY).toBe(400);
       });
+
+      it('should use original click position for world coords even when menu is clamped at right edge', () => {
+        mockState.translateX = 0;
+        mockState.translateY = 0;
+        mockState.scale = 0.25;
+        // Click near the right edge so contextMenuX gets clamped
+        const event = createPointerEvent({ clientX: 900, clientY: 100 });
+
+        contextMenuHandler.handleContextMenu(event);
+
+        // contextMenuX is clamped to 864, but world coordinate should use the actual click position (900)
+        expect(mockState.contextMenuX).toBe(864);
+        expect(mockState.contextMenuWorldX).toBe(900 / 0.25); // 3600
+        expect(mockState.contextMenuWorldY).toBe(100 / 0.25); // 400
+      });
+
+      it('should account for engine offset when computing world coordinates', () => {
+        (mockCore.store as any).offsetX = 50;
+        (mockCore.store as any).offsetY = 20;
+        mockState.translateX = 0;
+        mockState.translateY = 0;
+        mockState.scale = 1;
+        const event = createPointerEvent({ clientX: 300, clientY: 200 });
+
+        contextMenuHandler.handleContextMenu(event);
+
+        expect(mockState.contextMenuWorldX).toBe(250); // (300 - 50 - 0) / 1
+        expect(mockState.contextMenuWorldY).toBe(180); // (200 - 20 - 0) / 1
+      });
+    });
+    it('should set context menu visible', () => {
+      const event = createPointerEvent();
+
+      contextMenuHandler.handleContextMenu(event);
+
+      expect(mockState.isContextMenuVisible).toBe(true);
+    });
+
+    it('should disable core', () => {
+      const event = createPointerEvent();
+
+      contextMenuHandler.handleContextMenu(event);
+
+      expect(mockState.isEnabled).toBe(false);
+    });
+
+    it('should trigger rerender at end', () => {
+      const event = createPointerEvent();
+
+      contextMenuHandler.handleContextMenu(event);
+
+      expect(mockCore.rerender).toHaveBeenCalled();
     });
   });
 });

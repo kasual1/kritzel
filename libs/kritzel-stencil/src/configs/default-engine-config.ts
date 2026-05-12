@@ -33,6 +33,8 @@ export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   contextMenuItems: [],
   contextMenuX: 0,
   contextMenuY: 0,
+  contextMenuWorldX: 0,
+  contextMenuWorldY: 0,
   skipContextMenu: false,
   debugInfo: {
     showObjectInfo: false,
