@@ -80,6 +80,7 @@ export class KritzelMenu {
         {this.items.map(item => (
           <kritzel-menu-item
             key={item.id}
+            data-testid={`menu-item-${item.id}`}
             item={item}
             parent={this.parent}
             style={{ pointerEvents: this.editingMenuItem && !item.isEditing ? 'none' : 'auto' }}
