@@ -75,7 +75,7 @@ export class KritzelMoreMenu {
 
   render() {
     return (
-      <Host class={{ mobile: this.isTouchDevice }}>
+      <Host class={{ mobile: this.isTouchDevice }} style={{ display: this.visible ? '' : 'none' }}>
         <div class={{ 'more-menu-wrapper': true, visible: this.visible }}>
           <button
             class="more-menu-button"
