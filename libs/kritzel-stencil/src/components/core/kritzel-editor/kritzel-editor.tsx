@@ -211,7 +211,7 @@ export class KritzelEditor {
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
-  @Prop() isMoreMenuVisible: boolean = false;
+  @Prop() isMoreMenuVisible: boolean = true;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
   @Prop() assetStorageConfig?: KritzelAssetStorageConfig = DEFAULT_ASSET_STORAGE_CONFIG;
 
