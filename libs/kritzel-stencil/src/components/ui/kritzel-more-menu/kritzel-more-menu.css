@@ -1,6 +1,5 @@
 :host {
   display: inline-flex;
-  pointer-events: none;
 }
 
 .more-menu-wrapper {

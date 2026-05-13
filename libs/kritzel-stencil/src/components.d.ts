@@ -395,7 +395,7 @@ export namespace Components {
          */
         "isLoading": boolean;
         /**
-          * @default true
+          * @default false
          */
         "isMoreMenuVisible": boolean;
         /**
@@ -2462,7 +2462,7 @@ declare namespace LocalJSX {
          */
         "isLoading"?: boolean;
         /**
-          * @default true
+          * @default false
          */
         "isMoreMenuVisible"?: boolean;
         /**
