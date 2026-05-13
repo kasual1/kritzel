@@ -172,7 +172,7 @@ export class KritzelWorkspaceManager {
       });
 
     return (
-      <Host>
+      <Host style={{ display: this.visible ? '' : 'none' }}>
         <div class={{ manager: true, visible: this.visible }}>
           <kritzel-split-button
             ref={el => (this.splitButtonRef = el)}
