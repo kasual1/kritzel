@@ -10,7 +10,7 @@ const config: Config = {
     v4: true,
   },
   url: "https://kasual1.github.io",
-  baseUrl: process.env.Docusaurus_BASE_URL || "/kritzel/",
+  baseUrl: process.env.Docusaurus_BASE_URL || "/",
   projectName: "kritzel",
   onBrokenLinks: "warn",
   i18n: {
