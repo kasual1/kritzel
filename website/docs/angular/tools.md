@@ -1,4 +1,5 @@
 ---
+sidebar_label: Built-in Tools
 title: "Built-in Tools | Kritzel for Angular"
 description: "All built-in tools provided by Kritzel: brush, eraser, selection, line, shape, text, and image."
 ---

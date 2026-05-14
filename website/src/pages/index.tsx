@@ -150,14 +150,14 @@ function HomepageHeader() {
     <header className={clsx("hero hero--primary", styles.heroBanner)}>
       <div className="container">
         <Heading as="h1" className={clsx("hero__title", styles.heroTitle)}>
-          Infinite Canvas,
+          Build Infinite Canvas
           <br />
-          unbound creativity.
+          Experiences in Minutes.
         </Heading>
         <p className={clsx("hero__subtitle", styles.heroSubtitle)}>
-          Kritzel is a framework-agnostic infinite canvas library
+          The high-performance, real-time collaboration canvas library 
           <br />
-          for creating endless creative experiences.
+          built for React, Vue, and Angular.
         </p>
         <div className={styles.editorContainer}>
           <BrowserOnly fallback={<div className={styles.editorPlaceholder}>Loading editor...</div>}>
@@ -170,17 +170,17 @@ function HomepageHeader() {
             className="button button--primary button--lg"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
           >
-            Demo
+            Try the Demo
             <span className="buttonIcon">
               <ArrowRight style={{ width: "24px", height: "24px" }} />
             </span>
           </Link>
           <Link
             to="/docs/angular/overview"
-            className="button button--primary button--lg"
+            className="button button--secondary button--lg"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
           >
-            Documentation
+            Read the Docs
             <span className="buttonIcon">
               <ArrowRight style={{ width: "24px", height: "24px" }} />
             </span>
@@ -223,8 +223,8 @@ function InfoGraphicsSection() {
 export default function Home(): ReactNode {
   return (
     <Layout
-      title="Infinite Canvas Library for Angular, React, and Vue"
-      description="Kritzel is a framework-agnostic infinite canvas library for creating endless creative experiences."
+      title="Kritzel - Infinite Canvas Library for React, Vue, & Angular"
+      description="Kritzel helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools"
     >
       <HomepageHeader />
       <main>

@@ -1,4 +1,5 @@
 ---
+sidebar_label: Quick Start
 title: "Quick Start | Kritzel for Vue"
 description: "Install and integrate the Kritzel infinite canvas into your Vue application in minutes."
 ---
