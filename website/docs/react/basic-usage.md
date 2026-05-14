@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Basic Usage
 displayed_sidebar: tutorialSidebar
+title: "Basic Usage | Kritzel for React"
+description: "Programmatically interact with the Kritzel editor instance in your React app: load objects, change tools, and respond to events."
 ---
 
 # Basic Usage

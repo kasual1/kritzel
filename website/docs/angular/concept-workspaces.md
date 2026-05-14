@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Workspaces
 displayed_sidebar: tutorialSidebar
+title: "Workspaces | Kritzel for Angular"
+description: "Manage canvases, persistence, and state with Kritzel workspaces in Angular."
 ---
 
 # Workspaces in Kritzel

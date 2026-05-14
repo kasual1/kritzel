@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Tools
 displayed_sidebar: tutorialSidebar
+title: "Tools | Kritzel for Vue"
+description: "How tools work in Kritzel: switch between drawing, selection, and other interaction modes in your Vue app."
 ---
 
 # Understanding Tools

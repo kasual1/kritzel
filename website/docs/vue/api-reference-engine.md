@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Engine
 displayed_sidebar: tutorialSidebar
+title: "Engine API Reference | Kritzel for Vue"
+description: "Complete API reference for the headless Kritzel engine: rendering, viewport, pointer events, and workspace management."
 ---
 
 # API Reference — Engine

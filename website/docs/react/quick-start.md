@@ -1,3 +1,7 @@
+---
+title: "Quick Start | Kritzel for React"
+description: "Install and integrate the Kritzel infinite canvas into your React application in minutes."
+---
 # Getting Started
 
 This guide shows how to quickly add Kritzel to your project.

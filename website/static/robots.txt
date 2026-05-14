@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kasual1.github.io/kritzel/sitemap.xml
+Sitemap: https://kritzel.io/sitemap.xml

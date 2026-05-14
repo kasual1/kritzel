@@ -1,3 +1,7 @@
+---
+title: "Types & Interfaces | Kritzel for Vue"
+description: "TypeScript types and interfaces exposed by the Kritzel library for use in Vue projects."
+---
 # Types & Interfaces Reference
 
 All types below are exported from `kritzel-stencil`.

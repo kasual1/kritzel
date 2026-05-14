@@ -1,3 +1,7 @@
+---
+title: "Component Reference | Kritzel for Vue"
+description: "Reference for all built-in Kritzel web components available in Vue."
+---
 # Component Reference
 
 ## `<kritzel-editor>`

@@ -1,3 +1,7 @@
+---
+title: "Types & Interfaces | Kritzel for React"
+description: "TypeScript types and interfaces exposed by the Kritzel library for use in React projects."
+---
 # Other
 
 All types below are exported from `kritzel-stencil`.

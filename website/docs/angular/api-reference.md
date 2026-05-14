@@ -1,3 +1,7 @@
+---
+title: "API Reference | Kritzel for Angular"
+description: "Top-level API reference for Kritzel components and methods in Angular."
+---
 # API Reference
 
 Both `<kritzel-editor>` and `<kritzel-engine>` expose the same public methods. All methods are async and return Promises.

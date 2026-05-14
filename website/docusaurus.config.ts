@@ -2,6 +2,11 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
+const SITE_URL = "https://kritzel.io";
+const SITE_BASE_URL = process.env.Docusaurus_BASE_URL || "/";
+const ABSOLUTE_URL = (path: string) =>
+  `${SITE_URL}${SITE_BASE_URL.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
+
 const config: Config = {
   title: "Kritzel - Free Infinite Canvas Library",
   tagline: "Kritzel is a framework agnostic infinite canvas library for building endless creative experiences.",
@@ -9,8 +14,8 @@ const config: Config = {
   future: {
     v4: true,
   },
-  url: "https://kasual1.github.io",
-  baseUrl: process.env.Docusaurus_BASE_URL || "/",
+  url: SITE_URL,
+  baseUrl: SITE_BASE_URL,
   projectName: "kritzel",
   onBrokenLinks: "warn",
   i18n: {
@@ -78,7 +83,7 @@ const config: Config = {
         path: "docs/angular",
         routeBasePath: "docs/angular",
         sidebarPath: "./sidebars.ts",
-        breadcrumbs: false,
+        breadcrumbs: true,
       },
     ],
     [
@@ -88,7 +93,7 @@ const config: Config = {
         path: "docs/react",
         routeBasePath: "docs/react",
         sidebarPath: "./sidebars.ts",
-        breadcrumbs: false,
+        breadcrumbs: true,
       },
     ],
     [
@@ -98,7 +103,7 @@ const config: Config = {
         path: "docs/vue",
         routeBasePath: "docs/vue",
         sidebarPath: "./sidebars.ts",
-        breadcrumbs: false,
+        breadcrumbs: true,
       },
     ],
   ],
@@ -266,6 +271,111 @@ const config: Config = {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Schoolbell&display=swap",
       },
+    },
+    // Structured data: WebSite (enables Sitelinks Searchbox eligibility)
+    {
+      tagName: "script",
+      attributes: {
+        type: "application/ld+json",
+      },
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "Kritzel",
+        alternateName: "Kritzel Infinite Canvas Library",
+        url: ABSOLUTE_URL("/"),
+        description:
+          "Kritzel is a framework-agnostic infinite canvas and collaborative whiteboard library for Angular, React, and Vue.",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${ABSOLUTE_URL("/search")}?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      }),
+    },
+    // Structured data: Organization
+    {
+      tagName: "script",
+      attributes: {
+        type: "application/ld+json",
+      },
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "Kritzel",
+        url: ABSOLUTE_URL("/"),
+        logo: ABSOLUTE_URL("/img/logo.svg"),
+        sameAs: ["https://github.com/kasual1/kritzel"],
+      }),
+    },
+    // Structured data: SiteNavigationElement list (helps Google surface Sitelinks)
+    {
+      tagName: "script",
+      attributes: {
+        type: "application/ld+json",
+      },
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        itemListElement: [
+          {
+            "@type": "SiteNavigationElement",
+            position: 1,
+            name: "Documentation",
+            description: "Guides, concepts, and API reference for the Kritzel infinite canvas library.",
+            url: ABSOLUTE_URL("/docs/react/overview"),
+          },
+          {
+            "@type": "SiteNavigationElement",
+            position: 2,
+            name: "Getting Started",
+            description: "Quick start guide to install and integrate Kritzel into your app.",
+            url: ABSOLUTE_URL("/docs/react/quick-start"),
+          },
+          {
+            "@type": "SiteNavigationElement",
+            position: 3,
+            name: "API Reference",
+            description: "Detailed reference for the Kritzel editor and engine components.",
+            url: ABSOLUTE_URL("/docs/react/api-reference-editor"),
+          },
+          {
+            "@type": "SiteNavigationElement",
+            position: 4,
+            name: "Features",
+            description: "Infinite canvas, framework-agnostic integration, real-time collaboration, and drawing tools.",
+            url: ABSOLUTE_URL("/features/infinite-canvas"),
+          },
+          {
+            "@type": "SiteNavigationElement",
+            position: 5,
+            name: "Pricing",
+            description: "Kritzel licensing and pricing options.",
+            url: ABSOLUTE_URL("/pricing"),
+          },
+          {
+            "@type": "SiteNavigationElement",
+            position: 6,
+            name: "Angular",
+            description: "Use Kritzel in Angular applications.",
+            url: ABSOLUTE_URL("/docs/angular/overview"),
+          },
+          {
+            "@type": "SiteNavigationElement",
+            position: 7,
+            name: "React",
+            description: "Use Kritzel in React applications.",
+            url: ABSOLUTE_URL("/docs/react/overview"),
+          },
+          {
+            "@type": "SiteNavigationElement",
+            position: 8,
+            name: "Vue",
+            description: "Use Kritzel in Vue applications.",
+            url: ABSOLUTE_URL("/docs/vue/overview"),
+          },
+        ],
+      }),
     },
   ],
 };

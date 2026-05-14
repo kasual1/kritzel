@@ -1,3 +1,7 @@
+---
+title: "Canvas Object Types | Kritzel for Vue"
+description: "Reference for all canvas object types in Kritzel: brush, line, shape, text, and image."
+---
 # Canvas Object Types
 
 All objects on the canvas extend `KritzelBaseObject`. Each tool creates a specific object type when the user draws on the canvas.
