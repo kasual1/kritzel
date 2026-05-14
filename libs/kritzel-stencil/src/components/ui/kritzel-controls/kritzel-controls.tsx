@@ -306,7 +306,7 @@ export class KritzelControls {
                     <button
                       class="kritzel-control-main"
                       onClick={() => this.handleControlClick(control)}
-                      title={selectedSubOption?.label}
+                      aria-label={selectedSubOption?.label}
                       data-testid={`tool-${control.name}-main`}
                     >
                       <kritzel-icon name={selectedSubOption?.icon || control.icon}></kritzel-icon>
@@ -319,7 +319,7 @@ export class KritzelControls {
                       ref={el => {
                         if (el) (control as any)._triggerRef = el;
                       }}
-                      aria-label="Select shape type"
+                      aria-label={`Select ${control.name} options`}
                       data-testid={`tool-${control.name}-dropdown`}
                       tabIndex={isActive ? 0 : -1}
                     >
@@ -362,6 +362,7 @@ export class KritzelControls {
                   key={control.name}
                   data-testid={`tool-${control.name}`}
                   onClick={_event => this.handleControlClick?.(control)}
+                  aria-label={control.name.charAt(0).toUpperCase() + control.name.slice(1)}
                 >
                   <kritzel-icon name={control.icon}></kritzel-icon>
                 </button>
