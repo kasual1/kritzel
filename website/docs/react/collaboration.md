@@ -1,4 +1,5 @@
 ---
+sidebar_label: Collaboration
 title: "Real-time Collaboration | Kritzel for React"
 description: "Enable real-time multi-user editing on the Kritzel canvas in your React app using Hocuspocus and Yjs."
 ---

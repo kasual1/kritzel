@@ -1,4 +1,5 @@
 ---
+sidebar_label: API Reference
 title: "API Reference | Kritzel for Vue"
 description: "Top-level API reference for Kritzel components and methods in Vue."
 ---

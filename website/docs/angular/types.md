@@ -1,4 +1,5 @@
 ---
+sidebar_label: Types & Interfaces
 title: "Types & Interfaces | Kritzel for Angular"
 description: "TypeScript types and interfaces exposed by the Kritzel library for use in Angular projects."
 ---

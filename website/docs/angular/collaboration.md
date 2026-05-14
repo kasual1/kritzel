@@ -1,4 +1,5 @@
 ---
+sidebar_label: Collaboration
 title: "Real-time Collaboration | Kritzel for Angular"
 description: "Enable real-time multi-user editing on the Kritzel canvas in your Angular app using Hocuspocus and Yjs."
 ---

@@ -1,4 +1,5 @@
 ---
+sidebar_label: Collaboration
 title: "Real-time Collaboration | Kritzel for Vue"
 description: "Enable real-time multi-user editing on the Kritzel canvas in your Vue app using Hocuspocus and Yjs."
 ---
