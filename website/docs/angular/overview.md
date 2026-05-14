@@ -1,7 +1,6 @@
 ---
-
 sidebar_label: Overview
-title: Kritzel for Angular Overview
+title: "Overview | Kritzel for Angular"
 description: Build infinite canvas and collaborative whiteboard experiences in Angular with Kritzel's native wrapper and TypeScript-first API.
 keywords:
   - angular whiteboard

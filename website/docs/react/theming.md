@@ -1,4 +1,5 @@
 ---
+sidebar_label: Theming
 title: "Theming | Kritzel for React"
 description: "Customize the look and feel of the Kritzel editor with CSS variables and theme tokens."
 ---

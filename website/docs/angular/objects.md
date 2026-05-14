@@ -1,4 +1,5 @@
 ---
+sidebar_label: Canvas Object Types
 title: "Canvas Object Types | Kritzel for Angular"
 description: "Reference for all canvas object types in Kritzel: brush, line, shape, text, and image."
 ---

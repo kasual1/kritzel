@@ -1,4 +1,5 @@
 ---
+sidebar_label: Component Reference
 title: "Component Reference | Kritzel for React"
 description: "Reference for all built-in Kritzel web components available in React."
 ---
