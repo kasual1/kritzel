@@ -1,4 +1,5 @@
 ---
+sidebar_label: Component Reference
 title: "Component Reference | Kritzel for Vue"
 description: "Reference for all built-in Kritzel web components available in Vue."
 ---

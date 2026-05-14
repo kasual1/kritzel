@@ -1,6 +1,11 @@
 ---
+sidebar_label: Quick Start
 title: "Quick Start | Kritzel for Angular"
 description: "Install and integrate the Kritzel infinite canvas into your Angular application in minutes."
+keywords:
+  - angular whiteboard
+  - angular infinite canvas
+  - kritzel
 ---
 # Quick Start
 

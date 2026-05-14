@@ -1,7 +1,7 @@
 ---
 
 sidebar_label: Overview
-title: Kritzel for React Overview
+title: "Overview | Kritzel for React"
 description: Add an infinite canvas and collaborative whiteboard to your React app using Kritzel's React wrapper, rich drawing tools, and real-time sync.
 keywords:
   - react whiteboard

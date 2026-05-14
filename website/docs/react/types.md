@@ -1,4 +1,5 @@
 ---
+sidebar_label: Types & Interfaces
 title: "Types & Interfaces | Kritzel for React"
 description: "TypeScript types and interfaces exposed by the Kritzel library for use in React projects."
 ---

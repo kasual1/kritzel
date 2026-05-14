@@ -1,4 +1,5 @@
 ---
+sidebar_label: Component Reference
 title: "Component Reference | Kritzel for Angular"
 description: "Reference for all built-in Kritzel web components available in Angular."
 ---

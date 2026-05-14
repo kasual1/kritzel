@@ -1,4 +1,5 @@
 ---
+sidebar_label: API Reference
 title: "API Reference | Kritzel for Angular"
 description: "Top-level API reference for Kritzel components and methods in Angular."
 ---

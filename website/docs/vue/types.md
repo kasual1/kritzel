@@ -1,4 +1,5 @@
 ---
+sidebar_label: Types & Interfaces
 title: "Types & Interfaces | Kritzel for Vue"
 description: "TypeScript types and interfaces exposed by the Kritzel library for use in Vue projects."
 ---
