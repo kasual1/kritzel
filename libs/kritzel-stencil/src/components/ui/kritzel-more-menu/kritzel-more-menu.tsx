@@ -81,6 +81,7 @@ export class KritzelMoreMenu {
             class="more-menu-button"
             data-testid="more-menu-button"
             onClick={this.toggleMenu}
+            aria-label="More options"
           >
             <kritzel-icon name={this.icon} size={this.iconSize}></kritzel-icon>
           </button>

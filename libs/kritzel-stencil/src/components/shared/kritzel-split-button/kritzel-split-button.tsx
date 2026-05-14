@@ -109,13 +109,13 @@ export class KritzelSplitButton {
   render() {
     return (
       <Host class={{ mobile: this.isTouchDevice }}>
-        <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.mainButtonDisabled}>
+        <button class="split-main-button" tabIndex={0} onClick={this.handleButtonClick} disabled={this.mainButtonDisabled} aria-label="Main action">
           {this.buttonIcon && <kritzel-icon name={this.buttonIcon}></kritzel-icon>}
         </button>
 
         <div class="split-divider"></div>
 
-        <button ref={el => (this.splitMenuButtonRef = el)} class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.menuButtonDisabled}>
+        <button ref={el => (this.splitMenuButtonRef = el)} class="split-menu-button" tabIndex={0} onClick={this.toggleMenu} disabled={this.menuButtonDisabled} aria-label="Open menu">
           <kritzel-icon name={this.dropdownIcon}></kritzel-icon>
         </button>
 

@@ -31,6 +31,7 @@ export class KritzelBackToContent {
         <button
           class={{ 'back-to-content-button': true, visible: this.visible }}
           onClick={this.handleClick}
+          aria-label={this.text}
         >
           <kritzel-icon name="chevrons-left"></kritzel-icon>
         </button>
