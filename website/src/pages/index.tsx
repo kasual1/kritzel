@@ -118,24 +118,28 @@ const infoGraphicsData = [
     title: "Infinite Canvas",
     description: "Explore a boundless workspace where your creativity has no limits. Pan, zoom, and navigate freely across an endless digital canvas.",
     link: "/features/infinite-canvas",
+    linkText: "Learn more about Infinite Canvas",
   },
   {
     Graphic: InfoGraphic2,
     title: "Framework Agnostic",
     description: "Seamlessly integrate with Angular, React, or Vue. Kritzel adapts to your tech stack, not the other way around.",
     link: "/features/framework-agnostic",
+    linkText: "Learn more about Framework Agnostic support",
   },
   {
     Graphic: InfoGraphic3,
     title: "Powerful Drawing Tools",
     description: "From brushes to shapes, text to images—all the tools you need to bring your ideas to life with precision and ease.",
-    link: "/features/real-time-collaboration",
+    link: "/features/drawing-tools",
+    linkText: "Learn more about Powerful Drawing Tools",
   },
   {
     Graphic: InfoGraphic4,
     title: "Real-time Collaboration",
     description: "Work together in real-time with built-in collaboration features. See changes instantly as your team creates together.",
-    link: "/features/drawing-tools",
+    link: "/features/real-time-collaboration",
+    linkText: "Learn more about Real-time Collaboration",
   },
 ];
 
@@ -204,7 +208,7 @@ function InfoGraphicsSection() {
             </Heading>
             <p className={styles.infoDescription}>{item.description}</p>
             <Link to={item.link} className={styles.infoLink}>
-              Learn more <ArrowRight style={{ width: "1em", height: "1em", verticalAlign: "middle", fill: "#1a1a2e" }} />
+              {item.linkText} <ArrowRight style={{ width: "1em", height: "1em", verticalAlign: "middle", fill: "#1a1a2e" }} />
             </Link>
           </div>
           <div className={styles.infoGraphic}>
