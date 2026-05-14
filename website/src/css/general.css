@@ -2,6 +2,19 @@
   display: none !important;
 }
 
+/* Visually hidden breadcrumbs: crawlers can read them, users don't see them */
+nav[aria-label="Breadcrumbs"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .theme-announcement-bar {
   padding: 16px 0 !important;
 }
