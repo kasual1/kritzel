@@ -1,3 +1,7 @@
+---
+title: "Theming | Kritzel for Angular"
+description: "Customize the look and feel of the Kritzel editor with CSS variables and theme tokens."
+---
 # Theming
 
 Kritzel includes built-in light and dark themes. Themes are applied via CSS variables, making every visual aspect customizable.

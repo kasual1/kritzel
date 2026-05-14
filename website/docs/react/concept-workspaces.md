@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Workspaces
 displayed_sidebar: tutorialSidebar
+title: "Workspaces | Kritzel for React"
+description: "Manage canvases, persistence, and state with Kritzel workspaces in React."
 ---
 
 # Workspaces in Kritzel

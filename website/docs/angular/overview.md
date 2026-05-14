@@ -1,4 +1,5 @@
 ---
+
 sidebar_label: Overview
 title: Kritzel for Angular Overview
 description: Build infinite canvas and collaborative whiteboard experiences in Angular with Kritzel's native wrapper and TypeScript-first API.
@@ -12,7 +13,7 @@ keywords:
 
 # Overview
 
-Kritzel is a framework-agnostic infinite canvas and collaborative whiteboard engine built with [StencilJS](https://stenciljs.com/). It provides web components that work natively in any framework — with first-class wrappers for React, Vue, and Angular.
+Kritzel is a framework-agnostic infinite canvas and collaborative whiteboard engine. It provides web components that work natively in any framework — with first-class wrappers for React, Vue, and Angular.
 
 ## Key Features
 

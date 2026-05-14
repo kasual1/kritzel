@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Components
 displayed_sidebar: tutorialSidebar
+title: "Core Components | Kritzel for Angular"
+description: "Understand the Kritzel editor and engine web components and how to use them in Angular."
 ---
 
 # Core Components

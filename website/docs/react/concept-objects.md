@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Objects
 displayed_sidebar: tutorialSidebar
+title: "Canvas Objects | Kritzel for React"
+description: "Brush strokes, shapes, text, lines, and images: the building blocks rendered on the Kritzel canvas."
 ---
 
 # Canvas Objects

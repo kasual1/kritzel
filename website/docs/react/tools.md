@@ -1,3 +1,7 @@
+---
+title: "Built-in Tools | Kritzel for React"
+description: "All built-in tools provided by Kritzel: brush, eraser, selection, line, shape, text, and image."
+---
 # Built-in Tools
 
 Kritzel includes seven built-in drawing tools. All tools extend `KritzelBaseTool` and are registered with the engine via `registerTool()`.

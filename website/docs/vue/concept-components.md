@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Components
 displayed_sidebar: tutorialSidebar
+title: "Core Components | Kritzel for Vue"
+description: "Understand the Kritzel editor and engine web components and how to use them in Vue."
 ---
 
 # Core Components

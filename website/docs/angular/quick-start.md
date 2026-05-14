@@ -1,3 +1,7 @@
+---
+title: "Quick Start | Kritzel for Angular"
+description: "Install and integrate the Kritzel infinite canvas into your Angular application in minutes."
+---
 # Quick Start
 
 ## Installation

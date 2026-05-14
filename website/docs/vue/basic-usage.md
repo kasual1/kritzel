@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Basic Usage
 displayed_sidebar: tutorialSidebar
+title: "Basic Usage | Kritzel for Vue"
+description: "Programmatically interact with the Kritzel editor instance in your Vue app: load objects, change tools, and respond to events."
 ---
 
 # Basic Usage

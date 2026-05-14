@@ -1,3 +1,7 @@
+---
+title: "Component Reference | Kritzel for React"
+description: "Reference for all built-in Kritzel web components available in React."
+---
 # Component Reference
 
 ## `<kritzel-editor>`

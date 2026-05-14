@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Workspaces
 displayed_sidebar: tutorialSidebar
+title: "Workspaces | Kritzel for Vue"
+description: "Manage canvases, persistence, and state with Kritzel workspaces in Vue."
 ---
 
 # Workspaces in Kritzel

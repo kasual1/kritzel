@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Custom Toolbar
 displayed_sidebar: tutorialSidebar
+title: "Custom Toolbar Example | Kritzel for React"
+description: "Example: build a custom Kritzel toolbar in React by composing tools and controls."
 ---
 
 # Example: Custom Toolbar

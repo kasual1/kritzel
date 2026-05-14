@@ -1,3 +1,7 @@
+---
+title: "Component Reference | Kritzel for Angular"
+description: "Reference for all built-in Kritzel web components available in Angular."
+---
 # Component Reference
 
 ## `<kritzel-editor>`

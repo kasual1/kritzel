@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: License
 displayed_sidebar: tutorialSidebar
+title: "License Activation | Kritzel for Angular"
+description: "Activate Kritzel with a license key for production use in your Angular application."
 ---
 
 # License Activation

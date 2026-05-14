@@ -1,3 +1,7 @@
+---
+title: "Real-time Collaboration | Kritzel for Vue"
+description: "Enable real-time multi-user editing on the Kritzel canvas in your Vue app using Hocuspocus and Yjs."
+---
 # Collaboration
 
 Kritzel uses [Yjs](https://yjs.dev/) CRDTs under the hood for real-time collaboration and persistence. All canvas objects are stored in a Yjs document (`Y.Doc`), enabling conflict-free merging across multiple clients.

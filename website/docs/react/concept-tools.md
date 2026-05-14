@@ -1,6 +1,9 @@
 ---
+
 sidebar_label: Tools
 displayed_sidebar: tutorialSidebar
+title: "Tools | Kritzel for React"
+description: "How tools work in Kritzel: switch between drawing, selection, and other interaction modes in your React app."
 ---
 
 # Understanding Tools
