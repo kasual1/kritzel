@@ -160,8 +160,8 @@ const config: Config = {
           position: 'right',
         },
         {
+          type: 'custom-blogLink',
           label: 'Blog',
-          to: '/blog',
           position: 'right',
         },
         {
@@ -218,7 +218,7 @@ const config: Config = {
             },
             {
               label: 'Examples',
-              to: '#', // Placeholder
+              to: '/docs/react/example-custom-toolbar',
             },
           ],
         },
