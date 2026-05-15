@@ -99,8 +99,8 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     const menuWidthEstimate = 150;
     const margin = 10;
 
-    if (x + menuWidthEstimate > window.innerWidth - margin) {
-      x = window.innerWidth - menuWidthEstimate - margin;
+    if (x + menuWidthEstimate > this._core.store.state.viewportWidth - margin) {
+      x = this._core.store.state.viewportWidth - menuWidthEstimate - margin;
     }
 
     x = Math.max(margin, x);

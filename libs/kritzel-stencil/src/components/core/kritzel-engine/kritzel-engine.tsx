@@ -3001,7 +3001,7 @@ export class KritzelEngine {
             items={this.core.store.state.contextMenuItems}
             objects={this.core.store.selectionGroup?.objects || []}
             style={{
-              position: 'fixed',
+              position: 'absolute',
               left: `${this.core.store.state.contextMenuX}px`,
               top: `${this.core.store.state.contextMenuY}px`,
               zIndex: '10002',
