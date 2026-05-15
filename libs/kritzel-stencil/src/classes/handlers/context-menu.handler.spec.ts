@@ -32,6 +32,8 @@ describe('KritzelContextMenuHandler', () => {
     scale: number;
     isContextMenuVisible: boolean;
     isEnabled: boolean;
+    viewportWidth: number;
+    viewportHeight: number;
     objects: { remove: jest.Mock };
   };
 
@@ -79,6 +81,8 @@ describe('KritzelContextMenuHandler', () => {
       scale: 1,
       isContextMenuVisible: false,
       isEnabled: true,
+      viewportWidth: 1024,
+      viewportHeight: 768,
       objects: { remove: jest.fn() },
     };
 
@@ -372,13 +376,7 @@ describe('KritzelContextMenuHandler', () => {
     });
 
     describe('position calculation', () => {
-      beforeEach(() => {
-        // Mock window dimensions
-        Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
-        Object.defineProperty(window, 'innerHeight', { value: 768, configurable: true });
-      });
-
-      it('should set position based on event coordinates', () => {
+      it('should set position based on event coordinates minus offset', () => {
         const event = createPointerEvent({ clientX: 200, clientY: 150 });
 
         contextMenuHandler.handleContextMenu(event);
@@ -387,7 +385,7 @@ describe('KritzelContextMenuHandler', () => {
         expect(mockState.contextMenuY).toBe(150);
       });
 
-      it('should apply offset when calculating position', () => {
+      it('should apply offset when calculating screen position (position: absolute is relative to editor container)', () => {
         (mockCore.store as any).offsetX = 10;
         (mockCore.store as any).offsetY = 20;
 
@@ -451,11 +449,6 @@ describe('KritzelContextMenuHandler', () => {
     });
 
     describe('world coordinate calculation', () => {
-      beforeEach(() => {
-        Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
-        Object.defineProperty(window, 'innerHeight', { value: 768, configurable: true });
-      });
-
       it('should store world coordinates at the click position', () => {
         mockState.translateX = 0;
         mockState.translateY = 0;
