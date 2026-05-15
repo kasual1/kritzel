@@ -15,3 +15,13 @@
 .featureDescription {
   color: var(--ifm-color-content);
 }
+
+@media (max-width: 996px) {
+  .features {
+    padding: 3rem 0;
+  }
+
+  .features :global(.row) {
+    row-gap: 3rem;
+  }
+}
