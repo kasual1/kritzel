@@ -198,9 +198,13 @@
 
 @media screen and (max-width: 768px) {
 
+  .infoRow {
+    margin-bottom: 6rem;
+  }
+
   .infoRow,
   .infoRowReverse {
-    flex-direction: column;
+    flex-direction: column-reverse;
     text-align: center;
   }
 
