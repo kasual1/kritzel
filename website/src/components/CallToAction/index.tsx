@@ -1,13 +1,15 @@
 import type { ReactNode } from "react";
+import React from "react";
 import Link from "@docusaurus/Link";
 import Heading from "@theme/Heading";
 import ArrowRight from "@site/static/img/arrow_right.svg";
+import { getPreferredFramework, frameworkPaths, subscribeToPreferredFramework } from "@site/src/utils/frameworkPreference";
 
 import styles from "./styles.module.css";
 
 interface CallToActionButton {
   label: string;
-  to: string;
+  to?: string;
   showArrow?: boolean;
 }
 
@@ -19,9 +21,20 @@ interface CallToActionProps {
 
 export default function CallToAction({
   title = "Ready to create something amazing?",
-  description = "Start building your infinite canvas experience today. It's free, open-source, and ready to use with your favorite framework.",
-  primaryButton = { label: "Get Started", to: "/docs/angular/overview", showArrow: true },
+  description = "Start building your infinite canvas experience today. It's ready to use with your favorite framework.",
+  primaryButton = { label: "Get Started", showArrow: true },
 }: CallToActionProps): ReactNode {
+  const [docsPath, setDocsPath] = React.useState(() => frameworkPaths[getPreferredFramework()]);
+
+  React.useEffect(() => {
+    setDocsPath(frameworkPaths[getPreferredFramework()]);
+    return subscribeToPreferredFramework((framework) => {
+      setDocsPath(frameworkPaths[framework]);
+    });
+  }, []);
+
+  const resolvedTo = primaryButton.to ?? docsPath;
+
   return (
     <section className={styles.ctaSection}>
       <div className={styles.ctaContent}>
@@ -31,7 +44,7 @@ export default function CallToAction({
         <p className={styles.ctaDescription}>{description}</p>
         <div className={styles.ctaButtons}>
           <Link
-            to={primaryButton.to}
+            to={resolvedTo}
             className="button button--primary button--lg"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
           >

@@ -133,9 +133,9 @@ export default function DropdownNavbarItemMobile({
   // There's probably a better solution though...
   const href = props.to ? undefined : '#';
 
-  // Hide framework picker dropdown when not on docs pages
+  // Never render the framework picker in the mobile sidebar — it lives in the top navbar instead.
   const isOnDocsPage = localPathname.includes('/docs');
-  if (isFrameworkPicker(items) && !isOnDocsPage) {
+  if (isFrameworkPicker(items)) {
     return null;
   }
 

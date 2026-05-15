@@ -156,8 +156,7 @@ export default function Pricing(): ReactNode {
         <CallToAction
           title="Ready to get started?"
           description="Join thousands of developers building with Kritzel."
-          primaryButton={{ label: "Start Building", to: "/docs/angular/overview", showArrow: true }}
-          secondaryButton={{ label: "View on GitHub", to: "https://github.com/kasual1/kritzel" }}
+          primaryButton={{ label: "Start Building", showArrow: true }}
         />
       </main>
     </Layout>

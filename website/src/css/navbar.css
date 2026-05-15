@@ -91,6 +91,17 @@ button.navbar-sidebar__close>svg {
     display: none !important;
   }
 
+  /* Keep the framework picker visible in the top navbar on mobile devices. */
+  .navbar__inner .navbar-framework-picker {
+    display: inline-flex !important;
+    align-items: center;
+    margin-right: 0.25rem;
+  }
+
+  .navbar__inner .navbar-framework-picker > .navbar__link {
+    padding: 0.25rem 0.5rem;
+  }
+
   .navbar-sidebar .menu__link--sublist {
     font-weight: normal !important;
     color: var(--ifm-menu-color) !important;
