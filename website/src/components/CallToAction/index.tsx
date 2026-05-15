@@ -21,7 +21,7 @@ interface CallToActionProps {
 
 export default function CallToAction({
   title = "Ready to create something amazing?",
-  description = "Start building your infinite canvas experience today. It's free, open-source, and ready to use with your favorite framework.",
+  description = "Start building your infinite canvas experience today. It's ready to use with your favorite framework.",
   primaryButton = { label: "Get Started", showArrow: true },
 }: CallToActionProps): ReactNode {
   const [docsPath, setDocsPath] = React.useState(() => frameworkPaths[getPreferredFramework()]);

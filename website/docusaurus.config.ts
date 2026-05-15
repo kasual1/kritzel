@@ -35,7 +35,11 @@ const config: Config = {
       "classic",
       {
         docs: false,
-        blog: false,
+        blog: {
+          showReadingTime: true,
+          blogSidebarTitle: 'All posts',
+          routeBasePath: 'blog',
+        },
         sitemap: {
           changefreq: "weekly",
           priority: 0.5,
@@ -156,6 +160,11 @@ const config: Config = {
           position: 'right',
         },
         {
+          label: 'Blog',
+          to: '/blog',
+          position: 'right',
+        },
+        {
           type: 'custom-docsLink',
           label: 'Documentation',
           to: '/docs/react/overview',
@@ -254,7 +263,8 @@ const config: Config = {
               html: '<a href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer" class="footer__link-item">Demo</a>',
             },
             {
-              html: '<a href="https://github.com/kasual1/kritzel/discussions" target="_blank" rel="noopener noreferrer" class="footer__link-item">Blog</a>',
+              label: 'Blog',
+              to: '/blog',
             },
           ],
         },
