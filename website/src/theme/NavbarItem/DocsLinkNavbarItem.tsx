@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from '@docusaurus/Link';
 import { useLocalPathname } from '@docusaurus/theme-common/internal';
-import { getPreferredFramework, frameworkPaths } from '@site/src/utils/frameworkPreference';
+import { getPreferredFramework, frameworkPaths, subscribeToPreferredFramework, setPreferredFramework, getFrameworkFromPath } from '@site/src/utils/frameworkPreference';
 
 interface DocsLinkNavbarItemProps {
   label: string;
@@ -21,9 +21,20 @@ export default function DocsLinkNavbarItem({
   const [targetPath, setTargetPath] = useState('/docs/react/overview');
 
   useEffect(() => {
+    // If we are navigating to a docs page via direct URL, persist the framework preference
+    const frameworkFromUrl = getFrameworkFromPath(localPathname);
+    if (frameworkFromUrl && frameworkFromUrl !== getPreferredFramework()) {
+      setPreferredFramework(frameworkFromUrl);
+    }
+
+    // Sync on mount and whenever the route changes
     const preferred = getPreferredFramework();
     setTargetPath(frameworkPaths[preferred]);
-  }, []);
+    // Subscribe to in-tab and cross-tab preference changes
+    return subscribeToPreferredFramework((framework) => {
+      setTargetPath(frameworkPaths[framework]);
+    });
+  }, [localPathname]);
 
   // Hide this link when already on a docs page
   if (isOnDocsPage) {

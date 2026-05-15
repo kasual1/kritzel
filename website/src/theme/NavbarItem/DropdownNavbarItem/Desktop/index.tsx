@@ -4,7 +4,7 @@ import {useLocalPathname} from '@docusaurus/theme-common/internal';
 import NavbarNavLink from '@theme/NavbarItem/NavbarNavLink';
 import NavbarItem, {type LinkLikeNavbarItemProps} from '@theme/NavbarItem';
 import type {Props} from '@theme/NavbarItem/DropdownNavbarItem/Desktop';
-import { setPreferredFramework, getFrameworkFromPath } from '@site/src/utils/frameworkPreference';
+import { setPreferredFramework, getFrameworkFromPath, getPreferredFramework } from '@site/src/utils/frameworkPreference';
 
 function isFrameworkPicker(items: readonly LinkLikeNavbarItemProps[]): boolean {
   // Check if all items point to framework-specific docs
@@ -22,6 +22,10 @@ function isFeaturesDropdown(items: readonly LinkLikeNavbarItemProps[]): boolean 
   );
 }
 
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 export default function DropdownNavbarItemDesktop({
   items,
   position,
@@ -32,6 +36,13 @@ export default function DropdownNavbarItemDesktop({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const localPathname = useLocalPathname();
+  const [preferredLabel, setPreferredLabel] = useState<string>('React');
+
+  useEffect(() => {
+    if (isFrameworkPicker(items)) {
+      setPreferredLabel(capitalize(getPreferredFramework()));
+    }
+  }, [items]);
 
   useEffect(() => {
     const handleClickOutside = (
@@ -68,6 +79,13 @@ export default function DropdownNavbarItemDesktop({
     return null;
   }
 
+  const frameworkFromPath = isFrameworkPicker(items) ? getFrameworkFromPath(localPathname) : null;
+  const displayLabel = frameworkFromPath
+    ? capitalize(frameworkFromPath)
+    : isFrameworkPicker(items)
+    ? preferredLabel
+    : props.label;
+
   return (
     <div
       ref={dropdownRef}
@@ -85,6 +103,7 @@ export default function DropdownNavbarItemDesktop({
         href={props.to ? undefined : '#'}
         className={clsx('navbar__link', className)}
         {...props}
+        label={props.children ? undefined : displayLabel}
         onClick={props.to ? undefined : (e) => e.preventDefault()}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
@@ -92,7 +111,7 @@ export default function DropdownNavbarItemDesktop({
             setShowDropdown(!showDropdown);
           }
         }}>
-        {props.children ?? props.label}
+        {props.children ?? displayLabel}
       </NavbarNavLink>
       <ul className="dropdown__menu">
         {items.map((childItemProps, i) => {
