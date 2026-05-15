@@ -210,7 +210,7 @@ const config: Config = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs/angular/overview',
+              to: '/docs/react/overview',
             },
             {
               label: 'API Reference',
