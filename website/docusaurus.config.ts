@@ -35,7 +35,11 @@ const config: Config = {
       "classic",
       {
         docs: false,
-        blog: false,
+        blog: {
+          showReadingTime: true,
+          blogSidebarTitle: 'All posts',
+          routeBasePath: 'blog',
+        },
         sitemap: {
           changefreq: "weekly",
           priority: 0.5,
@@ -82,7 +86,7 @@ const config: Config = {
         id: "angular",
         path: "docs/angular",
         routeBasePath: "docs/angular",
-        sidebarPath: "./sidebars.ts",
+        sidebarPath: "./sidebars-angular.ts",
         breadcrumbs: true,
       },
     ],
@@ -156,6 +160,11 @@ const config: Config = {
           position: 'right',
         },
         {
+          type: 'custom-blogLink',
+          label: 'Blog',
+          position: 'right',
+        },
+        {
           type: 'custom-docsLink',
           label: 'Documentation',
           to: '/docs/react/overview',
@@ -201,7 +210,7 @@ const config: Config = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs/angular/overview',
+              to: '/docs/react/overview',
             },
             {
               label: 'API Reference',
@@ -209,7 +218,7 @@ const config: Config = {
             },
             {
               label: 'Examples',
-              to: '#', // Placeholder
+              to: '/docs/react/example-custom-toolbar',
             },
           ],
         },
@@ -234,8 +243,16 @@ const config: Config = {
           title: 'Community',
           items: [
             {
-              label: 'GitHub Discussions',
-              href: 'https://github.com/kasual1/kritzel/discussions',
+              html: '<a href="https://x.com/kritzel_io" target="_blank" rel="noopener noreferrer" class="footer__link-item">X</a>',
+            },
+            {
+              html: '<a href="https://linkedin.com/in/kritzel-app-26721b40b" target="_blank" rel="noopener noreferrer" class="footer__link-item">LinkedIn</a>',
+            },
+            {
+              html: '<a href="https://bsky.app/profile/kritzelio.bsky.social" target="_blank" rel="noopener noreferrer" class="footer__link-item">Bluesky</a>',
+            },
+            {
+              html: '<a href="https://github.com/kritzelapp" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub</a>',
             },
           ],
         },
@@ -243,20 +260,11 @@ const config: Config = {
           title: 'More',
           items: [
             {
-              label: 'Demo',
-              href: 'https://app.kritzel.io',
+              html: '<a href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer" class="footer__link-item">Demo</a>',
             },
             {
               label: 'Blog',
-              href: 'https://github.com/kasual1/kritzel/discussions',
-            },
-            {
-              label: 'Changelog',
-              href: 'https://github.com/kasual1/kritzel/releases',
-            },
-            {
-              label: 'License',
-              href: 'https://github.com/kasual1/kritzel/blob/main/LICENSE',
+              to: '/blog',
             },
           ],
         },

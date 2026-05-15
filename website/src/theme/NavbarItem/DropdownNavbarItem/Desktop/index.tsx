@@ -86,12 +86,15 @@ export default function DropdownNavbarItemDesktop({
     ? preferredLabel
     : props.label;
 
+  const isFramework = isFrameworkPicker(items);
+
   return (
     <div
       ref={dropdownRef}
       className={clsx('navbar__item', 'dropdown', 'dropdown--hoverable', {
         'dropdown--right': position === 'right',
         'dropdown--show': showDropdown,
+        'navbar-framework-picker': isFramework,
       })}>
       <NavbarNavLink
         aria-haspopup="true"
@@ -115,7 +118,6 @@ export default function DropdownNavbarItemDesktop({
       </NavbarNavLink>
       <ul className="dropdown__menu">
         {items.map((childItemProps, i) => {
-          const isFramework = isFrameworkPicker(items);
           const handleClick = isFramework ? () => {
             const framework = getFrameworkFromPath(childItemProps.to || '');
             if (framework) {
