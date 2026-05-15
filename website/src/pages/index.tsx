@@ -13,6 +13,7 @@ import InfoGraphic4 from "@site/static/img/info_graphic-4.svg";
 import BrowserOnly from "@docusaurus/BrowserOnly";
 
 import useBaseUrl from "@docusaurus/useBaseUrl";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 import styles from "./index.module.css";
 import React from "react";
@@ -221,11 +222,9 @@ function InfoGraphicsSection() {
 }
 
 export default function Home(): ReactNode {
+  const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout
-      title="Kritzel - Infinite Canvas Library for React, Vue, & Angular"
-      description="Kritzel helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools"
-    >
+    <Layout description={siteConfig.tagline}>
       <HomepageHeader />
       <main>
         <HomepageFeatures />

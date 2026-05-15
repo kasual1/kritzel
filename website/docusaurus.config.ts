@@ -8,8 +8,8 @@ const ABSOLUTE_URL = (path: string) =>
   `${SITE_URL}${SITE_BASE_URL.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
 
 const config: Config = {
-  title: "Kritzel - Free Infinite Canvas Library",
-  tagline: "Kritzel is a framework agnostic infinite canvas library for building endless creative experiences.",
+  title: "Kritzel - Infinite Canvas Library for React, Vue, & Angular",
+  tagline: "Kritzel helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools",
   favicon: "img/favicon.svg",
   future: {
     v4: true,
