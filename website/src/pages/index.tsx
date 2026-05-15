@@ -14,6 +14,7 @@ import BrowserOnly from "@docusaurus/BrowserOnly";
 
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import { getPreferredFramework, frameworkPaths, subscribeToPreferredFramework } from "@site/src/utils/frameworkPreference";
 
 import styles from "./index.module.css";
 import React from "react";
@@ -146,6 +147,15 @@ const infoGraphicsData = [
 
 function HomepageHeader() {
   const initialWorkspaceUrl = useBaseUrl('/json/initial_workspace.json');
+  const [targetPath, setTargetPath] = React.useState('/docs/react/overview');
+
+  React.useEffect(() => {
+    const preferred = getPreferredFramework();
+    setTargetPath(frameworkPaths[preferred]);
+    return subscribeToPreferredFramework((framework) => {
+      setTargetPath(frameworkPaths[framework]);
+    });
+  }, []);
   
   return (
     <header className={clsx("hero hero--primary", styles.heroBanner)}>
@@ -177,7 +187,7 @@ function HomepageHeader() {
             </span>
           </Link>
           <Link
-            to="/docs/angular/overview"
+            to={targetPath}
             className="button button--secondary button--lg"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
           >
