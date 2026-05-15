@@ -1,4 +1,4 @@
-import React, {useEffect, type ReactNode, type ComponentProps} from 'react';
+import React, {useState, useEffect, type ReactNode, type ComponentProps} from 'react';
 import clsx from 'clsx';
 import {
   isRegexpStringMatch,
@@ -11,7 +11,7 @@ import NavbarNavLink from '@theme/NavbarItem/NavbarNavLink';
 import NavbarItem, {type LinkLikeNavbarItemProps} from '@theme/NavbarItem';
 import type {Props} from '@theme/NavbarItem/DropdownNavbarItem/Mobile';
 import styles from './styles.module.css';
-import { setPreferredFramework, getFrameworkFromPath } from '@site/src/utils/frameworkPreference';
+import { setPreferredFramework, getFrameworkFromPath, getPreferredFramework } from '@site/src/utils/frameworkPreference';
 
 function isItemActive(
   item: LinkLikeNavbarItemProps,
@@ -34,6 +34,10 @@ function containsActiveItems(
   localPathname: string,
 ): boolean {
   return items.some((item) => isItemActive(item, localPathname));
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function isFrameworkPicker(items: readonly LinkLikeNavbarItemProps[]): boolean {
@@ -112,6 +116,13 @@ export default function DropdownNavbarItemMobile({
   const localPathname = useLocalPathname();
   const isActive = isSamePath(props.to, localPathname);
   const containsActive = containsActiveItems(items, localPathname);
+  const [preferredLabel, setPreferredLabel] = useState<string>('React');
+
+  useEffect(() => {
+    if (isFrameworkPicker(items)) {
+      setPreferredLabel(capitalize(getPreferredFramework()));
+    }
+  }, [items]);
 
   const {collapsed, toggleCollapsed} = useItemCollapsible({
     active: isActive || containsActive,
@@ -133,6 +144,13 @@ export default function DropdownNavbarItemMobile({
     return null;
   }
 
+  const frameworkFromPath = isFrameworkPicker(items) ? getFrameworkFromPath(localPathname) : null;
+  const displayLabel = frameworkFromPath
+    ? capitalize(frameworkFromPath)
+    : isFrameworkPicker(items)
+    ? preferredLabel
+    : props.label;
+
   return (
     <li
       className={clsx('menu__list-item', {
@@ -151,6 +169,7 @@ export default function DropdownNavbarItemMobile({
           )}
           href={href}
           {...props}
+          label={props.children ? undefined : displayLabel}
           onClick={(e) => {
             // Prevent navigation when link is "#"
             if (href === '#') {
@@ -159,7 +178,7 @@ export default function DropdownNavbarItemMobile({
             // Otherwise we let navigation eventually happen, and/or collapse
             toggleCollapsed();
           }}>
-          {props.children ?? props.label}
+          {props.children ?? displayLabel}
         </NavbarNavLink>
         <CollapseButton
           collapsed={collapsed}
