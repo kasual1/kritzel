@@ -74,6 +74,29 @@ describe('KritzelToolRegistry', () => {
     });
   });
 
+  describe('hasTool', () => {
+    it('should return true for a registered tool', () => {
+      const mockInstance = { name: '' };
+      const MockTool = jest.fn(() => mockInstance) as any;
+      KritzelToolRegistry.registerTool('brush', MockTool, mockCore);
+
+      expect(KritzelToolRegistry.hasTool('brush')).toBe(true);
+    });
+
+    it('should return false for an unregistered tool', () => {
+      expect(KritzelToolRegistry.hasTool('nonexistent')).toBe(false);
+    });
+
+    it('should not log any warnings', () => {
+      const spy = jest.spyOn(console, 'warn').mockImplementation();
+
+      KritzelToolRegistry.hasTool('missing');
+
+      expect(spy).not.toHaveBeenCalled();
+      spy.mockRestore();
+    });
+  });
+
   describe('getToolByIndex', () => {
     it('should return tool at the given index based on registration order', () => {
       const brushInstance = { name: '' };
