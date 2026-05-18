@@ -9,7 +9,7 @@ const ABSOLUTE_URL = (path: string) =>
 
 const config: Config = {
   title: "Kritzel - Infinite Canvas Library for React, Vue, & Angular",
-  tagline: "Kritzel helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools",
+  tagline: "Kritzel helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Easily integrate it into React, Vue & Angular.",
   favicon: "img/favicon.svg",
   future: {
     v4: true,

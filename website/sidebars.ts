@@ -11,25 +11,25 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Core Concepts',
-      collapsed: false,
+      collapsed: true,
       items: ['concept-components', 'concept-tools', 'concept-objects', 'concept-workspaces', 'collaboration', 'theming'],
     },
     {
       type: 'category',
       label: 'Examples',
-      collapsed: false,
+      collapsed: true,
       items: ['example-custom-toolbar'],
     },
     {
       type: 'category',
       label: 'License',
-      collapsed: false,
+      collapsed: true,
       items: ['license'],
     },
     {
       type: 'category',
       label: 'Api Reference',
-      collapsed: false,
+      collapsed: true,
       items: ['api-reference-editor', 'api-reference-engine', 'types'],
     }
   ],
