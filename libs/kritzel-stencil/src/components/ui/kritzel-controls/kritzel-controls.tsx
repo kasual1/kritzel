@@ -66,6 +66,13 @@ export class KritzelControls {
     }
   }
 
+  @Watch('controls')
+  async onControlsChange() {
+    if (this.kritzelEngine) {
+      await this.initializeTools();
+    }
+  }
+
   @Watch('theme')
   onThemeChange() {
     if (this.activeControl?.tool) {
@@ -182,15 +189,21 @@ export class KritzelControls {
   }
 
   private async initializeTools() {
+    let hasDefault = false;
+
     for (const c of this.controls) {
-      if (c.type === 'tool' && c.tool) {
-        c.tool = await this.kritzelEngine.registerTool(c.name, c.tool, c.config);
+      if (c.type === 'tool' && c.tool && typeof c.tool === 'function') {
+        const registered = await this.kritzelEngine!.registerTool(c.name, c.tool, c.config);
+        if (registered) {
+          c.tool = registered;
+        }
       }
 
       if (c.type === 'tool' && c.isDefault && c.tool) {
-        await this.kritzelEngine.changeActiveTool(c.tool as KritzelBaseTool);
+        await this.kritzelEngine!.changeActiveTool(c.tool as KritzelBaseTool);
         this.activeControl = c;
         this.updateDisplayValues(c.tool as KritzelBaseTool);
+        hasDefault = true;
       }
 
       if (c.type === 'config') {
@@ -199,6 +212,16 @@ export class KritzelControls {
         } else {
           console.warn('Only one config control is allowed. The first one will be used.');
         }
+      }
+    }
+
+    // If no tool is marked as default, activate the first tool control
+    if (!hasDefault) {
+      const firstTool = this.controls.find(c => c.type === 'tool' && c.tool);
+      if (firstTool) {
+        await this.kritzelEngine!.changeActiveTool(firstTool.tool as KritzelBaseTool);
+        this.activeControl = firstTool;
+        this.updateDisplayValues(firstTool.tool as KritzelBaseTool);
       }
     }
   }

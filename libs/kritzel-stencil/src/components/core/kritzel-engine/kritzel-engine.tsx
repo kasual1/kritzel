@@ -508,9 +508,21 @@ export class KritzelEngine {
     toolClass: any,
     toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
   ): Promise<KritzelBaseTool | null> {
-    if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
+    if (typeof toolClass !== 'function') {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return null;
+    }
+
+    // If a tool with this name is already registered, return the existing instance
+    // This avoids dual-package issues when tool classes are passed from external bundles
+    if (KritzelToolRegistry.hasTool(toolName)) {
+      const existingTool = KritzelToolRegistry.getTool(toolName)!;
+      if (toolConfig) {
+        Object.entries(toolConfig).forEach(([key, value]) => {
+          (existingTool as unknown as Record<string, unknown>)[key] = value;
+        });
+      }
+      return existingTool;
     }
 
     const registeredTool = KritzelToolRegistry.registerTool(toolName, toolClass, this.core);

@@ -26,6 +26,16 @@ export class KritzelToolRegistry {
   }
 
   /**
+   * Checks if a tool with the given name is registered.
+   *
+   * @param toolName - The unique identifier of the tool to check.
+   * @returns `true` if the tool is registered, `false` otherwise.
+   */
+  static hasTool(toolName: string): boolean {
+    return toolName in this.registry;
+  }
+
+  /**
    * Retrieves a registered tool by its name.
    * Logs a warning if the tool is not found.
    *
