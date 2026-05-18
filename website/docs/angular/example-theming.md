@@ -43,10 +43,25 @@ import { KritzelEditor } from 'kritzel-angular';
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<kritzel-editor></kritzel-editor>`,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
 })
 export class EditorComponent {}
 ```
+
+Add the following to your global styles (for example `src/styles.scss`):
+
+```scss title="styles.scss"
+html,
+body {
+  width: 100dvw;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior-x: none;
+}
+```
+
+This renders the editor with the default theme tokens, ready for progressive branding overrides in the steps below.
 
 ---
 
