@@ -12,55 +12,7 @@ This guide builds up a custom toolbar step by step, starting from a bare minimum
 
 ## Prerequisites
 
-Install the Angular wrapper package:
-
-```bash
-npm install kritzel-angular
-```
-
-Register Kritzel in your application config:
-
-```ts title="app.config.ts"
-import { ApplicationConfig } from '@angular/core';
-import { provideKritzel } from 'kritzel-angular';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideKritzel(),
-    // ... other providers
-  ],
-};
-```
-
-Then import `KritzelEditor` into your standalone component and add `<kritzel-editor>` to your template:
-
-```ts title="editor.component.ts"
-import { Component } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  template: `<kritzel-editor></kritzel-editor>`,
-})
-export class EditorComponent {}
-```
-
-Add the following to your global styles (for example `src/styles.scss`):
-
-```scss title="styles.scss"
-html,
-body {
-  width: 100dvw;
-  height: 100dvh;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  overscroll-behavior-x: none;
-}
-```
-
-This renders the editor with the **full default toolbar** — selection, brush, eraser, line, shape, text, and image tools.
+Complete the [Quick Start](./quick-start.md) guide to have a working `<kritzel-editor>` rendered in your application. This example builds on that setup.
 
 ---
 
