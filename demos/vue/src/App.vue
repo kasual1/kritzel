@@ -1,11 +1,7 @@
-<script setup lang="ts">
-import { KritzelEditor } from 'kritzel-vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <main>
-    <KritzelEditor ref="editor" />
-  </main>
+  <RouterView />
 </template>
 
 <style scoped></style>
