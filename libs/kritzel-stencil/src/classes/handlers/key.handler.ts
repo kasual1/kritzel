@@ -1,4 +1,3 @@
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelShortcut } from '../../interfaces/shortcut.interface';
@@ -145,7 +144,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
    * @param index - The zero-based index of the tool to activate from the tool registry.
    */
   private switchToolByIndex(index: number): void {
-    const toolInstance = KritzelToolRegistry.getToolByIndex(index);
+    const toolInstance = this._core.toolRegistry.getToolByIndex(index);
     if (toolInstance) {
       this._core.store.setState('activeTool', toolInstance);
       this._core.deselectAllObjects();

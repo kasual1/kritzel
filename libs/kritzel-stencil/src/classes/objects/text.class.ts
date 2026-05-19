@@ -1,4 +1,3 @@
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
@@ -386,7 +385,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this.uneditedObject = this.clone() as KritzelText;
 
-    this._core.store.setState('activeTool', KritzelToolRegistry.getTool('text'));
+    this._core.store.setState('activeTool', this._core.toolRegistry.getTool('text'));
 
     this.editor!.setProps({ editable: () => true });
 
@@ -450,7 +449,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     this._core.resetActiveText();
     this._core.clearSelection();
-    this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
   }
 
   /**

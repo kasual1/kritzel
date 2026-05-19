@@ -1,11 +1,9 @@
 import { KritzelImageTool } from './image-tool.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelImage } from '../objects/image.class';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 
 jest.mock('../core/core.class');
 jest.mock('../objects/image.class');
-jest.mock('../registries/tool.registry');
 
 const mockImageCompression = jest.fn();
 jest.mock('browser-image-compression', () => ({
@@ -38,7 +36,6 @@ describe('KritzelImageTool', () => {
     jest.spyOn(document.body, 'appendChild').mockImplementation(jest.fn());
 
     mockSelectionTool = { name: 'selection' };
-    (KritzelToolRegistry.getTool as jest.Mock).mockReturnValue(mockSelectionTool);
 
     mockImage = {
       id: 'img-1',
@@ -73,6 +70,7 @@ describe('KritzelImageTool', () => {
         emitObjectsRemoved: jest.fn(),
         emitObjectsUpdated: jest.fn(),
       },
+      toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
     } as unknown as jest.Mocked<KritzelCore>;
 
     originalFileReader = global.FileReader;
@@ -391,7 +389,7 @@ describe('KritzelImageTool', () => {
     it('should switch active tool to selection', async () => {
       await triggerFullImageFlow();
 
-      expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('selection');
+      expect(mockCore.toolRegistry.getTool).toHaveBeenCalledWith('selection');
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockSelectionTool);
     });
 
@@ -421,7 +419,7 @@ describe('KritzelImageTool', () => {
 
       handleCancel();
 
-      expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('selection');
+      expect(mockCore.toolRegistry.getTool).toHaveBeenCalledWith('selection');
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockSelectionTool);
     });
   });
