@@ -5,12 +5,12 @@ jest.mock('../tools/base-tool.class');
 
 describe('KritzelToolRegistry', () => {
   let mockCore: any;
+  let registry: KritzelToolRegistry;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Reset the static registry between tests
-    (KritzelToolRegistry as any).registry = {};
     mockCore = {};
+    registry = new KritzelToolRegistry(mockCore);
   });
 
   describe('registerTool', () => {
@@ -18,7 +18,7 @@ describe('KritzelToolRegistry', () => {
       const mockInstance = { name: '' };
       const MockTool = jest.fn(() => mockInstance) as any;
 
-      const result = KritzelToolRegistry.registerTool('brush', MockTool, mockCore);
+      const result = registry.registerTool('brush', MockTool);
 
       expect(MockTool).toHaveBeenCalledWith(mockCore);
       expect(result).toBe(mockInstance);
@@ -31,10 +31,10 @@ describe('KritzelToolRegistry', () => {
       const FirstTool = jest.fn(() => first) as any;
       const SecondTool = jest.fn(() => second) as any;
 
-      KritzelToolRegistry.registerTool('brush', FirstTool, mockCore);
-      KritzelToolRegistry.registerTool('brush', SecondTool, mockCore);
+      registry.registerTool('brush', FirstTool);
+      registry.registerTool('brush', SecondTool);
 
-      expect(KritzelToolRegistry.getTool('brush')).toBe(second);
+      expect(registry.getTool('brush')).toBe(second);
     });
 
     it('should register multiple tools independently', () => {
@@ -43,11 +43,11 @@ describe('KritzelToolRegistry', () => {
       const BrushTool = jest.fn(() => brushInstance) as any;
       const EraserTool = jest.fn(() => eraserInstance) as any;
 
-      KritzelToolRegistry.registerTool('brush', BrushTool, mockCore);
-      KritzelToolRegistry.registerTool('eraser', EraserTool, mockCore);
+      registry.registerTool('brush', BrushTool);
+      registry.registerTool('eraser', EraserTool);
 
-      expect(KritzelToolRegistry.getTool('brush')).toBe(brushInstance);
-      expect(KritzelToolRegistry.getTool('eraser')).toBe(eraserInstance);
+      expect(registry.getTool('brush')).toBe(brushInstance);
+      expect(registry.getTool('eraser')).toBe(eraserInstance);
     });
   });
 
@@ -55,9 +55,9 @@ describe('KritzelToolRegistry', () => {
     it('should return the registered tool instance', () => {
       const mockInstance = { name: '' };
       const MockTool = jest.fn(() => mockInstance) as any;
-      KritzelToolRegistry.registerTool('selection', MockTool, mockCore);
+      registry.registerTool('selection', MockTool);
 
-      const result = KritzelToolRegistry.getTool('selection');
+      const result = registry.getTool('selection');
 
       expect(result).toBe(mockInstance);
     });
@@ -65,11 +65,34 @@ describe('KritzelToolRegistry', () => {
     it('should return null and warn for an unregistered tool', () => {
       const spy = jest.spyOn(console, 'warn').mockImplementation();
 
-      const result = KritzelToolRegistry.getTool('nonexistent');
+      const result = registry.getTool('nonexistent');
 
       expect(result).toBeNull();
       expect(spy).toHaveBeenCalledWith('Unknown tool: nonexistent');
 
+      spy.mockRestore();
+    });
+  });
+
+  describe('hasTool', () => {
+    it('should return true for a registered tool', () => {
+      const mockInstance = { name: '' };
+      const MockTool = jest.fn(() => mockInstance) as any;
+      registry.registerTool('brush', MockTool);
+
+      expect(registry.hasTool('brush')).toBe(true);
+    });
+
+    it('should return false for an unregistered tool', () => {
+      expect(registry.hasTool('nonexistent')).toBe(false);
+    });
+
+    it('should not log any warnings', () => {
+      const spy = jest.spyOn(console, 'warn').mockImplementation();
+
+      registry.hasTool('missing');
+
+      expect(spy).not.toHaveBeenCalled();
       spy.mockRestore();
     });
   });
@@ -83,22 +106,60 @@ describe('KritzelToolRegistry', () => {
       const EraserTool = jest.fn(() => eraserInstance) as any;
       const SelectionTool = jest.fn(() => selectionInstance) as any;
 
-      KritzelToolRegistry.registerTool('brush', BrushTool, mockCore);
-      KritzelToolRegistry.registerTool('eraser', EraserTool, mockCore);
-      KritzelToolRegistry.registerTool('selection', SelectionTool, mockCore);
+      registry.registerTool('brush', BrushTool);
+      registry.registerTool('eraser', EraserTool);
+      registry.registerTool('selection', SelectionTool);
 
-      expect(KritzelToolRegistry.getToolByIndex(0)).toBe(brushInstance);
-      expect(KritzelToolRegistry.getToolByIndex(1)).toBe(eraserInstance);
-      expect(KritzelToolRegistry.getToolByIndex(2)).toBe(selectionInstance);
+      expect(registry.getToolByIndex(0)).toBe(brushInstance);
+      expect(registry.getToolByIndex(1)).toBe(eraserInstance);
+      expect(registry.getToolByIndex(2)).toBe(selectionInstance);
     });
 
     it('should return null for out-of-bounds index', () => {
       const mockInstance = { name: '' };
       const MockTool = jest.fn(() => mockInstance) as any;
-      KritzelToolRegistry.registerTool('brush', MockTool, mockCore);
+      registry.registerTool('brush', MockTool);
 
-      expect(KritzelToolRegistry.getToolByIndex(5)).toBeNull();
-      expect(KritzelToolRegistry.getToolByIndex(-1)).toBeNull();
+      expect(registry.getToolByIndex(5)).toBeNull();
+      expect(registry.getToolByIndex(-1)).toBeNull();
+    });
+  });
+
+  describe('multi-instance isolation', () => {
+    it('should not share registered tools between two registry instances', () => {
+      const coreA: any = { id: 'A' };
+      const coreB: any = { id: 'B' };
+      const registryA = new KritzelToolRegistry(coreA);
+      const registryB = new KritzelToolRegistry(coreB);
+
+      const brushA = { name: '' };
+      const BrushTool = jest.fn(() => brushA) as any;
+
+      registryA.registerTool('brush', BrushTool);
+
+      expect(registryA.hasTool('brush')).toBe(true);
+      expect(registryB.hasTool('brush')).toBe(false);
+    });
+
+    it('should create distinct tool instances bound to each registry\'s core', () => {
+      const coreA: any = { id: 'A' };
+      const coreB: any = { id: 'B' };
+      const registryA = new KritzelToolRegistry(coreA);
+      const registryB = new KritzelToolRegistry(coreB);
+
+      const instances: Array<{ name: string; core: any }> = [];
+      const BrushTool = jest.fn(function (this: any, core: any) {
+        this.name = '';
+        this.core = core;
+        instances.push(this);
+      }) as any;
+
+      const toolA = registryA.registerTool('brush', BrushTool) as any;
+      const toolB = registryB.registerTool('brush', BrushTool) as any;
+
+      expect(toolA).not.toBe(toolB);
+      expect(toolA.core).toBe(coreA);
+      expect(toolB.core).toBe(coreB);
     });
   });
 });

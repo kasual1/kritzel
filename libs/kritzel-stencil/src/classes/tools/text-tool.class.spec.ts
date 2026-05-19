@@ -2,13 +2,11 @@ import { KritzelTextTool } from './text-tool.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelText } from '../objects/text.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
 jest.mock('../objects/text.class');
 jest.mock('../../helpers/event.helper');
-jest.mock('../registries/tool.registry');
 
 describe('KritzelTextTool', () => {
   let tool: KritzelTextTool;
@@ -78,7 +76,6 @@ describe('KritzelTextTool', () => {
     };
 
     mockSelectionTool = { name: 'selection' };
-    (KritzelToolRegistry.getTool as jest.Mock).mockReturnValue(mockSelectionTool);
 
     mockCreatedText = {
       id: 'text-1',
@@ -107,6 +104,7 @@ describe('KritzelTextTool', () => {
       findObjectById: jest.fn().mockReturnValue(undefined),
       resetActiveText: jest.fn(),
       updateObject: jest.fn(),
+      toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
     } as unknown as jest.Mocked<KritzelCore>;
 
     tool = new KritzelTextTool(mockCore);

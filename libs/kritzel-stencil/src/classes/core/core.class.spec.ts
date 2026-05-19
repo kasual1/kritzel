@@ -6,7 +6,6 @@ import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseTool } from '../tools/base-tool.class';
 import { KritzelWorkspace } from './workspace.class';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelAppStateMap } from '../structures/app-state-map.structure';
@@ -181,10 +180,10 @@ describe('KritzelCore', () => {
     jest.mocked(KritzelStore).mockImplementation(() => mockStore);
     const selectionTool = new KritzelBaseTool(Object.create(KritzelCore.prototype));
     selectionTool.name = 'selection';
-    jest.mocked(KritzelToolRegistry.getTool).mockReturnValue(selectionTool);
 
     mockEngine = createMockEngine();
     core = new KritzelCore(mockEngine);
+    (core.toolRegistry.getTool as jest.Mock).mockReturnValue(selectionTool);
   });
 
   afterEach(() => {

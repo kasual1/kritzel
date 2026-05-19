@@ -19,7 +19,6 @@ import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, 
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelContextMenuHandler } from '../../../classes/handlers/context-menu.handler';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
-import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
 import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
@@ -508,12 +507,24 @@ export class KritzelEngine {
     toolClass: any,
     toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
   ): Promise<KritzelBaseTool | null> {
-    if (typeof toolClass !== 'function' || !(toolClass.prototype instanceof KritzelBaseTool)) {
+    if (typeof toolClass !== 'function') {
       console.error(`Failed to register tool "${toolName}": Tool class must be a constructor function`);
       return null;
     }
 
-    const registeredTool = KritzelToolRegistry.registerTool(toolName, toolClass, this.core);
+    // If a tool with this name is already registered, return the existing instance
+    // This avoids dual-package issues when tool classes are passed from external bundles
+    if (this.core.toolRegistry.hasTool(toolName)) {
+      const existingTool = this.core.toolRegistry.getTool(toolName)!;
+      if (toolConfig) {
+        Object.entries(toolConfig).forEach(([key, value]) => {
+          (existingTool as unknown as Record<string, unknown>)[key] = value;
+        });
+      }
+      return existingTool;
+    }
+
+    const registeredTool = this.core.toolRegistry.registerTool(toolName, toolClass);
 
     if (toolConfig) {
       Object.entries(toolConfig).forEach(([key, value]) => {
@@ -870,7 +881,7 @@ export class KritzelEngine {
    */
   @Method()
   async selectObjects(objects: KritzelBaseObject[]) {
-    const selectionTool = KritzelToolRegistry.getTool('selection');
+    const selectionTool = this.core.toolRegistry.getTool('selection');
     if (!selectionTool) {
       return;
     }
@@ -884,7 +895,7 @@ export class KritzelEngine {
   /** Selects all objects currently visible in the viewport. Switches to the selection tool automatically. */
   @Method()
   async selectAllObjectsInViewport() {
-    const selectionTool = KritzelToolRegistry.getTool('selection');
+    const selectionTool = this.core.toolRegistry.getTool('selection');
     if (!selectionTool) {
       return;
     }

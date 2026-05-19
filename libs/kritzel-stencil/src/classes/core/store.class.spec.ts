@@ -29,13 +29,17 @@ describe('KritzelStore', () => {
       activeWorkspace: { id: 'workspace-1' },
       pointers: new Map(),
       objects: null,
+      contextMenuItems: [],
+      workspaces: [],
+      debugInfo: {} as any,
+      cursor: { icon: '' } as any,
     } as unknown as KritzelEngineState;
   };
 
   beforeEach(() => {
     const state = createMockState();
     store = new KritzelStore(state);
-    mockState = state as TestState;
+    mockState = store.state as TestState;
   });
 
   afterEach(() => {
