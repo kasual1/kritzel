@@ -11,44 +11,7 @@ This guide builds up a custom context menu step by step, starting from a bare mi
 
 ## Prerequisites
 
-Install the Angular wrapper package:
-
-```bash
-npm install kritzel-angular
-```
-
-Register Kritzel in your application config:
-
-```ts title="app.config.ts"
-import { ApplicationConfig } from '@angular/core';
-import { provideKritzel } from 'kritzel-angular';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideKritzel(),
-    // ... other providers
-  ],
-};
-```
-
-Then import `KritzelEditor` into your standalone component:
-
-```ts title="editor.component.ts"
-import { Component } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<kritzel-editor></kritzel-editor>`,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {}
-```
-
-This renders the editor with the **built-in default context menu** — paste and select-all on the canvas, and copy, paste, ordering, alignment, group, and delete on selected objects.
+Complete the [Quick Start](./quick-start.md) guide to have a working `<kritzel-editor>` rendered in your application. This example builds on that setup.
 
 ---
 

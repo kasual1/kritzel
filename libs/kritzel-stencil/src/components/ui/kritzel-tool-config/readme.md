@@ -9,6 +9,7 @@
 
 | Property     | Attribute     | Description | Type                                                                                                 | Default     |
 | ------------ | ------------- | ----------- | ---------------------------------------------------------------------------------------------------- | ----------- |
+| `engine`     | --            |             | `HTMLElement`                                                                                        | `undefined` |
 | `isExpanded` | `is-expanded` |             | `boolean`                                                                                            | `false`     |
 | `theme`      | `theme`       |             | `"dark" \| "light"`                                                                                  | `undefined` |
 | `tool`       | --            |             | `KritzelBrushTool \| KritzelLineTool \| KritzelSelectionTool \| KritzelShapeTool \| KritzelTextTool` | `undefined` |

@@ -17,24 +17,36 @@ npm install kritzel-angular
 
 ## Setup
 
-Register the Angular module in your app:
+Register Kritzel in your application config:
 
-```ts
-// app.module.ts
-import { KritzelAngularModule } from 'kritzel-angular';
+```ts title="app.config.ts"
+import { ApplicationConfig } from '@angular/core';
+import { provideKritzel } from 'kritzel-angular';
 
-@NgModule({
-  imports: [KritzelAngularModule],
-})
-export class AppModule {}
+export const appConfig: ApplicationConfig = {
+  providers: [
+    // ... other providers
+    provideKritzel(),
+  ],
+};
 ```
 
 Then use the component in your template:
 
-```html
-<!-- app.component.html -->
-<kritzel-editor></kritzel-editor>
+```ts title="editor.component.ts"
+import { Component } from '@angular/core';
+import { KritzelEditor } from 'kritzel-angular';
+
+@Component({
+  selector: 'app-editor',
+  imports: [KritzelEditor],
+  template: `<kritzel-editor></kritzel-editor>`,
+  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
+})
+export class EditorComponent {}
 ```
+
+This renders the editor with the **full default toolbar** — selection, brush, eraser, line, shape, text, and image tools.
 
 ## Optional Enhancements
 

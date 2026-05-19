@@ -1,7 +1,6 @@
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelCore } from '../core/core.class';
 import { ShapeType } from '../../enums/shape-type.enum';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
@@ -91,7 +90,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
 
       if (activeShape !== null && object instanceof KritzelShape === false) {
         this._core.resetActiveShape();
-        this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+        this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
         return;
       }
 
@@ -124,7 +123,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
 
       if (activeShape !== null && object instanceof KritzelShape === false) {
         this._core.resetActiveShape();
-        this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+        this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
         return;
       }
 
@@ -286,7 +285,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
       this._core.engine.emitObjectsChange();
       this._core.engine.emitObjectsAdded([this.currentShape]);
       this._core.selectObjects([this.currentShape]);
-      this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+      this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
     }
 
     this.isDrawing = false;

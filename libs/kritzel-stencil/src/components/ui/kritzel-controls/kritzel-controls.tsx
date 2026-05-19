@@ -40,6 +40,11 @@ export class KritzelControls {
   @State() needsScrolling: boolean = false;
   @State() displayValues: ToolDisplayValues | null = null;
 
+  @State() internalControls: KritzelToolbarControl[] = [];
+
+  private handleActiveToolChangeBound = this.handleActiveToolChange.bind(this);
+  private handleSelectionChangeBound = this.handleSelectionChange.bind(this);
+
   @Listen('keydown', { target: 'window' })
   handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
@@ -49,9 +54,8 @@ export class KritzelControls {
     }
   }
 
-  @Listen('activeToolChange', { target: 'document' })
   async handleActiveToolChange(event: CustomEvent) {
-    this.activeControl = this.controls.find(control => control.tool === event.detail) || null;
+    this.activeControl = this.internalControls.find(control => control.tool === event.detail) || null;
 
     if (this.activeControl?.tool) {
       this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
@@ -59,10 +63,16 @@ export class KritzelControls {
     this.closeTooltip();
   }
 
-  @Listen('objectsSelectionChange', { target: 'document' })
   handleSelectionChange() {
     if (this.activeControl?.tool instanceof KritzelSelectionTool) {
       this.updateDisplayValues(this.activeControl.tool);
+    }
+  }
+
+  @Watch('controls')
+  async onControlsChange() {
+    if (this.kritzelEngine) {
+      await this.initializeTools();
     }
   }
 
@@ -153,6 +163,13 @@ export class KritzelControls {
     this.updateScrollIndicators();
   }
 
+  disconnectedCallback() {
+    if (this.kritzelEngine) {
+      this.kritzelEngine.removeEventListener('activeToolChange', this.handleActiveToolChangeBound);
+      this.kritzelEngine.removeEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
+    }
+  }
+
   private updateScrollIndicators() {
     if (!this.toolsScrollRef) return;
 
@@ -179,18 +196,33 @@ export class KritzelControls {
     if (!this.kritzelEngine) {
       throw new Error('kritzel-engine not found in parent element.');
     }
+
+    this.kritzelEngine.addEventListener('activeToolChange', this.handleActiveToolChangeBound as EventListener);
+    this.kritzelEngine.addEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
   }
 
   private async initializeTools() {
-    for (const c of this.controls) {
+    let hasDefault = false;
+    const newControls = this.controls.map(c => ({ ...c }));
+
+    for (const c of newControls) {
       if (c.type === 'tool' && c.tool) {
-        c.tool = await this.kritzelEngine.registerTool(c.name, c.tool, c.config);
+        let toolConstructor = c.tool;
+        if (typeof toolConstructor !== 'function') {
+           toolConstructor = (toolConstructor as any).constructor;
+        }
+
+        const registered = await this.kritzelEngine!.registerTool(c.name, toolConstructor as any, c.config);
+        if (registered) {
+          c.tool = registered;
+        }
       }
 
       if (c.type === 'tool' && c.isDefault && c.tool) {
-        await this.kritzelEngine.changeActiveTool(c.tool as KritzelBaseTool);
+        await this.kritzelEngine!.changeActiveTool(c.tool as KritzelBaseTool);
         this.activeControl = c;
         this.updateDisplayValues(c.tool as KritzelBaseTool);
+        hasDefault = true;
       }
 
       if (c.type === 'config') {
@@ -199,6 +231,18 @@ export class KritzelControls {
         } else {
           console.warn('Only one config control is allowed. The first one will be used.');
         }
+      }
+    }
+
+    this.internalControls = newControls;
+
+    // If no tool is marked as default, activate the first tool control
+    if (!hasDefault) {
+      const firstTool = this.internalControls.find(c => c.type === 'tool' && c.tool);
+      if (firstTool) {
+        await this.kritzelEngine!.changeActiveTool(firstTool.tool as KritzelBaseTool);
+        this.activeControl = firstTool;
+        this.updateDisplayValues(firstTool.tool as KritzelBaseTool);
       }
     }
   }
@@ -256,8 +300,8 @@ export class KritzelControls {
       (this.activeControl?.tool instanceof KritzelSelectionTool && this.activeControl.tool.hasSelection());
 
     // Separate tool controls from config control
-    const toolControls = this.controls.filter(c => c.type === 'tool' || c.type === 'separator');
-    const configControl = this.controls.find(c => c.type === 'config' && c.name === this.firstConfig?.name);
+    const toolControls = this.internalControls.filter(c => c.type === 'tool' || c.type === 'separator');
+    const configControl = this.internalControls.find(c => c.type === 'config' && c.name === this.firstConfig?.name);
 
     return (
       <Host
@@ -389,6 +433,7 @@ export class KritzelControls {
                 <kritzel-tool-config
                   tool={this.activeControl.tool as any}
                   theme={this.theme}
+                  engine={this.kritzelEngine}
                   onToolChange={event => this.handleToolChange?.(event)}
                   onDisplayValuesChange={this.handleDisplayValuesChange}
                   style={{ width: '100%', height: '100%' }}

@@ -2,7 +2,6 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelCore } from '../core/core.class';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
@@ -278,7 +277,7 @@ export class KritzelLineTool extends KritzelBaseTool {
     this._core.addSelectionGroup(selectionGroup);
 
     // Switch to selection tool
-    this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
 
     // Rerender
     this._core.rerender();

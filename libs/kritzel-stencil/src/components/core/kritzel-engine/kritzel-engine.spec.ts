@@ -43,13 +43,6 @@ jest.mock('../../../classes/objects/selection-box.class', () => ({ KritzelSelect
 jest.mock('../../../classes/objects/selection-group.class', () => ({ KritzelSelectionGroup: MockKritzelSelectionGroup }));
 jest.mock('../../../classes/objects/group.class', () => ({ KritzelGroup: MockKritzelGroup }));
 
-jest.mock('../../../classes/registries/tool.registry', () => ({
-  KritzelToolRegistry: {
-    getTool: jest.fn(),
-    registerTool: jest.fn(),
-  },
-}));
-
 jest.mock('html-to-image', () => ({
   toPng: jest.fn().mockResolvedValue('data:image/png;base64,xxx'),
   toSvg: jest.fn().mockResolvedValue('data:image/svg+xml;base64,xxx'),
@@ -62,7 +55,6 @@ jest.mock('../../../helpers/keyboard.helper', () => ({
 }));
 
 import { KritzelEngine } from './kritzel-engine';
-import { KritzelToolRegistry } from '../../../classes/registries/tool.registry';
 import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 
@@ -160,6 +152,11 @@ describe('KritzelEngine', () => {
       setState: jest.fn(),
       setSelectionBox: jest.fn(),
     },
+    toolRegistry: {
+      getTool: jest.fn(),
+      hasTool: jest.fn(),
+      registerTool: jest.fn(),
+    },
   });
 
   beforeEach(() => {
@@ -233,7 +230,7 @@ describe('KritzelEngine', () => {
     });
 
     it('selectObjects no-ops if the selection tool is not registered', async () => {
-      (KritzelToolRegistry.getTool as jest.Mock).mockReturnValue(null);
+      (core.toolRegistry.getTool as jest.Mock).mockReturnValue(null);
 
       await engine.selectObjects([]);
 
@@ -242,12 +239,12 @@ describe('KritzelEngine', () => {
 
     it('selectObjects switches to the selection tool and forwards the objects', async () => {
       const selectionTool = { onActivate: jest.fn(), onDeactivate: jest.fn() };
-      (KritzelToolRegistry.getTool as jest.Mock).mockReturnValue(selectionTool);
+      (core.toolRegistry.getTool as jest.Mock).mockReturnValue(selectionTool);
 
       const objects: any[] = [{ id: 'a' }, { id: 'b' }];
       await engine.selectObjects(objects);
 
-      expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('selection');
+      expect(core.toolRegistry.getTool).toHaveBeenCalledWith('selection');
       expect(core.store.setState).toHaveBeenCalledWith('activeTool', selectionTool);
       expect(core.deselectAllObjects).toHaveBeenCalledTimes(1);
       expect(core.selectObjects).toHaveBeenCalledWith(objects);
@@ -255,7 +252,7 @@ describe('KritzelEngine', () => {
 
     it('selectAllObjectsInViewport delegates after switching to the selection tool', async () => {
       const selectionTool = { onActivate: jest.fn(), onDeactivate: jest.fn() };
-      (KritzelToolRegistry.getTool as jest.Mock).mockReturnValue(selectionTool);
+      (core.toolRegistry.getTool as jest.Mock).mockReturnValue(selectionTool);
 
       await engine.selectAllObjectsInViewport();
 
@@ -801,6 +798,95 @@ describe('KritzelEngine', () => {
       invokeHandler(null);
 
       expect((engine as any).activeToolChange.emit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('registerTool', () => {
+    it('returns null and logs error when toolClass is not a function', async () => {
+      const spy = jest.spyOn(console, 'error').mockImplementation();
+
+      const result = await engine.registerTool('brush', 'not-a-function', undefined);
+
+      expect(result).toBeNull();
+      expect(spy).toHaveBeenCalledWith(
+        expect.stringContaining('Tool class must be a constructor function'),
+      );
+      spy.mockRestore();
+    });
+
+    it('returns null and logs error when toolClass is an object instance', async () => {
+      const spy = jest.spyOn(console, 'error').mockImplementation();
+
+      const result = await engine.registerTool('brush', { name: 'brush' }, undefined);
+
+      expect(result).toBeNull();
+      expect(spy).toHaveBeenCalledWith(
+        expect.stringContaining('Tool class must be a constructor function'),
+      );
+      spy.mockRestore();
+    });
+
+    it('returns existing tool instance when tool with same name is already registered', async () => {
+      const existingTool = { name: 'selection', color: 'red' };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(true);
+      (core.toolRegistry.getTool as jest.Mock).mockReturnValue(existingTool);
+
+      class FakeSelectionTool {}
+      const result = await engine.registerTool('selection', FakeSelectionTool, undefined);
+
+      expect(result).toBe(existingTool);
+      expect(core.toolRegistry.registerTool).not.toHaveBeenCalled();
+    });
+
+    it('applies toolConfig to existing tool instance', async () => {
+      const existingTool: any = { name: 'brush', color: 'red', size: 5 };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(true);
+      (core.toolRegistry.getTool as jest.Mock).mockReturnValue(existingTool);
+
+      class FakeBrushTool {}
+      const config = { color: 'blue', size: 10 } as any;
+      const result = await engine.registerTool('brush', FakeBrushTool, config);
+
+      expect(result).toBe(existingTool);
+      expect(existingTool.color).toBe('blue');
+      expect(existingTool.size).toBe(10);
+    });
+
+    it('does not apply config to existing tool when config is undefined', async () => {
+      const existingTool: any = { name: 'eraser', size: 8 };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(true);
+      (core.toolRegistry.getTool as jest.Mock).mockReturnValue(existingTool);
+
+      class FakeEraserTool {}
+      await engine.registerTool('eraser', FakeEraserTool, undefined);
+
+      expect(existingTool.size).toBe(8);
+    });
+
+    it('registers a new tool when no tool with that name exists', async () => {
+      const newTool = { name: 'line' };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class FakeLineTool {}
+      const result = await engine.registerTool('line', FakeLineTool, undefined);
+
+      expect(core.toolRegistry.hasTool).toHaveBeenCalledWith('line');
+      expect(core.toolRegistry.registerTool).toHaveBeenCalledWith('line', FakeLineTool);
+      expect(result).toBe(newTool);
+    });
+
+    it('applies toolConfig to a newly registered tool', async () => {
+      const newTool: any = { name: 'shape' };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class FakeShapeTool {}
+      const config = { shapeType: 'rectangle', fillColor: '#000' } as any;
+      await engine.registerTool('shape', FakeShapeTool, config);
+
+      expect(newTool.shapeType).toBe('rectangle');
+      expect(newTool.fillColor).toBe('#000');
     });
   });
 });

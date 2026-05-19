@@ -2,14 +2,12 @@ import { KritzelLineTool } from './line-tool.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
 jest.mock('../objects/line.class');
 jest.mock('../../helpers/event.helper');
-jest.mock('../registries/tool.registry');
 jest.mock('../objects/selection-group.class');
 
 describe('KritzelLineTool', () => {
@@ -78,7 +76,6 @@ describe('KritzelLineTool', () => {
     };
 
     mockSelectionTool = { name: 'selection' };
-    (KritzelToolRegistry.getTool as jest.Mock).mockReturnValue(mockSelectionTool);
 
     mockSelectionGroup = {
       addOrRemove: jest.fn(),
@@ -114,6 +111,7 @@ describe('KritzelLineTool', () => {
       },
       addSelectionGroup: jest.fn(),
       rerender: jest.fn(),
+      toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
     } as unknown as jest.Mocked<KritzelCore>;
 
     tool = new KritzelLineTool(mockCore);
@@ -626,7 +624,7 @@ describe('KritzelLineTool', () => {
       expect(mockSelectionGroup.isSelected).toBe(true);
       expect(mockSelectionGroup.rotation).toBe(mockCreatedLine.rotation);
       expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(mockSelectionGroup);
-      expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('selection');
+      expect(mockCore.toolRegistry.getTool).toHaveBeenCalledWith('selection');
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', mockSelectionTool);
       expect(mockCore.rerender).toHaveBeenCalled();
     });

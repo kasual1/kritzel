@@ -1,6 +1,5 @@
 import { KritzelShape } from './shape.class';
 import { KritzelCore } from '../core/core.class';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../helpers/devices.helper';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
@@ -93,12 +92,6 @@ jest.mock('prosemirror-commands', () => ({
   baseKeymap: {},
 }));
 
-jest.mock('../registries/tool.registry', () => ({
-  KritzelToolRegistry: {
-    getTool: jest.fn(() => ({ name: 'shape' })),
-  },
-}));
-
 jest.mock('../../helpers/keyboard.helper', () => ({
   KritzelKeyboardHelper: {
     disableInteractiveWidget: jest.fn(),
@@ -171,6 +164,9 @@ describe('KritzelShape', () => {
       rerender: rerender,
       engine: {
         emitObjectsChange: emitObjectsChange,
+      },
+      toolRegistry: {
+        getTool: jest.fn(() => ({ name: 'shape' })),
       },
     } as unknown as jest.Mocked<KritzelCore>;
   };
@@ -559,7 +555,7 @@ describe('KritzelShape', () => {
     it('should set active tool to shape', () => {
       shapeObject.edit();
 
-      expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('shape');
+      expect(mockCore.toolRegistry.getTool).toHaveBeenCalledWith('shape');
     });
 
     it('should set isEditing to true', () => {

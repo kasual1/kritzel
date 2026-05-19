@@ -12,7 +12,8 @@
   "dependencies": {
     "kritzel-react": "file:../../libs/kritzel-react/dist",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.15.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

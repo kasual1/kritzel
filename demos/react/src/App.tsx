@@ -1,11 +1,16 @@
 import "./App.css";
-import { KritzelEditor } from "kritzel-react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { EditorPage } from "./pages/EditorPage";
+import { MultiEditorPage } from "./pages/MultiEditorPage";
 
 function App() {
   return (
-    <div className="app">
-      <KritzelEditor></KritzelEditor>;
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<EditorPage />} />
+        <Route path="/multi-editor" element={<MultiEditorPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
