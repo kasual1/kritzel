@@ -1,7 +1,6 @@
 import { KritzelImage } from '../objects/image.class';
 import { KritzelBaseTool } from './base-tool.class';
 import imageCompression from 'browser-image-compression';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelCore } from '../core/core.class';
 
 /**
@@ -203,7 +202,7 @@ export class KritzelImageTool extends KritzelBaseTool {
       this._core.addObject(image);
     });
 
-    this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
     this._core.selectObjects(images);
     this._core.engine.emitObjectsChange();
     this._core.engine.emitObjectsAdded(images);
@@ -214,6 +213,6 @@ export class KritzelImageTool extends KritzelBaseTool {
    * Switches back to the selection tool without adding any image.
    */
   private handleCancel(): void {
-    this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
   }
 }

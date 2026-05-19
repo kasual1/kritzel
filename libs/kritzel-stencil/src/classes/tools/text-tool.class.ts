@@ -1,7 +1,6 @@
 import { KritzelText } from '../objects/text.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelCore } from '../core/core.class';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 
@@ -117,7 +116,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       if (activeText !== null && object instanceof KritzelText === false) {
         this._core.resetActiveText();
-        this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+        this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
         return;
       }
 
@@ -166,7 +165,7 @@ export class KritzelTextTool extends KritzelBaseTool {
 
       if (activeText !== null && object instanceof KritzelText === false) {
         this._core.resetActiveText();
-        this._core.store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+        this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
         return;
       }
 

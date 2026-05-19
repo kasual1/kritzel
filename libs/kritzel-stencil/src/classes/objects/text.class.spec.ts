@@ -1,6 +1,5 @@
 import { KritzelText } from './text.class';
 import { KritzelCore } from '../core/core.class';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../helpers/devices.helper';
 
@@ -91,12 +90,6 @@ jest.mock('prosemirror-commands', () => ({
   baseKeymap: {},
 }));
 
-jest.mock('../registries/tool.registry', () => ({
-  KritzelToolRegistry: {
-    getTool: jest.fn(() => ({ name: 'text' })),
-  },
-}));
-
 jest.mock('../../helpers/keyboard.helper', () => ({
   KritzelKeyboardHelper: {
     disableInteractiveWidget: jest.fn(),
@@ -161,6 +154,9 @@ describe('KritzelText', () => {
       rerender: rerender,
       engine: {
         emitObjectsChange: emitObjectsChange,
+      },
+      toolRegistry: {
+        getTool: jest.fn(() => ({ name: 'text' })),
       },
     } as unknown as jest.Mocked<KritzelCore>;
   };
@@ -503,7 +499,7 @@ describe('KritzelText', () => {
       textObject.edit();
 
       expect(mockSetState).toHaveBeenCalledWith('activeTool', expect.anything());
-      expect(KritzelToolRegistry.getTool).toHaveBeenCalledWith('text');
+      expect(mockCore.toolRegistry.getTool).toHaveBeenCalledWith('text');
     });
 
     it('should set editor to editable', () => {
