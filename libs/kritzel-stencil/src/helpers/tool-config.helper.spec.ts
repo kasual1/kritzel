@@ -65,6 +65,25 @@ describe('KritzelToolConfigHelper', () => {
         ],
       });
     });
+
+    it('should return brush config for an equivalent tool from another bundle instance', () => {
+      const tool = {
+        constructor: { name: 'KritzelBrushTool' },
+      } as any;
+
+      const result = KritzelToolConfigHelper.getToolConfig(tool);
+
+      expect(result).toEqual({
+        type: 'brush',
+        colorProperty: 'color',
+        sizeProperty: 'size',
+        opacityProperty: 'opacity',
+        paletteSource: 'palette',
+        controls: [
+          { type: 'stroke-size', propertyName: 'size' },
+        ],
+      });
+    });
   });
 
   describe('getToolConfig - LineTool', () => {

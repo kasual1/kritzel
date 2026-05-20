@@ -11,8 +11,15 @@ import {
   IndexedDBSyncProvider,
   KritzelEditor,
   KritzelSyncConfig,
+  ActiveWorkspaceChangeEvent,
+  DEFAULT_BRUSH_CONFIG,
+  EditorIsReadyEvent,
+  HocuspocusSyncProvider,
+  KritzelBrushTool,
+  KritzelSelectionTool,
+  KritzelToolbarControl,
+  LoginEvent,
 } from 'kritzel-angular';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, HocuspocusSyncProvider, LoginEvent } from 'kritzel-stencil';
 import { UserData } from './user.resolver';
 
 @Component({
@@ -68,7 +75,7 @@ export class EditorPageComponent implements OnInit {
     const editorState = event.detail;
     console.log('Editor is ready with state:', editorState);
 
-    if(this.isShared && this.activeWorkspaceId) {
+    if (this.isShared && this.activeWorkspaceId) {
       await this.editor.loadSharedWorkspace(this.activeWorkspaceId);
       return;
     }
@@ -91,5 +98,4 @@ export class EditorPageComponent implements OnInit {
   onLogout() {
     console.log('Logout event');
   }
-
 }
