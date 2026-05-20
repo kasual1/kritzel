@@ -7,7 +7,6 @@ description: "Build a custom Kritzel toolbar by composing tools and controls."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
-import { KritzelEditor, KritzelSelectionTool, KritzelBrushTool, InMemorySyncProvider, DEFAULT_BRUSH_CONFIG } from 'kritzel-react';
 
 # Custom Toolbar
 
@@ -47,54 +46,10 @@ There are three control types:
 Pass a `controls` array to replace the default set. Start with just selection and brush:
 
 <LiveDemo
-  stackBlitzUrl="https://stackblitz.com/github/kritzelapp/examples/tree/main/custom-toolbar/1/angular"
-  preview={
-    <KritzelEditor
-      editorId="demo-editor-1"
-      wheelEnabled={false}
-      syncConfig={{ providers: [InMemorySyncProvider] }}
-      assetStorageConfig={{ providers: [] }}
-      controls={[
-        { name: 'selection', type: 'tool', tool: KritzelSelectionTool, icon: 'cursor' },
-        { name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen' },
-      ]}
-    />
-  }
->
-```ts title="editor.component.ts"
-import { Component } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import {
-  KritzelEditor,
-  KritzelToolbarControl,
-  KritzelSelectionTool,
-  KritzelBrushTool,
-} from 'kritzel-angular';
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<kritzel-editor [controls]="controls"></kritzel-editor>`,
-})
-export class EditorComponent {
-  controls: KritzelToolbarControl[] = [
-    {
-      name: 'selection',
-      type: 'tool',
-      tool: KritzelSelectionTool,
-      icon: 'cursor',
-    },
-    {
-      name: 'brush',
-      type: 'tool',
-      tool: KritzelBrushTool,
-      icon: 'pen',
-    },
-  ];
-}
-```
-</LiveDemo>
+  stackBlitzUrl="https://stackblitz.com/github/kritzelapp/examples/tree/main/custom-toolbar/0/angular"
+  iframeUrl="https://kritzelapp.github.io/examples/custom-toolbar/0/angular/"
+  repoFiles={['src/app/app.ts', 'src/app/app.spec.ts']}
+/>
 
 The toolbar now shows exactly two buttons. Any tool not listed is unavailable to the user.
 
@@ -105,49 +60,10 @@ The toolbar now shows exactly two buttons. Any tool not listed is unavailable to
 Add `isDefault: true` to the brush so users land in drawing mode immediately. Then add a `type: 'config'` entry to expose the active tool's settings panel (color, size):
 
 <LiveDemo
-  stackBlitzUrl="https://stackblitz.com/github/kritzelapp/examples/tree/main/custom-toolbar/2/angular"
-  preview={
-    <KritzelEditor
-      editorId="demo-editor-2"
-      wheelEnabled={false}
-      syncConfig={{ providers: [InMemorySyncProvider] }}
-      assetStorageConfig={{ providers: [] }}
-      controls={[
-        { name: 'selection', type: 'tool', tool: KritzelSelectionTool, icon: 'cursor' },
-        { name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen', isDefault: true, config: DEFAULT_BRUSH_CONFIG },
-        { name: 'config', type: 'config' },
-      ]}
-    />
-  }
->
-```ts title="editor.component.ts"
-// highlight-start
-import { DEFAULT_BRUSH_CONFIG, InMemorySyncProvider } from 'kritzel-angular';
-// highlight-end
-controls: KritzelToolbarControl[] = [
-  {
-    name: 'selection',
-    type: 'tool',
-    tool: KritzelSelectionTool,
-    icon: 'cursor',
-  },
-  {
-    name: 'brush',
-    type: 'tool',
-    tool: KritzelBrushTool,
-    icon: 'pen',
-    isDefault: true,
-    // highlight-start
-    config: DEFAULT_BRUSH_CONFIG,
-    // highlight-end
-  },
-  {
-    name: 'config',
-    type: 'config',
-  },
-];
-```
-</LiveDemo>
+  stackBlitzUrl="https://stackblitz.com/github/kritzelapp/examples/tree/main/custom-toolbar/1/angular"
+  iframeUrl="https://kritzelapp.github.io/examples/custom-toolbar/1/angular/"
+  repoFiles={['src/app/app.ts']}
+/>
 
 Without the `config` entry the settings panel is never rendered, even though the tools still work.
 

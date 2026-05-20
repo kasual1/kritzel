@@ -292,12 +292,10 @@ export class KritzelControls {
   }
 
   render() {
-    const hasConfigUI =
-      this.activeControl?.tool instanceof KritzelBrushTool ||
-      this.activeControl?.tool instanceof KritzelTextTool ||
-      this.activeControl?.tool instanceof KritzelLineTool ||
-      this.activeControl?.tool instanceof KritzelShapeTool ||
-      (this.activeControl?.tool instanceof KritzelSelectionTool && this.activeControl.tool.hasSelection());
+    const activeToolConfig = this.activeControl?.tool
+      ? KritzelToolConfigHelper.getToolConfig(this.activeControl.tool as any)
+      : null;
+    const hasConfigUI = activeToolConfig !== null;
 
     // Separate tool controls from config control
     const toolControls = this.internalControls.filter(c => c.type === 'tool' || c.type === 'separator');
