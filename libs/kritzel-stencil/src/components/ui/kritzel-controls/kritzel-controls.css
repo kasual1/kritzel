@@ -3,6 +3,7 @@
   flex-direction: column;
   user-select: none;
   max-width: 100%;
+  z-index: 1;
 }
 
 :host(.mobile) {
@@ -22,7 +23,7 @@
   border-radius: var(--kritzel-controls-border-radius, 16px);
   box-shadow: var(--kritzel-controls-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
   border: var(--kritzel-controls-border, 1px solid #ebebeb);
-  z-index: 10000;
+  z-index: 1;
   position: relative;
   max-width: 100%;
   overflow: hidden;
