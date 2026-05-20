@@ -49,6 +49,30 @@ editor.syncConfig = {
 };
 ```
 
+### `InMemorySyncProvider`
+
+Holds canvas data in memory for the current page session. State survives the component being removed from the DOM and remounted, but is lost on page reload. Intended for documentation demos.
+
+```ts
+import { InMemorySyncProvider } from 'kritzel-stencil';
+
+editor.syncConfig = {
+  providers: [InMemorySyncProvider],
+};
+```
+
+You can clear the cache programmatically — useful for a "reset canvas" button in a demo:
+
+```ts
+import { InMemorySyncProvider } from 'kritzel-stencil';
+
+// Clear state for a specific doc name
+InMemorySyncProvider.clear('my-doc-name');
+
+// Clear all in-memory state
+InMemorySyncProvider.clear();
+```
+
 ### `WebSocketSyncProvider`
 
 Real-time sync via a WebSocket server (compatible with [y-websocket](https://github.com/yjs/y-websocket)).

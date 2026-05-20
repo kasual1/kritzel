@@ -7,11 +7,13 @@ import { ConfigurableTool, ToolConfigDefinition } from '../interfaces/tool-confi
 
 export class KritzelToolConfigHelper {
   static getToolConfig(tool: ConfigurableTool): ToolConfigDefinition | null {
-    if (tool instanceof KritzelSelectionTool) {
-      return tool.getToolConfig();
+    const toolConstructorName = tool?.constructor?.name;
+
+    if (tool instanceof KritzelSelectionTool || toolConstructorName === 'KritzelSelectionTool') {
+      return (tool as KritzelSelectionTool).getToolConfig();
     }
 
-    if (tool instanceof KritzelBrushTool) {
+    if (tool instanceof KritzelBrushTool || toolConstructorName === 'KritzelBrushTool') {
       return {
         type: 'brush',
         colorProperty: 'color',
@@ -24,7 +26,7 @@ export class KritzelToolConfigHelper {
       };
     }
 
-    if (tool instanceof KritzelLineTool) {
+    if (tool instanceof KritzelLineTool || toolConstructorName === 'KritzelLineTool') {
       return {
         type: 'line',
         colorProperty: 'color',
@@ -38,7 +40,7 @@ export class KritzelToolConfigHelper {
       };
     }
 
-    if (tool instanceof KritzelShapeTool) {
+    if (tool instanceof KritzelShapeTool || toolConstructorName === 'KritzelShapeTool') {
       return {
         type: 'shape',
         colorProperty: 'strokeColor',
@@ -52,7 +54,7 @@ export class KritzelToolConfigHelper {
       };
     }
 
-    if (tool instanceof KritzelTextTool) {
+    if (tool instanceof KritzelTextTool || toolConstructorName === 'KritzelTextTool') {
       return {
         type: 'text',
         colorProperty: 'fontColor',

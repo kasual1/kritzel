@@ -41,7 +41,6 @@ kritzel-controls.keyboard-open {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  z-index: 10000;
 }
 
 .top-right-buttons {
@@ -51,7 +50,6 @@ kritzel-controls.keyboard-open {
   display: flex;
   align-items: center;
   gap: 8px;
-  z-index: 10000;
 }
 
 .top-right-button {

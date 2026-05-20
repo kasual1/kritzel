@@ -9,7 +9,7 @@
   background-color: var(--kritzel-utility-panel-background-color, #e2e2e2);
   width: fit-content;
   user-select: none;
-  z-index: 10000;
+  z-index: 1;
 }
 
 .utility-button {

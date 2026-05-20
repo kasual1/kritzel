@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h, Event, EventEmitter, State, Watch, Listen } from '@stencil/core';
+import { Component, Host, Prop, h, Event, EventEmitter, State, Watch } from '@stencil/core';
 import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '../../../interfaces/tool-config.interface';
 import { KritzelToolConfigHelper } from '../../../helpers/tool-config.helper';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
@@ -51,10 +51,23 @@ export class KritzelToolConfig {
 
   @Prop({ mutable: true }) isExpanded: boolean = false;
   @Prop() theme: ThemeMode;
+  @Prop() engine: HTMLElement;
+
+  private handleSelectionChangeBound = this.handleSelectionChange.bind(this);
 
   @Watch('theme')
   onThemeChange() {
     this.emitDisplayValues();
+  }
+
+  @Watch('engine')
+  handleEngineChange(newEngine: HTMLElement, oldEngine: HTMLElement) {
+    if (oldEngine) {
+      oldEngine.removeEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
+    }
+    if (newEngine) {
+      newEngine.addEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
+    }
   }
 
   @Event() toolChange: EventEmitter<ConfigurableTool>;
@@ -65,7 +78,6 @@ export class KritzelToolConfig {
   @State() currentOpacity: number = 1;
   @State() private updateTrigger: number = 0;
 
-  @Listen('objectsSelectionChange', { target: 'document' })
   handleSelectionChange() {
     if (this.tool instanceof KritzelSelectionTool) {
       this.config = KritzelToolConfigHelper.getToolConfig(this.tool);
@@ -77,12 +89,21 @@ export class KritzelToolConfig {
     }
   }
 
+  disconnectedCallback() {
+    if (this.engine) {
+      this.engine.removeEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
+    }
+  }
+
   componentWillLoad() {
     this.config = KritzelToolConfigHelper.getToolConfig(this.tool);
     if (this.config) {
       this.updatePalette();
       this.currentOpacity = (this.tool as any)[this.config.opacityProperty] ?? 1;
       this.emitDisplayValues();
+    }
+    if (this.engine) {
+      this.engine.addEventListener('objectsSelectionChange', this.handleSelectionChangeBound);
     }
   }
 

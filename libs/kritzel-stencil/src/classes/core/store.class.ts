@@ -309,7 +309,14 @@ export class KritzelStore {
    * @param state - The initial engine state configuration
    */
   constructor(state: KritzelEngineState) {
-    this._state = state;
+    this._state = {
+      ...state,
+      contextMenuItems: [...state.contextMenuItems],
+      debugInfo: { ...state.debugInfo },
+      pointers: new Map(state.pointers),
+      workspaces: [...state.workspaces],
+      cursor: { ...state.cursor },
+    };
     this._state.objects = new KritzelObjectMap();
   }
 

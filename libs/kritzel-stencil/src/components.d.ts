@@ -1247,6 +1247,7 @@ export namespace Components {
         "sizes": number[];
     }
     interface KritzelToolConfig {
+        "engine": HTMLElement;
         /**
           * @default false
          */
@@ -3082,6 +3083,7 @@ declare namespace LocalJSX {
         "sizes"?: number[];
     }
     interface KritzelToolConfig {
+        "engine"?: HTMLElement;
         /**
           * @default false
          */

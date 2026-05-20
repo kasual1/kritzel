@@ -6,61 +6,15 @@ title: "Custom Toolbar Example | Kritzel for Angular"
 description: "Build a custom Kritzel toolbar by composing tools and controls."
 ---
 
+import LiveDemo from '@site/src/components/LiveDemo';
+
 # Custom Toolbar
 
 This guide builds up a custom toolbar step by step, starting from a bare minimum and progressively adding configuration until reaching a fully controlled setup.
 
 ## Prerequisites
 
-Install the Angular wrapper package:
-
-```bash
-npm install kritzel-angular
-```
-
-Register Kritzel in your application config:
-
-```ts title="app.config.ts"
-import { ApplicationConfig } from '@angular/core';
-import { provideKritzel } from 'kritzel-angular';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideKritzel(),
-    // ... other providers
-  ],
-};
-```
-
-Then import `KritzelEditor` into your standalone component and add `<kritzel-editor>` to your template:
-
-```ts title="editor.component.ts"
-import { Component } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  template: `<kritzel-editor></kritzel-editor>`,
-})
-export class EditorComponent {}
-```
-
-Add the following to your global styles (for example `src/styles.scss`):
-
-```scss title="styles.scss"
-html,
-body {
-  width: 100dvw;
-  height: 100dvh;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  overscroll-behavior-x: none;
-}
-```
-
-This renders the editor with the **full default toolbar** — selection, brush, eraser, line, shape, text, and image tools.
+Complete the [Quick Start](./quick-start.md) guide to have a working `<kritzel-editor>` rendered in your application. This example builds on that setup.
 
 ---
 
@@ -91,39 +45,11 @@ There are three control types:
 
 Pass a `controls` array to replace the default set. Start with just selection and brush:
 
-```ts title="editor.component.ts"
-import { Component } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import {
-  KritzelEditor,
-  KritzelToolbarControl,
-  KritzelSelectionTool,
-  KritzelBrushTool,
-} from 'kritzel-angular';
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<kritzel-editor [controls]="controls"></kritzel-editor>`,
-})
-export class EditorComponent {
-  controls: KritzelToolbarControl[] = [
-    {
-      name: 'selection',
-      type: 'tool',
-      tool: KritzelSelectionTool,
-      icon: 'cursor',
-    },
-    {
-      name: 'brush',
-      type: 'tool',
-      tool: KritzelBrushTool,
-      icon: 'pen',
-    },
-  ];
-}
-```
+<LiveDemo
+  stackBlitzUrl="https://stackblitz.com/github/kritzelapp/examples/tree/main/custom-toolbar/0/angular"
+  iframeUrl="https://kritzelapp.github.io/examples/custom-toolbar/0/angular/"
+  repoFiles={['src/app/app.ts', 'src/app/app.spec.ts']}
+/>
 
 The toolbar now shows exactly two buttons. Any tool not listed is unavailable to the user.
 
@@ -133,29 +59,11 @@ The toolbar now shows exactly two buttons. Any tool not listed is unavailable to
 
 Add `isDefault: true` to the brush so users land in drawing mode immediately. Then add a `type: 'config'` entry to expose the active tool's settings panel (color, size):
 
-```ts
-controls: KritzelToolbarControl[] = [
-  {
-    name: 'selection',
-    type: 'tool',
-    tool: KritzelSelectionTool,
-    icon: 'cursor',
-  },
-  {
-    name: 'brush',
-    type: 'tool',
-    tool: KritzelBrushTool,
-    icon: 'pen',
-    isDefault: true, // highlight-line
-  },
-  // highlight-start
-  {
-    name: 'config',
-    type: 'config',
-  },
-  // highlight-end
-];
-```
+<LiveDemo
+  stackBlitzUrl="https://stackblitz.com/github/kritzelapp/examples/tree/main/custom-toolbar/1/angular"
+  iframeUrl="https://kritzelapp.github.io/examples/custom-toolbar/1/angular/"
+  repoFiles={['src/app/app.ts']}
+/>
 
 Without the `config` entry the settings panel is never rendered, even though the tools still work.
 

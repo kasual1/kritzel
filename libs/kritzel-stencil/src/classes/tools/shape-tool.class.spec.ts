@@ -2,14 +2,12 @@ import { KritzelShapeTool } from './shape-tool.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelToolRegistry } from '../registries/tool.registry';
 import { ShapeType } from '../../enums/shape-type.enum';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
 jest.mock('../objects/shape.class');
 jest.mock('../../helpers/event.helper');
-jest.mock('../registries/tool.registry');
 
 describe('KritzelShapeTool', () => {
   let tool: KritzelShapeTool;
@@ -85,7 +83,6 @@ describe('KritzelShapeTool', () => {
     };
 
     mockSelectionTool = { name: 'selection' };
-    (KritzelToolRegistry.getTool as jest.Mock).mockReturnValue(mockSelectionTool);
 
     mockCreatedShape = {
       id: 'shape-1',
@@ -123,6 +120,7 @@ describe('KritzelShapeTool', () => {
       findObjectById: jest.fn().mockReturnValue(undefined),
       selectObjects: jest.fn(),
       resetActiveShape: jest.fn(),
+      toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
     } as unknown as jest.Mocked<KritzelCore>;
 
     tool = new KritzelShapeTool(mockCore);

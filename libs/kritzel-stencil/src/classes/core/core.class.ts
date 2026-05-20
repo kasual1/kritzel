@@ -55,6 +55,8 @@ export class KritzelCore {
   private readonly _cursorManager: KritzelCursorManager;
   /** Manager for theme styling */
   private readonly _themeManager: KritzelThemeManager;
+  /** Per-core registry of drawing tools (one instance per editor). */
+  private readonly _toolRegistry: KritzelToolRegistry;
   /** Optional unique identifier for namespacing storage keys across multiple editor instances */
   private _editorId?: string;
   /** Current user for awareness broadcasting */
@@ -109,6 +111,14 @@ export class KritzelCore {
   }
 
   /**
+   * Gets the tool registry scoped to this core instance.
+   * @returns The KritzelToolRegistry owned by this core
+   */
+  get toolRegistry(): KritzelToolRegistry {
+    return this._toolRegistry;
+  }
+
+  /**
    * Gets the editor ID used for namespacing storage keys.
    * @returns The editor ID or undefined if not set
    */
@@ -157,6 +167,7 @@ export class KritzelCore {
     this._anchorManager = new KritzelAnchorManager(this);
     this._cursorManager = new KritzelCursorManager(this);
     this._themeManager = new KritzelThemeManager(this);
+    this._toolRegistry = new KritzelToolRegistry(this);
     this._assetResolver = new KritzelAssetResolver();
   }
 
@@ -273,6 +284,7 @@ export class KritzelCore {
     async initializeWorkspace(workspace?: KritzelWorkspace, options?: InitializeWorkspaceOptions): Promise<void> {
     // Load all workspaces from app state map
     const workspaces = this.loadWorkspacesFromAppState();
+      const shouldCreateEditorScopedFallback = !workspace && !!this._editorId;
 
     // Find newest created workspace (tie-break by most recently updated)
     const newestCreatedWorkspace = workspaces.length > 0
@@ -300,7 +312,7 @@ export class KritzelCore {
     } else if (lastActiveWorkspace) {
       // Use last active workspace from localStorage
       activeWorkspace = lastActiveWorkspace;
-    } else if (newestCreatedWorkspace) {
+    } else if (newestCreatedWorkspace && !shouldCreateEditorScopedFallback) {
       // Use newest created workspace
       activeWorkspace = newestCreatedWorkspace;
     } else if (options?.skipFallbackCreation) {
@@ -954,7 +966,7 @@ export class KritzelCore {
       }
     });
 
-    this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this._store.setState('activeTool', this._toolRegistry.getTool('selection'));
 
     this.engine.emitObjectsChange();
 
@@ -1187,7 +1199,7 @@ export class KritzelCore {
       }
 
       this.addSelectionGroup(selectionGroup);
-      this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+      this._store.setState('activeTool', this._toolRegistry.getTool('selection'));
       this.rerender();
     }
   }
@@ -1229,7 +1241,7 @@ export class KritzelCore {
       }
 
       this.addSelectionGroup(selectionGroup);
-      this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+      this._store.setState('activeTool', this._toolRegistry.getTool('selection'));
       this.rerender();
     }
   }
@@ -1416,7 +1428,7 @@ export class KritzelCore {
 
     this.resetActiveText();
     this.clearSelection();
-    this._store.setState('activeTool', KritzelToolRegistry.getTool('selection'));
+    this._store.setState('activeTool', this._toolRegistry.getTool('selection'));
   }
 
   /**
