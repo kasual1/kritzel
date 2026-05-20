@@ -1,6 +1,6 @@
 {
   "name": "kritzel-react",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "homepage": "https://github.com/kasual1/kritzel#readme",
   "license": "ISC",
   "main": "dist/index.js",
@@ -20,7 +20,7 @@
     "@stencil/react-output-target": "^1.2.0"
   },
   "peerDependencies": {
-    "kritzel-stencil": "^0.3.1"
+    "kritzel-stencil": "^0.3.2"
   },
   "repository": {
     "type": "git",
