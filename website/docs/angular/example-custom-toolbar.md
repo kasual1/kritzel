@@ -52,7 +52,6 @@ Pass a `controls` array to replace the default set. Start with just selection an
     <KritzelEditor
       editorId="demo-editor-1"
       wheelEnabled={false}
-      syncConfig={{ providers: [] }}
       assetStorageConfig={{ providers: [] }}
       controls={[
         { name: 'selection', type: 'tool', tool: KritzelSelectionTool, icon: 'cursor' },

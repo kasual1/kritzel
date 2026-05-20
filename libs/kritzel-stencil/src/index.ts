@@ -28,6 +28,7 @@ export * from './helpers/cursor.helper';
 export * from './classes/tools/selection-tool.class';
 
 export * from './classes/providers/sync/broadcast-sync-provider.class';
+export * from './classes/providers/sync/in-memory-sync-provider.class';
 export * from './classes/providers/sync/indexeddb-sync-provider.class';
 export * from './classes/providers/sync/websocket-sync-provider.class';
 export * from './classes/providers/sync/hocuspocus-sync-provider.class';
