@@ -1,4 +1,4 @@
-import { type ReactNode, type ReactElement, useState, useCallback, Children, cloneElement, isValidElement } from 'react';
+import { type ReactNode, useState, useCallback, useEffect, useRef } from 'react';
 import CodeBlock from '@theme/CodeBlock';
 import { ExternalLink } from 'lucide-react';
 
@@ -10,16 +10,33 @@ interface CodeFile {
 }
 
 interface LiveDemoProps {
-  children: ReactNode;
+  children?: ReactNode;
   stackBlitzUrl?: string;
   height?: string;
-  /** When provided, this node is rendered in the preview pane (with cursorTarget injected)
-   *  and `children` is rendered as-is in the code pane (e.g. a highlighted MDX code block). */
-  preview?: ReactNode;
+  /** URL of the hosted example to embed in an iframe as the preview. */
+  iframeUrl?: string;
+  /**
+   * Paths relative to the example directory in the GitHub repo.
+   * Files are fetched at runtime and shown in the Code tab.
+   * Example: `['src/app/editor.component.ts', 'src/app/app.component.html']`
+   */
+  repoFiles?: string[];
   code?: string; // legacy, for single file
   codeTitle?: string;
   codeLang?: string;
   codeFiles?: CodeFile[];
+}
+
+const GITHUB_PAGES_BASE = 'https://kritzelapp.github.io/examples/';
+const RAW_GITHUB_BASE = 'https://raw.githubusercontent.com/kritzelapp/examples/main/';
+
+function langFromFilename(filename: string): string {
+  const ext = filename.split('.').pop() ?? '';
+  const map: Record<string, string> = {
+    ts: 'ts', tsx: 'tsx', html: 'html', css: 'css',
+    scss: 'scss', json: 'json', js: 'js', jsx: 'jsx',
+  };
+  return map[ext] ?? 'text';
 }
 
 
@@ -27,18 +44,50 @@ export default function LiveDemo({
   children,
   stackBlitzUrl,
   height = '400px',
-  preview,
+  iframeUrl,
+  repoFiles,
   code,
   codeTitle,
   codeLang = 'ts',
   codeFiles,
 }: LiveDemoProps) {
-  const hasCode = Boolean(codeFiles?.length || code || preview);
+  const hasCode = Boolean(children || repoFiles?.length || codeFiles?.length || code);
   const [view, setView] = useState<'preview' | 'code'>('preview');
-  const [previewEl, setPreviewEl] = useState<HTMLDivElement | null>(null);
-  const previewRef = useCallback((node: HTMLDivElement | null) => {
-    setPreviewEl(node);
-  }, []);
+  const [activeTab, setActiveTab] = useState(0);
+  const [fetchedFiles, setFetchedFiles] = useState<CodeFile[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
+
+  const rawBase = iframeUrl?.startsWith(GITHUB_PAGES_BASE)
+    ? RAW_GITHUB_BASE + iframeUrl.slice(GITHUB_PAGES_BASE.length)
+    : null;
+
+  useEffect(() => {
+    if (view !== 'code' || !repoFiles?.length || !rawBase || hasFetched.current) {
+      return;
+    }
+    hasFetched.current = true;
+    setIsFetching(true);
+    setFetchError(null);
+    Promise.all(
+      repoFiles.map(async (file) => {
+        const res = await fetch(rawBase + file);
+        if (!res.ok) {
+          throw new Error(`${res.status} – ${file}`);
+        }
+        return {
+          filename: file.split('/').pop() ?? file,
+          code: await res.text(),
+          language: langFromFilename(file),
+        } as CodeFile;
+      })
+    )
+      .then((files) => { setFetchedFiles(files); setActiveTab(0); })
+      .catch((err: Error) => setFetchError(err.message))
+      .finally(() => setIsFetching(false));
+  }, [view, rawBase, repoFiles]);
+
   const viewToggleRef = useCallback((node: HTMLButtonElement | null) => {
     if (!node) {
       return;
@@ -53,7 +102,6 @@ export default function LiveDemo({
 
     node.style.setProperty('font-family', 'var(--ifm-font-family-base)', 'important');
   }, []);
-  const [activeTab, setActiveTab] = useState(0);
 
   return (
     <div
@@ -166,18 +214,59 @@ export default function LiveDemo({
         )}
       </div>
       {view === 'preview' && (
-        <div ref={previewRef} style={{ height, position: 'relative' }}>
-          {previewEl &&
-            Children.map(preview ?? children, (child) =>
-              isValidElement(child)
-                ? cloneElement(child as ReactElement<any>, { cursorTarget: previewEl })
-                : child
-            )}
+        <div style={{ height }}>
+          {iframeUrl && (
+            <iframe
+              src={iframeUrl}
+              style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+              title="Live demo preview"
+            />
+          )}
         </div>
       )}
       {view === 'code' && (
         <div style={{ margin: 0 }}>
-          {preview ? (
+          {repoFiles?.length ? (
+            isFetching ? (
+              <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--ifm-color-emphasis-600)', fontFamily: 'var(--ifm-font-family-base)' }}>
+                Loading files…
+              </div>
+            ) : fetchError ? (
+              <div style={{ padding: '1rem', color: 'var(--ifm-color-danger-dark)', fontFamily: 'var(--ifm-font-family-base)' }}>
+                Failed to load: {fetchError}
+              </div>
+            ) : (
+              <>
+                {fetchedFiles.length > 1 && (
+                  <div style={{ display: 'flex', borderBottom: '1px solid var(--ifm-color-emphasis-200)', background: 'var(--ifm-background-surface-color)', fontFamily: 'var(--ifm-font-family-base)' }}>
+                    {fetchedFiles.map((file, idx) => (
+                      <button
+                        key={file.filename}
+                        ref={codeTabRef}
+                        onClick={() => setActiveTab(idx)}
+                        style={{
+                          border: 'none',
+                          background: 'none',
+                          padding: '0.5rem 1rem',
+                          cursor: 'pointer',
+                          fontWeight: activeTab === idx ? 'bold' : 'normal',
+                          borderBottom: activeTab === idx ? '2px solid var(--ifm-color-primary)' : '2px solid transparent',
+                          fontFamily: 'var(--ifm-font-family-base)',
+                        }}
+                      >
+                        {file.filename}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {fetchedFiles[activeTab] && (
+                  <CodeBlock language={fetchedFiles[activeTab].language ?? codeLang}>
+                    {fetchedFiles[activeTab].code}
+                  </CodeBlock>
+                )}
+              </>
+            )
+          ) : children ? (
             children
           ) : codeFiles && codeFiles.length > 0 ? (
             <>

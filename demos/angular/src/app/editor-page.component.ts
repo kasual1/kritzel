@@ -11,8 +11,15 @@ import {
   IndexedDBSyncProvider,
   KritzelEditor,
   KritzelSyncConfig,
+  ActiveWorkspaceChangeEvent,
+  DEFAULT_BRUSH_CONFIG,
+  EditorIsReadyEvent,
+  HocuspocusSyncProvider,
+  KritzelBrushTool,
+  KritzelSelectionTool,
+  KritzelToolbarControl,
+  LoginEvent,
 } from 'kritzel-angular';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, HocuspocusSyncProvider, LoginEvent } from 'kritzel-stencil';
 import { UserData } from './user.resolver';
 
 @Component({
@@ -21,6 +28,7 @@ import { UserData } from './user.resolver';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      [controls]="controls"
       [syncConfig]="syncConfig"
       [loginConfig]="loginConfig"
       [activeWorkspaceId]="activeWorkspaceId"
@@ -35,6 +43,27 @@ export class EditorPageComponent implements OnInit {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   private readonly route = inject(ActivatedRoute);
+
+  controls: KritzelToolbarControl[] = [
+    {
+      name: 'selection',
+      type: 'tool',
+      isDefault: true,
+      tool: KritzelSelectionTool,
+      icon: 'cursor',
+    },
+    {
+      name: 'brush',
+      type: 'tool',
+      tool: KritzelBrushTool,
+      icon: 'pen',
+      config: DEFAULT_BRUSH_CONFIG,
+    },
+    {
+      name: 'config',
+      type: 'config',
+    },
+  ];
 
   activeWorkspaceId: string | null = null;
 
@@ -68,7 +97,7 @@ export class EditorPageComponent implements OnInit {
     const editorState = event.detail;
     console.log('Editor is ready with state:', editorState);
 
-    if(this.isShared && this.activeWorkspaceId) {
+    if (this.isShared && this.activeWorkspaceId) {
       await this.editor.loadSharedWorkspace(this.activeWorkspaceId);
       return;
     }
@@ -91,5 +120,4 @@ export class EditorPageComponent implements OnInit {
   onLogout() {
     console.log('Logout event');
   }
-
 }
