@@ -7,7 +7,7 @@ description: "Build a custom Kritzel toolbar by composing tools and controls."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
-import { KritzelEditor, KritzelSelectionTool, KritzelBrushTool } from 'kritzel-react';
+import { KritzelEditor, KritzelSelectionTool, KritzelBrushTool, InMemorySyncProvider, DEFAULT_BRUSH_CONFIG } from 'kritzel-react';
 
 # Custom Toolbar
 
@@ -52,6 +52,7 @@ Pass a `controls` array to replace the default set. Start with just selection an
     <KritzelEditor
       editorId="demo-editor-1"
       wheelEnabled={false}
+      syncConfig={{ providers: [InMemorySyncProvider] }}
       assetStorageConfig={{ providers: [] }}
       controls={[
         { name: 'selection', type: 'tool', tool: KritzelSelectionTool, icon: 'cursor' },
@@ -109,16 +110,20 @@ Add `isDefault: true` to the brush so users land in drawing mode immediately. Th
     <KritzelEditor
       editorId="demo-editor-2"
       wheelEnabled={false}
+      syncConfig={{ providers: [InMemorySyncProvider] }}
       assetStorageConfig={{ providers: [] }}
       controls={[
         { name: 'selection', type: 'tool', tool: KritzelSelectionTool, icon: 'cursor' },
-        { name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen', isDefault: true },
+        { name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen', isDefault: true, config: DEFAULT_BRUSH_CONFIG },
         { name: 'config', type: 'config' },
       ]}
     />
   }
 >
 ```ts title="editor.component.ts"
+// highlight-start
+import { DEFAULT_BRUSH_CONFIG, InMemorySyncProvider } from 'kritzel-angular';
+// highlight-end
 controls: KritzelToolbarControl[] = [
   {
     name: 'selection',
@@ -132,6 +137,9 @@ controls: KritzelToolbarControl[] = [
     tool: KritzelBrushTool,
     icon: 'pen',
     isDefault: true,
+    // highlight-start
+    config: DEFAULT_BRUSH_CONFIG,
+    // highlight-end
   },
   {
     name: 'config',
