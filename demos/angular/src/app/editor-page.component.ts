@@ -28,7 +28,6 @@ import { UserData } from './user.resolver';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
-      [controls]="controls"
       [syncConfig]="syncConfig"
       [loginConfig]="loginConfig"
       [activeWorkspaceId]="activeWorkspaceId"
@@ -43,27 +42,6 @@ export class EditorPageComponent implements OnInit {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   private readonly route = inject(ActivatedRoute);
-
-  controls: KritzelToolbarControl[] = [
-    {
-      name: 'selection',
-      type: 'tool',
-      isDefault: true,
-      tool: KritzelSelectionTool,
-      icon: 'cursor',
-    },
-    {
-      name: 'brush',
-      type: 'tool',
-      tool: KritzelBrushTool,
-      icon: 'pen',
-      config: DEFAULT_BRUSH_CONFIG,
-    },
-    {
-      name: 'config',
-      type: 'config',
-    },
-  ];
 
   activeWorkspaceId: string | null = null;
 
