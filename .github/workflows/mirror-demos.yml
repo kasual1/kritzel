@@ -1,0 +1,57 @@
+# Mirrors the demos/ folder to kasual1/kritzel-demos, replacing local file:
+# dependencies in each package.json with the published npm package version.
+name: Mirror demos
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Get version
+        id: version
+        run: echo "version=$(node -p 'require("./libs/kritzel-stencil/package.json").version')" >> "$GITHUB_OUTPUT"
+
+      - name: Clone demos repository
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/kasual1/kritzel-demos.git demos-repo
+
+      - name: Sync demos content
+        run: |
+          for demo in angular react vue; do
+            mkdir -p demos-repo/$demo
+            rsync -av \
+              --delete \
+              --exclude='local-libs/' \
+              --exclude='node_modules/' \
+              --exclude='.angular/' \
+              demos/$demo/ demos-repo/$demo/
+          done
+
+      - name: Replace file: dependencies with npm versions
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          for pkg in demos-repo/angular/package.json demos-repo/react/package.json demos-repo/vue/package.json; do
+            jq --arg v "^$VERSION" '
+              .dependencies |= with_entries(
+                if .value | startswith("file:") then .value = $v else . end
+              )
+            ' "$pkg" > tmp.json && mv tmp.json "$pkg"
+          done
+
+      - name: Commit and push
+        run: |
+          cd demos-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "chore: sync demos from kritzel@${{ steps.version.outputs.version }}"
+          git push
