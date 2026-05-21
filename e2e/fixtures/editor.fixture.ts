@@ -153,7 +153,7 @@ export class EditorPage {
   }
 
   async goto() {
-    await this.page.goto('/');
+    await this.page.goto('/#/e2e');
   }
 
   /** Wait for the editor and engine custom elements to be defined and rendered. */
