@@ -36,7 +36,7 @@ jobs:
               demos/$demo/ demos-repo/$demo/
           done
 
-      - name: Replace file: dependencies with npm versions
+      - name: "Replace file: dependencies with npm versions"
         run: |
           VERSION=${{ steps.version.outputs.version }}
           for pkg in demos-repo/angular/package.json demos-repo/react/package.json demos-repo/vue/package.json; do
