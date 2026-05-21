@@ -4,7 +4,7 @@ const TEST_IMAGE_DATA_URL =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=';
 
 async function setupTwoEditors(page: import('@playwright/test').Page) {
-  await page.goto('/multi-editor');
+  await page.goto('/#/e2e/multi-editor');
 
   await page.waitForFunction(
     () => customElements.get('kritzel-editor') !== undefined,
