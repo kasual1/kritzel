@@ -198,6 +198,6 @@ export class CustomToolbar7Component {
 
   async setTool(name: ToolName) {
     this.activeTool.set(name);
-    // await this.editor.setActiveTool(name);
+    await this.editor.changeActiveToolByName(name);
   }
 }

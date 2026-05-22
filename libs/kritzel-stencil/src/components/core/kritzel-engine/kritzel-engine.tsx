@@ -547,6 +547,20 @@ export class KritzelEngine {
     tool?.onActivate();
   }
 
+  /**
+   * Switches the active drawing tool by its registered name.
+   * @param toolName - The name the tool was registered with (e.g., 'brush', 'eraser').
+   */
+  @Method()
+  async changeActiveToolByName(toolName: string): Promise<void> {
+    const tool = this.core.toolRegistry.getTool(toolName);
+    if (!tool) {
+      console.warn(`[KritzelEngine] No tool registered with name: ${toolName}`);
+      return;
+    }
+    await this.changeActiveTool(tool);
+  }
+
   /** Disables all user interaction with the engine (pointer, keyboard, etc.). */
   @Method()
   async disable() {

@@ -25,6 +25,7 @@ export interface KritzelTextToolConfig {
   size: number;
   fontFamily: string;
   palette: ThemeAwareColor[];
+  sizes?: number[];
 }
 
 export interface KritzelBrushToolConfig {
