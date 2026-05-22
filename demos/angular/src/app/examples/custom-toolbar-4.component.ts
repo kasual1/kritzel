@@ -40,7 +40,10 @@ export class CustomToolbar4Component {
       config: {
         type: 'pen',
         color: { light: '#000000', dark: '#ffffff' },
-        size: 8,
+        size: 24,
+        sizes: {
+          pen: [24, 16, 8]
+        },
         palettes: {
           pen: [
             { light: '#000000', dark: '#ffffff', label: 'Black' },

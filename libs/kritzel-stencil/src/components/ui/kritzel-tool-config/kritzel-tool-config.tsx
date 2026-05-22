@@ -231,6 +231,7 @@ export class KritzelToolConfig {
         return (
           <kritzel-font-size
             key={control.type}
+            sizes={this.sizes.length > 0 ? this.sizes : undefined}
             selectedSize={value}
             fontFamily={(this.tool as any).fontFamily}
             onSizeChange={this.handleSizeChange}

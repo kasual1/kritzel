@@ -71,7 +71,7 @@ Without the `config` entry the settings panel is never rendered, even though the
 
 ## Step 3: Configuring Initial Tool State
 
-Use the `config` property on a tool control to set its defaults — the starting color, size, and available palette:
+Use the `config` property on a tool control to set its defaults — the starting color, size,  available sizes, and available palette:
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -97,7 +97,7 @@ Expand the toolbar by adding eraser, line, shape, text, and image tools:
 
 ## Step 5: Configuring Individual Tool Behaviors
 
-Each tool accepts a typed `config` object. Add configurations for line, shape, and text:
+Each tool accepts a typed `config` object that lets you tailor colors, sizes, and behavior to your application's needs. Add configurations for line, shape, and text:
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"

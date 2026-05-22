@@ -966,5 +966,18 @@ describe('KritzelEngine', () => {
 
       expect(newTool.sizes).toEqual(customSizes);
     });
+
+    it('passes sizes array directly for text tool config', async () => {
+      const newTool: any = { name: 'text', sizes: [] };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class FakeTextTool {}
+      const customSizes = [16, 12, 8];
+      const config = { color: { light: '#000', dark: '#fff' }, size: 16, fontFamily: 'Arial', palette: [], sizes: customSizes } as any;
+      await engine.registerTool('text', FakeTextTool, config);
+
+      expect(newTool.sizes).toEqual(customSizes);
+    });
   });
 });

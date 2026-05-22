@@ -64,7 +64,7 @@ export class KritzelToolConfigHelper {
         sizeProperty: 'fontSize',
         opacityProperty: 'opacity',
         paletteSource: 'palette',
-        sizesSource: 'none',
+        sizesSource: 'sizes',
         controls: [
           { type: 'font-size', propertyName: 'fontSize', additionalProps: {} },
           { type: 'font-family', propertyName: 'fontFamily' },
