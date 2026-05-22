@@ -3,6 +3,7 @@ import { KritzelPath } from '../objects/path.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelCore } from '../core/core.class';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
+import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
 
 /**
  * Brush tool for free-hand drawing on the canvas.
@@ -21,6 +22,9 @@ export class KritzelBrushTool extends KritzelBaseTool {
 
   /** Available color palette for the brush tool */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
+
+  /** Available stroke size presets for the brush tool */
+  sizes: number[] = [...DEFAULT_STROKE_SIZES];
 
   /**
    * Minimum distance in screen pixels between two consecutive stored points.

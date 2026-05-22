@@ -180,6 +180,22 @@ Type: `Promise<void>`
 
 
 
+### `changeActiveToolByName(toolName: string) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name       | Type     | Description |
+| ---------- | -------- | ----------- |
+| `toolName` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `clearSelection() => Promise<void>`
 
 

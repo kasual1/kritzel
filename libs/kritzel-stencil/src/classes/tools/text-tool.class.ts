@@ -3,6 +3,7 @@ import { KritzelBaseTool } from './base-tool.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelCore } from '../core/core.class';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
+import { DEFAULT_FONT_SIZES } from '../../constants/stroke-size.constants';
 
 /**
  * Text tool for creating and editing text objects on the canvas.
@@ -61,6 +62,9 @@ export class KritzelTextTool extends KritzelBaseTool {
 
   /** Available color palette for the text tool */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
+
+  /** Available font size presets for the text tool */
+  sizes: number[] = [...DEFAULT_FONT_SIZES];
 
   /**
    * Creates a new instance of KritzelTextTool.

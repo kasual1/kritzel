@@ -517,9 +517,7 @@ export class KritzelEngine {
     if (this.core.toolRegistry.hasTool(toolName)) {
       const existingTool = this.core.toolRegistry.getTool(toolName)!;
       if (toolConfig) {
-        Object.entries(toolConfig).forEach(([key, value]) => {
-          (existingTool as unknown as Record<string, unknown>)[key] = value;
-        });
+        this.applyToolConfig(existingTool, toolConfig);
       }
       return existingTool;
     }
@@ -527,9 +525,7 @@ export class KritzelEngine {
     const registeredTool = this.core.toolRegistry.registerTool(toolName, toolClass);
 
     if (toolConfig) {
-      Object.entries(toolConfig).forEach(([key, value]) => {
-        (registeredTool as unknown as Record<string, unknown>)[key] = value;
-      });
+      this.applyToolConfig(registeredTool, toolConfig);
     }
 
     return Promise.resolve(registeredTool);
@@ -549,6 +545,20 @@ export class KritzelEngine {
     this.core.store.setState('activeTool', tool);
     this.core.deselectAllObjects();
     tool?.onActivate();
+  }
+
+  /**
+   * Switches the active drawing tool by its registered name.
+   * @param toolName - The name the tool was registered with (e.g., 'brush', 'eraser').
+   */
+  @Method()
+  async changeActiveToolByName(toolName: string): Promise<void> {
+    const tool = this.core.toolRegistry.getTool(toolName);
+    if (!tool) {
+      console.warn(`[KritzelEngine] No tool registered with name: ${toolName}`);
+      return;
+    }
+    await this.changeActiveTool(tool);
   }
 
   /** Disables all user interaction with the engine (pointer, keyboard, etc.). */
@@ -1644,6 +1654,33 @@ export class KritzelEngine {
 
   private syncLoadingState(): void {
     this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
+  }
+
+  private applyToolConfig(
+    tool: KritzelBaseTool,
+    toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
+  ): void {
+    Object.entries(toolConfig).forEach(([key, value]) => {
+      (tool as unknown as Record<string, unknown>)[key] = value;
+    });
+
+    // Resolve palettes map into the flat palette array the UI reads
+    if ('palettes' in toolConfig && 'type' in toolConfig) {
+      const brushConfig = toolConfig as KritzelBrushToolConfig;
+      const resolvedPalette = brushConfig.palettes[brushConfig.type];
+      if (resolvedPalette) {
+        (tool as unknown as Record<string, unknown>)['palette'] = resolvedPalette;
+      }
+    }
+
+    // Resolve sizes map into the flat sizes array the UI reads (brush tool uses a map keyed by type)
+    if ('sizes' in toolConfig && toolConfig.sizes != null && 'type' in toolConfig) {
+      const brushConfig = toolConfig as KritzelBrushToolConfig;
+      const resolvedSizes = brushConfig.sizes?.[brushConfig.type];
+      if (resolvedSizes) {
+        (tool as unknown as Record<string, unknown>)['sizes'] = resolvedSizes;
+      }
+    }
   }
 
   get isSelecting() {

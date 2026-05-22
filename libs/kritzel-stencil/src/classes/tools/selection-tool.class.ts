@@ -287,6 +287,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         sizeProperty: 'size',
         opacityProperty: 'opacity',
         paletteSource: 'none',
+        sizesSource: 'none',
         controls: [],
       };
     }
@@ -315,6 +316,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       sizeProperty: 'size',
       opacityProperty: 'opacity',
       paletteSource: 'palette',
+      sizesSource: 'none',
       controls,
     };
   }
