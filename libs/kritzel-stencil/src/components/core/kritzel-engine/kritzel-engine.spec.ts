@@ -914,5 +914,57 @@ describe('KritzelEngine', () => {
 
       expect(existingTool.palette).toBe(customPalette);
     });
+
+    it('resolves sizes map into sizes for brush tool config', async () => {
+      const newTool: any = { name: 'pen', sizes: [] };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class FakeBrushTool {}
+      const customSizes = [2, 4, 8];
+      const config = { type: 'pen', color: { light: '#000', dark: '#fff' }, size: 6, palettes: { pen: [] }, sizes: { pen: customSizes } } as any;
+      await engine.registerTool('pen', FakeBrushTool, config);
+
+      expect(newTool.sizes).toBe(customSizes);
+    });
+
+    it('resolves sizes map into sizes for existing brush tool', async () => {
+      const existingTool: any = { name: 'pen', sizes: [4, 6, 8, 12, 16, 24] };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(true);
+      (core.toolRegistry.getTool as jest.Mock).mockReturnValue(existingTool);
+
+      class FakeBrushTool {}
+      const customSizes = [1, 2, 4];
+      const config = { type: 'pen', color: { light: '#000', dark: '#fff' }, size: 4, palettes: { pen: [] }, sizes: { pen: customSizes } } as any;
+      await engine.registerTool('pen', FakeBrushTool, config);
+
+      expect(existingTool.sizes).toBe(customSizes);
+    });
+
+    it('passes sizes array directly for line tool config', async () => {
+      const newTool: any = { name: 'line', sizes: [] };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class FakeLineTool {}
+      const customSizes = [1, 2, 4, 8];
+      const config = { color: { light: '#000', dark: '#fff' }, size: 4, palette: [], sizes: customSizes } as any;
+      await engine.registerTool('line', FakeLineTool, config);
+
+      expect(newTool.sizes).toEqual(customSizes);
+    });
+
+    it('passes sizes array directly for shape tool config', async () => {
+      const newTool: any = { name: 'shape', sizes: [] };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class FakeShapeTool {}
+      const customSizes = [2, 4, 6, 10];
+      const config = { shapeType: 'rectangle', strokeColor: { light: '#000', dark: '#fff' }, strokeWidth: 4, fillColor: { light: 'transparent', dark: 'transparent' }, fontColor: { light: '#000', dark: '#fff' }, fontSize: 16, fontFamily: 'Arial', palette: [], sizes: customSizes } as any;
+      await engine.registerTool('shape', FakeShapeTool, config);
+
+      expect(newTool.sizes).toEqual(customSizes);
+    });
   });
 });

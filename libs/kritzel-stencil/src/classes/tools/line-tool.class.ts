@@ -5,6 +5,7 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
+import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
 
 /**
  * Line tool for drawing straight lines on the canvas.
@@ -24,6 +25,9 @@ export class KritzelLineTool extends KritzelBaseTool {
 
   /** Available color palette for the line tool */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
+
+  /** Available stroke size presets for the line tool */
+  sizes: number[] = [...DEFAULT_STROKE_SIZES];
 
   /** Arrow head configuration for lines created with this tool */
   arrows?: LineArrowConfig;

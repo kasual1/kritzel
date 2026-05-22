@@ -1,5 +1,6 @@
 import { KritzelBrushToolConfig } from '../interfaces/toolbar-control.interface';
 import { DEFAULT_COLOR_PALETTE } from '../constants/color-palette.constants';
+import { DEFAULT_STROKE_SIZES } from '../constants/stroke-size.constants';
 
 export const DEFAULT_BRUSH_CONFIG: KritzelBrushToolConfig = {
   type: 'pen',
@@ -7,6 +8,9 @@ export const DEFAULT_BRUSH_CONFIG: KritzelBrushToolConfig = {
   size: 16,
   palettes: {
     pen: [...DEFAULT_COLOR_PALETTE],
+  },
+  sizes: {
+    pen: [...DEFAULT_STROKE_SIZES],
   },
 };
 
