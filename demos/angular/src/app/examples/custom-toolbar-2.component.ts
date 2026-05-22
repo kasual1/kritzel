@@ -4,7 +4,6 @@ import {
   KritzelBrushTool,
   KritzelSelectionTool,
   KritzelToolbarControl,
-  DEFAULT_BRUSH_CONFIG,
 } from 'kritzel-angular';
 
 @Component({
@@ -22,19 +21,21 @@ import {
 export class CustomToolbar2Component {
   controls: KritzelToolbarControl[] = [
     {
-      tool: KritzelSelectionTool,
+      name: 'selection',
       type: 'tool',
-      name: 'Select',
+      tool: KritzelSelectionTool,
       icon: 'cursor',
     },
     {
-      tool: KritzelBrushTool,
+      name: 'brush',
       type: 'tool',
-      name: 'Brush',
+      tool: KritzelBrushTool,
       icon: 'pen',
-      isDefault: true,
-      config: DEFAULT_BRUSH_CONFIG,
+      isDefault: true
     },
-    { type: 'config', name: 'config' },
+    {
+      name: 'config',
+      type: 'config',
+    },
   ];
 }
