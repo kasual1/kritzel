@@ -2,20 +2,16 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   KritzelEditor,
   KritzelBrushTool,
-  KritzelLineTool,
-  KritzelShapeTool,
-  KritzelTextTool,
   KritzelSelectionTool,
   KritzelToolbarControl,
+  DEFAULT_BRUSH_CONFIG,
 } from 'kritzel-angular';
 
 @Component({
   selector: 'app-custom-toolbar-2',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor [controls]="controls"></kritzel-editor>
-  `,
+  template: ` <kritzel-editor [controls]="controls"></kritzel-editor> `,
   styles: `
     :host {
       display: block;
@@ -25,11 +21,20 @@ import {
 })
 export class CustomToolbar2Component {
   controls: KritzelToolbarControl[] = [
-    { type: 'tool', tool: KritzelSelectionTool, name: 'Selection', icon: 'selection', isDefault: true },
-    { type: 'separator', name: 'separator-1' },
-    { type: 'tool', tool: KritzelBrushTool, name: 'Brush', icon: 'brush' },
-    { type: 'tool', tool: KritzelLineTool, name: 'Line', icon: 'line' },
-    { type: 'tool', tool: KritzelShapeTool, name: 'Shape', icon: 'shape' },
-    { type: 'tool', tool: KritzelTextTool, name: 'Text', icon: 'text' },
+    {
+      tool: KritzelSelectionTool,
+      type: 'tool',
+      name: 'Select',
+      icon: 'cursor',
+    },
+    {
+      tool: KritzelBrushTool,
+      type: 'tool',
+      name: 'Brush',
+      icon: 'pen',
+      isDefault: true,
+      config: DEFAULT_BRUSH_CONFIG,
+    },
+    { type: 'config', name: 'config' },
   ];
 }
