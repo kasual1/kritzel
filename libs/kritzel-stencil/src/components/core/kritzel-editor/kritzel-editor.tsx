@@ -476,6 +476,11 @@ export class KritzelEditor {
   }
 
   @Method()
+  async changeActiveToolByName(toolName: string): Promise<void> {
+    return this.engineRef.changeActiveToolByName(toolName);
+  }
+
+  @Method()
   async disable() {
     return this.engineRef.disable();
   }

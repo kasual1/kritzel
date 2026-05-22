@@ -708,6 +708,7 @@ describe('KritzelSelectionTool', () => {
         sizeProperty: 'size',
         opacityProperty: 'opacity',
         paletteSource: 'none',
+        sizesSource: 'none',
         controls: [],
       });
     });

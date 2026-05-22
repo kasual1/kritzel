@@ -19,6 +19,7 @@ export interface ToolConfigDefinition {
   sizeProperty: string;
   opacityProperty: string;
   paletteSource: 'palette' | 'none';
+  sizesSource: 'sizes' | 'none';
   controls: ToolConfigControl[];
 }
 

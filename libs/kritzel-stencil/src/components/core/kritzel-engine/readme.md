@@ -177,6 +177,22 @@ Type: `Promise<void>`
 
 
 
+### `changeActiveToolByName(toolName: string) => Promise<void>`
+
+Switches the active drawing tool by its registered name.
+
+#### Parameters
+
+| Name       | Type     | Description                                                        |
+| ---------- | -------- | ------------------------------------------------------------------ |
+| `toolName` | `string` | - The name the tool was registered with (e.g., 'brush', 'eraser'). |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `clearSelection() => Promise<void>`
 
 Deselects all currently selected objects.

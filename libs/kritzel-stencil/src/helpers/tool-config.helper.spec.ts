@@ -60,6 +60,7 @@ describe('KritzelToolConfigHelper', () => {
         sizeProperty: 'size',
         opacityProperty: 'opacity',
         paletteSource: 'palette',
+        sizesSource: 'sizes',
         controls: [
           { type: 'stroke-size', propertyName: 'size' },
         ],
@@ -79,6 +80,7 @@ describe('KritzelToolConfigHelper', () => {
         sizeProperty: 'size',
         opacityProperty: 'opacity',
         paletteSource: 'palette',
+        sizesSource: 'sizes',
         controls: [
           { type: 'stroke-size', propertyName: 'size' },
         ],
@@ -98,6 +100,7 @@ describe('KritzelToolConfigHelper', () => {
         sizeProperty: 'size',
         opacityProperty: 'opacity',
         paletteSource: 'palette',
+        sizesSource: 'sizes',
         controls: [
           { type: 'stroke-size', propertyName: 'size' },
           { type: 'line-endings', propertyName: 'arrows', additionalProps: {} },
@@ -118,6 +121,7 @@ describe('KritzelToolConfigHelper', () => {
         sizeProperty: 'strokeWidth',
         opacityProperty: 'opacity',
         paletteSource: 'palette',
+        sizesSource: 'sizes',
         controls: [
           { type: 'stroke-size', propertyName: 'strokeWidth' },
           { type: 'shape-fill', propertyName: 'fillColor', additionalProps: {} },
@@ -138,6 +142,7 @@ describe('KritzelToolConfigHelper', () => {
         sizeProperty: 'fontSize',
         opacityProperty: 'opacity',
         paletteSource: 'palette',
+        sizesSource: 'sizes',
         controls: [
           { type: 'font-size', propertyName: 'fontSize', additionalProps: {} },
           { type: 'font-family', propertyName: 'fontFamily' },
