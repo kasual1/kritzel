@@ -42,6 +42,7 @@ export class KritzelToolConfig {
     this.config = newConfig;
     if (this.config) {
       this.updatePalette();
+      this.updateSizes();
       this.currentOpacity = (newTool as any)[this.config.opacityProperty] ?? 1;
       
       // Emit the values since they might have been updated from the old tool
@@ -75,6 +76,7 @@ export class KritzelToolConfig {
 
   @State() config: ToolConfigDefinition;
   @State() palette: ThemeAwareColor[] = [];
+  @State() sizes: number[] = [];
   @State() currentOpacity: number = 1;
   @State() private updateTrigger: number = 0;
 
@@ -83,6 +85,7 @@ export class KritzelToolConfig {
       this.config = KritzelToolConfigHelper.getToolConfig(this.tool);
       if (this.config) {
         this.updatePalette();
+        this.updateSizes();
         this.currentOpacity = (this.tool as any)[this.config.opacityProperty] ?? 1;
         this.emitDisplayValues();
       }
@@ -99,6 +102,7 @@ export class KritzelToolConfig {
     this.config = KritzelToolConfigHelper.getToolConfig(this.tool);
     if (this.config) {
       this.updatePalette();
+      this.updateSizes();
       this.currentOpacity = (this.tool as any)[this.config.opacityProperty] ?? 1;
       this.emitDisplayValues();
     }
@@ -133,6 +137,16 @@ export class KritzelToolConfig {
       this.palette = [];
     } else {
       this.palette = (this.tool as any).palette || [];
+    }
+  }
+
+  private updateSizes() {
+    if (!this.config) return;
+
+    if (this.config.sizesSource === 'none') {
+      this.sizes = [];
+    } else {
+      this.sizes = (this.tool as any).sizes || [];
     }
   }
 
@@ -207,6 +221,7 @@ export class KritzelToolConfig {
         return (
           <kritzel-stroke-size
             key={control.type}
+            sizes={this.sizes.length > 0 ? this.sizes : undefined}
             selectedSize={value}
             onSizeChange={this.handleSizeChange}
           ></kritzel-stroke-size>

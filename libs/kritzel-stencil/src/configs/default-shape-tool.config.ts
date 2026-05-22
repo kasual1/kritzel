@@ -1,6 +1,7 @@
 import { KritzelShapeToolConfig } from "../interfaces/toolbar-control.interface";
 import { ShapeType } from "../enums/shape-type.enum";
 import { DEFAULT_COLOR_PALETTE } from "../constants/color-palette.constants";
+import { DEFAULT_STROKE_SIZES } from "../constants/stroke-size.constants";
 
 export const DEFAULT_SHAPE_CONFIG: KritzelShapeToolConfig = {
   shapeType: ShapeType.Rectangle,
@@ -11,4 +12,5 @@ export const DEFAULT_SHAPE_CONFIG: KritzelShapeToolConfig = {
   fontSize: 16,
   fontFamily: 'Arial',
   palette: [...DEFAULT_COLOR_PALETTE],
+  sizes: [...DEFAULT_STROKE_SIZES],
 };

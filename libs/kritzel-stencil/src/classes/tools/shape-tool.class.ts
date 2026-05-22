@@ -4,6 +4,7 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelCore } from '../core/core.class';
 import { ShapeType } from '../../enums/shape-type.enum';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
+import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
 
 /**
  * Shape tool for drawing geometric shapes (rectangles, ellipses, etc.) on the canvas.
@@ -38,6 +39,9 @@ export class KritzelShapeTool extends KritzelBaseTool {
 
   /** Available color palette for the shape tool */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
+
+  /** Available stroke size presets for the shape tool */
+  sizes: number[] = [...DEFAULT_STROKE_SIZES];
 
   /** X coordinate where the shape drawing started */
   private startX: number = 0;

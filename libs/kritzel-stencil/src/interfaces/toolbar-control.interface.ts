@@ -33,13 +33,17 @@ export interface KritzelBrushToolConfig {
   size: number;
   palettes: {
     [brushType: string]: ThemeAwareColor[];
-  }
+  };
+  sizes?: {
+    [brushType: string]: number[];
+  };
 }
 
 export interface KritzelLineToolConfig {
   color: ThemeAwareColor;
   size: number;
   palette: ThemeAwareColor[];
+  sizes?: number[];
   arrows?: {
     start?: { enabled: boolean; style?: 'triangle' | 'open' | 'diamond' | 'circle' };
     end?: { enabled: boolean; style?: 'triangle' | 'open' | 'diamond' | 'circle' };
@@ -55,4 +59,5 @@ export interface KritzelShapeToolConfig {
   fontSize: number;
   fontFamily: string;
   palette: ThemeAwareColor[];
+  sizes?: number[];
 }

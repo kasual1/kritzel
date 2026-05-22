@@ -1658,6 +1658,15 @@ export class KritzelEngine {
         (tool as unknown as Record<string, unknown>)['palette'] = resolvedPalette;
       }
     }
+
+    // Resolve sizes map into the flat sizes array the UI reads (brush tool uses a map keyed by type)
+    if ('sizes' in toolConfig && toolConfig.sizes != null && 'type' in toolConfig) {
+      const brushConfig = toolConfig as KritzelBrushToolConfig;
+      const resolvedSizes = brushConfig.sizes?.[brushConfig.type];
+      if (resolvedSizes) {
+        (tool as unknown as Record<string, unknown>)['sizes'] = resolvedSizes;
+      }
+    }
   }
 
   get isSelecting() {

@@ -20,6 +20,7 @@ export class KritzelToolConfigHelper {
         sizeProperty: 'size',
         opacityProperty: 'opacity',
         paletteSource: 'palette',
+        sizesSource: 'sizes',
         controls: [
           { type: 'stroke-size', propertyName: 'size' },
         ],
@@ -33,6 +34,7 @@ export class KritzelToolConfigHelper {
         sizeProperty: 'size',
         opacityProperty: 'opacity',
         paletteSource: 'palette',
+        sizesSource: 'sizes',
         controls: [
           { type: 'stroke-size', propertyName: 'size' },
           { type: 'line-endings', propertyName: 'arrows', additionalProps: {} },
@@ -47,6 +49,7 @@ export class KritzelToolConfigHelper {
         sizeProperty: 'strokeWidth',
         opacityProperty: 'opacity',
         paletteSource: 'palette',
+        sizesSource: 'sizes',
         controls: [
           { type: 'stroke-size', propertyName: 'strokeWidth' },
           { type: 'shape-fill', propertyName: 'fillColor', additionalProps: {} },
@@ -61,6 +64,7 @@ export class KritzelToolConfigHelper {
         sizeProperty: 'fontSize',
         opacityProperty: 'opacity',
         paletteSource: 'palette',
+        sizesSource: 'none',
         controls: [
           { type: 'font-size', propertyName: 'fontSize', additionalProps: {} },
           { type: 'font-family', propertyName: 'fontFamily' },

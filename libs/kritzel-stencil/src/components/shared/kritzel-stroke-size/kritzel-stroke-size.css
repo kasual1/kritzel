@@ -10,7 +10,7 @@
 .size-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(6, 32px);
+  grid-template-columns: repeat(auto-fill, 32px);
   gap: 8px;
   justify-items: center;
 }
