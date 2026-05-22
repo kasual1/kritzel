@@ -5,22 +5,18 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import {
   IndexedDBSyncProvider,
   KritzelEditor,
   KritzelSyncConfig,
   ActiveWorkspaceChangeEvent,
-  DEFAULT_BRUSH_CONFIG,
   EditorIsReadyEvent,
   HocuspocusSyncProvider,
-  KritzelBrushTool,
-  KritzelSelectionTool,
-  KritzelToolbarControl,
   LoginEvent,
 } from 'kritzel-angular';
-import { UserData } from './user.resolver';
+import { UserData } from '../resolvers/user.resolver';
 
 @Component({
   selector: 'app-editor-page',
@@ -38,10 +34,11 @@ import { UserData } from './user.resolver';
     ></kritzel-editor>
   `,
 })
-export class EditorPageComponent implements OnInit {
+export class Collaboration1Component implements OnInit {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   activeWorkspaceId: string | null = null;
 
@@ -81,13 +78,13 @@ export class EditorPageComponent implements OnInit {
     }
 
     this.activeWorkspaceId = editorState.activeWorkspace.id;
-    window.history.replaceState(null, '', `/${editorState.activeWorkspace.id}`);
+    this.router.navigate(['/examples/collaboration-1', editorState.activeWorkspace.id], { replaceUrl: true });
   }
 
   onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
     const workspace = event.detail;
     this.activeWorkspaceId = workspace.id;
-    window.history.replaceState(null, '', `/${workspace.id}`);
+    this.router.navigate(['/examples/collaboration-1', workspace.id], { replaceUrl: true });
   }
 
   onLogin(event: CustomEvent<LoginEvent>) {
