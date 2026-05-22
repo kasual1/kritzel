@@ -517,9 +517,7 @@ export class KritzelEngine {
     if (this.core.toolRegistry.hasTool(toolName)) {
       const existingTool = this.core.toolRegistry.getTool(toolName)!;
       if (toolConfig) {
-        Object.entries(toolConfig).forEach(([key, value]) => {
-          (existingTool as unknown as Record<string, unknown>)[key] = value;
-        });
+        this.applyToolConfig(existingTool, toolConfig);
       }
       return existingTool;
     }
@@ -527,9 +525,7 @@ export class KritzelEngine {
     const registeredTool = this.core.toolRegistry.registerTool(toolName, toolClass);
 
     if (toolConfig) {
-      Object.entries(toolConfig).forEach(([key, value]) => {
-        (registeredTool as unknown as Record<string, unknown>)[key] = value;
-      });
+      this.applyToolConfig(registeredTool, toolConfig);
     }
 
     return Promise.resolve(registeredTool);
@@ -1644,6 +1640,24 @@ export class KritzelEngine {
 
   private syncLoadingState(): void {
     this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
+  }
+
+  private applyToolConfig(
+    tool: KritzelBaseTool,
+    toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
+  ): void {
+    Object.entries(toolConfig).forEach(([key, value]) => {
+      (tool as unknown as Record<string, unknown>)[key] = value;
+    });
+
+    // Resolve palettes map into the flat palette array the UI reads
+    if ('palettes' in toolConfig && 'type' in toolConfig) {
+      const brushConfig = toolConfig as KritzelBrushToolConfig;
+      const resolvedPalette = brushConfig.palettes[brushConfig.type];
+      if (resolvedPalette) {
+        (tool as unknown as Record<string, unknown>)['palette'] = resolvedPalette;
+      }
+    }
   }
 
   get isSelecting() {

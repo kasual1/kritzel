@@ -12,7 +12,6 @@ import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
-import { DEFAULT_BRUSH_CONFIG } from '../../../configs/default-brush-tool.config';
 import { DEFAULT_LINE_TOOL_CONFIG } from '../../../configs/default-line-tool.config';
 import { DEFAULT_TEXT_CONFIG } from '../../../configs/default-text-tool.config';
 import { DEFAULT_SHAPE_CONFIG } from '../../../configs/default-shape-tool.config';
@@ -77,45 +76,18 @@ export class KritzelEditor {
       type: 'tool',
       tool: KritzelBrushTool,
       icon: 'pen',
-      config: DEFAULT_BRUSH_CONFIG,
-    },
-    {
-      name: 'eraser',
-      type: 'tool',
-      tool: KritzelEraserTool,
-      icon: 'eraser',
-    },
-    {
-      name: 'line',
-      type: 'tool',
-      tool: KritzelLineTool,
-      icon: 'arrow',
-      config: DEFAULT_LINE_TOOL_CONFIG,
-    },
-    {
-      name: 'shape',
-      type: 'tool',
-      tool: KritzelShapeTool,
-      icon: 'shape-rectangle',
-      config: DEFAULT_SHAPE_CONFIG,
-      subOptions: [
-        { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },
-        { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },
-        { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },
-      ],
-    },
-    {
-      name: 'text',
-      type: 'tool',
-      tool: KritzelTextTool,
-      icon: 'type',
-      config: DEFAULT_TEXT_CONFIG,
-    },
-    {
-      name: 'image',
-      type: 'tool',
-      tool: KritzelImageTool,
-      icon: 'image',
+      config: {
+        type: 'pen',
+        color: { light: '#000000', dark: '#ffffff' },
+        size: 8,
+        palettes: {
+          pen: [
+            { light: '#000000', dark: '#ffffff', label: 'Black' },
+            { light: '#e53935', dark: '#e53935', label: 'Red' },
+            { light: '#1a73e8', dark: '#1a73e8', label: 'Blue' },
+          ],
+        },
+      },
     },
     {
       name: 'config',

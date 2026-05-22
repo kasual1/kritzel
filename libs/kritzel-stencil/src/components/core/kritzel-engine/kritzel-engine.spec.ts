@@ -888,5 +888,31 @@ describe('KritzelEngine', () => {
       expect(newTool.shapeType).toBe('rectangle');
       expect(newTool.fillColor).toBe('#000');
     });
+
+    it('resolves palettes map into palette for brush tool config', async () => {
+      const newTool: any = { name: 'pen', palette: [] };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class FakeBrushTool {}
+      const customPalette = [{ light: '#ff0000', dark: '#ff0000' }];
+      const config = { type: 'pen', color: customPalette[0], size: 6, palettes: { pen: customPalette } } as any;
+      await engine.registerTool('pen', FakeBrushTool, config);
+
+      expect(newTool.palette).toBe(customPalette);
+    });
+
+    it('resolves palettes map into palette for existing brush tool', async () => {
+      const existingTool: any = { name: 'pen', palette: [{ light: '#000', dark: '#fff' }] };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(true);
+      (core.toolRegistry.getTool as jest.Mock).mockReturnValue(existingTool);
+
+      class FakeBrushTool {}
+      const customPalette = [{ light: '#ff0000', dark: '#ff0000' }];
+      const config = { type: 'pen', color: customPalette[0], size: 6, palettes: { pen: customPalette } } as any;
+      await engine.registerTool('pen', FakeBrushTool, config);
+
+      expect(existingTool.palette).toBe(customPalette);
+    });
   });
 });
