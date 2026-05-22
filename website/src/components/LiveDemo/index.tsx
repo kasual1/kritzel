@@ -11,14 +11,24 @@ interface CodeFile {
 
 interface LiveDemoProps {
   children?: ReactNode;
+  /**
+   * GitHub repository URL pointing to the directory containing the example files.
+   * Must follow the format: `https://github.com/{owner}/{repo}/tree/{branch}/{path}`
+   *
+   * Used to derive:
+   * - Raw content URL for fetching `repoFiles`
+   * - StackBlitz URL (if `stackBlitzUrl` is not explicitly provided)
+   */
+  repoUrl?: string;
+  /** Override the auto-derived StackBlitz URL. */
   stackBlitzUrl?: string;
   height?: string;
   /** URL of the hosted example to embed in an iframe as the preview. */
   iframeUrl?: string;
   /**
-   * Paths relative to the example directory in the GitHub repo.
+   * Paths relative to `repoUrl` in the GitHub repo.
    * Files are fetched at runtime and shown in the Code tab.
-   * Example: `['src/app/editor.component.ts', 'src/app/app.component.html']`
+   * Example: `['src/app/examples/editor.component.ts']`
    */
   repoFiles?: string[];
   code?: string; // legacy, for single file
@@ -27,8 +37,33 @@ interface LiveDemoProps {
   codeFiles?: CodeFile[];
 }
 
-const GITHUB_PAGES_BASE = 'https://kritzelapp.github.io/examples/';
-const RAW_GITHUB_BASE = 'https://raw.githubusercontent.com/kritzelapp/examples/main/';
+/**
+ * Parses a GitHub tree URL into its components.
+ * Expected format: https://github.com/{owner}/{repo}/tree/{branch}/{path}
+ */
+function parseGitHubUrl(url: string) {
+  const match = url.match(
+    /^https:\/\/github\.com\/([^/]+)\/([^/]+)\/tree\/([^/]+)\/(.+)$/
+  );
+  if (!match) return null;
+  const [, owner, repo, branch, path] = match;
+  return { owner, repo, branch, path };
+}
+
+function buildRawBaseUrl(repoUrl: string): string | null {
+  const parsed = parseGitHubUrl(repoUrl);
+  if (!parsed) return null;
+  const { owner, repo, branch, path } = parsed;
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}/`;
+}
+
+function buildStackBlitzUrl(repoUrl: string, file?: string): string {
+  const parsed = parseGitHubUrl(repoUrl);
+  if (!parsed) return repoUrl;
+  const { owner, repo, branch, path } = parsed;
+  const base = `https://stackblitz.com/github/${owner}/${repo}/tree/${branch}/${path}`;
+  return file ? `${base}?file=${encodeURIComponent(file)}` : base;
+}
 
 function langFromFilename(filename: string): string {
   const ext = filename.split('.').pop() ?? '';
@@ -42,6 +77,7 @@ function langFromFilename(filename: string): string {
 
 export default function LiveDemo({
   children,
+  repoUrl,
   stackBlitzUrl,
   height = '400px',
   iframeUrl,
@@ -59,9 +95,9 @@ export default function LiveDemo({
   const [fetchError, setFetchError] = useState<string | null>(null);
   const hasFetched = useRef(false);
 
-  const rawBase = iframeUrl?.startsWith(GITHUB_PAGES_BASE)
-    ? RAW_GITHUB_BASE + iframeUrl.slice(GITHUB_PAGES_BASE.length)
-    : null;
+  const rawBase = repoUrl ? buildRawBaseUrl(repoUrl) : null;
+  const resolvedStackBlitzUrl = stackBlitzUrl
+    ?? (repoUrl ? buildStackBlitzUrl(repoUrl, repoFiles?.[0]) : undefined);
 
   useEffect(() => {
     if (view !== 'code' || !repoFiles?.length || !rawBase || hasFetched.current) {
@@ -191,9 +227,9 @@ export default function LiveDemo({
             Preview
           </button>
         )}
-        {stackBlitzUrl && (
+        {resolvedStackBlitzUrl && (
           <a
-            href={stackBlitzUrl}
+            href={resolvedStackBlitzUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="button button--sm button--secondary"
