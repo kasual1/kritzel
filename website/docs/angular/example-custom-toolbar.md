@@ -46,9 +46,9 @@ There are three control types:
 Pass a `controls` array to replace the default set. Start with just selection and brush:
 
 <LiveDemo
-  stackBlitzUrl="https://stackblitz.com/github/kritzelapp/examples/tree/main/custom-toolbar/0/angular"
-  iframeUrl="https://kritzelapp.github.io/examples/custom-toolbar/0/angular/"
-  repoFiles={['src/app/app.ts', 'src/app/app.spec.ts']}
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-1"
+  repoFiles={['src/app/examples/custom-toolbar-1.component.ts', 'src/app/examples/custom-toolbar-2.component.ts']}
 />
 
 The toolbar now shows exactly two buttons. Any tool not listed is unavailable to the user.
@@ -60,9 +60,9 @@ The toolbar now shows exactly two buttons. Any tool not listed is unavailable to
 Add `isDefault: true` to the brush so users land in drawing mode immediately. Then add a `type: 'config'` entry to expose the active tool's settings panel (color, size):
 
 <LiveDemo
-  stackBlitzUrl="https://stackblitz.com/github/kritzelapp/examples/tree/main/custom-toolbar/1/angular"
-  iframeUrl="https://kritzelapp.github.io/examples/custom-toolbar/1/angular/"
-  repoFiles={['src/app/app.ts']}
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-2"
+  repoFiles={['src/app/examples/custom-toolbar-2.component.ts']}
 />
 
 Without the `config` entry the settings panel is never rendered, even though the tools still work.
