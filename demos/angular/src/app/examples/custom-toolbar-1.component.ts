@@ -3,7 +3,6 @@ import {
   KritzelEditor,
   KritzelBrushTool,
   KritzelSelectionTool,
-  KritzelEraserTool,
   KritzelToolbarControl,
 } from 'kritzel-angular';
 
@@ -23,9 +22,7 @@ import {
 })
 export class CustomToolbar1Component {
   controls: KritzelToolbarControl[] = [
-    { type: 'tool', tool: KritzelBrushTool, name: 'Brush', icon: 'brush', isDefault: true },
-    { type: 'separator', name: 'separator-1' },
-    { type: 'tool', tool: KritzelEraserTool, name: 'Eraser', icon: 'eraser' },
-    { type: 'tool', tool: KritzelSelectionTool, name: 'Selection', icon: 'selection' },
+    { type: 'tool', tool: KritzelSelectionTool, name: 'Select', icon: 'cursor', isDefault: true },
+    { type: 'tool', tool: KritzelBrushTool, name: 'Brush', icon: 'pen' },
   ];
 }
