@@ -243,6 +243,10 @@ export class KritzelContextMenu {
   }
 
   render() {
+    if (!this.processedItems || this.processedItems.length === 0) {
+      return null;
+    }
+
     return (
       <Host>
         <div class="menu-container">
