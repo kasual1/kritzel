@@ -365,6 +365,8 @@ export namespace Components {
          */
         "editorId"?: string;
         "enable": () => Promise<void>;
+        "exportSelectedObjectsAsPng": () => Promise<void>;
+        "exportSelectedObjectsAsSvg": () => Promise<void>;
         "exportViewportAsPng": () => Promise<void>;
         "exportViewportAsSvg": () => Promise<void>;
         "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>;

@@ -25,16 +25,44 @@ export class CustomContextMenu6Component {
 
   globalItems: ContextMenuItem[] = [
     {
-      label: 'Paste',
+      label: 'Parent 1',
       action: async (menu) => {
-        this.editor.paste(menu.x, menu.y);
+        window.alert(`Parent 1`);
       },
     },
     {
-      label: 'Select All',
+      label: 'Parent 2',
       action: () => {
-        this.editor.selectAllObjectsInViewport();
+        window.alert(`Parent 2`);
       },
+    },
+     {
+      label: 'Parent 3',
+      children: [
+        {
+          label: 'Child 1',
+        },
+        {
+          label: 'Child 2',
+        },
+         {
+          label: 'Child 3',
+          children: [
+            {
+              label: 'Subchild 1',
+              action: () => {
+                this.editor.bringForward();
+              }
+            },
+            {
+              label: 'Subchild 2',
+              action: () => {
+                this.editor.bringForward();
+              }
+            }
+          ]
+        },
+      ],
     },
   ];
 
@@ -46,63 +74,6 @@ export class CustomContextMenu6Component {
       },
       icon: 'copy',
       group: 'clipboard',
-    },
-    {
-      label: 'Order',
-      icon: 'layers',
-      group: 'arrange',
-      children: [
-        {
-          label: 'Bring to Front',
-          action: () => {
-            this.editor.bringToFront();
-          },
-        },
-        {
-          label: 'Bring Forward',
-          action: () => {
-            this.editor.bringForward();
-          },
-        },
-        {
-          label: 'Send Backward',
-          action: () => {
-            this.editor.sendBackward();
-          },
-        },
-        {
-          label: 'Send to Back',
-          action: () => {
-            this.editor.sendToBack();
-          },
-        },
-      ],
-    },
-    {
-      label: 'Align',
-      icon: 'align-left',
-      group: 'arrange',
-      children: [
-        {
-          label: 'Align Left',
-          action: () => {
-            this.editor.alignObjects(KritzelAlignment.StartHorizontal);
-          },
-        },
-        {
-          label: 'Align Center',
-          action: () => {
-            this.editor.alignObjects(KritzelAlignment.CenterHorizontal);
-          },
-        },
-        {
-          label: 'Align Right',
-          action: () => {
-            this.editor.alignObjects(KritzelAlignment.EndHorizontal);
-          },
-        },
-      ],
-      disabled: (_menu, objects) => objects.length < 2,
     },
     {
       label: 'Delete',

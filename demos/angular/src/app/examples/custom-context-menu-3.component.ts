@@ -29,13 +29,25 @@ export class CustomContextMenu3Component {
       action: async (menu) => {
         this.editor.paste(menu.x, menu.y);
       },
+      icon: 'paste',
+      group: 'clipboard',
     },
     {
       label: 'Select All',
       action: () => {
         this.editor.selectAllObjectsInViewport();
       },
+      icon: 'select-all',
+      group: 'clipboard',
     },
+    {
+      label: 'Like',
+      action: () => {
+        window.alert('Hey, thanks for liking this demo! ❤️');
+      },
+      group: 'other',
+      icon: 'heart',
+    }
   ];
 
   objectItems: ContextMenuItem[] = [
@@ -52,7 +64,7 @@ export class CustomContextMenu3Component {
       action: async (menu) => {
         this.editor.paste(menu.x, menu.y);
       },
-      icon: 'clipboard',
+      icon: 'paste',
       group: 'clipboard',
     },
     {
@@ -60,7 +72,7 @@ export class CustomContextMenu3Component {
       action: () => {
         this.editor.delete();
       },
-      icon: 'trash',
+      icon: 'delete',
       group: 'destructive',
     },
   ];
