@@ -5,6 +5,8 @@ title: "Custom Context Menu Example | Kritzel for Angular"
 description: "Build a custom Kritzel context menu step by step, from a minimal action list up to a fully structured menu with icons, groups, nested submenus, and async conditional items."
 ---
 
+import LiveDemo from '@site/src/components/LiveDemo';
+
 # Custom Context Menu
 
 This guide builds up a custom context menu step by step, starting from a bare minimum and progressively adding configuration until reaching a fully controlled setup.
@@ -20,7 +22,7 @@ Complete the [Quick Start](./quick-start.md) guide to have a working `<kritzel-e
 The context menu is controlled by two inputs on `<kritzel-editor>`:
 
 - **`globalContextMenuItems`** — the items shown when the user right-clicks on the empty canvas (no object under the cursor).
-- **`objectContextMenuItems`** — the items shown when the user right-clicks on a selected object.
+- **`objectContextMenuItems`** — the items shown when the user right-clicks on selected objects.
 
 Both accept an array of `ContextMenuItem` objects:
 
@@ -38,50 +40,19 @@ interface ContextMenuItem {
 }
 ```
 
-Passing either input replaces the corresponding default set entirely. Omitting an input keeps that default set intact.
+Passing either input replaces the corresponding default set entirely. Omitting an input keeps that default set intact. Passing an empty array (`[]`) hides that menu entirely — no context menu will appear for the canvas or the object respectively.
 
 ---
 
 ## Step 1: Adding Items to the Canvas Menu
 
-Pass a `globalContextMenuItems` array to replace the default canvas (empty-area) context menu:
+Pass a `globalContextMenuItems` array to replace the default canvas (empty-area) context menu. `objectContextMenuItems` is set to `[]` here to hide the default object menu while keeping the focus on the canvas menu:
 
-```ts title="editor.component.ts"
-import { Component } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { ContextMenuItem } from 'kritzel-stencil'; // highlight-line
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      [globalContextMenuItems]="globalItems"
-    ></kritzel-editor>
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  // highlight-start
-  globalItems: ContextMenuItem[] = [
-    {
-      label: 'Paste',
-      action: (_menu, _objects) => {
-        // paste logic
-      },
-    },
-    {
-      label: 'Select All',
-      action: (_menu, _objects) => {
-        // select-all logic
-      },
-    },
-  ];
-  // highlight-end
-}
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-1"
+  repoFiles={['src/app/examples/custom-context-menu-1.component.ts']}
+/>
 
 The `action` callback receives the screen-space position of the menu (`menu.x`, `menu.y`) and the array of currently selected objects (`objects`). For canvas-level items, `objects` is always empty.
 
@@ -91,48 +62,11 @@ The `action` callback receives the screen-space position of the menu (`menu.x`, 
 
 Add `objectContextMenuItems` to also replace the per-object context menu:
 
-```ts title="editor.component.ts"
-import { Component } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { ContextMenuItem } from 'kritzel-stencil';
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      [globalContextMenuItems]="globalItems"
-      [objectContextMenuItems]="objectItems"
-    ></kritzel-editor>
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  globalItems: ContextMenuItem[] = [
-    { label: 'Paste', action: () => {} },
-    { label: 'Select All', action: () => {} },
-  ];
-
-  // highlight-start
-  objectItems: ContextMenuItem[] = [
-    {
-      label: 'Copy',
-      action: (_menu, objects) => {
-        console.log('Copying', objects.length, 'object(s)');
-      },
-    },
-    {
-      label: 'Delete',
-      action: (_menu, objects) => {
-        console.log('Deleting', objects.length, 'object(s)');
-      },
-    },
-  ];
-  // highlight-end
-}
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-2"
+  repoFiles={['src/app/examples/custom-context-menu-2.component.ts']}
+/>
 
 When right-clicking a selected object, `objects` contains the currently selected objects. When right-clicking an unselected object, the editor first selects it, then populates `objects` with that single object.
 
@@ -142,34 +76,11 @@ When right-clicking a selected object, `objects` contains the currently selected
 
 Use `icon` and `group` to structure the menu visually. Items sharing the same `group` string are separated from other groups by a divider:
 
-```ts
-objectItems: ContextMenuItem[] = [
-  {
-    label: 'Copy',
-    action: () => {},
-    // highlight-start
-    icon: 'copy',
-    group: 'clipboard',
-    // highlight-end
-  },
-  {
-    label: 'Paste',
-    action: () => {},
-    // highlight-start
-    icon: 'clipboard',
-    group: 'clipboard',
-    // highlight-end
-  },
-  {
-    label: 'Delete',
-    action: () => {},
-    // highlight-start
-    icon: 'trash',
-    group: 'destructive',
-    // highlight-end
-  },
-];
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-3"
+  repoFiles={['src/app/examples/custom-context-menu-3.component.ts']}
+/>
 
 The `icon` value is a built-in icon name. Custom SVG icons registered via the `customSvgIcons` input on `<kritzel-editor>` are also available here by their registered key.
 
@@ -177,144 +88,38 @@ The `icon` value is a built-in icon name. Custom SVG icons registered via the `c
 
 ## Step 4: Conditionally Disabling Items
 
-Use a function for `disabled` to compute the enabled state at the moment the menu opens. The function receives the same `menu` position and `objects` array as `action`:
+Use a function for `disabled` to compute the enabled state at the moment the menu opens. In this example, **Select All** is disabled when there are no objects in the viewport, and **Paste** is disabled when the clipboard is empty (no objects have been copied yet):
 
-```ts
-objectItems: ContextMenuItem[] = [
-  {
-    label: 'Copy',
-    action: () => {},
-    icon: 'copy',
-    group: 'clipboard',
-  },
-  {
-    label: 'Paste',
-    action: () => {},
-    icon: 'clipboard',
-    group: 'clipboard',
-    // highlight-start
-    disabled: (_menu, objects) => objects.length > 5,
-    // highlight-end
-  },
-  {
-    label: 'Delete',
-    action: () => {},
-    icon: 'trash',
-    group: 'destructive',
-  },
-];
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-4"
+  repoFiles={['src/app/examples/custom-context-menu-4.component.ts']}
+/>
 
 `disabled` also accepts a plain `boolean` for statically disabled items.
 
 ---
 
-## Step 5: Async Disabled and Visible Conditions
+## Step 5: Conditinonally Hiding Items
 
-Both `disabled` and `visible` accept functions that return a `Promise<boolean>`. The menu waits for all promises to resolve before rendering:
+Similar to `disabled`, `visible` accepts functions that return a `Promise<boolean>`. The menu waits for all promises to resolve before rendering:
 
-```ts
-objectItems: ContextMenuItem[] = [
-  {
-    label: 'Copy',
-    action: () => {},
-    icon: 'copy',
-    group: 'clipboard',
-  },
-  {
-    label: 'Export as PNG',
-    action: (_menu, objects) => {
-      // export logic
-    },
-    icon: 'download',
-    group: 'export',
-    // highlight-start
-    visible: async (_menu, objects) => {
-      const hasImages = objects.some(obj => obj.type === 'image');
-      return hasImages;
-    },
-    disabled: async (_menu, objects) => {
-      const count = objects.length;
-      return count === 0;
-    },
-    // highlight-end
-  },
-  {
-    label: 'Delete',
-    action: () => {},
-    icon: 'trash',
-    group: 'destructive',
-  },
-];
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-5"
+  repoFiles={['src/app/examples/custom-context-menu-5.component.ts']}
+/>
 
-`visible` controls whether the item appears in the list at all. `disabled` greys it out but keeps it visible.
+`visible` controls whether the item appears in the list at all.
 
 ---
 
 ## Step 6: Nested Submenus
 
-Add `children` to an item to turn it into a submenu trigger. The item itself has no `action`; clicking it opens the nested list:
+Add `children` to an item to turn it into a submenu trigger. The item itself has no `action`; clicking or hovering over it opens the nested list. Submenus can be nested to any depth. The menu automatically handles positioning to ensure submenus are always fully visible within the viewport.
 
-```ts
-objectItems: ContextMenuItem[] = [
-  {
-    label: 'Copy',
-    action: () => {},
-    icon: 'copy',
-    group: 'clipboard',
-  },
-  // highlight-start
-  {
-    label: 'Order',
-    icon: 'layers',
-    group: 'arrange',
-    children: [
-      {
-        label: 'Bring to Front',
-        action: (_menu, objects) => {
-          // bring-to-front logic
-        },
-      },
-      {
-        label: 'Bring Forward',
-        action: (_menu, objects) => {
-          // bring-forward logic
-        },
-      },
-      {
-        label: 'Send Backward',
-        action: (_menu, objects) => {
-          // send-backward logic
-        },
-      },
-      {
-        label: 'Send to Back',
-        action: (_menu, objects) => {
-          // send-to-back logic
-        },
-      },
-    ],
-  },
-  {
-    label: 'Align',
-    icon: 'align-left',
-    group: 'arrange',
-    children: [
-      { label: 'Align Left', action: () => {} },
-      { label: 'Align Center', action: () => {} },
-      { label: 'Align Right', action: () => {} },
-    ],
-    disabled: (_menu, objects) => objects.length < 2,
-  },
-  // highlight-end
-  {
-    label: 'Delete',
-    action: () => {},
-    icon: 'trash',
-    group: 'destructive',
-  },
-];
-```
-
-`disabled` and `visible` work on submenu parent items the same way as on leaf items — the condition applies to the trigger entry itself, not to its children individually.
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-6"
+  repoFiles={['src/app/examples/custom-context-menu-6.component.ts']}
+/>

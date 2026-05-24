@@ -29,6 +29,7 @@ export class CustomContextMenu5Component {
       action: async (menu) => {
         this.editor.paste(menu.x, menu.y);
       },
+      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
     },
     {
       label: 'Select All',
@@ -50,16 +51,12 @@ export class CustomContextMenu5Component {
     {
       label: 'Export as PNG',
       action: () => {
-        this.editor.exportViewportAsPng();
+        this.editor.exportSelectedObjectsAsPng();
       },
       icon: 'download',
       group: 'export',
       visible: async (_menu, objects) => {
-        const hasImages = objects.some((obj) => obj.isClass('KritzelImage'));
-        return hasImages;
-      },
-      disabled: async (_menu, objects) => {
-        return objects.length === 0;
+        return objects.length === 1;
       },
     },
     {
@@ -67,7 +64,7 @@ export class CustomContextMenu5Component {
       action: () => {
         this.editor.delete();
       },
-      icon: 'trash',
+      icon: 'delete',
       group: 'destructive',
     },
   ];

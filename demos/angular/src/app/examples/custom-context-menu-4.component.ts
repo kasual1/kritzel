@@ -29,12 +29,18 @@ export class CustomContextMenu4Component {
       action: async (menu) => {
         this.editor.paste(menu.x, menu.y);
       },
+      icon: 'paste',
+      group: 'clipboard',
+      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
     },
     {
       label: 'Select All',
       action: () => {
         this.editor.selectAllObjectsInViewport();
       },
+      icon: 'select-all',
+      group: 'clipboard',
+      disabled: async () => (await this.editor.getObjectsInViewport()).length === 0,
     },
   ];
 
@@ -52,16 +58,16 @@ export class CustomContextMenu4Component {
       action: async (menu) => {
         this.editor.paste(menu.x, menu.y);
       },
-      icon: 'clipboard',
+      icon: 'paste',
       group: 'clipboard',
-      disabled: (_menu, objects) => objects.length > 5,
+      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
     },
     {
       label: 'Delete',
       action: () => {
         this.editor.delete();
       },
-      icon: 'trash',
+      icon: 'delete',
       group: 'destructive',
     },
   ];

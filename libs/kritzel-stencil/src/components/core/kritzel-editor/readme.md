@@ -304,6 +304,26 @@ Type: `Promise<void>`
 
 
 
+### `exportSelectedObjectsAsPng() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `exportSelectedObjectsAsSvg() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `exportViewportAsPng() => Promise<void>`
 
 
