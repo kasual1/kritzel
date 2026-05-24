@@ -32,12 +32,14 @@ export class KritzelContextMenu {
   @Event() close: EventEmitter<void>;
 
   @State() private processedItems: ProcessedMenuItem[] = [];
-  @State() private openSubmenuIndex: number | null = null;
-  @State() private submenuPosition: 'right' | 'left' = 'right';
+  
+  /** Current open submenu path (e.g. '0.2.1'). Empty if none. */
+  @State() private openSubmenuPath: string = '';
+  @State() private submenuPositions: { [path: string]: 'right' | 'left' } = {};
 
   private submenuTimer: ReturnType<typeof setTimeout> | null = null;
-  private submenuRefs: Map<number, HTMLDivElement> = new Map();
-  private menuItemWrapperRefs: Map<number, HTMLDivElement> = new Map();
+  private submenuRefs: Map<string, HTMLDivElement> = new Map();
+  private menuItemWrapperRefs: Map<string, HTMLDivElement> = new Map();
 
   @Listen('pointerdown', { target: 'window' })
   handleOutsideClick(event: MouseEvent) {
@@ -57,7 +59,8 @@ export class KritzelContextMenu {
 
   componentDidUpdate() {
     this.adjustPositionToViewport();
-    this.adjustSubmenuPosition();
+    this.adjustSubmenuPositions();
+    this.pruneStaleRefs();
   }
 
   disconnectedCallback() {
@@ -104,21 +107,67 @@ export class KritzelContextMenu {
     }
   }
 
-  private adjustSubmenuPosition() {
-    if (this.openSubmenuIndex === null) return;
+  private adjustSubmenuPositions() {
+    if (!this.openSubmenuPath) return;
 
-    const submenuEl = this.submenuRefs.get(this.openSubmenuIndex);
-    if (!submenuEl) return;
-
-    const submenuRect = submenuEl.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
 
-    // Adjust vertical position if needed (horizontal is pre-calculated)
-    if (submenuRect.bottom > viewportHeight - VIEWPORT_PADDING) {
-      const overflow = submenuRect.bottom - (viewportHeight - VIEWPORT_PADDING);
-      submenuEl.style.top = `${-overflow}px`;
-    } else {
-      submenuEl.style.top = '0px';
+    // Adjust every open submenu in the chain (every prefix of openSubmenuPath).
+    for (const path of this.getOpenSubmenuPaths()) {
+      const submenuEl = this.submenuRefs.get(path);
+      const wrapperEl = this.menuItemWrapperRefs.get(path);
+      if (!submenuEl || !wrapperEl) continue;
+
+      const wrapperRect = wrapperEl.getBoundingClientRect();
+      const submenuHeight = submenuEl.offsetHeight; // Constant regardless of current top shift
+      const naturalBottom = wrapperRect.top + submenuHeight;
+
+      if (naturalBottom > viewportHeight - VIEWPORT_PADDING) {
+        let overflow = naturalBottom - (viewportHeight - VIEWPORT_PADDING);
+        // Don't shift up so far that the top goes above the viewport
+        if (wrapperRect.top - overflow < VIEWPORT_PADDING) {
+          overflow = wrapperRect.top - VIEWPORT_PADDING;
+        }
+        submenuEl.style.top = `${-overflow}px`;
+      } else {
+        submenuEl.style.top = '0px';
+      }
+    }
+  }
+
+  private getOpenSubmenuPaths(): string[] {
+    if (!this.openSubmenuPath) return [];
+    const parts = this.openSubmenuPath.split('.');
+    const paths: string[] = [];
+    for (let i = 1; i <= parts.length; i++) {
+      paths.push(parts.slice(0, i).join('.'));
+    }
+    return paths;
+  }
+
+  private isSubmenuOpen(path: string): boolean {
+    return this.openSubmenuPath === path || this.openSubmenuPath.startsWith(path + '.');
+  }
+
+  private getParentPath(path: string): string {
+    const idx = path.lastIndexOf('.');
+    return idx === -1 ? '' : path.substring(0, idx);
+  }
+
+  private pruneStaleRefs() {
+    const openPaths = new Set(this.getOpenSubmenuPaths());
+    for (const key of Array.from(this.submenuRefs.keys())) {
+      if (!openPaths.has(key)) {
+        this.submenuRefs.delete(key);
+      }
+    }
+    // Keep root-level wrapper refs (single-segment paths) always rendered; prune deeper
+    // wrappers whose parent submenu is no longer open.
+    for (const key of Array.from(this.menuItemWrapperRefs.keys())) {
+      const parent = this.getParentPath(key);
+      if (parent !== '' && !openPaths.has(parent)) {
+        this.menuItemWrapperRefs.delete(key);
+      }
     }
   }
 
@@ -126,7 +175,7 @@ export class KritzelContextMenu {
     if (isDisabled) return;
 
     if (hasChildren) {
-      // Toggle submenu on click for touch devices
+      // Hover handles open/close; click on a parent is a no-op.
       return;
     }
 
@@ -135,31 +184,33 @@ export class KritzelContextMenu {
     }
   }
 
-  private handleItemMouseEnter(index: number, hasChildren: boolean) {
+  private handleItemMouseEnter(path: string, hasChildren: boolean) {
     if (this.submenuTimer) {
       clearTimeout(this.submenuTimer);
       this.submenuTimer = null;
     }
 
+    const parentPath = this.getParentPath(path);
+
     if (hasChildren) {
       this.submenuTimer = setTimeout(() => {
-        // Pre-calculate position before opening to avoid flicker
-        const wrapperEl = this.menuItemWrapperRefs.get(index);
+        // Pre-calculate horizontal position before opening to avoid flicker.
+        const wrapperEl = this.menuItemWrapperRefs.get(path);
+        let position: 'right' | 'left' = 'right';
         if (wrapperEl) {
           const rect = wrapperEl.getBoundingClientRect();
           const viewportWidth = window.innerWidth;
-          // Check if opening to the right would overflow
           const wouldOverflowRight = rect.right + ESTIMATED_SUBMENU_WIDTH > viewportWidth - VIEWPORT_PADDING;
-          this.submenuPosition = wouldOverflowRight ? 'left' : 'right';
-        } else {
-          this.submenuPosition = 'right';
+          position = wouldOverflowRight ? 'left' : 'right';
         }
-        this.openSubmenuIndex = index;
+        this.submenuPositions = { ...this.submenuPositions, [path]: position };
+        this.openSubmenuPath = path;
       }, SUBMENU_DELAY);
     } else {
-      // Close any open submenu when hovering a non-parent item
+      // Hovering a sibling without children: collapse to the parent chain so any
+      // sibling-rooted submenu closes, but the ancestor chain stays open.
       this.submenuTimer = setTimeout(() => {
-        this.openSubmenuIndex = null;
+        this.openSubmenuPath = parentPath;
       }, SUBMENU_DELAY);
     }
   }
@@ -171,9 +222,11 @@ export class KritzelContextMenu {
     }
   }
 
-  private handleSubmenuMouseLeave() {
+  private handleSubmenuMouseLeave(path: string) {
+    // Close this submenu (and any deeper levels) but keep the ancestor chain open.
+    const parentPath = this.getParentPath(path);
     this.submenuTimer = setTimeout(() => {
-      this.openSubmenuIndex = null;
+      this.openSubmenuPath = parentPath;
     }, SUBMENU_DELAY);
   }
 
@@ -211,33 +264,49 @@ export class KritzelContextMenu {
     return defaultValue;
   }
 
-  private renderSubmenu(processedChildren: ProcessedMenuItem[], parentIndex: number) {
+  private renderItems(items: ProcessedMenuItem[], parentPath: string) {
+    return items.map(({ item, isDisabled, processedChildren }, index) => {
+      const path = parentPath === '' ? String(index) : `${parentPath}.${index}`;
+      const prevItem = index > 0 ? items[index - 1].item : null;
+      const showDivider = prevItem && prevItem.group !== item.group;
+      const hasChildren = !!processedChildren && processedChildren.length > 0;
+      const submenuOpen = hasChildren && this.isSubmenuOpen(path);
+
+      return [
+        showDivider && <div class="menu-divider" key={`divider-${path}`}></div>,
+        <div
+          class="menu-item-wrapper"
+          key={`wrapper-${path}`}
+          ref={el => el && this.menuItemWrapperRefs.set(path, el)}
+          onMouseEnter={() => this.handleItemMouseEnter(path, hasChildren)}
+        >
+          <button
+            key={`${item.label}-${path}`}
+            class={{ 'menu-item': true, 'disabled': isDisabled, 'has-children': hasChildren, 'submenu-open': submenuOpen }}
+            onClick={() => this.handleItemClick(item, isDisabled, hasChildren)}
+            disabled={isDisabled && !hasChildren}
+          >
+            {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
+            <span class="label">{item.label}</span>
+            {hasChildren && <kritzel-icon name="chevron-right" size={12} class="submenu-arrow"></kritzel-icon>}
+          </button>
+          {hasChildren && submenuOpen && this.renderSubmenu(processedChildren!, path)}
+        </div>,
+      ];
+    });
+  }
+
+  private renderSubmenu(processedChildren: ProcessedMenuItem[], path: string) {
+    const position = this.submenuPositions[path] === 'left' ? 'left' : 'right';
     return (
       <div
-        class={{ 'submenu-container': true, 'position-left': this.submenuPosition === 'left' }}
-        ref={el => el && this.submenuRefs.set(parentIndex, el)}
+        class={{ 'submenu-container': true, 'position-left': position === 'left' }}
+        key={`submenu-${path}`}
+        ref={el => el && this.submenuRefs.set(path, el)}
         onMouseEnter={() => this.handleSubmenuMouseEnter()}
-        onMouseLeave={() => this.handleSubmenuMouseLeave()}
+        onMouseLeave={() => this.handleSubmenuMouseLeave(path)}
       >
-        {processedChildren.map(({ item, isDisabled, processedChildren: nestedChildren }, index) => {
-          const prevItem = index > 0 ? processedChildren[index - 1].item : null;
-          const showDivider = prevItem && prevItem.group !== item.group;
-          const hasChildren = nestedChildren && nestedChildren.length > 0;
-
-          return [
-            showDivider && <div class="menu-divider" key={`submenu-divider-${index}`}></div>,
-            <button
-              key={`submenu-${item.label}-${index}`}
-              class={{ 'menu-item': true, 'disabled': isDisabled, 'has-children': hasChildren }}
-              onClick={() => this.handleItemClick(item, isDisabled, hasChildren)}
-              disabled={isDisabled}
-            >
-              {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
-              <span class="label">{item.label}</span>
-              {hasChildren && <kritzel-icon name="chevron-right" size={12} class="submenu-arrow"></kritzel-icon>}
-            </button>
-          ];
-        })}
+        {this.renderItems(processedChildren, path)}
       </div>
     );
   }
@@ -249,35 +318,7 @@ export class KritzelContextMenu {
 
     return (
       <Host>
-        <div class="menu-container">
-          {this.processedItems.map(({ item, isDisabled, processedChildren }, index) => {
-            const prevItem = index > 0 ? this.processedItems[index - 1].item : null;
-            const showDivider = prevItem && prevItem.group !== item.group;
-            const hasChildren = processedChildren && processedChildren.length > 0;
-            const isSubmenuOpen = this.openSubmenuIndex === index;
-
-            return [
-              showDivider && <div class="menu-divider" key={`divider-${index}`}></div>,
-              <div
-                class="menu-item-wrapper"
-                ref={el => el && this.menuItemWrapperRefs.set(index, el)}
-                onMouseEnter={() => this.handleItemMouseEnter(index, hasChildren)}
-              >
-                <button
-                  key={`${item.label}-${index}`}
-                  class={{ 'menu-item': true, 'disabled': isDisabled, 'has-children': hasChildren, 'submenu-open': isSubmenuOpen }}
-                  onClick={() => this.handleItemClick(item, isDisabled, hasChildren)}
-                  disabled={isDisabled && !hasChildren}
-                >
-                  {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
-                  <span class="label">{item.label}</span>
-                  {hasChildren && <kritzel-icon name="chevron-right" size={12} class="submenu-arrow"></kritzel-icon>}
-                </button>
-                {hasChildren && isSubmenuOpen && this.renderSubmenu(processedChildren, index)}
-              </div>
-            ];
-          })}
-        </div>
+        <div class="menu-container">{this.renderItems(this.processedItems, '')}</div>
       </Host>
     );
   }

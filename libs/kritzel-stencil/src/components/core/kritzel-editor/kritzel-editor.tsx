@@ -571,6 +571,16 @@ export class KritzelEditor {
   }
 
   @Method()
+  async exportSelectedObjectsAsPng(): Promise<void> {
+    return this.engineRef.exportSelectedObjectsAsPng();
+  }
+
+  @Method()
+  async exportSelectedObjectsAsSvg(): Promise<void> {
+    return this.engineRef.exportSelectedObjectsAsSvg();
+  }
+
+  @Method()
   async downloadAsJson(filename?: string): Promise<void> {
     return this.engineRef.downloadAsJson(filename);
   }
