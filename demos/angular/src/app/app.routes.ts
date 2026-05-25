@@ -16,6 +16,12 @@ import { CustomContextMenu3Component } from './examples/custom-context-menu-3.co
 import { CustomContextMenu4Component } from './examples/custom-context-menu-4.component';
 import { CustomContextMenu5Component } from './examples/custom-context-menu-5.component';
 import { CustomContextMenu6Component } from './examples/custom-context-menu-6.component';
+import { ObjectManagement1Component } from './examples/object-management-1.component';
+import { ObjectManagement2Component } from './examples/object-management-2.component';
+import { ObjectManagement3Component } from './examples/object-management-3.component';
+import { ObjectManagement4Component } from './examples/object-management-4.component';
+import { ObjectManagement5Component } from './examples/object-management-5.component';
+import { ObjectManagement6Component } from './examples/object-management-6.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -42,6 +48,12 @@ export const routes: Routes = [
       { path: 'custom-context-menu-4', component: CustomContextMenu4Component },
       { path: 'custom-context-menu-5', component: CustomContextMenu5Component },
       { path: 'custom-context-menu-6', component: CustomContextMenu6Component },
+      { path: 'object-management-1', component: ObjectManagement1Component },
+      { path: 'object-management-2', component: ObjectManagement2Component },
+      { path: 'object-management-3', component: ObjectManagement3Component },
+      { path: 'object-management-4', component: ObjectManagement4Component },
+      { path: 'object-management-5', component: ObjectManagement5Component },
+      { path: 'object-management-6', component: ObjectManagement6Component },
       {
         path: 'collaboration-1',
         children: [
