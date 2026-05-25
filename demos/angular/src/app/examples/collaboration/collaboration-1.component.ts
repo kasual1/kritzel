@@ -16,7 +16,7 @@ import {
   HocuspocusSyncProvider,
   LoginEvent,
 } from 'kritzel-angular';
-import { UserData } from '../resolvers/user.resolver';
+import { UserData } from '../../resolvers/user.resolver';
 
 @Component({
   selector: 'app-editor-page',
