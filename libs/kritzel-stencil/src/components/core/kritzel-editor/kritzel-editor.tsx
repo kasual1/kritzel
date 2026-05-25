@@ -693,6 +693,7 @@ export class KritzelEditor {
   }
 
   handleWorkspacesChange(event: CustomEvent<KritzelWorkspace[]>) {
+    event.stopPropagation();
     this.workspaces = event.detail;
   }
 
@@ -717,37 +718,45 @@ export class KritzelEditor {
   }
 
   handleObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
+    event.stopPropagation();
     this.objectsChange.emit(event.detail);
   }
 
   handleObjectsAdded(event: CustomEvent<ObjectsAddedEvent>) {
+    event.stopPropagation();
     this.objectsAdded.emit(event.detail);
   }
 
   handleObjectsRemoved(event: CustomEvent<ObjectsRemovedEvent>) {
+    event.stopPropagation();
     this.objectsRemoved.emit(event.detail);
   }
 
   handleObjectsUpdated(event: CustomEvent<ObjectsUpdatedEvent>) {
+    event.stopPropagation();
     this.objectsUpdated.emit(event.detail);
   }
 
   handleUndoStateChange(event: CustomEvent<KritzelUndoState>) {
+    event.stopPropagation();
     this.undoStateChange.emit(event.detail);
     this.undoState = event.detail;
   }
 
   async handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
+    event.stopPropagation();
     const hasVisibleObjects = this.getContentObjects(event.detail).length > 0;
     const hasAnyObjectsAtAll = this.getContentObjects(await this.engineRef.getAllObjects()).length > 0;
     this.isBackToContentButtonVisible = !hasVisibleObjects && hasAnyObjectsAtAll;
   }
 
   handleViewportChange(event: CustomEvent<KritzelViewportState>) {
+    event.stopPropagation();
     this.viewportChange.emit(event.detail);
   }
 
   handleAwarenessChange(event: CustomEvent<Map<number, Record<string, any>>>) {
+    event.stopPropagation();
     this.awarenessChange.emit(event.detail);
   }
 

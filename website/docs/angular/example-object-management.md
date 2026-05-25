@@ -5,6 +5,8 @@ title: "Object Management Example | Kritzel for Angular"
 description: "Build a programmatic object layer panel step by step, from a read-only snapshot up to real-time updates, selection control, and property mutation."
 ---
 
+import LiveDemo from '@site/src/components/LiveDemo';
+
 # Programmatic Object Management
 
 This guide builds up programmatic object management step by step, starting from a bare minimum and progressively adding configuration until reaching a fully controlled setup.
@@ -27,44 +29,11 @@ The editor exposes three read methods — `getAllObjects()`, `findObjects(predic
 
 Wait for the `isReady` event, then call `getAllObjects()` to load the initial snapshot into a signal:
 
-```ts title="editor.component.ts"
-
-import { Component, signal, ViewChild } from '@angular/core'; // highlight-line
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { EditorIsReadyEvent, KritzelBaseObject } from 'kritzel-stencil'; // highlight-line
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  // highlight-start
-  template: `
-    <kritzel-editor
-      (isReady)="onIsReady($event)"
-    ></kritzel-editor>
-    <ul>
-      @for (obj of objects(); track obj.id) {
-        <li>{{ obj.__class__ }} — {{ obj.id }}</li>
-      }
-    </ul>
-  `,
-  // highlight-end
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor; // highlight-line
-
-  objects = signal<KritzelBaseObject[]>([]); // highlight-line
-
-  // highlight-start
-  async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    const all = await this.editor.getAllObjects();
-    this.objects.set(all);
-  }
-  // highlight-end
-}
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-1"
+  repoFiles={['src/app/examples/object-management-1.component.ts']}
+/>
 
 `getAllObjects()` returns a live array reference from the canvas store. The signal holds a snapshot of that array at the moment of the call; it will not update automatically as objects are added or removed.
 
@@ -74,59 +43,11 @@ export class EditorComponent {
 
 Add the three change outputs to the template and update the signal in each handler:
 
-```ts title="editor.component.ts"
-import { Component, signal, ViewChild } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { EditorIsReadyEvent, KritzelBaseObject, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from 'kritzel-stencil'; // highlight-line
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      (isReady)="onIsReady($event)"
-      (objectsAdded)="onObjectsAdded($event)"
-      (objectsRemoved)="onObjectsRemoved($event)"
-      (objectsUpdated)="onObjectsUpdated($event)"
-    ></kritzel-editor>
-    <ul>
-      @for (obj of objects(); track obj.id) {
-        <li>{{ obj.__class__ }} — {{ obj.id }}</li>
-      }
-    </ul>
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
-  objects = signal<KritzelBaseObject[]>([]);
-
-  async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    const all = await this.editor.getAllObjects();
-    this.objects.set(all);
-  }
-
-  // highlight-start
-  onObjectsAdded(event: CustomEvent<ObjectsAddedEvent>) {
-    this.objects.update(prev => [...prev, ...event.detail.objects]);
-  }
-
-  onObjectsRemoved(event: CustomEvent<ObjectsRemovedEvent>) {
-    const removedIds = new Set(event.detail.objects.map(o => o.id));
-    this.objects.update(prev => prev.filter(o => !removedIds.has(o.id)));
-  }
-
-  onObjectsUpdated(_event: CustomEvent<ObjectsUpdatedEvent>) {
-    // getAllObjects() returns the same live references, so re-spreading
-    // the array is sufficient to trigger Angular's change detection.
-    this.objects.update(prev => [...prev]);
-  }
-  // highlight-end
-}
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-2"
+  repoFiles={['src/app/examples/object-management-2.component.ts']}
+/>
 
 Each output fires for both user-driven and programmatic changes, so these three handlers are the only place that needs to keep the list in sync. `onObjectsUpdated` re-spreads the existing array because the object references themselves are mutated in place by `updateObject()`.
 
@@ -136,29 +57,11 @@ Each output fires for both user-driven and programmatic changes, so these three 
 
 Add a click handler to each list item that calls `selectObjects()`:
 
-```ts title="editor.component.ts"
-// ...
-  template: `
-    <kritzel-editor
-      (isReady)="onIsReady($event)"
-      (objectsAdded)="onObjectsAdded($event)"
-      (objectsRemoved)="onObjectsRemoved($event)"
-      (objectsUpdated)="onObjectsUpdated($event)"
-    ></kritzel-editor>
-    <ul>
-      @for (obj of objects(); track obj.id) {
-        <li (click)="selectObject(obj)">{{ obj.__class__ }} — {{ obj.id }}</li>
-      }
-    </ul>
-  `,
-// ...
-
-  // highlight-start
-  async selectObject(obj: KritzelBaseObject) {
-    await this.editor.selectObjects([obj]);
-  }
-  // highlight-end
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-3"
+  repoFiles={['src/app/examples/object-management-3.component.ts']}
+/>
 
 `selectObjects()` switches the active tool to the selection tool and highlights the given objects on the canvas, exactly as if the user had clicked them. Passing an empty array clears the selection.
 
@@ -168,32 +71,11 @@ Add a click handler to each list item that calls `selectObjects()`:
 
 Add a button next to each row that halves the object's opacity using `updateObject()`:
 
-```ts title="editor.component.ts"
-// ...
-  template: `
-    <kritzel-editor
-      (isReady)="onIsReady($event)"
-      (objectsAdded)="onObjectsAdded($event)"
-      (objectsRemoved)="onObjectsRemoved($event)"
-      (objectsUpdated)="onObjectsUpdated($event)"
-    ></kritzel-editor>
-    <ul>
-      @for (obj of objects(); track obj.id) {
-        <li>
-          <span (click)="selectObject(obj)">{{ obj.__class__ }} — {{ obj.id }}</span>
-          <button (click)="halveOpacity(obj)">½ opacity</button>
-        </li>
-      }
-    </ul>
-  `,
-// ...
-
-  // highlight-start
-  async halveOpacity(obj: KritzelBaseObject) {
-    await this.editor.updateObject(obj, { opacity: obj.opacity * 0.5 });
-  }
-  // highlight-end
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-4"
+  repoFiles={['src/app/examples/object-management-4.component.ts']}
+/>
 
 `updateObject()` merges the partial properties into the existing object, rerenders the canvas, and emits `objectsUpdated` — which the handler from Step 2 picks up automatically, refreshing the list without any extra wiring.
 
@@ -203,33 +85,11 @@ Add a button next to each row that halves the object's opacity using `updateObje
 
 Extend the row with a delete button that calls `removeObject()`:
 
-```ts title="editor.component.ts"
-// ...
-  template: `
-    <kritzel-editor
-      (isReady)="onIsReady($event)"
-      (objectsAdded)="onObjectsAdded($event)"
-      (objectsRemoved)="onObjectsRemoved($event)"
-      (objectsUpdated)="onObjectsUpdated($event)"
-    ></kritzel-editor>
-    <ul>
-      @for (obj of objects(); track obj.id) {
-        <li>
-          <span (click)="selectObject(obj)">{{ obj.__class__ }} — {{ obj.id }}</span>
-          <button (click)="halveOpacity(obj)">½ opacity</button>
-          <button (click)="deleteObject(obj)">Delete</button>
-        </li>
-      }
-    </ul>
-  `,
-// ...
-
-  // highlight-start
-  async deleteObject(obj: KritzelBaseObject) {
-    await this.editor.removeObject(obj);
-  }
-  // highlight-end
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-5"
+  repoFiles={['src/app/examples/object-management-5.component.ts']}
+/>
 
 `removeObject()` deselects all objects, removes the target from the canvas store, rerenders, and emits `objectsRemoved`. The `onObjectsRemoved` handler from Step 2 filters it out of the signal automatically.
 
@@ -237,28 +97,12 @@ Extend the row with a delete button that calls `removeObject()`:
 
 ## Step 6: Filtering the List
 
-Replace `getAllObjects()` in `onIsReady` with `findObjects()` to load only a specific type:
+Instead of restricting which objects are loaded, track all objects and provide filter toggles to dynamically update both the list and the canvas:
 
-```ts title="editor.component.ts"
-  async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    // highlight-start
-    const shapes = await this.editor.findObjects(
-      obj => obj.__class__ === 'KritzelShape'
-    );
-    this.objects.set(shapes);
-    // highlight-end
-  }
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-6"
+  repoFiles={['src/app/examples/object-management-6.component.ts']}
+/>
 
-`findObjects()` accepts any predicate over `KritzelBaseObject`, so the same pattern works for filtering by `opacity`, `zIndex`, spatial position, or any other property. The event-driven updates from Step 2 continue to work — extend the `onObjectsAdded` handler with the same predicate to keep the filtered list consistent:
-
-```ts title="editor.component.ts"
-  onObjectsAdded(event: CustomEvent<ObjectsAddedEvent>) {
-    // highlight-start
-    const newShapes = event.detail.objects.filter(
-      o => o.__class__ === 'KritzelShape'
-    );
-    this.objects.update(prev => [...prev, ...newShapes]);
-    // highlight-end
-  }
-```
+A `computed()` signal derives the `filteredObjects` array so that only the selected types are rendered in the sidebar. To make the filtering visual on the canvas as well, toggling a filter triggers `applyOpacityFilter()`. This iterates through all loaded objects and calls `updateObject()`, setting `opacity: 1` for matching objects and `opacity: 0.5` for the rest.
