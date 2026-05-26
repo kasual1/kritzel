@@ -380,29 +380,61 @@ describe('KritzelThemeManager', () => {
   });
 
   // ============================================
-  // Default and Custom Theme Registration
+  // initializeThemes
   // ============================================
 
-  describe('Theme Registration', () => {
+  describe('initializeThemes', () => {
+    afterEach(() => {
+      KritzelThemeManager.initializeThemes([lightTheme, darkTheme]);
+    });
+
     it('should initially contain light and dark themes', () => {
       const themes = KritzelThemeManager.getAllThemes();
       expect(themes).toContain(lightTheme);
       expect(themes).toContain(darkTheme);
     });
 
-    it('should be able to register and retrieve a custom theme', () => {
-      const customTheme: any = { name: 'custom-dark', base: 'dark' };
-      KritzelThemeManager.registerTheme(customTheme);
+    it('should replace the registry with only the provided themes', () => {
+      const customTheme: any = { name: 'custom' };
+      KritzelThemeManager.initializeThemes([customTheme]);
 
-      expect(KritzelThemeManager.getAllThemes()).toContain(customTheme);
-
-      const retrieved = manager.getThemeByName('custom-dark');
-      expect(retrieved).toBe(customTheme);
+      expect(KritzelThemeManager.getAllThemes()).toEqual([customTheme]);
     });
 
-    it('should apply dynamically registered themes successfully', () => {
+    it('should remove the built-in light and dark themes after initialization', () => {
+      const customTheme: any = { name: 'custom' };
+      KritzelThemeManager.initializeThemes([customTheme]);
+
+      expect(KritzelThemeManager.getAllThemes()).not.toContain(lightTheme);
+      expect(KritzelThemeManager.getAllThemes()).not.toContain(darkTheme);
+    });
+
+    it('should make provided themes retrievable via getThemeByName', () => {
       const customTheme: any = { name: 'ocean-blue' };
-      KritzelThemeManager.registerTheme(customTheme);
+      KritzelThemeManager.initializeThemes([customTheme]);
+
+      expect(manager.getThemeByName('ocean-blue')).toBe(customTheme);
+    });
+
+    it('should register multiple themes', () => {
+      const themeA: any = { name: 'brand-light' };
+      const themeB: any = { name: 'brand-dark' };
+      KritzelThemeManager.initializeThemes([themeA, themeB]);
+
+      expect(KritzelThemeManager.getAllThemes()).toEqual([themeA, themeB]);
+    });
+
+    it('should fall back to the first registered theme when a name is not found', () => {
+      const firstTheme: any = { name: 'first' };
+      const secondTheme: any = { name: 'second' };
+      KritzelThemeManager.initializeThemes([firstTheme, secondTheme]);
+
+      expect(manager.getThemeByName('unknown')).toBe(firstTheme);
+    });
+
+    it('should apply themes registered via initializeThemes', () => {
+      const customTheme: any = { name: 'ocean-blue' };
+      KritzelThemeManager.initializeThemes([customTheme]);
 
       const element = createMockElement();
       manager.setTargetElement(element);
@@ -411,6 +443,15 @@ describe('KritzelThemeManager', () => {
       manager.setTheme('ocean-blue');
 
       expect(ThemeHelper.applyThemeToElement).toHaveBeenCalledWith(element, customTheme);
+    });
+
+    it('should warn when called with an empty array', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      KritzelThemeManager.initializeThemes([]);
+
+      expect(warnSpy).toHaveBeenCalled();
+      warnSpy.mockRestore();
     });
   });
 });

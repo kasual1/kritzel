@@ -513,6 +513,22 @@ Type: `Promise<void>`
 
 
 
+### `initializeThemes(themes: KritzelTheme[]) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name     | Type             | Description |
+| -------- | ---------------- | ----------- |
+| `themes` | `KritzelTheme[]` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `loadObjectsFromJson(json: string) => Promise<number>`
 
 
@@ -592,22 +608,6 @@ Type: `Promise<void>`
 ### `redo() => Promise<void>`
 
 
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `registerTheme(themeConfig: KritzelTheme) => Promise<void>`
-
-
-
-#### Parameters
-
-| Name          | Type           | Description |
-| ------------- | -------------- | ----------- |
-| `themeConfig` | `KritzelTheme` |             |
 
 #### Returns
 

@@ -391,6 +391,7 @@ export namespace Components {
         "group": () => Promise<void>;
         "hideContextMenu": () => Promise<void>;
         "importFromFile": () => Promise<void>;
+        "initializeThemes": (themes: KritzelTheme[]) => Promise<void>;
         /**
           * @default true
          */
@@ -431,7 +432,6 @@ export namespace Components {
         "panTo": (x: number, y: number) => Promise<void>;
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
-        "registerTheme": (themeConfig: KritzelTheme) => Promise<void>;
         "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>;
         "reinitSync": () => Promise<void>;
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;

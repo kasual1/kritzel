@@ -99,22 +99,30 @@ export class KritzelThemeManager {
 
   /**
    * Gets the theme configuration object by its name.
-   * Returns the corresponding theme object containing all CSS variable values.
+   * Falls back to the first registered theme if the requested name is not found.
    *
    * @param themeName - The name of the theme to retrieve
    * @returns The KritzelTheme object containing all theme CSS variable values
    */
   getThemeByName(themeName: ThemeName): KritzelTheme {
-    return THEME_REGISTRY.get(themeName) || THEME_REGISTRY.get(DEFAULT_THEME)!;
+    return THEME_REGISTRY.get(themeName) ?? THEME_REGISTRY.values().next().value!;
   }
 
   /**
-   * Registers a new theme or updates an existing one in the global registry.
+   * Replaces the global theme registry with the provided themes.
+   * Call this once before initializing any editor instances to define which themes are available.
+   * Replaces the built-in light and dark themes entirely — only the provided themes will be available.
    *
-   * @param theme - The theme object to register
+   * @param themes - The complete list of themes to make available
    */
-  static registerTheme(theme: KritzelTheme): void {
-    THEME_REGISTRY.set(theme.name, theme);
+  static initializeThemes(themes: KritzelTheme[]): void {
+    if (themes.length === 0) {
+      console.warn('[KritzelThemeManager] initializeThemes called with an empty array. The theme registry will be empty.');
+    }
+    THEME_REGISTRY.clear();
+    for (const theme of themes) {
+      THEME_REGISTRY.set(theme.name, theme);
+    }
   }
 
   /**
@@ -131,7 +139,7 @@ export class KritzelThemeManager {
     if (!targetElement) return;
 
     const themeName = this.getStoredTheme();
-    const theme = THEME_REGISTRY.get(themeName) || THEME_REGISTRY.get(DEFAULT_THEME)!;
+    const theme = this.getThemeByName(themeName);
     ThemeHelper.applyThemeToElement(targetElement, theme);
   }
 
