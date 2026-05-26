@@ -1,5 +1,6 @@
 import { Component, Host, Prop, h } from '@stencil/core';
-import { ThemeAwareColor, ThemeMode } from '../../../constants/color-palette.constants';
+import { ThemeAwareColor } from '../../../constants/color-palette.constants';
+import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
 
 @Component({
@@ -9,7 +10,7 @@ import { KritzelColorHelper } from '../../../helpers/color.helper';
 })
 export class KritzelColorComponent {
   @Prop() value: string | ThemeAwareColor;
-  @Prop() theme: ThemeMode;
+  @Prop() theme: ThemeName;
   @Prop() size: number = 24;
 
   private resolveColor(): string {

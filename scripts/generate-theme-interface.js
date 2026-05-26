@@ -172,7 +172,7 @@ function generateThemeInterface(groups) {
   lines.push("/**");
   lines.push(" * Theme name type for available themes");
   lines.push(" */");
-  lines.push("export type ThemeName = 'light' | 'dark';");
+  lines.push("export type ThemeName = 'light' | 'dark' | (string & NonNullable<unknown>);");
   lines.push("");
 
   // Main interface

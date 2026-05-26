@@ -1,4 +1,5 @@
-import { ThemeAwareColor, ThemeMode, resolveColor } from '../constants/color-palette.constants';
+import { ThemeAwareColor, resolveColor } from '../constants/color-palette.constants';
+import { ThemeName } from '../interfaces/theme.interface';
 import { KritzelThemeManager } from '../classes/managers/theme.manager';
 
 export class KritzelColorHelper {
@@ -9,13 +10,13 @@ export class KritzelColorHelper {
    * @param theme - Optional theme to use. If not provided, uses current theme from ThemeManager
    * @returns The resolved hex color string, or empty string if color is undefined
    */
-  static resolveThemeColor(color: ThemeAwareColor | undefined, theme?: ThemeMode): string {
+  static resolveThemeColor(color: ThemeAwareColor | undefined, theme?: ThemeName): string {
     if (!color) {
       return '';
     }
     
     const currentTheme = theme ?? KritzelThemeManager.getStoredTheme();
-    return resolveColor(color, currentTheme);
+    return resolveColor(color, currentTheme as ThemeName);
   }
 
   /**
@@ -25,7 +26,7 @@ export class KritzelColorHelper {
    * @param theme - Optional theme to use. If not provided, uses current theme from ThemeManager
    * @returns The color as an rgba string, or the resolved hex if opacity is 1
    */
-  static applyOpacity(color: ThemeAwareColor | string | undefined, opacity: number, theme?: ThemeMode): string {
+  static applyOpacity(color: ThemeAwareColor | string | undefined, opacity: number, theme?: ThemeName): string {
     const hexColor = typeof color === 'string' ? color : this.resolveThemeColor(color, theme);
     if (!hexColor || opacity >= 1) return hexColor;
 

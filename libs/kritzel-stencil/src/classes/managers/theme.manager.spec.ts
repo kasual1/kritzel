@@ -51,12 +51,24 @@ describe('KritzelThemeManager', () => {
       expect(freshManager.currentTheme).toBe('dark');
     });
 
-    it('should default to light when settings object has invalid theme', () => {
+    it('should allow unregistered themes to be loaded from settings', () => {
       localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'neon' }));
 
       const freshManager = new KritzelThemeManager(mockCore);
 
-      expect(freshManager.currentTheme).toBe('light');
+      // The manager allows unregistered themes because they might be registered later
+      expect(freshManager.currentTheme).toBe('neon');
+    });
+
+    it('should fallback to default theme when applying an unregistered theme', () => {
+      localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'neon' }));
+
+      const freshManager = new KritzelThemeManager(mockCore);
+      const element = createMockElement();
+      freshManager.setTargetElement(element);
+
+      // Even though currentTheme is 'neon', the fallback 'light' theme is applied
+      expect(ThemeHelper.applyThemeToElement).toHaveBeenCalledWith(element, lightTheme);
     });
 
     it('should default to light when settings object has no theme', () => {
@@ -195,6 +207,12 @@ describe('KritzelThemeManager', () => {
 
       expect(theme).toBe(darkTheme);
     });
+
+    it('should return lightTheme as a fallback for an unregistered theme', () => {
+      const theme = manager.getThemeByName('unregistered-theme');
+
+      expect(theme).toBe(lightTheme);
+    });
   });
 
   // ============================================
@@ -218,10 +236,10 @@ describe('KritzelThemeManager', () => {
       expect(KritzelThemeManager.getStoredTheme()).toBe('light');
     });
 
-    it('should return light for invalid theme in settings', () => {
+    it('should return the theme name from settings even if unregistered', () => {
       localStorage.setItem('kritzel-settings', JSON.stringify({ theme: 'invalid' }));
 
-      expect(KritzelThemeManager.getStoredTheme()).toBe('light');
+      expect(KritzelThemeManager.getStoredTheme()).toBe('invalid');
     });
 
     it('should return light for invalid JSON', () => {
@@ -356,6 +374,41 @@ describe('KritzelThemeManager', () => {
       manager.applyTheme('dark');
 
       expect(ThemeHelper.applyThemeToElement).not.toHaveBeenCalled();
+    });
+  });
+
+  // ============================================
+  // Default and Custom Theme Registration
+  // ============================================
+
+  describe('Theme Registration', () => {
+    it('should initially contain light and dark themes', () => {
+      const themes = KritzelThemeManager.getAllThemes();
+      expect(themes).toContain(lightTheme);
+      expect(themes).toContain(darkTheme);
+    });
+
+    it('should be able to register and retrieve a custom theme', () => {
+      const customTheme: any = { name: 'custom-dark', base: 'dark' };
+      KritzelThemeManager.registerTheme(customTheme);
+
+      expect(KritzelThemeManager.getAllThemes()).toContain(customTheme);
+
+      const retrieved = manager.getThemeByName('custom-dark');
+      expect(retrieved).toBe(customTheme);
+    });
+
+    it('should apply dynamically registered themes successfully', () => {
+      const customTheme: any = { name: 'ocean-blue' };
+      KritzelThemeManager.registerTheme(customTheme);
+
+      const element = createMockElement();
+      manager.setTargetElement(element);
+      jest.clearAllMocks();
+
+      manager.setTheme('ocean-blue');
+
+      expect(ThemeHelper.applyThemeToElement).toHaveBeenCalledWith(element, customTheme);
     });
   });
 });

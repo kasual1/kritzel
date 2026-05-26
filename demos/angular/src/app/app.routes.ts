@@ -22,6 +22,11 @@ import { ObjectManagement4Component } from './examples/object-management/object-
 import { ObjectManagement5Component } from './examples/object-management/object-management-5.component';
 import { ObjectManagement6Component } from './examples/object-management/object-management-6.component';
 import { Collaboration1Component } from './examples/collaboration/collaboration-1.component';
+import { Theming1Component } from './examples/theming/theming-1.component';
+import { Theming2Component } from './examples/theming/theming-2.component';
+import { Theming3Component } from './examples/theming/theming-3.component';
+import { Theming4Component } from './examples/theming/theming-4.component';
+import { Theming5Component } from './examples/theming/theming-5.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -54,6 +59,11 @@ export const routes: Routes = [
       { path: 'object-management-4', component: ObjectManagement4Component },
       { path: 'object-management-5', component: ObjectManagement5Component },
       { path: 'object-management-6', component: ObjectManagement6Component },
+      { path: 'theming-1', component: Theming1Component },
+      { path: 'theming-2', component: Theming2Component },
+      { path: 'theming-3', component: Theming3Component },
+      { path: 'theming-4', component: Theming4Component },
+      { path: 'theming-5', component: Theming5Component },
       {
         path: 'collaboration-1',
         children: [

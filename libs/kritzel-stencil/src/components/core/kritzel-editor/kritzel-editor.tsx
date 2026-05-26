@@ -30,7 +30,8 @@ import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelUndoState } from '../../..';
 import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
-import { ThemeName } from '../../../interfaces/theme.interface';
+import { ThemeName, KritzelTheme } from '../../../interfaces/theme.interface';
+import { KritzelThemeManager } from '../../../classes/managers/theme.manager';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
@@ -260,7 +261,7 @@ export class KritzelEditor {
   @State() isVirtualKeyboardOpen: boolean = false;
   @State() undoState: KritzelUndoState | null = null;
   @State() isBackToContentButtonVisible: boolean = false;
-  @State() currentTheme: ThemeName = 'light';
+  @Prop({ mutable: true }) theme: ThemeName = 'light';
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
   @State() currentIsPublic: boolean = false;
 
@@ -324,7 +325,7 @@ export class KritzelEditor {
     }
   }
 
-  @Watch('currentTheme')
+  @Watch('theme')
   onCurrentThemeChange() {
     setTimeout(() => this.setOsSpecificCssVariables(), 0);
     if (this.engineRef) {
@@ -635,6 +636,11 @@ export class KritzelEditor {
     return this.engineRef.getDisplayableShortcuts();
   }
 
+  @Method()
+  async registerTheme(themeConfig: KritzelTheme): Promise<void> {
+    KritzelThemeManager.registerTheme(themeConfig);
+  }
+
   engineRef!: HTMLKritzelEngineElement;
   controlsRef!: HTMLKritzelControlsElement;
   settingsRef!: HTMLKritzelSettingsElement;
@@ -764,7 +770,7 @@ export class KritzelEditor {
     this.scaleMin = event.detail.scaleMin;
     this.scaleMax = event.detail.scaleMax;
     this.lockDrawingScale = event.detail.lockDrawingScale;
-    this.currentTheme = event.detail.theme;
+    this.theme = event.detail.theme;
     this.viewportBoundaryLeft = event.detail.viewportBoundaryLeft ?? -Infinity;
     this.viewportBoundaryRight = event.detail.viewportBoundaryRight ?? Infinity;
     this.viewportBoundaryTop = event.detail.viewportBoundaryTop ?? -Infinity;
@@ -883,8 +889,8 @@ export class KritzelEditor {
         if (typeof parsed.lockDrawingScale === 'boolean') {
           this.lockDrawingScale = parsed.lockDrawingScale;
         }
-        if (parsed.theme === 'light' || parsed.theme === 'dark') {
-          this.currentTheme = parsed.theme;
+        if (typeof parsed.theme === 'string') {
+          this.theme = parsed.theme;
         }
         if (typeof parsed.viewportBoundaryLeft === 'number') {
           this.viewportBoundaryLeft = parsed.viewportBoundaryLeft;
@@ -916,7 +922,7 @@ export class KritzelEditor {
       scaleMin: this.scaleMin,
       scaleMax: this.scaleMax,
       lockDrawingScale: this.lockDrawingScale,
-      theme: this.currentTheme,
+      theme: this.theme,
       viewportBoundaryLeft: this.viewportBoundaryLeft,
       viewportBoundaryRight: this.viewportBoundaryRight,
       viewportBoundaryTop: this.viewportBoundaryTop,
@@ -1015,7 +1021,7 @@ export class KritzelEditor {
           viewportBoundaryTop={this.viewportBoundaryTop}
           viewportBoundaryBottom={this.viewportBoundaryBottom}
           wheelEnabled={this.wheelEnabled}
-          theme={this.currentTheme}
+          theme={this.theme}
           debugInfo={this.debugInfo}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
@@ -1043,7 +1049,7 @@ export class KritzelEditor {
           controls={this.controls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}
           undoState={this.undoState ?? undefined}
-          theme={this.currentTheme}
+          theme={this.theme}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
 
