@@ -277,6 +277,7 @@ describe('KritzelThemeManager', () => {
     });
 
     it('should not apply theme when no target element is set', () => {
+      jest.clearAllMocks();
       manager.setTheme('dark');
 
       expect(ThemeHelper.applyThemeToElement).not.toHaveBeenCalled();
@@ -339,6 +340,7 @@ describe('KritzelThemeManager', () => {
     });
 
     it('should not apply when no target element is set', () => {
+      jest.clearAllMocks();
       manager.applyTheme('light');
 
       expect(ThemeHelper.applyThemeToElement).not.toHaveBeenCalled();
