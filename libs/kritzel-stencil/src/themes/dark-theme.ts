@@ -44,6 +44,7 @@ export const darkTheme: KritzelTheme = {
   selection: {
     borderColor: '#0A84FF',
     handleColor: '#1a1a1a',
+    handleStrokeColor: '#0A84FF'
   },
 
   checkerboard: {

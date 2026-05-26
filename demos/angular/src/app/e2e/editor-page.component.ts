@@ -1,6 +1,107 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 import { KritzelEditor } from 'kritzel-angular';
+import { KritzelTheme, KritzelThemeManager, ThemeName } from 'kritzel-stencil';
+
+const customAngularTheme: KritzelTheme = {
+  name: 'angular-theme',
+  global: {
+    primaryColor: '#dd0031',
+    primaryHoverColor: '#b30027',
+    focusRingColor: 'rgba(221, 0, 48, 0.2)',
+    cursorTrailColor: 'rgb(228, 228, 228)',
+    cursorTrailOpacity: '0.6',
+  },
+  engine: {
+    backgroundColor: '#ffffff',
+  },
+  selection: {
+    borderColor: '#dd0031',
+    borderWidth: '2px',
+    handleSize: '6px',
+    handleColor: '#ffffff',
+    handleStrokeColor: '#dd0031',
+  },
+  contextMenu: {
+    backgroundColor: '#ffffff',
+    borderRadius: '12px',
+    boxShadow: '0 1px 6px rgba(0, 0, 0, 0.12)',
+    border: '1px solid #ebebeb',
+    padding: '4px',
+    itemGap: '8px',
+    itemPadding: '8px',
+    itemBorderRadius: '12px',
+    itemColor: '#333333',
+    itemFontSize: '14px',
+    itemHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+    itemActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
+    itemDisabledColor: '#aaaaaa',
+  },
+  controls: {
+    boxShadow: '0 0 3px rgba(0, 0, 0, 0.08)',
+    border: '1px solid #ebebeb',
+    borderRadius: '16px',
+    backgroundColor: '#ffffff',
+    padding: '8px',
+    gap: '8px',
+    controlColor: '#000',
+    controlBorderRadius: '12px',
+    controlPadding: '8px',
+    controlHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+    controlActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
+    controlSelectedBackgroundColor: '#dd0031',
+    controlSelectedColor: '#ffffff',
+  },
+  tooltip: {
+    backgroundColor: '#fff',
+    color: '#000',
+    borderRadius: '16px',
+    padding: '8px',
+    boxShadow: '0 1px 6px rgba(0, 0, 0, 0.12)',
+  },
+  colorPalette: {
+    hoverBackgroundColor: '#ebebeb',
+    circleBorderColor: '#dddcdc',
+    selectedBackgroundColor: '#ebebeb',
+  },
+  strokeSize: {
+    hoverBackgroundColor: '#ebebeb',
+    selectedBackgroundColor: '#ebebeb',
+  },
+  menu: {
+    itemSelectedBackgroundColor: '#dd0031',
+    itemInputSelectionColor: '#dd0031',
+  },
+  snap: {
+    indicatorStroke: '#dd0031',
+  },
+  dropdown: {
+    accentColor: '#dd0031',
+    selectedBackgroundColor: 'rgba(221, 0, 48, 0.1)',
+  },
+  button: {
+    primaryBackgroundColor: '#dd0031',
+    primaryHoverBackgroundColor: '#b30027',
+  },
+  slideToggle: {
+    trackCheckedColor: '#dd0031',
+  },
+  opacitySlider: {
+    activeColor: '#dd0031',
+    thumbColor: '#dd0031',
+  },
+  masterDetail: {
+    menuItemSelectedBackgroundColor: 'rgba(221, 0, 48, 0.1)',
+    menuItemSelectedHoverBackgroundColor: 'rgba(221, 0, 48, 0.15)',
+    menuItemSelectedColor: '#dd0031',
+  },
+  textInput: {
+    focusBorderColor: '#dd0031',
+  },
+  numericInput: {
+    focusBorderColor: '#dd0031',
+  },
+};
 
 @Component({
   selector: 'app-editor-page',
@@ -8,4 +109,10 @@ import { KritzelEditor } from 'kritzel-angular';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: ` <kritzel-editor></kritzel-editor> `,
 })
-export class EditorPageComponent {}
+export class EditorPageComponent {
+  activeTheme = signal<ThemeName>('angular-theme');
+
+  constructor() {
+    KritzelThemeManager.registerTheme(customAngularTheme);
+  }
+}

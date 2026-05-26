@@ -208,6 +208,7 @@ export class KritzelEditor {
     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
   ];
 
+  @Prop({ mutable: true }) theme: ThemeName = 'light';
   @Prop() customSvgIcons: Record<string, string> = {};
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
@@ -261,7 +262,6 @@ export class KritzelEditor {
   @State() isVirtualKeyboardOpen: boolean = false;
   @State() undoState: KritzelUndoState | null = null;
   @State() isBackToContentButtonVisible: boolean = false;
-  @Prop({ mutable: true }) theme: ThemeName = 'light';
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
   @State() currentIsPublic: boolean = false;
 

@@ -148,10 +148,10 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     object.zIndex = 99999;
     
     // Initialize styling with theme-aware defaults
-    object.borderColor = { light: '#007AFF', dark: '#0A84FF' } as ThemeAwareColor;
+    object.borderColor = undefined;
     object.borderWidth = 2;
-    object.handleColor = { light: '#ffffff', dark: '#1a1a1a' } as ThemeAwareColor;
-    object.handleStrokeColor = { light: '#007AFF', dark: '#0A84FF' } as ThemeAwareColor;
+    object.handleColor = undefined;
+    object.handleStrokeColor = undefined;
     object.handleSize = 6;
 
     return object;

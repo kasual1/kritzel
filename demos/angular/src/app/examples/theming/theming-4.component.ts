@@ -1,14 +1,15 @@
-import { Component, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { KritzelEditor } from 'kritzel-angular';
 import {
-  KritzelTheme, KritzelThemeManager, lightTheme, darkTheme, ThemeName,
+  KritzelTheme, KritzelThemeManager, lightTheme, darkTheme,
   KritzelBrushTool, KritzelSelectionTool, KritzelTextTool,
   ThemeAwareColor, KritzelToolbarControl,
-  DEFAULT_BRUSH_CONFIG, DEFAULT_TEXT_CONFIG, ThemeHelper
+  DEFAULT_BRUSH_CONFIG, DEFAULT_TEXT_CONFIG
 } from 'kritzel-stencil';
 
 const brandedLightTheme: KritzelTheme = {
   ...lightTheme,
+  name: 'branded-light',
   global: { ...lightTheme.global, textPrimary: '#1a0050', textSecondary: '#3d1e78' },
   engine: { ...lightTheme.engine, backgroundColor: '#faf7ff' },
   controls: {
@@ -23,6 +24,7 @@ const brandedLightTheme: KritzelTheme = {
 
 const brandedDarkTheme: KritzelTheme = {
   ...darkTheme,
+  name: 'branded-dark',
   global: { ...darkTheme.global, textPrimary: '#EDE7F6', textSecondary: '#D1C4E9' },
   engine: { ...darkTheme.engine, backgroundColor: '#12005e' },
   controls: {
@@ -81,10 +83,8 @@ const brandControls: KritzelToolbarControl[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
-      #editorEl
       [controls]="brandControls"
-      (isReady)="onIsReady()"
-      (themeChange)="onThemeChange($event)"
+      theme="branded-light"
     ></kritzel-editor>
   `,
   styles: [`
@@ -94,20 +94,12 @@ const brandControls: KritzelToolbarControl[] = [
     }
   `],
 })
-export class Theming4Component {
-  @ViewChild('editorEl', { read: ElementRef }) editorEl!: ElementRef<HTMLElement>;
-
+export class Theming4Component implements OnInit {
   readonly brandControls = brandControls;
 
-  onIsReady(): void {
-    const stored = KritzelThemeManager.getStoredTheme();
-    const theme = stored === 'dark' ? brandedDarkTheme : brandedLightTheme;
-    ThemeHelper.applyThemeToElement(this.editorEl.nativeElement, theme);
-  }
-
-  onThemeChange(event: CustomEvent<ThemeName>): void {
-    const theme = event.detail === 'dark' ? brandedDarkTheme : brandedLightTheme;
-    ThemeHelper.applyThemeToElement(this.editorEl.nativeElement, theme);
+  ngOnInit(): void {
+    KritzelThemeManager.registerTheme(brandedLightTheme);
+    KritzelThemeManager.registerTheme(brandedDarkTheme);
   }
 }
 

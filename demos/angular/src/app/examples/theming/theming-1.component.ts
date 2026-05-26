@@ -1,9 +1,10 @@
-import { Component, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { KritzelEditor } from 'kritzel-angular';
-import { KritzelTheme, lightTheme, ThemeHelper } from 'kritzel-stencil';
+import { KritzelTheme, lightTheme, KritzelThemeManager } from 'kritzel-stencil';
 
 const brandedAccentTheme: KritzelTheme = {
   ...lightTheme,
+  name: 'branded-accent',
   controls: {
     ...lightTheme.controls,
     controlSelectedBackgroundColor: '#6200EE',
@@ -20,7 +21,7 @@ const brandedAccentTheme: KritzelTheme = {
   selector: 'app-theming-1',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<kritzel-editor #editorEl (isReady)="onIsReady()"></kritzel-editor>`,
+  template: `<kritzel-editor theme="branded-accent"></kritzel-editor>`,
   styles: [`
     :host {
       display: block;
@@ -28,10 +29,8 @@ const brandedAccentTheme: KritzelTheme = {
     }
   `],
 })
-export class Theming1Component {
-  @ViewChild('editorEl', { read: ElementRef }) editorEl!: ElementRef<HTMLElement>;
-
-  onIsReady(): void {
-    ThemeHelper.applyThemeToElement(this.editorEl.nativeElement, brandedAccentTheme);
+export class Theming1Component implements OnInit {
+  ngOnInit(): void {
+    KritzelThemeManager.registerTheme(brandedAccentTheme);
   }
 }
