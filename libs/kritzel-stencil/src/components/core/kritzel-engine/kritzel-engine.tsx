@@ -1744,6 +1744,7 @@ export class KritzelEngine {
       // Initialize theme manager with kritzel-editor as target element
       const editorElement = this.host.closest('kritzel-editor') as HTMLElement;
       this.core.themeManager.setTargetElement(editorElement || this.host);
+      this.core.themeManager.injectThemeEarly(editorElement || this.host);
 
       // Initialize sync config and Yjs
       await this.initializeSyncAndWorkspace();

@@ -10,10 +10,30 @@ const SETTINGS_STORAGE_KEY = 'kritzel-settings';
 /** Default theme used when no stored preference exists. */
 const DEFAULT_THEME: ThemeName = 'light';
 
-/** Registry of available themes */
-const THEME_REGISTRY = new Map<string, KritzelTheme>();
-THEME_REGISTRY.set('light', lightTheme);
-THEME_REGISTRY.set('dark', darkTheme);
+/** Safe cross-chunk window interface extension */
+interface KritzelWindow extends Window {
+  __KRITZEL_THEME_REGISTRY__?: Map<string, KritzelTheme>;
+}
+
+/** Registry of available themes attached globally to prevent chunk duplication issues */
+const getGlobalThemeRegistry = (): Map<string, KritzelTheme> => {
+  if (typeof window !== 'undefined') {
+    const w = window as KritzelWindow;
+    if (!w.__KRITZEL_THEME_REGISTRY__) {
+      w.__KRITZEL_THEME_REGISTRY__ = new Map<string, KritzelTheme>();
+      w.__KRITZEL_THEME_REGISTRY__.set('light', lightTheme);
+      w.__KRITZEL_THEME_REGISTRY__.set('dark', darkTheme);
+    }
+    return w.__KRITZEL_THEME_REGISTRY__;
+  }
+  // Fallback for SSR/Node environments
+  const fallbackMap = new Map<string, KritzelTheme>();
+  fallbackMap.set('light', lightTheme);
+  fallbackMap.set('dark', darkTheme);
+  return fallbackMap;
+};
+
+const THEME_REGISTRY = getGlobalThemeRegistry();
 
 /**
  * Manages theme state and application across the Kritzel editor.
@@ -42,6 +62,7 @@ export class KritzelThemeManager {
     this._storageKey = core.editorId ? `${SETTINGS_STORAGE_KEY}-${core.editorId}` : SETTINGS_STORAGE_KEY;
     this._currentTheme = this.getStoredTheme();
     void this._core;
+    this.injectThemeEarly();
   }
 
   /**
@@ -94,6 +115,24 @@ export class KritzelThemeManager {
    */
   static registerTheme(theme: KritzelTheme): void {
     THEME_REGISTRY.set(theme.name, theme);
+  }
+
+  /**
+   * Pre-emptively applies the stored theme's CSS variables to the closest editor or document.
+   * This prevents a "Flash of Unstyled Content" (FOUC) while Stencil web components are hydrating.
+   * 
+   * @param element - The HTML element to apply the theme to
+   */
+  injectThemeEarly(element?: HTMLElement): void {
+    let targetElement = element;
+    if (!targetElement && typeof document !== 'undefined') {
+      targetElement = document.querySelector('kritzel-editor') as HTMLElement || document.documentElement;
+    }
+    if (!targetElement) return;
+
+    const themeName = this.getStoredTheme();
+    const theme = THEME_REGISTRY.get(themeName) || THEME_REGISTRY.get(DEFAULT_THEME)!;
+    ThemeHelper.applyThemeToElement(targetElement, theme);
   }
 
   /**

@@ -3224,6 +3224,7 @@ declare namespace LocalJSX {
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
         "wheelEnabled": boolean;
+        "theme": ThemeName;
         "isControlsVisible": boolean;
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
@@ -3231,7 +3232,6 @@ declare namespace LocalJSX {
         "isLoading": boolean;
         "editorId": string;
         "activeWorkspaceId": string;
-        "theme": ThemeName;
     }
     interface KritzelEngineAttributes {
         "editorId": string;
