@@ -99,6 +99,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'isLoading',
   'editorId',
   'activeWorkspaceId',
+  'theme',
   'isReady',
   'activeWorkspaceChange',
   'objectsChange',

@@ -10,6 +10,11 @@ const SETTINGS_STORAGE_KEY = 'kritzel-settings';
 /** Default theme used when no stored preference exists. */
 const DEFAULT_THEME: ThemeName = 'light';
 
+/** Registry of available themes */
+const THEME_REGISTRY = new Map<string, KritzelTheme>();
+THEME_REGISTRY.set('light', lightTheme);
+THEME_REGISTRY.set('dark', darkTheme);
+
 /**
  * Manages theme state and application across the Kritzel editor.
  * Reads the persisted theme from the settings object in localStorage but does not write to it.
@@ -75,11 +80,29 @@ export class KritzelThemeManager {
    * Gets the theme configuration object by its name.
    * Returns the corresponding theme object containing all CSS variable values.
    *
-   * @param themeName - The name of the theme to retrieve ('light' or 'dark')
+   * @param themeName - The name of the theme to retrieve
    * @returns The KritzelTheme object containing all theme CSS variable values
    */
   getThemeByName(themeName: ThemeName): KritzelTheme {
-    return themeName === 'dark' ? darkTheme : lightTheme;
+    return THEME_REGISTRY.get(themeName) || THEME_REGISTRY.get(DEFAULT_THEME)!;
+  }
+
+  /**
+   * Registers a new theme or updates an existing one in the global registry.
+   *
+   * @param theme - The theme object to register
+   */
+  static registerTheme(theme: KritzelTheme): void {
+    THEME_REGISTRY.set(theme.name, theme);
+  }
+
+  /**
+   * Gets all registered themes.
+   *
+   * @returns An array of all registered theme objects
+   */
+  static getAllThemes(): KritzelTheme[] {
+    return Array.from(THEME_REGISTRY.values());
   }
 
   /**
@@ -97,7 +120,7 @@ export class KritzelThemeManager {
     }
     try {
       const parsed = JSON.parse(stored);
-      if (parsed?.theme === 'dark' || parsed?.theme === 'light') {
+      if (typeof parsed?.theme === 'string') {
         return parsed.theme;
       }
     } catch {
@@ -122,7 +145,7 @@ export class KritzelThemeManager {
     }
     try {
       const parsed = JSON.parse(stored);
-      if (parsed?.theme === 'dark' || parsed?.theme === 'light') {
+      if (typeof parsed?.theme === 'string') {
         return parsed.theme;
       }
     } catch {

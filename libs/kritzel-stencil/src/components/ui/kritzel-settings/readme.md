@@ -62,6 +62,7 @@ Type: `Promise<void>`
 
 ### Depends on
 
+- [kritzel-dropdown](../../shared/kritzel-dropdown)
 - [kritzel-slide-toggle](../../shared/kritzel-slide-toggle)
 - [kritzel-numeric-input](../../shared/kritzel-numeric-input)
 - [kritzel-dialog](../../shared/kritzel-dialog)
@@ -70,6 +71,7 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-settings --> kritzel-dropdown
   kritzel-settings --> kritzel-slide-toggle
   kritzel-settings --> kritzel-numeric-input
   kritzel-settings --> kritzel-dialog

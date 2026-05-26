@@ -5,6 +5,7 @@ import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
 import { KRITZEL_VERSION } from '../../../constants/version';
 import { CURRENT_APP_STATE_SCHEMA_VERSION, CURRENT_WORKSPACE_SCHEMA_VERSION } from '../../../constants/schema.constants';
 import { ThemeName } from '../../../interfaces/theme.interface';
+import { KritzelThemeManager } from '../../../classes/managers/theme.manager';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 const DEFAULT_SCALE_MIN = 0.0001;
 const DEFAULT_SCALE_MAX = 1000;
@@ -54,7 +55,7 @@ export class KritzelSettings {
   @State() scaleMin: number = DEFAULT_SCALE_MIN;
   @State() scaleMax: number = DEFAULT_SCALE_MAX;
   @State() lockDrawingScale: boolean = DEFAULT_LOCK_DRAWING_SCALE;
-  @State() currentTheme: ThemeName = 'light';
+  @State() theme: ThemeName = 'light';
   @State() viewportBoundaryLeft: number = DEFAULT_VIEWPORT_BOUNDARY_LEFT;
   @State() viewportBoundaryRight: number = DEFAULT_VIEWPORT_BOUNDARY_RIGHT;
   @State() viewportBoundaryTop: number = DEFAULT_VIEWPORT_BOUNDARY_TOP;
@@ -80,8 +81,8 @@ export class KritzelSettings {
     if (typeof settings.lockDrawingScale === 'boolean') {
       this.lockDrawingScale = settings.lockDrawingScale;
     }
-    if (settings.theme === 'light' || settings.theme === 'dark') {
-      this.currentTheme = settings.theme;
+    if (typeof settings.theme === 'string') {
+      this.theme = settings.theme;
     }
     if (typeof settings.viewportBoundaryLeft === 'number') {
       this.viewportBoundaryLeft = settings.viewportBoundaryLeft;
@@ -105,7 +106,7 @@ export class KritzelSettings {
       scaleMin: this.scaleMin,
       scaleMax: this.scaleMax,
       lockDrawingScale: this.lockDrawingScale,
-      theme: this.currentTheme,
+      theme: this.theme,
       viewportBoundaryLeft: this.viewportBoundaryLeft,
       viewportBoundaryRight: this.viewportBoundaryRight,
       viewportBoundaryTop: this.viewportBoundaryTop,
@@ -130,8 +131,8 @@ export class KritzelSettings {
     this.emitSettings();
   };
 
-  private handleThemeChange = (event: CustomEvent<boolean>): void => {
-    this.currentTheme = event.detail ? 'dark' : 'light';
+  private handleThemeChange = (event: CustomEvent<string>): void => {
+    this.theme = event.detail;
     this.emitSettings();
   };
 
@@ -208,15 +209,15 @@ export class KritzelSettings {
             <h3>General Settings</h3>
             <div class="settings-group">
               <div class="settings-item">
-                <label class="settings-label">Dark Mode</label>
+                <label class="settings-label">Theme</label>
                 <p class="settings-description">
-                  Toggle between light and dark color themes for the editor interface.
+                  Select a registered color theme for the editor interface.
                 </p>
-                <kritzel-slide-toggle
-                  checked={this.currentTheme === 'dark'}
-                  label="Dark Mode"
-                  onCheckedChange={this.handleThemeChange}
-                />
+                <kritzel-dropdown
+                  options={KritzelThemeManager.getAllThemes().map(t => ({ value: t.name, label: t.name }))}
+                  value={this.theme}
+                  onValueChanged={this.handleThemeChange}
+                ></kritzel-dropdown>
               </div>
                <div class="settings-item">
                 <label class="settings-label">Lock Drawing Scale</label>

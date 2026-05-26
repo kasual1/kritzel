@@ -7,14 +7,14 @@
 
 ## Properties
 
-| Property        | Attribute     | Description | Type                | Default     |
-| --------------- | ------------- | ----------- | ------------------- | ----------- |
-| `colors`        | --            |             | `ThemeAwareColor[]` | `[]`        |
-| `isExpanded`    | `is-expanded` |             | `boolean`           | `false`     |
-| `isOpaque`      | `is-opaque`   |             | `boolean`           | `false`     |
-| `opacity`       | `opacity`     |             | `number`            | `1`         |
-| `selectedColor` | --            |             | `ThemeAwareColor`   | `null`      |
-| `theme`         | `theme`       |             | `"dark" \| "light"` | `undefined` |
+| Property        | Attribute     | Description | Type                               | Default     |
+| --------------- | ------------- | ----------- | ---------------------------------- | ----------- |
+| `colors`        | --            |             | `ThemeAwareColor[]`                | `[]`        |
+| `isExpanded`    | `is-expanded` |             | `boolean`                          | `false`     |
+| `isOpaque`      | `is-opaque`   |             | `boolean`                          | `false`     |
+| `opacity`       | `opacity`     |             | `number`                           | `1`         |
+| `selectedColor` | --            |             | `ThemeAwareColor`                  | `null`      |
+| `theme`         | `theme`       |             | `"dark" \| "light" \| string & {}` | `undefined` |
 
 
 ## Events

@@ -1,7 +1,7 @@
 /**
  * Theme name type for available themes
  */
-export type ThemeName = 'light' | 'dark';
+export type ThemeName = 'light' | 'dark' | (string & NonNullable<unknown>);
 
 /**
  * Complete theme definition with all CSS variable values grouped by category
