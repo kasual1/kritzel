@@ -31,6 +31,6 @@ const brandedAccentTheme: KritzelTheme = {
 })
 export class Theming1Component implements OnInit {
   ngOnInit(): void {
-    KritzelThemeManager.registerTheme(brandedAccentTheme);
+    KritzelThemeManager.initializeThemes([brandedAccentTheme]);
   }
 }

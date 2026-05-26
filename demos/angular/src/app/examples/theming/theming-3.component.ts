@@ -70,8 +70,7 @@ const brandedDarkTheme: KritzelTheme = {
 })
 export class Theming3Component implements OnInit {
   ngOnInit(): void {
-    KritzelThemeManager.registerTheme(brandedLightTheme);
-    KritzelThemeManager.registerTheme(brandedDarkTheme);
+    KritzelThemeManager.initializeThemes([brandedLightTheme, brandedDarkTheme]);
   }
 }
 

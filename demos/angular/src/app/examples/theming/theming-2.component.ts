@@ -48,6 +48,6 @@ const customLightTheme: KritzelTheme = {
 })
 export class Theming2Component implements OnInit {
   ngOnInit(): void {
-    KritzelThemeManager.registerTheme(customLightTheme);
+    KritzelThemeManager.initializeThemes([customLightTheme]);
   }
 }

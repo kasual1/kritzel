@@ -105,9 +105,8 @@ export class Theming5Component implements OnInit {
   activeTheme = signal<ThemeName>('branded-light');
 
   ngOnInit(): void {
-    KritzelThemeManager.registerTheme(brandedLightTheme);
-    KritzelThemeManager.registerTheme(brandedDarkTheme);
-    
+    KritzelThemeManager.initializeThemes([brandedLightTheme, brandedDarkTheme]);
+
     const stored = KritzelThemeManager.getStoredTheme();
     // Default to our branded-light if neither of our branded themes are selected
     if (stored === 'branded-light' || stored === 'branded-dark') {

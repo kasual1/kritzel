@@ -637,8 +637,8 @@ export class KritzelEditor {
   }
 
   @Method()
-  async registerTheme(themeConfig: KritzelTheme): Promise<void> {
-    KritzelThemeManager.registerTheme(themeConfig);
+  async initializeThemes(themes: KritzelTheme[]): Promise<void> {
+    KritzelThemeManager.initializeThemes(themes);
   }
 
   engineRef!: HTMLKritzelEngineElement;

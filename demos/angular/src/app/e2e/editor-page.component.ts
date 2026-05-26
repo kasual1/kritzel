@@ -113,6 +113,6 @@ export class EditorPageComponent {
   activeTheme = signal<ThemeName>('angular-theme');
 
   constructor() {
-    KritzelThemeManager.registerTheme(customAngularTheme);
+    KritzelThemeManager.initializeThemes([customAngularTheme]);
   }
 }

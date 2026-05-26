@@ -98,8 +98,7 @@ export class Theming4Component implements OnInit {
   readonly brandControls = brandControls;
 
   ngOnInit(): void {
-    KritzelThemeManager.registerTheme(brandedLightTheme);
-    KritzelThemeManager.registerTheme(brandedDarkTheme);
+    KritzelThemeManager.initializeThemes([brandedLightTheme, brandedDarkTheme]);
   }
 }
 
