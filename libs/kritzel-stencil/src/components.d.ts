@@ -391,7 +391,6 @@ export namespace Components {
         "group": () => Promise<void>;
         "hideContextMenu": () => Promise<void>;
         "importFromFile": () => Promise<void>;
-        "initializeThemes": (themes: KritzelTheme[]) => Promise<void>;
         /**
           * @default true
          */
@@ -458,6 +457,7 @@ export namespace Components {
           * @default 'light'
          */
         "theme": ThemeName;
+        "themes"?: KritzelTheme[];
         "triggerSelectionChange": () => Promise<void>;
         "undo": () => Promise<void>;
         "ungroup": () => Promise<void>;
@@ -838,6 +838,10 @@ export namespace Components {
          */
         "theme": ThemeName;
         /**
+          * An array of available themes for the editor.
+         */
+        "themes"?: KritzelTheme[];
+        /**
           * Manually triggers the `objectsSelectionChange` event.
          */
         "triggerSelectionChange": () => Promise<void>;
@@ -1169,13 +1173,17 @@ export namespace Components {
         "offsetY": number;
     }
     interface KritzelSettings {
+        /**
+          * Keyboard shortcuts to display in the settings dialog
+          * @default ['light', 'dark']
+         */
+        "availableThemes": string[];
         "open": () => Promise<void>;
         /**
           * Current settings values. Used to initialize and sync the component's internal state.
          */
         "settings"?: Partial<KritzelSettingsConfig>;
         /**
-          * Keyboard shortcuts to display in the settings dialog
           * @default []
          */
         "shortcuts": Omit<KritzelShortcut, 'action' | 'condition'>[];
@@ -2535,6 +2543,7 @@ declare namespace LocalJSX {
           * @default 'light'
          */
         "theme"?: ThemeName;
+        "themes"?: KritzelTheme[];
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -2671,6 +2680,10 @@ declare namespace LocalJSX {
           * @default 'light'
          */
         "theme"?: ThemeName;
+        /**
+          * An array of available themes for the editor.
+         */
+        "themes"?: KritzelTheme[];
         /**
           * The current user for awareness broadcasting (name, id, cursor position).
          */
@@ -2998,6 +3011,11 @@ declare namespace LocalJSX {
     }
     interface KritzelSettings {
         /**
+          * Keyboard shortcuts to display in the settings dialog
+          * @default ['light', 'dark']
+         */
+        "availableThemes"?: string[];
+        /**
           * Emitted when settings change
          */
         "onSettingsChange"?: (event: KritzelSettingsCustomEvent<KritzelSettingsConfig>) => void;
@@ -3006,7 +3024,6 @@ declare namespace LocalJSX {
          */
         "settings"?: Partial<KritzelSettingsConfig>;
         /**
-          * Keyboard shortcuts to display in the settings dialog
           * @default []
          */
         "shortcuts"?: Omit<KritzelShortcut, 'action' | 'condition'>[];

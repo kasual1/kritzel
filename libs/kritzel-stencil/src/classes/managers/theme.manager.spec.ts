@@ -380,38 +380,34 @@ describe('KritzelThemeManager', () => {
   });
 
   // ============================================
-  // initializeThemes
+  // registerThemes
   // ============================================
 
-  describe('initializeThemes', () => {
-    afterEach(() => {
-      KritzelThemeManager.initializeThemes([lightTheme, darkTheme]);
-    });
-
+  describe('registerThemes', () => {
     it('should initially contain light and dark themes', () => {
-      const themes = KritzelThemeManager.getAllThemes();
+      const themes = manager.getAllThemes();
       expect(themes).toContain(lightTheme);
       expect(themes).toContain(darkTheme);
     });
 
     it('should replace the registry with only the provided themes', () => {
       const customTheme: any = { name: 'custom' };
-      KritzelThemeManager.initializeThemes([customTheme]);
+      manager.registerThemes([customTheme]);
 
-      expect(KritzelThemeManager.getAllThemes()).toEqual([customTheme]);
+      expect(manager.getAllThemes()).toEqual([customTheme]);
     });
 
     it('should remove the built-in light and dark themes after initialization', () => {
       const customTheme: any = { name: 'custom' };
-      KritzelThemeManager.initializeThemes([customTheme]);
+      manager.registerThemes([customTheme]);
 
-      expect(KritzelThemeManager.getAllThemes()).not.toContain(lightTheme);
-      expect(KritzelThemeManager.getAllThemes()).not.toContain(darkTheme);
+      expect(manager.getAllThemes()).not.toContain(lightTheme);
+      expect(manager.getAllThemes()).not.toContain(darkTheme);
     });
 
     it('should make provided themes retrievable via getThemeByName', () => {
       const customTheme: any = { name: 'ocean-blue' };
-      KritzelThemeManager.initializeThemes([customTheme]);
+      manager.registerThemes([customTheme]);
 
       expect(manager.getThemeByName('ocean-blue')).toBe(customTheme);
     });
@@ -419,22 +415,22 @@ describe('KritzelThemeManager', () => {
     it('should register multiple themes', () => {
       const themeA: any = { name: 'brand-light' };
       const themeB: any = { name: 'brand-dark' };
-      KritzelThemeManager.initializeThemes([themeA, themeB]);
+      manager.registerThemes([themeA, themeB]);
 
-      expect(KritzelThemeManager.getAllThemes()).toEqual([themeA, themeB]);
+      expect(manager.getAllThemes()).toEqual([themeA, themeB]);
     });
 
     it('should fall back to the first registered theme when a name is not found', () => {
       const firstTheme: any = { name: 'first' };
       const secondTheme: any = { name: 'second' };
-      KritzelThemeManager.initializeThemes([firstTheme, secondTheme]);
+      manager.registerThemes([firstTheme, secondTheme]);
 
       expect(manager.getThemeByName('unknown')).toBe(firstTheme);
     });
 
-    it('should apply themes registered via initializeThemes', () => {
+    it('should apply themes registered via registerThemes', () => {
       const customTheme: any = { name: 'ocean-blue' };
-      KritzelThemeManager.initializeThemes([customTheme]);
+      manager.registerThemes([customTheme]);
 
       const element = createMockElement();
       manager.setTargetElement(element);
@@ -448,7 +444,7 @@ describe('KritzelThemeManager', () => {
     it('should warn when called with an empty array', () => {
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
-      KritzelThemeManager.initializeThemes([]);
+      manager.registerThemes([]);
 
       expect(warnSpy).toHaveBeenCalled();
       warnSpy.mockRestore();

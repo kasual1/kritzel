@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 import { KritzelEditor } from 'kritzel-angular';
-import { KritzelTheme, KritzelThemeManager, ThemeName } from 'kritzel-stencil';
+import { KritzelTheme, ThemeName } from 'kritzel-stencil';
 
 const customAngularTheme: KritzelTheme = {
   name: 'angular-theme',
@@ -107,12 +107,20 @@ const customAngularTheme: KritzelTheme = {
   selector: 'app-editor-page',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: ` <kritzel-editor></kritzel-editor> `,
+  template: ` <kritzel-editor [theme]="activeTheme()" [themes]="themes" (themeChange)="handleThemeChange($event)" (isReady)="handleIsReady($event)"></kritzel-editor> `,
 })
 export class EditorPageComponent {
-  activeTheme = signal<ThemeName>('angular-theme');
+  themes = [customAngularTheme];
+  activeTheme = signal<ThemeName | undefined>(undefined);
 
-  constructor() {
-    KritzelThemeManager.initializeThemes([customAngularTheme]);
+  constructor() {}
+
+  handleThemeChange(event: CustomEvent<ThemeName>) {
+    console.log('Theme changed to:', event.detail);
+    this.activeTheme.set(event.detail);
+  }
+
+  handleIsReady(event: CustomEvent<any>) {
+    console.log('Editor is ready:', event.detail);
   }
 }

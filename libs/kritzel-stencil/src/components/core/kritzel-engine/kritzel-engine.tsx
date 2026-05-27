@@ -37,7 +37,7 @@ import { KritzelColorHelper } from '../../../helpers/color.helper';
 import { KritzelSvgExportHelper } from '../../../helpers/svg-export.helper';
 import { toPng, toSvg } from 'html-to-image';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
-import { ThemeName } from '../../../interfaces/theme.interface';
+import { KritzelTheme, ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelViewportState } from '../../../interfaces/viewport-state.interface';
@@ -190,6 +190,16 @@ export class KritzelEngine {
   @Watch('theme')
   onThemeChange(newValue: ThemeName) {
     this.core.themeManager.setTheme(newValue);
+  }
+
+  /** An array of available themes for the editor. */
+  @Prop() themes?: KritzelTheme[];
+  @Watch('themes')
+  onThemesChange(newValue?: KritzelTheme[]) {
+    if (newValue && newValue.length > 0) {
+      this.core.themeManager.registerThemes(newValue);
+      this.core.themeManager.applyTheme(this.core.themeManager.currentTheme);
+    }
   }
 
   /** Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to. */
@@ -1716,6 +1726,11 @@ export class KritzelEngine {
 
   componentWillLoad() {
     this.core.setEditorId(this.editorId);
+    if (this.themes && this.themes.length > 0) {
+      this.core.themeManager.registerThemes(this.themes);
+    }
+    const editorElement = this.host.closest('kritzel-editor') as HTMLElement;
+    this.core.themeManager.injectThemeEarly(editorElement || this.host);
     this.core.setUser(this.user);
     this.validateScaleMax(this.scaleMax);
     this.validateScaleMin(this.scaleMin);
@@ -1744,7 +1759,6 @@ export class KritzelEngine {
       // Initialize theme manager with kritzel-editor as target element
       const editorElement = this.host.closest('kritzel-editor') as HTMLElement;
       this.core.themeManager.setTargetElement(editorElement || this.host);
-      this.core.themeManager.injectThemeEarly(editorElement || this.host);
 
       // Initialize sync config and Yjs
       await this.initializeSyncAndWorkspace();

@@ -59,7 +59,7 @@ const brandedDarkTheme: KritzelTheme = {
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor theme="branded-light"></kritzel-editor>
+    <kritzel-editor [themes]="themes" theme="branded-light"></kritzel-editor>
   `,
   styles: [`
     :host {
@@ -69,8 +69,8 @@ const brandedDarkTheme: KritzelTheme = {
   `],
 })
 export class Theming3Component implements OnInit {
+  themes = [brandedLightTheme, brandedDarkTheme];
   ngOnInit(): void {
-    KritzelThemeManager.initializeThemes([brandedLightTheme, brandedDarkTheme]);
   }
 }
 

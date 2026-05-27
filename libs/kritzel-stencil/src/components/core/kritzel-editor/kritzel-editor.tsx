@@ -31,7 +31,6 @@ import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, 
 import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelUndoState } from '../../..';
 import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
 import { ThemeName, KritzelTheme } from '../../../interfaces/theme.interface';
-import { KritzelThemeManager } from '../../../classes/managers/theme.manager';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
@@ -208,6 +207,7 @@ export class KritzelEditor {
     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
   ];
 
+  @Prop() themes?: KritzelTheme[];
   @Prop({ mutable: true }) theme: ThemeName = 'light';
   @Prop() customSvgIcons: Record<string, string> = {};
   @Prop() isControlsVisible: boolean = true;
@@ -636,11 +636,6 @@ export class KritzelEditor {
     return this.engineRef.getDisplayableShortcuts();
   }
 
-  @Method()
-  async initializeThemes(themes: KritzelTheme[]): Promise<void> {
-    KritzelThemeManager.initializeThemes(themes);
-  }
-
   engineRef!: HTMLKritzelEngineElement;
   controlsRef!: HTMLKritzelControlsElement;
   settingsRef!: HTMLKritzelSettingsElement;
@@ -683,6 +678,7 @@ export class KritzelEditor {
       syncConfig: this.syncConfig,
       assetStorageConfig: this.assetStorageConfig,
       loginConfig: this.loginConfig,
+      theme: this.theme
     });
   }
 
@@ -776,11 +772,12 @@ export class KritzelEditor {
     this.viewportBoundaryTop = event.detail.viewportBoundaryTop ?? -Infinity;
     this.viewportBoundaryBottom = event.detail.viewportBoundaryBottom ?? Infinity;
     this.debugInfo = event.detail.debugInfo;
-    this.themeChange.emit(event.detail.theme);
-
+    
     if (this.engineRef) {
       this.engineRef.saveSettings(event.detail);
     }
+    
+    this.themeChange.emit(event.detail.theme);
   }
 
   private get moreMenuItems(): IKritzelMenuItem[] {
@@ -1022,6 +1019,7 @@ export class KritzelEditor {
           viewportBoundaryBottom={this.viewportBoundaryBottom}
           wheelEnabled={this.wheelEnabled}
           theme={this.theme}
+          themes={this.themes}
           debugInfo={this.debugInfo}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
@@ -1061,6 +1059,7 @@ export class KritzelEditor {
               }
             }}
             shortcuts={this.shortcuts}
+            availableThemes={['light', 'dark', ...(this.themes?.map(t => t.name) || [])]}
             settings={this.currentSettingsConfig}
             onSettingsChange={event => this.handleSettingsChange(event)}
           ></kritzel-settings>
