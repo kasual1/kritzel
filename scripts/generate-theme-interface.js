@@ -11,7 +11,7 @@ const path = require('path');
 // Configuration
 const SOURCE_DIR = path.join(__dirname, '../libs/kritzel-stencil/src');
 const THEME_INTERFACE_PATH = path.join(SOURCE_DIR, 'interfaces', 'theme.interface.ts');
-const CSS_FILE_PATTERN = /\.(css|tsx)$/;
+const CSS_FILE_PATTERN = /\.(css|tsx|ts)$/;
 const CSS_VARIABLE_PATTERN = /--kritzel-([a-zA-Z0-9-]+)/g;
 
 // Known categories based on component structure

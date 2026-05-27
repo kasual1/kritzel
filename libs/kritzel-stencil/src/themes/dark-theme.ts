@@ -89,6 +89,7 @@ export const darkTheme: KritzelTheme = {
     controlHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
     controlSelectedBackgroundColor: '#0A84FF',
     controlSelectedColor: '#ffffff',
+    separatorColor: '#3a3a3a',
   },
 
   currentUserDialog: {
