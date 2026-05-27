@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { KritzelEditor } from 'kritzel-angular';
 import { EditorIsReadyEvent, KritzelBaseObject } from 'kritzel-stencil';
+import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
   selector: 'app-object-management-1',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor (isReady)="onIsReady($event)"></kritzel-editor>
+    <kritzel-editor [theme]="'angular-theme'" [themes]="themes" (isReady)="onIsReady($event)"></kritzel-editor>
     <aside>
       <h3>Objects ({{ objects().length }})</h3>
       <ul>
@@ -46,6 +47,8 @@ import { EditorIsReadyEvent, KritzelBaseObject } from 'kritzel-stencil';
 })
 export class ObjectManagement1Component {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
+
+  themes = [customAngularTheme];
 
   objects = signal<KritzelBaseObject[]>([]);
 

@@ -11,6 +11,7 @@ import {
   KritzelToolbarControl,
   ShapeType,
 } from 'kritzel-angular';
+import { customAngularTheme } from '../../const/custom-angular-theme';
 
 type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | 'image';
 
@@ -32,6 +33,8 @@ type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | '
 
     <kritzel-editor
       #editor
+      [theme]="'angular-theme'"
+      [themes]="themes"
       [controls]="controls"
       [isControlsVisible]="false"
     ></kritzel-editor>
@@ -66,6 +69,8 @@ type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | '
 })
 export class CustomToolbar7Component {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
+
+  themes = [customAngularTheme];
 
   activeTool = signal<ToolName>('selection');
 

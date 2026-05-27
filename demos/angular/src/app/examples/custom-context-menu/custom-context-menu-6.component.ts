@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { KritzelEditor } from 'kritzel-angular';
 import { ContextMenuItem, KritzelAlignment } from 'kritzel-stencil';
+import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
   selector: 'app-custom-context-menu-6',
@@ -9,6 +10,8 @@ import { ContextMenuItem, KritzelAlignment } from 'kritzel-stencil';
   template: `
     <kritzel-editor
       #editor
+      [theme]="'angular-theme'"
+      [themes]="themes"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"
     ></kritzel-editor>
@@ -22,6 +25,8 @@ import { ContextMenuItem, KritzelAlignment } from 'kritzel-stencil';
 })
 export class CustomContextMenu6Component {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
+
+  themes = [customAngularTheme];
 
   globalItems: ContextMenuItem[] = [
     {

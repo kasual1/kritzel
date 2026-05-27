@@ -7,6 +7,7 @@ import {
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
 } from 'kritzel-stencil';
+import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
   selector: 'app-object-management-2',
@@ -14,6 +15,8 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      [theme]="'angular-theme'"
+      [themes]="themes"
       (isReady)="onIsReady($event)"
       (objectsAdded)="onObjectsAdded($event)"
       (objectsRemoved)="onObjectsRemoved($event)"
@@ -57,6 +60,8 @@ import {
 })
 export class ObjectManagement2Component {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
+
+  themes = [customAngularTheme];
 
   objects = signal<KritzelBaseObject[]>([]);
 

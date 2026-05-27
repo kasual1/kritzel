@@ -5,13 +5,14 @@ import {
   KritzelSelectionTool,
   KritzelToolbarControl,
 } from 'kritzel-angular';
+import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
   selector: 'app-custom-toolbar-1',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor [controls]="controls"></kritzel-editor>
+    <kritzel-editor [theme]="'angular-theme'" [themes]="themes" [controls]="controls"></kritzel-editor>
   `,
   styles: `
     :host {
@@ -21,6 +22,8 @@ import {
   `,
 })
 export class CustomToolbar1Component {
+  themes = [customAngularTheme];
+
   controls: KritzelToolbarControl[] = [
     { type: 'tool', tool: KritzelSelectionTool, name: 'Select', icon: 'cursor', isDefault: true },
     { type: 'tool', tool: KritzelBrushTool, name: 'Brush', icon: 'pen' },
