@@ -14,10 +14,12 @@ import {
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
-  selector: 'app-custom-toolbar-6',
+  selector: 'app-custom-toolbar-full-drawing-app',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: ` <kritzel-editor [theme]="'angular-theme'" [themes]="themes" [controls]="controls"></kritzel-editor> `,
+  template: `
+    <kritzel-editor [theme]="'angular-theme'" [themes]="themes" [controls]="controls"></kritzel-editor>
+  `,
   styles: `
     :host {
       display: block;
@@ -25,7 +27,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     }
   `,
 })
-export class CustomToolbar6Component {
+export class CustomToolbarFullDrawingAppComponent {
   themes = [customAngularTheme];
 
   controls: KritzelToolbarControl[] = [

@@ -16,7 +16,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
 type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | 'image';
 
 @Component({
-  selector: 'app-custom-toolbar-7',
+  selector: 'app-custom-toolbar-external',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -67,7 +67,7 @@ type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | '
     }
   `,
 })
-export class CustomToolbar7Component {
+export class CustomToolbarExternalComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
@@ -201,8 +201,8 @@ export class CustomToolbar7Component {
     },
   ];
 
-  async setTool(name: ToolName) {
+  setTool(name: ToolName): void {
     this.activeTool.set(name);
-    await this.editor.changeActiveToolByName(name);
+    this.editor.changeActiveToolByName(name);
   }
 }

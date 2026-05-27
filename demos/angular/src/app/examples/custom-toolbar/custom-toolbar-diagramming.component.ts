@@ -1,9 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   KritzelEditor,
-  KritzelBrushTool,
-  KritzelEraserTool,
-  KritzelImageTool,
   KritzelLineTool,
   KritzelSelectionTool,
   KritzelShapeTool,
@@ -14,10 +11,12 @@ import {
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
-  selector: 'app-custom-toolbar-5',
+  selector: 'app-custom-toolbar-diagramming',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: ` <kritzel-editor [theme]="'angular-theme'" [themes]="themes" [controls]="controls"></kritzel-editor> `,
+  template: `
+    <kritzel-editor [theme]="'angular-theme'" [themes]="themes" [controls]="controls"></kritzel-editor>
+  `,
   styles: `
     :host {
       display: block;
@@ -25,7 +24,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     }
   `,
 })
-export class CustomToolbar5Component {
+export class CustomToolbarDiagrammingComponent {
   themes = [customAngularTheme];
 
   controls: KritzelToolbarControl[] = [
@@ -37,31 +36,8 @@ export class CustomToolbar5Component {
       isDefault: true,
     },
     {
-      name: 'brush',
-      type: 'tool',
-      tool: KritzelBrushTool,
-      icon: 'pen',
-      config: {
-        type: 'pen',
-        color: { light: '#000000', dark: '#ffffff' },
-        size: 24,
-        sizes: {
-          pen: [24, 16, 8]
-        },
-        palettes: {
-          pen: [
-            { light: '#000000', dark: '#ffffff', label: 'Black' },
-            { light: '#e53935', dark: '#e53935', label: 'Red' },
-            { light: '#1a73e8', dark: '#1a73e8', label: 'Blue' },
-          ],
-        },
-      },
-    },
-    {
-      name: 'eraser',
-      type: 'tool',
-      tool: KritzelEraserTool,
-      icon: 'eraser',
+      name: 'separator-tools',
+      type: 'separator',
     },
     {
       name: 'line',
@@ -102,6 +78,29 @@ export class CustomToolbar5Component {
           { light: '#d81b60', dark: '#f06292' },
         ],
       },
+      subOptions: [
+        {
+          id: 'rectangle',
+          icon: 'shape-rectangle',
+          label: 'Rectangle',
+          value: ShapeType.Rectangle,
+          toolProperty: 'shapeType',
+        },
+        {
+          id: 'ellipse',
+          icon: 'shape-ellipse',
+          label: 'Ellipse',
+          value: ShapeType.Ellipse,
+          toolProperty: 'shapeType',
+        },
+        {
+          id: 'triangle',
+          icon: 'shape-triangle',
+          label: 'Triangle',
+          value: ShapeType.Triangle,
+          toolProperty: 'shapeType',
+        },
+      ],
     },
     {
       name: 'text',
@@ -121,10 +120,8 @@ export class CustomToolbar5Component {
       },
     },
     {
-      name: 'image',
-      type: 'tool',
-      tool: KritzelImageTool,
-      icon: 'image',
+      name: 'separator-config',
+      type: 'separator',
     },
     {
       name: 'config',
