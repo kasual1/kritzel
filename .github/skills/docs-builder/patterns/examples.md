@@ -2,7 +2,9 @@
 
 ## Overview
 
-Example pages are progressive step-by-step guides that teach a single Kritzel feature by building it up incrementally. Each page lives at `website/docs/angular/example-<feature>.md` and uses the `<LiveDemo>` component to embed hosted previews alongside fetched source code.
+Example pages demonstrate a single Kritzel feature through multiple **self-contained, realistic use cases**. Each example on the page is a complete, copy-paste-ready implementation that solves a real scenario a developer might encounter. Examples are ordered from simple to advanced, but every example stands alone — a developer can grab any single one without needing the others.
+
+Each page lives at `website/docs/angular/example-<feature>.md` and uses the `<LiveDemo>` component to embed hosted previews alongside fetched source code.
 
 ## File Naming & Location
 
@@ -24,20 +26,20 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Page Structure
 
-1. **`# <Feature>`** — intro paragraph: "This guide builds up X step by step, starting from a bare minimum and progressively adding configuration until reaching a fully controlled setup."
+1. **`# <Feature>`** — intro paragraph describing what the page covers and what kind of use cases the reader will find.
 2. **`## Prerequisites`** — link to Quick Start guide.
-3. **`## How <Feature> Works`** — interface definition or brief conceptual explanation (1–2 paragraphs max).
-4. **`## Step 1` through `## Step N`** — each step adds exactly one concept on top of the previous step.
+3. **`## How <Feature> Works`** — interface definition or brief conceptual explanation (1–2 paragraphs max). Include the relevant TypeScript interface or type if it helps the reader.
+4. **`## <Use Case Title>` sections** — each section is a complete, self-contained example named after the scenario it solves (e.g., "Annotation-Only Toolbar", "Diagramming Toolbar", "Custom External Toolbar").
 
 ## The LiveDemo Component
 
-Each step includes a `<LiveDemo>` block that renders an iframe preview and fetches source code from GitHub:
+Each example includes a `<LiveDemo>` block that renders an iframe preview and fetches source code from GitHub:
 
 ```jsx
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/<feature>-<step>"
-  repoFiles={['src/app/examples/<feature>/<feature>-<step>.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/<feature>-<example-name>"
+  repoFiles={['src/app/examples/<feature>/<feature>-<example-name>.component.ts']}
 />
 ```
 
@@ -53,65 +55,80 @@ Each step includes a `<LiveDemo>` block that renders an iframe preview and fetch
 
 - `repoUrl` always points to the Angular demo: `https://github.com/kasual1/kritzel-demos/tree/main/angular`
 - `iframeUrl` uses the Angular GitHub Pages hash-router: `https://kasual1.github.io/kritzel-demos/angular/#/examples/<route>`
-- `repoFiles` lists only files relevant to the current step. For the first step, include both files of step 1 and step 2 if step 2 builds directly on step 1's base. Otherwise, list only the current step's file.
+- `repoFiles` lists all files needed to understand the example. Include helper files, services, or secondary components if the example uses them.
 
 ## Demo Source Code
 
-The actual Angular components backing each step live in:
+The actual Angular components backing each example live in:
 
 ```
 demos/angular/src/app/examples/<feature>/
-├── <feature>-1.component.ts
-├── <feature>-2.component.ts
-├── ...
-└── <feature>-N.component.ts
+├── <feature>-<example-name>.component.ts
+├── <feature>-<example-name>.component.ts
+└── ...
 ```
 
 Each component is a standalone Angular component following these rules:
 
 - `ChangeDetectionStrategy.OnPush`
 - Standalone pattern with `imports: [KritzelEditor]`
-- `:host { display: block; height: 100%; }` for full-height layout
-- Incremental: step N includes all code from step N-1 plus the new addition
+- `:host { display: block; height: 100%; }` for full-height layout (or `display: flex` when using side panels)
+- **Self-contained**: every example includes all the code needed to work independently — no relying on a "previous step" for context
 
-## Step Writing Rules
+## Example Writing Rules
 
-### Each step must:
+### Each example must:
 
-- Start from the output of the previous step (cumulative)
+- Solve a realistic, named scenario (not "Step 3" but "Diagramming Toolbar with Shapes and Lines")
+- Be fully self-contained — a developer can copy it without reading other examples
 - Contain a `<LiveDemo>` block with the appropriate `iframeUrl` and `repoFiles`
-- End with 1–2 sentences explaining what the new code does mechanically
-- Be separated from the next step by a `---` horizontal rule
+- Start with 1–2 sentences framing the use case scenario
+- End with 1–2 sentences explaining key API details or gotchas
+- Be separated from the next example by a `---` horizontal rule
 
-### Each step must NOT:
+### Each example must NOT:
 
-- Repeat unchanged code without purpose
-- Introduce multiple unrelated concepts at once
-- Include motivational phrasing ("useful when you want to...", "a real-world example...")
+- Reference or depend on code from other examples on the same page
+- Be named generically ("Step 1", "Basic", "Advanced") — use scenario names
+- Include motivational filler ("useful when you want to...", "imagine a scenario...")
+- Combine too many unrelated API features — keep focus on one coherent scenario
 - Use backtick code references in headings
 
-## Step Ordering Heuristic
+## Example Ordering Heuristic
 
-Build up in this order when documenting a feature end-to-end:
+Order examples from simple use cases to complex ones:
 
-1. **Bare minimum** — show the feature with the fewest possible options
-2. **Defaults / initial state** — configure starting values
-3. **Extend the set** — add more items (tools, options, menu entries)
-4. **Type-specific config** — add per-item typed configuration
-5. **Variants / sub-options** — expose multi-variant controls
-6. **Programmatic control** — replace built-in UI with custom code
+1. **Simple real scenario** — the most common, minimal use of the feature (e.g., "Annotation-Only Toolbar" with just select + brush)
+2. **Domain-specific scenario** — a use case tailored to a specific domain (e.g., "Diagramming Toolbar" with shapes, lines, text)
+3. **Fully configured scenario** — a production-ready setup with all options configured (e.g., "Full Drawing App Toolbar" with separators, sub-options, palettes)
+4. **Custom integration scenario** — replacing built-in UI with custom code or integrating with external state (e.g., "Custom External Toolbar" hiding built-in controls)
 
-Not every feature needs all six levels — stop when the API surface is exhausted.
+Not every feature needs all four levels — stop when the API surface is covered with realistic scenarios. Aim for 3–5 examples per page.
+
+## Naming Examples
+
+Use descriptive, scenario-based names that tell the developer what they'll build:
+
+| Instead of | Use |
+|---|---|
+| "Step 1: Minimal toolbar" | "Annotation-Only Toolbar" |
+| "Step 2: Adding more tools" | "Diagramming Toolbar" |
+| "Step 3: Full configuration" | "Full Drawing App with Branded Colors" |
+| "Step 4: Programmatic control" | "Custom External Toolbar" |
+| "Basic context menu" | "Canvas-Level Quick Actions" |
+| "Advanced context menu" | "Object Inspector Menu with Submenus" |
+
+The heading doubles as the scenario name. It should immediately tell the reader what they will end up with after copying the code.
 
 ## Maintaining Existing Examples
 
 When editing an existing example page:
 
-1. Read the current page to understand the step progression.
-2. Identify where the new content fits in the progression (insert between existing steps or append).
-3. If inserting, renumber subsequent steps and update their `<LiveDemo>` references.
-4. Ensure corresponding demo components exist in `demos/angular/src/app/examples/<feature>/`.
-5. Verify routes are registered in the Angular demo's router config.
+1. Read the current page to understand the existing scenarios.
+2. Identify whether the new content fits as a new scenario (append) or refines an existing one (edit in place).
+3. Ensure corresponding demo components exist in `demos/angular/src/app/examples/<feature>/`.
+4. Verify routes are registered in the Angular demo's router config.
+5. Each example component file should be named after the scenario slug, not a number (e.g., `custom-toolbar-annotation.component.ts` not `custom-toolbar-1.component.ts`). During the transition period, numbered files are acceptable.
 
 ## Relationship to Other Frameworks
 
