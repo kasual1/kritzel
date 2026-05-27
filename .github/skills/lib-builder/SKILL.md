@@ -1,10 +1,10 @@
 ---
-name: stencil-builder
+name: lib-builder
 description: "Add features, fix bugs, or edit existing code in the kritzel-stencil core library. Covers tools, handlers, objects, components, themes, helpers, providers, and managers. Use when working inside libs/kritzel-stencil/src/."
 argument-hint: "Describe the feature, bug fix, or change to make in the stencil core"
 ---
 
-# Stencil Builder — kritzel-stencil Core Library
+# Lib Builder — kritzel-stencil Core Library
 
 ## When to Use
 
