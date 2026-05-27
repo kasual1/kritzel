@@ -1,4 +1,4 @@
-import { KritzelTheme } from 'kritzel-stencil';
+import { KritzelTheme } from "kritzel-angular";
 
 export const customAngularTheme: KritzelTheme = {
   name: 'angular-theme',
@@ -50,6 +50,7 @@ export const customAngularTheme: KritzelTheme = {
     controlActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
     controlSelectedBackgroundColor: '#dd0031',
     controlSelectedColor: '#ffffff',
+    separatorColor: '#ebebeb'
   },
   tooltip: {
     backgroundColor: '#fff',
