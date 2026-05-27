@@ -87,6 +87,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'controls',
   'globalContextMenuItems',
   'objectContextMenuItems',
+  'themes',
   'theme',
   'customSvgIcons',
   'isControlsVisible',
@@ -220,6 +221,7 @@ export const KritzelPillTabs: StencilVueComponent<JSX.KritzelPillTabs> = /*@__PU
 
 
 export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PURE__*/ defineContainer<JSX.KritzelSettings>('kritzel-settings', defineKritzelSettings, [
+  'availableThemes',
   'shortcuts',
   'settings',
   'settingsChange'

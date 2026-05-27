@@ -81,6 +81,7 @@ const brandControls: KritzelToolbarControl[] = [
     </div>
     <kritzel-editor
       [controls]="brandControls"
+      [themes]="themes"
       [theme]="activeTheme()"
       (themeChange)="onThemeChange($event)"
     ></kritzel-editor>
@@ -100,13 +101,12 @@ const brandControls: KritzelToolbarControl[] = [
   `],
 })
 export class Theming5Component implements OnInit {
+  themes = [brandedLightTheme, brandedDarkTheme];
   readonly brandControls = brandControls;
 
   activeTheme = signal<ThemeName>('branded-light');
 
   ngOnInit(): void {
-    KritzelThemeManager.initializeThemes([brandedLightTheme, brandedDarkTheme]);
-
     const stored = KritzelThemeManager.getStoredTheme();
     // Default to our branded-light if neither of our branded themes are selected
     if (stored === 'branded-light' || stored === 'branded-dark') {

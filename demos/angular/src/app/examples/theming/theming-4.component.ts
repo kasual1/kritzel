@@ -84,6 +84,7 @@ const brandControls: KritzelToolbarControl[] = [
   template: `
     <kritzel-editor
       [controls]="brandControls"
+      [themes]="themes"
       theme="branded-light"
     ></kritzel-editor>
   `,
@@ -95,10 +96,10 @@ const brandControls: KritzelToolbarControl[] = [
   `],
 })
 export class Theming4Component implements OnInit {
+  themes = [brandedLightTheme, brandedDarkTheme];
   readonly brandControls = brandControls;
 
   ngOnInit(): void {
-    KritzelThemeManager.initializeThemes([brandedLightTheme, brandedDarkTheme]);
   }
 }
 

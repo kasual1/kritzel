@@ -10,31 +10,6 @@ const SETTINGS_STORAGE_KEY = 'kritzel-settings';
 /** Default theme used when no stored preference exists. */
 const DEFAULT_THEME: ThemeName = 'light';
 
-/** Safe cross-chunk window interface extension */
-interface KritzelWindow extends Window {
-  __KRITZEL_THEME_REGISTRY__?: Map<string, KritzelTheme>;
-}
-
-/** Registry of available themes attached globally to prevent chunk duplication issues */
-const getGlobalThemeRegistry = (): Map<string, KritzelTheme> => {
-  if (typeof window !== 'undefined') {
-    const w = window as KritzelWindow;
-    if (!w.__KRITZEL_THEME_REGISTRY__) {
-      w.__KRITZEL_THEME_REGISTRY__ = new Map<string, KritzelTheme>();
-      w.__KRITZEL_THEME_REGISTRY__.set('light', lightTheme);
-      w.__KRITZEL_THEME_REGISTRY__.set('dark', darkTheme);
-    }
-    return w.__KRITZEL_THEME_REGISTRY__;
-  }
-  // Fallback for SSR/Node environments
-  const fallbackMap = new Map<string, KritzelTheme>();
-  fallbackMap.set('light', lightTheme);
-  fallbackMap.set('dark', darkTheme);
-  return fallbackMap;
-};
-
-const THEME_REGISTRY = getGlobalThemeRegistry();
-
 /**
  * Manages theme state and application across the Kritzel editor.
  * Reads the persisted theme from the settings object in localStorage but does not write to it.
@@ -50,6 +25,7 @@ export class KritzelThemeManager {
   private _currentTheme: ThemeName = DEFAULT_THEME;
   private _targetElement: HTMLElement | null = null;
   private readonly _storageKey: string;
+  private _themeRegistry = new Map<string, KritzelTheme>();
 
   /**
    * Creates a new KritzelThemeManager instance.
@@ -60,9 +36,12 @@ export class KritzelThemeManager {
   constructor(core: KritzelCore) {
     this._core = core;
     this._storageKey = core.editorId ? `${SETTINGS_STORAGE_KEY}-${core.editorId}` : SETTINGS_STORAGE_KEY;
+    
+    this._themeRegistry.set('light', lightTheme);
+    this._themeRegistry.set('dark', darkTheme);
+
     this._currentTheme = this.getStoredTheme();
     void this._core;
-    this.injectThemeEarly();
   }
 
   /**
@@ -105,23 +84,21 @@ export class KritzelThemeManager {
    * @returns The KritzelTheme object containing all theme CSS variable values
    */
   getThemeByName(themeName: ThemeName): KritzelTheme {
-    return THEME_REGISTRY.get(themeName) ?? THEME_REGISTRY.values().next().value!;
+    return this._themeRegistry.get(themeName) ?? this._themeRegistry.values().next().value!;
   }
 
   /**
-   * Replaces the global theme registry with the provided themes.
-   * Call this once before initializing any editor instances to define which themes are available.
-   * Replaces the built-in light and dark themes entirely — only the provided themes will be available.
+   * Registers the provided themes to this theme manager instance.
    *
    * @param themes - The complete list of themes to make available
    */
-  static initializeThemes(themes: KritzelTheme[]): void {
+  registerThemes(themes: KritzelTheme[]): void {
     if (themes.length === 0) {
-      console.warn('[KritzelThemeManager] initializeThemes called with an empty array. The theme registry will be empty.');
+      console.warn('[KritzelThemeManager] registerThemes called with an empty array. The theme registry will be empty.');
     }
-    THEME_REGISTRY.clear();
+    this._themeRegistry.clear();
     for (const theme of themes) {
-      THEME_REGISTRY.set(theme.name, theme);
+      this._themeRegistry.set(theme.name, theme);
     }
   }
 
@@ -134,7 +111,7 @@ export class KritzelThemeManager {
   injectThemeEarly(element?: HTMLElement): void {
     let targetElement = element;
     if (!targetElement && typeof document !== 'undefined') {
-      targetElement = document.querySelector('kritzel-editor') as HTMLElement || document.documentElement;
+      targetElement = document.documentElement;
     }
     if (!targetElement) return;
 
@@ -148,8 +125,8 @@ export class KritzelThemeManager {
    *
    * @returns An array of all registered theme objects
    */
-  static getAllThemes(): KritzelTheme[] {
-    return Array.from(THEME_REGISTRY.values());
+  getAllThemes(): KritzelTheme[] {
+    return Array.from(this._themeRegistry.values());
   }
 
   /**

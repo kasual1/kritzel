@@ -5,7 +5,6 @@ import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
 import { KRITZEL_VERSION } from '../../../constants/version';
 import { CURRENT_APP_STATE_SCHEMA_VERSION, CURRENT_WORKSPACE_SCHEMA_VERSION } from '../../../constants/schema.constants';
 import { ThemeName } from '../../../interfaces/theme.interface';
-import { KritzelThemeManager } from '../../../classes/managers/theme.manager';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 const DEFAULT_SCALE_MIN = 0.0001;
 const DEFAULT_SCALE_MAX = 1000;
@@ -39,6 +38,7 @@ export class KritzelSettings {
   @Element() host!: HTMLElement;
 
   /** Keyboard shortcuts to display in the settings dialog */
+  @Prop() availableThemes: string[] = ['light', 'dark'];
   @Prop() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
 
   /** Current settings values. Used to initialize and sync the component's internal state. */
@@ -214,7 +214,7 @@ export class KritzelSettings {
                   Select a registered color theme for the editor interface.
                 </p>
                 <kritzel-dropdown
-                  options={KritzelThemeManager.getAllThemes().map(t => ({ value: t.name, label: t.name }))}
+                  options={this.availableThemes.map(t => ({ value: t, label: t }))}
                   value={this.theme}
                   onValueChanged={this.handleThemeChange}
                 ></kritzel-dropdown>

@@ -28,10 +28,11 @@ A settings button component that opens a settings dialog when clicked.
 
 ## Properties
 
-| Property    | Attribute | Description                                                                          | Type                                               | Default     |
-| ----------- | --------- | ------------------------------------------------------------------------------------ | -------------------------------------------------- | ----------- |
-| `settings`  | --        | Current settings values. Used to initialize and sync the component's internal state. | `KritzelSettingsConfig`                            | `undefined` |
-| `shortcuts` | --        | Keyboard shortcuts to display in the settings dialog                                 | `Omit<KritzelShortcut, "action" \| "condition">[]` | `[]`        |
+| Property          | Attribute | Description                                                                          | Type                                               | Default             |
+| ----------------- | --------- | ------------------------------------------------------------------------------------ | -------------------------------------------------- | ------------------- |
+| `availableThemes` | --        | Keyboard shortcuts to display in the settings dialog                                 | `string[]`                                         | `['light', 'dark']` |
+| `settings`        | --        | Current settings values. Used to initialize and sync the component's internal state. | `KritzelSettingsConfig`                            | `undefined`         |
+| `shortcuts`       | --        |                                                                                      | `Omit<KritzelShortcut, "action" \| "condition">[]` | `[]`                |
 
 
 ## Events

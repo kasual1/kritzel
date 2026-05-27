@@ -36,7 +36,7 @@ const customLightTheme: KritzelTheme = {
   selector: 'app-theming-2',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: ` <kritzel-editor theme="custom-light"></kritzel-editor> `,
+  template: `<kritzel-editor [themes]="themes" theme="custom-light"></kritzel-editor>`,
   styles: [
     `
       :host {
@@ -47,7 +47,7 @@ const customLightTheme: KritzelTheme = {
   ],
 })
 export class Theming2Component implements OnInit {
+  themes = [customLightTheme];
   ngOnInit(): void {
-    KritzelThemeManager.initializeThemes([customLightTheme]);
   }
 }

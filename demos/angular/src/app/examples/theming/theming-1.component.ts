@@ -21,7 +21,7 @@ const brandedAccentTheme: KritzelTheme = {
   selector: 'app-theming-1',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<kritzel-editor theme="branded-accent"></kritzel-editor>`,
+  template: `<kritzel-editor [themes]="themes" theme="branded-accent"></kritzel-editor>`,
   styles: [`
     :host {
       display: block;
@@ -30,7 +30,7 @@ const brandedAccentTheme: KritzelTheme = {
   `],
 })
 export class Theming1Component implements OnInit {
+  themes = [brandedAccentTheme];
   ngOnInit(): void {
-    KritzelThemeManager.initializeThemes([brandedAccentTheme]);
   }
 }
