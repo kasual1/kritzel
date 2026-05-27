@@ -107,20 +107,12 @@ const customAngularTheme: KritzelTheme = {
   selector: 'app-editor-page',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: ` <kritzel-editor [theme]="activeTheme()" [themes]="themes" (themeChange)="handleThemeChange($event)" (isReady)="handleIsReady($event)"></kritzel-editor> `,
+  template: ` <kritzel-editor [theme]="'angular-theme'" [themes]="themes"></kritzel-editor> `,
 })
 export class EditorPageComponent {
   themes = [customAngularTheme];
-  activeTheme = signal<ThemeName | undefined>(undefined);
+  activeTheme = signal<ThemeName | undefined>('angular-theme');
 
   constructor() {}
 
-  handleThemeChange(event: CustomEvent<ThemeName>) {
-    console.log('Theme changed to:', event.detail);
-    this.activeTheme.set(event.detail);
-  }
-
-  handleIsReady(event: CustomEvent<any>) {
-    console.log('Editor is ready:', event.detail);
-  }
 }

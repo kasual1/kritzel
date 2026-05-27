@@ -31,6 +31,9 @@ import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, 
 import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelUndoState } from '../../..';
 import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
 import { ThemeName, KritzelTheme } from '../../../interfaces/theme.interface';
+import { ThemeHelper } from '../../../helpers/theme.helper';
+import { lightTheme } from '../../../themes/light-theme';
+import { darkTheme } from '../../../themes/dark-theme';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
@@ -264,6 +267,7 @@ export class KritzelEditor {
   @State() isBackToContentButtonVisible: boolean = false;
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
   @State() currentIsPublic: boolean = false;
+  @State() isEditorVisible: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -327,10 +331,16 @@ export class KritzelEditor {
 
   @Watch('theme')
   onCurrentThemeChange() {
+    this.applyTheme();
     setTimeout(() => this.setOsSpecificCssVariables(), 0);
     if (this.engineRef) {
       this.engineRef.saveSettings(this.currentSettingsConfig);
     }
+  }
+
+  @Watch('themes')
+  onThemesChange() {
+    this.applyTheme();
   }
 
   @Listen('dblclick', { passive: false })
@@ -646,6 +656,17 @@ export class KritzelEditor {
 
   componentWillLoad() {
     this.loadSettingsFromStorage();
+    this.applyTheme();
+  }
+
+  private applyTheme(): void {
+    const themeObj = this.resolveThemeObject();
+    ThemeHelper.applyThemeToElement(this.host, themeObj);
+  }
+
+  private resolveThemeObject(): KritzelTheme {
+    return this.themes?.find(t => t.name === this.theme)
+      ?? (this.theme === 'dark' ? darkTheme : lightTheme);
   }
 
   componentDidLoad() {
@@ -663,6 +684,8 @@ export class KritzelEditor {
     if (!this.isEngineReady || !this.isControlsReady || !this.isWorkspaceManagerReady || !this.activeWorkspace) {
       return;
     }
+
+    this.isEditorVisible = true;
 
     const { id, name, isPublic, createdAt, updatedAt } = this.activeWorkspace;
 
@@ -980,10 +1003,16 @@ export class KritzelEditor {
   render() {
     const isLoggedIn = this.isLoggedIn;
     const shouldShowCurrentUser = isLoggedIn;
-    const shouldShowLoginButton = !!this.loginConfig && !isLoggedIn;
+    const shouldShowLoginButton = this.isReady &&!!this.loginConfig && !isLoggedIn;
 
     return (
-      <Host>
+      <Host
+        style={{
+          opacity: this.isEditorVisible ? '1' : '0',
+          visibility: this.isEditorVisible ? 'visible' : 'hidden',
+          transition: 'opacity 0.2s ease-in-out, visibility 0.2s ease-in-out',
+        }}
+      >
         <div class="top-left-buttons">
           <kritzel-workspace-manager
             visible={this.isWorkspaceManagerVisible}
@@ -1059,7 +1088,7 @@ export class KritzelEditor {
               }
             }}
             shortcuts={this.shortcuts}
-            availableThemes={['light', 'dark', ...(this.themes?.map(t => t.name) || [])]}
+            availableThemes={this.themes && this.themes.length > 0 ? this.themes.map(t => t.name) : ['light', 'dark']}
             settings={this.currentSettingsConfig}
             onSettingsChange={event => this.handleSettingsChange(event)}
           ></kritzel-settings>
@@ -1080,7 +1109,11 @@ export class KritzelEditor {
 
           {shouldShowCurrentUser && <kritzel-current-user user={this.user}></kritzel-current-user>}
 
-          {shouldShowLoginButton && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>}
+          {shouldShowLoginButton && (
+            <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>
+              Sign in
+            </kritzel-button>
+          )}
 
           <kritzel-more-menu
             items={this.moreMenuItems}
