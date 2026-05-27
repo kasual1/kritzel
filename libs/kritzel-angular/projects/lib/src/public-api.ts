@@ -19,6 +19,7 @@ export {
     KritzelToolbarControl,
     KritzelSyncConfig,
     KritzelWorkspace,
+    KritzelTheme,
     InMemorySyncProvider,
     IndexedDBSyncProvider,
     BroadcastSyncProvider,
@@ -28,6 +29,8 @@ export {
     LoginEvent,
     EditorIsReadyEvent,
     ActiveWorkspaceChangeEvent,
+    lightTheme,
+    darkTheme,
     DEFAULT_BRUSH_CONFIG,
     DEFAULT_TEXT_CONFIG,
 } from 'kritzel-stencil';
