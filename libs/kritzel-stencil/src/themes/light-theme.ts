@@ -43,6 +43,8 @@ export const lightTheme: KritzelTheme = {
 
   selection: {
     borderColor: '#007AFF',
+    boxBackgroundColor: 'rgba(0, 122, 255, 0.2)',
+    boxBorderColor: 'rgba(0, 122, 255, 0.5)',
     handleColor: '#ffffff',
     handleStrokeColor: '#007AFF'
   },
