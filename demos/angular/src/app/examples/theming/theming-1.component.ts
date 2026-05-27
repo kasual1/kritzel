@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { KritzelTheme, lightTheme, KritzelThemeManager } from 'kritzel-stencil';
+import { KritzelEditor, KritzelTheme, lightTheme } from 'kritzel-angular';
 
 const brandedAccentTheme: KritzelTheme = {
   ...lightTheme,
