@@ -372,6 +372,8 @@ export interface KritzelTheme {
   selection?: {
     borderColor?: string;
     borderWidth?: string;
+    boxBackgroundColor?: string;
+    boxBorderColor?: string;
     handleColor?: string;
     handleSize?: string;
     handleStrokeColor?: string;

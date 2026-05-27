@@ -21,6 +21,8 @@ const customAngularTheme: KritzelTheme = {
     handleSize: '6px',
     handleColor: '#ffffff',
     handleStrokeColor: '#dd0031',
+    boxBackgroundColor: 'rgba(221, 0, 48, 0.2)',
+    boxBorderColor: 'rgba(221, 0, 48, 0.5)',
   },
   contextMenu: {
     backgroundColor: '#ffffff',
