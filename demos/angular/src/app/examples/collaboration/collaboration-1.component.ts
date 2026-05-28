@@ -25,6 +25,8 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      editorId="collaboration-1"
+      [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
       [syncConfig]="syncConfig"

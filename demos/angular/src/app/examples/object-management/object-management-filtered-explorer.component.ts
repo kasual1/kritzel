@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, signal, ViewChild } from '@angular/core';
-import { EditorIsReadyEvent, InMemorySyncProvider, KritzelBaseObject, KritzelEditor, KritzelSyncConfig, KritzelShape, KritzelPath, KritzelLine, ShapeType, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from 'kritzel-angular';
+import { EditorIsReadyEvent, InMemorySyncProvider, KritzelBaseObject, KritzelEditor, KritzelSyncConfig, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
+import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
   selector: 'app-object-management-filtered-explorer',
@@ -8,12 +9,14 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      editorId="object-management-filtered-explorer"
       [theme]="'angular-theme'"
       [themes]="themes"
       [syncConfig]="syncConfig"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
+      [wheelEnabled]="false"
       (isReady)="onIsReady($event)"
       (objectsAdded)="onObjectsAdded($event)"
       (objectsRemoved)="onObjectsRemoved($event)"
@@ -117,7 +120,10 @@ export class ObjectManagementFilteredExplorerComponent {
   });
 
   async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    await this.seedObjects();
+    const existing = await this.editor.getAllObjects();
+    if (existing.length === 0) {
+      await this.seedObjects();
+    }
     const objects = await this.editor.getAllObjects();
     this.allObjects.set([...objects]);
     await this.applyOpacityFilter();
@@ -171,32 +177,8 @@ export class ObjectManagementFilteredExplorerComponent {
   }
 
   private async seedObjects() {
-    await this.editor.addObject(new KritzelShape({
-      translateX: -140, translateY: -170, width: 120, height: 120,
-      shapeType: ShapeType.Ellipse,
-      fillColor: { light: '#e3f2fd', dark: '#1a237e' },
-      strokeColor: { light: '#1565c0', dark: '#90caf9' },
-      strokeWidth: 3,
-    }));
-    await this.editor.addObject(new KritzelShape({
-      translateX: 20, translateY: -150, width: 120, height: 120,
-      shapeType: ShapeType.Rectangle,
-      fillColor: { light: '#fce4ec', dark: '#880e4f' },
-      strokeColor: { light: '#c62828', dark: '#ef9a9a' },
-      strokeWidth: 3,
-    }));
-    await this.editor.addObject(new KritzelLine({
-      startX: -170, startY: 10, endX: 130, endY: 10,
-      stroke: { light: '#4caf50', dark: '#81c784' },
-      strokeWidth: 3,
-    }));
-    const path = new KritzelPath({
-      points: [[0, 0, 0.5], [15, -20, 0.5], [30, -40, 0.5], [45, -25, 0.5], [60, -10, 0.5], [75, -30, 0.5], [90, -50, 0.5], [105, -35, 0.5], [120, -20, 0.5], [135, -40, 0.5], [150, -60, 0.5], [165, -45, 0.5], [180, -30, 0.5], [195, -50, 0.5], [210, -70, 0.5], [225, -55, 0.5], [240, -40, 0.5]],
-      translateX: -75, translateY: 125,
-      strokeWidth: 8,
-      fill: { light: '#ff9800', dark: '#ffb74d' },
-    });
-    path.rotation = (40 * Math.PI) / 180;
-    await this.editor.addObject(path);
+    for (const obj of createSeedObjects()) {
+      await this.editor.addObject(obj);
+    }
   }
 }
