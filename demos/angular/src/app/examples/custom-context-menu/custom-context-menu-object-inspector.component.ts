@@ -4,7 +4,7 @@ import { ContextMenuItem } from 'kritzel-stencil';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
-  selector: 'app-custom-context-menu-4',
+  selector: 'app-custom-context-menu-object-inspector',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -14,6 +14,9 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       [themes]="themes"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
     ></kritzel-editor>
   `,
   styles: `
@@ -23,7 +26,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     }
   `,
 })
-export class CustomContextMenu4Component {
+export class CustomContextMenuObjectInspectorComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
@@ -45,7 +48,6 @@ export class CustomContextMenu4Component {
       },
       icon: 'select-all',
       group: 'clipboard',
-      disabled: async () => (await this.editor.getObjectsInViewport()).length === 0,
     },
   ];
 
@@ -66,6 +68,60 @@ export class CustomContextMenu4Component {
       icon: 'paste',
       group: 'clipboard',
       disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
+    },
+    {
+      label: 'Arrange',
+      icon: 'layers',
+      group: 'arrange',
+      children: [
+        {
+          label: 'Bring to Front',
+          icon: 'bring-to-front',
+          action: () => {
+            this.editor.bringToFront();
+          },
+        },
+        {
+          label: 'Bring Forward',
+          icon: 'bring-forward',
+          action: () => {
+            this.editor.bringForward();
+          },
+        },
+        {
+          label: 'Send Backward',
+          icon: 'send-backward',
+          action: () => {
+            this.editor.sendBackward();
+          },
+        },
+        {
+          label: 'Send to Back',
+          icon: 'send-to-back',
+          action: () => {
+            this.editor.sendToBack();
+          },
+        },
+      ],
+    },
+    {
+      label: 'Export',
+      icon: 'download',
+      group: 'export',
+      children: [
+        {
+          label: 'Export as PNG',
+          action: () => {
+            this.editor.exportSelectedObjectsAsPng();
+          },
+        },
+        {
+          label: 'Export as SVG',
+          action: () => {
+            this.editor.exportSelectedObjectsAsSvg();
+          },
+        },
+      ],
     },
     {
       label: 'Delete',

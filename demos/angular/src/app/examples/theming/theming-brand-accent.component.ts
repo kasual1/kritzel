@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { KritzelEditor, KritzelTheme, lightTheme } from 'kritzel-angular';
 
 const brandedAccentTheme: KritzelTheme = {
@@ -17,10 +17,18 @@ const brandedAccentTheme: KritzelTheme = {
 };
 
 @Component({
-  selector: 'app-theming-1',
+  selector: 'app-theming-brand-accent',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<kritzel-editor [themes]="themes" theme="branded-accent"></kritzel-editor>`,
+  template: `
+    <kritzel-editor
+      [themes]="themes"
+      theme="branded-accent"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
+    ></kritzel-editor>
+  `,
   styles: [`
     :host {
       display: block;
@@ -28,8 +36,6 @@ const brandedAccentTheme: KritzelTheme = {
     }
   `],
 })
-export class Theming1Component implements OnInit {
+export class ThemingBrandAccentComponent {
   themes = [brandedAccentTheme];
-  ngOnInit(): void {
-  }
 }

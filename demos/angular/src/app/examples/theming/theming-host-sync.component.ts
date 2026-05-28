@@ -699,7 +699,7 @@ const brandControls: KritzelToolbarControl[] = [
 ];
 
 @Component({
-  selector: 'app-theming-5',
+  selector: 'app-theming-host-sync',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -710,6 +710,9 @@ const brandControls: KritzelToolbarControl[] = [
       [controls]="brandControls"
       [themes]="themes"
       [theme]="activeTheme()"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
       (themeChange)="onThemeChange($event)"
     ></kritzel-editor>
   `,
@@ -727,7 +730,7 @@ const brandControls: KritzelToolbarControl[] = [
     }
   `],
 })
-export class Theming5Component implements OnInit {
+export class ThemingHostSyncComponent implements OnInit {
   themes = [brandedLightTheme, brandedDarkTheme];
   readonly brandControls = brandControls;
 
@@ -735,7 +738,6 @@ export class Theming5Component implements OnInit {
 
   ngOnInit(): void {
     const stored = KritzelThemeManager.getStoredTheme();
-    // Default to our branded-light if neither of our branded themes are selected
     if (stored === 'branded-light' || stored === 'branded-dark') {
       this.activeTheme.set(stored);
       document.documentElement.setAttribute('data-theme', stored);

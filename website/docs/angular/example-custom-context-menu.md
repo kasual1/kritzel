@@ -2,14 +2,14 @@
 sidebar_label: Custom Context Menu
 displayed_sidebar: tutorialSidebar
 title: "Custom Context Menu Example | Kritzel for Angular"
-description: "Build a custom Kritzel context menu step by step, from a minimal action list up to a fully structured menu with icons, groups, nested submenus, and async conditional items."
+description: "Build a custom Kritzel context menu for real-world scenarios — from minimal canvas actions to a full object inspector with submenus, conditional visibility, and async state."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
 # Custom Context Menu
 
-This guide builds up a custom context menu step by step, starting from a bare minimum and progressively adding configuration until reaching a fully controlled setup.
+This page shows how to configure the `globalContextMenuItems` and `objectContextMenuItems` inputs on `<kritzel-editor>` for different real-world scenarios. Each example is self-contained and ready to copy into your project.
 
 ## Prerequisites
 
@@ -44,82 +44,56 @@ Passing either input replaces the corresponding default set entirely. Omitting a
 
 ---
 
-## Step 1: Adding Items to the Canvas Menu
+## Canvas-Level Quick Actions
 
-Pass a `globalContextMenuItems` array to replace the default canvas (empty-area) context menu. `objectContextMenuItems` is set to `[]` here to hide the default object menu while keeping the focus on the canvas menu:
+A minimal setup for a document viewer or read-only annotation tool: right-clicking the empty canvas offers Paste and Select All. The object menu is disabled entirely by passing an empty array, keeping the interaction focused on canvas-level actions.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-1"
-  repoFiles={['src/app/examples/custom-context-menu-1.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-canvas-quick-actions"
+  repoFiles={['src/app/examples/custom-context-menu/custom-context-menu-canvas-quick-actions.component.ts']}
 />
 
-The `action` callback receives the screen-space position of the menu (`menu.x`, `menu.y`) and the array of currently selected objects (`objects`). For canvas-level items, `objects` is always empty.
+The `action` callback receives the screen-space position of the menu (`menu.x`, `menu.y`) and the array of currently selected objects. For canvas-level items, `objects` is always empty. Setting `objectContextMenuItems` to `[]` suppresses the default object menu entirely.
 
 ---
 
-## Step 2: Adding Items to the Object Menu
+## Clipboard and Object Actions
 
-Add `objectContextMenuItems` to also replace the per-object context menu:
+A standard whiteboard setup with separate menus for canvas and objects. The canvas menu handles paste and bulk selection, while the object menu provides copy, paste, and delete — grouped visually using the `group` property and decorated with `icon` for quick scanning.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-2"
-  repoFiles={['src/app/examples/custom-context-menu-2.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-clipboard-actions"
+  repoFiles={['src/app/examples/custom-context-menu/custom-context-menu-clipboard-actions.component.ts']}
 />
 
-When right-clicking a selected object, `objects` contains the currently selected objects. When right-clicking an unselected object, the editor first selects it, then populates `objects` with that single object.
+Items sharing the same `group` string are visually separated from other groups by a divider line. The `icon` value is a built-in icon name. Custom SVG icons registered via the `customSvgIcons` input on `<kritzel-editor>` are also available here by their registered key.
 
 ---
 
-## Step 3: Adding Icons and Visual Groups
+## Smart Conditional Menu
 
-Use `icon` and `group` to structure the menu visually. Items sharing the same `group` string are separated from other groups by a divider:
+A production-ready menu that reacts to editor state: Paste is disabled when the clipboard is empty, Select All is disabled when the viewport has no objects, and Export as PNG only appears when exactly one object is selected. This prevents user confusion by hiding or greying out actions that cannot succeed.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-3"
-  repoFiles={['src/app/examples/custom-context-menu-3.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-smart-conditional"
+  repoFiles={['src/app/examples/custom-context-menu/custom-context-menu-smart-conditional.component.ts']}
 />
 
-The `icon` value is a built-in icon name. Custom SVG icons registered via the `customSvgIcons` input on `<kritzel-editor>` are also available here by their registered key.
+Both `disabled` and `visible` accept a function returning `boolean` or `Promise<boolean>`. The menu waits for all promises to resolve before rendering. Use `disabled` for items that should remain visible but un-clickable, and `visible` for items that should be hidden entirely based on context.
 
 ---
 
-## Step 4: Conditionally Disabling Items
+## Object Inspector Menu with Submenus
 
-Use a function for `disabled` to compute the enabled state at the moment the menu opens. In this example, **Select All** is disabled when there are no objects in the viewport, and **Paste** is disabled when the clipboard is empty (no objects have been copied yet):
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-4"
-  repoFiles={['src/app/examples/custom-context-menu-4.component.ts']}
-/>
-
-`disabled` also accepts a plain `boolean` for statically disabled items.
-
----
-
-## Step 5: Conditinonally Hiding Items
-
-Similar to `disabled`, `visible` accepts functions that return a `Promise<boolean>`. The menu waits for all promises to resolve before rendering:
+A full-featured object menu for a design tool: clipboard actions at the top, a nested Arrange submenu for layer ordering (Bring to Front, Send to Back, etc.), a nested Export submenu offering PNG and SVG formats, and a destructive Delete action at the bottom. Submenus can be nested to any depth.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-5"
-  repoFiles={['src/app/examples/custom-context-menu-5.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-object-inspector"
+  repoFiles={['src/app/examples/custom-context-menu/custom-context-menu-object-inspector.component.ts']}
 />
 
-`visible` controls whether the item appears in the list at all.
-
----
-
-## Step 6: Nested Submenus
-
-Add `children` to an item to turn it into a submenu trigger. The item itself has no `action`; clicking or hovering over it opens the nested list. Submenus can be nested to any depth. The menu automatically handles positioning to ensure submenus are always fully visible within the viewport.
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-6"
-  repoFiles={['src/app/examples/custom-context-menu-6.component.ts']}
-/>
+Add `children` to an item to turn it into a submenu trigger — the item itself has no `action`. Clicking or hovering over it opens the nested list. The menu automatically handles positioning to ensure submenus are always fully visible within the viewport.

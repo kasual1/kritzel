@@ -4,7 +4,7 @@ import { ContextMenuItem } from 'kritzel-stencil';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
-  selector: 'app-custom-context-menu-2',
+  selector: 'app-custom-context-menu-smart-conditional',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -14,6 +14,9 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       [themes]="themes"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
     ></kritzel-editor>
   `,
   styles: `
@@ -23,7 +26,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     }
   `,
 })
-export class CustomContextMenu2Component {
+export class CustomContextMenuSmartConditionalComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
@@ -34,12 +37,18 @@ export class CustomContextMenu2Component {
       action: async (menu) => {
         this.editor.paste(menu.x, menu.y);
       },
+      icon: 'paste',
+      group: 'clipboard',
+      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
     },
     {
       label: 'Select All',
       action: () => {
         this.editor.selectAllObjectsInViewport();
       },
+      icon: 'select-all',
+      group: 'clipboard',
+      disabled: async () => (await this.editor.getObjectsInViewport()).length === 0,
     },
   ];
 
@@ -49,12 +58,34 @@ export class CustomContextMenu2Component {
       action: () => {
         this.editor.copy();
       },
+      icon: 'copy',
+      group: 'clipboard',
+    },
+    {
+      label: 'Paste',
+      action: async (menu) => {
+        this.editor.paste(menu.x, menu.y);
+      },
+      icon: 'paste',
+      group: 'clipboard',
+      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
+    },
+    {
+      label: 'Export as PNG',
+      action: () => {
+        this.editor.exportSelectedObjectsAsPng();
+      },
+      icon: 'download',
+      group: 'export',
+      visible: async (_menu, objects) => objects.length === 1,
     },
     {
       label: 'Delete',
       action: () => {
         this.editor.delete();
       },
+      icon: 'delete',
+      group: 'destructive',
     },
   ];
 }

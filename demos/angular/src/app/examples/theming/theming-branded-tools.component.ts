@@ -1,7 +1,7 @@
-import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { KritzelEditor } from 'kritzel-angular';
 import {
-  KritzelTheme, KritzelThemeManager, lightTheme, darkTheme,
+  KritzelTheme, lightTheme, darkTheme,
   KritzelBrushTool, KritzelSelectionTool, KritzelTextTool,
   ThemeAwareColor, KritzelToolbarControl,
   DEFAULT_BRUSH_CONFIG, DEFAULT_TEXT_CONFIG
@@ -705,7 +705,7 @@ const brandControls: KritzelToolbarControl[] = [
 ];
 
 @Component({
-  selector: 'app-theming-4',
+  selector: 'app-theming-branded-tools',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -713,6 +713,9 @@ const brandControls: KritzelToolbarControl[] = [
       [controls]="brandControls"
       [themes]="themes"
       theme="branded-light"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
     ></kritzel-editor>
   `,
   styles: [`
@@ -722,11 +725,8 @@ const brandControls: KritzelToolbarControl[] = [
     }
   `],
 })
-export class Theming4Component implements OnInit {
+export class ThemingBrandedToolsComponent {
   themes = [brandedLightTheme, brandedDarkTheme];
   readonly brandControls = brandControls;
-
-  ngOnInit(): void {
-  }
 }
 

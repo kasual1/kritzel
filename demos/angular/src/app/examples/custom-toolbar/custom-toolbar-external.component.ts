@@ -37,6 +37,9 @@ type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | '
       [themes]="themes"
       [controls]="controls"
       [isControlsVisible]="false"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
     ></kritzel-editor>
   `,
   styles: `

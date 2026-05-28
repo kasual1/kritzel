@@ -333,19 +333,25 @@ const customLightTheme: KritzelTheme = {
 };
 
 @Component({
-  selector: 'app-theming-2',
+  selector: 'app-theming-full-light',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<kritzel-editor [themes]="themes" theme="custom-light"></kritzel-editor>`,
-  styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-      }
-    `,
-  ],
+  template: `
+    <kritzel-editor
+      [themes]="themes"
+      theme="custom-light"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
+    ></kritzel-editor>
+  `,
+  styles: [`
+    :host {
+      display: block;
+      height: 100%;
+    }
+  `],
 })
-export class Theming2Component {
+export class ThemingFullLightComponent {
   themes = [customLightTheme];
 }

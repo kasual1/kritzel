@@ -10,13 +10,16 @@ import {
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
-  selector: 'app-object-management-6',
+  selector: 'app-object-management-filtered-explorer',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
       [theme]="'angular-theme'"
       [themes]="themes"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
       (isReady)="onIsReady($event)"
       (objectsAdded)="onObjectsAdded($event)"
       (objectsRemoved)="onObjectsRemoved($event)"
@@ -25,7 +28,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     <aside>
       <div class="filters">
         @for (type of availableTypes; track type) {
-          <button 
+          <button
             [class.active]="selectedTypes().has(type)"
             (click)="toggleFilter(type)"
           >
@@ -100,7 +103,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     }
   `,
 })
-export class ObjectManagement6Component {
+export class ObjectManagementFilteredExplorerComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
