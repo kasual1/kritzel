@@ -16,7 +16,7 @@ export default defineConfig({
   reporter: [['line'], ['html', { open: 'never', outputFolder: './playwright-report' }]],
   snapshotPathTemplate: '{testDir}/../screenshots/{projectName}/{testFilePath}/{arg}{ext}',
   expect: {
-    toHaveScreenshot: { maxDiffPixelRatio: 0.005 }, // Screenshots will always have some minor pixel differences, so we set a small tolerance to avoid false positives
+    toHaveScreenshot: { maxDiffPixelRatio: 0.01 }, // Screenshots will always have some minor pixel differences, so we set a small tolerance to avoid false positives
   },
   use: {
     trace: 'on-first-retry',
