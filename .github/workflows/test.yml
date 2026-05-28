@@ -107,14 +107,16 @@ jobs:
         env:
           E2E_PROJECT: ${{ matrix.project }}
 
-      - name: Upload screenshot comparison results
-        if: always()
+      - name: Upload Playwright report
+        if: failure()
         uses: actions/upload-artifact@v6
         with:
-          name: screenshot-comparison-${{ matrix.project }}
-          path: |
-            libs/kritzel-stencil/screenshot/compare.html
-            libs/kritzel-stencil/screenshot/images/
-            libs/kritzel-stencil/screenshot/builds/
-            libs/kritzel-stencil/screenshot/screenshot-diff.js
-            node_modules/@stencil/core/screenshot/compare/
+          name: playwright-report-${{ matrix.project }}
+          path: e2e/playwright-report/
+
+      - name: Upload test results (screenshot diffs)
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results-${{ matrix.project }}
+          path: e2e/test-results/
