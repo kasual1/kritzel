@@ -72,12 +72,12 @@ describe('KritzelSelectionBox', () => {
 
     it('should set backgroundColor with theme-aware color', () => {
       const box = KritzelSelectionBox.create(mockCore);
-      expect(box.backgroundColor).toEqual({ light: 'rgba(0, 122, 255, 0.2)', dark: 'rgba(0, 122, 255, 0.2)' });
+      expect(box.backgroundColor).toEqual({ light: 'var(--kritzel-selection-box-background-color)', dark: 'var(--kritzel-selection-box-background-color)' });
     });
 
     it('should set borderColor with theme-aware color', () => {
       const box = KritzelSelectionBox.create(mockCore);
-      expect(box.borderColor).toEqual({ light: 'rgba(0, 122, 255, 0.5)', dark: 'rgba(0, 122, 255, 0.5)' });
+      expect(box.borderColor).toEqual({ light: 'var(--kritzel-selection-box-border-color)', dark: 'var(--kritzel-selection-box-border-color)' });
     });
 
     it('should set borderWidth to 2', () => {
