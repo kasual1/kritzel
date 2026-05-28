@@ -8,6 +8,8 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      editorId="custom-context-menu-object-inspector"
+      [wheelEnabled]="false"
       #editor
       [theme]="'angular-theme'"
       [themes]="themes"
