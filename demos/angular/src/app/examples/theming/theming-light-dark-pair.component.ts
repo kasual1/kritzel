@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { KritzelEditor } from 'kritzel-angular';
-import { KritzelTheme, KritzelThemeManager, lightTheme, darkTheme } from 'kritzel-stencil';
+import { KritzelTheme, lightTheme, darkTheme } from 'kritzel-stencil';
 
 const brandPurple = '#6200EE';
 const brandPurpleHover = '#7c2fff';
@@ -660,11 +660,17 @@ const brandedDarkTheme: KritzelTheme = {
 };
 
 @Component({
-  selector: 'app-theming-3',
+  selector: 'app-theming-light-dark-pair',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor [themes]="themes" theme="branded-light"></kritzel-editor>
+    <kritzel-editor
+      [themes]="themes"
+      theme="branded-light"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
+    ></kritzel-editor>
   `,
   styles: [`
     :host {
@@ -673,9 +679,7 @@ const brandedDarkTheme: KritzelTheme = {
     }
   `],
 })
-export class Theming3Component implements OnInit {
+export class ThemingLightDarkPairComponent {
   themes = [brandedLightTheme, brandedDarkTheme];
-  ngOnInit(): void {
-  }
 }
 

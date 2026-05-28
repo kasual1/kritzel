@@ -15,7 +15,14 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor [theme]="'angular-theme'" [themes]="themes" [controls]="controls"></kritzel-editor>
+    <kritzel-editor
+      [theme]="'angular-theme'"
+      [themes]="themes"
+      [controls]="controls"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
+    ></kritzel-editor>
   `,
   styles: `
     :host {

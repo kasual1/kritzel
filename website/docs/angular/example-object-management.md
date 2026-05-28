@@ -2,14 +2,14 @@
 sidebar_label: Object Management
 displayed_sidebar: tutorialSidebar
 title: "Object Management Example | Kritzel for Angular"
-description: "Build a programmatic object layer panel step by step, from a read-only snapshot up to real-time updates, selection control, and property mutation."
+description: "Programmatically list, select, mutate, remove, and filter canvas objects from custom UI panels."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
-# Programmatic Object Management
+# Object Management
 
-This guide builds up programmatic object management step by step, starting from a bare minimum and progressively adding configuration until reaching a fully controlled setup.
+This page shows how to build custom UI that reads and controls canvas objects programmatically. Each example is a self-contained panel you can drop into your application.
 
 ## Prerequisites
 
@@ -25,84 +25,42 @@ The editor exposes three read methods — `getAllObjects()`, `findObjects(predic
 
 ---
 
-## Step 1: Reading All Objects on Ready
+## Read-Only Object Inspector
 
-Wait for the `isReady` event, then call `getAllObjects()` to load the initial snapshot into a signal:
+A sidebar that lists every object on the canvas and stays in sync automatically. Drawing or erasing updates the list in real time through the three change events without any polling or manual refresh.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-1"
-  repoFiles={['src/app/examples/object-management-1.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-read-only-inspector"
+  repoFiles={['src/app/examples/object-management/object-management-read-only-inspector.component.ts']}
 />
 
-`getAllObjects()` returns a live array reference from the canvas store. The signal holds a snapshot of that array at the moment of the call; it will not update automatically as objects are added or removed.
+`getAllObjects()` loads the initial snapshot on `isReady`. The three output events — `objectsAdded`, `objectsRemoved`, and `objectsUpdated` — fire for both user-driven and programmatic changes, so binding them once is enough to keep the list current at all times.
 
 ---
 
-## Step 2: Keeping the List Current with Events
+## Interactive Layer Panel
 
-Add the three change outputs to the template and update the signal in each handler:
+A layers-panel-style sidebar where clicking a row selects the object on the canvas, and each row offers actions to adjust opacity or delete the object entirely.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-2"
-  repoFiles={['src/app/examples/object-management-2.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-interactive-layer-panel"
+  repoFiles={['src/app/examples/object-management/object-management-interactive-layer-panel.component.ts']}
 />
 
-Each output fires for both user-driven and programmatic changes, so these three handlers are the only place that needs to keep the list in sync. `onObjectsUpdated` re-spreads the existing array because the object references themselves are mutated in place by `updateObject()`.
+`selectObjects([obj])` switches the active tool to selection and highlights the given object — passing an empty array clears the selection. `updateObject(obj, { opacity })` merges partial properties and rerenders the canvas. `removeObject(obj)` deletes the object and emits `objectsRemoved`, which the same event handler picks up to refresh the list.
 
 ---
 
-## Step 3: Selecting an Object Programmatically
+## Filtered Object Explorer
 
-Add a click handler to each list item that calls `selectObjects()`:
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-3"
-  repoFiles={['src/app/examples/object-management-3.component.ts']}
-/>
-
-`selectObjects()` switches the active tool to the selection tool and highlights the given objects on the canvas, exactly as if the user had clicked them. Passing an empty array clears the selection.
-
----
-
-## Step 4: Mutating an Object
-
-Add a button next to each row that halves the object's opacity using `updateObject()`:
+A panel with type-based filter toggles that both narrow the sidebar list and visually dim non-matching objects on the canvas by adjusting their opacity.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-4"
-  repoFiles={['src/app/examples/object-management-4.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-filtered-explorer"
+  repoFiles={['src/app/examples/object-management/object-management-filtered-explorer.component.ts']}
 />
 
-`updateObject()` merges the partial properties into the existing object, rerenders the canvas, and emits `objectsUpdated` — which the handler from Step 2 picks up automatically, refreshing the list without any extra wiring.
-
----
-
-## Step 5: Removing an Object Programmatically
-
-Extend the row with a delete button that calls `removeObject()`:
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-5"
-  repoFiles={['src/app/examples/object-management-5.component.ts']}
-/>
-
-`removeObject()` deselects all objects, removes the target from the canvas store, rerenders, and emits `objectsRemoved`. The `onObjectsRemoved` handler from Step 2 filters it out of the signal automatically.
-
----
-
-## Step 6: Filtering the List
-
-Instead of restricting which objects are loaded, track all objects and provide filter toggles to dynamically update both the list and the canvas:
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-6"
-  repoFiles={['src/app/examples/object-management-6.component.ts']}
-/>
-
-A `computed()` signal derives the `filteredObjects` array so that only the selected types are rendered in the sidebar. To make the filtering visual on the canvas as well, toggling a filter triggers `applyOpacityFilter()`. This iterates through all loaded objects and calls `updateObject()`, setting `opacity: 1` for matching objects and `opacity: 0.5` for the rest.
+A `computed()` signal derives `filteredObjects` from the selected type set, keeping the template reactive without manual subscriptions. Toggling a filter calls `applyOpacityFilter()`, which iterates through all objects and sets `opacity: 1` for matching types and `opacity: 0.5` for the rest via `updateObject()`.

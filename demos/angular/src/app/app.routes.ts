@@ -6,24 +6,26 @@ import { CustomToolbarFullDrawingAppComponent } from './examples/custom-toolbar/
 import { CustomToolbarExternalComponent } from './examples/custom-toolbar/custom-toolbar-external.component';
 import { EditorPageComponent } from './e2e/editor-page.component';
 import { MultiEditorPageComponent } from './e2e/multi-editor-page.component';
-import { CustomContextMenu1Component } from './examples/custom-context-menu/custom-context-menu-1.component';
-import { CustomContextMenu2Component } from './examples/custom-context-menu/custom-context-menu-2.component';
-import { CustomContextMenu3Component } from './examples/custom-context-menu/custom-context-menu-3.component';
-import { CustomContextMenu4Component } from './examples/custom-context-menu/custom-context-menu-4.component';
-import { CustomContextMenu5Component } from './examples/custom-context-menu/custom-context-menu-5.component';
-import { CustomContextMenu6Component } from './examples/custom-context-menu/custom-context-menu-6.component';
-import { ObjectManagement1Component } from './examples/object-management/object-management-1.component';
-import { ObjectManagement2Component } from './examples/object-management/object-management-2.component';
-import { ObjectManagement3Component } from './examples/object-management/object-management-3.component';
-import { ObjectManagement4Component } from './examples/object-management/object-management-4.component';
-import { ObjectManagement5Component } from './examples/object-management/object-management-5.component';
-import { ObjectManagement6Component } from './examples/object-management/object-management-6.component';
+import { CustomContextMenuCanvasQuickActionsComponent } from './examples/custom-context-menu/custom-context-menu-canvas-quick-actions.component';
+import { CustomContextMenuClipboardActionsComponent } from './examples/custom-context-menu/custom-context-menu-clipboard-actions.component';
+import { CustomContextMenuSmartConditionalComponent } from './examples/custom-context-menu/custom-context-menu-smart-conditional.component';
+import { CustomContextMenuObjectInspectorComponent } from './examples/custom-context-menu/custom-context-menu-object-inspector.component';
+import { ObjectManagementReadOnlyInspectorComponent } from './examples/object-management/object-management-read-only-inspector.component';
+import { ObjectManagementInteractiveLayerPanelComponent } from './examples/object-management/object-management-interactive-layer-panel.component';
+import { ObjectManagementFilteredExplorerComponent } from './examples/object-management/object-management-filtered-explorer.component';
 import { Collaboration1Component } from './examples/collaboration/collaboration-1.component';
-import { Theming1Component } from './examples/theming/theming-1.component';
-import { Theming2Component } from './examples/theming/theming-2.component';
-import { Theming3Component } from './examples/theming/theming-3.component';
-import { Theming4Component } from './examples/theming/theming-4.component';
-import { Theming5Component } from './examples/theming/theming-5.component';
+import { ThemingBrandAccentComponent } from './examples/theming/theming-brand-accent.component';
+import { ThemingFullLightComponent } from './examples/theming/theming-full-light.component';
+import { ThemingLightDarkPairComponent } from './examples/theming/theming-light-dark-pair.component';
+import { ThemingBrandedToolsComponent } from './examples/theming/theming-branded-tools.component';
+import { ThemingHostSyncComponent } from './examples/theming/theming-host-sync.component';
+import { ViewportNavigationZoomDashboardComponent } from './examples/viewport-navigation/viewport-navigation-zoom-dashboard.component';
+import { ViewportNavigationObjectFocusComponent } from './examples/viewport-navigation/viewport-navigation-object-focus.component';
+import { ViewportNavigationBoundedCanvasComponent } from './examples/viewport-navigation/viewport-navigation-bounded-canvas.component';
+import { ViewportNavigationClickToZoomComponent } from './examples/viewport-navigation/viewport-navigation-click-to-zoom.component';
+import { WorkspaceManagementTabBarComponent } from './examples/workspace-management/workspace-management-tab-bar.component';
+import { WorkspaceManagementCrudPanelComponent } from './examples/workspace-management/workspace-management-crud-panel.component';
+import { WorkspaceManagementUrlSyncedComponent } from './examples/workspace-management/workspace-management-url-synced.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -41,23 +43,31 @@ export const routes: Routes = [
       { path: 'custom-toolbar-diagramming', component: CustomToolbarDiagrammingComponent },
       { path: 'custom-toolbar-full-drawing-app', component: CustomToolbarFullDrawingAppComponent },
       { path: 'custom-toolbar-external', component: CustomToolbarExternalComponent },
-      { path: 'custom-context-menu-1', component: CustomContextMenu1Component },
-      { path: 'custom-context-menu-2', component: CustomContextMenu2Component },
-      { path: 'custom-context-menu-3', component: CustomContextMenu3Component },
-      { path: 'custom-context-menu-4', component: CustomContextMenu4Component },
-      { path: 'custom-context-menu-5', component: CustomContextMenu5Component },
-      { path: 'custom-context-menu-6', component: CustomContextMenu6Component },
-      { path: 'object-management-1', component: ObjectManagement1Component },
-      { path: 'object-management-2', component: ObjectManagement2Component },
-      { path: 'object-management-3', component: ObjectManagement3Component },
-      { path: 'object-management-4', component: ObjectManagement4Component },
-      { path: 'object-management-5', component: ObjectManagement5Component },
-      { path: 'object-management-6', component: ObjectManagement6Component },
-      { path: 'theming-1', component: Theming1Component },
-      { path: 'theming-2', component: Theming2Component },
-      { path: 'theming-3', component: Theming3Component },
-      { path: 'theming-4', component: Theming4Component },
-      { path: 'theming-5', component: Theming5Component },
+      { path: 'custom-context-menu-canvas-quick-actions', component: CustomContextMenuCanvasQuickActionsComponent },
+      { path: 'custom-context-menu-clipboard-actions', component: CustomContextMenuClipboardActionsComponent },
+      { path: 'custom-context-menu-smart-conditional', component: CustomContextMenuSmartConditionalComponent },
+      { path: 'custom-context-menu-object-inspector', component: CustomContextMenuObjectInspectorComponent },
+      { path: 'object-management-read-only-inspector', component: ObjectManagementReadOnlyInspectorComponent },
+      { path: 'object-management-interactive-layer-panel', component: ObjectManagementInteractiveLayerPanelComponent },
+      { path: 'object-management-filtered-explorer', component: ObjectManagementFilteredExplorerComponent },
+      { path: 'theming-brand-accent', component: ThemingBrandAccentComponent },
+      { path: 'theming-full-light', component: ThemingFullLightComponent },
+      { path: 'theming-light-dark-pair', component: ThemingLightDarkPairComponent },
+      { path: 'theming-branded-tools', component: ThemingBrandedToolsComponent },
+      { path: 'theming-host-sync', component: ThemingHostSyncComponent },
+      { path: 'viewport-navigation-zoom-dashboard', component: ViewportNavigationZoomDashboardComponent },
+      { path: 'viewport-navigation-object-focus', component: ViewportNavigationObjectFocusComponent },
+      { path: 'viewport-navigation-bounded-canvas', component: ViewportNavigationBoundedCanvasComponent },
+      { path: 'viewport-navigation-click-to-zoom', component: ViewportNavigationClickToZoomComponent },
+      { path: 'workspace-management-tab-bar', component: WorkspaceManagementTabBarComponent },
+      { path: 'workspace-management-crud-panel', component: WorkspaceManagementCrudPanelComponent },
+      {
+        path: 'workspace-management-url-synced',
+        children: [
+          { path: '', pathMatch: 'full', component: WorkspaceManagementUrlSyncedComponent },
+          { path: ':workspaceId', component: WorkspaceManagementUrlSyncedComponent },
+        ],
+      },
       {
         path: 'collaboration-1',
         children: [

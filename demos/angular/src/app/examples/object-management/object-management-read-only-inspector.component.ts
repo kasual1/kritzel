@@ -1,14 +1,30 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { KritzelEditor } from 'kritzel-angular';
-import { EditorIsReadyEvent, KritzelBaseObject } from 'kritzel-stencil';
+import {
+  EditorIsReadyEvent,
+  KritzelBaseObject,
+  ObjectsAddedEvent,
+  ObjectsRemovedEvent,
+  ObjectsUpdatedEvent,
+} from 'kritzel-stencil';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
-  selector: 'app-object-management-1',
+  selector: 'app-object-management-read-only-inspector',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <kritzel-editor [theme]="'angular-theme'" [themes]="themes" (isReady)="onIsReady($event)"></kritzel-editor>
+    <kritzel-editor
+      [theme]="'angular-theme'"
+      [themes]="themes"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
+      (isReady)="onIsReady($event)"
+      (objectsAdded)="onObjectsAdded($event)"
+      (objectsRemoved)="onObjectsRemoved($event)"
+      (objectsUpdated)="onObjectsUpdated($event)"
+    ></kritzel-editor>
     <aside>
       <h3>Objects ({{ objects().length }})</h3>
       <ul>
@@ -45,7 +61,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     }
   `,
 })
-export class ObjectManagement1Component {
+export class ObjectManagementReadOnlyInspectorComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
@@ -54,6 +70,19 @@ export class ObjectManagement1Component {
 
   async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
     const all = await this.editor.getAllObjects();
-    this.objects.set(all);
+    this.objects.set([...all]);
+  }
+
+  onObjectsAdded(event: CustomEvent<ObjectsAddedEvent>) {
+    this.objects.update(prev => [...prev, ...event.detail.objects]);
+  }
+
+  onObjectsRemoved(event: CustomEvent<ObjectsRemovedEvent>) {
+    const removedIds = new Set(event.detail.objects.map(o => o.id));
+    this.objects.update(prev => prev.filter(o => !removedIds.has(o.id)));
+  }
+
+  onObjectsUpdated(_event: CustomEvent<ObjectsUpdatedEvent>) {
+    this.objects.update(prev => [...prev]);
   }
 }

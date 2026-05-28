@@ -10,23 +10,30 @@ import {
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
-  selector: 'app-object-management-3',
+  selector: 'app-object-management-interactive-layer-panel',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
       [theme]="'angular-theme'"
       [themes]="themes"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
       (isReady)="onIsReady($event)"
       (objectsAdded)="onObjectsAdded($event)"
       (objectsRemoved)="onObjectsRemoved($event)"
       (objectsUpdated)="onObjectsUpdated($event)"
     ></kritzel-editor>
     <aside>
-      <h3>Objects ({{ objects().length }})</h3>
+      <h3>Layers ({{ objects().length }})</h3>
       <ul>
         @for (obj of objects(); track obj.id) {
-          <li (click)="selectObject(obj)">{{ obj.__class__ }} — {{ obj.id }}</li>
+          <li>
+            <span (click)="selectObject(obj)">{{ obj.__class__ }} — {{ obj.id }}</span>
+            <button (click)="halveOpacity(obj)">Adjust opacity</button>
+            <button (click)="deleteObject(obj)">Delete</button>
+          </li>
         }
       </ul>
     </aside>
@@ -40,7 +47,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       flex: 1;
     }
     aside {
-      width: 240px;
+      width: 260px;
       overflow-y: auto;
       padding: 8px;
       border-left: 1px solid #ddd;
@@ -52,17 +59,23 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       padding: 0;
     }
     li {
+      display: flex;
+      align-items: center;
+      gap: 4px;
       padding: 4px 0;
       border-bottom: 1px solid #eee;
+    }
+    span {
+      flex: 1;
       word-break: break-all;
       cursor: pointer;
     }
-    li:hover {
-      background: #f5f5f5;
+    span:hover {
+      text-decoration: underline;
     }
   `,
 })
-export class ObjectManagement3Component {
+export class ObjectManagementInteractiveLayerPanelComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
@@ -89,5 +102,13 @@ export class ObjectManagement3Component {
 
   async selectObject(obj: KritzelBaseObject) {
     await this.editor.selectObjects([obj]);
+  }
+
+  async halveOpacity(obj: KritzelBaseObject) {
+    await this.editor.updateObject(obj, { opacity: obj.opacity * 0.5 });
+  }
+
+  async deleteObject(obj: KritzelBaseObject) {
+    await this.editor.removeObject(obj);
   }
 }

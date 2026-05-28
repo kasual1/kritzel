@@ -4,7 +4,7 @@ import { ContextMenuItem } from 'kritzel-stencil';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
-  selector: 'app-custom-context-menu-3',
+  selector: 'app-custom-context-menu-clipboard-actions',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -14,6 +14,9 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       [themes]="themes"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
     ></kritzel-editor>
   `,
   styles: `
@@ -23,7 +26,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     }
   `,
 })
-export class CustomContextMenu3Component {
+export class CustomContextMenuClipboardActionsComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
@@ -45,14 +48,6 @@ export class CustomContextMenu3Component {
       icon: 'select-all',
       group: 'clipboard',
     },
-    {
-      label: 'Like',
-      action: () => {
-        window.alert('Hey, thanks for liking this demo! ❤️');
-      },
-      group: 'other',
-      icon: 'heart',
-    }
   ];
 
   objectItems: ContextMenuItem[] = [

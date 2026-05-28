@@ -4,7 +4,7 @@ import { ContextMenuItem } from 'kritzel-stencil';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
-  selector: 'app-custom-context-menu-5',
+  selector: 'app-custom-context-menu-canvas-quick-actions',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -13,7 +13,10 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       [theme]="'angular-theme'"
       [themes]="themes"
       [globalContextMenuItems]="globalItems"
-      [objectContextMenuItems]="objectItems"
+      [objectContextMenuItems]="[]"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
     ></kritzel-editor>
   `,
   styles: `
@@ -23,7 +26,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     }
   `,
 })
-export class CustomContextMenu5Component {
+export class CustomContextMenuCanvasQuickActionsComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
@@ -34,43 +37,14 @@ export class CustomContextMenu5Component {
       action: async (menu) => {
         this.editor.paste(menu.x, menu.y);
       },
-      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
+      icon: 'paste',
     },
     {
       label: 'Select All',
       action: () => {
         this.editor.selectAllObjectsInViewport();
       },
-    },
-  ];
-
-  objectItems: ContextMenuItem[] = [
-    {
-      label: 'Copy',
-      action: () => {
-        this.editor.copy();
-      },
-      icon: 'copy',
-      group: 'clipboard',
-    },
-    {
-      label: 'Export as PNG',
-      action: () => {
-        this.editor.exportSelectedObjectsAsPng();
-      },
-      icon: 'download',
-      group: 'export',
-      visible: async (_menu, objects) => {
-        return objects.length === 1;
-      },
-    },
-    {
-      label: 'Delete',
-      action: () => {
-        this.editor.delete();
-      },
-      icon: 'delete',
-      group: 'destructive',
+      icon: 'select-all',
     },
   ];
 }
