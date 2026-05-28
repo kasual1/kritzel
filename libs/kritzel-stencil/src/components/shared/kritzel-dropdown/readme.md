@@ -30,6 +30,7 @@
  - [kritzel-brush-style](../kritzel-brush-style)
  - [kritzel-export](../../ui/kritzel-export)
  - [kritzel-font-family](../kritzel-font-family)
+ - [kritzel-settings](../../ui/kritzel-settings)
 
 ### Graph
 ```mermaid
@@ -37,6 +38,7 @@ graph TD;
   kritzel-brush-style --> kritzel-dropdown
   kritzel-export --> kritzel-dropdown
   kritzel-font-family --> kritzel-dropdown
+  kritzel-settings --> kritzel-dropdown
   style kritzel-dropdown fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -16,7 +16,8 @@ import {
   HocuspocusSyncProvider,
   LoginEvent,
 } from 'kritzel-angular';
-import { UserData } from '../resolvers/user.resolver';
+import { UserData } from '../../resolvers/user.resolver';
+import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
   selector: 'app-editor-page',
@@ -24,6 +25,8 @@ import { UserData } from '../resolvers/user.resolver';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      [theme]="'angular-theme'"
+      [themes]="themes"
       [syncConfig]="syncConfig"
       [loginConfig]="loginConfig"
       [activeWorkspaceId]="activeWorkspaceId"
@@ -36,6 +39,8 @@ import { UserData } from '../resolvers/user.resolver';
 })
 export class Collaboration1Component implements OnInit {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
+
+  themes = [customAngularTheme];
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

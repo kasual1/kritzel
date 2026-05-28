@@ -2,12 +2,14 @@
 sidebar_label: Theming & Custom Branding
 displayed_sidebar: tutorialSidebar
 title: "Theming & Custom Branding Example | Kritzel for Angular"
-description: "Build a coherent custom theme step by step, from overriding accent colors through a full branded light/dark pair to syncing the active theme with the host application."
+description: "Apply custom branding to the Kritzel editor — from a quick accent override to a full light/dark theme pair with branded tool palettes and host application synchronization."
 ---
+
+import LiveDemo from '@site/src/components/LiveDemo';
 
 # Theming & Custom Branding
 
-This guide builds up a custom Kritzel theme step by step, starting from a bare minimum and progressively adding configuration until reaching a fully controlled setup.
+This page shows how to customize the visual appearance of `<kritzel-editor>` using the `KritzelTheme` interface. Each example is a self-contained, copy-paste-ready implementation for a specific branding scenario.
 
 ## Prerequisites
 
@@ -17,530 +19,89 @@ Complete the [Quick Start](./quick-start.md) guide to have a working `<kritzel-e
 
 ## How Theming Works
 
-Kritzel renders without a Shadow DOM, so every visual token is reachable from the host page via CSS custom properties. All variables follow the naming convention `--kritzel-{section}-{property}`, where keys are derived from the `KritzelTheme` interface by converting camelCase to kebab-case:
+Kritzel enables theming through the `KritzelTheme` interface instead of relying on manual CSS variable manipulation. All visual tokens are typed within properties matching this interface (e.g., `theme.global.textPrimary` or `theme.controls.backgroundColor`).
 
-| `KritzelTheme` key path | CSS custom property |
-|---|---|
-| `global.textPrimary` | `--kritzel-global-text-primary` |
-| `engine.backgroundColor` | `--kritzel-engine-background-color` |
-| `controls.backgroundColor` | `--kritzel-controls-background-color` |
-| `controls.controlSelectedBackgroundColor` | `--kritzel-controls-control-selected-background-color` |
-| `selection.borderColor` | `--kritzel-selection-border-color` |
-
-Two preset objects — `lightTheme` and `darkTheme` — are exported from `kritzel-stencil` and can be spread into a custom `KritzelTheme` object to override individual tokens while inheriting the rest. The `themeChange` event fires whenever the user toggles the theme through the editor's settings panel, carrying the new `ThemeName` (`'light'` or `'dark'`).
+Two preset objects — `lightTheme` and `darkTheme` — are exported from `kritzel-stencil` and can be spread into a custom `KritzelTheme` object to override individual tokens while inheriting the rest. Pass custom themes via the `[themes]` input and set the active one with `[theme]`. The `themeChange` event fires whenever the user toggles the theme through the editor's settings panel, carrying the new `ThemeName`.
 
 ---
 
-## Step 1: Overriding Accent Colors
+## Brand Accent Override
 
-Add CSS custom properties to the component's stylesheet to replace the default blue accent with a brand color:
+A product that only needs to swap the default blue accent for a brand color. Override just the `controls` and `selection` sections while inheriting everything else from `lightTheme`.
 
-```ts title="editor.component.ts"
-import { Component } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/theming-brand-accent"
+  repoFiles={['src/app/examples/theming/theming-brand-accent.component.ts']}
+/>
 
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<kritzel-editor></kritzel-editor>`,
-  // highlight-start
-  styles: [`
-    kritzel-editor { display: block; width: 100%; height: 100vh; }
-    kritzel-editor {
-      --kritzel-controls-control-selected-background-color: #6200EE;
-      --kritzel-controls-control-selected-color: #ffffff;
-      --kritzel-selection-border-color: #6200EE;
-      --kritzel-selection-handle-color: #ffffff;
-    }
-  `],
-  // highlight-end
-})
-export class EditorComponent {}
-```
-
-The four variables change the toolbar's active-tool indicator (background and icon color) and the selection rectangle (border and resize handle fill). CSS custom properties cascade through Kritzel's light-DOM structure, so a single rule on the host element is sufficient.
+Spreading `lightTheme` and overriding only the relevant sections means future Kritzel updates to unrelated tokens are inherited automatically. The `name` field is required and must be unique — it identifies the theme when passed to the `[theme]` input.
 
 ---
 
-## Step 2: Building a Full Branded Light Theme
+## Full Custom Light Theme
 
-The CSS approach covers individual tokens but requires knowing exact variable names. Building a typed `KritzelTheme` object provides autocomplete on every section and keeps the full theme in one place. Apply it once after the editor is ready:
+A fully branded light theme that customizes every UI section — toolbar, dialogs, menus, inputs, canvas, and overlays — using a consistent purple palette. Provides complete autocomplete coverage of the `KritzelTheme` interface.
 
-```ts title="editor.component.ts"
-// highlight-start
-import { Component, ElementRef, ViewChild } from '@angular/core';
-// highlight-end
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-// highlight-start
-import { KritzelTheme, KritzelThemeManager, lightTheme } from 'kritzel-stencil';
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/theming-full-light"
+  repoFiles={['src/app/examples/theming/theming-full-light.component.ts']}
+/>
 
-const brandedLightTheme: KritzelTheme = {
-  ...lightTheme,
-  global: {
-    ...lightTheme.global,
-    textPrimary: '#1a0050',
-    textSecondary: '#3d1e78',
-  },
-  engine: {
-    ...lightTheme.engine,
-    backgroundColor: '#faf7ff',
-  },
-  controls: {
-    ...lightTheme.controls,
-    backgroundColor: '#ffffff',
-    controlSelectedBackgroundColor: '#6200EE',
-    controlSelectedColor: '#ffffff',
-    controlHoverBackgroundColor: 'rgba(98, 0, 238, 0.08)',
-  },
-  selection: {
-    ...lightTheme.selection,
-    borderColor: '#6200EE',
-    handleColor: '#ffffff',
-  },
-};
-// highlight-end
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  // highlight-start
-  template: `
-    <kritzel-editor
-      #editorEl
-      (isReady)="onIsReady()"
-    ></kritzel-editor>
-  `,
-  // highlight-end
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  // highlight-start
-  @ViewChild('editorEl', { read: ElementRef }) editorEl!: ElementRef<HTMLElement>;
-
-  onIsReady(): void {
-    this.applyTheme(brandedLightTheme, this.editorEl.nativeElement);
-  }
-
-  private applyTheme(theme: KritzelTheme, element: HTMLElement): void {
-    const toKebab = (s: string) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-    for (const [section, tokens] of Object.entries(theme)) {
-      if (section === 'name' || typeof tokens !== 'object') continue;
-      for (const [prop, value] of Object.entries(tokens as Record<string, string>)) {
-        element.style.setProperty(`--kritzel-${toKebab(section)}-${toKebab(prop)}`, value);
-      }
-    }
-  }
-  // highlight-end
-}
-```
-
-`applyTheme` iterates the `KritzelTheme` object, derives each CSS variable name from the section and property keys, and sets them as inline styles on the editor element. Inline styles override the component stylesheet, so this approach supersedes the manual overrides from Step 1.
+Define color constants at the top to keep the theme object DRY. Every section spreads the corresponding `lightTheme` section first, ensuring any properties you don't explicitly set remain at their defaults.
 
 ---
 
-## Step 3: Adding a Custom Dark Variant
+## Branded Light and Dark Pair
 
-Add a paired dark theme object and re-apply the correct theme whenever the user toggles via the settings panel:
+A production-ready setup with both a branded light and branded dark theme. The editor's built-in settings panel toggle switches between them, and `KritzelThemeManager.getStoredTheme()` persists the user's choice across page reloads.
 
-```ts title="editor.component.ts"
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-// highlight-start
-import { KritzelTheme, KritzelThemeManager, lightTheme, darkTheme, ThemeName } from 'kritzel-stencil';
-// highlight-end
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/theming-light-dark-pair"
+  repoFiles={['src/app/examples/theming/theming-light-dark-pair.component.ts']}
+/>
 
-const brandedLightTheme: KritzelTheme = {
-  ...lightTheme,
-  global: {
-    ...lightTheme.global,
-    textPrimary: '#1a0050',
-    textSecondary: '#3d1e78',
-  },
-  engine: {
-    ...lightTheme.engine,
-    backgroundColor: '#faf7ff',
-  },
-  controls: {
-    ...lightTheme.controls,
-    backgroundColor: '#ffffff',
-    controlSelectedBackgroundColor: '#6200EE',
-    controlSelectedColor: '#ffffff',
-    controlHoverBackgroundColor: 'rgba(98, 0, 238, 0.08)',
-  },
-  selection: {
-    ...lightTheme.selection,
-    borderColor: '#6200EE',
-    handleColor: '#ffffff',
-  },
-};
-
-// highlight-start
-const brandedDarkTheme: KritzelTheme = {
-  ...darkTheme,
-  global: {
-    ...darkTheme.global,
-    textPrimary: '#EDE7F6',
-    textSecondary: '#D1C4E9',
-  },
-  engine: {
-    ...darkTheme.engine,
-    backgroundColor: '#12005e',
-  },
-  controls: {
-    ...darkTheme.controls,
-    backgroundColor: '#1a0080',
-    controlSelectedBackgroundColor: '#BB86FC',
-    controlSelectedColor: '#000000',
-    controlHoverBackgroundColor: 'rgba(187, 134, 252, 0.12)',
-  },
-  selection: {
-    ...darkTheme.selection,
-    borderColor: '#BB86FC',
-    handleColor: '#12005e',
-  },
-};
-// highlight-end
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      #editorEl
-      (isReady)="onIsReady()"
-      // highlight-start
-      (themeChange)="onThemeChange($event)"
-      // highlight-end
-    ></kritzel-editor>
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild('editorEl', { read: ElementRef }) editorEl!: ElementRef<HTMLElement>;
-
-  onIsReady(): void {
-    // highlight-start
-    const stored = KritzelThemeManager.getStoredTheme();
-    const theme = stored === 'dark' ? brandedDarkTheme : brandedLightTheme;
-    this.applyTheme(theme, this.editorEl.nativeElement);
-    // highlight-end
-  }
-
-  // highlight-start
-  onThemeChange(event: CustomEvent<ThemeName>): void {
-    const theme = event.detail === 'dark' ? brandedDarkTheme : brandedLightTheme;
-    this.applyTheme(theme, this.editorEl.nativeElement);
-  }
-  // highlight-end
-
-  private applyTheme(theme: KritzelTheme, element: HTMLElement): void {
-    const toKebab = (s: string) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-    for (const [section, tokens] of Object.entries(theme)) {
-      if (section === 'name' || typeof tokens !== 'object') continue;
-      for (const [prop, value] of Object.entries(tokens as Record<string, string>)) {
-        element.style.setProperty(`--kritzel-${toKebab(section)}-${toKebab(prop)}`, value);
-      }
-    }
-  }
-}
-```
-
-`KritzelThemeManager.getStoredTheme()` reads the persisted theme preference from `localStorage` so the branded theme is applied correctly even when the user returns with dark mode already active. `onThemeChange` re-applies whichever custom theme matches the new name every time the user switches.
+Pass both themes in the `[themes]` array. The editor renders the toggle in its settings panel automatically when more than one theme is available. Each theme's `name` must be unique — the `[theme]` input binds to one of these names.
 
 ---
 
-## Step 4: Using ThemeAwareColor in Tool Configs
+## Branded Drawing Tools with Theme-Aware Palette
 
-Override the `controls` input to give each drawing tool a branded color palette. `ThemeAwareColor` objects hold a `light` and `dark` value, and Kritzel automatically resolves the correct one based on the active theme:
+An application that needs branded colors in the tool config panel — the brush and text tools use a custom `ThemeAwareColor` palette that resolves the correct swatch for light and dark mode automatically.
 
-```ts title="editor.component.ts"
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import {
-  KritzelTheme, KritzelThemeManager, lightTheme, darkTheme, ThemeName,
-  // highlight-start
-  KritzelBrushTool, KritzelSelectionTool, KritzelTextTool,
-  ThemeAwareColor, KritzelToolbarControl,
-  DEFAULT_BRUSH_CONFIG, DEFAULT_TEXT_CONFIG,
-  // highlight-end
-} from 'kritzel-stencil';
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/theming-branded-tools"
+  repoFiles={['src/app/examples/theming/theming-branded-tools.component.ts']}
+/>
 
-const brandedLightTheme: KritzelTheme = {
-  ...lightTheme,
-  global: { ...lightTheme.global, textPrimary: '#1a0050', textSecondary: '#3d1e78' },
-  engine: { ...lightTheme.engine, backgroundColor: '#faf7ff' },
-  controls: {
-    ...lightTheme.controls,
-    backgroundColor: '#ffffff',
-    controlSelectedBackgroundColor: '#6200EE',
-    controlSelectedColor: '#ffffff',
-    controlHoverBackgroundColor: 'rgba(98, 0, 238, 0.08)',
-  },
-  selection: { ...lightTheme.selection, borderColor: '#6200EE', handleColor: '#ffffff' },
-};
-
-const brandedDarkTheme: KritzelTheme = {
-  ...darkTheme,
-  global: { ...darkTheme.global, textPrimary: '#EDE7F6', textSecondary: '#D1C4E9' },
-  engine: { ...darkTheme.engine, backgroundColor: '#12005e' },
-  controls: {
-    ...darkTheme.controls,
-    backgroundColor: '#1a0080',
-    controlSelectedBackgroundColor: '#BB86FC',
-    controlSelectedColor: '#000000',
-    controlHoverBackgroundColor: 'rgba(187, 134, 252, 0.12)',
-  },
-  selection: { ...darkTheme.selection, borderColor: '#BB86FC', handleColor: '#12005e' },
-};
-
-// highlight-start
-const BRAND_PALETTE: ThemeAwareColor[] = [
-  { light: '#6200EE', dark: '#BB86FC', label: 'Brand' },
-  { light: '#03DAC6', dark: '#03DAC6', label: 'Accent' },
-  { light: '#000000', dark: '#ffffff', label: 'Foreground' },
-  { light: '#ffffff', dark: '#12005e', label: 'Background' },
-];
-
-const brandControls: KritzelToolbarControl[] = [
-  {
-    name: 'selection',
-    type: 'tool',
-    isDefault: true,
-    tool: KritzelSelectionTool,
-    icon: 'cursor',
-  },
-  {
-    name: 'brush',
-    type: 'tool',
-    tool: KritzelBrushTool,
-    icon: 'pen',
-    config: {
-      ...DEFAULT_BRUSH_CONFIG,
-      color: { light: '#6200EE', dark: '#BB86FC', label: 'Brand' },
-      palettes: { pen: BRAND_PALETTE },
-    },
-  },
-  {
-    name: 'text',
-    type: 'tool',
-    tool: KritzelTextTool,
-    icon: 'type',
-    config: {
-      ...DEFAULT_TEXT_CONFIG,
-      color: { light: '#1a0050', dark: '#EDE7F6', label: 'Text' },
-      palette: BRAND_PALETTE,
-    },
-  },
-  { name: 'config', type: 'config' },
-];
-// highlight-end
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      #editorEl
-      // highlight-start
-      [controls]="brandControls"
-      // highlight-end
-      (isReady)="onIsReady()"
-      (themeChange)="onThemeChange($event)"
-    ></kritzel-editor>
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild('editorEl', { read: ElementRef }) editorEl!: ElementRef<HTMLElement>;
-
-  // highlight-start
-  readonly brandControls = brandControls;
-  // highlight-end
-
-  onIsReady(): void {
-    const stored = KritzelThemeManager.getStoredTheme();
-    const theme = stored === 'dark' ? brandedDarkTheme : brandedLightTheme;
-    this.applyTheme(theme, this.editorEl.nativeElement);
-  }
-
-  onThemeChange(event: CustomEvent<ThemeName>): void {
-    const theme = event.detail === 'dark' ? brandedDarkTheme : brandedLightTheme;
-    this.applyTheme(theme, this.editorEl.nativeElement);
-  }
-
-  private applyTheme(theme: KritzelTheme, element: HTMLElement): void {
-    const toKebab = (s: string) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-    for (const [section, tokens] of Object.entries(theme)) {
-      if (section === 'name' || typeof tokens !== 'object') continue;
-      for (const [prop, value] of Object.entries(tokens as Record<string, string>)) {
-        element.style.setProperty(`--kritzel-${toKebab(section)}-${toKebab(prop)}`, value);
-      }
-    }
-  }
-}
-```
-
-Each `ThemeAwareColor` in `BRAND_PALETTE` declares a `light` and `dark` value. When the active theme is `'dark'`, Kritzel resolves each color's `dark` field for both the rendered strokes and the color swatches shown in the tool config panel.
+Each `ThemeAwareColor` in the palette declares a `light` and `dark` value. When the active theme is dark, Kritzel resolves each color's `dark` field for both the rendered strokes and the color swatches shown in the tool config panel. The `label` field is optional and displayed as a tooltip.
 
 ---
 
-## Step 5: Syncing themeChange to the Host Application
+## Host Application Theme Synchronization
 
-Propagate the editor's active theme to the surrounding page by writing a `data-theme` attribute onto `document.documentElement`, giving the rest of the application a CSS hook to react:
+An application that needs its own UI (sidebar, header, surrounding layout) to react when the user toggles the editor's theme. Listen to `themeChange` and propagate a `data-theme` attribute on `document.documentElement` so any CSS in the host can respond.
 
-```ts title="editor.component.ts"
-import { Component, ElementRef, signal, ViewChild } from '@angular/core';
-// highlight-start
-import { ChangeDetectionStrategy } from '@angular/core';
-// highlight-end
-import { KritzelEditor } from 'kritzel-angular';
-import {
-  KritzelTheme, KritzelThemeManager, lightTheme, darkTheme, ThemeName,
-  KritzelBrushTool, KritzelSelectionTool, KritzelTextTool,
-  ThemeAwareColor, KritzelToolbarControl,
-  DEFAULT_BRUSH_CONFIG, DEFAULT_TEXT_CONFIG,
-} from 'kritzel-stencil';
-
-const brandedLightTheme: KritzelTheme = {
-  ...lightTheme,
-  global: { ...lightTheme.global, textPrimary: '#1a0050', textSecondary: '#3d1e78' },
-  engine: { ...lightTheme.engine, backgroundColor: '#faf7ff' },
-  controls: {
-    ...lightTheme.controls,
-    backgroundColor: '#ffffff',
-    controlSelectedBackgroundColor: '#6200EE',
-    controlSelectedColor: '#ffffff',
-    controlHoverBackgroundColor: 'rgba(98, 0, 238, 0.08)',
-  },
-  selection: { ...lightTheme.selection, borderColor: '#6200EE', handleColor: '#ffffff' },
-};
-
-const brandedDarkTheme: KritzelTheme = {
-  ...darkTheme,
-  global: { ...darkTheme.global, textPrimary: '#EDE7F6', textSecondary: '#D1C4E9' },
-  engine: { ...darkTheme.engine, backgroundColor: '#12005e' },
-  controls: {
-    ...darkTheme.controls,
-    backgroundColor: '#1a0080',
-    controlSelectedBackgroundColor: '#BB86FC',
-    controlSelectedColor: '#000000',
-    controlHoverBackgroundColor: 'rgba(187, 134, 252, 0.12)',
-  },
-  selection: { ...darkTheme.selection, borderColor: '#BB86FC', handleColor: '#12005e' },
-};
-
-const BRAND_PALETTE: ThemeAwareColor[] = [
-  { light: '#6200EE', dark: '#BB86FC', label: 'Brand' },
-  { light: '#03DAC6', dark: '#03DAC6', label: 'Accent' },
-  { light: '#000000', dark: '#ffffff', label: 'Foreground' },
-  { light: '#ffffff', dark: '#12005e', label: 'Background' },
-];
-
-const brandControls: KritzelToolbarControl[] = [
-  { name: 'selection', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
-  {
-    name: 'brush',
-    type: 'tool',
-    tool: KritzelBrushTool,
-    icon: 'pen',
-    config: {
-      ...DEFAULT_BRUSH_CONFIG,
-      color: { light: '#6200EE', dark: '#BB86FC', label: 'Brand' },
-      palettes: { pen: BRAND_PALETTE },
-    },
-  },
-  {
-    name: 'text',
-    type: 'tool',
-    tool: KritzelTextTool,
-    icon: 'type',
-    config: {
-      ...DEFAULT_TEXT_CONFIG,
-      color: { light: '#1a0050', dark: '#EDE7F6', label: 'Text' },
-      palette: BRAND_PALETTE,
-    },
-  },
-  { name: 'config', type: 'config' },
-];
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      #editorEl
-      [controls]="brandControls"
-      (isReady)="onIsReady()"
-      (themeChange)="onThemeChange($event)"
-    ></kritzel-editor>
-    // highlight-start
-    <div [attr.data-theme]="activeTheme()">
-      Current theme: {{ activeTheme() }}
-    </div>
-    // highlight-end
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild('editorEl', { read: ElementRef }) editorEl!: ElementRef<HTMLElement>;
-
-  readonly brandControls = brandControls;
-
-  // highlight-start
-  activeTheme = signal<ThemeName>('light');
-  // highlight-end
-
-  onIsReady(): void {
-    const stored = KritzelThemeManager.getStoredTheme();
-    const theme = stored === 'dark' ? brandedDarkTheme : brandedLightTheme;
-    this.applyTheme(theme, this.editorEl.nativeElement);
-    // highlight-start
-    this.activeTheme.set(stored);
-    document.documentElement.setAttribute('data-theme', stored);
-    // highlight-end
-  }
-
-  onThemeChange(event: CustomEvent<ThemeName>): void {
-    const theme = event.detail === 'dark' ? brandedDarkTheme : brandedLightTheme;
-    this.applyTheme(theme, this.editorEl.nativeElement);
-    // highlight-start
-    this.activeTheme.set(event.detail);
-    document.documentElement.setAttribute('data-theme', event.detail);
-    // highlight-end
-  }
-
-  private applyTheme(theme: KritzelTheme, element: HTMLElement): void {
-    const toKebab = (s: string) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-    for (const [section, tokens] of Object.entries(theme)) {
-      if (section === 'name' || typeof tokens !== 'object') continue;
-      for (const [prop, value] of Object.entries(tokens as Record<string, string>)) {
-        element.style.setProperty(`--kritzel-${toKebab(section)}-${toKebab(prop)}`, value);
-      }
-    }
-  }
-}
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/theming-host-sync"
+  repoFiles={['src/app/examples/theming/theming-host-sync.component.ts']}
+/>
 
 Setting `data-theme` on `document.documentElement` makes the active theme queryable from any stylesheet in the application:
 
 ```css title="styles.css"
-[data-theme='dark'] .app-sidebar {
+[data-theme='branded-dark'] .app-sidebar {
   background: #1a0080;
   color: #EDE7F6;
 }
 
-[data-theme='dark'] .app-toolbar {
+[data-theme='branded-dark'] .app-toolbar {
   border-color: rgba(187, 134, 252, 0.2);
 }
 ```
 
-The `activeTheme` signal carries the same value for any Angular component that needs to adjust its template or styles reactively.
+`KritzelThemeManager.getStoredTheme()` reads the persisted theme preference from `localStorage` so the correct branded theme is applied on initial load without a flash of the wrong palette.

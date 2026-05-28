@@ -7,7 +7,7 @@ import { KritzelImage } from '../classes/objects/image.class';
 import { KritzelGroup } from '../classes/objects/group.class';
 import { KritzelClassHelper } from './class.helper';
 import { KritzelColorHelper } from './color.helper';
-import { ThemeMode } from '../constants/color-palette.constants';
+import { ThemeName } from '../interfaces/theme.interface';
 import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 
 /**
@@ -15,7 +15,7 @@ import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
  */
 export interface SvgExportOptions {
   /** Theme to use for resolving theme-aware colors. Defaults to current theme. */
-  theme?: ThemeMode;
+  theme?: ThemeName;
   /** Padding around the exported content in world units. Defaults to 0. */
   padding?: number;
   /** Whether to include XML declaration. Defaults to true. */
@@ -130,7 +130,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns Array of def element strings
    */
-  private static collectDefs(objects: KritzelBaseObject[], theme?: ThemeMode): string[] {
+  private static collectDefs(objects: KritzelBaseObject[], theme?: ThemeName): string[] {
     const defs: string[] = [];
 
     for (const obj of objects) {
@@ -154,7 +154,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns SVG marker element string
    */
-  private static generateArrowMarker(line: KritzelLine, end: 'start' | 'end', _theme?: ThemeMode): string {
+  private static generateArrowMarker(line: KritzelLine, end: 'start' | 'end', _theme?: ThemeName): string {
     const markerId = end === 'start' ? line.startMarkerId : line.endMarkerId;
     const size = line.getArrowSize(end);
     const fill = line.getArrowFill(end);
@@ -175,7 +175,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns SVG element string, or empty string if object type is not supported
    */
-  static objectToSvgElement(object: KritzelBaseObject, theme?: ThemeMode): string {
+  static objectToSvgElement(object: KritzelBaseObject, theme?: ThemeName): string {
     if (KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath')) {
       return this.pathToSvg(object, theme);
     }
@@ -204,7 +204,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns SVG element string
    */
-  private static pathToSvg(path: KritzelPath, theme?: ThemeMode): string {
+  private static pathToSvg(path: KritzelPath, theme?: ThemeName): string {
     const transform = this.buildTransform(path);
     const fill = KritzelColorHelper.resolveThemeColor(path.fill, theme);
     const stroke = KritzelColorHelper.resolveThemeColor(path.stroke, theme);
@@ -224,7 +224,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns SVG element string
    */
-  private static lineToSvg(line: KritzelLine, theme?: ThemeMode): string {
+  private static lineToSvg(line: KritzelLine, theme?: ThemeName): string {
     const transform = this.buildTransform(line);
     const stroke = KritzelColorHelper.resolveThemeColor(line.stroke, theme);
     const opacity = line.opacity !== 1 ? ` opacity="${line.opacity}"` : '';
@@ -245,7 +245,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns SVG element string
    */
-  private static shapeToSvg(shape: KritzelShape, theme?: ThemeMode): string {
+  private static shapeToSvg(shape: KritzelShape, theme?: ThemeName): string {
     const transform = this.buildTransform(shape);
     const fill = KritzelColorHelper.resolveThemeColor(shape.fillColor, theme);
     const stroke = KritzelColorHelper.resolveThemeColor(shape.strokeColor, theme);
@@ -284,7 +284,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns SVG element string
    */
-  private static textToSvg(text: KritzelText, theme?: ThemeMode): string {
+  private static textToSvg(text: KritzelText, theme?: ThemeName): string {
     const transform = this.buildTransform(text);
     const opacity = text.opacity !== 1 ? ` opacity="${text.opacity}"` : '';
     const fontColor = KritzelColorHelper.resolveThemeColor(text.fontColor, theme);
@@ -341,7 +341,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns SVG element string
    */
-  private static groupToSvg(group: KritzelGroup, theme?: ThemeMode): string {
+  private static groupToSvg(group: KritzelGroup, theme?: ThemeName): string {
     const children = group.children
       .sort((a, b) => a.zIndex - b.zIndex)
       .map(child => this.objectToSvgElement(child, theme))
@@ -389,7 +389,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns HTML string
    */
-  private static prosemirrorToHtml(content: any, _context: KritzelText | KritzelShape, theme?: ThemeMode): string {
+  private static prosemirrorToHtml(content: any, _context: KritzelText | KritzelShape, theme?: ThemeName): string {
     if (!content || !content.content) {
       return '';
     }
@@ -405,7 +405,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns HTML string
    */
-  private static nodeToHtml(node: any, theme?: ThemeMode): string {
+  private static nodeToHtml(node: any, theme?: ThemeName): string {
     if (!node) return '';
 
     switch (node.type) {
@@ -453,7 +453,7 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns Wrapped HTML string
    */
-  private static applyMark(text: string, mark: any, _theme?: ThemeMode): string {
+  private static applyMark(text: string, mark: any, _theme?: ThemeName): string {
     switch (mark.type) {
       case 'bold':
       case 'strong':

@@ -11,7 +11,7 @@
 | ------------ | ------------- | ----------- | ---------------------------------------------------------------------------------------------------- | ----------- |
 | `engine`     | --            |             | `HTMLElement`                                                                                        | `undefined` |
 | `isExpanded` | `is-expanded` |             | `boolean`                                                                                            | `false`     |
-| `theme`      | `theme`       |             | `"dark" \| "light"`                                                                                  | `undefined` |
+| `theme`      | `theme`       |             | `"dark" \| "light" \| string & {}`                                                                   | `undefined` |
 | `tool`       | --            |             | `KritzelBrushTool \| KritzelLineTool \| KritzelSelectionTool \| KritzelShapeTool \| KritzelTextTool` | `undefined` |
 
 

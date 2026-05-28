@@ -27,8 +27,8 @@ export class KritzelSelectionBox extends KritzelBaseObject<HTMLElement> {
     object.userId = core.user?.id;
     object.scale = core.store.state.scale;
     object.zIndex = 99999;
-    object.backgroundColor = { light: 'rgba(0, 122, 255, 0.2)', dark: 'rgba(0, 122, 255, 0.2)' } as ThemeAwareColor;
-    object.borderColor = { light: 'rgba(0, 122, 255, 0.5)', dark: 'rgba(0, 122, 255, 0.5)' } as ThemeAwareColor;
+    object.backgroundColor = { light: 'var(--kritzel-selection-box-background-color)', dark: 'var(--kritzel-selection-box-background-color)' } as ThemeAwareColor;
+    object.borderColor = { light: 'var(--kritzel-selection-box-border-color)', dark: 'var(--kritzel-selection-box-border-color)' } as ThemeAwareColor;
     object.borderWidth = 2;
     object.height = 0;
     object.width = 0;

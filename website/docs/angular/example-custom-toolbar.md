@@ -1,16 +1,15 @@
 ---
-
 sidebar_label: Custom Toolbar
 displayed_sidebar: tutorialSidebar
 title: "Custom Toolbar Example | Kritzel for Angular"
-description: "Build a custom Kritzel toolbar by composing tools and controls."
+description: "Build a custom Kritzel toolbar by composing tools and controls for different use cases — from a minimal annotation setup to a fully programmatic external toolbar."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
 # Custom Toolbar
 
-This guide builds up a custom toolbar step by step, starting from a bare minimum and progressively adding configuration until reaching a fully controlled setup.
+This page shows how to compose the `controls` input on `<kritzel-editor>` into different toolbar configurations for real-world scenarios. Each example is self-contained and ready to copy into your project.
 
 ## Prerequisites
 
@@ -41,96 +40,56 @@ There are three control types:
 
 ---
 
-## Step 1: Selecting Only Specific Tools
+## Annotation-Only Toolbar
 
-Pass a `controls` array to replace the default set. Start with just selection and brush:
+A minimal toolbar for document markup: just selection and a configured brush with a branded color palette. Users land directly in drawing mode and can pick from three pen sizes and three colors.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-1"
-  repoFiles={['src/app/examples/custom-toolbar-1.component.ts', 'src/app/examples/custom-toolbar-2.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-annotation"
+  repoFiles={['src/app/examples/custom-toolbar/custom-toolbar-annotation.component.ts']}
 />
 
-The toolbar now shows exactly two buttons. Any tool not listed is unavailable to the user.
+The `config` object on the brush control sets starting defaults — `size`, `sizes`, and `palettes` — while the `type: 'config'` entry renders the settings panel so users can adjust them at runtime. Without the `config` entry the settings panel is never rendered, even though the tool still works. Colors are defined as `ThemeAwareColor` objects (`{ light, dark }`) so they adapt automatically when the user switches between light and dark mode.
 
 ---
 
-## Step 2: Setting a Default Tool and Exposing Settings
+## Diagramming Toolbar
 
-Add `isDefault: true` to the brush so users land in drawing mode immediately. Then add a `type: 'config'` entry to expose the active tool's settings panel (color, size):
+A toolbar tailored for flowchart and diagram creation: selection, lines with arrowheads, shapes with sub-options (rectangle, ellipse, triangle), and text — no freehand brush needed.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-2"
-  repoFiles={['src/app/examples/custom-toolbar-2.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-diagramming"
+  repoFiles={['src/app/examples/custom-toolbar/custom-toolbar-diagramming.component.ts']}
 />
 
-Without the `config` entry the settings panel is never rendered, even though the tools still work.
+The `arrows` config on the line tool controls arrowheads — `end.enabled: true` with `style: 'triangle'` adds a filled arrowhead to every new line. Available styles are `'triangle'`, `'open'`, `'diamond'`, and `'circle'`. Each `subOption` on the shape tool sets `toolProperty` to the property it controls; selecting a sub-option updates that property without switching away from the tool.
 
 ---
 
-## Step 3: Configuring Initial Tool State
+## Full Drawing App Toolbar
 
-Use the `config` property on a tool control to set its defaults — the starting color, size,  available sizes, and available palette:
+A production-ready toolbar with all available tools, separators grouping related items, shape sub-options, and individually configured color palettes — the kind of setup a general-purpose whiteboard or drawing application would ship.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-3"
-  repoFiles={['src/app/examples/custom-toolbar-3.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-full-drawing-app"
+  repoFiles={['src/app/examples/custom-toolbar/custom-toolbar-full-drawing-app.component.ts']}
 />
 
-Colors are defined as `ThemeAwareColor` objects (`{ light, dark }`) so they adapt automatically when the user switches between light and dark mode.
+Separators (`type: 'separator'`) group related buttons visually. Each tool accepts a typed `config` object that lets you tailor colors, sizes, and behavior independently. The `config` control at the end renders the active tool's settings panel.
 
 ---
 
-## Step 4: Adding More Tools
+## Custom External Toolbar
 
-Expand the toolbar by adding eraser, line, shape, text, and image tools:
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-4"
-  repoFiles={['src/app/examples/custom-toolbar-4.component.ts']}
-/>
-
----
-
-## Step 5: Configuring Individual Tool Behaviors
-
-Each tool accepts a typed `config` object that lets you tailor colors, sizes, and behavior to your application's needs. Add configurations for line, shape, and text:
+Hide the built-in toolbar with `[isControlsVisible]="false"` and switch tools from your own custom UI via `setActiveTool()`. The `controls` array is still required — it registers tool instances and their configs with the engine even though the built-in toolbar is invisible.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-5"
-  repoFiles={['src/app/examples/custom-toolbar-5.component.ts']}
-/>
-
-The `arrows` config controls arrowheads on lines. Setting `end.enabled: true` with `style: 'triangle'` adds a filled arrowhead to every new line. Available styles are `'triangle'`, `'open'`, `'diamond'`, and `'circle'`.
-
----
-
-## Step 6: Adding Shape Sub-Options and Separators
-
-`subOptions` lets a single toolbar button expose multiple variants — useful for the shape tool so users can switch between rectangle, ellipse, and triangle. Add separators to group related buttons visually:
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-6"
-  repoFiles={['src/app/examples/custom-toolbar-6.component.ts']}
-/>
-
-Each `subOption` sets `toolProperty` to the property on the tool instance it controls. Selecting a sub-option updates that property without switching away from the tool.
-
----
-
-## Step 7: Driving the Active Tool Programmatically
-
-Hide the built-in toolbar with `[isControlsVisible]="false"` and switch tools via `setActiveTool()` from your own UI. The `controls` array is still required — it registers tool instances and their configs with the engine:
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-7"
-  repoFiles={['src/app/examples/custom-toolbar-7.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-external"
+  repoFiles={['src/app/examples/custom-toolbar/custom-toolbar-external.component.ts']}
 />
 
 `setActiveTool(name)` matches against the `name` field in the `controls` array. The `activeTool` signal keeps your custom button states in sync with what the engine is doing.

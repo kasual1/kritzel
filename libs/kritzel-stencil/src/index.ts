@@ -10,6 +10,7 @@
 
 export type * from './components';
 
+export * from './classes/objects/base-object.class';
 export * from './classes/objects/text.class';
 export * from './classes/objects/path.class';
 export * from './classes/objects/image.class';
@@ -45,6 +46,7 @@ export * from './classes/managers/theme.manager';
 
 export * from './interfaces/toolbar-control.interface';
 export * from './interfaces/menu-item.interface';
+export * from './interfaces/object-change-event.interface';
 export * from './interfaces/sync-provider.interface';
 export * from './interfaces/sync-config.interface';
 export * from './interfaces/asset.interface';

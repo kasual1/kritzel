@@ -4,13 +4,26 @@ import {
   KritzelBrushTool,
   KritzelSelectionTool,
   KritzelToolbarControl,
+  InMemorySyncProvider,
+  KritzelSyncConfig,
 } from 'kritzel-angular';
+import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
-  selector: 'app-custom-toolbar-3',
+  selector: 'app-custom-toolbar-annotation',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: ` <kritzel-editor [controls]="controls"></kritzel-editor> `,
+  template: `
+    <kritzel-editor
+      [theme]="'angular-theme'"
+      [themes]="themes"
+      [syncConfig]="syncConfig"
+      [controls]="controls"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
+    ></kritzel-editor>
+  `,
   styles: `
     :host {
       display: block;
@@ -18,7 +31,13 @@ import {
     }
   `,
 })
-export class CustomToolbar3Component {
+export class CustomToolbarAnnotationComponent {
+  themes = [customAngularTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
+
   controls: KritzelToolbarControl[] = [
     {
       name: 'selection',
@@ -37,7 +56,7 @@ export class CustomToolbar3Component {
         color: { light: '#000000', dark: '#ffffff' },
         size: 24,
         sizes: {
-          pen: [24, 16, 8]
+          pen: [24, 16, 8],
         },
         palettes: {
           pen: [

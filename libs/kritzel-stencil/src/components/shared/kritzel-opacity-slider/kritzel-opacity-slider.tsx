@@ -51,6 +51,7 @@ export class KritzelOpacitySlider {
               onInput={(e) => this.handleInput(e)}
               style={{
                 '--slider-progress': `${percentage}%`,
+                '--kritzel-opacity-slider-thumb-border-color': this.previewColor,
               } as any}
             />
           </div>

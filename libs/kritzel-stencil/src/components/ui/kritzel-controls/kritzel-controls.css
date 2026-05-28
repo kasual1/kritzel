@@ -118,7 +118,7 @@
 .kritzel-control-separator {
   width: 1px;
   height: 24px;
-  background-color: var(--kritzel-controls-border, #ebebeb);
+  background-color: var(--kritzel-controls-separator-color, #ebebeb);
   margin: 0 4px;
 }
 

@@ -6,7 +6,8 @@ import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.clas
 import { ShapeFillType } from '../../shared/kritzel-shape-fill/kritzel-shape-fill';
 import { LineArrowConfig } from '../../../interfaces/arrow-head.interface';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
-import { ThemeAwareColor, ThemeMode } from '../../../constants/color-palette.constants';
+import { ThemeAwareColor } from '../../../constants/color-palette.constants';
+import { ThemeName } from '../../../interfaces/theme.interface';
 
 @Component({
   tag: 'kritzel-tool-config',
@@ -51,7 +52,7 @@ export class KritzelToolConfig {
   }
 
   @Prop({ mutable: true }) isExpanded: boolean = false;
-  @Prop() theme: ThemeMode;
+  @Prop() theme: ThemeName;
   @Prop() engine: HTMLElement;
 
   private handleSelectionChangeBound = this.handleSelectionChange.bind(this);

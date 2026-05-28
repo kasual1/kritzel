@@ -2,12 +2,14 @@
 sidebar_label: Workspace Management
 displayed_sidebar: tutorialSidebar
 title: "Workspace Management Example | Kritzel for Angular"
-description: "Build a full CRUD workspace tab bar step by step, from reading the initial list through creating, switching, renaming, and deleting workspaces."
+description: "Manage multiple workspaces with a tab bar, full CRUD controls, or URL-synced deep linking — each example is self-contained and ready to copy."
 ---
+
+import LiveDemo from '@site/src/components/LiveDemo';
 
 # Workspace Management
 
-This guide builds up workspace management step by step, starting from a bare minimum and progressively adding configuration until reaching a fully controlled multi-workspace tab bar.
+This page shows how to manage multiple workspaces programmatically — from a simple tab bar to a full CRUD panel to URL-routed deep linking. Each example is self-contained and ready to copy into your project.
 
 ## Prerequisites
 
@@ -40,411 +42,42 @@ The four CRUD methods — `createWorkspace`, `getWorkspaces`, `updateWorkspace`,
 
 ---
 
-## Step 1: Reading the Initial Workspace List
+## Workspace Tab Bar
 
-Wait for `isReady`, then call `getWorkspaces()` to seed a `workspaces` signal with the list that was already persisted:
+A read-only tab bar that lists all persisted workspaces and lets the user switch between them by clicking a tab. The active tab highlights automatically.
 
-```ts title="editor.component.ts"
-import { Component, signal, ViewChild } from '@angular/core'; // highlight-start
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { EditorIsReadyEvent, KritzelWorkspace } from 'kritzel-stencil'; // highlight-end
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/workspace-management-tab-bar"
+  repoFiles={['src/app/examples/workspace-management/workspace-management-tab-bar.component.ts']}
+/>
 
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      // highlight-start
-      (isReady)="onReady($event)"
-      // highlight-end
-    ></kritzel-editor>
-    // highlight-start
-    <ul>
-      @for (ws of workspaces(); track ws.id) {
-        <li>{{ ws.name }}</li>
-      }
-    </ul>
-    // highlight-end
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor; // highlight-start
-
-  workspaces = signal<KritzelWorkspace[]>([]);
-
-  async onReady(event: CustomEvent<EditorIsReadyEvent>) {
-    this.workspaces.set(await this.editor.getWorkspaces());
-  }
-  // highlight-end
-}
-```
-
-`isReady` fires once the engine has fully initialised and all persisted workspaces have been loaded. Reading `getWorkspaces()` inside this handler guarantees the list is complete before the first render.
+`isReady` fires once the engine has fully initialised and all persisted workspaces have been loaded. Reading `getWorkspaces()` inside this handler guarantees the list is complete before the first render. Setting `activeWorkspaceId` to a new value causes the editor to load the matching workspace and fire `activeWorkspaceChange` to confirm the switch.
 
 ---
 
-## Step 2: Tracking the Active Workspace
+## Workspace CRUD Panel
 
-Bind `activeWorkspaceId` and listen to `activeWorkspaceChange` so the component always knows which workspace is currently open:
+A production-ready tab bar with create, rename, and delete actions. New workspaces open immediately after creation; the delete button is disabled when only one workspace remains to prevent an empty-state scenario.
 
-```ts title="editor.component.ts"
-import { Component, signal, ViewChild } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelWorkspace } from 'kritzel-stencil'; // highlight-start
-// highlight-end
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/workspace-management-crud-panel"
+  repoFiles={['src/app/examples/workspace-management/workspace-management-crud-panel.component.ts']}
+/>
 
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      // highlight-start
-      [activeWorkspaceId]="activeWorkspaceId()"
-      // highlight-end
-      (isReady)="onReady($event)"
-      // highlight-start
-      (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-      // highlight-end
-    ></kritzel-editor>
-    <ul>
-      @for (ws of workspaces(); track ws.id) {
-        // highlight-start
-        <li [class.active]="ws.id === activeWorkspaceId()">{{ ws.name }}</li>
-        // highlight-end
-      }
-    </ul>
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
-  workspaces = signal<KritzelWorkspace[]>([]);
-  // highlight-start
-  activeWorkspaceId = signal<string | undefined>(undefined);
-  // highlight-end
-
-  async onReady(event: CustomEvent<EditorIsReadyEvent>) {
-    this.workspaces.set(await this.editor.getWorkspaces());
-    // highlight-start
-    this.activeWorkspaceId.set(event.detail.activeWorkspace.id);
-    // highlight-end
-  }
-
-  // highlight-start
-  onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
-    this.activeWorkspaceId.set(event.detail.id);
-  }
-  // highlight-end
-}
-```
-
-`activeWorkspaceChange` fires after any workspace switch — whether triggered by the user interacting with the built-in workspace manager or by the component setting `activeWorkspaceId`. Reading the initial active workspace ID from `event.detail.activeWorkspace` inside `isReady` seeds the signal before any switch occurs.
+`createWorkspace` persists a new `KritzelWorkspace` instance — construct it with `new KritzelWorkspace(id, name)`. `updateWorkspace` persists any property changes (here the `name`). `deleteWorkspace` removes a workspace but does not auto-switch, so the component redirects to the first remaining workspace when the active one is deleted. After every mutation, call `getWorkspaces()` to refresh the local list.
 
 ---
 
-## Step 3: Switching Between Workspaces
+## URL-Synced Workspace Switcher
 
-Add click handlers to the list items so that clicking a workspace name switches to it:
+Sync the active workspace ID with the Angular Router so users can bookmark or share a direct link to a specific workspace. If the URL contains a workspace ID on load, that workspace opens automatically; otherwise the editor's default workspace is used and the URL updates to match.
 
-```ts title="editor.component.ts"
-import { Component, signal, ViewChild } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelWorkspace } from 'kritzel-stencil';
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/workspace-management-url-synced"
+  repoFiles={['src/app/examples/workspace-management/workspace-management-url-synced.component.ts']}
+/>
 
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      [activeWorkspaceId]="activeWorkspaceId()"
-      (isReady)="onReady($event)"
-      (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-    ></kritzel-editor>
-    <ul>
-      @for (ws of workspaces(); track ws.id) {
-        <li
-          [class.active]="ws.id === activeWorkspaceId()"
-          // highlight-start
-          (click)="switchTo(ws)"
-          // highlight-end
-        >{{ ws.name }}</li>
-      }
-    </ul>
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
-  workspaces = signal<KritzelWorkspace[]>([]);
-  activeWorkspaceId = signal<string | undefined>(undefined);
-
-  async onReady(event: CustomEvent<EditorIsReadyEvent>) {
-    this.workspaces.set(await this.editor.getWorkspaces());
-    this.activeWorkspaceId.set(event.detail.activeWorkspace.id);
-  }
-
-  onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
-    this.activeWorkspaceId.set(event.detail.id);
-  }
-
-  // highlight-start
-  switchTo(workspace: KritzelWorkspace) {
-    this.activeWorkspaceId.set(workspace.id);
-  }
-  // highlight-end
-}
-```
-
-Setting `activeWorkspaceId` to a new value causes the `[activeWorkspaceId]` binding to propagate the change to the editor, which then loads the matching workspace and fires `activeWorkspaceChange` to confirm the switch.
-
----
-
-## Step 4: Creating a Workspace
-
-Add a "New Board" button that calls `createWorkspace` with a fresh `KritzelWorkspace` instance, then refreshes the list:
-
-```ts title="editor.component.ts"
-import { Component, signal, ViewChild } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelWorkspace } from 'kritzel-stencil';
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      [activeWorkspaceId]="activeWorkspaceId()"
-      (isReady)="onReady($event)"
-      (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-    ></kritzel-editor>
-    <ul>
-      @for (ws of workspaces(); track ws.id) {
-        <li
-          [class.active]="ws.id === activeWorkspaceId()"
-          (click)="switchTo(ws)"
-        >{{ ws.name }}</li>
-      }
-    </ul>
-    // highlight-start
-    <button (click)="addWorkspace()">New Board</button>
-    // highlight-end
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
-  workspaces = signal<KritzelWorkspace[]>([]);
-  activeWorkspaceId = signal<string | undefined>(undefined);
-
-  async onReady(event: CustomEvent<EditorIsReadyEvent>) {
-    this.workspaces.set(await this.editor.getWorkspaces());
-    this.activeWorkspaceId.set(event.detail.activeWorkspace.id);
-  }
-
-  onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
-    this.activeWorkspaceId.set(event.detail.id);
-  }
-
-  switchTo(workspace: KritzelWorkspace) {
-    this.activeWorkspaceId.set(workspace.id);
-  }
-
-  // highlight-start
-  async addWorkspace() {
-    const workspace = new KritzelWorkspace(crypto.randomUUID(), 'New Board');
-    await this.editor.createWorkspace(workspace);
-    this.workspaces.set(await this.editor.getWorkspaces());
-    this.switchTo(workspace);
-  }
-  // highlight-end
-}
-```
-
-`createWorkspace` persists the new workspace and returns it. Calling `getWorkspaces()` afterwards synchronises the local signal with the updated list. Passing the new workspace to `switchTo` immediately navigates to it, so the empty canvas opens right away.
-
----
-
-## Step 5: Renaming a Workspace
-
-Add an inline rename interaction that updates the `name` property of the workspace object and persists the change via `updateWorkspace`:
-
-```ts title="editor.component.ts"
-import { Component, signal, ViewChild } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelWorkspace } from 'kritzel-stencil';
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      [activeWorkspaceId]="activeWorkspaceId()"
-      (isReady)="onReady($event)"
-      (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-    ></kritzel-editor>
-    <ul>
-      @for (ws of workspaces(); track ws.id) {
-        <li
-          [class.active]="ws.id === activeWorkspaceId()"
-          (click)="switchTo(ws)"
-        >
-          {{ ws.name }}
-          // highlight-start
-          <button (click)="rename(ws, $event)">Rename</button>
-          // highlight-end
-        </li>
-      }
-    </ul>
-    <button (click)="addWorkspace()">New Board</button>
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
-  workspaces = signal<KritzelWorkspace[]>([]);
-  activeWorkspaceId = signal<string | undefined>(undefined);
-
-  async onReady(event: CustomEvent<EditorIsReadyEvent>) {
-    this.workspaces.set(await this.editor.getWorkspaces());
-    this.activeWorkspaceId.set(event.detail.activeWorkspace.id);
-  }
-
-  onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
-    this.activeWorkspaceId.set(event.detail.id);
-  }
-
-  switchTo(workspace: KritzelWorkspace) {
-    this.activeWorkspaceId.set(workspace.id);
-  }
-
-  async addWorkspace() {
-    const workspace = new KritzelWorkspace(crypto.randomUUID(), 'New Board');
-    await this.editor.createWorkspace(workspace);
-    this.workspaces.set(await this.editor.getWorkspaces());
-    this.switchTo(workspace);
-  }
-
-  // highlight-start
-  async rename(workspace: KritzelWorkspace, event: MouseEvent) {
-    event.stopPropagation();
-    const newName = prompt('Workspace name:', workspace.name);
-    if (!newName || newName === workspace.name) return;
-    workspace.name = newName;
-    await this.editor.updateWorkspace(workspace);
-    this.workspaces.set(await this.editor.getWorkspaces());
-  }
-  // highlight-end
-}
-```
-
-`updateWorkspace` persists any property changes made to the workspace object — in this case the `name`. Refreshing the list via `getWorkspaces()` causes Angular to re-render the tab labels with the updated name.
-
----
-
-## Step 6: Deleting a Workspace
-
-Add a delete button that removes the workspace and, if it was active, switches to the next available workspace:
-
-```ts title="editor.component.ts"
-import { Component, signal, ViewChild } from '@angular/core';
-import { ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelWorkspace } from 'kritzel-stencil';
-
-@Component({
-  selector: 'app-editor',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      [activeWorkspaceId]="activeWorkspaceId()"
-      (isReady)="onReady($event)"
-      (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-    ></kritzel-editor>
-    <ul>
-      @for (ws of workspaces(); track ws.id) {
-        <li
-          [class.active]="ws.id === activeWorkspaceId()"
-          (click)="switchTo(ws)"
-        >
-          {{ ws.name }}
-          <button (click)="rename(ws, $event)">Rename</button>
-          // highlight-start
-          <button
-            [disabled]="workspaces().length <= 1"
-            (click)="remove(ws, $event)"
-          >Delete</button>
-          // highlight-end
-        </li>
-      }
-    </ul>
-    <button (click)="addWorkspace()">New Board</button>
-  `,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
-})
-export class EditorComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
-  workspaces = signal<KritzelWorkspace[]>([]);
-  activeWorkspaceId = signal<string | undefined>(undefined);
-
-  async onReady(event: CustomEvent<EditorIsReadyEvent>) {
-    this.workspaces.set(await this.editor.getWorkspaces());
-    this.activeWorkspaceId.set(event.detail.activeWorkspace.id);
-  }
-
-  onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
-    this.activeWorkspaceId.set(event.detail.id);
-  }
-
-  switchTo(workspace: KritzelWorkspace) {
-    this.activeWorkspaceId.set(workspace.id);
-  }
-
-  async addWorkspace() {
-    const workspace = new KritzelWorkspace(crypto.randomUUID(), 'New Board');
-    await this.editor.createWorkspace(workspace);
-    this.workspaces.set(await this.editor.getWorkspaces());
-    this.switchTo(workspace);
-  }
-
-  async rename(workspace: KritzelWorkspace, event: MouseEvent) {
-    event.stopPropagation();
-    const newName = prompt('Workspace name:', workspace.name);
-    if (!newName || newName === workspace.name) return;
-    workspace.name = newName;
-    await this.editor.updateWorkspace(workspace);
-    this.workspaces.set(await this.editor.getWorkspaces());
-  }
-
-  // highlight-start
-  async remove(workspace: KritzelWorkspace, event: MouseEvent) {
-    event.stopPropagation();
-    const wasActive = workspace.id === this.activeWorkspaceId();
-    await this.editor.deleteWorkspace(workspace);
-    const remaining = await this.editor.getWorkspaces();
-    this.workspaces.set(remaining);
-    if (wasActive && remaining.length > 0) {
-      this.switchTo(remaining[0]);
-    }
-  }
-  // highlight-end
-}
-```
-
-`deleteWorkspace` removes the workspace from persistent storage but does not automatically switch the active workspace. The component checks whether the deleted workspace was active and, if so, redirects to the first remaining workspace. The delete button is disabled when only one workspace remains, preventing an empty-state scenario.
+The route is configured with an optional `:workspaceId` param. On init the component reads the param from the snapshot; inside `onReady` it falls back to `event.detail.activeWorkspace.id` when no param is present. Every workspace switch calls `router.navigate` with `replaceUrl: true` to keep the URL in sync without polluting browser history.

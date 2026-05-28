@@ -1,6 +1,7 @@
 import { Component, Host, h, Prop, EventEmitter, Event } from '@stencil/core';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
-import { ThemeAwareColor, ThemeMode } from '../../../constants/color-palette.constants';
+import { ThemeAwareColor } from '../../../constants/color-palette.constants';
+import { ThemeName } from '../../../interfaces/theme.interface';
 
 @Component({
   tag: 'kritzel-color-palette',
@@ -13,7 +14,7 @@ export class KritzelColorPalette {
   @Prop() isExpanded: boolean = false;
   @Prop() isOpaque: boolean = false;
   @Prop() opacity: number = 1;
-  @Prop() theme: ThemeMode;
+  @Prop() theme: ThemeName;
 
   @Event() colorChange: EventEmitter<ThemeAwareColor>;
 
