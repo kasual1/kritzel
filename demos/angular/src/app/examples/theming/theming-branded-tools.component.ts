@@ -711,6 +711,8 @@ const brandControls: KritzelToolbarControl[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      editorId="theming-branded-tools"
+      [wheelEnabled]="false"
       [controls]="brandControls"
       [themes]="themes"
       [syncConfig]="syncConfig"

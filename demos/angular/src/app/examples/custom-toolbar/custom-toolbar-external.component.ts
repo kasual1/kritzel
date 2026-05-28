@@ -34,6 +34,8 @@ type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | '
     </div>
 
     <kritzel-editor
+      editorId="custom-toolbar-external"
+      [wheelEnabled]="false"
       #editor
       [theme]="'angular-theme'"
       [themes]="themes"

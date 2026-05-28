@@ -22,6 +22,8 @@ const brandedAccentTheme: KritzelTheme = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      editorId="theming-brand-accent"
+      [wheelEnabled]="false"
       [themes]="themes"
       [syncConfig]="syncConfig"
       theme="branded-accent"
