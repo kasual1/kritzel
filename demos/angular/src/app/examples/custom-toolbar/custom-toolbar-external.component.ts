@@ -61,9 +61,9 @@ type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | '
     }
 
     .toolbar button.active {
-      background: #1a73e8;
+      background: #dd0031;
       color: #fff;
-      border-color: #1a73e8;
+      border-color: #dd0031;
     }
   `,
 })
