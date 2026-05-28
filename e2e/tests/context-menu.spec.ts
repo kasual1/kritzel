@@ -4,7 +4,7 @@ import { test, expect } from '../fixtures/editor.fixture';
  * Wait for the context menu to become visible in the engine's shadow DOM and for
  * the component's async item-processing to finish, then let the browser paint.
  */
-async function waitForContextMenu(page: import('@playwright/test').Page) {
+async function waitForContextMenu(page: import('@playwright/test').Page, _clickPosition?: { x: number; y: number }) {
   await page.waitForFunction(() => {
     const engine = document.querySelector('kritzel-engine');
     if (!engine?.shadowRoot) return false;
@@ -63,7 +63,7 @@ test.describe('Context Menu', () => {
       const centerY = box.y + box.height / 2;
 
       await rightClickAt(editorPage.page, centerX, centerY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: centerX, y: centerY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
@@ -81,7 +81,7 @@ test.describe('Context Menu', () => {
       const clickY = box.y + box.height / 2;
 
       await rightClickAt(editorPage.page, clickX, clickY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: clickX, y: clickY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
@@ -100,7 +100,7 @@ test.describe('Context Menu', () => {
       const clickY = box.y + box.height - 10;
 
       await rightClickAt(editorPage.page, clickX, clickY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: clickX, y: clickY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
@@ -119,7 +119,7 @@ test.describe('Context Menu', () => {
       const clickY = box.y + box.height / 2;
 
       await rightClickAt(editorPage.page, clickX, clickY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: clickX, y: clickY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
@@ -138,7 +138,7 @@ test.describe('Context Menu', () => {
       const clickY = box.y + box.height - 10;
 
       await rightClickAt(editorPage.page, clickX, clickY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: clickX, y: clickY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
@@ -158,7 +158,7 @@ test.describe('Context Menu', () => {
       const clickY = box.y + 5;
 
       await rightClickAt(editorPage.page, clickX, clickY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: clickX, y: clickY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
@@ -191,7 +191,7 @@ test.describe('Context Menu', () => {
 
       const { pageX, pageY } = await editorPage.worldToPage(100, 75);
       await rightClickAt(editorPage.page, pageX, pageY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: pageX, y: pageY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
@@ -222,7 +222,7 @@ test.describe('Context Menu', () => {
 
       const { pageX, pageY } = await editorPage.worldToPage(worldX + 100, 75);
       await rightClickAt(editorPage.page, pageX, pageY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: pageX, y: pageY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
@@ -254,7 +254,7 @@ test.describe('Context Menu', () => {
 
       const { pageX, pageY } = await editorPage.worldToPage(worldX + 100, worldY + 75);
       await rightClickAt(editorPage.page, pageX, pageY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: pageX, y: pageY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
@@ -278,7 +278,7 @@ test.describe('Context Menu', () => {
       const clickY = box.y + box.height / 2;
 
       await rightClickAt(editorPage.page, clickX, clickY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: clickX, y: clickY });
 
       // Left-click anywhere else to dismiss
       await editorPage.page.mouse.click(clickX + 200, clickY + 200);
@@ -308,7 +308,7 @@ test.describe('Context Menu', () => {
 
       const box = await editorPage.getEngineBoundingBox();
       await rightClickAt(editorPage.page, box.x + box.width / 2, box.y + box.height / 2);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: box.x + box.width / 2, y: box.y + box.height / 2 });
 
       // Click the "Paste" item (visible because we just copied a shape)
       await editorPage.page.evaluate(() => {
@@ -351,7 +351,7 @@ test.describe('Context Menu', () => {
       const clickY = box.y + box.height - 80;
 
       await rightClickAt(editorPage.page, clickX, clickY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: clickX, y: clickY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
@@ -391,7 +391,7 @@ test.describe('Context Menu', () => {
 
       const { pageX, pageY } = await editorPage.worldToPage(0, worldY + 100);
       await rightClickAt(editorPage.page, pageX, pageY);
-      await waitForContextMenu(editorPage.page);
+      await waitForContextMenu(editorPage.page, { x: pageX, y: pageY });
 
       const rect = await getContextMenuRect(editorPage.page);
       expect(rect).not.toBeNull();
