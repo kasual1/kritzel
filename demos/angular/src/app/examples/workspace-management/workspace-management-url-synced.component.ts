@@ -18,6 +18,8 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       <button class="add-btn" (click)="addWorkspace()">+ New Board</button>
     </nav>
     <kritzel-editor
+      editorId="workspace-management-url-synced"
+      [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
       [syncConfig]="syncConfig"

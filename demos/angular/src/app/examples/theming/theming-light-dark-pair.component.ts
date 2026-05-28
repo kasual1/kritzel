@@ -664,6 +664,8 @@ const brandedDarkTheme: KritzelTheme = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      editorId="theming-light-dark-pair"
+      [wheelEnabled]="false"
       [themes]="themes"
       [syncConfig]="syncConfig"
       theme="branded-light"

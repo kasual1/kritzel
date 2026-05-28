@@ -9,6 +9,8 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      editorId="viewport-navigation-zoom-dashboard"
+      [wheelEnabled]="false"
       [themes]="themes"
       [syncConfig]="syncConfig"
       [loginConfig]="undefined"
