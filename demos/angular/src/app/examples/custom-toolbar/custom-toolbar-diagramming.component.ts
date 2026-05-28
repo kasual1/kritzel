@@ -7,6 +7,8 @@ import {
   KritzelTextTool,
   KritzelToolbarControl,
   ShapeType,
+  InMemorySyncProvider,
+  KritzelSyncConfig,
 } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
@@ -18,6 +20,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     <kritzel-editor
       [theme]="'angular-theme'"
       [themes]="themes"
+      [syncConfig]="syncConfig"
       [controls]="controls"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
@@ -33,6 +36,10 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
 })
 export class CustomToolbarDiagrammingComponent {
   themes = [customAngularTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
 
   controls: KritzelToolbarControl[] = [
     {

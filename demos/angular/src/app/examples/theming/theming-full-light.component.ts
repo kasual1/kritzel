@@ -2,7 +2,7 @@ import {
   Component,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { KritzelEditor, KritzelTheme, lightTheme } from 'kritzel-angular';
+import { KritzelEditor, KritzelTheme, lightTheme, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
 
 const brandPurple = '#6200EE';
 const brandPurpleHover = '#7c2fff';
@@ -339,6 +339,7 @@ const customLightTheme: KritzelTheme = {
   template: `
     <kritzel-editor
       [themes]="themes"
+      [syncConfig]="syncConfig"
       theme="custom-light"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
@@ -354,4 +355,8 @@ const customLightTheme: KritzelTheme = {
 })
 export class ThemingFullLightComponent {
   themes = [customLightTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
 }

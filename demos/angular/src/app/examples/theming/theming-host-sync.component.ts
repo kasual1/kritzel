@@ -5,6 +5,7 @@ import {
   KritzelBrushTool, KritzelSelectionTool, KritzelTextTool,
   ThemeAwareColor, KritzelToolbarControl,
   DEFAULT_BRUSH_CONFIG, DEFAULT_TEXT_CONFIG,
+  InMemorySyncProvider, KritzelSyncConfig,
 } from 'kritzel-angular';
 
 const brandPurple = '#6200EE';
@@ -709,6 +710,7 @@ const brandControls: KritzelToolbarControl[] = [
     <kritzel-editor
       [controls]="brandControls"
       [themes]="themes"
+      [syncConfig]="syncConfig"
       [theme]="activeTheme()"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
@@ -733,6 +735,10 @@ const brandControls: KritzelToolbarControl[] = [
 export class ThemingHostSyncComponent implements OnInit {
   themes = [brandedLightTheme, brandedDarkTheme];
   readonly brandControls = brandControls;
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
 
   activeTheme = signal<ThemeName>('branded-light');
 

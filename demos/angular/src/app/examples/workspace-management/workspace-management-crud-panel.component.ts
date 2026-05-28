@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, ViewChild, ViewChildren, QueryList, AfterViewChecked } from '@angular/core';
-import { KritzelEditor, ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelWorkspace } from 'kritzel-angular';
+import { KritzelEditor, ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelWorkspace, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
@@ -35,6 +35,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     <kritzel-editor
       [theme]="'angular-theme'"
       [themes]="themes"
+      [syncConfig]="syncConfig"
       [activeWorkspaceId]="activeWorkspaceId()"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
@@ -122,6 +123,10 @@ export class WorkspaceManagementCrudPanelComponent implements AfterViewChecked {
   @ViewChildren('renameInput') renameInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   themes = [customAngularTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
 
   workspaces = signal<KritzelWorkspace[]>([]);
   activeWorkspaceId = signal<string | undefined>(undefined);

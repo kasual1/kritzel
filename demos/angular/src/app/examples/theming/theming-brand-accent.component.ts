@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor, KritzelTheme, lightTheme } from 'kritzel-angular';
+import { KritzelEditor, KritzelTheme, lightTheme, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
 
 const brandedAccentTheme: KritzelTheme = {
   ...lightTheme,
@@ -23,6 +23,7 @@ const brandedAccentTheme: KritzelTheme = {
   template: `
     <kritzel-editor
       [themes]="themes"
+      [syncConfig]="syncConfig"
       theme="branded-accent"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
@@ -38,4 +39,8 @@ const brandedAccentTheme: KritzelTheme = {
 })
 export class ThemingBrandAccentComponent {
   themes = [brandedAccentTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
 }
