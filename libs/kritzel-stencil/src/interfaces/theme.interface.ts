@@ -18,18 +18,14 @@ export interface KritzelTheme {
     focusColor?: string;
     fontFamily?: string;
     borderColor?: string;
-    dividerColor?: string;
-    focusColor?: string;
     focusRingColor?: string;
     iconColor?: string;
-    pointerCursor?: string;
     primaryColor?: string;
     primaryHoverColor?: string;
     primaryTextColor?: string;
     scrollbarThumbColor?: string;
     textPrimary?: string;
     textSecondary?: string;
-    iconColor?: string;
     name?: string;
     pointerCursor?: string;
   };

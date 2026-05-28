@@ -120,10 +120,6 @@ export class CustomToolbarDiagrammingComponent {
       },
     },
     {
-      name: 'separator-config',
-      type: 'separator',
-    },
-    {
       name: 'config',
       type: 'config',
     },
