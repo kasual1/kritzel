@@ -8,6 +8,7 @@ export const customAngularTheme: KritzelTheme = {
     focusRingColor: 'rgba(221, 0, 48, 0.2)',
     cursorTrailColor: 'rgb(228, 228, 228)',
     cursorTrailOpacity: '0.6',
+    textPrimary: '#000000',
   },
   engine: {
     backgroundColor: '#ffffff',
@@ -32,8 +33,8 @@ export const customAngularTheme: KritzelTheme = {
     itemBorderRadius: '12px',
     itemColor: '#333333',
     itemFontSize: '14px',
-    itemHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
-    itemActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
+    itemHoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
+    itemActiveBackgroundColor: 'rgba(221, 0, 48, 0.12)',
     itemDisabledColor: '#aaaaaa',
   },
   controls: {
@@ -46,8 +47,8 @@ export const customAngularTheme: KritzelTheme = {
     controlColor: '#000',
     controlBorderRadius: '12px',
     controlPadding: '8px',
-    controlHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
-    controlActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
+    controlHoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
+    controlActiveBackgroundColor: 'rgba(221, 0, 48, 0.12)',
     controlSelectedBackgroundColor: '#dd0031',
     controlSelectedColor: '#ffffff',
     separatorColor: '#ebebeb'
@@ -69,11 +70,16 @@ export const customAngularTheme: KritzelTheme = {
     selectedBackgroundColor: '#ebebeb',
   },
   menu: {
+    itemButtonHoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
+    itemOverlayBackgroundColor: 'rgba(221, 0, 48, 0.08)',
     itemSelectedBackgroundColor: '#dd0031',
     itemInputSelectionColor: '#dd0031',
   },
   snap: {
     indicatorStroke: '#dd0031',
+  },
+  splitButton: {
+    hoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
   },
   dropdown: {
     accentColor: '#dd0031',
@@ -82,15 +88,25 @@ export const customAngularTheme: KritzelTheme = {
   button: {
     primaryBackgroundColor: '#dd0031',
     primaryHoverBackgroundColor: '#b30027',
+    primaryActiveBackgroundColor: '#8c001f',
   },
   slideToggle: {
     trackCheckedColor: '#dd0031',
+  },
+  loginDialog: {
+    buttonHoverBackground: 'rgba(221, 0, 48, 0.08)',
   },
   opacitySlider: {
     activeColor: '#dd0031',
     thumbColor: '#dd0031',
   },
+  moreMenu: {
+    buttonHoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
+    buttonActiveBackgroundColor: 'rgba(221, 0, 48, 0.12)',
+  },
   masterDetail: {
+    menuItemHoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
+    menuItemActiveBackgroundColor: 'rgba(221, 0, 48, 0.12)',
     menuItemSelectedBackgroundColor: 'rgba(221, 0, 48, 0.1)',
     menuItemSelectedHoverBackgroundColor: 'rgba(221, 0, 48, 0.15)',
     menuItemSelectedColor: '#dd0031',
