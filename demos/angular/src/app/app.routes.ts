@@ -6,6 +6,7 @@ import { CustomToolbarFullDrawingAppComponent } from './examples/custom-toolbar/
 import { CustomToolbarExternalComponent } from './examples/custom-toolbar/custom-toolbar-external.component';
 import { EditorPageComponent } from './e2e/editor-page.component';
 import { MultiEditorPageComponent } from './e2e/multi-editor-page.component';
+import { WrappedEditorPageComponent } from './e2e/wrapped-editor-page.component';
 import { CustomContextMenuCanvasQuickActionsComponent } from './examples/custom-context-menu/custom-context-menu-canvas-quick-actions.component';
 import { CustomContextMenuClipboardActionsComponent } from './examples/custom-context-menu/custom-context-menu-clipboard-actions.component';
 import { CustomContextMenuSmartConditionalComponent } from './examples/custom-context-menu/custom-context-menu-smart-conditional.component';
@@ -34,6 +35,7 @@ export const routes: Routes = [
     children: [
       { path: 'editor', component: EditorPageComponent },
       { path: 'multi-editor', component: MultiEditorPageComponent },
+      { path: 'wrapped-editor', component: WrappedEditorPageComponent },
     ],
   },
   {

@@ -152,8 +152,8 @@ export class EditorPage {
     this.utilityPanel = page.locator('kritzel-utility-panel');
   }
 
-  async goto() {
-    await this.page.goto('/#/e2e/editor');
+  async goto(path = '/e2e/editor') {
+    await this.page.goto(`/#${path}`);
   }
 
   /** Wait for the editor and engine custom elements to be defined and rendered. */
