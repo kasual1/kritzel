@@ -28,10 +28,11 @@ A settings button component that opens a settings dialog when clicked.
 
 ## Properties
 
-| Property    | Attribute | Description                                                                          | Type                                               | Default     |
-| ----------- | --------- | ------------------------------------------------------------------------------------ | -------------------------------------------------- | ----------- |
-| `settings`  | --        | Current settings values. Used to initialize and sync the component's internal state. | `KritzelSettingsConfig`                            | `undefined` |
-| `shortcuts` | --        | Keyboard shortcuts to display in the settings dialog                                 | `Omit<KritzelShortcut, "action" \| "condition">[]` | `[]`        |
+| Property          | Attribute | Description                                                                          | Type                                               | Default             |
+| ----------------- | --------- | ------------------------------------------------------------------------------------ | -------------------------------------------------- | ------------------- |
+| `availableThemes` | --        | Keyboard shortcuts to display in the settings dialog                                 | `string[]`                                         | `['light', 'dark']` |
+| `settings`        | --        | Current settings values. Used to initialize and sync the component's internal state. | `KritzelSettingsConfig`                            | `undefined`         |
+| `shortcuts`       | --        |                                                                                      | `Omit<KritzelShortcut, "action" \| "condition">[]` | `[]`                |
 
 
 ## Events
@@ -62,6 +63,7 @@ Type: `Promise<void>`
 
 ### Depends on
 
+- [kritzel-dropdown](../../shared/kritzel-dropdown)
 - [kritzel-slide-toggle](../../shared/kritzel-slide-toggle)
 - [kritzel-numeric-input](../../shared/kritzel-numeric-input)
 - [kritzel-dialog](../../shared/kritzel-dialog)
@@ -70,6 +72,7 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-settings --> kritzel-dropdown
   kritzel-settings --> kritzel-slide-toggle
   kritzel-settings --> kritzel-numeric-input
   kritzel-settings --> kritzel-dialog

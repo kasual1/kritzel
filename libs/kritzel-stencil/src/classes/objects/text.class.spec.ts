@@ -113,6 +113,8 @@ describe('KritzelText', () => {
   let mockSetState: jest.Mock;
   let mockRerender: jest.Mock;
   let mockEmitObjectsChange: jest.Mock;
+  let mockEmitObjectsAdded: jest.Mock;
+  let mockEmitObjectsUpdated: jest.Mock;
 
   const createMockCore = (): jest.Mocked<KritzelCore> => {
     const objectsUpdate = jest.fn();
@@ -120,12 +122,16 @@ describe('KritzelText', () => {
     const setState = jest.fn();
     const rerender = jest.fn();
     const emitObjectsChange = jest.fn();
+    const emitObjectsAdded = jest.fn();
+    const emitObjectsUpdated = jest.fn();
 
     mockObjectsUpdate = objectsUpdate;
     mockObjectsConsolidate = objectsConsolidate;
     mockSetState = setState;
     mockRerender = rerender;
     mockEmitObjectsChange = emitObjectsChange;
+    mockEmitObjectsAdded = emitObjectsAdded;
+    mockEmitObjectsUpdated = emitObjectsUpdated;
 
     return {
       store: {
@@ -154,6 +160,8 @@ describe('KritzelText', () => {
       rerender: rerender,
       engine: {
         emitObjectsChange: emitObjectsChange,
+        emitObjectsAdded: emitObjectsAdded,
+        emitObjectsUpdated: emitObjectsUpdated,
       },
       toolRegistry: {
         getTool: jest.fn(() => ({ name: 'text' })),
@@ -572,6 +580,8 @@ describe('KritzelText', () => {
       textObject.save();
 
       expect(mockEmitObjectsChange).toHaveBeenCalled();
+      expect(mockEmitObjectsUpdated).toHaveBeenCalled();
+      expect(mockEmitObjectsAdded).not.toHaveBeenCalled();
     });
   });
 

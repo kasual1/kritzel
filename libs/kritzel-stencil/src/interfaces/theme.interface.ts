@@ -1,7 +1,7 @@
 /**
  * Theme name type for available themes
  */
-export type ThemeName = 'light' | 'dark';
+export type ThemeName = 'light' | 'dark' | (string & NonNullable<unknown>);
 
 /**
  * Complete theme definition with all CSS variable values grouped by category
@@ -19,14 +19,15 @@ export interface KritzelTheme {
     fontFamily?: string;
     borderColor?: string;
     focusRingColor?: string;
-    pointerCursor?: string;
+    iconColor?: string;
     primaryColor?: string;
     primaryHoverColor?: string;
     primaryTextColor?: string;
     scrollbarThumbColor?: string;
     textPrimary?: string;
     textSecondary?: string;
-    iconColor?: string;
+    name?: string;
+    pointerCursor?: string;
   };
 
   /** Active users variables */
@@ -140,6 +141,7 @@ export interface KritzelTheme {
     controlSelectedColor?: string;
     gap?: string;
     padding?: string;
+    separatorColor?: string;
   };
 
   /** Current user dialog variables */
@@ -372,6 +374,8 @@ export interface KritzelTheme {
   selection?: {
     borderColor?: string;
     borderWidth?: string;
+    boxBackgroundColor?: string;
+    boxBorderColor?: string;
     handleColor?: string;
     handleSize?: string;
     handleStrokeColor?: string;

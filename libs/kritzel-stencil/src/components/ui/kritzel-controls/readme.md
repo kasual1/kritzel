@@ -7,13 +7,13 @@
 
 ## Properties
 
-| Property                | Attribute                  | Description | Type                      | Default     |
-| ----------------------- | -------------------------- | ----------- | ------------------------- | ----------- |
-| `activeControl`         | --                         |             | `KritzelToolbarControl`   | `null`      |
-| `controls`              | --                         |             | `KritzelToolbarControl[]` | `[]`        |
-| `isUtilityPanelVisible` | `is-utility-panel-visible` |             | `boolean`                 | `true`      |
-| `theme`                 | `theme`                    |             | `"dark" \| "light"`       | `undefined` |
-| `undoState`             | --                         |             | `KritzelUndoState`        | `null`      |
+| Property                | Attribute                  | Description | Type                               | Default   |
+| ----------------------- | -------------------------- | ----------- | ---------------------------------- | --------- |
+| `activeControl`         | --                         |             | `KritzelToolbarControl`            | `null`    |
+| `controls`              | --                         |             | `KritzelToolbarControl[]`          | `[]`      |
+| `isUtilityPanelVisible` | `is-utility-panel-visible` |             | `boolean`                          | `true`    |
+| `theme`                 | `theme`                    |             | `"dark" \| "light" \| string & {}` | `'light'` |
+| `undoState`             | --                         |             | `KritzelUndoState`                 | `null`    |
 
 
 ## Events

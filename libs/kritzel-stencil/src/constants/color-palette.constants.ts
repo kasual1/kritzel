@@ -1,7 +1,9 @@
+import { ThemeName } from '../interfaces/theme.interface';
+
 /**
  * Supported theme modes for color variations
  */
-export type ThemeMode = 'light' | 'dark';
+// export type ThemeMode = 'light' | 'dark'; // Removed in favor of ThemeName
 
 /**
  * Color definition with different values per theme
@@ -11,6 +13,8 @@ export interface ThemeAwareColor {
   light: string;
   /** Color value for dark theme */
   dark: string;
+  /** Custom colors based on new themes */
+  [key: string]: string | undefined;
   /** Optional semantic label for the color */
   label?: string;
 }
@@ -23,8 +27,11 @@ export type ColorPalette = readonly ThemeAwareColor[];
 /**
  * Helper function to resolve a color value for a specific theme
  */
-export function resolveColor(color: ThemeAwareColor, theme: ThemeMode): string {
-  return color[theme];
+export function resolveColor(color: ThemeAwareColor, theme: ThemeName): string {
+  if (theme in color && color[theme]) {
+    return color[theme] as string;
+  }
+  return color[theme === 'dark' ? 'dark' : 'light'];
 }
 
 /**

@@ -43,7 +43,10 @@ export const darkTheme: KritzelTheme = {
 
   selection: {
     borderColor: '#0A84FF',
+    boxBackgroundColor: 'rgba(10, 132, 255, 0.2)',
+    boxBorderColor: 'rgba(10, 132, 255, 0.5)',
     handleColor: '#1a1a1a',
+    handleStrokeColor: '#0A84FF'
   },
 
   checkerboard: {
@@ -86,6 +89,7 @@ export const darkTheme: KritzelTheme = {
     controlHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
     controlSelectedBackgroundColor: '#0A84FF',
     controlSelectedColor: '#ffffff',
+    separatorColor: '#3a3a3a',
   },
 
   currentUserDialog: {

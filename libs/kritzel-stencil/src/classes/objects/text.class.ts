@@ -31,6 +31,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   isDebugInfoVisible: boolean = true;
   isEditable: boolean = true;
   isEditing: boolean = false;
+  isNewlyCreated: boolean = false;
 
   editor: EditorView | null = null;
   content: any = null;
@@ -423,6 +424,13 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     this._core.store.objects.update(this);
 
     this._core.engine.emitObjectsChange();
+
+    if (this.isNewlyCreated) {
+      this.isNewlyCreated = false;
+      this._core.engine.emitObjectsAdded([this]);
+    } else {
+      this._core.engine.emitObjectsUpdated([{ object: this, changedProperties: ['content'] }]);
+    }
   }
 
   /**

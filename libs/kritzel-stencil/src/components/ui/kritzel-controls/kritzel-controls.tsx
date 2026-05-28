@@ -11,7 +11,7 @@ import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 import { ToolDisplayValues } from '../../../interfaces/tool-config.interface';
 import { KritzelToolConfigHelper } from '../../../helpers/tool-config.helper';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
-import { ThemeMode } from '../../../constants/color-palette.constants';
+import { ThemeName } from '../../../interfaces/theme.interface';
 
 type ToolConfig = Record<string, any>;
 
@@ -28,7 +28,7 @@ export class KritzelControls {
   @Prop({ mutable: true }) activeControl: KritzelToolbarControl | null = null;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() undoState: KritzelUndoState = null;
-  @Prop() theme: ThemeMode;
+  @Prop() theme: ThemeName = 'light';
 
   @Event() isControlsReady: EventEmitter<void>;
 

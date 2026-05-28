@@ -1,0 +1,139 @@
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { KritzelEditor, ContextMenuItem, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { customAngularTheme } from '../../const/custom-angular-theme';
+
+@Component({
+  selector: 'app-custom-context-menu-object-inspector',
+  imports: [KritzelEditor],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <kritzel-editor
+      #editor
+      [theme]="'angular-theme'"
+      [themes]="themes"
+      [syncConfig]="syncConfig"
+      [globalContextMenuItems]="globalItems"
+      [objectContextMenuItems]="objectItems"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
+    ></kritzel-editor>
+  `,
+  styles: `
+    :host {
+      display: block;
+      height: 100%;
+    }
+  `,
+})
+export class CustomContextMenuObjectInspectorComponent {
+  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+
+  themes = [customAngularTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
+
+  globalItems: ContextMenuItem[] = [
+    {
+      label: 'Paste',
+      action: async (menu) => {
+        this.editor.paste(menu.x, menu.y);
+      },
+      icon: 'paste',
+      group: 'clipboard',
+      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
+    },
+    {
+      label: 'Select All',
+      action: () => {
+        this.editor.selectAllObjectsInViewport();
+      },
+      icon: 'select-all',
+      group: 'clipboard',
+    },
+  ];
+
+  objectItems: ContextMenuItem[] = [
+    {
+      label: 'Copy',
+      action: () => {
+        this.editor.copy();
+      },
+      icon: 'copy',
+      group: 'clipboard',
+    },
+    {
+      label: 'Paste',
+      action: async (menu) => {
+        this.editor.paste(menu.x, menu.y);
+      },
+      icon: 'paste',
+      group: 'clipboard',
+      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
+    },
+    {
+      label: 'Arrange',
+      icon: 'layers',
+      group: 'arrange',
+      children: [
+        {
+          label: 'Bring to Front',
+          icon: 'bring-to-front',
+          action: () => {
+            this.editor.bringToFront();
+          },
+        },
+        {
+          label: 'Bring Forward',
+          icon: 'bring-forward',
+          action: () => {
+            this.editor.bringForward();
+          },
+        },
+        {
+          label: 'Send Backward',
+          icon: 'send-backward',
+          action: () => {
+            this.editor.sendBackward();
+          },
+        },
+        {
+          label: 'Send to Back',
+          icon: 'send-to-back',
+          action: () => {
+            this.editor.sendToBack();
+          },
+        },
+      ],
+    },
+    {
+      label: 'Export',
+      icon: 'download',
+      group: 'export',
+      children: [
+        {
+          label: 'Export as PNG',
+          action: () => {
+            this.editor.exportSelectedObjectsAsPng();
+          },
+        },
+        {
+          label: 'Export as SVG',
+          action: () => {
+            this.editor.exportSelectedObjectsAsSvg();
+          },
+        },
+      ],
+    },
+    {
+      label: 'Delete',
+      action: () => {
+        this.editor.delete();
+      },
+      icon: 'delete',
+      group: 'destructive',
+    },
+  ];
+}

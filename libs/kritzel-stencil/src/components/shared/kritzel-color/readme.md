@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type                        | Default     |
-| -------- | --------- | ----------- | --------------------------- | ----------- |
-| `size`   | `size`    |             | `number`                    | `24`        |
-| `theme`  | `theme`   |             | `"dark" \| "light"`         | `undefined` |
-| `value`  | `value`   |             | `ThemeAwareColor \| string` | `undefined` |
+| Property | Attribute | Description | Type                               | Default     |
+| -------- | --------- | ----------- | ---------------------------------- | ----------- |
+| `size`   | `size`    |             | `number`                           | `24`        |
+| `theme`  | `theme`   |             | `"dark" \| "light" \| string & {}` | `undefined` |
+| `value`  | `value`   |             | `ThemeAwareColor \| string`        | `undefined` |
 
 
 ## Dependencies

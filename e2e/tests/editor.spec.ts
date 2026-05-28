@@ -140,57 +140,11 @@ test.describe('Editor', () => {
   });
 
   test('controls fit inside the editor when wrapped in a narrow container', async ({ editorPage, page }) => {
-    await editorPage.goto();
-    await editorPage.waitForReady();
-
-    // Constrain the editor to a narrow box, simulating embedding it inside a
-    // wrapper component that does not span the full page. A visible border is
-    // applied to the wrapper so the boundary is obvious in the screenshot.
     const WRAPPER_WIDTH = 320;
     const WRAPPER_HEIGHT = 600;
 
-    await page.evaluate(({ w, h }) => {
-      const editor = document.querySelector('kritzel-editor') as HTMLElement | null;
-      if (!editor) throw new Error('kritzel-editor not found');
-
-      // Create an explicit wrapper element and move the editor into it so the
-      // wrapper boundary is visually distinct from the editor itself.
-      const wrapper = document.createElement('div');
-      wrapper.id = 'e2e-editor-wrapper';
-      wrapper.setAttribute(
-        'style',
-        [
-          `width: ${w}px`,
-          `height: ${h}px`,
-          'box-sizing: border-box',
-          'border: 4px solid #ff0080',
-          'background: #fafafa',
-          'position: relative',
-          'overflow: hidden',
-          'margin: 24px',
-        ].join('; ')
-      );
-
-      editor.parentElement!.insertBefore(wrapper, editor);
-      wrapper.appendChild(editor);
-
-      // Override the demos' "fill the page" styles so the editor fills the wrapper.
-      editor.setAttribute(
-        'style',
-        'width: 100% !important; height: 100% !important; flex: 0 0 auto !important;'
-      );
-    }, { w: WRAPPER_WIDTH, h: WRAPPER_HEIGHT });
-
-    // Allow the browser to perform layout after resizing.
-    await page.waitForFunction(
-      (expectedWidth) => {
-        const editor = document.querySelector('kritzel-editor') as HTMLElement | null;
-        if (!editor) return false;
-        // Account for the 4px border on each side of the wrapper.
-        return Math.round(editor.getBoundingClientRect().width) === expectedWidth - 8;
-      },
-      WRAPPER_WIDTH
-    );
+    await editorPage.goto(`/e2e/wrapped-editor?width=${WRAPPER_WIDTH}&height=${WRAPPER_HEIGHT}`);
+    await editorPage.waitForReady();
 
     await editorPage.controls.waitFor({ state: 'visible' });
     await editorPage.activateTool('brush');
@@ -234,53 +188,13 @@ test.describe('Editor', () => {
   });
 
   test('settings dialog stays within a wrapped editor container', async ({ editorPage, page }) => {
-    await editorPage.goto();
-    await editorPage.waitForReady();
-
     const WRAPPER_WIDTH = 600;
     const WRAPPER_HEIGHT = 500;
 
-    await page.evaluate(({ w, h }) => {
-      const editor = document.querySelector('kritzel-editor') as HTMLElement | null;
-      if (!editor) throw new Error('kritzel-editor not found');
+    await editorPage.goto(`/e2e/wrapped-editor?width=${WRAPPER_WIDTH}&height=${WRAPPER_HEIGHT}`);
+    await editorPage.waitForReady();
 
-      const wrapper = document.createElement('div');
-      wrapper.id = 'e2e-dialog-wrapper';
-      wrapper.setAttribute(
-        'style',
-        [
-          `width: ${w}px`,
-          `height: ${h}px`,
-          'box-sizing: border-box',
-          'border: 4px solid #ff0080',
-          'border-radius: 16px',
-          'background: #fafafa',
-          'position: relative',
-          'overflow: hidden',
-          'margin: 24px',
-        ].join('; ')
-      );
-
-      editor.parentElement!.insertBefore(wrapper, editor);
-      wrapper.appendChild(editor);
-
-      editor.setAttribute(
-        'style',
-        'width: 100% !important; height: 100% !important; flex: 0 0 auto !important;'
-      );
-    }, { w: WRAPPER_WIDTH, h: WRAPPER_HEIGHT });
-
-    await page.waitForFunction(
-      (expectedWidth) => {
-        const editor = document.querySelector('kritzel-editor') as HTMLElement | null;
-        if (!editor) return false;
-        return Math.round(editor.getBoundingClientRect().width) === expectedWidth - 8;
-      },
-      WRAPPER_WIDTH
-    );
-
-    // Open the more-menu and click Settings.
-   // Open the more-menu (⋮ button) inside the editor's shadow DOM.
+    // Open the more-menu (⋮ button) inside the editor's shadow DOM.
     await page.getByTestId('more-menu-button').click();
 
     // Click the Settings item in the dropdown.
@@ -301,50 +215,11 @@ test.describe('Editor', () => {
   });
 
   test('settings dialog stays within a large wrapped editor container', async ({ editorPage, page }) => {
-    await editorPage.goto();
-    await editorPage.waitForReady();
-
     const WRAPPER_WIDTH = 1000;
     const WRAPPER_HEIGHT = 600;
 
-    await page.evaluate(({ w, h }) => {
-      const editor = document.querySelector('kritzel-editor') as HTMLElement | null;
-      if (!editor) throw new Error('kritzel-editor not found');
-
-      const wrapper = document.createElement('div');
-      wrapper.id = 'e2e-dialog-wrapper-large';
-      wrapper.setAttribute(
-        'style',
-        [
-          `width: ${w}px`,
-          `height: ${h}px`,
-          'box-sizing: border-box',
-          'border: 4px solid #ff0080',
-          'border-radius: 16px',
-          'background: #fafafa',
-          'position: relative',
-          'overflow: hidden',
-          'margin: 24px',
-        ].join('; ')
-      );
-
-      editor.parentElement!.insertBefore(wrapper, editor);
-      wrapper.appendChild(editor);
-
-      editor.setAttribute(
-        'style',
-        'width: 100% !important; height: 100% !important; flex: 0 0 auto !important;'
-      );
-    }, { w: WRAPPER_WIDTH, h: WRAPPER_HEIGHT });
-
-    await page.waitForFunction(
-      (expectedWidth) => {
-        const editor = document.querySelector('kritzel-editor') as HTMLElement | null;
-        if (!editor) return false;
-        return Math.round(editor.getBoundingClientRect().width) === expectedWidth - 8;
-      },
-      WRAPPER_WIDTH
-    );
+    await editorPage.goto(`/e2e/wrapped-editor?width=${WRAPPER_WIDTH}&height=${WRAPPER_HEIGHT}`);
+    await editorPage.waitForReady();
 
     // Open the more-menu (⋮ button) inside the editor's shadow DOM.
     await page.getByTestId('more-menu-button').click();

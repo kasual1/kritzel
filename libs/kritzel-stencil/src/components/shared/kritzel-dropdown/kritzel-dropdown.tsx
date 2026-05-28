@@ -80,12 +80,13 @@ export class KritzelDropdown {
 
   private updateInternalValue(proposedValue: string, emitChange: boolean) {
     let finalValue = proposedValue;
-    if (this.options && this.options.length > 0) {
-      const isValidValue = this.options.some(opt => opt.value === finalValue);
-      if (!finalValue || !isValidValue) {
-        finalValue = this.options[0].value;
-      }
-    } else {
+    
+    // Only fall back to an option if the proposed value is completely missing.
+    // We intentionally don't sanitize invalid values here, to allow for values 
+    // that might be added to options asynchronously later (preventing race conditions).
+    if (!finalValue && this.options && this.options.length > 0) {
+      finalValue = this.options[0].value;
+    } else if (!finalValue) {
       finalValue = undefined;
     }
 

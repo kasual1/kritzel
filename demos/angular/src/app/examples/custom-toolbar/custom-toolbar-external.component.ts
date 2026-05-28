@@ -10,12 +10,15 @@ import {
   KritzelTextTool,
   KritzelToolbarControl,
   ShapeType,
+  InMemorySyncProvider,
+  KritzelSyncConfig,
 } from 'kritzel-angular';
+import { customAngularTheme } from '../../const/custom-angular-theme';
 
 type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | 'image';
 
 @Component({
-  selector: 'app-custom-toolbar-7',
+  selector: 'app-custom-toolbar-external',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -32,8 +35,14 @@ type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | '
 
     <kritzel-editor
       #editor
+      [theme]="'angular-theme'"
+      [themes]="themes"
+      [syncConfig]="syncConfig"
       [controls]="controls"
       [isControlsVisible]="false"
+      [loginConfig]="undefined"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
     ></kritzel-editor>
   `,
   styles: `
@@ -58,14 +67,20 @@ type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | '
     }
 
     .toolbar button.active {
-      background: #1a73e8;
+      background: #dd0031;
       color: #fff;
-      border-color: #1a73e8;
+      border-color: #dd0031;
     }
   `,
 })
-export class CustomToolbar7Component {
+export class CustomToolbarExternalComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
+
+  themes = [customAngularTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
 
   activeTool = signal<ToolName>('selection');
 
@@ -196,8 +211,8 @@ export class CustomToolbar7Component {
     },
   ];
 
-  async setTool(name: ToolName) {
+  setTool(name: ToolName): void {
     this.activeTool.set(name);
-    await this.editor.changeActiveToolByName(name);
+    this.editor.changeActiveToolByName(name);
   }
 }

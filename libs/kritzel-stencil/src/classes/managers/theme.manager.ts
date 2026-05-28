@@ -25,6 +25,7 @@ export class KritzelThemeManager {
   private _currentTheme: ThemeName = DEFAULT_THEME;
   private _targetElement: HTMLElement | null = null;
   private readonly _storageKey: string;
+  private _themeRegistry = new Map<string, KritzelTheme>();
 
   /**
    * Creates a new KritzelThemeManager instance.
@@ -35,6 +36,10 @@ export class KritzelThemeManager {
   constructor(core: KritzelCore) {
     this._core = core;
     this._storageKey = core.editorId ? `${SETTINGS_STORAGE_KEY}-${core.editorId}` : SETTINGS_STORAGE_KEY;
+    
+    this._themeRegistry.set('light', lightTheme);
+    this._themeRegistry.set('dark', darkTheme);
+
     this._currentTheme = this.getStoredTheme();
     void this._core;
   }
@@ -73,13 +78,55 @@ export class KritzelThemeManager {
 
   /**
    * Gets the theme configuration object by its name.
-   * Returns the corresponding theme object containing all CSS variable values.
+   * Falls back to the first registered theme if the requested name is not found.
    *
-   * @param themeName - The name of the theme to retrieve ('light' or 'dark')
+   * @param themeName - The name of the theme to retrieve
    * @returns The KritzelTheme object containing all theme CSS variable values
    */
   getThemeByName(themeName: ThemeName): KritzelTheme {
-    return themeName === 'dark' ? darkTheme : lightTheme;
+    return this._themeRegistry.get(themeName) ?? this._themeRegistry.values().next().value!;
+  }
+
+  /**
+   * Registers the provided themes to this theme manager instance.
+   *
+   * @param themes - The complete list of themes to make available
+   */
+  registerThemes(themes: KritzelTheme[]): void {
+    if (themes.length === 0) {
+      console.warn('[KritzelThemeManager] registerThemes called with an empty array. The theme registry will be empty.');
+    }
+    this._themeRegistry.clear();
+    for (const theme of themes) {
+      this._themeRegistry.set(theme.name, theme);
+    }
+  }
+
+  /**
+   * Pre-emptively applies the stored theme's CSS variables to the closest editor or document.
+   * This prevents a "Flash of Unstyled Content" (FOUC) while Stencil web components are hydrating.
+   * 
+   * @param element - The HTML element to apply the theme to
+   */
+  injectThemeEarly(element?: HTMLElement): void {
+    let targetElement = element;
+    if (!targetElement && typeof document !== 'undefined') {
+      targetElement = document.documentElement;
+    }
+    if (!targetElement) return;
+
+    const themeName = this.getStoredTheme();
+    const theme = this.getThemeByName(themeName);
+    ThemeHelper.applyThemeToElement(targetElement, theme);
+  }
+
+  /**
+   * Gets all registered themes.
+   *
+   * @returns An array of all registered theme objects
+   */
+  getAllThemes(): KritzelTheme[] {
+    return Array.from(this._themeRegistry.values());
   }
 
   /**
@@ -97,7 +144,7 @@ export class KritzelThemeManager {
     }
     try {
       const parsed = JSON.parse(stored);
-      if (parsed?.theme === 'dark' || parsed?.theme === 'light') {
+      if (typeof parsed?.theme === 'string') {
         return parsed.theme;
       }
     } catch {
@@ -122,7 +169,7 @@ export class KritzelThemeManager {
     }
     try {
       const parsed = JSON.parse(stored);
-      if (parsed?.theme === 'dark' || parsed?.theme === 'light') {
+      if (typeof parsed?.theme === 'string') {
         return parsed.theme;
       }
     } catch {

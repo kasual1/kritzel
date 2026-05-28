@@ -30,7 +30,10 @@ import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
 import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelUndoState } from '../../..';
 import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
-import { ThemeName } from '../../../interfaces/theme.interface';
+import { ThemeName, KritzelTheme } from '../../../interfaces/theme.interface';
+import { ThemeHelper } from '../../../helpers/theme.helper';
+import { lightTheme } from '../../../themes/light-theme';
+import { darkTheme } from '../../../themes/dark-theme';
 import { KritzelSelectionGroup } from '../../../classes/objects/selection-group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
@@ -207,6 +210,8 @@ export class KritzelEditor {
     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
   ];
 
+  @Prop() themes?: KritzelTheme[];
+  @Prop({ mutable: true }) theme: ThemeName = 'light';
   @Prop() customSvgIcons: Record<string, string> = {};
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
@@ -260,9 +265,9 @@ export class KritzelEditor {
   @State() isVirtualKeyboardOpen: boolean = false;
   @State() undoState: KritzelUndoState | null = null;
   @State() isBackToContentButtonVisible: boolean = false;
-  @State() currentTheme: ThemeName = 'light';
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
   @State() currentIsPublic: boolean = false;
+  @State() isEditorVisible: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -324,12 +329,18 @@ export class KritzelEditor {
     }
   }
 
-  @Watch('currentTheme')
+  @Watch('theme')
   onCurrentThemeChange() {
+    this.applyTheme();
     setTimeout(() => this.setOsSpecificCssVariables(), 0);
     if (this.engineRef) {
       this.engineRef.saveSettings(this.currentSettingsConfig);
     }
+  }
+
+  @Watch('themes')
+  onThemesChange() {
+    this.applyTheme();
   }
 
   @Listen('dblclick', { passive: false })
@@ -571,6 +582,16 @@ export class KritzelEditor {
   }
 
   @Method()
+  async exportSelectedObjectsAsPng(): Promise<void> {
+    return this.engineRef.exportSelectedObjectsAsPng();
+  }
+
+  @Method()
+  async exportSelectedObjectsAsSvg(): Promise<void> {
+    return this.engineRef.exportSelectedObjectsAsSvg();
+  }
+
+  @Method()
   async downloadAsJson(filename?: string): Promise<void> {
     return this.engineRef.downloadAsJson(filename);
   }
@@ -635,6 +656,17 @@ export class KritzelEditor {
 
   componentWillLoad() {
     this.loadSettingsFromStorage();
+    this.applyTheme();
+  }
+
+  private applyTheme(): void {
+    const themeObj = this.resolveThemeObject();
+    ThemeHelper.applyThemeToElement(this.host, themeObj);
+  }
+
+  private resolveThemeObject(): KritzelTheme {
+    return this.themes?.find(t => t.name === this.theme)
+      ?? (this.theme === 'dark' ? darkTheme : lightTheme);
   }
 
   componentDidLoad() {
@@ -653,6 +685,8 @@ export class KritzelEditor {
       return;
     }
 
+    this.isEditorVisible = true;
+
     const { id, name, isPublic, createdAt, updatedAt } = this.activeWorkspace;
 
     this.isReady.emit({
@@ -667,6 +701,7 @@ export class KritzelEditor {
       syncConfig: this.syncConfig,
       assetStorageConfig: this.assetStorageConfig,
       loginConfig: this.loginConfig,
+      theme: this.theme
     });
   }
 
@@ -683,6 +718,7 @@ export class KritzelEditor {
   }
 
   handleWorkspacesChange(event: CustomEvent<KritzelWorkspace[]>) {
+    event.stopPropagation();
     this.workspaces = event.detail;
   }
 
@@ -707,37 +743,45 @@ export class KritzelEditor {
   }
 
   handleObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
+    event.stopPropagation();
     this.objectsChange.emit(event.detail);
   }
 
   handleObjectsAdded(event: CustomEvent<ObjectsAddedEvent>) {
+    event.stopPropagation();
     this.objectsAdded.emit(event.detail);
   }
 
   handleObjectsRemoved(event: CustomEvent<ObjectsRemovedEvent>) {
+    event.stopPropagation();
     this.objectsRemoved.emit(event.detail);
   }
 
   handleObjectsUpdated(event: CustomEvent<ObjectsUpdatedEvent>) {
+    event.stopPropagation();
     this.objectsUpdated.emit(event.detail);
   }
 
   handleUndoStateChange(event: CustomEvent<KritzelUndoState>) {
+    event.stopPropagation();
     this.undoStateChange.emit(event.detail);
     this.undoState = event.detail;
   }
 
   async handleObjectsInViewportChange(event: CustomEvent<KritzelBaseObject<Element>[]>) {
+    event.stopPropagation();
     const hasVisibleObjects = this.getContentObjects(event.detail).length > 0;
     const hasAnyObjectsAtAll = this.getContentObjects(await this.engineRef.getAllObjects()).length > 0;
     this.isBackToContentButtonVisible = !hasVisibleObjects && hasAnyObjectsAtAll;
   }
 
   handleViewportChange(event: CustomEvent<KritzelViewportState>) {
+    event.stopPropagation();
     this.viewportChange.emit(event.detail);
   }
 
   handleAwarenessChange(event: CustomEvent<Map<number, Record<string, any>>>) {
+    event.stopPropagation();
     this.awarenessChange.emit(event.detail);
   }
 
@@ -745,17 +789,18 @@ export class KritzelEditor {
     this.scaleMin = event.detail.scaleMin;
     this.scaleMax = event.detail.scaleMax;
     this.lockDrawingScale = event.detail.lockDrawingScale;
-    this.currentTheme = event.detail.theme;
+    this.theme = event.detail.theme;
     this.viewportBoundaryLeft = event.detail.viewportBoundaryLeft ?? -Infinity;
     this.viewportBoundaryRight = event.detail.viewportBoundaryRight ?? Infinity;
     this.viewportBoundaryTop = event.detail.viewportBoundaryTop ?? -Infinity;
     this.viewportBoundaryBottom = event.detail.viewportBoundaryBottom ?? Infinity;
     this.debugInfo = event.detail.debugInfo;
-    this.themeChange.emit(event.detail.theme);
-
+    
     if (this.engineRef) {
       this.engineRef.saveSettings(event.detail);
     }
+    
+    this.themeChange.emit(event.detail.theme);
   }
 
   private get moreMenuItems(): IKritzelMenuItem[] {
@@ -864,8 +909,8 @@ export class KritzelEditor {
         if (typeof parsed.lockDrawingScale === 'boolean') {
           this.lockDrawingScale = parsed.lockDrawingScale;
         }
-        if (parsed.theme === 'light' || parsed.theme === 'dark') {
-          this.currentTheme = parsed.theme;
+        if (typeof parsed.theme === 'string') {
+          this.theme = parsed.theme;
         }
         if (typeof parsed.viewportBoundaryLeft === 'number') {
           this.viewportBoundaryLeft = parsed.viewportBoundaryLeft;
@@ -897,7 +942,7 @@ export class KritzelEditor {
       scaleMin: this.scaleMin,
       scaleMax: this.scaleMax,
       lockDrawingScale: this.lockDrawingScale,
-      theme: this.currentTheme,
+      theme: this.theme,
       viewportBoundaryLeft: this.viewportBoundaryLeft,
       viewportBoundaryRight: this.viewportBoundaryRight,
       viewportBoundaryTop: this.viewportBoundaryTop,
@@ -958,10 +1003,16 @@ export class KritzelEditor {
   render() {
     const isLoggedIn = this.isLoggedIn;
     const shouldShowCurrentUser = isLoggedIn;
-    const shouldShowLoginButton = !!this.loginConfig && !isLoggedIn;
+    const shouldShowLoginButton = this.isReady &&!!this.loginConfig && !isLoggedIn;
 
     return (
-      <Host>
+      <Host
+        style={{
+          opacity: this.isEditorVisible ? '1' : '0',
+          visibility: this.isEditorVisible ? 'visible' : 'hidden',
+          transition: 'opacity 0.2s ease-in-out, visibility 0.2s ease-in-out',
+        }}
+      >
         <div class="top-left-buttons">
           <kritzel-workspace-manager
             visible={this.isWorkspaceManagerVisible}
@@ -996,7 +1047,8 @@ export class KritzelEditor {
           viewportBoundaryTop={this.viewportBoundaryTop}
           viewportBoundaryBottom={this.viewportBoundaryBottom}
           wheelEnabled={this.wheelEnabled}
-          theme={this.currentTheme}
+          theme={this.theme}
+          themes={this.themes}
           debugInfo={this.debugInfo}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
@@ -1024,7 +1076,7 @@ export class KritzelEditor {
           controls={this.controls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}
           undoState={this.undoState ?? undefined}
-          theme={this.currentTheme}
+          theme={this.theme}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
 
@@ -1036,6 +1088,7 @@ export class KritzelEditor {
               }
             }}
             shortcuts={this.shortcuts}
+            availableThemes={this.themes && this.themes.length > 0 ? this.themes.map(t => t.name) : ['light', 'dark']}
             settings={this.currentSettingsConfig}
             onSettingsChange={event => this.handleSettingsChange(event)}
           ></kritzel-settings>
@@ -1056,7 +1109,11 @@ export class KritzelEditor {
 
           {shouldShowCurrentUser && <kritzel-current-user user={this.user}></kritzel-current-user>}
 
-          {shouldShowLoginButton && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>Sign in</kritzel-button>}
+          {shouldShowLoginButton && (
+            <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>
+              Sign in
+            </kritzel-button>
+          )}
 
           <kritzel-more-menu
             items={this.moreMenuItems}

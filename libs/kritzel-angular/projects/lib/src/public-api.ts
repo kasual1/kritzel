@@ -3,6 +3,7 @@ export * from './lib/proxy';
 export * from './lib/provide.function';
 
 export {
+    KritzelBaseObject,
     KritzelText,
     KritzelPath,
     KritzelImage,
@@ -16,18 +17,32 @@ export {
     KritzelEraserTool,
     KritzelSelectionTool,
     KritzelImageTool,
-    KritzelToolbarControl,
-    KritzelSyncConfig,
     KritzelWorkspace,
     InMemorySyncProvider,
     IndexedDBSyncProvider,
     BroadcastSyncProvider,
     WebSocketSyncProvider,
     HocuspocusSyncProvider,
+    KritzelThemeManager,
     ShapeType,
+    lightTheme,
+    darkTheme,
+    DEFAULT_BRUSH_CONFIG,
+    DEFAULT_TEXT_CONFIG,
+} from 'kritzel-stencil';
+
+export type {
+    KritzelToolbarControl,
+    KritzelSyncConfig,
+    KritzelTheme,
+    KritzelViewportState,
+    ContextMenuItem,
+    ThemeAwareColor,
+    ThemeName,
     LoginEvent,
     EditorIsReadyEvent,
     ActiveWorkspaceChangeEvent,
-    DEFAULT_BRUSH_CONFIG,
-    DEFAULT_TEXT_CONFIG,
+    ObjectsAddedEvent,
+    ObjectsRemovedEvent,
+    ObjectsUpdatedEvent,
 } from 'kritzel-stencil';

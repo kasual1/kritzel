@@ -863,6 +863,8 @@ export class KritzelCore {
         group.finalize();
       };
 
+      const newlyAddedObjects: KritzelBaseObject<any>[] = [];
+
       // First add all copied objects to the objectsMap with updated positions
       copiedObjects.forEach((obj, i) => {
         // Update workspace if pasting to a different workspace
@@ -883,10 +885,13 @@ export class KritzelCore {
 
         // Add to objectsMap
         this.addObject(obj);
+        newlyAddedObjects.push(obj);
 
         // Add to selection group
         selectionGroup.addOrRemove(obj);
       });
+
+      this.engine.emitObjectsAdded(newlyAddedObjects);
 
       // Update line anchors to point to the newly pasted objects
       // Only remap if the anchor target was also part of the copied selection
