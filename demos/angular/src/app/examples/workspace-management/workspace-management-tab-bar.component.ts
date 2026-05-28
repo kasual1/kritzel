@@ -16,6 +16,8 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       }
     </nav>
     <kritzel-editor
+      editorId="workspace-management-tab-bar"
+      [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
       [syncConfig]="syncConfig"

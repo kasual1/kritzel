@@ -338,6 +338,8 @@ const customLightTheme: KritzelTheme = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
+      editorId="theming-full-light"
+      [wheelEnabled]="false"
       [themes]="themes"
       [syncConfig]="syncConfig"
       theme="custom-light"

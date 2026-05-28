@@ -708,6 +708,8 @@ const brandControls: KritzelToolbarControl[] = [
       Current theme: {{ activeTheme() }}
     </div>
     <kritzel-editor
+      editorId="theming-host-sync"
+      [wheelEnabled]="false"
       [controls]="brandControls"
       [themes]="themes"
       [syncConfig]="syncConfig"
