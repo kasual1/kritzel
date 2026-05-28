@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { KritzelEditor, KritzelViewportState } from 'kritzel-angular';
+import { KritzelEditor, KritzelViewportState, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
@@ -11,6 +11,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     <kritzel-editor
       #editorEl
       [themes]="themes"
+      [syncConfig]="syncConfig"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
@@ -73,6 +74,11 @@ export class ViewportNavigationClickToZoomComponent {
   @ViewChild('editorEl', { read: ElementRef }) editorEl!: ElementRef<HTMLElement>;
 
   themes = [customAngularTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
+
   viewport = signal<KritzelViewportState | null>(null);
 
   async onCanvasClick(event: MouseEvent) {

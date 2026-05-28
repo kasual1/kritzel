@@ -35,7 +35,7 @@ A sidebar that lists every object on the canvas and stays in sync automatically.
   repoFiles={['src/app/examples/object-management/object-management-read-only-inspector.component.ts']}
 />
 
-`getAllObjects()` loads the initial snapshot on `isReady`. The three output events — `objectsAdded`, `objectsRemoved`, and `objectsUpdated` — fire for both user-driven and programmatic changes, so binding them once is enough to keep the list current at all times.
+`addObject()` seeds the canvas with sample shapes, text, and lines on startup. `getAllObjects()` then loads the full snapshot. The three output events — `objectsAdded`, `objectsRemoved`, and `objectsUpdated` — fire for both user-driven and programmatic changes, so binding them once is enough to keep the list current at all times.
 
 ---
 

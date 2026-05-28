@@ -10,6 +10,8 @@ import {
   KritzelTextTool,
   KritzelToolbarControl,
   ShapeType,
+  InMemorySyncProvider,
+  KritzelSyncConfig,
 } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
@@ -35,6 +37,7 @@ type ToolName = 'selection' | 'brush' | 'eraser' | 'line' | 'shape' | 'text' | '
       #editor
       [theme]="'angular-theme'"
       [themes]="themes"
+      [syncConfig]="syncConfig"
       [controls]="controls"
       [isControlsVisible]="false"
       [loginConfig]="undefined"
@@ -74,6 +77,10 @@ export class CustomToolbarExternalComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
 
   activeTool = signal<ToolName>('selection');
 

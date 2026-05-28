@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { KritzelEditor, KritzelViewportState } from 'kritzel-angular';
+import { KritzelEditor, KritzelViewportState, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
@@ -10,6 +10,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
   template: `
     <kritzel-editor
       [themes]="themes"
+      [syncConfig]="syncConfig"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
@@ -68,6 +69,11 @@ export class ViewportNavigationObjectFocusComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider]
+  };
+
   viewport = signal<KritzelViewportState | null>(null);
 
   async focusSelected() {
