@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { KritzelEditor } from 'kritzel-angular';
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelWorkspace } from 'kritzel-stencil';
+import { KritzelEditor, ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelWorkspace } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({

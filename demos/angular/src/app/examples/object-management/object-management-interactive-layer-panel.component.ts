@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
 import {
+  KritzelEditor,
   EditorIsReadyEvent,
   KritzelBaseObject,
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
-} from 'kritzel-stencil';
+} from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
@@ -26,7 +26,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       (objectsUpdated)="onObjectsUpdated($event)"
     ></kritzel-editor>
     <aside>
-      <h3>Layers ({{ objects().length }})</h3>
+      <h3>Objects ({{ objects().length }})</h3>
       <ul>
         @for (obj of objects(); track obj.id) {
           <li>
@@ -42,6 +42,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     :host {
       display: flex;
       height: 100%;
+      font-family: Roboto, sans-serif;
     }
     kritzel-editor {
       flex: 1;
@@ -50,7 +51,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       width: 260px;
       overflow-y: auto;
       padding: 8px;
-      border-left: 1px solid #ddd;
+      border-left: 1px solid #ebebeb;
       font-size: 13px;
     }
     ul {
@@ -69,9 +70,11 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       flex: 1;
       word-break: break-all;
       cursor: pointer;
+      color: #333333;
     }
     span:hover {
       text-decoration: underline;
+      color: #dd0031;
     }
   `,
 })
@@ -101,6 +104,7 @@ export class ObjectManagementInteractiveLayerPanelComponent {
   }
 
   async selectObject(obj: KritzelBaseObject) {
+    await this.editor.panTo(obj.translateX + obj.width / 2, obj.translateY + obj.height / 2);
     await this.editor.selectObjects([obj]);
   }
 

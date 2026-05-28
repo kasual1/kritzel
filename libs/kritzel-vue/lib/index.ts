@@ -2,7 +2,8 @@ export * from './components';
 export * from './plugin';
 
 export {
-     KritzelText,
+    KritzelBaseObject,
+    KritzelText,
     KritzelPath,
     KritzelImage,
     KritzelLine,
@@ -15,21 +16,27 @@ export {
     KritzelEraserTool,
     KritzelSelectionTool,
     KritzelImageTool,
-    KritzelToolbarControl,
-    KritzelSyncConfig,
     KritzelWorkspace,
-    KritzelTheme,
     InMemorySyncProvider,
     IndexedDBSyncProvider,
     BroadcastSyncProvider,
     WebSocketSyncProvider,
     HocuspocusSyncProvider,
     ShapeType,
-    LoginEvent,
-    EditorIsReadyEvent,
-    ActiveWorkspaceChangeEvent,
     lightTheme,
     darkTheme,
     DEFAULT_BRUSH_CONFIG,
     DEFAULT_TEXT_CONFIG,
+} from 'kritzel-stencil';
+
+export type {
+    KritzelToolbarControl,
+    KritzelSyncConfig,
+    KritzelTheme,
+    LoginEvent,
+    EditorIsReadyEvent,
+    ActiveWorkspaceChangeEvent,
+    ObjectsAddedEvent,
+    ObjectsRemovedEvent,
+    ObjectsUpdatedEvent,
 } from 'kritzel-stencil';

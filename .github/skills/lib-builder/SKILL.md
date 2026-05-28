@@ -77,6 +77,34 @@ Select the relevant pattern based on what you're working on:
 
 **Load the relevant pattern file(s) before making changes.**
 
+## Public Exports
+
+To expose a class, function, interface, or constant publicly, it must be exported in **four** places:
+
+1. **`libs/kritzel-stencil/src/index.ts`** — the stencil core barrel file
+2. **`libs/kritzel-angular/projects/lib/src/public-api.ts`** — re-exports from `kritzel-stencil`
+3. **`libs/kritzel-react/lib/index.ts`** — re-exports from `kritzel-stencil`
+4. **`libs/kritzel-vue/lib/index.ts`** — re-exports from `kritzel-stencil`
+
+All three framework wrappers explicitly re-export symbols from `kritzel-stencil` so that consuming applications (e.g. the demos) only need a single import source — `kritzel-angular`, `kritzel-react`, or `kritzel-vue` — without ever importing `kritzel-stencil` directly.
+
+**Keep the export lists consistent across all three wrappers.** When adding a new public symbol, add it to all four files.
+
+Example (adding `KritzelFoo`):
+
+```typescript
+// libs/kritzel-stencil/src/index.ts
+export * from './classes/objects/foo.class';
+
+// libs/kritzel-angular/projects/lib/src/public-api.ts
+// libs/kritzel-react/lib/index.ts
+// libs/kritzel-vue/lib/index.ts
+export {
+    // ... existing exports ...
+    KritzelFoo,
+} from 'kritzel-stencil';
+```
+
 ## General Rules
 
 1. **No framework code** — kritzel-stencil is framework-agnostic; never import Angular/React/Vue

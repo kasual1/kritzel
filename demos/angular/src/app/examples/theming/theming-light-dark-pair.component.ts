@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import { KritzelTheme, lightTheme, darkTheme } from 'kritzel-stencil';
+import { KritzelEditor, KritzelTheme, lightTheme, darkTheme } from 'kritzel-angular';
 
 const brandPurple = '#6200EE';
 const brandPurpleHover = '#7c2fff';

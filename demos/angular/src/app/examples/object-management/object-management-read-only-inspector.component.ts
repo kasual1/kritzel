@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
 import {
+  KritzelEditor,
   EditorIsReadyEvent,
   KritzelBaseObject,
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
-} from 'kritzel-stencil';
+} from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
@@ -38,6 +38,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     :host {
       display: flex;
       height: 100%;
+      font-family: Roboto, sans-serif;
     }
     kritzel-editor {
       flex: 1;
@@ -46,7 +47,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       width: 240px;
       overflow-y: auto;
       padding: 8px;
-      border-left: 1px solid #ddd;
+      border-left: 1px solid #ebebeb;
       font-size: 13px;
     }
     ul {
@@ -58,6 +59,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       padding: 4px 0;
       border-bottom: 1px solid #eee;
       word-break: break-all;
+      color: #333333;
     }
   `,
 })
