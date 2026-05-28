@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { KritzelEditor } from 'kritzel-angular';
-import { KritzelViewportState } from 'kritzel-stencil';
+import { KritzelEditor, KritzelViewportState } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({

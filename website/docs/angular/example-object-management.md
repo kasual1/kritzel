@@ -39,9 +39,9 @@ A sidebar that lists every object on the canvas and stays in sync automatically.
 
 ---
 
-## Interactive Layer Panel
+## Interactive Object Panel
 
-A layers-panel-style sidebar where clicking a row selects the object on the canvas, and each row offers actions to adjust opacity or delete the object entirely.
+A panel-style sidebar where clicking a row selects the object on the canvas, and each row offers actions to adjust opacity or delete the object entirely.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -49,7 +49,7 @@ A layers-panel-style sidebar where clicking a row selects the object on the canv
   repoFiles={['src/app/examples/object-management/object-management-interactive-layer-panel.component.ts']}
 />
 
-`selectObjects([obj])` switches the active tool to selection and highlights the given object — passing an empty array clears the selection. `updateObject(obj, { opacity })` merges partial properties and rerenders the canvas. `removeObject(obj)` deletes the object and emits `objectsRemoved`, which the same event handler picks up to refresh the list.
+`panTo(x, y)` moves the viewport so the object's center is on screen, and `selectObjects([obj])` switches the active tool to selection and highlights it — passing an empty array clears the selection. `updateObject(obj, { opacity })` merges partial properties and rerenders the canvas. `removeObject(obj)` deletes the object and emits `objectsRemoved`, which the same event handler picks up to refresh the list.
 
 ---
 

@@ -130,6 +130,41 @@ When editing an existing example page:
 4. Verify routes are registered in the Angular demo's router config.
 5. Each example component file should be named after the scenario slug, not a number (e.g., `custom-toolbar-annotation.component.ts` not `custom-toolbar-1.component.ts`). During the transition period, numbered files are acceptable.
 
+## Styling Rules for Demo Components
+
+Custom UI elements (side panels, filter bars, layer panels, toolbars, status displays) that sit alongside the `<kritzel-editor>` must follow these rules:
+
+### Font Family
+
+Every component must set an explicit `font-family` on `:host`. Do **not** rely on browser defaults or use elaborate system font stacks (no `-apple-system, BlinkMacSystemFont, ...`).
+
+```css
+:host {
+  font-family: Roboto, sans-serif;
+}
+```
+
+### Framework-Themed Colors
+
+Custom UI must use the framework's theme colors — never generic Bootstrap-style blues or arbitrary colors.
+
+| Token | Angular value | Usage |
+|-------|--------------|-------|
+| Primary | `#dd0031` | Active buttons, hover accents, selected states |
+| Primary hover | `#b30027` | Active button borders, pressed states |
+| Text | `#333333` | Default text in panels and lists |
+| Border | `#ebebeb` | Panel borders, dividers between editor and sidebar |
+| Item border | `#eee` | List item separators |
+| Inactive button bg | `#f0f0f0` | Non-active filter/toggle buttons |
+
+When a button or element has an "active" or "selected" state, use the primary color as background with white text — matching the theme's `controls.selected` pattern.
+
+Hover states on clickable text (spans, links) should change color to the primary color rather than using only `text-decoration: underline`.
+
+### Why
+
+Readers copy these examples as starting points. If custom UI uses generic colors, the result looks inconsistent with the themed editor. By using framework-specific colors everywhere, the example looks polished and production-ready out of the box.
+
 ## Relationship to Other Frameworks
 
 Example pages are written for **Angular only**. The React and Vue equivalents are created by a separate translation process. Do not create or edit files in `website/docs/react/` or `website/docs/vue/` when using this pattern.

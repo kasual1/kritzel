@@ -1,12 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, signal, ViewChild } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
-import {
-  EditorIsReadyEvent,
-  KritzelBaseObject,
-  ObjectsAddedEvent,
-  ObjectsRemovedEvent,
-  ObjectsUpdatedEvent,
-} from 'kritzel-stencil';
+import { EditorIsReadyEvent, InMemorySyncProvider, KritzelBaseObject, KritzelEditor, KritzelSyncConfig, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
 @Component({
@@ -17,6 +10,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     <kritzel-editor
       [theme]="'angular-theme'"
       [themes]="themes"
+      [syncConfig]="syncConfig"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
@@ -41,8 +35,6 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
         @for (obj of filteredObjects(); track obj.id) {
           <li>
             <span (click)="selectObject(obj)">{{ obj.__class__ }} — {{ obj.id }}</span>
-            <button (click)="halveOpacity(obj)">Adjust opacity</button>
-            <button (click)="deleteObject(obj)">Delete</button>
           </li>
         }
       </ul>
@@ -52,6 +44,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
     :host {
       display: flex;
       height: 100%;
+      font-family: Roboto, sans-serif;
     }
     kritzel-editor {
       flex: 1;
@@ -60,7 +53,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       width: 280px;
       overflow-y: auto;
       padding: 8px;
-      border-left: 1px solid #ddd;
+      border-left: 1px solid #ebebeb;
       font-size: 13px;
     }
     .filters {
@@ -77,9 +70,9 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       cursor: pointer;
     }
     .filters button.active {
-      background: #007bff;
+      background: #dd0031;
       color: white;
-      border-color: #0056b3;
+      border-color: #b30027;
     }
     ul {
       list-style: none;
@@ -97,9 +90,11 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       flex: 1;
       word-break: break-all;
       cursor: pointer;
+      color: #333333;
     }
     span:hover {
       text-decoration: underline;
+      color: #dd0031;
     }
   `,
 })
@@ -107,6 +102,10 @@ export class ObjectManagementFilteredExplorerComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
+
+  syncConfig: KritzelSyncConfig = {
+    providers:  [InMemorySyncProvider]
+  }
 
   allObjects = signal<KritzelBaseObject[]>([]);
   availableTypes = ['KritzelPath', 'KritzelText', 'KritzelShape', 'KritzelImage', 'KritzelLine'];
@@ -166,14 +165,7 @@ export class ObjectManagementFilteredExplorerComponent {
   }
 
   async selectObject(obj: KritzelBaseObject) {
+    await this.editor.panTo(obj.translateX + obj.width / 2, obj.translateY + obj.height / 2);
     await this.editor.selectObjects([obj]);
-  }
-
-  async halveOpacity(obj: KritzelBaseObject) {
-    await this.editor.updateObject(obj, { opacity: obj.opacity * 0.5 });
-  }
-
-  async deleteObject(obj: KritzelBaseObject) {
-    await this.editor.removeObject(obj);
   }
 }
