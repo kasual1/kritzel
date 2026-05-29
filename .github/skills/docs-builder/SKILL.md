@@ -51,6 +51,7 @@ This separation ensures consistency: one authoritative source is written once, t
 Detailed conventions for each documentation category live in the `patterns/` subfolder:
 
 - [`patterns/examples.md`](patterns/examples.md) — How to write, structure, and maintain example pages
+- [`patterns/core-concept.md`](patterns/core-concept.md) — How to write, structure, and maintain core concept pages
 
 ## Workflow
 

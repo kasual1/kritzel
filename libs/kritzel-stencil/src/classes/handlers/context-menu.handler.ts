@@ -114,4 +114,73 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
 
     this._core.rerender();
   }
+
+  /**
+   * Programmatically opens the context menu at a specified world-coordinate position.
+   * If an objectId is provided and found, the object context menu is shown for that object.
+   * If no objectId is provided but a selection group exists, the object context menu is shown.
+   * Otherwise, the global context menu is shown.
+   * @param options.x - The X position in world (canvas) coordinates.
+   * @param options.y - The Y position in world (canvas) coordinates.
+   * @param options.objectId - Optional ID of an object to select and show the object context menu for.
+   */
+  open(options: { x: number; y: number; objectId?: string }): void {
+    const { x, y, objectId } = options;
+
+    if (this._core.store.state.activeTool instanceof KritzelSelectionTool) {
+      const selectionTool = this._core.store.state.activeTool as KritzelSelectionTool;
+      selectionTool?.moveHandler?.cancelPendingDrag();
+    }
+
+    if (this._core.store.selectionBox) {
+      this._core.store.objects.remove(object => object instanceof KritzelSelectionBox);
+      this._core.store.setSelectionBox(null);
+      this._core.store.state.isSelecting = false;
+    }
+
+    if (objectId) {
+      const targetObject = this._core.store.allObjects.find(obj => obj.id === objectId);
+      if (targetObject && !(targetObject instanceof KritzelSelectionGroup) && !(targetObject instanceof KritzelSelectionBox)) {
+        const selectionGroup = KritzelSelectionGroup.create(this._core);
+        selectionGroup.addOrRemove(targetObject);
+        selectionGroup.isSelected = true;
+        selectionGroup.rotation = targetObject.rotation;
+
+        this._core.store.state.isSelecting = false;
+
+        const currentSelectionGroup = this._core.store.selectionGroup;
+        if (currentSelectionGroup) {
+          this._core.removeSelectionGroup();
+        }
+        this._core.addSelectionGroup(selectionGroup);
+      }
+    }
+
+    this._core.store.state.contextMenuItems = this._core.store.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
+
+    this._core.store.state.contextMenuWorldX = x;
+    this._core.store.state.contextMenuWorldY = y;
+
+    const { translateX, translateY, scale } = this._core.store.state;
+    let screenX = x * scale + translateX;
+    let screenY = y * scale + translateY;
+
+    const menuWidthEstimate = 150;
+    const margin = 10;
+
+    if (screenX + menuWidthEstimate > this._core.store.state.viewportWidth - margin) {
+      screenX = this._core.store.state.viewportWidth - menuWidthEstimate - margin;
+    }
+
+    screenX = Math.max(margin, screenX);
+    screenY = Math.max(margin, screenY);
+
+    this._core.store.state.contextMenuX = screenX;
+    this._core.store.state.contextMenuY = screenY;
+    this._core.store.state.isContextMenuVisible = true;
+
+    this._core.store.state.isEnabled = false;
+
+    this._core.rerender();
+  }
 }

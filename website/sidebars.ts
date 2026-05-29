@@ -12,7 +12,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Core Concepts',
       collapsed: true,
-      items: ['concept-components', 'concept-tools', 'concept-objects', 'concept-workspaces', 'collaboration', 'theming'],
+      items: ['concept-components', 'concept-tools', 'concept-objects', 'concept-workspaces', 'theming', 'concept-collaboration'],
     },
     {
       type: 'category',

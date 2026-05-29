@@ -696,6 +696,20 @@ export class KritzelEngine {
   }
 
   /**
+   * Programmatically opens the context menu at a specified world-coordinate position.
+   * If `objectId` is provided and found, the object context menu is shown for that object.
+   * If no `objectId` is provided but a selection group already exists, the object context menu is shown.
+   * Otherwise, the global context menu is shown.
+   * @param options.x - The X position in world (canvas) coordinates.
+   * @param options.y - The Y position in world (canvas) coordinates.
+   * @param options.objectId - Optional ID of an object to select and show the object context menu for.
+   */
+  @Method()
+  async openContextMenu(options: { x: number; y: number; objectId?: string }) {
+    this.contextMenuHandler.open(options);
+  }
+
+  /**
    * Retrieves a canvas object by its unique ID.
    * @param id - The object's unique identifier.
    * @returns The matching object, or `null` if not found.

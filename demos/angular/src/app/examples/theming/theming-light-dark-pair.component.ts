@@ -665,10 +665,10 @@ const brandedDarkTheme: KritzelTheme = {
   template: `
     <kritzel-editor
       editorId="theming-light-dark-pair"
-      [wheelEnabled]="false"
-      [themes]="themes"
-      [syncConfig]="syncConfig"
       theme="branded-light"
+      [themes]="themes"
+      [wheelEnabled]="false"
+      [syncConfig]="syncConfig"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
