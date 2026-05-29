@@ -712,11 +712,11 @@ const brandControls: KritzelToolbarControl[] = [
   template: `
     <kritzel-editor
       editorId="theming-branded-tools"
+      theme="branded-light"
+      [themes]="themes"
       [wheelEnabled]="false"
       [controls]="brandControls"
-      [themes]="themes"
       [syncConfig]="syncConfig"
-      theme="branded-light"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
