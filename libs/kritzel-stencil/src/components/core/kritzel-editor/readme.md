@@ -546,6 +546,22 @@ Type: `Promise<void>`
 
 
 
+### `openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name      | Type                                           | Description |
+| --------- | ---------------------------------------------- | ----------- |
+| `options` | `{ x: number; y: number; objectId?: string; }` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `openLoginDialog() => Promise<void>`
 
 

@@ -27,12 +27,6 @@ import { ViewportNavigationClickToZoomComponent } from './examples/viewport-navi
 import { WorkspaceManagementTabBarComponent } from './examples/workspace-management/workspace-management-tab-bar.component';
 import { WorkspaceManagementCrudPanelComponent } from './examples/workspace-management/workspace-management-crud-panel.component';
 import { WorkspaceManagementUrlSyncedComponent } from './examples/workspace-management/workspace-management-url-synced.component';
-import { ObjectsAddRemoveComponent } from './concepts/objects/objects-add-remove.component';
-import { ObjectsQueryComponent } from './concepts/objects/objects-query.component';
-import { ObjectsSelectionComponent } from './concepts/objects/objects-selection.component';
-import { ObjectsGroupingComponent } from './concepts/objects/objects-grouping.component';
-import { WorkspacesSwitchComponent } from './concepts/workspaces/workspaces-switch.component';
-import { WorkspacesCrudComponent } from './concepts/workspaces/workspaces-crud.component';
 import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
 import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
 import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
@@ -51,12 +45,6 @@ export const routes: Routes = [
   {
     path: 'concepts',
     children: [
-      { path: 'objects-add-remove', component: ObjectsAddRemoveComponent },
-      { path: 'objects-query', component: ObjectsQueryComponent },
-      { path: 'objects-selection', component: ObjectsSelectionComponent },
-      { path: 'objects-grouping', component: ObjectsGroupingComponent },
-      { path: 'workspaces-switch', component: WorkspacesSwitchComponent },
-      { path: 'workspaces-crud', component: WorkspacesCrudComponent },
       { path: 'theming-apply', component: ThemingApplyComponent },
       { path: 'theming-custom', component: ThemingCustomComponent },
       { path: 'collaboration-local', component: CollaborationLocalComponent },
