@@ -98,6 +98,17 @@ When authoring a Core Concept page, draw upon the appropriate subset of the Krit
 
 ### 6. Theming
 - **Concept:** Adapting the visual look of Kritzel tools, toolbars, and context menus via CSS overrides or configuration objects.
+
+## AI Authoring & Editing Guidelines
+
+Based on past learnings, always strictly follow these operational rules when updating documentation:
+
+1. **Safe File Editing:** If a documentation file already exists, **NEVER** use terminal shell commands (like PowerShell's `Set-Content` or `echo`) to rewrite or overwrite the file. Shell escaping frequently corrupts Markdown syntax (e.g., turning ``` `method()` ``` into `\method()\`). Always use the system's native `replace_string_in_file` or edit tools to safely update file contents.
+2. **Strict Markdown Formatting:** Ensure all methods, variable names, bindings, and components mentioned in paragraph text are properly wrapped in backticks (e.g., `` `[activeWorkspaceId]` ``). Do NOT escape backticks.
+3. **Demo Component Integration:** Creating demo components requires a full loop:
+   - Create the `<concept>-<focus>.component.ts` file in `demos/angular/src/app/concepts/<concept>/`.
+   - Update `demos/angular/src/app/app.routes.ts` to import the file and add its route to the `concepts` children array.
+   - Without the route, the `<LiveDemo>` iframe will fail to load the preview.
 - **Relevant Usage:** (CSS Variable mapping and toolbar configuration objects).
 
 ### 7. Collaboration

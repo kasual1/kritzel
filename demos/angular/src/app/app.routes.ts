@@ -33,6 +33,10 @@ import { ObjectsSelectionComponent } from './concepts/objects/objects-selection.
 import { ObjectsGroupingComponent } from './concepts/objects/objects-grouping.component';
 import { WorkspacesSwitchComponent } from './concepts/workspaces/workspaces-switch.component';
 import { WorkspacesCrudComponent } from './concepts/workspaces/workspaces-crud.component';
+import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
+import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
+import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
+import { CollaborationRealtimeComponent } from './concepts/collaboration/collaboration-realtime.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -53,6 +57,10 @@ export const routes: Routes = [
       { path: 'objects-grouping', component: ObjectsGroupingComponent },
       { path: 'workspaces-switch', component: WorkspacesSwitchComponent },
       { path: 'workspaces-crud', component: WorkspacesCrudComponent },
+      { path: 'theming-apply', component: ThemingApplyComponent },
+      { path: 'theming-custom', component: ThemingCustomComponent },
+      { path: 'collaboration-local', component: CollaborationLocalComponent },
+      { path: 'collaboration-realtime', component: CollaborationRealtimeComponent },
     ],
   },
   {
