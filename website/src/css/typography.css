@@ -47,6 +47,31 @@ p {
   font-family: Arial, sans-serif !important;
 }
 
+table {
+  display: table;
+  width: 100%;
+  max-width: 100%;
+  table-layout: auto;
+  word-break: break-word;
+}
+
+table th:first-child {
+  width: 25%;
+}
+
+table th:nth-child(2) {
+  width: 20%;
+}
+
+table th:last-child {
+  width: 40%;
+}
+
+table td code {
+  white-space: pre-wrap !important;
+  word-break: break-word;
+}
+
 table th,
 table td {
   font-size: 0.8rem;
@@ -64,7 +89,7 @@ table td {
 .markdown ul,
 .markdown ol,
 .markdown li {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: var(--ifm-text-color-light);
   font-family: Arial, sans-serif !important;
 }

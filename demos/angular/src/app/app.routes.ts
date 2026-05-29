@@ -27,6 +27,12 @@ import { ViewportNavigationClickToZoomComponent } from './examples/viewport-navi
 import { WorkspaceManagementTabBarComponent } from './examples/workspace-management/workspace-management-tab-bar.component';
 import { WorkspaceManagementCrudPanelComponent } from './examples/workspace-management/workspace-management-crud-panel.component';
 import { WorkspaceManagementUrlSyncedComponent } from './examples/workspace-management/workspace-management-url-synced.component';
+import { ObjectsAddRemoveComponent } from './concepts/objects/objects-add-remove.component';
+import { ObjectsQueryComponent } from './concepts/objects/objects-query.component';
+import { ObjectsSelectionComponent } from './concepts/objects/objects-selection.component';
+import { ObjectsGroupingComponent } from './concepts/objects/objects-grouping.component';
+import { WorkspacesSwitchComponent } from './concepts/workspaces/workspaces-switch.component';
+import { WorkspacesCrudComponent } from './concepts/workspaces/workspaces-crud.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -36,6 +42,17 @@ export const routes: Routes = [
       { path: 'editor', component: EditorPageComponent },
       { path: 'multi-editor', component: MultiEditorPageComponent },
       { path: 'wrapped-editor', component: WrappedEditorPageComponent },
+    ],
+  },
+  {
+    path: 'concepts',
+    children: [
+      { path: 'objects-add-remove', component: ObjectsAddRemoveComponent },
+      { path: 'objects-query', component: ObjectsQueryComponent },
+      { path: 'objects-selection', component: ObjectsSelectionComponent },
+      { path: 'objects-grouping', component: ObjectsGroupingComponent },
+      { path: 'workspaces-switch', component: WorkspacesSwitchComponent },
+      { path: 'workspaces-crud', component: WorkspacesCrudComponent },
     ],
   },
   {
