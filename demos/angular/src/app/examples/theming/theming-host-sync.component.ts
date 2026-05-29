@@ -709,11 +709,11 @@ const brandControls: KritzelToolbarControl[] = [
     </div>
     <kritzel-editor
       editorId="theming-host-sync"
+      [theme]="activeTheme()"
+      [themes]="themes"
       [wheelEnabled]="false"
       [controls]="brandControls"
-      [themes]="themes"
       [syncConfig]="syncConfig"
-      [theme]="activeTheme()"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"

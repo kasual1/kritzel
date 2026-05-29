@@ -12,35 +12,45 @@ The `<kritzel-engine>` is the low-level headless canvas primitive. It handles re
 
 ## Props
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| cursorTarget | HTMLElement | document.body | Element to apply cursor styles to |
-| globalContextMenuItems | ContextMenuItem[] | undefined | Context menu items for canvas background |
-| objectContextMenuItems | ContextMenuItem[] | undefined | Context menu items for selected objects |
-| lockDrawingScale | boolean | true | Fixed visual size for drawn objects regardless of zoom |
-| scaleMax | number | ABSOLUTE_SCALE_MAX | Maximum zoom scale |
-| scaleMin | number | ABSOLUTE_SCALE_MIN | Minimum zoom scale |
-| syncConfig | KritzelSyncConfig | undefined | Sync provider configuration |
-| theme | 'light' \| 'dark' | 'light' | Active theme |
-| viewportBoundaryLeft | number | -Infinity | Left pan boundary |
-| viewportBoundaryRight | number | Infinity | Right pan boundary |
-| viewportBoundaryTop | number | -Infinity | Top pan boundary |
-| viewportBoundaryBottom | number | Infinity | Bottom pan boundary |
-| workspace | KritzelWorkspace | undefined | The active workspace |
+| Property | Type | Description |
+|----------|------|-------------|
+| activeWorkspaceId | string | Programmatically force an active workspace |
+| assetStorageConfig | KritzelAssetStorageConfig | Asset storage configuration for images |
+| cursorTarget | HTMLElement | Element to apply cursor styles to |
+| debugInfo | KritzelDebugInfo | Toggle debug overlay information |
+| editorId | string | Unique identifier for namespacing storage keys |
+| globalContextMenuItems | ContextMenuItem[] | Context menu items for canvas background |
+| isLoading | boolean | External loading state |
+| lockDrawingScale | boolean | Fixed visual size for drawn objects regardless of zoom |
+| objectContextMenuItems | ContextMenuItem[] | Context menu items for selected objects |
+| scaleMax | number | Maximum zoom scale |
+| scaleMin | number | Minimum zoom scale |
+| syncConfig | KritzelSyncConfig | Sync provider configuration |
+| theme | 'light' \| 'dark' | Active theme |
+| themes | KritzelTheme[] | Array of available themes |
+| user | IKritzelUser | The current user for awareness broadcasting |
+| viewportBoundaryBottom | number | Bottom pan boundary |
+| viewportBoundaryLeft | number | Left pan boundary |
+| viewportBoundaryRight | number | Right pan boundary |
+| viewportBoundaryTop | number | Top pan boundary |
+| wheelEnabled | boolean | Enable or disable mouse wheel zoom/pan |
+| workspace | KritzelWorkspace | The active workspace |
 
 ## Events
 
 | Event | Payload Type | Description |
 |-------|-------------|-------------|
-| isEngineReady | KritzelEngineState | Emitted when the engine is fully initialized |
 | activeToolChange | KritzelBaseTool | Emitted when the active tool changes |
+| activeWorkspaceChange | KritzelWorkspace | Emitted when the active workspace changes |
+| awarenessChange | `Map<number, Record<string, any>>` | Emitted when the awareness state changes |
+| isEngineReady | KritzelEngineState | Emitted when the engine is fully initialized |
 | longpress | PointerEvent | Emitted on long-press (useful for mobile context menus) |
-| objectsChange | KritzelBaseObject[] | Emitted when objects are added, removed, or modified |
 | objectsAdded | ObjectsAddedEvent | Emitted when objects are added |
-| objectsRemoved | ObjectsRemovedEvent | Emitted when objects are removed |
-| objectsUpdated | ObjectsUpdatedEvent | Emitted when objects are updated |
+| objectsChange | KritzelBaseObject[] | Emitted when objects are added, removed, or modified |
 | objectsInViewportChange | KritzelBaseObject[] | Emitted when visible objects change (after pan/zoom) |
+| objectsRemoved | ObjectsRemovedEvent | Emitted when objects are removed |
 | objectsSelectionChange | void | Emitted when selected objects change |
+| objectsUpdated | ObjectsUpdatedEvent | Emitted when objects are updated |
 | undoStateChange | KritzelUndoState | Emitted when undo/redo availability changes |
 | viewportChange | KritzelViewportState | Emitted on pan, zoom, or resize |
 | workspacesChange | KritzelWorkspace[] | Emitted when workspaces are created, updated, or deleted |
@@ -219,10 +229,18 @@ centerObjectInViewport(object: KritzelBaseObject): Promise<KritzelBaseObject>
 Pans and zooms the viewport to fit the nearest content, with padding. Useful when the user has panned away from all objects.
 
 ```ts
-backToContent: Promise<boolean>
+backToContent(): Promise<boolean>
 ```
 
 Returns `true` if content was found and the viewport was adjusted, `false` otherwise.
+
+#### centerAllObjects
+
+Pans and zooms the viewport to fit ALL objects on the canvas, including those not currently rendered.
+
+```ts
+centerAllObjects(animate?: boolean): Promise<boolean>
+```
 
 #### screenToWorld
 
@@ -300,6 +318,14 @@ registerTool(
 ): Promise<KritzelBaseTool>
 ```
 
+#### changeActiveToolByName
+
+Switches the active drawing tool by its registered name.
+
+```ts
+changeActiveToolByName(toolName: string): Promise<void>
+```
+
 #### changeActiveTool
 
 Switches the active drawing tool. Deactivates the current tool and clears any selection.
@@ -333,7 +359,15 @@ enable: Promise<void>
 Copies the currently selected objects to the internal clipboard.
 
 ```ts
-copy: Promise<void>
+copy(): Promise<void>
+```
+
+#### cut
+
+Cuts the currently selected objects to the internal clipboard (deletes them from the canvas).
+
+```ts
+cut(): Promise<void>
 ```
 
 #### paste
@@ -467,7 +501,63 @@ exportViewportAsPng: Promise<void>
 Exports the current viewport as an SVG file and triggers a browser download.
 
 ```ts
-exportViewportAsSvg: Promise<void>
+exportViewportAsSvg(): Promise<void>
+```
+
+#### getSelectedObjectsAsSvgString
+
+Generates an SVG string from the currently selected objects.
+
+```ts
+getSelectedObjectsAsSvgString(options?: { theme?: 'light' | 'dark'; padding?: number }): Promise<string | null>
+```
+
+#### exportSelectedObjectsAsSvg
+
+Exports the currently selected objects as an SVG file and triggers a browser download.
+
+```ts
+exportSelectedObjectsAsSvg(options?: { theme?: 'light' | 'dark'; padding?: number }): Promise<void>
+```
+
+#### getSelectedObjectsAsPngDataUrl
+
+Generates a PNG data URL from the currently selected objects.
+
+```ts
+getSelectedObjectsAsPngDataUrl(options?: { theme?: 'light' | 'dark'; padding?: number; scale?: number }): Promise<string | null>
+```
+
+#### exportSelectedObjectsAsPng
+
+Exports the currently selected objects as a PNG file and triggers a browser download.
+
+```ts
+exportSelectedObjectsAsPng(options?: { theme?: 'light' | 'dark'; padding?: number; scale?: number }): Promise<void>
+```
+
+#### exportAsJson
+
+Exports the current workspace and all its objects as a JSON string.
+
+```ts
+exportAsJson(): Promise<string>
+```
+
+#### importFromJson
+
+Imports a workspace from a JSON string into a new workspace.
+
+```ts
+importFromJson(json: string): Promise<void>
+```
+
+#### loadObjectsFromJson
+
+Loads objects from a workspace JSON string into the current workspace.
+
+```ts
+loadObjectsFromJson(json: string): Promise<number>
 ```
 
 ---
