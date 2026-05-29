@@ -644,6 +644,25 @@ Type: `Promise<void>`
 
 
 
+### `openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void>`
+
+Programmatically opens the context menu at a specified world-coordinate position.
+If `objectId` is provided and found, the object context menu is shown for that object.
+If no `objectId` is provided but a selection group already exists, the object context menu is shown.
+Otherwise, the global context menu is shown.
+
+#### Parameters
+
+| Name      | Type                                           | Description |
+| --------- | ---------------------------------------------- | ----------- |
+| `options` | `{ x: number; y: number; objectId?: string; }` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `panTo(x: number, y: number) => Promise<void>`
 
 Pans the viewport to center on the given world coordinates without changing the scale.

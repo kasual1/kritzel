@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { KritzelEditor, ContextMenuItem, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { KritzelEditor, ContextMenuItem, InMemorySyncProvider, KritzelSyncConfig, EditorIsReadyEvent } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
+import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
   selector: 'app-custom-context-menu-smart-conditional',
@@ -19,6 +20,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
+      (isReady)="onIsReady($event)"
     ></kritzel-editor>
   `,
   styles: `
@@ -36,6 +38,23 @@ export class CustomContextMenuSmartConditionalComponent {
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider]
   };
+
+  async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
+    const existing = await this.editor.getAllObjects();
+    if (existing.length === 0) {
+      await this.seedObjects();
+    }
+
+    await this.editor.selectAllObjectsInViewport();
+
+    const selected = await this.editor.getSelectedObjects();
+
+    await this.editor.openContextMenu({
+      x: selected[0].translateX + 50,
+      y: selected[0].translateY + 50,
+      objectId: selected[0].id,
+    });
+  }
 
   globalItems: ContextMenuItem[] = [
     {
@@ -94,4 +113,10 @@ export class CustomContextMenuSmartConditionalComponent {
       group: 'destructive',
     },
   ];
+
+  private async seedObjects() {
+    for (const obj of createSeedObjects()) {
+      await this.editor.addObject(obj);
+    }
+  }
 }

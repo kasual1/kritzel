@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { KritzelEditor, ContextMenuItem, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
@@ -19,6 +19,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
+      (isReady)="onEditorReady()"
     ></kritzel-editor>
   `,
   styles: `
@@ -53,4 +54,8 @@ export class CustomContextMenuCanvasQuickActionsComponent {
       icon: 'select-all',
     },
   ];
+
+  async onEditorReady(): Promise<void> {
+    await this.editor.openContextMenu({ x: -50, y: -50 });
+  }
 }

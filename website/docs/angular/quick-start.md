@@ -9,6 +9,8 @@ keywords:
 ---
 # Quick Start
 
+The following guide gets you a full Kritzel editor setup in under five minutes.
+
 ## Installation
 
 ```bash

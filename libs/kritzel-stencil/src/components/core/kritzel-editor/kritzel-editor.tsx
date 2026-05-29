@@ -637,6 +637,11 @@ export class KritzelEditor {
   }
 
   @Method()
+  async openContextMenu(options: { x: number; y: number; objectId?: string }) {
+    return this.engineRef.openContextMenu(options);
+  }
+
+  @Method()
   async triggerSelectionChange() {
     return this.engineRef.triggerSelectionChange();
   }
