@@ -12,28 +12,47 @@ The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It
 
 ## Props
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| scaleMax | number | ABSOLUTE_SCALE_MAX | Maximum zoom scale allowed |
-| scaleMin | number | ABSOLUTE_SCALE_MIN | Minimum zoom scale allowed |
-| lockDrawingScale | boolean | true | When true, objects are drawn at a fixed visual size regardless of zoom |
-| viewportBoundaryLeft | number | -Infinity | Left boundary in world coordinates |
-| viewportBoundaryRight | number | Infinity | Right boundary in world coordinates |
-| viewportBoundaryTop | number | -Infinity | Top boundary in world coordinates |
-| viewportBoundaryBottom | number | Infinity | Bottom boundary in world coordinates |
-| controls | KritzelToolbarControl[] | Default toolbar | Toolbar items (selection, brush, line, eraser, text, shape, image, config) |
-| globalContextMenuItems | ContextMenuItem[] | Paste, Select All | Context menu when right-clicking the canvas background |
-| objectContextMenuItems | ContextMenuItem[] | Copy, Paste, Order, Align, Group, Delete | Context menu when right-clicking a selected object |
-| customSvgIcons | Record&lt;string, string&gt; | {} | Custom SVG icon definitions by name |
-| isControlsVisible | boolean | true | Show/hide the toolbar |
-| isUtilityPanelVisible | boolean | true | Show/hide the utility panel (undo/redo, zoom) |
-| syncConfig | KritzelSyncConfig | undefined | Sync provider configuration |
+| Property | Type | Description |
+|----------|------|-------------|
+| scaleMax | number | Maximum zoom scale allowed |
+| scaleMin | number | Minimum zoom scale allowed |
+| lockDrawingScale | boolean | When true, objects are drawn at a fixed visual size regardless of zoom |
+| viewportBoundaryLeft | number | Left boundary in world coordinates |
+| viewportBoundaryRight | number | Right boundary in world coordinates |
+| viewportBoundaryTop | number | Top boundary in world coordinates |
+| viewportBoundaryBottom | number | Bottom boundary in world coordinates |
+| wheelEnabled | boolean | Enable or disable mouse wheel zoom/pan |
+| debugInfo | KritzelDebugInfo | Toggle debug overlay information |
+| user | IKritzelUser | The current authenticated user |
+| activeUsers | IKritzelUser[] | Other users currently in the session |
+| controls | KritzelToolbarControl[] | Toolbar items (selection, brush, line, eraser, text, shape, image, config) |
+| globalContextMenuItems | ContextMenuItem[] | Context menu when right-clicking the canvas background |
+| objectContextMenuItems | ContextMenuItem[] | Context menu when right-clicking a selected object |
+| customSvgIcons | Record&lt;string, string&gt; | Custom SVG icon definitions by name |
+| isControlsVisible | boolean | Show/hide the toolbar |
+| isUtilityPanelVisible | boolean | Show/hide the utility panel (undo/redo, zoom) |
+| syncConfig | KritzelSyncConfig | Sync provider configuration |
+| assetStorageConfig | KritzelAssetStorageConfig | Asset storage configuration for images |
+| activeWorkspaceId | string | Programmatically force an active workspace |
+| activeWorkspace | KritzelWorkspace | Automatically updated with the current active workspace |
+| editorId | string | Unique identifier for scoping settings and providers |
+| user | IKritzelUser | The current authenticated user |
+| activeUsers | IKritzelUser[] | Other users currently in the session |
+| cursorTarget | HTMLElement | Target element to attach cursor styles to |
+| isLoading | boolean | Displays loading state/spinner |
+| theme | ThemeName | Current active theme |
+| themes | KritzelTheme[] | Array of available themes |
+| loginConfig | KritzelLoginConfig | Configuration for login dialog and providers |
+| isWorkspaceManagerVisible | boolean | Show/hide the workspace manager toggle |
+| isMoreMenuVisible | boolean | Show/hide the 'More' menu |
 
 ## Events
 
 | Event | Payload Type | Description |
 |-------|-------------|-------------|
-| isReady | HTMLElement | Emitted when the editor is fully initialized |
+| isReady | EditorIsReadyEvent | Emitted when the editor is fully initialized |
+| activeWorkspaceChange | ActiveWorkspaceChangeEvent | Emitted when the active workspace changes |
+| workspacesChange | KritzelWorkspace[] | Emitted when the list of workspaces changes |
 | objectsChange | KritzelBaseObject[] | Emitted when objects are added, removed, or modified |
 | objectsAdded | ObjectsAddedEvent | Emitted when objects are added |
 | objectsRemoved | ObjectsRemovedEvent | Emitted when objects are removed |
@@ -41,6 +60,10 @@ The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It
 | undoStateChange | KritzelUndoState | Emitted when undo/redo availability changes |
 | themeChange | ThemeName | Emitted when the theme changes |
 | viewportChange | KritzelViewportState | Emitted on pan, zoom, or resize |
+| awarenessChange | `Map<number, Record<string, any>>` | Emitted when collaborative awareness states change |
+| isPublicChange | IKritzelIsPublicChangedEvent | Emitted when the workspace public sharing status toggles |
+| login | LoginEvent | Emitted when login is triggered via the provider dialog |
+| logout | void | Emitted when the user attempts to log out via the menu |
 
 ---
 
@@ -277,7 +300,23 @@ getWorkspaces: Promise<KritzelWorkspace[]>
 Returns the currently active workspace.
 
 ```ts
-getActiveWorkspace: Promise<KritzelWorkspace>
+getActiveWorkspace(): Promise<KritzelWorkspace>
+```
+
+#### loadSharedWorkspace
+
+Loads a workspace shared externally using a secure access token.
+
+```ts
+loadSharedWorkspace(token: string): Promise<void>
+```
+
+#### reinitSync
+
+Reinitializes the active synchronization provider connection.
+
+```ts
+reinitSync(): Promise<void>
 ```
 
 ---
@@ -455,7 +494,7 @@ getScreenshot(format?: 'png' | 'svg'): Promise<string>
 Exports the current viewport as a PNG file and triggers a browser download.
 
 ```ts
-exportViewportAsPng: Promise<void>
+exportViewportAsPng(): Promise<void>
 ```
 
 #### exportViewportAsSvg
@@ -463,7 +502,67 @@ exportViewportAsPng: Promise<void>
 Exports the current viewport as an SVG file and triggers a browser download.
 
 ```ts
-exportViewportAsSvg: Promise<void>
+exportViewportAsSvg(): Promise<void>
+```
+
+#### exportSelectedObjectsAsPng
+
+Exports currently selected objects as a PNG file download.
+
+```ts
+exportSelectedObjectsAsPng(): Promise<void>
+```
+
+#### exportSelectedObjectsAsSvg
+
+Exports currently selected objects as an SVG file download.
+
+```ts
+exportSelectedObjectsAsSvg(): Promise<void>
+```
+
+#### downloadAsJson
+
+Downloads the canvas state as a JSON file. Use the optional filename directly.
+
+```ts
+downloadAsJson(filename?: string): Promise<void>
+```
+
+#### importFromFile
+
+Triggers a local file selector, parsing the user's selected file to import objects.
+
+```ts
+importFromFile(): Promise<void>
+```
+
+#### loadObjectsFromJson
+
+Hydrates the canvas with a serialized JSON string containing objects.
+
+```ts
+loadObjectsFromJson(json: string): Promise<number>
+```
+
+---
+
+### External Services & Dialogs
+
+#### openLoginDialog
+
+Opens the authentication/login modal.
+
+```ts
+openLoginDialog(): Promise<void>
+```
+
+#### setLoginLoading
+
+Indicates loading spinner state on a targeted provider during authentication.
+
+```ts
+setLoginLoading(provider: string | null): Promise<void>
 ```
 
 ---

@@ -1,0 +1,105 @@
+# Pattern: Core Concept Pages
+
+## Overview
+
+Core Concept pages introduce fundamental architectural pillars of Kritzel (such as Viewport, Workspaces, Tools, Objects, Theming, Collaboration). Unlike the exhaustive, deep-dive Example pages, Core Concept pages are designed to give users a quick, high-level understanding of a concept, accompanied by very focused, small live-demo examples.
+
+These pages bridge the gap between abstract architectural concepts and practical API usage.
+
+## File Naming & Location
+
+- File: `website/docs/angular/concept-<concept>.md` (or relevant framework directory)
+- Sidebar registration: add page ID (`concept-<concept>`) to the `'Concepts'` category in `website/sidebars.ts`
+
+## Frontmatter
+
+```md
+---
+sidebar_label: <Concept Name>
+displayed_sidebar: tutorialSidebar
+title: "<Concept Name> Concept | Kritzel for Angular"
+description: "Understand the core concept of <Concept Name> in Kritzel."
+---
+
+import LiveDemo from '@site/src/components/LiveDemo';
+```
+
+## Page Structure
+
+1. **`# <Concept Name>`** — The main page title.
+2. **`## Overview`** — Explain what the concept is, its role within the Kritzel architecture, and why a developer should care. Keep it high-level.
+3. **Use Case Sections (`##` or `###`)** — Provide multiple *very focused* live-demo examples showing users exactly how to accomplish specific, atomic tasks related to the concept. **Do not** use a literal `## Focused Use Cases` heading; instead, promote the use cases to top-level or natural descriptive headings (e.g., `## Using the Editor Component`).
+4. **`## Related API Methods`** — A quick bulleted list summarizing the most relevant API methods associated with this concept.
+    - Group methods by a short, high-level context label, followed by the methods in parentheses (e.g., `- Camera control (\`setViewport()\`, \`panTo()\`)`).
+    - Keep it simple: do not use bold descriptions or long explanatory sentences.
+    - ALWAYS end this section with the exact sentence: `For a comprehensive view, see the [API Reference](api-reference-editor.md).`
+
+## Focused Live-Demo Example Constraints
+
+The examples on a Core Concept page are **smaller** and **less detailed** than those on Example Pages (`examples.md`). 
+
+- Focus on **"How to do ONE specific thing."**
+- **Descriptive Text is Required:** Every section containing a `<LiveDemo>` MUST include descriptive text explaining the purpose of the demo.
+- **Strict `<LiveDemo>` Usage:** NEVER use raw inline markdown code blocks (e.g., \`\`\`typescript\`) to demonstrate API usage. ALWAYS use the `<LiveDemo>` component to embed a working example.
+- **Proactive Demo Creation:** If the underlying Angular component required for the `<LiveDemo>` does not exist in `demos/angular/src/app/...`, you MUST proactively create it. Do not fall back to inline code simply because the demo file is missing.
+- **Demo Routing Registration:** Whenever you create a new concept demo component, you must also register its route in the application's routing (`demos/angular/src/app/app.routes.ts`) so the `iframeUrl` correctly resolves and the demo loads on the site.
+- **No Duplicate Source Code:** Do not add raw code blocks below a `<LiveDemo>` embed. The `<LiveDemo>` component securely tracks and references the hosted code on GitHub.
+- Do not build full, robust applications here; emphasize simplicity and clarity.
+- **Do not** write extensive step-by-step tutorials here.
+
+### `<LiveDemo>` Usage
+
+Just like in the Examples pattern, embed previews with:
+```jsx
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/<concept>-<focus>"
+  repoFiles={['src/app/concepts/<concept>/<concept>-<focus>.component.ts']}
+/>
+```
+
+---
+
+## Content Mapping (Core Concepts to API)
+
+When authoring a Core Concept page, draw upon the appropriate subset of the Kritzel Editor API:
+
+### 1. Components (Editor, Engine)
+- **Concept:** The relationship between the visual `<kritzel-editor>` and the headless `<kritzel-engine>`, showing they share identical public APIs exposing asynchronous methods (returning Promises).
+- **Relevant Usage:** Mounting, basic sizing, and UI configuration (e.g., hiding or showing the workspace-manager or the more-menu).
+
+### 2. Tools
+- **Concept:** How the user interacts with the canvas via registered drawing/selection modes.
+- **Relevant Usage:** 
+  - `registerTool(toolName, toolClass, config)`
+  - `changeActiveTool(tool)`
+  - `disable()`, `enable()`
+
+### 3. Objects
+- **Concept:** Elements drawn on the canvas and their lifecycles. Encompassing base objects, visibility, and selection matrices.
+- **Relevant Usage:** 
+  - Lifecycle: `addObject`, `removeObject`, `updateObject`, `getObjectById`.
+  - Queries: `getAllObjects`, `findObjects`, `getObjectsTotalCount`, `getObjectsInViewport`.
+  - Manipulation: `group`, `ungroup`, ordering functions (`bringToFront`, `sendBackward`, etc.), `alignObjects`.
+  - Selection: `getSelectedObjects`, `selectObjects`, `clearSelection`.
+
+### 4. Workspaces
+- **Concept:** Managing multiple distinct document states or "pages" within a single Kritzel instance.
+- **Relevant Usage:** 
+  - `createWorkspace`, `updateWorkspace`, `deleteWorkspace`.
+  - `getWorkspaces`, `getActiveWorkspace`.
+
+### 5. Viewport
+- **Concept:** Camera control, zooming, and panning behavior natively handled by Kritzel. Navigating infinite or bounded canvas structures.
+- **Relevant Usage:** 
+  - State reading: `getViewport`
+  - Camera control: `setViewport`, `panTo`, `zoomTo`, `centerObjectInViewport`, `backToContent`.
+  - Coordinate Mapping: `screenToWorld`, `worldToScreen`.
+
+### 6. Theming
+- **Concept:** Adapting the visual look of Kritzel tools, toolbars, and context menus via CSS overrides or configuration objects.
+- **Relevant Usage:** (CSS Variable mapping and toolbar configuration objects).
+
+### 7. Collaboration
+- **Concept:** Real-time synchronization leveraging multiplayer providers (e.g., Yjs, Hocuspocus).
+- **Relevant Usage:** Establishing connection configurations and tracking presence hooks.
