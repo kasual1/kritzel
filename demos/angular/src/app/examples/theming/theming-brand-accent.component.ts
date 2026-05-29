@@ -23,10 +23,10 @@ const brandedAccentTheme: KritzelTheme = {
   template: `
     <kritzel-editor
       editorId="theming-brand-accent"
-      [wheelEnabled]="false"
-      [themes]="themes"
-      [syncConfig]="syncConfig"
       theme="branded-accent"
+      [themes]="themes"
+      [wheelEnabled]="false"
+      [syncConfig]="syncConfig"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"

@@ -27,6 +27,10 @@ import { ViewportNavigationClickToZoomComponent } from './examples/viewport-navi
 import { WorkspaceManagementTabBarComponent } from './examples/workspace-management/workspace-management-tab-bar.component';
 import { WorkspaceManagementCrudPanelComponent } from './examples/workspace-management/workspace-management-crud-panel.component';
 import { WorkspaceManagementUrlSyncedComponent } from './examples/workspace-management/workspace-management-url-synced.component';
+import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
+import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
+import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
+import { CollaborationRealtimeComponent } from './concepts/collaboration/collaboration-realtime.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -36,6 +40,15 @@ export const routes: Routes = [
       { path: 'editor', component: EditorPageComponent },
       { path: 'multi-editor', component: MultiEditorPageComponent },
       { path: 'wrapped-editor', component: WrappedEditorPageComponent },
+    ],
+  },
+  {
+    path: 'concepts',
+    children: [
+      { path: 'theming-apply', component: ThemingApplyComponent },
+      { path: 'theming-custom', component: ThemingCustomComponent },
+      { path: 'collaboration-local', component: CollaborationLocalComponent },
+      { path: 'collaboration-realtime', component: CollaborationRealtimeComponent },
     ],
   },
   {
