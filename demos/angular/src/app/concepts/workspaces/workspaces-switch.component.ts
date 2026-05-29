@@ -1,11 +1,11 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { KritzelEditorComponent, Workspace } from '@kritzel/angular';
+import { KritzelEditor, KritzelWorkspace } from 'kritzel-angular';
 
 @Component({
   selector: 'app-workspaces-switch',
   standalone: true,
-  imports: [CommonModule, KritzelEditorComponent],
+  imports: [CommonModule, KritzelEditor],
   template: `
     <div class="demo-container">
       <div class="sidebar">
@@ -20,7 +20,7 @@ import { KritzelEditorComponent, Workspace } from '@kritzel/angular';
       </div>
       <div class="editor-area">
         <kritzel-editor
-          [hideWorkspaceManager]="true"
+          [isWorkspaceManagerVisible]="false"
           [activeWorkspaceId]="activeWorkspaceId"
           (editorReady)="onEditorReady($event)"
           (activeWorkspaceChange)="onWorkspaceChange($event)"
@@ -39,8 +39,8 @@ import { KritzelEditorComponent, Workspace } from '@kritzel/angular';
   `]
 })
 export class WorkspacesSwitchComponent {
-  editor: any;
-  workspaces: Workspace[] = [];
+  editor: KritzelEditor | null = null;
+  workspaces: KritzelWorkspace[] = [];
   activeWorkspaceId: string | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {}
