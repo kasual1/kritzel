@@ -339,10 +339,10 @@ const customLightTheme: KritzelTheme = {
   template: `
     <kritzel-editor
       editorId="theming-full-light"
-      [wheelEnabled]="false"
-      [themes]="themes"
-      [syncConfig]="syncConfig"
       theme="custom-light"
+      [themes]="themes"
+      [wheelEnabled]="false"
+      [syncConfig]="syncConfig"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
