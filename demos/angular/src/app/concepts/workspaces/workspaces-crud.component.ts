@@ -1,11 +1,11 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { KritzelEditorComponent, Workspace } from '@kritzel/angular';
+import { KritzelEditor, KritzelWorkspace } from 'kritzel-angular';
 
 @Component({
   selector: 'app-workspaces-crud',
   standalone: true,
-  imports: [CommonModule, KritzelEditorComponent],
+  imports: [CommonModule, KritzelEditor],
   template: `
     <div class="demo-container">
       <div class="sidebar">
@@ -29,7 +29,7 @@ import { KritzelEditorComponent, Workspace } from '@kritzel/angular';
       </div>
       <div class="editor-area">
         <kritzel-editor
-          [hideWorkspaceManager]="true"
+          [isWorkspaceManagerVisible]="false"
           [activeWorkspaceId]="activeWorkspaceId"
           (editorReady)="onEditorReady($event)"
           (workspacesChange)="onWorkspacesChange($event)"
@@ -52,8 +52,8 @@ import { KritzelEditorComponent, Workspace } from '@kritzel/angular';
   `]
 })
 export class WorkspacesCrudComponent {
-  editor: any;
-  workspaces: Workspace[] = [];
+  editor: KritzelEditor | null = null;
+  workspaces: KritzelWorkspace[] = [];
   activeWorkspaceId: string | null = null;
   editingId: string | null = null;
 
@@ -80,24 +80,24 @@ export class WorkspacesCrudComponent {
 
   async addWorkspace() {
     if (!this.editor) return;
-    const ws = await this.editor.createWorkspace({ name: 'New Workspace' });
-    if (ws) {
-      this.activeWorkspaceId = ws.id;
-    }
+    // const ws = await this.editor.createWorkspace();
+    // if (ws) {
+    //   this.activeWorkspaceId = ws.id;
+    // }
   }
 
   editName(id: string) {
     this.editingId = id;
   }
 
-  async saveName(ws: Workspace, newName: string) {
+  async saveName(ws: KritzelWorkspace, newName: string) {
     if (!this.editor || !this.editingId) return;
     ws.name = newName;
     await this.editor.updateWorkspace(ws);
     this.editingId = null;
   }
 
-  async deleteWorkspace(ws: Workspace, evt: Event) {
+  async deleteWorkspace(ws: KritzelWorkspace, evt: Event) {
     if (!this.editor) return;
     evt.stopPropagation();
     await this.editor.deleteWorkspace(ws);
