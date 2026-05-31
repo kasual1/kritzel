@@ -31,6 +31,19 @@ import { ThemingApplyComponent } from './concepts/theming/theming-apply.componen
 import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
 import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
 import { CollaborationRealtimeComponent } from './concepts/collaboration/collaboration-realtime.component';
+import { ComponentsEditorComponent } from './concepts/components/components-editor.component';
+import { ComponentsEditorUiComponent } from './concepts/components/components-editor-ui.component';
+import { ComponentsEngineComponent } from './concepts/components/components-engine.component';
+import { ObjectsAddRemoveComponent } from './concepts/objects/objects-add-remove.component';
+import { ObjectsQueryComponent } from './concepts/objects/objects-query.component';
+import { ObjectsSelectionComponent } from './concepts/objects/objects-selection.component';
+import { ObjectsGroupingComponent } from './concepts/objects/objects-grouping.component';
+import { ViewportChangeComponent } from './concepts/viewport/viewport-change.component';
+import { ViewportCenterComponent } from './concepts/viewport/viewport-center.component';
+import { ViewportCoordinatesComponent } from './concepts/viewport/viewport-coordinates.component';
+import { ToolsChangeComponent } from './concepts/tools/tools-change.component';
+import { ToolsDisableComponent } from './concepts/tools/tools-disable.component';
+import { ToolsRegisterComponent } from './concepts/tools/tools-register.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -49,6 +62,19 @@ export const routes: Routes = [
       { path: 'theming-custom', component: ThemingCustomComponent },
       { path: 'collaboration-local', component: CollaborationLocalComponent },
       { path: 'collaboration-realtime', component: CollaborationRealtimeComponent },
+      { path: 'components-editor', component: ComponentsEditorComponent },
+      { path: 'components-editor-ui', component: ComponentsEditorUiComponent },
+      { path: 'components-engine', component: ComponentsEngineComponent },
+      { path: 'objects-add-remove', component: ObjectsAddRemoveComponent },
+      { path: 'objects-query', component: ObjectsQueryComponent },
+      { path: 'objects-selection', component: ObjectsSelectionComponent },
+      { path: 'objects-grouping', component: ObjectsGroupingComponent },
+      { path: 'viewport-change', component: ViewportChangeComponent },
+      { path: 'viewport-center', component: ViewportCenterComponent },
+      { path: 'viewport-coordinates', component: ViewportCoordinatesComponent },
+      { path: 'tools-change', component: ToolsChangeComponent },
+      { path: 'tools-disable', component: ToolsDisableComponent },
+      { path: 'tools-register', component: ToolsRegisterComponent },
     ],
   },
   {
