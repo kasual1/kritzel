@@ -52,6 +52,7 @@ Detailed conventions for each documentation category live in the `patterns/` sub
 
 - [`patterns/examples.md`](patterns/examples.md) — How to write, structure, and maintain example pages
 - [`patterns/core-concept.md`](patterns/core-concept.md) — How to write, structure, and maintain core concept pages
+- [`patterns/angular-demo-pages.md`](patterns/angular-demo-pages.md) — How to create Angular demo components that back `<LiveDemo>` embeds
 
 ## Workflow
 
