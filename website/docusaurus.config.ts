@@ -86,7 +86,7 @@ const config: Config = {
         id: "angular",
         path: "docs/angular",
         routeBasePath: "docs/angular",
-        sidebarPath: "./sidebars-angular.ts",
+        sidebarPath: "./sidebars.ts",
         breadcrumbs: true,
       },
     ],
