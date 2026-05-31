@@ -32,6 +32,10 @@ export {
 
 export type {
     KritzelToolbarControl,
+    KritzelBrushToolConfig,
+    KritzelLineToolConfig,
+    KritzelShapeToolConfig,
+    KritzelTextToolConfig,
     KritzelSyncConfig,
     KritzelTheme,
     KritzelViewportState,
