@@ -27,7 +27,7 @@ The basic implementation of the Editor requires zero configuration. You simply d
   repoFiles={['src/app/concepts/components/components-editor.component.ts']}
 />
 
-### Waiting for Initialization (`isReady`)
+### Waiting for Initialization
 
 Because Kritzel performs asynchronous setup tasks internally (such as instantiating canvas elements and syncing state), you must wait for the `(isReady)` event before calling programmatic API methods. Bind the event in your template:
 
@@ -52,7 +52,7 @@ export class MyComponent {
 
 ### Customizing the Editor UI
 
-You can toggle visibility for built-in UI components using the Editor's attributes. For example, setting `isWorkspaceManagerVisible` and `isMoreMenuVisible` to false will clean up the edges of the UI:
+You can toggle visibility for built-in UI components using the Editor's attributes. For example, setting `isWorkspaceManagerVisible` and `isMoreMenuVisible` to false will not render the workspace manager at the top left nor the more menu at the top right, giving you a more minimal interface while retaining all core whiteboard functionality.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
