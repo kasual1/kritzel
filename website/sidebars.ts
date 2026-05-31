@@ -18,7 +18,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Examples',
       collapsed: true,
-      items: ['example-custom-toolbar'],
+      items: ['example-custom-toolbar', 'example-custom-context-menu', 'example-object-management', 'example-theming', 'example-viewport-navigation', 'example-workspace-management'],
     },
     {
       type: 'category',

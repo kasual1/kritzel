@@ -44,6 +44,8 @@ import { ViewportCoordinatesComponent } from './concepts/viewport/viewport-coord
 import { ToolsChangeComponent } from './concepts/tools/tools-change.component';
 import { ToolsDisableComponent } from './concepts/tools/tools-disable.component';
 import { ToolsRegisterComponent } from './concepts/tools/tools-register.component';
+import { WorkspacesSwitchComponent } from './concepts/workspaces/workspaces-switch.component';
+import { WorkspacesCrudComponent } from './concepts/workspaces/workspaces-crud.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -75,6 +77,8 @@ export const routes: Routes = [
       { path: 'tools-change', component: ToolsChangeComponent },
       { path: 'tools-disable', component: ToolsDisableComponent },
       { path: 'tools-register', component: ToolsRegisterComponent },
+      { path: 'workspaces-switch', component: WorkspacesSwitchComponent },
+      { path: 'workspaces-crud', component: WorkspacesCrudComponent },
     ],
   },
   {
