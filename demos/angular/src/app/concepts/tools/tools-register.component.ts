@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/
 import {
   KritzelEditor,
   KritzelBrushTool,
+  KritzelBrushToolConfig,
   EditorIsReadyEvent,
   InMemorySyncProvider,
   KritzelSyncConfig,
