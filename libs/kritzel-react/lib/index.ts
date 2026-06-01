@@ -24,6 +24,7 @@ export {
     HocuspocusSyncProvider,
     KritzelThemeManager,
     ShapeType,
+    KritzelAlignment,
     lightTheme,
     darkTheme,
     DEFAULT_BRUSH_CONFIG,
