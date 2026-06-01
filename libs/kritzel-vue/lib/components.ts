@@ -76,6 +76,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'scaleMax',
   'scaleMin',
   'lockDrawingScale',
+  'isObjectDistanceFadingActive',
   'viewportBoundaryLeft',
   'viewportBoundaryRight',
   'viewportBoundaryTop',

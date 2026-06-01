@@ -54,6 +54,7 @@ export class KritzelEditor {
   @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
   @Prop({ mutable: true }) scaleMin: number = ABSOLUTE_SCALE_MIN;
   @Prop({ mutable: true }) lockDrawingScale: boolean = true;
+  @Prop({ mutable: true }) isObjectDistanceFadingActive: boolean = false;
   @Prop({ mutable: true }) viewportBoundaryLeft: number = -Infinity;
   @Prop({ mutable: true }) viewportBoundaryRight: number = Infinity;
   @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
@@ -1044,6 +1045,7 @@ export class KritzelEditor {
           user={this.user}
           scaleMax={this.scaleMax}
           lockDrawingScale={this.lockDrawingScale}
+          isObjectDistanceFadingActive={this.isObjectDistanceFadingActive}
           scaleMin={this.scaleMin}
           cursorTarget={this.cursorTarget}
           isLoading={this.isLoading}

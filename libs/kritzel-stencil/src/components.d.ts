@@ -405,6 +405,10 @@ export namespace Components {
          */
         "isMoreMenuVisible": boolean;
         /**
+          * @default false
+         */
+        "isObjectDistanceFadingActive": boolean;
+        /**
           * @default true
          */
         "isUtilityPanelVisible": boolean;
@@ -721,6 +725,11 @@ export namespace Components {
           * @default false
          */
         "isLoading": boolean;
+        /**
+          * When true, objects fade based on distance to the viewport center.
+          * @default false
+         */
+        "isObjectDistanceFadingActive": boolean;
         /**
           * Loads objects from a workspace JSON string into the current workspace. Unlike importFromJson, this does not create a new workspace - it adds objects to the existing one. Useful for initializing a workspace with pre-existing content after the editor is ready.
           * @param json - A JSON string containing workspace data (from exportAsJson).
@@ -2502,6 +2511,10 @@ declare namespace LocalJSX {
          */
         "isMoreMenuVisible"?: boolean;
         /**
+          * @default false
+         */
+        "isObjectDistanceFadingActive"?: boolean;
+        /**
           * @default true
          */
         "isUtilityPanelVisible"?: boolean;
@@ -2604,6 +2617,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "isLoading"?: boolean;
+        /**
+          * When true, objects fade based on distance to the viewport center.
+          * @default false
+         */
+        "isObjectDistanceFadingActive"?: boolean;
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
@@ -3244,6 +3262,7 @@ declare namespace LocalJSX {
         "scaleMax": number;
         "scaleMin": number;
         "lockDrawingScale": boolean;
+        "isObjectDistanceFadingActive": boolean;
         "viewportBoundaryLeft": number;
         "viewportBoundaryRight": number;
         "viewportBoundaryTop": number;
@@ -3264,6 +3283,7 @@ declare namespace LocalJSX {
         "scaleMax": number;
         "scaleMin": number;
         "lockDrawingScale": boolean;
+        "isObjectDistanceFadingActive": boolean;
         "theme": ThemeName;
         "viewportBoundaryLeft": number;
         "viewportBoundaryRight": number;
