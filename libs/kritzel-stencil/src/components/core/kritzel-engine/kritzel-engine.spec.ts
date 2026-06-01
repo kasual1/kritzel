@@ -387,6 +387,64 @@ describe('KritzelEngine', () => {
     });
   });
 
+  describe('object distance fading', () => {
+    const computeFade = (objectScale = 1, viewportScale = 1) =>
+      (engine as any).getObjectDistanceFadeMultiplier(objectScale, viewportScale);
+
+    it('returns 1 when fading is disabled', () => {
+      engine.isObjectDistanceFadingActive = false;
+
+      expect(computeFade(5.8, 0.1)).toBe(1);
+    });
+
+    it('returns 1 at or above near scale threshold', () => {
+      engine.isObjectDistanceFadingActive = true;
+
+      expect(computeFade(1, 1)).toBe(1);
+      expect(computeFade(1, 2)).toBe(1);
+    });
+
+    it('returns minimum opacity multiplier beyond far-distance threshold', () => {
+      engine.isObjectDistanceFadingActive = true;
+
+      expect(computeFade(1, 0.01)).toBeCloseTo(0, 6);
+    });
+
+    it('interpolates smoothly between near and far scales', () => {
+      engine.isObjectDistanceFadingActive = true;
+
+      const midFade = computeFade(1, 0.5);
+
+      expect(midFade).toBeGreaterThan(0);
+      expect(midFade).toBeLessThan(1);
+    });
+
+    it('fades more when zoomed out and less when zoomed in', () => {
+      engine.isObjectDistanceFadingActive = true;
+
+      const fadeAtSmallScale = computeFade(1, 0.2);
+      const fadeAtLargeScale = computeFade(1, 2.0);
+
+      expect(fadeAtSmallScale).toBeLessThan(fadeAtLargeScale);
+    });
+
+    it('fades high-scale objects earlier than low-scale objects at the same viewport scale', () => {
+      engine.isObjectDistanceFadingActive = true;
+
+      const viewportScale = 3;
+      const lowScaleObjectFade = computeFade(0.2, viewportScale);
+      const highScaleObjectFade = computeFade(5.8, viewportScale);
+
+      expect(lowScaleObjectFade).toBeGreaterThan(highScaleObjectFade);
+    });
+
+    it('rerenders when isObjectDistanceFadingActive changes', () => {
+      (engine as any).onIsObjectDistanceFadingActiveChange();
+
+      expect(core.rerender).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('hideContextMenu', () => {
     it('resets transient context-menu state and rerenders', async () => {
       core.store.state.isContextMenuVisible = true;

@@ -185,6 +185,13 @@ export class KritzelEngine {
     this.core.store.state.lockDrawingScale = newValue;
   }
 
+  /** When true, objects fade based on distance to the viewport center. */
+  @Prop() isObjectDistanceFadingActive: boolean = false;
+  @Watch('isObjectDistanceFadingActive')
+  onIsObjectDistanceFadingActiveChange() {
+    this.core.rerender();
+  }
+
   /** The current theme to apply to the editor */
   @Prop() theme: ThemeName = 'light';
   @Watch('theme')
@@ -1675,6 +1682,9 @@ export class KritzelEngine {
     undoStackSize: 0,
     redoStackSize: 0,
   };
+  private readonly _objectDistanceFadeNearScale = 1;
+  private readonly _objectDistanceFadeFarScale = 0.15;
+  private readonly _objectDistanceFadeMinOpacity = 0;
 
   private syncLoadingState(): void {
     this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
@@ -2053,6 +2063,56 @@ export class KritzelEngine {
     this.core.rerender();
   }
 
+  private getObjectDistanceFadeMultiplier(objectScale: number, viewportScale: number): number {
+    if (!this.isObjectDistanceFadingActive) {
+      return 1;
+    }
+
+    const safeViewportScale = Math.max(Number.isFinite(viewportScale) ? viewportScale : 1, Number.EPSILON);
+    const safeObjectScale = Math.max(Number.isFinite(objectScale) ? objectScale : 1, Number.EPSILON);
+    const normalizedScale = safeViewportScale / safeObjectScale;
+
+    if (normalizedScale >= this._objectDistanceFadeNearScale) {
+      return 1;
+    }
+
+    if (normalizedScale <= this._objectDistanceFadeFarScale) {
+      return this._objectDistanceFadeMinOpacity;
+    }
+
+    const progress =
+      (this._objectDistanceFadeNearScale - normalizedScale) /
+      (this._objectDistanceFadeNearScale - this._objectDistanceFadeFarScale);
+    const smooth = progress * progress * (3 - 2 * progress);
+
+    return 1 - smooth * (1 - this._objectDistanceFadeMinOpacity);
+  }
+
+  private shouldApplyDistanceFade(object: KritzelBaseObject<any>): boolean {
+    return (
+      !KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') &&
+      !KritzelClassHelper.isInstanceOf<KritzelSelectionBox>(object, 'KritzelSelectionBox')
+    );
+  }
+
+  private getObjectEffectiveOpacity(
+    object: KritzelBaseObject<any>,
+    viewportScale: number,
+  ): { multiplied: number; overridden: string } {
+    const safeObjectOpacity = Number.isFinite(object.opacity) ? object.opacity : 1;
+    const distanceFadeMultiplier = this.shouldApplyDistanceFade(object)
+      ? this.getObjectDistanceFadeMultiplier(object.scale, viewportScale)
+      : 1;
+
+    const multiplied =
+      (object.markedForRemoval ? 0.5 : 1) * safeObjectOpacity * distanceFadeMultiplier;
+    const overridden = (
+      (object.markedForRemoval ? 0.5 : safeObjectOpacity) * distanceFadeMultiplier
+    ).toString();
+
+    return { multiplied, overridden };
+  }
+
   render() {
     if (!this.viewport) {
       return (
@@ -2072,6 +2132,7 @@ export class KritzelEngine {
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
+    const viewportScale = this.core.store.state.scale;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
     const visibleObjects = this.core.store.objectsInViewport;
@@ -2135,6 +2196,9 @@ export class KritzelEngine {
           }}
         >
           {visibleObjects?.map(object => {
+            const { multiplied: effectiveOpacity, overridden: effectiveOpacityString } =
+              this.getObjectEffectiveOpacity(object, viewportScale);
+
             return (
               <div
                 key={object.id}
@@ -2148,9 +2212,7 @@ export class KritzelEngine {
                   pointerEvents: this.core.store.state.isScaling ? 'none' : 'auto',
                 }}
               >
-                {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (() => {
-                  const effectiveOpacity = (object.markedForRemoval ? 0.5 : 1) * object.opacity;
-                  return (
+                {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -2174,12 +2236,9 @@ export class KritzelEngine {
                       shape-rendering={object.isLowRes() ? 'optimizeSpeed' : 'auto'}
                     />
                   </svg>
-                  );
-                })()}
+                )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (() => {
-                  const effectiveOpacity = (object.markedForRemoval ? 0.5 : 1) * object.opacity;
-                  return (
+                {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -2247,8 +2306,7 @@ export class KritzelEngine {
                       marker-end={object.hasEndArrow ? `url(#${object.endMarkerId})` : undefined}
                     />
                   </svg>
-                  );
-                })()}
+                )}
 
                 {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && object.loadState === 'ready' && (
                   <img
@@ -2262,7 +2320,7 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
+                      opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                       backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
                       borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
@@ -2291,7 +2349,7 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
+                      opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                       backgroundColor: KritzelColorHelper.resolveThemeColor(
                         { light: '#e5e7eb', dark: '#2a2a2a' },
@@ -2332,7 +2390,7 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
+                      opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                       backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
                       borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
@@ -2393,7 +2451,7 @@ export class KritzelEngine {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
+                      opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
                     }}
                   >
@@ -2419,9 +2477,6 @@ export class KritzelEngine {
                 )}
 
                 {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') && (() => {
-                  
-                  const effectiveOpacity = (object.markedForRemoval ? 0.5 : 1) * object.opacity;
-
                   const fillResolved = KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme);
                   const strokeResolved = KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme);
                   const isFilled = !!fillResolved && fillResolved !== 'transparent';
