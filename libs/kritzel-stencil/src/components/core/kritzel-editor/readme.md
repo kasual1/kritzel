@@ -77,6 +77,22 @@ Type: `Promise<T>`
 
 
 
+### `addObjects<T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>`
+
+
+
+#### Parameters
+
+| Name      | Type  | Description |
+| --------- | ----- | ----------- |
+| `objects` | `T[]` |             |
+
+#### Returns
+
+Type: `Promise<T[]>`
+
+
+
 ### `alignObjects(alignment: KritzelAlignment) => Promise<void>`
 
 
@@ -658,6 +674,22 @@ Type: `Promise<void>`
 #### Returns
 
 Type: `Promise<T>`
+
+
+
+### `removeObjects<T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>`
+
+
+
+#### Parameters
+
+| Name      | Type  | Description |
+| --------- | ----- | ----------- |
+| `objects` | `T[]` |             |
+
+#### Returns
+
+Type: `Promise<T[]>`
 
 
 

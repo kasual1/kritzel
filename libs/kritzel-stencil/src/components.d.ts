@@ -331,6 +331,7 @@ export namespace Components {
          */
         "activeWorkspaceId"?: string;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "addObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
         /**
           * @default DEFAULT_ASSET_STORAGE_CONFIG
@@ -443,6 +444,7 @@ export namespace Components {
         "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>;
         "reinitSync": () => Promise<void>;
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        "removeObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         /**
           * @default ABSOLUTE_SCALE_MAX
          */
@@ -507,6 +509,12 @@ export namespace Components {
           * @returns The added object.
          */
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        /**
+          * Adds multiple objects to the canvas in a single batch operation. All objects are inserted within one Yjs transaction (single undo step), triggering only one rerender cycle. Intended for programmatic streaming scenarios where per-object overhead would cause stutter.
+          * @param objects - The object instances to add.
+          * @returns The added objects.
+         */
+        "addObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         /**
           * Aligns the currently selected objects according to the specified alignment.
           * @param alignment - The alignment direction (e.g., `CenterHorizontal`, `StartVertical`).
@@ -801,6 +809,12 @@ export namespace Components {
           * @returns The removed object.
          */
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
+        /**
+          * Removes multiple objects from the canvas in a single batch operation. All removals happen within one Yjs transaction (single undo step), triggering only one rerender cycle. Intended for programmatic streaming scenarios where per-object overhead would cause stutter.
+          * @param objects - The objects to remove.
+          * @returns The removed objects.
+         */
+        "removeObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         /**
           * Persists the given settings object to localStorage using the namespaced storage key.
           * @param settings - The settings configuration to persist.

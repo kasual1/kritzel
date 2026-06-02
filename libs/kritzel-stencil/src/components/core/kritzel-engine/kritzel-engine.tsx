@@ -773,7 +773,6 @@ export class KritzelEngine {
 
     object.id = object.generateId();
     object._core = this.core;
-    object.scale = this.core.store.state.scale;
     object.zIndex = this.core.store.currentZIndex;
     object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
@@ -807,7 +806,6 @@ export class KritzelEngine {
           const oldId = child.id;
           child.id = child.generateId();
           child._core = this.core;
-          child.scale = this.core.store.state.scale;
           child.zIndex = this.core.store.currentZIndex;
           child.workspaceId = this.core.store.state.activeWorkspace!.id;
 
@@ -883,7 +881,6 @@ export class KritzelEngine {
       for (const object of objects) {
         object.id = object.generateId();
         object._core = this.core;
-        object.scale = this.core.store.state.scale;
         object.zIndex = this.core.store.currentZIndex;
         object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
@@ -912,7 +909,6 @@ export class KritzelEngine {
               const oldId = child.id;
               child.id = child.generateId();
               child._core = this.core;
-              child.scale = this.core.store.state.scale;
               child.zIndex = this.core.store.currentZIndex;
               child.workspaceId = this.core.store.state.activeWorkspace!.id;
 
@@ -2709,6 +2705,7 @@ export class KritzelEngine {
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>height: {object.height}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>translateX: {object.translateX}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>translateY: {object.translateY}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>scale: {object.scale}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>rotationDegrees: {object.rotationDegrees}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
                     
