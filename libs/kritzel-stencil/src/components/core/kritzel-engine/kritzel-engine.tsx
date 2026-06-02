@@ -866,6 +866,103 @@ export class KritzelEngine {
   }
 
   /**
+   * Adds multiple objects to the canvas in a single batch operation.
+   * All objects are inserted within one Yjs transaction (single undo step),
+   * triggering only one rerender cycle. Intended for programmatic streaming
+   * scenarios where per-object overhead would cause stutter.
+   * @param objects - The object instances to add.
+   * @returns The added objects.
+   */
+  @Method()
+  async addObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]> {
+    if (objects.length === 0) {
+      return [];
+    }
+
+    this.core.store.objects.transaction(() => {
+      for (const object of objects) {
+        object.id = object.generateId();
+        object._core = this.core;
+        object.scale = this.core.store.state.scale;
+        object.zIndex = this.core.store.currentZIndex;
+        object.workspaceId = this.core.store.state.activeWorkspace!.id;
+
+        if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
+          const pendingContent = object.content;
+          object.editor = object.createEditor();
+          if (pendingContent) {
+            object.setContent(pendingContent);
+          }
+        }
+
+        if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') && object._pendingChildren.length > 0) {
+          const idRemapping = new Map<string, string>();
+          const allFlushedChildren: KritzelBaseObject<any>[] = [];
+
+          const flushGroup = (group: KritzelGroup): void => {
+            if (group._pendingChildren.length === 0) {
+              return;
+            }
+
+            const pending = group._pendingChildren;
+            group._pendingChildren = [];
+            group.childIds = [];
+
+            pending.forEach(child => {
+              const oldId = child.id;
+              child.id = child.generateId();
+              child._core = this.core;
+              child.scale = this.core.store.state.scale;
+              child.zIndex = this.core.store.currentZIndex;
+              child.workspaceId = this.core.store.state.activeWorkspace!.id;
+
+              idRemapping.set(oldId, child.id);
+              group.childIds.push(child.id);
+              allFlushedChildren.push(child);
+
+              if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
+                flushGroup(child);
+              }
+            });
+          };
+
+          flushGroup(object);
+
+          allFlushedChildren.forEach(child => {
+            if (KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
+              if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
+                child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
+              }
+              if (child.endAnchor && idRemapping.has(child.endAnchor.objectId)) {
+                child.endAnchor = { objectId: idRemapping.get(child.endAnchor.objectId)! };
+              }
+            }
+          });
+
+          allFlushedChildren.forEach(child => {
+            this.core.addObject(child);
+          });
+
+          object.finalize();
+          this.core.anchorManager.rebuildIndex();
+        }
+
+        this.core.addObject(object);
+      }
+    });
+
+    this.core.rerender();
+
+    await new Promise<void>(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    });
+
+    this.emitObjectsAdded(objects);
+
+    return objects;
+  }
+
+  /**
    * Updates properties of an existing canvas object.
    * @param object - The object to update.
    * @param updatedProperties - A partial set of properties to apply.
@@ -901,6 +998,33 @@ export class KritzelEngine {
     this.emitObjectsRemoved([object]);
 
     return object;
+  }
+
+  /**
+   * Removes multiple objects from the canvas in a single batch operation.
+   * All removals happen within one Yjs transaction (single undo step),
+   * triggering only one rerender cycle. Intended for programmatic streaming
+   * scenarios where per-object overhead would cause stutter.
+   * @param objects - The objects to remove.
+   * @returns The removed objects.
+   */
+  @Method()
+  async removeObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]> {
+    const objectsMap = this.core.store.objects;
+    if (!objectsMap || objects.length === 0) {
+      return [];
+    }
+
+    objectsMap.transaction(() => {
+      for (const object of objects) {
+        this.core.removeObject(object);
+      }
+    });
+
+    this.core.rerender();
+    this.emitObjectsRemoved(objects);
+
+    return objects;
   }
 
   /** Returns the currently selected objects. Returns an empty array if nothing is selected. */
