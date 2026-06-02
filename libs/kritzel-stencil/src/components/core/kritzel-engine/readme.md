@@ -71,6 +71,25 @@ Type: `Promise<T>`
 
 The added object.
 
+### `addObjects<T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>`
+
+Adds multiple objects to the canvas in a single batch operation.
+All objects are inserted within one Yjs transaction (single undo step),
+triggering only one rerender cycle. Intended for programmatic streaming
+scenarios where per-object overhead would cause stutter.
+
+#### Parameters
+
+| Name      | Type  | Description                    |
+| --------- | ----- | ------------------------------ |
+| `objects` | `T[]` | - The object instances to add. |
+
+#### Returns
+
+Type: `Promise<T[]>`
+
+The added objects.
+
 ### `alignObjects(alignment: KritzelAlignment) => Promise<void>`
 
 Aligns the currently selected objects according to the specified alignment.
@@ -754,6 +773,25 @@ Removes an object from the canvas.
 Type: `Promise<T>`
 
 The removed object.
+
+### `removeObjects<T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>`
+
+Removes multiple objects from the canvas in a single batch operation.
+All removals happen within one Yjs transaction (single undo step),
+triggering only one rerender cycle. Intended for programmatic streaming
+scenarios where per-object overhead would cause stutter.
+
+#### Parameters
+
+| Name      | Type  | Description              |
+| --------- | ----- | ------------------------ |
+| `objects` | `T[]` | - The objects to remove. |
+
+#### Returns
+
+Type: `Promise<T[]>`
+
+The removed objects.
 
 ### `saveSettings(settings: KritzelSettingsConfig) => Promise<void>`
 
