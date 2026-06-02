@@ -230,6 +230,10 @@ export namespace Components {
           * @default null
          */
         "undoState": KritzelUndoState;
+        /**
+          * @default true
+         */
+        "visible": boolean;
     }
     interface KritzelCurrentUser {
         /**
@@ -2369,6 +2373,10 @@ declare namespace LocalJSX {
           * @default null
          */
         "undoState"?: KritzelUndoState;
+        /**
+          * @default true
+         */
+        "visible"?: boolean;
     }
     interface KritzelCurrentUser {
         /**
@@ -3235,6 +3243,7 @@ declare namespace LocalJSX {
         "theme": ThemeName;
     }
     interface KritzelControlsAttributes {
+        "visible": boolean;
         "isUtilityPanelVisible": boolean;
         "theme": ThemeName;
     }
@@ -3262,7 +3271,6 @@ declare namespace LocalJSX {
         "scaleMax": number;
         "scaleMin": number;
         "lockDrawingScale": boolean;
-        "isObjectDistanceFadingActive": boolean;
         "viewportBoundaryLeft": number;
         "viewportBoundaryRight": number;
         "viewportBoundaryTop": number;
@@ -3273,6 +3281,7 @@ declare namespace LocalJSX {
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;
+        "isObjectDistanceFadingActive": boolean;
         "isLoading": boolean;
         "editorId": string;
         "activeWorkspaceId": string;
