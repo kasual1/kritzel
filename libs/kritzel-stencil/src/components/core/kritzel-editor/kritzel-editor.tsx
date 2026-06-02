@@ -362,6 +362,11 @@ export class KritzelEditor {
   }
 
   @Method()
+  async addObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]> {
+    return this.engineRef.addObjects(objects);
+  }
+
+  @Method()
   async updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null> {
     return this.engineRef.updateObject(object, updatedProperties);
   }
@@ -369,6 +374,11 @@ export class KritzelEditor {
   @Method()
   async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     return this.engineRef.removeObject(object);
+  }
+
+  @Method()
+  async removeObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]> {
+    return this.engineRef.removeObjects(objects);
   }
 
   @Method()
