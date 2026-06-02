@@ -54,7 +54,6 @@ export class KritzelEditor {
   @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
   @Prop({ mutable: true }) scaleMin: number = ABSOLUTE_SCALE_MIN;
   @Prop({ mutable: true }) lockDrawingScale: boolean = true;
-  @Prop({ mutable: true }) isObjectDistanceFadingActive: boolean = false;
   @Prop({ mutable: true }) viewportBoundaryLeft: number = -Infinity;
   @Prop({ mutable: true }) viewportBoundaryRight: number = Infinity;
   @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
@@ -218,6 +217,7 @@ export class KritzelEditor {
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
+  @Prop() isObjectDistanceFadingActive: boolean = false;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
   @Prop() assetStorageConfig?: KritzelAssetStorageConfig = DEFAULT_ASSET_STORAGE_CONFIG;
 
@@ -1073,8 +1073,8 @@ export class KritzelEditor {
         ></kritzel-engine>
 
         <kritzel-controls
+          visible={this.isControlsVisible}
           class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
-          style={{ display: this.isControlsVisible ? 'flex' : 'none' }}
           ref={el => {
             if (el) {
               this.controlsRef = el;
