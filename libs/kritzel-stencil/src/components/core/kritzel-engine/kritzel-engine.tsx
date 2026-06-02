@@ -1685,6 +1685,9 @@ export class KritzelEngine {
   private readonly _objectDistanceFadeNearScale = 1;
   private readonly _objectDistanceFadeFarScale = 0.15;
   private readonly _objectDistanceFadeMinOpacity = 0;
+  private readonly _objectDistanceFadeCloseStartScale = 2;
+  private readonly _objectDistanceFadeCloseMaxScale = 4;
+  private readonly _objectDistanceFadeCloseMinOpacity = 0;
 
   private syncLoadingState(): void {
     this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
@@ -2072,6 +2075,14 @@ export class KritzelEngine {
     const safeObjectScale = Math.max(Number.isFinite(objectScale) ? objectScale : 1, Number.EPSILON);
     const normalizedScale = safeViewportScale / safeObjectScale;
 
+    const farFadeMultiplier = this.getFarDistanceFadeMultiplier(normalizedScale);
+    const closeFadeMultiplier = this.getCloseDistanceFadeMultiplier(normalizedScale);
+
+    return Math.min(farFadeMultiplier, closeFadeMultiplier);
+  }
+
+  private getFarDistanceFadeMultiplier(normalizedScale: number): number {
+
     if (normalizedScale >= this._objectDistanceFadeNearScale) {
       return 1;
     }
@@ -2086,6 +2097,23 @@ export class KritzelEngine {
     const smooth = progress * progress * (3 - 2 * progress);
 
     return 1 - smooth * (1 - this._objectDistanceFadeMinOpacity);
+  }
+
+  private getCloseDistanceFadeMultiplier(normalizedScale: number): number {
+    if (normalizedScale <= this._objectDistanceFadeCloseStartScale) {
+      return 1;
+    }
+
+    if (normalizedScale >= this._objectDistanceFadeCloseMaxScale) {
+      return this._objectDistanceFadeCloseMinOpacity;
+    }
+
+    const progress =
+      (normalizedScale - this._objectDistanceFadeCloseStartScale) /
+      (this._objectDistanceFadeCloseMaxScale - this._objectDistanceFadeCloseStartScale);
+    const smooth = progress * progress * (3 - 2 * progress);
+
+    return 1 - smooth * (1 - this._objectDistanceFadeCloseMinOpacity);
   }
 
   private shouldApplyDistanceFade(object: KritzelBaseObject<any>): boolean {

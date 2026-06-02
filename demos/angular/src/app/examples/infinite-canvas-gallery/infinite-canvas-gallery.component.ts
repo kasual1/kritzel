@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnDestroy,
   ViewChild,
   signal,
 } from '@angular/core';
@@ -12,7 +11,6 @@ import {
   InMemorySyncProvider,
   KritzelSyncConfig,
   KritzelImage,
-  KritzelViewportState,
 } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
 
@@ -28,10 +26,11 @@ interface ArtworkDef {
   fg: string;
 }
 
-interface GalleryImageEntry {
-  image: KritzelImage;
-  centerX: number;
-  centerY: number;
+interface GalleryBounds {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
 }
 
 // Seeded pseudo-random generator (mulberry32) — same layout every render
@@ -44,6 +43,7 @@ function seededRng(seed: number): () => number {
     return ((t ^ (t >>> 14)) >>> 0) / 0xffffffff;
   };
 }
+
 
 const PALETTES: Array<{ bg: string; fg: string }> = [
   { bg: '1d3557', fg: 'ffffff' },
@@ -117,52 +117,89 @@ const BASE_TITLES = [
   'The Crossing',
 ];
 
-function generateArtworks(count: number): ArtworkDef[] {
+// Sector-based layout inspired by the chunk-based infinite canvas approach
+// (see tympanus.net/codrops/2026/01/07/infinite-canvas-building-a-seamless-pan-anywhere-image-space/):
+// divide the canvas into equal sectors and scatter images fully randomly within each
+// sector — avoids the regular-grid look while keeping even coverage across the canvas.
+function generateCuboidArtworks(count: number): ArtworkDef[] {
   const rng = seededRng(42);
   const artworks: ArtworkDef[] = [];
 
-  // Sunflower / golden-angle spiral: even non-clustering distribution
-  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
-  const spread = 6000;
+  const cols = 8;
+  const rows = 6;
+  const width = 10000;
+  const height = 8000;
+  const sectorW = width / cols;   // 1250
+  const sectorH = height / rows;  // ~1333
 
-  for (let i = 0; i < count; i++) {
-    const r = spread * Math.sqrt((i + 0.5) / count);
-    const angle = i * goldenAngle;
-    const jitterX = (rng() - 0.5) * 700;
-    const jitterY = (rng() - 0.5) * 700;
+  // Discrete depth tiers create clear foreground / midground / background planes
+  // rather than a continuous gradient that blurs perceived depth.
+  const depthLevels = [0.50, 0.68, 0.84, 1.0];
 
-    const x = Math.round(r * Math.cos(angle) + jitterX);
-    const y = Math.round(r * Math.sin(angle) + jitterY);
+  for (let row = 0; row < rows && artworks.length < count; row++) {
+    for (let col = 0; col < cols && artworks.length < count; col++) {
+      const sectorLeft = -width / 2 + col * sectorW;
+      const sectorTop = -height / 2 + row * sectorH;
 
-    // Pieces further from origin feel more distant
-    const normR = r / spread;
-    const depth = Math.max(
-      0.15,
-      Math.min(1.0, 1.0 - normR * 0.78 + (rng() - 0.5) * 0.2),
-    );
+      // 4–6 images per sector (article uses ~5 planes per chunk)
+      const sectorCount = 4 + Math.floor(rng() * 3);
 
-    // Mix portrait and landscape
-    const isPortrait = rng() > 0.5;
-    const baseW = Math.round(360 + rng() * 180);
-    const baseH = isPortrait
-      ? Math.round(baseW * (1.25 + rng() * 0.35))
-      : Math.round(baseW * (0.58 + rng() * 0.3));
+      for (let i = 0; i < sectorCount && artworks.length < count; i++) {
+        // Fully random position within sector — the key insight from the article.
+        // Equivalent to: cx * CHUNK_SIZE + r(0) * CHUNK_SIZE
+        const x = Math.round(sectorLeft + rng() * sectorW);
+        const y = Math.round(sectorTop + rng() * sectorH);
 
-    const palette = PALETTES[Math.floor(rng() * PALETTES.length)];
-    const baseTitle = BASE_TITLES[i % BASE_TITLES.length];
-    const suffix =
-      i >= BASE_TITLES.length
-        ? ` ${Math.floor(i / BASE_TITLES.length) + 1}`
-        : '';
-    const title = baseTitle + suffix;
+        // Pick a random depth tier — not tied to grid layer, so nearby images
+        // can have very different depths, creating natural visual layering.
+        const depth = depthLevels[Math.floor(rng() * depthLevels.length)];
 
-    artworks.push({ title, w: baseW, h: baseH, x, y, depth, ...palette });
+        const isPortrait = rng() > 0.47;
+        // Wider size range (200–560) for stronger visual rhythm
+        const baseW = Math.round(200 + rng() * 360);
+        const baseH = isPortrait
+          ? Math.round(baseW * (1.2 + rng() * 0.5))
+          : Math.round(baseW * (0.55 + rng() * 0.35));
+
+        const palette = PALETTES[Math.floor(rng() * PALETTES.length)];
+        const idx = artworks.length;
+        const baseTitle = BASE_TITLES[idx % BASE_TITLES.length];
+        const suffix = idx >= BASE_TITLES.length ? ` ${Math.floor(idx / BASE_TITLES.length) + 1}` : '';
+
+        artworks.push({ title: baseTitle + suffix, w: baseW, h: baseH, x, y, depth, ...palette });
+      }
+    }
   }
 
   return artworks;
 }
 
-const ARTWORKS: ArtworkDef[] = generateArtworks(100);
+function computeGalleryBounds(artworks: ArtworkDef[]): GalleryBounds {
+  let left = Number.POSITIVE_INFINITY;
+  let right = Number.NEGATIVE_INFINITY;
+  let top = Number.POSITIVE_INFINITY;
+  let bottom = Number.NEGATIVE_INFINITY;
+
+  for (const art of artworks) {
+    const scaledW = Math.max(80, Math.round(art.w * art.depth));
+    const scaledH = Math.max(80, Math.round(art.h * art.depth));
+    left = Math.min(left, art.x - scaledW / 2);
+    right = Math.max(right, art.x + scaledW / 2);
+    top = Math.min(top, art.y - scaledH / 2);
+    bottom = Math.max(bottom, art.y + scaledH / 2);
+  }
+
+  const padding = 520;
+  return {
+    left: Math.floor(left - padding),
+    right: Math.ceil(right + padding),
+    top: Math.floor(top - padding),
+    bottom: Math.ceil(bottom + padding),
+  };
+}
+
+const ARTWORKS: ArtworkDef[] = generateCuboidArtworks(200);
+const GALLERY_BOUNDS = computeGalleryBounds(ARTWORKS);
 
 @Component({
   selector: 'app-infinite-canvas-gallery',
@@ -185,12 +222,17 @@ const ARTWORKS: ArtworkDef[] = generateArtworks(100);
         [theme]="'angular-theme'"
         [themes]="themes"
         [syncConfig]="syncConfig"
+        [viewportBoundaryLeft]="bounds.left"
+        [viewportBoundaryRight]="bounds.right"
+        [viewportBoundaryTop]="bounds.top"
+        [viewportBoundaryBottom]="bounds.bottom"
         [controls]="controls"
         [loginConfig]="undefined"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
+        [isObjectDistanceFadingActive]="true"
+        [scaleMin]="0.12"
         (isReady)="onReady()"
-        (viewportChange)="onViewportChange($event)"
       ></kritzel-editor>
     </div>
   `,
@@ -255,23 +297,14 @@ const ARTWORKS: ArtworkDef[] = generateArtworks(100);
     }
   `,
 })
-export class InfiniteCanvasGalleryComponent implements OnDestroy {
-  private static readonly MIN_IMAGE_OPACITY = 0.16;
-  private static readonly MAX_IMAGE_OPACITY = 1.0;
-  private static readonly FADE_NEAR_DISTANCE = 260;
-  private static readonly FADE_FAR_DISTANCE = 1650;
-  private static readonly OPACITY_EPSILON = 0.015;
-
+export class InfiniteCanvasGalleryComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  private galleryImages: GalleryImageEntry[] = [];
-  private rafHandle: number | null = null;
-  private pendingViewport: KritzelViewportState | null = null;
-  private isOpacityUpdateInFlight = false;
-  private queuedViewportAfterFlight: KritzelViewportState | null = null;
+  private readonly initialViewportScale = 0.22;
 
   themes = [customAngularTheme];
   artworkCount = signal(0);
+  bounds = GALLERY_BOUNDS;
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
@@ -287,129 +320,66 @@ export class InfiniteCanvasGalleryComponent implements OnDestroy {
     },
   ];
 
-  ngOnDestroy(): void {
-    if (this.rafHandle !== null) {
-      cancelAnimationFrame(this.rafHandle);
-      this.rafHandle = null;
-    }
-  }
-
   async onReady(): Promise<void> {
+    // Set the viewport BEFORE seeding. The engine stamps each added object with
+    // object.scale = currentViewportScale. Fading uses normalizedScale =
+    // viewportScale / objectScale — seeding at scale 0.22 means the ratio is
+    // 1.0 at the initial view (fully visible) and only fades when zooming below
+    // that level, rather than being nearly invisible from the start.
+    await this.editor.setViewport(0, 0, this.initialViewportScale);
+
     const existing = await this.editor.getAllObjects();
     if (existing.length === 0) {
       await this.seedGallery();
     } else {
       this.artworkCount.set(existing.length);
     }
-    // Zoom out to reveal the full scattered gallery
-    await this.editor.setViewport(0, 0, 0.18);
-  }
-
-  onViewportChange(event: CustomEvent<KritzelViewportState>): void {
-    this.pendingViewport = event.detail;
-    if (this.rafHandle !== null) {
-      return;
-    }
-
-    this.rafHandle = requestAnimationFrame(() => {
-      this.rafHandle = null;
-      if (this.pendingViewport) {
-        void this.updateImageOpacities(this.pendingViewport);
-      }
-    });
   }
 
   private async seedGallery(): Promise<void> {
-    const seededImages = await Promise.all(
-      ARTWORKS.map((art) => {
-        // Apply depth to actual pixel dimensions: close = full size, far = tiny
-        const scaledW = Math.round(art.w * art.depth);
-        const scaledH = Math.round(art.h * art.depth);
-        const label = art.title.replace(/ /g, '+').replace(/&/g, 'and');
-        const src = `https://placehold.co/${scaledW}x${scaledH}/${art.bg}/${art.fg}?text=${label}`;
-        return KritzelImage.fromUrl(src, {
-          translateX: art.x,
-          translateY: art.y,
-          maxWidth: scaledW,
-          maxHeight: scaledH,
-        }).then((image) => ({
-          image,
-          centerX: art.x + scaledW / 2,
-          centerY: art.y + scaledH / 2,
-        }));
-      }),
-    );
-
-    this.galleryImages = seededImages;
-
-    for (let i = 0; i < seededImages.length; i++) {
-      const entry = seededImages[i];
-      entry.image.isEditable = false;
-      entry.image.opacity = InfiniteCanvasGalleryComponent.MIN_IMAGE_OPACITY;
-      await this.editor.addObject(entry.image);
+    const byDepth = new Map<number, ArtworkDef[]>();
+    for (const art of ARTWORKS) {
+      if (!byDepth.has(art.depth)) {
+        byDepth.set(art.depth, []);
+      }
+      byDepth.get(art.depth)?.push(art);
     }
 
-    this.artworkCount.set(seededImages.length);
-  }
+    const depths = Array.from(byDepth.keys()).sort((a, b) => a - b);
+    let created = 0;
 
-  private async updateImageOpacities(viewport: KritzelViewportState): Promise<void> {
-    if (this.isOpacityUpdateInFlight) {
-      this.queuedViewportAfterFlight = viewport;
-      return;
-    }
+    for (const depth of depths) {
+      const arts = byDepth.get(depth) ?? [];
+      // Aggressive bias: farther layers get even larger object.scale so they
+      // drop out earlier and foreground layers remain visually dominant.
+      const stampScale = (this.initialViewportScale / Math.max(depth, 0.1)) * 1.35;
+      await this.editor.setViewport(0, 0, stampScale);
 
-    this.isOpacityUpdateInFlight = true;
-    try {
-      const updatedEntries: GalleryImageEntry[] = [];
+      const seededImages = await Promise.all(
+        arts.map((art) => {
+          const scaledW = Math.max(80, Math.round(art.w * art.depth));
+          const scaledH = Math.max(80, Math.round(art.h * art.depth));
+          const label = art.title.replace(/ /g, '+').replace(/&/g, 'and');
+          const src = `https://placehold.co/${scaledW}x${scaledH}/${art.bg}/${art.fg}?text=${label}`;
+          return KritzelImage.fromUrl(src, {
+            translateX: art.x,
+            translateY: art.y,
+            maxWidth: scaledW,
+            maxHeight: scaledH,
+          });
+        }),
+      );
 
-      for (const entry of this.galleryImages) {
-        const distance = Math.hypot(
-          entry.centerX - viewport.translateX,
-          entry.centerY - viewport.translateY,
-        );
-        const opacity = this.opacityFromDistance(
-          distance * Math.max(viewport.scale, 0.001),
-        );
-
-        if (
-          Math.abs((entry.image.opacity ?? 1) - opacity) >=
-          InfiniteCanvasGalleryComponent.OPACITY_EPSILON
-        ) {
-          entry.image.opacity = opacity;
-          updatedEntries.push(entry);
-        }
+      for (let i = 0; i < seededImages.length; i++) {
+        const image = seededImages[i];
+        image.isEditable = false;
+        await this.editor.addObject(image);
       }
 
-      if (updatedEntries.length > 0) {
-        await Promise.all(
-          updatedEntries.map((entry) =>
-            this.editor.updateObject(entry.image, { opacity: entry.image.opacity }),
-          ),
-        );
-      }
-    } finally {
-      this.isOpacityUpdateInFlight = false;
+      created += seededImages.length;
     }
 
-    if (this.queuedViewportAfterFlight) {
-      const nextViewport = this.queuedViewportAfterFlight;
-      this.queuedViewportAfterFlight = null;
-      await this.updateImageOpacities(nextViewport);
-    }
-  }
-
-  private opacityFromDistance(distance: number): number {
-    const near = InfiniteCanvasGalleryComponent.FADE_NEAR_DISTANCE;
-    const far = InfiniteCanvasGalleryComponent.FADE_FAR_DISTANCE;
-    const raw = (distance - near) / (far - near);
-    const clamped = Math.max(0, Math.min(1, raw));
-    const smooth = clamped * clamped * (3 - 2 * clamped);
-    const fade = 1 - smooth;
-    return (
-      InfiniteCanvasGalleryComponent.MIN_IMAGE_OPACITY +
-      fade *
-        (InfiniteCanvasGalleryComponent.MAX_IMAGE_OPACITY -
-          InfiniteCanvasGalleryComponent.MIN_IMAGE_OPACITY)
-    );
+    await this.editor.setViewport(0, 0, this.initialViewportScale);
+    this.artworkCount.set(created);
   }
 }
