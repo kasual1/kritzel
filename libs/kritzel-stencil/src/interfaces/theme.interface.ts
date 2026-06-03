@@ -14,12 +14,13 @@ export interface KritzelTheme {
   global?: {
     cursorTrailColor?: string;
     cursorTrailOpacity?: string;
-    dividerColor?: string;
-    focusColor?: string;
     fontFamily?: string;
     borderColor?: string;
+    dividerColor?: string;
+    focusColor?: string;
     focusRingColor?: string;
     iconColor?: string;
+    pointerCursor?: string;
     primaryColor?: string;
     primaryHoverColor?: string;
     primaryTextColor?: string;
@@ -27,7 +28,6 @@ export interface KritzelTheme {
     textPrimary?: string;
     textSecondary?: string;
     name?: string;
-    pointerCursor?: string;
   };
 
   /** Active users variables */
@@ -135,7 +135,6 @@ export interface KritzelTheme {
     controlActiveBackgroundColor?: string;
     controlBorderRadius?: string;
     controlColor?: string;
-    controlHoverBackgroundColor?: string;
     controlPadding?: string;
     controlSelectedBackgroundColor?: string;
     controlSelectedColor?: string;
@@ -188,8 +187,10 @@ export interface KritzelTheme {
     accentColor?: string;
     background?: string;
     borderColor?: string;
+    borderRadius?: string;
     hoverBackgroundColor?: string;
     hoverBorderColor?: string;
+    menuBorderRadius?: string;
     selectedBackgroundColor?: string;
     textColor?: string;
     triggerFontSize?: string;
@@ -331,6 +332,7 @@ export interface KritzelTheme {
   /** Numeric input variables */
   numericInput?: {
     borderColor?: string;
+    borderRadius?: string;
     focusBorderColor?: string;
     hoverBorderColor?: string;
     inputBackground?: string;
@@ -339,6 +341,7 @@ export interface KritzelTheme {
     selectionColor?: string;
     spinnerActiveBackground?: string;
     spinnerBackground?: string;
+    spinnerBorderRadius?: string;
     spinnerColor?: string;
     spinnerHoverBackground?: string;
     textColor?: string;
@@ -470,6 +473,7 @@ export interface KritzelTheme {
   textInput?: {
     background?: string;
     borderColor?: string;
+    borderRadius?: string;
     focusBorderColor?: string;
     hoverBorderColor?: string;
     labelColor?: string;
