@@ -85,6 +85,10 @@ export class ToolsControlsComponent {
         ],
       },
     },
+    {
+      name: 'config',
+      type: 'config'
+    }
   ];
 
   async onReady() {
