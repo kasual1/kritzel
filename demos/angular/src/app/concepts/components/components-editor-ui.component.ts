@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { KritzelEditor, InMemorySyncProvider, KritzelSyncConfig, EditorIsReadyEvent } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
+import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
   selector: 'app-components-editor-ui',
@@ -17,6 +18,7 @@ import { angularThemeDark } from '../../const/angular-theme-dark';
       [loginConfig]="undefined"
       [isWorkspaceManagerVisible]="false"
       [isMoreMenuVisible]="false"
+      (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
   styles: [`
@@ -24,9 +26,17 @@ import { angularThemeDark } from '../../const/angular-theme-dark';
   `],
 })
 export class ComponentsEditorUiComponent {
+  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+
   themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
   };
+
+  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+    for (const obj of createSeedObjects()) {
+      await this.editor.addObject(obj);
+    }
+  }
 }

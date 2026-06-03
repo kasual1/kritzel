@@ -135,6 +135,7 @@ export interface KritzelTheme {
     controlActiveBackgroundColor?: string;
     controlBorderRadius?: string;
     controlColor?: string;
+    controlHoverBackgroundColor?: string;
     controlPadding?: string;
     controlSelectedBackgroundColor?: string;
     controlSelectedColor?: string;
