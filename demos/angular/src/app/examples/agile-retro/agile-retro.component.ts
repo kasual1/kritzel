@@ -17,7 +17,8 @@ import {
   ObjectsUpdatedEvent,
   KritzelAlignment
 } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 
 interface StickyCardItem {
   id: string;
@@ -459,7 +460,7 @@ interface StickyCardItem {
 export class AgileRetroComponent implements OnDestroy {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],

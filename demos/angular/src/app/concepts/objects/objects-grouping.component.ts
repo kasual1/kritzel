@@ -8,7 +8,8 @@ import {
   KritzelSyncConfig,
   ShapeType,
 } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 
 @Component({
   selector: 'app-objects-grouping',
@@ -69,7 +70,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
 export class ObjectsGroupingComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],

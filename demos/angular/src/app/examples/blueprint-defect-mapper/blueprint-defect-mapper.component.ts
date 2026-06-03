@@ -10,7 +10,8 @@ import {
   IndexedDBSyncProvider,
   InMemorySyncProvider
 } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 
 interface Defect {
   id: string;
@@ -438,7 +439,7 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
   @ViewChild('editorEl', { read: ElementRef }) editorEl!: ElementRef<HTMLElement>;
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
