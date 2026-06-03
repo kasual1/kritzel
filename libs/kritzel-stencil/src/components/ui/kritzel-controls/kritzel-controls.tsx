@@ -24,6 +24,7 @@ type ToolConfig = Record<string, any>;
 export class KritzelControls {
   @Element() host!: HTMLElement;
 
+  @Prop() visible: boolean = true;
   @Prop() controls: KritzelToolbarControl[] = [];
   @Prop({ mutable: true }) activeControl: KritzelToolbarControl | null = null;
   @Prop() isUtilityPanelVisible: boolean = true;
@@ -303,6 +304,7 @@ export class KritzelControls {
 
     return (
       <Host
+        style={{ display: this.visible ? '' : 'none' }}
         class={{
           mobile: this.isTouchDevice,
         }}

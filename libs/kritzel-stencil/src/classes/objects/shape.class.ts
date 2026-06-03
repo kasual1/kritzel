@@ -32,7 +32,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   /** Screen-space y coordinate of the shape's top-left corner (like Path.y) */
   y: number = 0;
 
-  scale: number = 1;
+  scale?: number = 1;
   scaleFactor: number = 1;
 
   isDebugInfoVisible: boolean = true;
@@ -114,7 +114,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.fontSize = config.fontSize ?? 16;
       this.fontFamily = config.fontFamily ?? 'Arial';
       this.fontColor = config.fontColor ?? KritzelColorHelper.determineTextColor(this.fillColor);
-      this.scale = config.scale ?? 1;
+      this.scale = config.scale;
       this.scaleFactor = config.scaleX ?? 1;
     }
   }
