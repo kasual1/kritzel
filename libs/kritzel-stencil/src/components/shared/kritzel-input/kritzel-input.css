@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   border: 1px solid var(--kritzel-text-input-border-color, #ebebeb);
-  border-radius: 6px;
+  border-radius: var(--kritzel-text-input-border-radius, 6px);
   overflow: hidden;
   background: var(--kritzel-text-input-background, #ffffff);
   transition: border-color 150ms ease;

@@ -65,6 +65,8 @@ You can toggle visibility for built-in UI components using the Editor's attribut
 
 When you need a deeply custom application without built-in UI chrome, use the `<kritzel-engine>`. You can build your own HTML/CSS UI around it and drive the Engine entirely via its programmatic API. The demo below demonstrates how to bind external standard HTML buttons to the headless Engine.
 
+Unlike the Editor, the Engine **does not register any drawing tools by default**. The Editor automatically registers tools through its built-in `<kritzel-controls>` toolbar component. When using the Engine directly, you must call `registerTool()` for each tool you want to use before calling `changeActiveTool()` or `changeActiveToolByName()`.
+
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/concepts/components-engine"

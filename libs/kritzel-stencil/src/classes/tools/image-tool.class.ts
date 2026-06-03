@@ -17,6 +17,8 @@ import { KritzelCore } from '../core/core.class';
  *      the id to a URL via the asset resolver.
  */
 export class KritzelImageTool extends KritzelBaseTool {
+  override toolType = 'image' as const;
+
   /** Hidden file input element for image selection */
   fileInput: HTMLInputElement | null = null;
 

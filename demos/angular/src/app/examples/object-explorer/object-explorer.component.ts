@@ -19,7 +19,8 @@ import {
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
 } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
@@ -594,7 +595,7 @@ export class ObjectExplorerComponent implements OnDestroy {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
   @ViewChild(KritzelEditor, { read: ElementRef }) editorHostRef!: ElementRef<HTMLElement>;
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],

@@ -30,6 +30,7 @@ export const darkTheme: KritzelTheme = {
   textInput: {
     background: '#1a1a1a',
     borderColor: '#4a4a4a',
+    borderRadius: '6px',
     focusBorderColor: '#ffffff',
     hoverBorderColor: '#5a5a5a',
     labelColor: '#e0e0e0',
@@ -127,9 +128,11 @@ export const darkTheme: KritzelTheme = {
   dropdown: {
     accentColor: '#0A84FF',
     borderColor: '#4a4a4a',
+    borderRadius: '6px',
     hoverBorderColor: '#5a5a5a',
     background: '#1a1a1a',
     hoverBackgroundColor: '#3a3a3a',
+    menuBorderRadius: '6px',
     selectedBackgroundColor: 'rgba(10, 132, 255, 0.2)',
     textColor: '#e0e0e0',
   },
@@ -214,6 +217,7 @@ export const darkTheme: KritzelTheme = {
 
   numericInput: {
     borderColor: '#4a4a4a',
+    borderRadius: '6px',
     focusBorderColor: '#ffffff',
     hoverBorderColor: '#5a5a5a',
     inputBackground: '#1a1a1a',
@@ -222,6 +226,7 @@ export const darkTheme: KritzelTheme = {
     selectionColor: '#ffffff',
     spinnerActiveBackground: 'hsl(0, 0%, 100%, 12%)',
     spinnerBackground: 'transparent',
+    spinnerBorderRadius: '5px',
     spinnerColor: '#e0e0e0',
     spinnerHoverBackground: 'hsl(0, 0%, 100%, 8%)',
     textColor: '#e0e0e0',

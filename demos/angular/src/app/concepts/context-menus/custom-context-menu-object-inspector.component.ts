@@ -6,7 +6,8 @@ import {
   KritzelSyncConfig,
   EditorIsReadyEvent,
 } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
@@ -39,7 +40,7 @@ import { createSeedObjects } from '../../const/seed-objects';
 export class CustomContextMenuObjectInspectorComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],

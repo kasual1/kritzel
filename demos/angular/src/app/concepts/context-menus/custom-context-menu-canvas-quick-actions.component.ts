@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { KritzelEditor, ContextMenuItem, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 
 @Component({
   selector: 'app-custom-context-menu-canvas-quick-actions',
@@ -32,7 +33,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
 export class CustomContextMenuCanvasQuickActionsComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider]

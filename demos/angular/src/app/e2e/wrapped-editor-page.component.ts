@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { KritzelEditor } from 'kritzel-angular';
-import { customAngularTheme } from '../const/custom-angular-theme';
+import { angularThemeLight } from '../const/angular-theme-light';
+import { angularThemeDark } from '../const/angular-theme-dark';
 
 @Component({
   selector: 'app-wrapped-editor-page',
@@ -24,7 +25,7 @@ import { customAngularTheme } from '../const/custom-angular-theme';
   `,
 })
 export class WrappedEditorPageComponent implements OnInit {
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
   wrapperWidth = 320;
   wrapperHeight = 600;
 

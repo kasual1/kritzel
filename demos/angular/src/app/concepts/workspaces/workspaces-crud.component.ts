@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { KritzelEditor, ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelWorkspace, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 
 @Component({
   selector: 'app-workspaces-crud',
@@ -50,7 +51,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
 export class WorkspacesCrudComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],

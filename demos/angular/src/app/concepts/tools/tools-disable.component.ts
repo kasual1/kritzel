@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { KritzelEditor, EditorIsReadyEvent, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
@@ -41,18 +42,20 @@ import { createSeedObjects } from '../../const/seed-objects';
 export class ToolsDisableComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
   };
 
-  isDisabled = signal(false);
+  isDisabled = signal(true);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     for (const obj of createSeedObjects()) {
       await this.editor.addObject(obj);
     }
+
+   await this.editor.disable();
   }
 
   async toggle() {
