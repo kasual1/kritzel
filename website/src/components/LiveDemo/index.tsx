@@ -79,7 +79,7 @@ export default function LiveDemo({
   children,
   repoUrl,
   stackBlitzUrl,
-  height = '400px',
+  height = '560px',
   iframeUrl,
   repoFiles,
   code,
