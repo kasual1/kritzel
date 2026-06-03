@@ -100,6 +100,9 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   }) {
     super();
 
+    // Always create the editor so setContent() works immediately
+    this.editor = this.createEditor();
+
     if (config) {
       this.x = config.x ?? 0;
       this.y = config.y ?? 0;
@@ -171,7 +174,6 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.scaleFactor = 1;
     object.scale = config?.scale ?? core.store.state.scale;
     object.zIndex = core.store.currentZIndex;
-    object.editor = object.createEditor();
 
     // Compute world-space translateX/Y from screen-space coordinates
     // This follows the same pattern as KritzelPath.updateDimensions()

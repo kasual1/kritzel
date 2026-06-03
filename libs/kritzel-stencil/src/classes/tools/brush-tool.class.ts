@@ -11,6 +11,8 @@ import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
  * Supports mouse, touch, and pen input with configurable color, size, and opacity.
  */
 export class KritzelBrushTool extends KritzelBaseTool {
+  override toolType = 'brush' as const;
+
   /** The color of the brush stroke (supports theme-aware light/dark colors) */
   color: ThemeAwareColor = DEFAULT_COLOR_PALETTE[0];
 

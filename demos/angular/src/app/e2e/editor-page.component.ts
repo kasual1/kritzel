@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { KritzelEditor } from 'kritzel-angular';
-import { customAngularTheme } from '../const/custom-angular-theme';
+import { angularThemeLight } from '../const/angular-theme-light';
+import { angularThemeDark } from '../const/angular-theme-dark';
 
 @Component({
   selector: 'app-editor-page',
@@ -10,5 +11,5 @@ import { customAngularTheme } from '../const/custom-angular-theme';
   template: `<kritzel-editor [theme]="'angular-theme'" [themes]="themes"></kritzel-editor>`,
 })
 export class EditorPageComponent {
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 }

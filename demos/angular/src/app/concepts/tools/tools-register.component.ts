@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  signal,
   ViewChild,
 } from '@angular/core';
 import {
@@ -15,7 +14,9 @@ import {
   KritzelTextTool,
   KritzelToolbarControl,
 } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
+import { createSeedObjects } from '../../const/seed-objects';
 
 const highlighterConfig: KritzelBrushToolConfig = {
   type: 'highlighter',
@@ -73,7 +74,7 @@ const highlighterConfig: KritzelBrushToolConfig = {
 export class ToolsRegisterComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   controls: KritzelToolbarControl[] = [
     {
@@ -144,6 +145,10 @@ export class ToolsRegisterComponent {
   };
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+    for (const obj of createSeedObjects()) {
+        await this.editor.addObject(obj);
+      }
+
     await this.editor.registerTool(
       'highlighter',
       KritzelBrushTool,
