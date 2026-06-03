@@ -6,7 +6,13 @@ import {
   viewChild,
   ViewChild,
 } from '@angular/core';
-import { InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import {
+  InMemorySyncProvider,
+  KritzelBrushTool,
+  KritzelEraserTool,
+  KritzelSelectionTool,
+  KritzelSyncConfig,
+} from 'kritzel-angular';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
@@ -25,6 +31,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       <kritzel-engine
         #engine
         [syncConfig]="syncConfig"
+        [wheelEnabled]="false"
         (isEngineReady)="onReady()"
       ></kritzel-engine>
     </div>
@@ -72,6 +79,11 @@ export class ComponentsEngineComponent {
   }
 
   async onReady() {
+    // The engine does not register any tools by default — you must register them manually.
+    await this.engine.registerTool('brush', KritzelBrushTool);
+    await this.engine.registerTool('eraser', KritzelEraserTool);
+    await this.engine.registerTool('select', KritzelSelectionTool);
+
     for (const obj of createSeedObjects()) {
       await this.engine.addObject(obj);
     }
