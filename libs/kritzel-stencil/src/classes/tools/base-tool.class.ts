@@ -1,4 +1,5 @@
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
+import { KritzelToolType } from '../../interfaces/tool-type.interface';
 import { KritzelTool } from '../../interfaces/tool.interface';
 import { KritzelCore } from '../core/core.class';
 
@@ -10,6 +11,9 @@ import { KritzelCore } from '../core/core.class';
 export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
   /** Class name identifier used for serialization/deserialization */
   __class__: string = this.constructor.name;
+
+  /** Identifies the tool type for config resolution (survives minification and dual-package bundling) */
+  toolType: KritzelToolType = 'base';
 
   /** Human-readable name of the tool */
   name: string = 'base-tool';

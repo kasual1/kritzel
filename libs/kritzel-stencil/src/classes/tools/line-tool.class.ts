@@ -14,6 +14,8 @@ import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
  * Automatically switches to selection tool after line completion.
  */
 export class KritzelLineTool extends KritzelBaseTool {
+  override toolType = 'line' as const;
+
   /** The stroke color of the line (supports theme-aware light/dark colors) */
   color: ThemeAwareColor = DEFAULT_COLOR_PALETTE[0];
 
