@@ -48,6 +48,7 @@ import { ViewportChangeComponent } from './concepts/viewport/viewport-change.com
 import { ViewportCenterComponent } from './concepts/viewport/viewport-center.component';
 import { ViewportCoordinatesComponent } from './concepts/viewport/viewport-coordinates.component';
 import { ToolsChangeComponent } from './concepts/tools/tools-change.component';
+import { ToolsControlsComponent } from './concepts/tools/tools-controls.component';
 import { ToolsDisableComponent } from './concepts/tools/tools-disable.component';
 import { ToolsRegisterComponent } from './concepts/tools/tools-register.component';
 import { WorkspacesSwitchComponent } from './concepts/workspaces/workspaces-switch.component';
@@ -81,6 +82,7 @@ export const routes: Routes = [
       { path: 'viewport-center', component: ViewportCenterComponent },
       { path: 'viewport-coordinates', component: ViewportCoordinatesComponent },
       { path: 'tools-change', component: ToolsChangeComponent },
+      { path: 'tools-controls', component: ToolsControlsComponent },
       { path: 'tools-disable', component: ToolsDisableComponent },
       { path: 'tools-register', component: ToolsRegisterComponent },
       { path: 'workspaces-switch', component: WorkspacesSwitchComponent },
