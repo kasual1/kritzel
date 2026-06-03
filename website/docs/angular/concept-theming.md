@@ -27,7 +27,7 @@ The simplest entry point is switching between the two built-in themes. Pass `lig
 
 ## Creating a Custom Theme
 
-To apply your own brand identity, spread an existing base theme and override only the tokens you need. Every top-level section of `KritzelTheme` — such as `global`, `controls`, `selection`, `button`, and `contextMenu` — corresponds to a specific part of the editor UI. Spreading the base theme section first ensures unset tokens fall back to sensible defaults.
+This example intentionally applies a strong, light-purple visual language and removes rounding across the UI (`borderRadius: 0`) to demonstrate how far Kritzel can be customized. It starts from `lightTheme`, then overrides multiple `KritzelTheme` groups (`engine`, `controls`, `menu`, `contextMenu`, `button`, and more) so the editor background, controls, menus, and actions all follow one coherent branded style.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"

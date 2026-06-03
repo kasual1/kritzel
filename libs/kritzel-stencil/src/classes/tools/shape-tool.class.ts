@@ -13,6 +13,8 @@ import { DEFAULT_STROKE_SIZES } from '../../constants/stroke-size.constants';
  * Automatically switches to selection tool after shape completion.
  */
 export class KritzelShapeTool extends KritzelBaseTool {
+  override toolType = 'shape' as const;
+
   /** The type of shape to create (rectangle, ellipse, etc.) */
   shapeType: ShapeType = ShapeType.Rectangle;
 

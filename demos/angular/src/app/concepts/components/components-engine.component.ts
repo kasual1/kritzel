@@ -1,5 +1,19 @@
-import { Component, ChangeDetectionStrategy, CUSTOM_ELEMENTS_SCHEMA, ElementRef, viewChild } from '@angular/core';
-import { InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef,
+  viewChild,
+  ViewChild,
+} from '@angular/core';
+import {
+  InMemorySyncProvider,
+  KritzelBrushTool,
+  KritzelEraserTool,
+  KritzelSelectionTool,
+  KritzelSyncConfig,
+} from 'kritzel-angular';
+import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
   selector: 'app-components-engine',
@@ -16,32 +30,63 @@ import { InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
     <div class="engine-wrap">
       <kritzel-engine
         #engine
-        (isReady)="onReady()"
+        [syncConfig]="syncConfig"
+        [wheelEnabled]="false"
+        (isEngineReady)="onReady()"
       ></kritzel-engine>
     </div>
   `,
-  styles: [`
-    :host { display: flex; flex-direction: column; height: 100%; }
-    .toolbar { display: flex; gap: 8px; padding: 8px; background: #f5f5f5; border-bottom: 1px solid #e0e0e0; }
-    .toolbar button { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; background: #fff; }
-    .toolbar button:hover { background: #e8e8e8; }
-    .engine-wrap { flex: 1; position: relative; }
-  `],
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        padding: 8px;
+        background: #f5f5f5;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .toolbar button {
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        background: #fff;
+      }
+      .toolbar button:hover {
+        background: #e8e8e8;
+      }
+      .engine-wrap {
+        flex: 1;
+        position: relative;
+      }
+    `,
+  ],
 })
 export class ComponentsEngineComponent {
-  engineRef = viewChild<ElementRef<HTMLElement>>('engine');
+  @ViewChild('engine', { static: true }) engineRef!: ElementRef<HTMLElement>;
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
   };
 
   private get engine(): any {
-    return this.engineRef()?.nativeElement;
+    return this.engineRef?.nativeElement;
   }
 
   async onReady() {
-    if (!this.engine) return;
-    await this.engine.initSync(this.syncConfig);
+    // The engine does not register any tools by default — you must register them manually.
+    await this.engine.registerTool('brush', KritzelBrushTool);
+    await this.engine.registerTool('eraser', KritzelEraserTool);
+    await this.engine.registerTool('select', KritzelSelectionTool);
+
+    for (const obj of createSeedObjects()) {
+      await this.engine.addObject(obj);
+    }
     await this.engine.changeActiveToolByName('brush');
   }
 

@@ -7,20 +7,20 @@
 
 ## Properties
 
-| Property     | Attribute     | Description | Type                                                                                                 | Default     |
-| ------------ | ------------- | ----------- | ---------------------------------------------------------------------------------------------------- | ----------- |
-| `engine`     | --            |             | `HTMLElement`                                                                                        | `undefined` |
-| `isExpanded` | `is-expanded` |             | `boolean`                                                                                            | `false`     |
-| `theme`      | `theme`       |             | `"dark" \| "light" \| string & {}`                                                                   | `undefined` |
-| `tool`       | --            |             | `KritzelBrushTool \| KritzelLineTool \| KritzelSelectionTool \| KritzelShapeTool \| KritzelTextTool` | `undefined` |
+| Property     | Attribute     | Description | Type                               | Default     |
+| ------------ | ------------- | ----------- | ---------------------------------- | ----------- |
+| `engine`     | --            |             | `HTMLElement`                      | `undefined` |
+| `isExpanded` | `is-expanded` |             | `boolean`                          | `false`     |
+| `theme`      | `theme`       |             | `"dark" \| "light" \| string & {}` | `undefined` |
+| `tool`       | --            |             | `KritzelBaseTool`                  | `undefined` |
 
 
 ## Events
 
-| Event                 | Description | Type                                                                                                              |
-| --------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
-| `displayValuesChange` |             | `CustomEvent<ToolDisplayValues>`                                                                                  |
-| `toolChange`          |             | `CustomEvent<KritzelBrushTool \| KritzelLineTool \| KritzelSelectionTool \| KritzelShapeTool \| KritzelTextTool>` |
+| Event                 | Description | Type                             |
+| --------------------- | ----------- | -------------------------------- |
+| `displayValuesChange` |             | `CustomEvent<ToolDisplayValues>` |
+| `toolChange`          |             | `CustomEvent<KritzelBaseTool>`   |
 
 
 ## Dependencies

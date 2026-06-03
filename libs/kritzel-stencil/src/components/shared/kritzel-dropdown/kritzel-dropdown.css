@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   border: 1px solid var(--kritzel-dropdown-border-color, #ebebeb);
-  border-radius: 6px;
+  border-radius: var(--kritzel-dropdown-border-radius, 6px);
   overflow: visible;
   height: 38px;
   width: 100%;
@@ -35,7 +35,7 @@
   height: 100%;
   width: 100%;
   box-sizing: border-box;
-  border-radius: 6px;
+  border-radius: var(--kritzel-dropdown-border-radius, 6px);
   border: none;
   background-color: var(--kritzel-dropdown-background, #ffffff);
   cursor: var(--kritzel-global-pointer-cursor, pointer);
@@ -103,7 +103,7 @@
   list-style: none;
   background-color: var(--kritzel-dropdown-background, #ffffff);
   border: 1px solid var(--kritzel-global-border-color, #ebebeb);
-  border-radius: 6px;
+  border-radius: var(--kritzel-dropdown-menu-border-radius, var(--kritzel-dropdown-border-radius, 6px));
   box-shadow: var(--kritzel-controls-box-shadow, 0 4px 12px rgba(0, 0, 0, 0.15));
   z-index: 1000;
   max-height: 240px;

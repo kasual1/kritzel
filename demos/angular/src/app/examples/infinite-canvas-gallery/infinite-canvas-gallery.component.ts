@@ -11,7 +11,8 @@ import {
   EditorIsReadyEvent,
   KritzelViewportState,
 } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 
 const TOTAL_IMAGES = 4000;
 const CLUSTER_RADIUS = 14000;
@@ -158,7 +159,7 @@ export class InfiniteCanvasGalleryComponent {
   private pendingViewport: KritzelViewportState | null = null;
   private lastViewportRegionSignature = '';
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
