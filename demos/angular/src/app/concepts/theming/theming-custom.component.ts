@@ -7,8 +7,8 @@ const brandPurpleActive = '#5b21b6';
 const brandPurpleLight = 'rgba(124, 58, 237, 0.1)';
 const brandPurpleMedium = 'rgba(124, 58, 237, 0.2)';
 
-const brandedPurpleFlatTheme: KritzelTheme = {
-  ...lightTheme,
+const brandedPurpleFlatTheme = {
+  ...(lightTheme),
   name: 'branded-purple-flat',
   global: {
     ...lightTheme.global,
@@ -136,19 +136,22 @@ const brandedPurpleFlatTheme: KritzelTheme = {
     innerBorderRadius: '0px',
   },
   dropdown: {
-    ...lightTheme.dropdown,
+    ...((lightTheme.dropdown ?? {})),
     background: '#faf6ff',
     borderColor: '#e1d2ff',
+    borderRadius: '0px',
     textColor: '#3b2a66',
     accentColor: brandPurple,
     hoverBackgroundColor: brandPurpleLight,
     hoverBorderColor: brandPurple,
+    menuBorderRadius: '0px',
     selectedBackgroundColor: brandPurpleMedium,
   },
   numericInput: {
-    ...lightTheme.numericInput,
+    ...((lightTheme.numericInput ?? {})),
     inputBackground: '#faf6ff',
     borderColor: '#e1d2ff',
+    borderRadius: '0px',
     hoverBorderColor: brandPurple,
     focusBorderColor: brandPurple,
     textColor: '#3b2a66',
@@ -158,6 +161,7 @@ const brandedPurpleFlatTheme: KritzelTheme = {
     spinnerBackground: '#f2e9ff',
     spinnerHoverBackground: brandPurpleLight,
     spinnerActiveBackground: brandPurpleMedium,
+    spinnerBorderRadius: '0px',
     spinnerColor: brandPurple,
   },
   opacitySlider: {
@@ -206,9 +210,10 @@ const brandedPurpleFlatTheme: KritzelTheme = {
     dividerBackgroundColor: '#e1d2ff',
   },
   textInput: {
-    ...lightTheme.textInput,
+    ...((lightTheme.textInput ?? {})),
     background: '#faf6ff',
     borderColor: '#e1d2ff',
+    borderRadius: '0px',
     hoverBorderColor: '#c4a8f7',
     focusBorderColor: brandPurple,
     textColor: '#3b2a66',
@@ -232,7 +237,7 @@ const brandedPurpleFlatTheme: KritzelTheme = {
     buttonHoverBackgroundColor: brandPurpleMedium,
     separatorColor: '#e1d2ff',
   },
-};
+} as KritzelTheme;
 
 @Component({
   selector: 'app-theming-custom',
@@ -264,11 +269,6 @@ const brandedPurpleFlatTheme: KritzelTheme = {
       border: 1px solid #e1d2ff;
       border-radius: 0;
       box-sizing: border-box;
-      --kritzel-dropdown-border-radius: 0px;
-      --kritzel-dropdown-menu-border-radius: 0px;
-      --kritzel-numeric-input-border-radius: 0px;
-      --kritzel-numeric-input-spinner-border-radius: 0px;
-      --kritzel-text-input-border-radius: 0px;
     }
   `],
 })
