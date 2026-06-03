@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { KritzelEditor, EditorIsReadyEvent, KritzelViewportState, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
@@ -46,7 +47,7 @@ import { createSeedObjects } from '../../const/seed-objects';
 export class ViewportChangeComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],

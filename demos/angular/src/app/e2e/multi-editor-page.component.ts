@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { KritzelEditor } from 'kritzel-angular';
-import { customAngularTheme } from '../const/custom-angular-theme';
+import { angularThemeLight } from '../const/angular-theme-light';
+import { angularThemeDark } from '../const/angular-theme-dark';
 
 @Component({
   selector: 'app-multi-editor-page',
@@ -58,5 +59,5 @@ import { customAngularTheme } from '../const/custom-angular-theme';
   ],
 })
 export class MultiEditorPageComponent {
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 }

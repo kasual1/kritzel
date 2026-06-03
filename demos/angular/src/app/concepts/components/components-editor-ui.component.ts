@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { KritzelEditor, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
-import { customAngularTheme } from '../../const/custom-angular-theme';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
 
 @Component({
   selector: 'app-components-editor-ui',
@@ -23,7 +24,7 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
   `],
 })
 export class ComponentsEditorUiComponent {
-  themes = [customAngularTheme];
+  themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
