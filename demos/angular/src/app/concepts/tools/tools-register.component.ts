@@ -17,6 +17,7 @@ import {
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
+import { createSeedObjects } from '../../const/seed-objects';
 
 const highlighterConfig: KritzelBrushToolConfig = {
   type: 'highlighter',
@@ -145,6 +146,10 @@ export class ToolsRegisterComponent {
   };
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+    for (const obj of createSeedObjects()) {
+        await this.editor.addObject(obj);
+      }
+
     await this.editor.registerTool(
       'highlighter',
       KritzelBrushTool,
