@@ -773,6 +773,7 @@ export class KritzelEngine {
 
     object.id = object.generateId();
     object._core = this.core;
+    object.scale = object.scale ?? this.core.store.state.scale;
     object.zIndex = this.core.store.currentZIndex;
     object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
@@ -806,6 +807,7 @@ export class KritzelEngine {
           const oldId = child.id;
           child.id = child.generateId();
           child._core = this.core;
+          child.scale = child.scale ?? this.core.store.state.scale;
           child.zIndex = this.core.store.currentZIndex;
           child.workspaceId = this.core.store.state.activeWorkspace!.id;
 

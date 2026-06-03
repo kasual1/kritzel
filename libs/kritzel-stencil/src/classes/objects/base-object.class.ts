@@ -33,7 +33,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   borderWidth: number = 0;
   opacity: number = 1;
   padding: number = 0;
-  scale!: number;
+  scale?: number;
   resizing: boolean = false;
   rotation: number = 0;
   markedForRemoval: boolean = false;
