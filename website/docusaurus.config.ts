@@ -4,6 +4,24 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const SITE_URL = "https://kritzel.io";
 const SITE_BASE_URL = process.env.Docusaurus_BASE_URL || "/";
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const DEFAULT_DEMO_BASE_URLS = IS_PRODUCTION
+  ? {
+    angular: "https://kasual1.github.io/kritzel-demos/angular",
+    react: "https://kasual1.github.io/kritzel-demos/react",
+    vue: "https://kasual1.github.io/kritzel-demos/vue",
+  }
+  : {
+    angular: "http://localhost:4200",
+    react: "http://localhost:5175",
+    vue: "http://localhost:5175",
+  };
+
+const DEMO_BASE_URLS = {
+  angular: process.env.DEMO_BASE_URL_ANGULAR || DEFAULT_DEMO_BASE_URLS.angular,
+  react: process.env.DEMO_BASE_URL_REACT || DEFAULT_DEMO_BASE_URLS.react,
+  vue: process.env.DEMO_BASE_URL_VUE || DEFAULT_DEMO_BASE_URLS.vue,
+};
 const ABSOLUTE_URL = (path: string) =>
   `${SITE_URL}${SITE_BASE_URL.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
 
@@ -27,6 +45,9 @@ const config: Config = {
     hooks: {
       onBrokenMarkdownLinks: "warn",
     },
+  },
+  customFields: {
+    demoBaseUrls: DEMO_BASE_URLS,
   },
   themes: ["@docusaurus/theme-mermaid"],
 

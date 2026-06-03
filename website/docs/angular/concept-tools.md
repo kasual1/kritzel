@@ -21,7 +21,7 @@ You can programmatically change the currently active tool using the API. This is
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/tools-change"
+  demoPath="/concepts/tools-change"
   repoFiles={['src/app/concepts/tools/tools-change.component.ts']}
 />
 
@@ -31,7 +31,7 @@ If your application needs to temporarily lock the canvas to prevent user interac
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/tools-disable"
+  demoPath="/concepts/tools-disable"
   repoFiles={['src/app/concepts/tools/tools-disable.component.ts']}
 />
 
@@ -41,7 +41,7 @@ If you want a focused editing experience, pass a custom `controls` array to `kri
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/tools-controls"
+  demoPath="/concepts/tools-controls"
   repoFiles={['src/app/concepts/tools/tools-controls.component.ts']}
 />
 
@@ -51,7 +51,7 @@ You can register a custom tool configuration and then surface it in the controls
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/tools-register"
+  demoPath="/concepts/tools-register"
   repoFiles={['src/app/concepts/tools/tools-register.component.ts']}
 />
 

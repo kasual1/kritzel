@@ -39,6 +39,6 @@ A presentation-style explorer layout with a dashboard header, grouped tree navig
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-explorer"
+  demoPath="/examples/object-explorer"
   repoFiles={['src/app/examples/object-explorer/object-explorer.component.ts']}
 />

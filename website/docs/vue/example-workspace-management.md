@@ -48,7 +48,7 @@ A read-only tab bar that lists all persisted workspaces and lets the user switch
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/workspace-management-tab-bar"
+  demoPath="/examples/workspace-management-tab-bar"
   repoFiles={['src/app/examples/workspace-management/workspace-management-tab-bar.component.ts']}
 />
 
@@ -62,7 +62,7 @@ A production-ready tab bar with create, rename, and delete actions. New workspac
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/workspace-management-crud-panel"
+  demoPath="/examples/workspace-management-crud-panel"
   repoFiles={['src/app/examples/workspace-management/workspace-management-crud-panel.component.ts']}
 />
 
@@ -76,7 +76,7 @@ Sync the active workspace ID with the Angular Router so users can bookmark or sh
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/workspace-management-url-synced"
+  demoPath="/examples/workspace-management-url-synced"
   repoFiles={['src/app/examples/workspace-management/workspace-management-url-synced.component.ts']}
 />
 

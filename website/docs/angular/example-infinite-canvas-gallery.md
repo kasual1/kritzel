@@ -50,7 +50,7 @@ Twenty artwork thumbnails — sourced from [placehold.co](https://placehold.co) 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/infinite-canvas-gallery"
+  demoPath="/examples/infinite-canvas-gallery"
   repoFiles={['src/app/examples/infinite-canvas-gallery/infinite-canvas-gallery.component.ts']}
 />
 

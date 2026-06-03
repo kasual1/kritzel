@@ -21,7 +21,7 @@ The simplest entry point is switching between the two built-in themes. Pass `lig
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/theming-apply"
+  demoPath="/concepts/theming-apply"
   repoFiles={['src/app/concepts/theming/theming-apply.component.ts']}
 />
 
@@ -31,7 +31,7 @@ To apply your own brand identity, spread an existing base theme and override onl
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/theming-custom"
+  demoPath="/concepts/theming-custom"
   repoFiles={['src/app/concepts/theming/theming-custom.component.ts']}
 />
 

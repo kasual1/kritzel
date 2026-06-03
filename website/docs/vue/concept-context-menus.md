@@ -21,7 +21,7 @@ This focused setup uses a minimal canvas menu for quick document commands. It is
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/context-menus-canvas-quick-actions"
+  demoPath="/concepts/context-menus-canvas-quick-actions"
   repoFiles={['src/app/concepts/context-menus/custom-context-menu-canvas-quick-actions.component.ts']}
 />
 
@@ -31,7 +31,7 @@ This example separates canvas actions from object actions and adds visual groupi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/context-menus-clipboard-actions"
+  demoPath="/concepts/context-menus-clipboard-actions"
   repoFiles={['src/app/concepts/context-menus/custom-context-menu-clipboard-actions.component.ts']}
 />
 
@@ -41,7 +41,7 @@ This demo shows state-aware menus where items are hidden or disabled until actio
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/context-menus-smart-conditional"
+  demoPath="/concepts/context-menus-smart-conditional"
   repoFiles={['src/app/concepts/context-menus/custom-context-menu-smart-conditional.component.ts']}
 />
 
@@ -51,7 +51,7 @@ This configuration uses `children` to create submenus for structured action grou
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/context-menus-object-inspector"
+  demoPath="/concepts/context-menus-object-inspector"
   repoFiles={['src/app/concepts/context-menus/custom-context-menu-object-inspector.component.ts']}
 />
 

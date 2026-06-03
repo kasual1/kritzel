@@ -41,6 +41,6 @@ A curated slides deck with an interactive Angular dashboard header. Clicking nex
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/slideshow-presentation"
+  demoPath="/examples/slideshow-presentation"
   repoFiles={['src/app/examples/slideshow-presentation/slideshow-presentation.component.ts']}
 />

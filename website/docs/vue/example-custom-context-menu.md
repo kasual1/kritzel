@@ -50,7 +50,7 @@ A minimal setup for a document viewer or read-only annotation tool: right-clicki
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-canvas-quick-actions"
+  demoPath="/examples/custom-context-menu-canvas-quick-actions"
   repoFiles={['src/app/examples/custom-context-menu/custom-context-menu-canvas-quick-actions.component.ts']}
 />
 
@@ -64,7 +64,7 @@ A standard whiteboard setup with separate menus for canvas and objects. The canv
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-clipboard-actions"
+  demoPath="/examples/custom-context-menu-clipboard-actions"
   repoFiles={['src/app/examples/custom-context-menu/custom-context-menu-clipboard-actions.component.ts']}
 />
 
@@ -78,7 +78,7 @@ A production-ready menu that reacts to editor state: Paste is disabled when the 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-smart-conditional"
+  demoPath="/examples/custom-context-menu-smart-conditional"
   repoFiles={['src/app/examples/custom-context-menu/custom-context-menu-smart-conditional.component.ts']}
 />
 
@@ -92,7 +92,7 @@ A full-featured object menu for a design tool: clipboard actions at the top, a n
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-context-menu-object-inspector"
+  demoPath="/examples/custom-context-menu-object-inspector"
   repoFiles={['src/app/examples/custom-context-menu/custom-context-menu-object-inspector.component.ts']}
 />
 
