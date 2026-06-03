@@ -8,6 +8,8 @@ import { KritzelCore } from '../core/core.class';
  * and deleted when the gesture completes. Supports mouse, touch, and pen input.
  */
 export class KritzelEraserTool extends KritzelBaseTool {
+  override toolType = 'eraser' as const;
+
   /** Timeout handle for delayed touch start activation to prevent accidental erasing */
   touchStartTimeout: any = null;
 

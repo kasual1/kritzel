@@ -1,35 +1,20 @@
 import { KritzelToolConfigHelper } from './tool-config.helper';
-import { KritzelBrushTool } from '../classes/tools/brush-tool.class';
-import { KritzelLineTool } from '../classes/tools/line-tool.class';
-import { KritzelShapeTool } from '../classes/tools/shape-tool.class';
-import { KritzelTextTool } from '../classes/tools/text-tool.class';
-import { KritzelSelectionTool } from '../classes/tools/selection-tool.class';
-
-jest.mock('../classes/tools/brush-tool.class');
-jest.mock('../classes/tools/line-tool.class');
-jest.mock('../classes/tools/shape-tool.class');
-jest.mock('../classes/tools/text-tool.class');
-jest.mock('../classes/tools/selection-tool.class');
-
-const createMockTool = <T>(ToolClass: new (...args: any[]) => T, overrides: Record<string, any> = {}): T => {
-  const tool = Object.create(ToolClass.prototype);
-  return Object.assign(tool, overrides);
-};
 
 describe('KritzelToolConfigHelper', () => {
   describe('getToolConfig - SelectionTool', () => {
     it('should delegate to tool.getToolConfig() for SelectionTool', () => {
       const mockConfig = {
-        type: 'selection' as const,
+        type: 'selection',
         colorProperty: 'color',
         sizeProperty: 'size',
         opacityProperty: 'opacity',
-        paletteSource: 'palette' as const,
+        paletteSource: 'palette',
         controls: [],
       };
-      const tool = createMockTool(KritzelSelectionTool, {
+      const tool = {
+        toolType: 'selection',
         getToolConfig: jest.fn().mockReturnValue(mockConfig),
-      });
+      } as any;
 
       const result = KritzelToolConfigHelper.getToolConfig(tool);
 
@@ -38,9 +23,10 @@ describe('KritzelToolConfigHelper', () => {
     });
 
     it('should return null when SelectionTool.getToolConfig returns null', () => {
-      const tool = createMockTool(KritzelSelectionTool, {
+      const tool = {
+        toolType: 'selection',
         getToolConfig: jest.fn().mockReturnValue(null),
-      });
+      } as any;
 
       const result = KritzelToolConfigHelper.getToolConfig(tool);
 
@@ -50,7 +36,7 @@ describe('KritzelToolConfigHelper', () => {
 
   describe('getToolConfig - BrushTool', () => {
     it('should return brush config', () => {
-      const tool = createMockTool(KritzelBrushTool);
+      const tool = { toolType: 'brush' } as any;
 
       const result = KritzelToolConfigHelper.getToolConfig(tool);
 
@@ -67,10 +53,8 @@ describe('KritzelToolConfigHelper', () => {
       });
     });
 
-    it('should return brush config for an equivalent tool from another bundle instance', () => {
-      const tool = {
-        constructor: { name: 'KritzelBrushTool' },
-      } as any;
+    it('should return brush config for a tool from another bundle instance', () => {
+      const tool = { toolType: 'brush' } as any;
 
       const result = KritzelToolConfigHelper.getToolConfig(tool);
 
@@ -90,7 +74,7 @@ describe('KritzelToolConfigHelper', () => {
 
   describe('getToolConfig - LineTool', () => {
     it('should return line config with stroke-size and line-endings controls', () => {
-      const tool = createMockTool(KritzelLineTool);
+      const tool = { toolType: 'line' } as any;
 
       const result = KritzelToolConfigHelper.getToolConfig(tool);
 
@@ -111,7 +95,7 @@ describe('KritzelToolConfigHelper', () => {
 
   describe('getToolConfig - ShapeTool', () => {
     it('should return shape config with stroke-size and shape-fill controls', () => {
-      const tool = createMockTool(KritzelShapeTool);
+      const tool = { toolType: 'shape' } as any;
 
       const result = KritzelToolConfigHelper.getToolConfig(tool);
 
@@ -132,7 +116,7 @@ describe('KritzelToolConfigHelper', () => {
 
   describe('getToolConfig - TextTool', () => {
     it('should return text config with font-size and font-family controls', () => {
-      const tool = createMockTool(KritzelTextTool);
+      const tool = { toolType: 'text' } as any;
 
       const result = KritzelToolConfigHelper.getToolConfig(tool);
 
@@ -156,6 +140,22 @@ describe('KritzelToolConfigHelper', () => {
       const unknownTool = {} as any;
 
       const result = KritzelToolConfigHelper.getToolConfig(unknownTool);
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null for eraser tool', () => {
+      const tool = { toolType: 'eraser' } as any;
+
+      const result = KritzelToolConfigHelper.getToolConfig(tool);
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null for image tool', () => {
+      const tool = { toolType: 'image' } as any;
+
+      const result = KritzelToolConfigHelper.getToolConfig(tool);
 
       expect(result).toBeNull();
     });

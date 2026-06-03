@@ -41,7 +41,7 @@
   background-color: var(--kritzel-global-primary-color, #007AFF);
   color: var(--kritzel-global-primary-text-color, #fff);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--kritzel-button-border-radius, 8px);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
