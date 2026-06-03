@@ -1,111 +1,153 @@
-import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
-  KritzelEditor,
+  ChangeDetectionStrategy,
+  Component,
+  signal,
+  ViewChild,
+} from '@angular/core';
+import {
   KritzelBrushTool,
   KritzelBrushToolConfig,
+  KritzelEditor,
+  KritzelSelectionTool,
   EditorIsReadyEvent,
   InMemorySyncProvider,
   KritzelSyncConfig,
+  KritzelTextTool,
+  KritzelToolbarControl,
 } from 'kritzel-angular';
 import { customAngularTheme } from '../../const/custom-angular-theme';
+
+const highlighterConfig: KritzelBrushToolConfig = {
+  type: 'highlighter',
+  color: { light: '#ffeb3b', dark: '#fff176' },
+  size: 20,
+  palettes: {
+    highlighter: [
+      { light: '#ffeb3b', dark: '#fff176', label: 'Yellow' },
+      { light: '#76ff03', dark: '#b2ff59', label: 'Green' },
+    ],
+  },
+};
 
 @Component({
   selector: 'app-tools-register',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
-      <button (click)="registerRedPen()">Register Red Pen</button>
-      <button (click)="registerHighlighter()">Register Highlighter</button>
-      <button (click)="activateCustomTool('red-pen')" [disabled]="!registeredTools().has('red-pen')">
-        Use Red Pen
-      </button>
-      <button (click)="activateCustomTool('highlighter')" [disabled]="!registeredTools().has('highlighter')">
-        Use Highlighter
-      </button>
-      <button (click)="activateSelect()">Select</button>
-    </div>
     <kritzel-editor
       editorId="tools-register"
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
       [syncConfig]="syncConfig"
+      [controls]="controls"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      [isControlsVisible]="false"
       (isReady)="onReady($event)"
     ></kritzel-editor>
-    <div class="status-bar">
-      Registered: {{ registeredToolNames() }}
-    </div>
   `,
-  styles: [`
-    :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    .toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; flex-wrap: wrap; }
-    .toolbar button { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; font-size: 13px; }
-    .toolbar button:hover:not(:disabled) { background: #dd0031; color: #fff; border-color: #dd0031; }
-    .toolbar button:disabled { opacity: 0.5; cursor: not-allowed; }
-    kritzel-editor { flex: 1; }
-    .status-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-top: 1px solid #ebebeb; font-size: 13px; }
-  `],
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        font-family: Roboto, sans-serif;
+      }
+      kritzel-editor {
+        flex: 1;
+      }
+      .status-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: #f5f5f5;
+        border-top: 1px solid #ebebeb;
+        font-size: 13px;
+      }
+    `,
+  ],
 })
 export class ToolsRegisterComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [customAngularTheme];
 
+  controls: KritzelToolbarControl[] = [
+    {
+      name: 'select',
+      type: 'tool',
+      tool: KritzelSelectionTool,
+      icon: 'cursor',
+      isDefault: true,
+    },
+    {
+      name: 'brush',
+      type: 'tool',
+      tool: KritzelBrushTool,
+      icon: 'pen',
+      config: {
+        type: 'pen',
+        color: { light: '#1f2937', dark: '#f3f4f6' },
+        size: 6,
+        palettes: {
+          pen: [
+            { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },
+            { light: '#dd0031', dark: '#ff5b79', label: 'Accent' },
+          ],
+        },
+      },
+    },
+    {
+      name: 'highlighter',
+      type: 'tool',
+      tool: KritzelBrushTool,
+      icon: 'highlighter',
+      config: {
+        type: 'highlighter',
+        color: { light: '#ffeb3b', dark: '#fff176' },
+        size: 20,
+        opacity: 0.6,
+        palettes: {
+          highlighter: [
+            { light: '#ffeb3b', dark: '#fff176', label: 'Yellow' },
+            { light: '#76ff03', dark: '#b2ff59', label: 'Green' },
+          ],
+        },
+      },
+    },
+    {
+      name: 'text',
+      type: 'tool',
+      tool: KritzelTextTool,
+      icon: 'type',
+      config: {
+        color: { light: '#1f2937', dark: '#f3f4f6' },
+        size: 18,
+        fontFamily: 'Arial',
+        palette: [
+          { light: '#1f2937', dark: '#f3f4f6' },
+          { light: '#dd0031', dark: '#ff5b79' },
+        ],
+      },
+    },
+    {
+      name: 'config',
+      type: 'config'
+    }
+  ];
+
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
   };
 
-  registeredTools = signal<Set<string>>(new Set());
-
-  registeredToolNames(): string {
-    const names = [...this.registeredTools()];
-    return names.length > 0 ? names.join(', ') : 'none';
-  }
-
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {}
-
-  async registerRedPen() {
-    const config: KritzelBrushToolConfig = {
-      type: 'pen',
-      color: { light: '#e53935', dark: '#ef5350' },
-      size: 4,
-      palettes: {
-        pen: [
-          { light: '#e53935', dark: '#ef5350', label: 'Red' },
-          { light: '#d81b60', dark: '#ec407a', label: 'Pink' },
-        ],
-      },
-    };
-    await this.editor.registerTool('red-pen', KritzelBrushTool, config);
-    this.registeredTools.update(set => new Set([...set, 'red-pen']));
-  }
-
-  async registerHighlighter() {
-    const config: KritzelBrushToolConfig = {
-      type: 'highlighter',
-      color: { light: '#ffeb3b', dark: '#fff176' },
-      size: 20,
-      palettes: {
-        highlighter: [
-          { light: '#ffeb3b', dark: '#fff176', label: 'Yellow' },
-          { light: '#76ff03', dark: '#b2ff59', label: 'Green' },
-        ],
-      },
-    };
-    await this.editor.registerTool('highlighter', KritzelBrushTool, config);
-    this.registeredTools.update(set => new Set([...set, 'highlighter']));
-  }
-
-  async activateCustomTool(name: string) {
-    await this.editor.changeActiveToolByName(name);
-  }
-
-  async activateSelect() {
-    await this.editor.changeActiveToolByName('select');
+  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+    await this.editor.registerTool(
+      'highlighter',
+      KritzelBrushTool,
+      highlighterConfig,
+    );
   }
 }

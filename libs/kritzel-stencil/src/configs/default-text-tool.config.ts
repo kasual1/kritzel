@@ -5,6 +5,7 @@ import { DEFAULT_FONT_SIZES } from "../constants/stroke-size.constants";
 export const DEFAULT_TEXT_CONFIG: KritzelTextToolConfig = {
   color: DEFAULT_COLOR_PALETTE[0],
   size: 8,
+  opacity: 1,
   fontFamily: 'Arial',
   palette: [...DEFAULT_COLOR_PALETTE],
   sizes: [...DEFAULT_FONT_SIZES],
