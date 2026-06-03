@@ -6,6 +6,7 @@ export const DEFAULT_BRUSH_CONFIG: KritzelBrushToolConfig = {
   type: 'pen',
   color: DEFAULT_COLOR_PALETTE[0],
   size: 16,
+  opacity: 1,
   palettes: {
     pen: [...DEFAULT_COLOR_PALETTE],
   },

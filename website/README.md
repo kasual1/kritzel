@@ -14,6 +14,20 @@ yarn
 yarn start
 ```
 
+To point LiveDemo previews to a local demo app while running docs locally, set `DEMO_BASE_URL` before starting:
+
+```powershell
+$env:DEMO_BASE_URL_ANGULAR="http://localhost:4200"
+$env:DEMO_BASE_URL_REACT="http://localhost:5175"
+$env:DEMO_BASE_URL_VUE="http://localhost:5175"
+yarn start
+```
+
+If these are not set, defaults are chosen by environment:
+
+- Development (`yarn start`): Angular `http://localhost:4200`, React/Vue `http://localhost:5175`
+- Production build (`yarn build`): `https://kasual1.github.io/kritzel-demos/{angular|react|vue}`
+
 This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
 ## Build

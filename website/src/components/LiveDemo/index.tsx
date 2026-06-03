@@ -1,6 +1,8 @@
 import { type ReactNode, useState, useCallback, useEffect, useRef } from 'react';
 import CodeBlock from '@theme/CodeBlock';
 import { ExternalLink } from 'lucide-react';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import { useLocation } from '@docusaurus/router';
 
 
 interface CodeFile {
@@ -8,6 +10,8 @@ interface CodeFile {
   code: string;
   language?: string;
 }
+
+type DemoFramework = 'angular' | 'react' | 'vue';
 
 interface LiveDemoProps {
   children?: ReactNode;
@@ -25,6 +29,10 @@ interface LiveDemoProps {
   height?: string;
   /** URL of the hosted example to embed in an iframe as the preview. */
   iframeUrl?: string;
+  /** Route segment for the demo (e.g. `/examples/agile-retro`) resolved against `customFields.demoBaseUrls`. */
+  demoPath?: string;
+  /** Optional framework override. Defaults to the docs route framework (`/docs/{framework}/...`). */
+  demoFramework?: DemoFramework;
   /**
    * Paths relative to `repoUrl` in the GitHub repo.
    * Files are fetched at runtime and shown in the Code tab.
@@ -74,19 +82,65 @@ function langFromFilename(filename: string): string {
   return map[ext] ?? 'text';
 }
 
+function getDemoBaseUrls(customFields: unknown): Partial<Record<DemoFramework, string>> {
+  const fallback: Partial<Record<DemoFramework, string>> = {};
+  if (!customFields || typeof customFields !== 'object') {
+    return fallback;
+  }
+
+  const urls = (customFields as Record<string, unknown>).demoBaseUrls;
+  if (!urls || typeof urls !== 'object') {
+    return fallback;
+  }
+
+  const parsed = urls as Record<string, unknown>;
+  const frameworks: DemoFramework[] = ['angular', 'react', 'vue'];
+  for (const framework of frameworks) {
+    const value = parsed[framework];
+    if (typeof value === 'string' && value.trim().length > 0) {
+      fallback[framework] = value.trim();
+    }
+  }
+
+  return fallback;
+}
+
+function buildDemoUrl(demoBaseUrl: string, demoPath: string): string {
+  if (/^https?:\/\//.test(demoPath)) {
+    return demoPath;
+  }
+
+  const base = demoBaseUrl.replace(/\/+$/, '');
+  const cleanedPath = demoPath.startsWith('#') ? demoPath.slice(1) : demoPath;
+  const normalizedPath = cleanedPath.startsWith('/') ? cleanedPath : `/${cleanedPath}`;
+  return `${base}/#${normalizedPath}`;
+}
+
+function getFrameworkFromPathname(pathname: string): DemoFramework | null {
+  const match = pathname.match(/\/docs\/(angular|react|vue)(\/|$)/);
+  if (!match) {
+    return null;
+  }
+  return match[1] as DemoFramework;
+}
+
 
 export default function LiveDemo({
   children,
   repoUrl,
   stackBlitzUrl,
-  height = '400px',
+  height = '560px',
   iframeUrl,
+  demoPath,
+  demoFramework,
   repoFiles,
   code,
   codeTitle,
   codeLang = 'ts',
   codeFiles,
 }: LiveDemoProps) {
+  const { siteConfig } = useDocusaurusContext();
+  const { pathname } = useLocation();
   const hasCode = Boolean(children || repoFiles?.length || codeFiles?.length || code);
   const [view, setView] = useState<'preview' | 'code'>('preview');
   const [activeTab, setActiveTab] = useState(0);
@@ -96,6 +150,10 @@ export default function LiveDemo({
   const hasFetched = useRef(false);
 
   const rawBase = repoUrl ? buildRawBaseUrl(repoUrl) : null;
+  const demoBaseUrls = getDemoBaseUrls(siteConfig.customFields);
+  const resolvedDemoFramework = demoFramework ?? getFrameworkFromPathname(pathname) ?? 'angular';
+  const demoBaseUrl = demoBaseUrls[resolvedDemoFramework];
+  const resolvedIframeUrl = iframeUrl ?? (demoPath && demoBaseUrl ? buildDemoUrl(demoBaseUrl, demoPath) : undefined);
   const resolvedStackBlitzUrl = stackBlitzUrl
     ?? (repoUrl ? buildStackBlitzUrl(repoUrl, repoFiles?.[0]) : undefined);
 
@@ -251,9 +309,9 @@ export default function LiveDemo({
       </div>
       {view === 'preview' && (
         <div style={{ height }}>
-          {iframeUrl && (
+          {resolvedIframeUrl && (
             <iframe
-              src={iframeUrl}
+              src={resolvedIframeUrl}
               style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
               title="Live demo preview"
             />

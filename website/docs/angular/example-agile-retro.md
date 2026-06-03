@@ -34,7 +34,7 @@ Before retrospective facilitators or developers start placing visual sticky note
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/agile-retro"
+  demoPath="/examples/agile-retro"
   repoFiles={['src/app/examples/agile-retro/agile-retro.component.ts']}
 />
 
@@ -48,7 +48,7 @@ Distributed teams often need to tidy up cluttered boards by stacking card piles,
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/agile-retro"
+  demoPath="/examples/agile-retro"
   repoFiles={['src/app/examples/agile-retro/agile-retro.component.ts']}
 />
 
@@ -62,7 +62,7 @@ Custom interaction menus offer highly tailored whiteboard options (e.g. changing
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/agile-retro"
+  demoPath="/examples/agile-retro"
   repoFiles={['src/app/examples/agile-retro/agile-retro.component.ts']}
 />
 

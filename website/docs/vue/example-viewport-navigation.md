@@ -41,7 +41,7 @@ A status bar at the bottom of the editor that live-tracks the current viewport s
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/viewport-navigation-zoom-dashboard"
+  demoPath="/examples/viewport-navigation-zoom-dashboard"
   repoFiles={['src/app/examples/viewport-navigation/viewport-navigation-zoom-dashboard.component.ts']}
 />
 
@@ -55,7 +55,7 @@ A navigation bar that lets users jump the viewport directly to a selected object
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/viewport-navigation-object-focus"
+  demoPath="/examples/viewport-navigation-object-focus"
   repoFiles={['src/app/examples/viewport-navigation/viewport-navigation-object-focus.component.ts']}
 />
 
@@ -69,7 +69,7 @@ A kiosk or presentation setup where the canvas is restricted to a fixed area. Us
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/viewport-navigation-bounded-canvas"
+  demoPath="/examples/viewport-navigation-bounded-canvas"
   repoFiles={['src/app/examples/viewport-navigation/viewport-navigation-bounded-canvas.component.ts']}
 />
 
@@ -83,7 +83,7 @@ An inspection tool that converts a click on the canvas into world coordinates an
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/viewport-navigation-click-to-zoom"
+  demoPath="/examples/viewport-navigation-click-to-zoom"
   repoFiles={['src/app/examples/viewport-navigation/viewport-navigation-click-to-zoom.component.ts']}
 />
 

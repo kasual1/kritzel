@@ -31,7 +31,7 @@ A product that only needs to swap the default blue accent for a brand color. Ove
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/theming-brand-accent"
+  demoPath="/examples/theming-brand-accent"
   repoFiles={['src/app/examples/theming/theming-brand-accent.component.ts']}
 />
 
@@ -45,7 +45,7 @@ A fully branded light theme that customizes every UI section — toolbar, dialog
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/theming-full-light"
+  demoPath="/examples/theming-full-light"
   repoFiles={['src/app/examples/theming/theming-full-light.component.ts']}
 />
 
@@ -59,7 +59,7 @@ A production-ready setup with both a branded light and branded dark theme. The e
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/theming-light-dark-pair"
+  demoPath="/examples/theming-light-dark-pair"
   repoFiles={['src/app/examples/theming/theming-light-dark-pair.component.ts']}
 />
 
@@ -73,7 +73,7 @@ An application that needs branded colors in the tool config panel — the brush 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/theming-branded-tools"
+  demoPath="/examples/theming-branded-tools"
   repoFiles={['src/app/examples/theming/theming-branded-tools.component.ts']}
 />
 
@@ -87,7 +87,7 @@ An application that needs its own UI (sidebar, header, surrounding layout) to re
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/theming-host-sync"
+  demoPath="/examples/theming-host-sync"
   repoFiles={['src/app/examples/theming/theming-host-sync.component.ts']}
 />
 

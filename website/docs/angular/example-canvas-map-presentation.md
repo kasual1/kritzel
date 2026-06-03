@@ -42,7 +42,7 @@ A presentation layout showcasing direct diagonal transitions and fluid single-st
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/canvas-map-presentation"
+  demoPath="/examples/canvas-map-presentation"
   repoFiles={['src/app/examples/canvas-map-presentation/canvas-map-presentation.component.ts']}
 />
 

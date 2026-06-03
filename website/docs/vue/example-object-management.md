@@ -31,7 +31,7 @@ A sidebar that lists every object on the canvas and stays in sync automatically.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-read-only-inspector"
+  demoPath="/examples/object-management-read-only-inspector"
   repoFiles={['src/app/examples/object-management/object-management-read-only-inspector.component.ts']}
 />
 
@@ -45,7 +45,7 @@ A panel-style sidebar where clicking a row selects the object on the canvas, and
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-interactive-layer-panel"
+  demoPath="/examples/object-management-interactive-layer-panel"
   repoFiles={['src/app/examples/object-management/object-management-interactive-layer-panel.component.ts']}
 />
 
@@ -59,7 +59,7 @@ A panel with type-based filter toggles that both narrow the sidebar list and vis
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/object-management-filtered-explorer"
+  demoPath="/examples/object-management-filtered-explorer"
   repoFiles={['src/app/examples/object-management/object-management-filtered-explorer.component.ts']}
 />
 

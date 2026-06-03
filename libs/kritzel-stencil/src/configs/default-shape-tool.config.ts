@@ -8,6 +8,7 @@ export const DEFAULT_SHAPE_CONFIG: KritzelShapeToolConfig = {
   fillColor: { light: 'transparent', dark: 'transparent' },
   strokeColor: DEFAULT_COLOR_PALETTE[0],
   strokeWidth: 4,
+  opacity: 1,
   fontColor: DEFAULT_COLOR_PALETTE[0],
   fontSize: 16,
   fontFamily: 'Arial',
