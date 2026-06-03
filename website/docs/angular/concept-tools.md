@@ -35,6 +35,16 @@ If your application needs to temporarily lock the canvas to prevent user interac
   repoFiles={['src/app/concepts/tools/tools-disable.component.ts']}
 />
 
+## Registering Only Specific Tools in kritzel-controls
+
+If you want a focused editing experience, pass a custom `controls` array to `kritzel-editor`. The editor will register and render only the tools you provide. In this example, the controls are limited to `select`, `brush`, and `text`.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/tools-controls"
+  repoFiles={['src/app/concepts/tools/tools-controls.component.ts']}
+/>
+
 ## Customizing and Registering Tools
 
 You can register custom configurations for the built-in tools or even implement your own specialized tools by extending the base tool class. Once registered, these tools can be selected just like the default ones.
