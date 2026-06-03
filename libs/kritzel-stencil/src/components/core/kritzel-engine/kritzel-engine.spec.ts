@@ -917,6 +917,19 @@ describe('KritzelEngine', () => {
       expect(existingTool.size).toBe(10);
     });
 
+    it('applies opacity from toolConfig to existing tool instance', async () => {
+      const existingTool: any = { name: 'brush', opacity: 1 };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(true);
+      (core.toolRegistry.getTool as jest.Mock).mockReturnValue(existingTool);
+
+      class FakeBrushTool {}
+      const config = { color: 'blue', size: 10, opacity: 0.5 } as any;
+      const result = await engine.registerTool('brush', FakeBrushTool, config);
+
+      expect(result).toBe(existingTool);
+      expect(existingTool.opacity).toBe(0.5);
+    });
+
     it('does not apply config to existing tool when config is undefined', async () => {
       const existingTool: any = { name: 'eraser', size: 8 };
       (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(true);
@@ -952,6 +965,18 @@ describe('KritzelEngine', () => {
 
       expect(newTool.shapeType).toBe('rectangle');
       expect(newTool.fillColor).toBe('#000');
+    });
+
+    it('applies opacity from toolConfig to a newly registered tool', async () => {
+      const newTool: any = { name: 'line', opacity: 1 };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class FakeLineTool {}
+      const config = { color: { light: '#000', dark: '#fff' }, size: 4, opacity: 0.25, palette: [] } as any;
+      await engine.registerTool('line', FakeLineTool, config);
+
+      expect(newTool.opacity).toBe(0.25);
     });
 
     it('resolves palettes map into palette for brush tool config', async () => {

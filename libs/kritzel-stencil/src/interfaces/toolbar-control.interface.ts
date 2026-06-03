@@ -23,6 +23,7 @@ export interface KritzelToolbarControl {
 export interface KritzelTextToolConfig {
   color: ThemeAwareColor;
   size: number;
+  opacity?: number;
   fontFamily: string;
   palette: ThemeAwareColor[];
   sizes?: number[];
@@ -32,6 +33,7 @@ export interface KritzelBrushToolConfig {
   type: 'pen' | 'highlighter';
   color: ThemeAwareColor;
   size: number;
+  opacity?: number;
   palettes: {
     [brushType: string]: ThemeAwareColor[];
   };
@@ -43,6 +45,7 @@ export interface KritzelBrushToolConfig {
 export interface KritzelLineToolConfig {
   color: ThemeAwareColor;
   size: number;
+  opacity?: number;
   palette: ThemeAwareColor[];
   sizes?: number[];
   arrows?: {
@@ -56,6 +59,7 @@ export interface KritzelShapeToolConfig {
   fillColor: ThemeAwareColor;
   strokeColor: ThemeAwareColor;
   strokeWidth: number;
+  opacity?: number;
   fontColor: ThemeAwareColor;
   fontSize: number;
   fontFamily: string;

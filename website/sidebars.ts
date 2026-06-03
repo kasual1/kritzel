@@ -12,13 +12,13 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Core Concepts',
       collapsed: true,
-      items: ['concept-components', 'concept-viewport', 'concept-tools', 'concept-objects', 'concept-workspaces', 'concept-theming', 'concept-collaboration'],
+      items: ['concept-components', 'concept-tools', 'concept-objects',  'concept-viewport', 'concept-workspaces', 'concept-context-menus', 'concept-theming', 'concept-collaboration'],
     },
     {
       type: 'category',
       label: 'Examples',
       collapsed: true,
-      items: ['example-custom-toolbar', 'example-custom-context-menu', 'example-object-management', 'example-object-explorer', 'example-theming', 'example-viewport-navigation', 'example-blueprint-defect-mapper', 'example-workspace-management', 'example-slideshow-presentation', 'example-canvas-map-presentation', 'example-agile-retro', 'example-infinite-canvas-gallery'],
+      items: ['example-object-explorer', 'example-blueprint-defect-mapper', 'example-slideshow-presentation', 'example-canvas-map-presentation', 'example-agile-retro', 'example-infinite-canvas-gallery'],
     },
     {
       type: 'category',

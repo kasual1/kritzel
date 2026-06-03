@@ -23,7 +23,7 @@ The basic implementation of the Editor requires zero configuration. You simply d
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/components-editor"
+  demoPath="/concepts/components-editor"
   repoFiles={['src/app/concepts/components/components-editor.component.ts']}
 />
 
@@ -56,7 +56,7 @@ You can toggle visibility for built-in UI components using the Editor's attribut
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/components-editor-ui"
+  demoPath="/concepts/components-editor-ui"
   repoFiles={['src/app/concepts/components/components-editor-ui.component.ts']}
 />
 
@@ -67,7 +67,7 @@ When you need a deeply custom application without built-in UI chrome, use the `<
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/components-engine"
+  demoPath="/concepts/components-engine"
   repoFiles={['src/app/concepts/components/components-engine.component.ts']}
 />
 

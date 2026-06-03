@@ -7,10 +7,10 @@ import { CustomToolbarExternalComponent } from './examples/custom-toolbar/custom
 import { EditorPageComponent } from './e2e/editor-page.component';
 import { MultiEditorPageComponent } from './e2e/multi-editor-page.component';
 import { WrappedEditorPageComponent } from './e2e/wrapped-editor-page.component';
-import { CustomContextMenuCanvasQuickActionsComponent } from './examples/custom-context-menu/custom-context-menu-canvas-quick-actions.component';
-import { CustomContextMenuClipboardActionsComponent } from './examples/custom-context-menu/custom-context-menu-clipboard-actions.component';
-import { CustomContextMenuSmartConditionalComponent } from './examples/custom-context-menu/custom-context-menu-smart-conditional.component';
-import { CustomContextMenuObjectInspectorComponent } from './examples/custom-context-menu/custom-context-menu-object-inspector.component';
+import { CustomContextMenuCanvasQuickActionsComponent } from './concepts/context-menus/custom-context-menu-canvas-quick-actions.component';
+import { CustomContextMenuClipboardActionsComponent } from './concepts/context-menus/custom-context-menu-clipboard-actions.component';
+import { CustomContextMenuSmartConditionalComponent } from './concepts/context-menus/custom-context-menu-smart-conditional.component';
+import { CustomContextMenuObjectInspectorComponent } from './concepts/context-menus/custom-context-menu-object-inspector.component';
 import { ObjectManagementReadOnlyInspectorComponent } from './examples/object-management/object-management-read-only-inspector.component';
 import { ObjectManagementInteractiveLayerPanelComponent } from './examples/object-management/object-management-interactive-layer-panel.component';
 import { ObjectManagementFilteredExplorerComponent } from './examples/object-management/object-management-filtered-explorer.component';
@@ -48,6 +48,7 @@ import { ViewportChangeComponent } from './concepts/viewport/viewport-change.com
 import { ViewportCenterComponent } from './concepts/viewport/viewport-center.component';
 import { ViewportCoordinatesComponent } from './concepts/viewport/viewport-coordinates.component';
 import { ToolsChangeComponent } from './concepts/tools/tools-change.component';
+import { ToolsControlsComponent } from './concepts/tools/tools-controls.component';
 import { ToolsDisableComponent } from './concepts/tools/tools-disable.component';
 import { ToolsRegisterComponent } from './concepts/tools/tools-register.component';
 import { WorkspacesSwitchComponent } from './concepts/workspaces/workspaces-switch.component';
@@ -81,10 +82,15 @@ export const routes: Routes = [
       { path: 'viewport-center', component: ViewportCenterComponent },
       { path: 'viewport-coordinates', component: ViewportCoordinatesComponent },
       { path: 'tools-change', component: ToolsChangeComponent },
+      { path: 'tools-controls', component: ToolsControlsComponent },
       { path: 'tools-disable', component: ToolsDisableComponent },
       { path: 'tools-register', component: ToolsRegisterComponent },
       { path: 'workspaces-switch', component: WorkspacesSwitchComponent },
       { path: 'workspaces-crud', component: WorkspacesCrudComponent },
+      { path: 'context-menus-canvas-quick-actions', component: CustomContextMenuCanvasQuickActionsComponent },
+      { path: 'context-menus-clipboard-actions', component: CustomContextMenuClipboardActionsComponent },
+      { path: 'context-menus-smart-conditional', component: CustomContextMenuSmartConditionalComponent },
+      { path: 'context-menus-object-inspector', component: CustomContextMenuObjectInspectorComponent },
     ],
   },
   {
@@ -94,10 +100,6 @@ export const routes: Routes = [
       { path: 'custom-toolbar-diagramming', component: CustomToolbarDiagrammingComponent },
       { path: 'custom-toolbar-full-drawing-app', component: CustomToolbarFullDrawingAppComponent },
       { path: 'custom-toolbar-external', component: CustomToolbarExternalComponent },
-      { path: 'custom-context-menu-canvas-quick-actions', component: CustomContextMenuCanvasQuickActionsComponent },
-      { path: 'custom-context-menu-clipboard-actions', component: CustomContextMenuClipboardActionsComponent },
-      { path: 'custom-context-menu-smart-conditional', component: CustomContextMenuSmartConditionalComponent },
-      { path: 'custom-context-menu-object-inspector', component: CustomContextMenuObjectInspectorComponent },
       { path: 'object-management-read-only-inspector', component: ObjectManagementReadOnlyInspectorComponent },
       { path: 'object-management-interactive-layer-panel', component: ObjectManagementInteractiveLayerPanelComponent },
       { path: 'object-management-filtered-explorer', component: ObjectManagementFilteredExplorerComponent },

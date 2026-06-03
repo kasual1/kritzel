@@ -27,7 +27,7 @@ Combine them to get durable local persistence *and* instant cross-tab updates.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/collaboration-local"
+  demoPath="/concepts/collaboration-local"
   repoFiles={['src/app/concepts/collaboration/collaboration-local.component.ts']}
 />
 
@@ -42,7 +42,7 @@ A common production pattern combines local persistence (for offline resilience) 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/collaboration-realtime"
+  demoPath="/concepts/collaboration-realtime"
   repoFiles={['src/app/concepts/collaboration/collaboration-realtime.component.ts']}
 />
 

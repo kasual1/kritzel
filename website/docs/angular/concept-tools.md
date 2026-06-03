@@ -21,7 +21,7 @@ You can programmatically change the currently active tool using the API. This is
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/tools-change"
+  demoPath="/concepts/tools-change"
   repoFiles={['src/app/concepts/tools/tools-change.component.ts']}
 />
 
@@ -31,17 +31,27 @@ If your application needs to temporarily lock the canvas to prevent user interac
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/tools-disable"
+  demoPath="/concepts/tools-disable"
   repoFiles={['src/app/concepts/tools/tools-disable.component.ts']}
 />
 
-## Customizing and Registering Tools
+## Customizing the Toolbar
 
-You can register custom configurations for the built-in tools or even implement your own specialized tools by extending the base tool class. Once registered, these tools can be selected just like the default ones.
+If you want a focused editing experience, pass a custom `controls` array to `kritzel-editor`. The editor will register and render only the tools you provide. In this example, the controls are limited to `select`, `brush`, and `text`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/tools-register"
+  demoPath="/concepts/tools-controls"
+  repoFiles={['src/app/concepts/tools/tools-controls.component.ts']}
+/>
+
+## Adding Custom Tools
+
+You can register a custom tool configuration and then surface it in the controls panel. This example registers a custom highlighter built from `KritzelBrushTool` and adds it to the toolbar controls alongside `selection`, `pen`, and `text`.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/concepts/tools-register"
   repoFiles={['src/app/concepts/tools/tools-register.component.ts']}
 />
 
