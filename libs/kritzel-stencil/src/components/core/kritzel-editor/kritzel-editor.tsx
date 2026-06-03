@@ -217,6 +217,7 @@ export class KritzelEditor {
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
+  @Prop() isObjectDistanceFadingActive: boolean = false;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
   @Prop() assetStorageConfig?: KritzelAssetStorageConfig = DEFAULT_ASSET_STORAGE_CONFIG;
 
@@ -361,6 +362,11 @@ export class KritzelEditor {
   }
 
   @Method()
+  async addObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]> {
+    return this.engineRef.addObjects(objects);
+  }
+
+  @Method()
   async updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>): Promise<T | null> {
     return this.engineRef.updateObject(object, updatedProperties);
   }
@@ -368,6 +374,11 @@ export class KritzelEditor {
   @Method()
   async removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     return this.engineRef.removeObject(object);
+  }
+
+  @Method()
+  async removeObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]> {
+    return this.engineRef.removeObjects(objects);
   }
 
   @Method()
@@ -1044,6 +1055,7 @@ export class KritzelEditor {
           user={this.user}
           scaleMax={this.scaleMax}
           lockDrawingScale={this.lockDrawingScale}
+          isObjectDistanceFadingActive={this.isObjectDistanceFadingActive}
           scaleMin={this.scaleMin}
           cursorTarget={this.cursorTarget}
           isLoading={this.isLoading}
@@ -1071,8 +1083,8 @@ export class KritzelEditor {
         ></kritzel-engine>
 
         <kritzel-controls
+          visible={this.isControlsVisible}
           class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
-          style={{ display: this.isControlsVisible ? 'flex' : 'none' }}
           ref={el => {
             if (el) {
               this.controlsRef = el;

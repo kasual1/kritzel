@@ -14,6 +14,7 @@
 | `isUtilityPanelVisible` | `is-utility-panel-visible` |             | `boolean`                          | `true`    |
 | `theme`                 | `theme`                    |             | `"dark" \| "light" \| string & {}` | `'light'` |
 | `undoState`             | --                         |             | `KritzelUndoState`                 | `null`    |
+| `visible`               | `visible`                  |             | `boolean`                          | `true`    |
 
 
 ## Events

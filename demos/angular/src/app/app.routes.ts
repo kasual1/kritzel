@@ -14,6 +14,7 @@ import { CustomContextMenuObjectInspectorComponent } from './examples/custom-con
 import { ObjectManagementReadOnlyInspectorComponent } from './examples/object-management/object-management-read-only-inspector.component';
 import { ObjectManagementInteractiveLayerPanelComponent } from './examples/object-management/object-management-interactive-layer-panel.component';
 import { ObjectManagementFilteredExplorerComponent } from './examples/object-management/object-management-filtered-explorer.component';
+import { ObjectExplorerComponent } from './examples/object-explorer/object-explorer.component';
 import { Collaboration1Component } from './examples/collaboration/collaboration-1.component';
 import { ThemingBrandAccentComponent } from './examples/theming/theming-brand-accent.component';
 import { ThemingFullLightComponent } from './examples/theming/theming-full-light.component';
@@ -24,9 +25,14 @@ import { ViewportNavigationZoomDashboardComponent } from './examples/viewport-na
 import { ViewportNavigationObjectFocusComponent } from './examples/viewport-navigation/viewport-navigation-object-focus.component';
 import { ViewportNavigationBoundedCanvasComponent } from './examples/viewport-navigation/viewport-navigation-bounded-canvas.component';
 import { ViewportNavigationClickToZoomComponent } from './examples/viewport-navigation/viewport-navigation-click-to-zoom.component';
+import { BlueprintDefectMapperComponent } from './examples/blueprint-defect-mapper/blueprint-defect-mapper.component';
 import { WorkspaceManagementTabBarComponent } from './examples/workspace-management/workspace-management-tab-bar.component';
 import { WorkspaceManagementCrudPanelComponent } from './examples/workspace-management/workspace-management-crud-panel.component';
 import { WorkspaceManagementUrlSyncedComponent } from './examples/workspace-management/workspace-management-url-synced.component';
+import { SlideshowPresentationComponent } from './examples/slideshow-presentation/slideshow-presentation.component';
+import { CanvasMapPresentationComponent } from './examples/canvas-map-presentation/canvas-map-presentation.component';
+import { AgileRetroComponent } from './examples/agile-retro/agile-retro.component';
+import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-gallery/infinite-canvas-gallery.component';
 import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
 import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
 import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
@@ -95,6 +101,7 @@ export const routes: Routes = [
       { path: 'object-management-read-only-inspector', component: ObjectManagementReadOnlyInspectorComponent },
       { path: 'object-management-interactive-layer-panel', component: ObjectManagementInteractiveLayerPanelComponent },
       { path: 'object-management-filtered-explorer', component: ObjectManagementFilteredExplorerComponent },
+      { path: 'object-explorer', component: ObjectExplorerComponent },
       { path: 'theming-brand-accent', component: ThemingBrandAccentComponent },
       { path: 'theming-full-light', component: ThemingFullLightComponent },
       { path: 'theming-light-dark-pair', component: ThemingLightDarkPairComponent },
@@ -104,6 +111,7 @@ export const routes: Routes = [
       { path: 'viewport-navigation-object-focus', component: ViewportNavigationObjectFocusComponent },
       { path: 'viewport-navigation-bounded-canvas', component: ViewportNavigationBoundedCanvasComponent },
       { path: 'viewport-navigation-click-to-zoom', component: ViewportNavigationClickToZoomComponent },
+      { path: 'blueprint-defect-mapper', component: BlueprintDefectMapperComponent },
       { path: 'workspace-management-tab-bar', component: WorkspaceManagementTabBarComponent },
       { path: 'workspace-management-crud-panel', component: WorkspaceManagementCrudPanelComponent },
       {
@@ -113,6 +121,10 @@ export const routes: Routes = [
           { path: ':workspaceId', component: WorkspaceManagementUrlSyncedComponent },
         ],
       },
+      { path: 'slideshow-presentation', component: SlideshowPresentationComponent },
+      { path: 'canvas-map-presentation', component: CanvasMapPresentationComponent },
+      { path: 'agile-retro', component: AgileRetroComponent },
+      { path: 'infinite-canvas-gallery', component: InfiniteCanvasGalleryComponent },
       {
         path: 'collaboration-1',
         children: [

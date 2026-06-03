@@ -54,6 +54,12 @@ jest.mock('../../../helpers/keyboard.helper', () => ({
   },
 }));
 
+jest.mock('../../../helpers/class.helper', () => ({
+  KritzelClassHelper: {
+    isInstanceOf: jest.fn().mockReturnValue(false),
+  },
+}));
+
 import { KritzelEngine } from './kritzel-engine';
 import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
@@ -121,6 +127,7 @@ describe('KritzelEngine', () => {
         clearLocalSelectionBox: jest.fn(),
         clearCursorPosition: jest.fn(),
         destroy: jest.fn(),
+        transaction: jest.fn().mockImplementation((cb: () => void) => cb()),
         undoState: { canUndo: false, canRedo: false, undoStackSize: 0, redoStackSize: 0 },
       },
       state: {
@@ -383,6 +390,64 @@ describe('KritzelEngine', () => {
       await engine.enable();
 
       expect(core.store.state.isEnabled).toBe(true);
+      expect(core.rerender).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('object distance fading', () => {
+    const computeFade = (objectScale = 1, viewportScale = 1) =>
+      (engine as any).getObjectDistanceFadeMultiplier(objectScale, viewportScale);
+
+    it('returns 1 when fading is disabled', () => {
+      engine.isObjectDistanceFadingActive = false;
+
+      expect(computeFade(5.8, 0.1)).toBe(1);
+    });
+
+    it('returns 1 at or above near scale threshold', () => {
+      engine.isObjectDistanceFadingActive = true;
+
+      expect(computeFade(1, 1)).toBe(1);
+      expect(computeFade(1, 2)).toBe(1);
+    });
+
+    it('returns minimum opacity multiplier beyond far-distance threshold', () => {
+      engine.isObjectDistanceFadingActive = true;
+
+      expect(computeFade(1, 0.01)).toBeCloseTo(0, 6);
+    });
+
+    it('interpolates smoothly between near and far scales', () => {
+      engine.isObjectDistanceFadingActive = true;
+
+      const midFade = computeFade(1, 0.5);
+
+      expect(midFade).toBeGreaterThan(0);
+      expect(midFade).toBeLessThan(1);
+    });
+
+    it('fades more when zoomed out and less when zoomed in', () => {
+      engine.isObjectDistanceFadingActive = true;
+
+      const fadeAtSmallScale = computeFade(1, 0.2);
+      const fadeAtLargeScale = computeFade(1, 2.0);
+
+      expect(fadeAtSmallScale).toBeLessThan(fadeAtLargeScale);
+    });
+
+    it('fades high-scale objects earlier than low-scale objects at the same viewport scale', () => {
+      engine.isObjectDistanceFadingActive = true;
+
+      const viewportScale = 0.8;
+      const lowScaleObjectFade = computeFade(0.5, viewportScale);
+      const highScaleObjectFade = computeFade(2, viewportScale);
+
+      expect(lowScaleObjectFade).toBeGreaterThan(highScaleObjectFade);
+    });
+
+    it('rerenders when isObjectDistanceFadingActive changes', () => {
+      (engine as any).onIsObjectDistanceFadingActiveChange();
+
       expect(core.rerender).toHaveBeenCalledTimes(1);
     });
   });
@@ -978,6 +1043,65 @@ describe('KritzelEngine', () => {
       await engine.registerTool('text', FakeTextTool, config);
 
       expect(newTool.sizes).toEqual(customSizes);
+    });
+  });
+
+  describe('addObject / addObjects scale preservation', () => {
+    const makeObject = (scale: number): any => ({
+      scale,
+      workspaceId: '',
+      zIndex: 0,
+      _core: null,
+      generateId: jest.fn().mockReturnValue('generated-id'),
+    });
+
+    beforeEach(() => {
+      core.store.state.activeWorkspace = { id: 'ws1' } as KritzelWorkspace;
+      jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
+    });
+
+    it('addObject preserves an explicitly set scale', async () => {
+      const object = makeObject(0.5);
+
+      await engine.addObject(object);
+
+      expect(object.scale).toBe(0.5);
+    });
+
+    it('addObject does not overwrite scale 1 with the viewport scale', async () => {
+      core.store.state.scale = 3;
+      const object = makeObject(1);
+
+      await engine.addObject(object);
+
+      expect(object.scale).toBe(1);
+    });
+
+    it('addObject preserves a large scale value', async () => {
+      const object = makeObject(10);
+
+      await engine.addObject(object);
+
+      expect(object.scale).toBe(10);
+    });
+
+    it('addObjects preserves the caller-supplied scale on every object in the batch', async () => {
+      const a = makeObject(0.2);
+      const b = makeObject(5);
+
+      await engine.addObjects([a, b]);
+
+      expect(a.scale).toBe(0.2);
+      expect(b.scale).toBe(5);
+    });
+
+    it('addObjects does not overwrite scale 1 with the viewport scale', async () => {
+      core.store.state.scale = 2;
+      const object = makeObject(1);
+
+      await engine.addObjects([object]);
+
+      expect(object.scale).toBe(1);
     });
   });
 });
