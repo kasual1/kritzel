@@ -18,7 +18,7 @@ export interface KritzelObject<T = Element> {
   borderColor?: ThemeAwareColor;
   borderWidth: number;
   opacity: number;
-  scale: number;
+  scale?: number;
   resizing: boolean;
   rotation: number;
   markedForRemoval: boolean;
