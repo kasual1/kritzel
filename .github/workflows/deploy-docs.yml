@@ -1,0 +1,99 @@
+# Deploys the Docusaurus documentation to Cloudflare Pages
+name: Deploy documentation
+
+on:
+  workflow_dispatch:
+
+jobs:
+  # --- Build Stencil Library ---
+  build-stencil:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22.14.0"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Kritzel Stencil components
+        run: npm run build -w libs/kritzel-stencil
+
+      - name: Upload Stencil dist
+        uses: actions/upload-artifact@v6
+        with:
+          name: stencil-dist
+          path: |
+            libs/kritzel-stencil/dist
+            libs/kritzel-stencil/loader
+
+  # --- Build Docusaurus (after Stencil build, needs kritzel-react) ---
+  build-docs:
+    runs-on: ubuntu-latest
+    needs: build-stencil
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22.14.0"
+
+      - name: Download Stencil dist
+        uses: actions/download-artifact@v6
+        with:
+          name: stencil-dist
+          path: libs/kritzel-stencil
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Kritzel React library
+        run: npm run build -w libs/kritzel-react
+
+      - name: Install Docusaurus dependencies
+        run: |
+          cd website
+          npm install
+
+      - name: Build Docusaurus documentation
+        run: |
+          cd website
+          npm run build
+        env:
+          Docusaurus_BASE_URL: /
+          DEMO_BASE_URL_ANGULAR: ${{ vars.DEMO_BASE_URL_ANGULAR }}
+          DEMO_BASE_URL_REACT: ${{ vars.DEMO_BASE_URL_REACT }}
+          DEMO_BASE_URL_VUE: ${{ vars.DEMO_BASE_URL_VUE }}
+
+      - name: Upload docs artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: docs-build
+          path: website/build
+
+  # --- Deploy to Cloudflare Pages ---
+  deploy-cloudflare:
+    runs-on: ubuntu-latest
+    needs: build-docs
+    timeout-minutes: 10
+    steps:
+      - name: Download docs artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: docs-build
+          path: _site
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy _site --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}

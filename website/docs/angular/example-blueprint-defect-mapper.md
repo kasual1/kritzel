@@ -39,7 +39,7 @@ Instead, to center the camera viewport on a static image background or a station
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/blueprint-defect-mapper"
+  demoPath="/examples/blueprint-defect-mapper"
   repoFiles={['src/app/examples/blueprint-defect-mapper/blueprint-defect-mapper.component.ts']}
 />
 

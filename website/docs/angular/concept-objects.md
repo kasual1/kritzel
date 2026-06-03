@@ -26,7 +26,7 @@ You can manually inject objects into the canvas or remove them programmatically,
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/objects-add-remove"
+  demoPath="/concepts/objects-add-remove"
   repoFiles={['src/app/concepts/objects/objects-add-remove.component.ts']}
 />
 
@@ -36,7 +36,7 @@ Kritzel allows you to read the state of all objects currently on the canvas, or 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/objects-query"
+  demoPath="/concepts/objects-query"
   repoFiles={['src/app/concepts/objects/objects-query.component.ts']}
 />
 
@@ -46,7 +46,7 @@ You can programmatically retrieve the currently selected objects, select specifi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/objects-selection"
+  demoPath="/concepts/objects-selection"
   repoFiles={['src/app/concepts/objects/objects-selection.component.ts']}
 />
 
@@ -56,7 +56,7 @@ Objects can be grouped together so they can be moved and transformed as a single
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/objects-grouping"
+  demoPath="/concepts/objects-grouping"
   repoFiles={['src/app/concepts/objects/objects-grouping.component.ts']}
 />
 

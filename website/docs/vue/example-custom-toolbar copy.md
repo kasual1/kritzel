@@ -46,7 +46,7 @@ A minimal toolbar for document markup: just selection and a configured brush wit
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-annotation"
+  demoPath="/examples/custom-toolbar-annotation"
   repoFiles={['src/app/examples/custom-toolbar/custom-toolbar-annotation.component.ts']}
 />
 
@@ -60,7 +60,7 @@ A toolbar tailored for flowchart and diagram creation: selection, lines with arr
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-diagramming"
+  demoPath="/examples/custom-toolbar-diagramming"
   repoFiles={['src/app/examples/custom-toolbar/custom-toolbar-diagramming.component.ts']}
 />
 
@@ -74,7 +74,7 @@ A production-ready toolbar with all available tools, separators grouping related
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-full-drawing-app"
+  demoPath="/examples/custom-toolbar-full-drawing-app"
   repoFiles={['src/app/examples/custom-toolbar/custom-toolbar-full-drawing-app.component.ts']}
 />
 
@@ -88,7 +88,7 @@ Hide the built-in toolbar with `[isControlsVisible]="false"` and switch tools fr
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/examples/custom-toolbar-external"
+  demoPath="/examples/custom-toolbar-external"
   repoFiles={['src/app/examples/custom-toolbar/custom-toolbar-external.component.ts']}
 />
 
