@@ -15,15 +15,6 @@ In Kritzel, a Tool represents an active state that determines how user input (li
 
 Kritzel provides a versatile set of default tools like the Selection Tool, Brush Tool, Line Tool, Shape Tool, and Text Tool. You can also customize existing tools or register entirely custom tools to extend functionality.
 
-## Managing the Active Tool
-
-You can programmatically change the currently active tool using the API. This is useful when you want to build your own custom toolbar or trigger tool changes via keyboard shortcuts.
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/tools-change"
-  repoFiles={['src/app/concepts/tools/tools-change.component.ts']}
-/>
 
 ## Disabling and Enabling Tools
 
@@ -37,7 +28,7 @@ If your application needs to temporarily lock the canvas to prevent user interac
 
 ## Customizing the Toolbar
 
-If you want a focused editing experience, pass a custom `controls` array to `kritzel-editor`. The editor will register and render only the tools you provide. In this example, the controls are limited to `select`, `brush`, and `text`.
+If you want a focused editing experience, pass a custom `controls` array to `kritzel-editor`. The editor will register and render only the tools you provide. In this example, the controls are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -53,6 +44,16 @@ You can register a custom tool configuration and then surface it in the controls
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/concepts/tools-register"
   repoFiles={['src/app/concepts/tools/tools-register.component.ts']}
+/>
+
+## Programmatically Changing the Active Tool
+
+You can programmatically change the currently active tool using the API. This is useful when you want to build your own custom toolbar or trigger tool changes via keyboard shortcuts.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/concepts/tools-change"
+  repoFiles={['src/app/concepts/tools/tools-change.component.ts']}
 />
 
 ## Related API Methods

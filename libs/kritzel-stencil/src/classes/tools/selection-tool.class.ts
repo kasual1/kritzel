@@ -28,6 +28,8 @@ import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
  * to specialized handlers (selection, move, resize, rotation, hover, line handle).
  */
 export class KritzelSelectionTool extends KritzelBaseTool {
+  override toolType = 'selection' as const;
+
   /** Handler for selection box and object selection logic */
   selectionHandler: KritzelSelectionHandler;
 

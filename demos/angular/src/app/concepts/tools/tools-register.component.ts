@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  signal,
   ViewChild,
 } from '@angular/core';
 import {

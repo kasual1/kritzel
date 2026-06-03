@@ -12,6 +12,8 @@ import { DEFAULT_FONT_SIZES } from '../../constants/stroke-size.constants';
  * Supports configurable font family, size, color, and opacity.
  */
 export class KritzelTextTool extends KritzelBaseTool {
+  override toolType = 'text' as const;
+
   /** Backing field for {@link fontFamily}. */
   private _fontFamily: string = 'Arial';
 

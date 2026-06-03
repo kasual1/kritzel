@@ -52,7 +52,6 @@ export class ToolsControlsComponent {
       type: 'tool',
       tool: KritzelSelectionTool,
       icon: 'cursor',
-      isDefault: true,
     },
     {
       name: 'brush',
@@ -70,6 +69,7 @@ export class ToolsControlsComponent {
           ],
         },
       },
+      isDefault: true,
     },
     {
       name: 'text',

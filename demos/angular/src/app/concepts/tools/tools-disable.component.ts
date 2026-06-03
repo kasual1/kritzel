@@ -48,12 +48,14 @@ export class ToolsDisableComponent {
     providers: [InMemorySyncProvider],
   };
 
-  isDisabled = signal(false);
+  isDisabled = signal(true);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     for (const obj of createSeedObjects()) {
       await this.editor.addObject(obj);
     }
+
+   await this.editor.disable();
   }
 
   async toggle() {
