@@ -768,25 +768,23 @@ export class KritzelViewport {
   }
 
   /**
-   * Centers and fits ALL objects in the viewport, including objects not currently rendered.
-   * Calculates the combined bounding box of all objects and optionally animates the viewport to show them.
+   * Centers and fits the provided objects in the viewport.
+   * Calculates the combined bounding box of the provided objects and optionally animates the viewport to show them.
+   * @param objects - Objects to include in the fit operation.
    * @param animate - Whether to animate the viewport transition (default: true)
-   * @returns true if objects were found and viewport was adjusted, false if no objects exist
+   * @returns true if at least one object was provided and viewport was adjusted, false otherwise
    */
-  centerFitAllObjects(animate = true): boolean {
-    const allObjects = this._core.store.allNonSelectionObjects;
-
-    if (allObjects.length === 0) {
+  centerFitObjects<T extends Element>(objects: KritzelBaseObject<T>[], animate = true): boolean {
+    if (objects.length === 0) {
       return false;
     }
 
-    // Calculate combined bounds of all objects
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
     let maxY = -Infinity;
 
-    for (const obj of allObjects) {
+    for (const obj of objects) {
       const bounds = obj.rotatedBoundingBox;
       minX = Math.min(minX, bounds.x);
       minY = Math.min(minY, bounds.y);
@@ -813,5 +811,15 @@ export class KritzelViewport {
     this.animateViewportTo(targetTranslateX, targetTranslateY, clampedScale, animate ? 150 : 0);
 
     return true;
+  }
+
+  /**
+   * Centers and fits ALL objects in the viewport, including objects not currently rendered.
+   * Calculates the combined bounding box of all objects and optionally animates the viewport to show them.
+   * @param animate - Whether to animate the viewport transition (default: true)
+   * @returns true if objects were found and viewport was adjusted, false if no objects exist
+   */
+  centerFitAllObjects(animate = true): boolean {
+    return this.centerFitObjects(this._core.store.allNonSelectionObjects, animate);
   }
 }

@@ -1134,6 +1134,20 @@ export class KritzelEngine {
   }
 
   /**
+   * Pans and zooms the viewport to fit the provided objects.
+   * Calculates the combined bounding box of the given objects and centers the viewport to show them.
+   * @param objects - The objects to center and fit in the viewport.
+   * @param animate - Whether to animate the viewport transition (default: true).
+   * @returns `true` if objects were provided and the viewport was adjusted, `false` otherwise.
+   */
+  @Method()
+  async centerObjects(objects: KritzelBaseObject[], animate = true): Promise<boolean> {
+    return this.viewport.centerFitObjects(objects, animate);
+  }
+
+  
+
+  /**
    * Sets the viewport to center on the given world coordinates at the specified scale.
    * @param x - X position in world coordinates to center on.
    * @param y - Y position in world coordinates to center on.

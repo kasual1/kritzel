@@ -414,6 +414,11 @@ export class KritzelEditor {
   }
 
   @Method()
+  async centerObjects(objects: KritzelBaseObject[], animate = true): Promise<boolean> {
+    return this.engineRef.centerObjects(objects, animate);
+  }
+
+  @Method()
   async setViewport(x: number, y: number, scale: number): Promise<void> {
     return this.engineRef.setViewport(x, y, scale);
   }

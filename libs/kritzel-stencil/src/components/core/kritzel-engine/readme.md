@@ -182,6 +182,24 @@ Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>>`
 
 The centered object.
 
+### `centerObjects(objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>`
+
+Pans and zooms the viewport to fit the provided objects.
+Calculates the combined bounding box of the given objects and centers the viewport to show them.
+
+#### Parameters
+
+| Name      | Type                                             | Description                                                   |
+| --------- | ------------------------------------------------ | ------------------------------------------------------------- |
+| `objects` | `KritzelBaseObject<HTMLElement \| SVGElement>[]` | - The objects to center and fit in the viewport.              |
+| `animate` | `boolean`                                        | - Whether to animate the viewport transition (default: true). |
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+`true` if objects were provided and the viewport was adjusted, `false` otherwise.
+
 ### `changeActiveTool(tool: KritzelBaseTool) => Promise<void>`
 
 Switches the active drawing tool. Deactivates the current tool and clears any selection.
