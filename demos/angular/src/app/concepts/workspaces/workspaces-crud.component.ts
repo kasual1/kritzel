@@ -10,6 +10,7 @@ import {
   EditorIsReadyEvent,
   KritzelWorkspace,
   KritzelSyncConfig,
+  InMemorySyncProvider,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
@@ -40,6 +41,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
+      [syncConfig]="syncConfig"
       [activeWorkspaceId]="activeWorkspaceId()"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
@@ -118,7 +120,9 @@ export class WorkspacesCrudComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  
+  syncConfig: KritzelSyncConfig = {
+    providers: [InMemorySyncProvider],
+  };
 
   workspaces = signal<KritzelWorkspace[]>([]);
   activeWorkspaceId = signal<string | undefined>(undefined);
@@ -128,6 +132,8 @@ export class WorkspacesCrudComponent {
   async onReady(event: CustomEvent<EditorIsReadyEvent>) {
     this.workspaces.set(await this.editor.getWorkspaces());
     this.activeWorkspaceId.set(event.detail.activeWorkspace.id);
+
+    this.editor.activeWorkspaceId = this.activeWorkspaceId();
 
     for (const obj of createSeedObjects()) {
       await this.editor.addObject(obj);

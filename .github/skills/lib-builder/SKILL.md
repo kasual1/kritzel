@@ -118,6 +118,9 @@ export {
 8. **Design for late-bound wrapper inputs** — Angular/React/Vue wrappers may apply prop updates after `componentDidLoad`; component behavior must still reflect latest props
 9. **Test post-initialization updates** — add at least one unit test that updates props after initialization and asserts the runtime collaborator receives new values
 10. **Prefer reusable bug lessons over local patches** — when fixing a lifecycle/prop bug, update the relevant pattern docs so future changes avoid the same class of regression
+11. **Treat sync persistence as opt-in by default** — `kritzel-editor` defaults to `syncConfig.providers = []`, so object state is not persisted across page reloads and not persisted when switching workspaces unless a sync provider is explicitly configured
+12. **Choose providers by persistence scope** — use `IndexedDBSyncProvider` for persistent local storage across reloads (and across workspaces), and use `InMemorySyncProvider` when cross-workspace persistence is needed only within the current runtime session
+13. **Keep demos deterministic unless persistence is the concept** — most demos should keep no sync provider so reload resets canvas state; workspace concept demos are the main exception and should use `InMemorySyncProvider`
 
 ## Cross-Wrapper Reliability Checklist
 
