@@ -334,7 +334,7 @@ export namespace Components {
         "addObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
         /**
-          * @default DEFAULT_ASSET_STORAGE_CONFIG
+          * @default {   providers: [], }
          */
         "assetStorageConfig"?: KritzelAssetStorageConfig;
         "backToContent": () => Promise<boolean>;
@@ -429,7 +429,6 @@ export namespace Components {
         "lockDrawingScale": boolean;
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
-          * @default {     providers: [       {         label: 'Sign in with Google',         icon: 'google',         name: 'Google',       },     ],   }
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
@@ -446,11 +445,11 @@ export namespace Components {
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "removeObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         /**
-          * @default ABSOLUTE_SCALE_MAX
+          * @default 1000
          */
         "scaleMax": number;
         /**
-          * @default ABSOLUTE_SCALE_MIN
+          * @default 0.0001
          */
         "scaleMin": number;
         "screenToWorld": (x: number, y: number) => Promise<{ x: number; y: number; }>;
@@ -461,7 +460,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default DEFAULT_SYNC_CONFIG
+          * @default {   providers: [], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -822,12 +821,12 @@ export namespace Components {
         "saveSettings": (settings: KritzelSettingsConfig) => Promise<void>;
         /**
           * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
-          * @default ABSOLUTE_SCALE_MAX
+          * @default 1000
          */
         "scaleMax": number;
         /**
           * Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.
-          * @default ABSOLUTE_SCALE_MIN
+          * @default 0.0001
          */
         "scaleMin": number;
         /**
@@ -2492,7 +2491,7 @@ declare namespace LocalJSX {
          */
         "activeWorkspaceId"?: string;
         /**
-          * @default DEFAULT_ASSET_STORAGE_CONFIG
+          * @default {   providers: [], }
          */
         "assetStorageConfig"?: KritzelAssetStorageConfig;
         /**
@@ -2550,7 +2549,6 @@ declare namespace LocalJSX {
         "lockDrawingScale"?: boolean;
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
-          * @default {     providers: [       {         label: 'Sign in with Google',         icon: 'google',         name: 'Google',       },     ],   }
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
@@ -2571,15 +2569,15 @@ declare namespace LocalJSX {
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState1>) => void;
         "onViewportChange"?: (event: KritzelEditorCustomEvent<KritzelViewportState>) => void;
         /**
-          * @default ABSOLUTE_SCALE_MAX
+          * @default 1000
          */
         "scaleMax"?: number;
         /**
-          * @default ABSOLUTE_SCALE_MIN
+          * @default 0.0001
          */
         "scaleMin"?: number;
         /**
-          * @default DEFAULT_SYNC_CONFIG
+          * @default {   providers: [], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -2711,12 +2709,12 @@ declare namespace LocalJSX {
         "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
         /**
           * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
-          * @default ABSOLUTE_SCALE_MAX
+          * @default 1000
          */
         "scaleMax"?: number;
         /**
           * Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.
-          * @default ABSOLUTE_SCALE_MIN
+          * @default 0.0001
          */
         "scaleMin"?: number;
         /**

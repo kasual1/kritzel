@@ -1,5 +1,4 @@
-import { IndexedDBAssetProvider } from "../classes/providers/assets/indexeddb-asset-provider.class";
-import { KritzelAssetStorageConfig } from "../interfaces/asset-storage-config.interface";
+import { KritzelAssetStorageConfig } from '../interfaces/asset-storage-config.interface';
 
 /**
  * Default asset storage configuration. Stores bytes in IndexedDB only,
@@ -8,5 +7,5 @@ import { KritzelAssetStorageConfig } from "../interfaces/asset-storage-config.in
  * (e.g. HttpAssetProvider) so images are available across devices.
  */
 export const DEFAULT_ASSET_STORAGE_CONFIG: KritzelAssetStorageConfig = {
-  providers: [IndexedDBAssetProvider],
+  providers: [],
 };

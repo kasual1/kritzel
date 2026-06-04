@@ -10,7 +10,6 @@ import {
 import { CommonModule } from '@angular/common';
 import {
   EditorIsReadyEvent,
-  InMemorySyncProvider,
   KritzelBaseObject,
   KritzelEditor,
   KritzelSyncConfig,
@@ -35,7 +34,6 @@ import { createSeedObjects } from '../../const/seed-objects';
           [theme]="'angular-theme'"
           [themes]="themes"
           [syncConfig]="syncConfig"
-          [loginConfig]="undefined"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
           [wheelEnabled]="false"
@@ -598,7 +596,7 @@ export class ObjectExplorerComponent implements OnDestroy {
   themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
+    providers: [],
   };
 
   allObjects = signal<KritzelBaseObject[]>([]);

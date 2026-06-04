@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import {
   KritzelEditor,
   ContextMenuItem,
-  InMemorySyncProvider,
   KritzelSyncConfig,
   EditorIsReadyEvent,
 } from 'kritzel-angular';
@@ -21,10 +20,8 @@ import { createSeedObjects } from '../../const/seed-objects';
       #editor
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onIsReady($event)"
@@ -42,9 +39,7 @@ export class CustomContextMenuClipboardActionsComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   globalItems: ContextMenuItem[] = [
     {

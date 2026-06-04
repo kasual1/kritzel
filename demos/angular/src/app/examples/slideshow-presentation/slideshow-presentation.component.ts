@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, signal, computed, ViewChild, Elemen
 import { 
   KritzelEditor, 
   EditorIsReadyEvent, 
-  InMemorySyncProvider, 
   KritzelSyncConfig, 
   KritzelShape, 
   KritzelText, 
@@ -57,8 +56,6 @@ interface Slide {
         [theme]="'angular-theme'"
         [themes]="themes"
         [wheelEnabled]="false"
-        [syncConfig]="syncConfig"
-        [loginConfig]="undefined"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady()"
@@ -175,9 +172,7 @@ export class SlideshowPresentationComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   slides: Slide[] = [
     { title: '1. Welcome to Kritzel', centerX: 0, centerY: 0 },

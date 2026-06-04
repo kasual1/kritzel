@@ -7,7 +7,6 @@ import {
 import {
   KritzelEditor,
   ContextMenuItem,
-  InMemorySyncProvider,
   KritzelSyncConfig,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
@@ -25,10 +24,8 @@ import { createSeedObjects } from '../../const/seed-objects';
       #editor
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="[]"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onEditorReady()"
@@ -46,9 +43,7 @@ export class CustomContextMenuCanvasQuickActionsComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   globalItems: ContextMenuItem[] = [
     {

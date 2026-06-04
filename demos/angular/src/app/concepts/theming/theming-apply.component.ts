@@ -2,7 +2,6 @@ import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import {
   KritzelEditor,
   KritzelTheme,
-  InMemorySyncProvider,
   KritzelSyncConfig,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
@@ -34,8 +33,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         [theme]="activeName"
         [themes]="themes"
         [wheelEnabled]="false"
-        [syncConfig]="syncConfig"
-        [loginConfig]="undefined"
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="true"
         (isReady)="onIsReady($event)"
@@ -86,9 +83,7 @@ export class ThemingApplyComponent {
   themes: KritzelTheme[] = [angularThemeLight, angularThemeDark];
   activeName: string = 'angular-theme';
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   async onIsReady(_event: CustomEvent) {
     for (const obj of createSeedObjects()) {

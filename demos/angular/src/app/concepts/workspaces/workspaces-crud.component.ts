@@ -9,7 +9,6 @@ import {
   ActiveWorkspaceChangeEvent,
   EditorIsReadyEvent,
   KritzelWorkspace,
-  InMemorySyncProvider,
   KritzelSyncConfig,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
@@ -41,9 +40,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
       [activeWorkspaceId]="activeWorkspaceId()"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady($event)"
@@ -121,9 +118,7 @@ export class WorkspacesCrudComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   workspaces = signal<KritzelWorkspace[]>([]);
   activeWorkspaceId = signal<string | undefined>(undefined);
