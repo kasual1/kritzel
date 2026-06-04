@@ -700,6 +700,23 @@ Type: `Promise<void>`
 
 
 
+### `panToObject(object: KritzelBaseObject) => Promise<void>`
+
+Pans the viewport to center on the given object without changing the zoom level.
+Unlike `centerObjectInViewport`, this moves the camera — not the object.
+
+#### Parameters
+
+| Name     | Type                                           | Description                                           |
+| -------- | ---------------------------------------------- | ----------------------------------------------------- |
+| `object` | `KritzelBaseObject<HTMLElement \| SVGElement>` | - The object whose center the viewport should pan to. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `paste(x: number, y: number) => Promise<void>`
 
 Pastes previously copied objects at the specified world coordinates.

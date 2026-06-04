@@ -2,7 +2,7 @@
 sidebar_label: Collaboration
 displayed_sidebar: tutorialSidebar
 title: "Collaboration Concept | Kritzel for Angular"
-description: "Understand the core concept of Collaboration in Kritzel — real-time sync, local persistence, and multi-user editing using Yjs providers."
+description: "Understand the core concept of Collaboration in Kritzel — cross-tab sync and multi-user editing using Yjs providers."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -13,17 +13,13 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 Kritzel uses [Yjs](https://yjs.dev/) CRDTs under the hood for all data synchronization and persistence. Every canvas object lives inside a Yjs document (`Y.Doc`), which means changes merge conflict-free across any number of clients — whether they are browser tabs on the same machine or users on opposite sides of the world.
 
-You configure collaboration through the `syncConfig` prop on `<kritzel-editor>` (or `<kritzel-engine>`). This prop accepts a list of **providers** that control *where* and *how* document state is stored and shared. Providers are composable: combine a local persistence provider with a real-time network provider to get offline-first collaboration out of the box.
+You configure collaboration through the `syncConfig` prop on `<kritzel-editor>` (or `<kritzel-engine>`). This prop accepts a list of **providers** that control *where* and *how* document state is shared. Providers are composable and can combine local browser channels with network transport.
 
-## Local Persistence & Cross-Tab Sync
+## Cross-Tab Sync
 
-For many use cases you don't need a server at all. Kritzel ships providers that keep canvas data entirely on the client:
+For same-device collaboration across multiple browser tabs, use `BroadcastSyncProvider`. It synchronizes document updates in real time through the BroadcastChannel API.
 
-- `IndexedDBSyncProvider` — persists state in the browser's IndexedDB. Data survives page reloads and browser restarts.
-- `BroadcastSyncProvider` — syncs across tabs in the same browser using the BroadcastChannel API.
-- `InMemorySyncProvider` — holds state in memory for the current session. Intended for documentation demos and transient editing.
-
-Combine them to get durable local persistence *and* instant cross-tab updates.
+This is useful when users open the same board in multiple tabs and expect immediate consistency.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -55,6 +51,6 @@ When your application manages multiple documents simultaneously (e.g. a workspac
 - Sync configuration (`syncConfig` prop, provider composition)
 - Provider factories (`WebSocketSyncProvider.with()`, `HocuspocusSyncProvider.with()`)
 - Multiplexing lifecycle (`HocuspocusSyncProvider.createSharedWebSocket()`, `HocuspocusSyncProvider.destroySharedWebSocket()`)
-- Cache management (`InMemorySyncProvider.clear()`)
+- Cross-tab provider (`BroadcastSyncProvider`)
 
 For a comprehensive view, see the [API Reference](api-reference-editor.md).

@@ -814,9 +814,7 @@ export class ObjectExplorerComponent implements OnDestroy {
 
   async selectTreeObject(obj: KritzelBaseObject) {
     this.selectedObject.set(obj);
-    const midX = obj.translateX + (obj.width ?? 0) / 2;
-    const midY = obj.translateY + (obj.height ?? 0) / 2;
-    await this.editor.panTo(midX, midY);
+    await this.editor.panToObject(obj);
     await this.editor.selectObjects([obj]);
   }
 
