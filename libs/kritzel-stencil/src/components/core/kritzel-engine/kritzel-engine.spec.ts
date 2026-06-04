@@ -223,6 +223,26 @@ describe('KritzelEngine', () => {
     jest.clearAllMocks();
   });
 
+  describe('context menu item watchers', () => {
+    it('updates handler global items when globalContextMenuItems changes', () => {
+      const globalItems = [{ label: 'Paste' }] as any;
+      (engine as any).contextMenuHandler = { globalContextMenuItems: [] };
+
+      engine.onGlobalContextMenuItemsChange(globalItems);
+
+      expect((engine as any).contextMenuHandler.globalContextMenuItems).toBe(globalItems);
+    });
+
+    it('updates handler object items when objectContextMenuItems changes', () => {
+      const objectItems = [{ label: 'Copy' }] as any;
+      (engine as any).contextMenuHandler = { objectContextMenuItems: [] };
+
+      engine.onObjectContextMenuItemsChange(objectItems);
+
+      expect((engine as any).contextMenuHandler.objectContextMenuItems).toBe(objectItems);
+    });
+  });
+
   describe('selection delegation', () => {
     it('triggerSelectionChange emits the objectsSelectionChange event', async () => {
       await engine.triggerSelectionChange();

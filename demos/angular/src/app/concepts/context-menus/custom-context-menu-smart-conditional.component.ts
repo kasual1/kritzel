@@ -40,23 +40,6 @@ export class CustomContextMenuSmartConditionalComponent {
     providers: [InMemorySyncProvider]
   };
 
-  async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length === 0) {
-      await this.seedObjects();
-    }
-
-    await this.editor.selectAllObjectsInViewport();
-
-    const selected = await this.editor.getSelectedObjects();
-
-    await this.editor.openContextMenu({
-      x: selected[0].translateX + 50,
-      y: selected[0].translateY + 50,
-      objectId: selected[0].id,
-    });
-  }
-
   globalItems: ContextMenuItem[] = [
     {
       label: 'Paste',
@@ -114,6 +97,24 @@ export class CustomContextMenuSmartConditionalComponent {
       group: 'destructive',
     },
   ];
+
+  async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
+     for (const obj of createSeedObjects()) {
+      await this.editor.addObject(obj);
+    }
+
+    await this.editor.selectAllObjectsInViewport();
+
+    const selected = await this.editor.getSelectedObjects();
+
+    await this.editor.openContextMenu({
+      x: selected[0].translateX + 50,
+      y: selected[0].translateY + 50,
+      objectId: selected[0].id,
+    });
+  }
+
+  
 
   private async seedObjects() {
     for (const obj of createSeedObjects()) {

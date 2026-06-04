@@ -50,14 +50,24 @@ You can programmatically retrieve the currently selected objects, select specifi
   repoFiles={['src/app/concepts/objects/objects-selection.component.ts']}
 />
 
-## Grouping and Ordering
+## Grouping
 
-Objects can be grouped together so they can be moved and transformed as a single unit or their z-index ordered.
+Objects can be grouped together so they can be moved and transformed as a single unit.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/concepts/objects-grouping"
   repoFiles={['src/app/concepts/objects/objects-grouping.component.ts']}
+/>
+
+## Ordering
+
+Objects' z-index can be changed to control their visual stacking order, for example by bringing them to the front or sending them backward.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/concepts/objects-ordering"
+  repoFiles={['src/app/concepts/objects/objects-ordering.component.ts']}
 />
 
 ## Related API Methods
