@@ -63,6 +63,7 @@ jest.mock('../../../helpers/class.helper', () => ({
 import { KritzelEngine } from './kritzel-engine';
 import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
+import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 
 describe('KritzelEngine', () => {
   let engine: KritzelEngine;
@@ -202,6 +203,7 @@ describe('KritzelEngine', () => {
       handleResize: jest.fn(),
       centerFitNearestContent: jest.fn().mockReturnValue(true),
       centerFitAllObjects: jest.fn().mockReturnValue(true),
+      centerFitObjects: jest.fn().mockReturnValue(true),
       setViewport: jest.fn(),
       panTo: jest.fn(),
       zoomTo: jest.fn(),
@@ -593,6 +595,14 @@ describe('KritzelEngine', () => {
       const result = await engine.centerAllObjects(false);
 
       expect(engine.viewport.centerFitAllObjects).toHaveBeenCalledWith(false);
+      expect(result).toBe(true);
+    });
+
+    it('centerObjects delegates to viewport.centerFitObjects', async () => {
+      const objects = [{ id: 'obj-1' }] as unknown as KritzelBaseObject[];
+      const result = await engine.centerObjects(objects, false);
+
+      expect(engine.viewport.centerFitObjects).toHaveBeenCalledWith(objects, false);
       expect(result).toBe(true);
     });
   });

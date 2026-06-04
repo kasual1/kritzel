@@ -342,6 +342,7 @@ export namespace Components {
         "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
         "centerAllObjects": (animate?: boolean) => Promise<boolean>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
+        "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "changeActiveToolByName": (toolName: string) => Promise<void>;
         "clearSelection": () => Promise<void>;
@@ -551,6 +552,13 @@ export namespace Components {
           * @returns The centered object.
          */
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
+        /**
+          * Pans and zooms the viewport to fit the provided objects. Calculates the combined bounding box of the given objects and centers the viewport to show them.
+          * @param objects - The objects to center and fit in the viewport.
+          * @param animate - Whether to animate the viewport transition (default: true).
+          * @returns `true` if objects were provided and the viewport was adjusted, `false` otherwise.
+         */
+        "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
           * Switches the active drawing tool. Deactivates the current tool and clears any selection.
           * @param tool - The tool instance to activate.

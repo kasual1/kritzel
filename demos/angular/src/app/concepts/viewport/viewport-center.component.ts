@@ -60,7 +60,7 @@ export class ViewportCenterComponent {
   async centerOn(index: number) {
     const all = this.objects();
     if (all[index]) {
-      await this.editor.panToObject(all[index]);
+      await this.editor.centerObjects([all[index]]);
     }
   }
 

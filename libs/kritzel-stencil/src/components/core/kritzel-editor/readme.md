@@ -183,6 +183,23 @@ Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>>`
 
 
 
+### `centerObjects(objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>`
+
+
+
+#### Parameters
+
+| Name      | Type                                             | Description |
+| --------- | ------------------------------------------------ | ----------- |
+| `objects` | `KritzelBaseObject<HTMLElement \| SVGElement>[]` |             |
+| `animate` | `boolean`                                        |             |
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
 ### `changeActiveTool(tool: KritzelBaseTool) => Promise<void>`
 
 
