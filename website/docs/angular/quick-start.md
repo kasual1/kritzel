@@ -52,6 +52,29 @@ This renders the editor with the **full default toolbar** — selection, brush, 
 
 ## Optional Enhancements
 
+### Persist Canvas State
+
+By default, the editor uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
+
+For provider behavior details and persistence guidance, see the [Persistence concept](concept-persistence.md).
+
+```ts title="editor.component.ts"
+import { Component } from '@angular/core';
+import { IndexedDBSyncProvider, KritzelEditor, KritzelSyncConfig } from 'kritzel-angular';
+
+@Component({
+  selector: 'app-editor',
+  imports: [KritzelEditor],
+  template: `<kritzel-editor [syncConfig]="syncConfig"></kritzel-editor>`,
+  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
+})
+export class EditorComponent {
+  readonly syncConfig: KritzelSyncConfig = {
+    providers: [IndexedDBSyncProvider],
+  };
+}
+```
+
 ### Apply Full Viewport Styling
 
 To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `styles.css`):

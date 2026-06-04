@@ -74,6 +74,7 @@ Select the relevant pattern based on what you're working on:
 | [helper.md](patterns/helper.md) | Adding or editing a static utility helper |
 | [provider.md](patterns/provider.md) | Adding or editing a sync/asset provider |
 | [manager.md](patterns/manager.md) | Adding or editing a cross-cutting manager |
+| [reactivity-and-wrappers.md](patterns/reactivity-and-wrappers.md) | Debugging or preventing prop timing bugs between Stencil core and Angular/React/Vue wrappers |
 
 **Load the relevant pattern file(s) before making changes.**
 
@@ -113,3 +114,19 @@ export {
 4. **CSS variables** — prefix all with `--kritzel-`; run `node scripts/generate-theme-interface.js` after adding new ones
 5. **Strict typing** — avoid `any`; use `unknown` at boundaries
 6. **Test coverage** — add/update `*.spec.ts` for logic changes
+7. **No one-time prop snapshots for runtime collaborators** — if a component creates long-lived helpers/handlers/managers from `@Prop()` values, keep those collaborators synchronized with `@Watch()` handlers
+8. **Design for late-bound wrapper inputs** — Angular/React/Vue wrappers may apply prop updates after `componentDidLoad`; component behavior must still reflect latest props
+9. **Test post-initialization updates** — add at least one unit test that updates props after initialization and asserts the runtime collaborator receives new values
+10. **Prefer reusable bug lessons over local patches** — when fixing a lifecycle/prop bug, update the relevant pattern docs so future changes avoid the same class of regression
+11. **Treat sync persistence as opt-in by default** — `kritzel-editor` defaults to `syncConfig.providers = []`, so object state is not persisted across page reloads and not persisted when switching workspaces unless a sync provider is explicitly configured
+12. **Choose providers by persistence scope** — use `IndexedDBSyncProvider` for persistent local storage across reloads (and across workspaces), and use `InMemorySyncProvider` when cross-workspace persistence is needed only within the current runtime session
+13. **Keep demos deterministic unless persistence is the concept** — most demos should keep no sync provider so reload resets canvas state; workspace concept demos are the main exception and should use `InMemorySyncProvider`
+
+## Cross-Wrapper Reliability Checklist
+
+Before merging changes in `components/core/`:
+
+- Identify all constructor-time snapshots of `@Prop()` data copied into helper classes
+- Add/verify `@Watch()` synchronization for props consumed by long-lived runtime instances
+- Confirm default prop values do not silently override late-bound wrapper values
+- Add or update tests for both initial props and late prop updates

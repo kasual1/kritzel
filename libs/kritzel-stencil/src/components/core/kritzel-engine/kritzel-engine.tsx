@@ -144,9 +144,21 @@ export class KritzelEngine {
 
   /** Context menu items shown when right-clicking the canvas background. */
   @Prop() globalContextMenuItems!: ContextMenuItem[];
+  @Watch('globalContextMenuItems')
+  onGlobalContextMenuItemsChange(newValue: ContextMenuItem[] | undefined) {
+    if (this.contextMenuHandler) {
+      this.contextMenuHandler.globalContextMenuItems = newValue ?? [];
+    }
+  }
 
   /** Context menu items shown when right-clicking a selected object. */
   @Prop() objectContextMenuItems!: ContextMenuItem[];
+  @Watch('objectContextMenuItems')
+  onObjectContextMenuItemsChange(newValue: ContextMenuItem[] | undefined) {
+    if (this.contextMenuHandler) {
+      this.contextMenuHandler.objectContextMenuItems = newValue ?? [];
+    }
+  }
   /** Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine. */
   @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
   @Watch('scaleMax')
@@ -1091,6 +1103,16 @@ export class KritzelEngine {
   }
 
   /**
+   * Pans the viewport to center on the given object without changing the zoom level.
+   * Unlike `centerObjectInViewport`, this moves the camera — not the object.
+   * @param object - The object whose center the viewport should pan to.
+   */
+  @Method()
+  async panToObject(object: KritzelBaseObject): Promise<void> {
+    this.viewport.panTo(object.centerX, object.centerY);
+  }
+
+  /**
    * Pans and zooms the viewport to fit the nearest content, with padding.
    * Useful when the user has panned away from all objects.
    * @returns `true` if content was found and the viewport was adjusted, `false` otherwise.
@@ -1110,6 +1132,20 @@ export class KritzelEngine {
   async centerAllObjects(animate = true): Promise<boolean> {
     return this.viewport.centerFitAllObjects(animate);
   }
+
+  /**
+   * Pans and zooms the viewport to fit the provided objects.
+   * Calculates the combined bounding box of the given objects and centers the viewport to show them.
+   * @param objects - The objects to center and fit in the viewport.
+   * @param animate - Whether to animate the viewport transition (default: true).
+   * @returns `true` if objects were provided and the viewport was adjusted, `false` otherwise.
+   */
+  @Method()
+  async centerObjects(objects: KritzelBaseObject[], animate = true): Promise<boolean> {
+    return this.viewport.centerFitObjects(objects, animate);
+  }
+
+  
 
   /**
    * Sets the viewport to center on the given world coordinates at the specified scale.

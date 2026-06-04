@@ -1,16 +1,22 @@
-import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import {
   KritzelEditor,
   EditorIsReadyEvent,
-  InMemorySyncProvider,
   KritzelBaseObject,
   KritzelShape,
   KritzelPath,
   KritzelSyncConfig,
   ShapeType,
+  IndexedDBSyncProvider,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
+import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
   selector: 'app-objects-add-remove',
@@ -21,7 +27,9 @@ import { angularThemeDark } from '../../const/angular-theme-dark';
       <button (click)="addRectangle()">Add Rectangle</button>
       <button (click)="addEllipse()">Add Ellipse</button>
       <button (click)="addPath()">Add Path</button>
-      <button (click)="removeLastObject()" [disabled]="objects().length === 0">Remove Last</button>
+      <button (click)="removeLastObject()" [disabled]="objects().length === 0">
+        Remove Last
+      </button>
       <span class="count">Objects: {{ objects().length }}</span>
     </div>
     <kritzel-editor
@@ -29,36 +37,72 @@ import { angularThemeDark } from '../../const/angular-theme-dark';
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
-  styles: [`
-    :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    .toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; }
-    .toolbar button { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; font-size: 13px; }
-    .toolbar button:hover { background: #dd0031; color: #fff; border-color: #dd0031; }
-    .toolbar button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .toolbar button:disabled:hover { background: #fff; color: inherit; border-color: #ccc; }
-    .count { margin-left: auto; font-size: 13px; color: #333; }
-    kritzel-editor { flex: 1; }
-  `],
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        font-family: Roboto, sans-serif;
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: #f5f5f5;
+        border-bottom: 1px solid #ebebeb;
+      }
+      .toolbar button {
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      .toolbar button:hover {
+        background: #dd0031;
+        color: #fff;
+        border-color: #dd0031;
+      }
+      .toolbar button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .toolbar button:disabled:hover {
+        background: #fff;
+        color: inherit;
+        border-color: #ccc;
+      }
+      .count {
+        margin-left: auto;
+        font-size: 13px;
+        color: #333;
+      }
+      kritzel-editor {
+        flex: 1;
+      }
+    `,
+  ],
 })
 export class ObjectsAddRemoveComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
-
   objects = signal<KritzelBaseObject[]>([]);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+    for (const obj of createSeedObjects()) {
+      await this.editor.addObject(obj);
+    }
+    
     const all = await this.editor.getAllObjects();
     this.objects.set(all);
   }
@@ -95,7 +139,15 @@ export class ObjectsAddRemoveComponent {
 
   async addPath() {
     const path = new KritzelPath({
-      points: [[0, 0, 0.5], [20, -15, 0.5], [40, -30, 0.5], [60, -20, 0.5], [80, -10, 0.5], [100, -25, 0.5], [120, -40, 0.5]],
+      points: [
+        [0, 0, 0.5],
+        [20, -15, 0.5],
+        [40, -30, 0.5],
+        [60, -20, 0.5],
+        [80, -10, 0.5],
+        [100, -25, 0.5],
+        [120, -40, 0.5],
+      ],
       translateX: this.randomOffset(),
       translateY: this.randomOffset(),
       strokeWidth: 6,
