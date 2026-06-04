@@ -128,5 +128,6 @@ Below is a complete example combining everything covered in this guide. It provi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  repoFiles={['src/app/examples/basic-usage/basic-usage.component.ts']}
+  repoFiles={['src/app/basic-usage/basic-usage.component.ts']}
+  demoPath="/basic-usage"
 />

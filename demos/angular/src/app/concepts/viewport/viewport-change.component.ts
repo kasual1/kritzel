@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { KritzelEditor, EditorIsReadyEvent, KritzelViewportState, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { KritzelEditor, EditorIsReadyEvent, KritzelViewportState, KritzelSyncConfig } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
@@ -22,8 +22,6 @@ import { createSeedObjects } from '../../const/seed-objects';
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady($event)"
@@ -49,9 +47,7 @@ export class ViewportChangeComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   viewport = signal<KritzelViewportState | null>(null);
 

@@ -1188,6 +1188,42 @@ describe('KritzelViewport', () => {
     });
   });
 
+  describe('centerFitObjects', () => {
+    it('should return false when the object list is empty', () => {
+      const result = viewport.centerFitObjects([]);
+
+      expect(result).toBe(false);
+    });
+
+    it('should animate viewport to show the provided objects', () => {
+      const animateSpy = jest.spyOn(viewport, 'animateViewportTo');
+      const objects = [
+        { rotatedBoundingBox: { x: 100, y: 50, width: 200, height: 100 } },
+        { rotatedBoundingBox: { x: 600, y: 450, width: 100, height: 150 } },
+      ] as unknown as KritzelBaseObject[];
+
+      const result = viewport.centerFitObjects(objects, false);
+
+      expect(result).toBe(true);
+      expect(animateSpy).toHaveBeenCalledWith(expect.any(Number), expect.any(Number), expect.any(Number), 0);
+    });
+  });
+
+  describe('centerFitAllObjects', () => {
+    it('should delegate to centerFitObjects with all non-selection objects', () => {
+      const allObjects = [
+        { rotatedBoundingBox: { x: 10, y: 20, width: 30, height: 40 } },
+      ] as unknown as KritzelBaseObject[];
+      (mockCore.store as any).allNonSelectionObjects = allObjects;
+      const centerFitObjectsSpy = jest.spyOn(viewport, 'centerFitObjects').mockReturnValue(true);
+
+      const result = viewport.centerFitAllObjects(false);
+
+      expect(result).toBe(true);
+      expect(centerFitObjectsSpy).toHaveBeenCalledWith(allObjects, false);
+    });
+  });
+
   describe('viewport boundary clamping', () => {
     beforeEach(() => {
       mockState.host = mockHost;

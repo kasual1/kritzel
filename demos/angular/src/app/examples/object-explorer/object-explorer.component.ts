@@ -10,7 +10,6 @@ import {
 import { CommonModule } from '@angular/common';
 import {
   EditorIsReadyEvent,
-  InMemorySyncProvider,
   KritzelBaseObject,
   KritzelEditor,
   KritzelSyncConfig,
@@ -35,7 +34,6 @@ import { createSeedObjects } from '../../const/seed-objects';
           [theme]="'angular-theme'"
           [themes]="themes"
           [syncConfig]="syncConfig"
-          [loginConfig]="undefined"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
           [wheelEnabled]="false"
@@ -598,7 +596,7 @@ export class ObjectExplorerComponent implements OnDestroy {
   themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
+    providers: [],
   };
 
   allObjects = signal<KritzelBaseObject[]>([]);
@@ -816,9 +814,7 @@ export class ObjectExplorerComponent implements OnDestroy {
 
   async selectTreeObject(obj: KritzelBaseObject) {
     this.selectedObject.set(obj);
-    const midX = obj.translateX + (obj.width ?? 0) / 2;
-    const midY = obj.translateY + (obj.height ?? 0) / 2;
-    await this.editor.panTo(midX, midY);
+    await this.editor.panToObject(obj);
     await this.editor.selectObjects([obj]);
   }
 

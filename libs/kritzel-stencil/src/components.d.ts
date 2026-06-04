@@ -334,7 +334,7 @@ export namespace Components {
         "addObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
         /**
-          * @default DEFAULT_ASSET_STORAGE_CONFIG
+          * @default {   providers: [], }
          */
         "assetStorageConfig"?: KritzelAssetStorageConfig;
         "backToContent": () => Promise<boolean>;
@@ -342,6 +342,7 @@ export namespace Components {
         "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
         "centerAllObjects": (animate?: boolean) => Promise<boolean>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
+        "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "changeActiveToolByName": (toolName: string) => Promise<void>;
         "clearSelection": () => Promise<void>;
@@ -429,7 +430,6 @@ export namespace Components {
         "lockDrawingScale": boolean;
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
-          * @default {     providers: [       {         label: 'Sign in with Google',         icon: 'google',         name: 'Google',       },     ],   }
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
@@ -439,6 +439,7 @@ export namespace Components {
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
         "openLoginDialog": () => Promise<void>;
         "panTo": (x: number, y: number) => Promise<void>;
+        "panToObject": (object: KritzelBaseObject) => Promise<void>;
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
         "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>;
@@ -446,11 +447,11 @@ export namespace Components {
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "removeObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         /**
-          * @default ABSOLUTE_SCALE_MAX
+          * @default 1000
          */
         "scaleMax": number;
         /**
-          * @default ABSOLUTE_SCALE_MIN
+          * @default 0.0001
          */
         "scaleMin": number;
         "screenToWorld": (x: number, y: number) => Promise<{ x: number; y: number; }>;
@@ -461,7 +462,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default DEFAULT_SYNC_CONFIG
+          * @default {   providers: [], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -551,6 +552,13 @@ export namespace Components {
           * @returns The centered object.
          */
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
+        /**
+          * Pans and zooms the viewport to fit the provided objects. Calculates the combined bounding box of the given objects and centers the viewport to show them.
+          * @param objects - The objects to center and fit in the viewport.
+          * @param animate - Whether to animate the viewport transition (default: true).
+          * @returns `true` if objects were provided and the viewport was adjusted, `false` otherwise.
+         */
+        "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
           * Switches the active drawing tool. Deactivates the current tool and clears any selection.
           * @param tool - The tool instance to activate.
@@ -782,6 +790,11 @@ export namespace Components {
          */
         "panTo": (x: number, y: number) => Promise<void>;
         /**
+          * Pans the viewport to center on the given object without changing the zoom level. Unlike `centerObjectInViewport`, this moves the camera — not the object.
+          * @param object - The object whose center the viewport should pan to.
+         */
+        "panToObject": (object: KritzelBaseObject) => Promise<void>;
+        /**
           * Pastes previously copied objects at the specified world coordinates.
           * @param x - X position in world coordinates.
           * @param y - Y position in world coordinates.
@@ -822,12 +835,12 @@ export namespace Components {
         "saveSettings": (settings: KritzelSettingsConfig) => Promise<void>;
         /**
           * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
-          * @default ABSOLUTE_SCALE_MAX
+          * @default 1000
          */
         "scaleMax": number;
         /**
           * Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.
-          * @default ABSOLUTE_SCALE_MIN
+          * @default 0.0001
          */
         "scaleMin": number;
         /**
@@ -2492,7 +2505,7 @@ declare namespace LocalJSX {
          */
         "activeWorkspaceId"?: string;
         /**
-          * @default DEFAULT_ASSET_STORAGE_CONFIG
+          * @default {   providers: [], }
          */
         "assetStorageConfig"?: KritzelAssetStorageConfig;
         /**
@@ -2550,7 +2563,6 @@ declare namespace LocalJSX {
         "lockDrawingScale"?: boolean;
         /**
           * Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers.
-          * @default {     providers: [       {         label: 'Sign in with Google',         icon: 'google',         name: 'Google',       },     ],   }
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
@@ -2571,15 +2583,15 @@ declare namespace LocalJSX {
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState1>) => void;
         "onViewportChange"?: (event: KritzelEditorCustomEvent<KritzelViewportState>) => void;
         /**
-          * @default ABSOLUTE_SCALE_MAX
+          * @default 1000
          */
         "scaleMax"?: number;
         /**
-          * @default ABSOLUTE_SCALE_MIN
+          * @default 0.0001
          */
         "scaleMin"?: number;
         /**
-          * @default DEFAULT_SYNC_CONFIG
+          * @default {   providers: [], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -2711,12 +2723,12 @@ declare namespace LocalJSX {
         "onWorkspacesChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace[]>) => void;
         /**
           * Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.
-          * @default ABSOLUTE_SCALE_MAX
+          * @default 1000
          */
         "scaleMax"?: number;
         /**
           * Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.
-          * @default ABSOLUTE_SCALE_MIN
+          * @default 0.0001
          */
         "scaleMin"?: number;
         /**

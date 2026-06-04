@@ -15,9 +15,9 @@ Context menus in Kritzel define which actions are available at the exact point w
 
 This split lets you keep actions context-aware by default. A canvas click can expose navigation and document-level commands, while an object click can expose transformation, layering, export, or delete actions. With `visible` and `disabled`, menus can react to editor state before users execute an invalid command.
 
-## Canvas-Level Actions
+## Global Context Menu
 
-This focused setup uses a minimal canvas menu for quick document commands. It is useful for viewer-like experiences where users mostly interact with the board as a whole rather than individual objects.
+This focused setup uses a minimal global context menu for quick document commands. It is triggered by right-clicking on an empty area of the canvas.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -25,9 +25,9 @@ This focused setup uses a minimal canvas menu for quick document commands. It is
   repoFiles={['src/app/concepts/context-menus/custom-context-menu-canvas-quick-actions.component.ts']}
 />
 
-## Clipboard and Object Actions
+## Object Context Menu
 
-This example separates canvas actions from object actions and adds visual grouping. It demonstrates a practical baseline for whiteboard workflows where copy, paste, and delete are frequently used.
+This example separates global context actions from object specific actions and adds visual grouping. It demonstrates a practical baseline for whiteboard workflows where copy, paste, and delete are frequently used. For the object context menu to appear, right-click directly on a selected object.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -37,7 +37,7 @@ This example separates canvas actions from object actions and adds visual groupi
 
 ## Conditional Menu State
 
-This demo shows state-aware menus where items are hidden or disabled until actions become valid. It reduces user friction by exposing only what can currently succeed.
+This demo shows state-aware menus where items are hidden or disabled until actions become valid. It reduces user friction by exposing only what can currently succeed. The context menu below shows the "Export as PNG" action only when a single object is selected. And disables "Paste" until something is copied.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -47,7 +47,7 @@ This demo shows state-aware menus where items are hidden or disabled until actio
 
 ## Nested Menu Hierarchies
 
-This configuration uses `children` to create submenus for structured action groups like Arrange and Export. It is a good fit for design tools where many object-specific actions need to remain organized.
+This configuration uses `children` to create submenus for grouping related actions. Context menus support infinite nesting and automatically detect edge collisions to keep all items visible.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"

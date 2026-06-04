@@ -90,6 +90,41 @@ After adding new CSS variables:
 - Core components (editor, engine) may access `KritzelCore`
 - Keep render methods small; extract complex JSX into private render helpers
 
+## Reactive Prop Bridging (Important)
+
+When a component creates long-lived runtime instances (handlers/managers/viewports) that depend on `@Prop()` values, avoid constructor-time snapshots that can go stale.
+
+Anti-pattern:
+
+```tsx
+this.handler = new MyHandler(this.somePropItems); // Captured once
+```
+
+Preferred pattern:
+
+```tsx
+@Prop() somePropItems: Item[] = [];
+
+@Watch('somePropItems')
+onSomePropItemsChange(newValue: Item[] | undefined) {
+  if (this.handler) {
+    this.handler.items = newValue ?? [];
+  }
+}
+
+componentDidLoad() {
+  this.handler = new MyHandler(this.somePropItems);
+}
+```
+
+Why this matters:
+- Framework wrappers can apply prop updates after `componentDidLoad`
+- Without `@Watch()` bridging, runtime behavior can diverge from current prop values
+- Defaults can unintentionally mask wrapper-provided values
+
+Test expectation for this pattern:
+- Add a unit test that changes the prop after handler creation and verifies the handler sees the updated value
+
 ## Core vs UI Components
 
 | Aspect | Core Component | UI Component |
