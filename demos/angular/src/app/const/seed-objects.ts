@@ -10,18 +10,18 @@ export function createSeedObjects(): KritzelBaseObject[] {
   path.rotation = (40 * Math.PI) / 180;
 
   return [
+     new KritzelShape({
+      translateX: 20, translateY: -150, width: 120, height: 120,
+      shapeType: ShapeType.Rectangle,
+      fillColor: { light: '#fce4ec', dark: '#880e4f' },
+      strokeColor: { light: '#c62828', dark: '#ef9a9a' },
+      strokeWidth: 3,
+    }),
     new KritzelShape({
       translateX: -140, translateY: -170, width: 120, height: 120,
       shapeType: ShapeType.Ellipse,
       fillColor: { light: '#e3f2fd', dark: '#1a237e' },
       strokeColor: { light: '#1565c0', dark: '#90caf9' },
-      strokeWidth: 3,
-    }),
-    new KritzelShape({
-      translateX: 20, translateY: -150, width: 120, height: 120,
-      shapeType: ShapeType.Rectangle,
-      fillColor: { light: '#fce4ec', dark: '#880e4f' },
-      strokeColor: { light: '#c62828', dark: '#ef9a9a' },
       strokeWidth: 3,
     }),
     new KritzelLine({

@@ -9,7 +9,6 @@ import {
   KritzelEditor,
   KritzelSelectionTool,
   EditorIsReadyEvent,
-  InMemorySyncProvider,
   KritzelSyncConfig,
   KritzelTextTool,
   KritzelToolbarControl,
@@ -40,9 +39,7 @@ const highlighterConfig: KritzelBrushToolConfig = {
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
       [controls]="controls"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady($event)"
@@ -140,9 +137,7 @@ export class ToolsRegisterComponent {
     }
   ];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     for (const obj of createSeedObjects()) {

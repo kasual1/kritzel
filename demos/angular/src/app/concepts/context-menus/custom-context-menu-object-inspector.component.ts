@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import {
   KritzelEditor,
   ContextMenuItem,
-  InMemorySyncProvider,
   KritzelSyncConfig,
   EditorIsReadyEvent,
 } from 'kritzel-angular';
@@ -21,10 +20,8 @@ import { createSeedObjects } from '../../const/seed-objects';
       #editor
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onIsReady($event)"
@@ -42,26 +39,7 @@ export class CustomContextMenuObjectInspectorComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
-
-  async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length === 0) {
-      await this.seedObjects();
-    }
-
-    await this.editor.selectAllObjectsInViewport();
-
-    const selected = await this.editor.getSelectedObjects();
-
-    await this.editor.openContextMenu({
-      x: selected[0].translateX + 50,
-      y: selected[0].translateY + 50,
-      objectId: selected[0].id,
-    });
-  }
+  
 
   globalItems: ContextMenuItem[] = [
     {
@@ -102,55 +80,36 @@ export class CustomContextMenuObjectInspectorComponent {
       disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
     },
     {
-      label: 'Arrange',
-      icon: 'layers',
+      label: 'Parent',
       group: 'arrange',
       children: [
         {
-          label: 'Bring to Front',
-          icon: 'bring-to-front',
+          label: 'Child 1',
           action: () => {
-            this.editor.bringToFront();
+            window.alert('Child 1 clicked');
           },
         },
         {
-          label: 'Bring Forward',
-          icon: 'bring-forward',
-          action: () => {
-            this.editor.bringForward();
-          },
+          label: 'Child 2',
+          children: [
+            {
+              label: 'Grandchild 1',
+              action: () => {
+                window.alert('Grandchild 1 clicked');
+              },
+            },
+            {
+              label: 'Grandchild 2',
+              action: () => {
+                window.alert('Grandchild 2 clicked');
+              },
+            },
+          ],
         },
         {
-          label: 'Send Backward',
-          icon: 'send-backward',
+          label: 'Child 3',
           action: () => {
-            this.editor.sendBackward();
-          },
-        },
-        {
-          label: 'Send to Back',
-          icon: 'send-to-back',
-          action: () => {
-            this.editor.sendToBack();
-          },
-        },
-      ],
-    },
-    {
-      label: 'Export',
-      icon: 'download',
-      group: 'export',
-      children: [
-        {
-          label: 'Export as PNG',
-          action: () => {
-            this.editor.exportSelectedObjectsAsPng();
-          },
-        },
-        {
-          label: 'Export as SVG',
-          action: () => {
-            this.editor.exportSelectedObjectsAsSvg();
+            window.alert('Child 3 clicked');
           },
         },
       ],
@@ -165,9 +124,19 @@ export class CustomContextMenuObjectInspectorComponent {
     },
   ];
 
-  private async seedObjects() {
+  async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
     for (const obj of createSeedObjects()) {
       await this.editor.addObject(obj);
     }
+
+    await this.editor.selectAllObjectsInViewport();
+
+    const selected = await this.editor.getSelectedObjects();
+
+    await this.editor.openContextMenu({
+      x: selected[0].translateX + 50,
+      y: selected[0].translateY + 50,
+      objectId: selected[0].id,
+    });
   }
 }

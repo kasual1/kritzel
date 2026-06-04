@@ -1,7 +1,17 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
-import { KritzelEditor, ContextMenuItem, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import {
+  KritzelEditor,
+  ContextMenuItem,
+  KritzelSyncConfig,
+} from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
+import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
   selector: 'app-custom-context-menu-canvas-quick-actions',
@@ -14,10 +24,8 @@ import { angularThemeDark } from '../../const/angular-theme-dark';
       #editor
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="[]"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onEditorReady()"
@@ -35,9 +43,7 @@ export class CustomContextMenuCanvasQuickActionsComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider]
-  };
+  
 
   globalItems: ContextMenuItem[] = [
     {
@@ -57,6 +63,10 @@ export class CustomContextMenuCanvasQuickActionsComponent {
   ];
 
   async onEditorReady(): Promise<void> {
+    for (const obj of createSeedObjects()) {
+      await this.editor.addObject(obj);
+    }
+
     await this.editor.openContextMenu({ x: -50, y: -50 });
   }
 }
