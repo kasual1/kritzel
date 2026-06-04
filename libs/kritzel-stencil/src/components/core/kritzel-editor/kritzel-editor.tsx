@@ -225,15 +225,7 @@ export class KritzelEditor {
   @Prop() cursorTarget?: HTMLElement;
 
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
-  @Prop() loginConfig?: KritzelLoginConfig = {
-    providers: [
-      {
-        label: 'Sign in with Google',
-        icon: 'google',
-        name: 'Google',
-      },
-    ],
-  };
+  @Prop() loginConfig?: KritzelLoginConfig;
 
   /** Whether the editor is in a loading state. When true, a loading overlay is displayed. */
   @Prop() isLoading: boolean = false;

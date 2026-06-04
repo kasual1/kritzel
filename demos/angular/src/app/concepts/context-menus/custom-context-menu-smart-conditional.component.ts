@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { KritzelEditor, ContextMenuItem, InMemorySyncProvider, KritzelSyncConfig, EditorIsReadyEvent } from 'kritzel-angular';
+import { KritzelEditor, ContextMenuItem, KritzelSyncConfig, EditorIsReadyEvent } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
@@ -15,10 +15,8 @@ import { createSeedObjects } from '../../const/seed-objects';
       #editor
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onIsReady($event)"
@@ -37,7 +35,7 @@ export class CustomContextMenuSmartConditionalComponent {
   themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider]
+    providers: []
   };
 
   globalItems: ContextMenuItem[] = [

@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor, InMemorySyncProvider, IndexedDBSyncProvider, BroadcastSyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { KritzelEditor, IndexedDBSyncProvider, BroadcastSyncProvider, KritzelSyncConfig } from 'kritzel-angular';
 
 @Component({
   selector: 'app-collaboration-local',
@@ -47,7 +47,7 @@ export class CollaborationLocalComponent {
   }
 
   private buildConfig(): KritzelSyncConfig {
-    const providers: KritzelSyncConfig['providers'] = [InMemorySyncProvider];
+    const providers: KritzelSyncConfig['providers'] = [];
     if (this.useIndexedDB) providers.push(IndexedDBSyncProvider);
     if (this.useBroadcast) providers.push(BroadcastSyncProvider);
     return { providers };

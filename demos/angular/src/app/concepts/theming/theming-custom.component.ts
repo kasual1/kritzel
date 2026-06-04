@@ -3,7 +3,6 @@ import {
   KritzelEditor,
   KritzelTheme,
   lightTheme,
-  InMemorySyncProvider,
   KritzelSyncConfig,
 } from 'kritzel-angular';
 import { createSeedObjects } from '../../const/seed-objects';
@@ -256,8 +255,6 @@ const brandedPurpleFlatTheme = {
       theme="branded-purple-flat"
       [themes]="themes"
       [wheelEnabled]="false"
-      [syncConfig]="syncConfig"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="true"
       [isWorkspaceManagerVisible]="true"
       (isReady)="onIsReady($event)"
@@ -287,9 +284,7 @@ export class ThemingCustomComponent {
 
   themes: KritzelTheme[] = [brandedPurpleFlatTheme];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   async onIsReady(_event: CustomEvent) {
     for (const obj of createSeedObjects()) {

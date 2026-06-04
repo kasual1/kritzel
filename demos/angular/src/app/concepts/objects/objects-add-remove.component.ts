@@ -7,12 +7,12 @@ import {
 import {
   KritzelEditor,
   EditorIsReadyEvent,
-  InMemorySyncProvider,
   KritzelBaseObject,
   KritzelShape,
   KritzelPath,
   KritzelSyncConfig,
   ShapeType,
+  IndexedDBSyncProvider,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
@@ -37,8 +37,6 @@ import { createSeedObjects } from '../../const/seed-objects';
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady($event)"
@@ -97,10 +95,6 @@ export class ObjectsAddRemoveComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
 
   objects = signal<KritzelBaseObject[]>([]);
 

@@ -10,7 +10,6 @@ import {
   KritzelBaseObject,
   ShapeType,
   ContextMenuItem,
-  InMemorySyncProvider,
   EditorIsReadyEvent,
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
@@ -44,10 +43,8 @@ interface StickyCardItem {
           #editorEl
           [themes]="themes"
           [theme]="'angular-theme'"
-          [syncConfig]="syncConfig"
           [globalContextMenuItems]="globalItems"
           [objectContextMenuItems]="objectItems"
-          [loginConfig]="undefined"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
           (isReady)="onReady($event)"
@@ -462,9 +459,7 @@ export class AgileRetroComponent implements OnDestroy {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   viewport = signal<KritzelViewportState | null>(null);
   activeTool = signal<string>('select');

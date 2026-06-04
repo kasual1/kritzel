@@ -7,7 +7,6 @@ import {
 import {
   KritzelEditor,
   EditorIsReadyEvent,
-  InMemorySyncProvider,
   KritzelBaseObject,
   KritzelSyncConfig,
 } from 'kritzel-angular';
@@ -34,8 +33,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         [wheelEnabled]="false"
         [theme]="'angular-theme'"
         [themes]="themes"
-        [syncConfig]="syncConfig"
-        [loginConfig]="undefined"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"
@@ -135,9 +132,7 @@ export class ObjectsOrderingComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   objects = signal<KritzelBaseObject[]>([]);
 
