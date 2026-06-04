@@ -438,6 +438,7 @@ export namespace Components {
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
         "openLoginDialog": () => Promise<void>;
         "panTo": (x: number, y: number) => Promise<void>;
+        "panToObject": (object: KritzelBaseObject) => Promise<void>;
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
         "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>;
@@ -780,6 +781,11 @@ export namespace Components {
           * @param y - Y position in world coordinates to center on.
          */
         "panTo": (x: number, y: number) => Promise<void>;
+        /**
+          * Pans the viewport to center on the given object without changing the zoom level. Unlike `centerObjectInViewport`, this moves the camera — not the object.
+          * @param object - The object whose center the viewport should pan to.
+         */
+        "panToObject": (object: KritzelBaseObject) => Promise<void>;
         /**
           * Pastes previously copied objects at the specified world coordinates.
           * @param x - X position in world coordinates.

@@ -15,8 +15,8 @@ import { createSeedObjects } from '../../const/seed-objects';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="toolbar">
-      <button (click)="centerOn(0)" [disabled]="objects().length === 0">Center on Ellipse</button>
-      <button (click)="centerOn(1)" [disabled]="objects().length < 2">Center on Rectangle</button>
+      <button (click)="centerOn(1)" [disabled]="objects().length < 2">Center on Ellipsis</button>
+      <button (click)="centerOn(0)" [disabled]="objects().length === 0">Center on Rectangle</button>
       <button (click)="centerOn(2)" [disabled]="objects().length < 3">Center on Line</button>
       <button (click)="centerOn(3)" [disabled]="objects().length < 4">Center on Path</button>
       <button (click)="backToContent()">Back to Content</button>
@@ -60,7 +60,7 @@ export class ViewportCenterComponent {
   async centerOn(index: number) {
     const all = this.objects();
     if (all[index]) {
-      await this.editor.centerObjectInViewport(all[index]);
+      await this.editor.panToObject(all[index]);
     }
   }
 

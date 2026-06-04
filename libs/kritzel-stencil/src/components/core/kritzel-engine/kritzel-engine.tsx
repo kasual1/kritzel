@@ -1103,6 +1103,16 @@ export class KritzelEngine {
   }
 
   /**
+   * Pans the viewport to center on the given object without changing the zoom level.
+   * Unlike `centerObjectInViewport`, this moves the camera — not the object.
+   * @param object - The object whose center the viewport should pan to.
+   */
+  @Method()
+  async panToObject(object: KritzelBaseObject): Promise<void> {
+    this.viewport.panTo(object.centerX, object.centerY);
+  }
+
+  /**
    * Pans and zooms the viewport to fit the nearest content, with padding.
    * Useful when the user has panned away from all objects.
    * @returns `true` if content was found and the viewport was adjusted, `false` otherwise.

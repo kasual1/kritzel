@@ -606,6 +606,22 @@ Type: `Promise<void>`
 
 
 
+### `panToObject(object: KritzelBaseObject) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name     | Type                                           | Description |
+| -------- | ---------------------------------------------- | ----------- |
+| `object` | `KritzelBaseObject<HTMLElement \| SVGElement>` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `paste(x: number, y: number) => Promise<void>`
 
 

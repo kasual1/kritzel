@@ -399,6 +399,11 @@ export class KritzelEditor {
   }
 
   @Method()
+  async panToObject(object: KritzelBaseObject): Promise<void> {
+    return this.engineRef.panToObject(object);
+  }
+
+  @Method()
   async backToContent(): Promise<boolean> {
     return this.engineRef.backToContent();
   }
