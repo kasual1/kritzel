@@ -154,6 +154,11 @@ export class KritzelContextMenu {
     return idx === -1 ? '' : path.substring(0, idx);
   }
 
+  private getMenuDepth(path: string): number {
+    if (!path) return 0;
+    return path.split('.').length;
+  }
+
   private pruneStaleRefs() {
     const openPaths = new Set(this.getOpenSubmenuPaths());
     for (const key of Array.from(this.submenuRefs.keys())) {
@@ -298,10 +303,13 @@ export class KritzelContextMenu {
 
   private renderSubmenu(processedChildren: ProcessedMenuItem[], path: string) {
     const position = this.submenuPositions[path] === 'left' ? 'left' : 'right';
+    const zIndex = this.getMenuDepth(path) + 1;
+
     return (
       <div
         class={{ 'submenu-container': true, 'position-left': position === 'left' }}
         key={`submenu-${path}`}
+        style={{ zIndex: String(zIndex) }}
         ref={el => el && this.submenuRefs.set(path, el)}
         onMouseEnter={() => this.handleSubmenuMouseEnter()}
         onMouseLeave={() => this.handleSubmenuMouseLeave(path)}
