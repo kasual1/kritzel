@@ -10,6 +10,26 @@ Organized into:
 
 ## Sync Providers
 
+### Default Behavior
+
+- `kritzel-editor` defaults to `syncConfig.providers = []`
+- With no sync providers configured:
+  - Object state is not persisted across page reloads
+  - Object state is not persisted when switching to another workspace and coming back
+
+### Persistence Scope Guide
+
+| Goal | Recommended Provider | Persists Across Workspace Switches | Persists Across Page Reloads |
+|------|-----------------------|------------------------------------|------------------------------|
+| Deterministic demo state after reload | None (`providers: []`) | No | No |
+| Real local persistence for product usage | `IndexedDBSyncProvider` | Yes | Yes |
+| Demo-only workspace persistence in current session | `InMemorySyncProvider` | Yes | No |
+
+### Demo Guidance
+
+- Default for demos: do not configure a sync provider so each reload starts clean
+- Exception: workspace concept demos should configure `InMemorySyncProvider` to demonstrate workspace switching while still resetting on reload
+
 ### Interface
 
 All sync providers implement a common interface (`KritzelSyncProvider` or similar contract):
