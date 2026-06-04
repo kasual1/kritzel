@@ -5,7 +5,6 @@ import {
 } from '@angular/core';
 import {
   KritzelEditor,
-  InMemorySyncProvider,
   KritzelSyncConfig,
   KritzelImage,
   EditorIsReadyEvent,
@@ -76,8 +75,6 @@ const pointInSphere = (index: number, count: number) => {
         editorId="infinite-canvas-gallery"
         [theme]="'angular-theme'"
         [themes]="themes"
-        [syncConfig]="syncConfig"
-        [loginConfig]="undefined"
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="false"
         [isObjectDistanceFadingActive]="true"
@@ -161,9 +158,7 @@ export class InfiniteCanvasGalleryComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
     if (this.isReady) {

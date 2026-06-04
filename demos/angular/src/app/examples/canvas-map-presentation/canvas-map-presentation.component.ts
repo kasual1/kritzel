@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, computed, ViewChild } from '@angular/core';
 import { 
   KritzelEditor, 
-  InMemorySyncProvider, 
   KritzelSyncConfig, 
   KritzelShape, 
   KritzelText, 
@@ -59,8 +58,6 @@ interface Slide {
         editorId="canvas-map-presentation"
         [theme]="'angular-theme'"
         [themes]="themes"
-        [syncConfig]="syncConfig"
-        [loginConfig]="undefined"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady()"
@@ -177,9 +174,7 @@ export class CanvasMapPresentationComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   slides: Slide[] = [
     { title: '1. Welcome to Canvas Map', centerX: 0, centerY: 0 },

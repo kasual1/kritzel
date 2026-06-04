@@ -1,5 +1,11 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { KritzelEditor, KritzelTheme, lightTheme, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import {
+  KritzelEditor,
+  KritzelTheme,
+  lightTheme,
+  KritzelSyncConfig,
+} from 'kritzel-angular';
+import { createSeedObjects } from '../../const/seed-objects';
 
 const brandPurple = '#7c3aed';
 const brandPurpleHover = '#6d28d9';
@@ -8,7 +14,7 @@ const brandPurpleLight = 'rgba(124, 58, 237, 0.1)';
 const brandPurpleMedium = 'rgba(124, 58, 237, 0.2)';
 
 const brandedPurpleFlatTheme = {
-  ...(lightTheme),
+  ...lightTheme,
   name: 'branded-purple-flat',
   global: {
     ...lightTheme.global,
@@ -136,7 +142,7 @@ const brandedPurpleFlatTheme = {
     innerBorderRadius: '0px',
   },
   dropdown: {
-    ...((lightTheme.dropdown ?? {})),
+    ...(lightTheme.dropdown ?? {}),
     background: '#faf6ff',
     borderColor: '#e1d2ff',
     borderRadius: '0px',
@@ -148,7 +154,7 @@ const brandedPurpleFlatTheme = {
     selectedBackgroundColor: brandPurpleMedium,
   },
   numericInput: {
-    ...((lightTheme.numericInput ?? {})),
+    ...(lightTheme.numericInput ?? {}),
     inputBackground: '#faf6ff',
     borderColor: '#e1d2ff',
     borderRadius: '0px',
@@ -210,7 +216,7 @@ const brandedPurpleFlatTheme = {
     dividerBackgroundColor: '#e1d2ff',
   },
   textInput: {
-    ...((lightTheme.textInput ?? {})),
+    ...(lightTheme.textInput ?? {}),
     background: '#faf6ff',
     borderColor: '#e1d2ff',
     borderRadius: '0px',
@@ -249,33 +255,40 @@ const brandedPurpleFlatTheme = {
       theme="branded-purple-flat"
       [themes]="themes"
       [wheelEnabled]="false"
-      [syncConfig]="syncConfig"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="true"
       [isWorkspaceManagerVisible]="true"
+      (isReady)="onIsReady($event)"
     ></kritzel-editor>
   `,
-  styles: [`
-    :host {
-      display: block;
-      height: 100%;
-      background: linear-gradient(180deg, #fbf8ff 0%, #f3ebff 100%);
-    }
+  styles: [
+    `
+      :host {
+        display: block;
+        height: 100%;
+        background: linear-gradient(180deg, #fbf8ff 0%, #f3ebff 100%);
+      }
 
-    kritzel-editor {
-      display: block;
-      height: 100%;
-      background: linear-gradient(180deg, #ffffff 0%, #f8f2ff 100%);
-      border: 1px solid #e1d2ff;
-      border-radius: 0;
-      box-sizing: border-box;
-    }
-  `],
+      kritzel-editor {
+        display: block;
+        height: 100%;
+        background: linear-gradient(180deg, #ffffff 0%, #f8f2ff 100%);
+        border: 1px solid #e1d2ff;
+        border-radius: 0;
+        box-sizing: border-box;
+      }
+    `,
+  ],
 })
 export class ThemingCustomComponent {
+  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+
   themes: KritzelTheme[] = [brandedPurpleFlatTheme];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
+
+  async onIsReady(_event: CustomEvent) {
+    for (const obj of createSeedObjects()) {
+      await this.editor.addObject(obj);
+    }
+  }
 }

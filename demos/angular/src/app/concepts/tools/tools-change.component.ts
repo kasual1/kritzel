@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent, InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { KritzelEditor, EditorIsReadyEvent, KritzelSyncConfig } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
@@ -26,8 +26,6 @@ type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text';
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
-      [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       [isControlsVisible]="false"
@@ -52,9 +50,7 @@ export class ToolsChangeComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   activeTool = signal<ToolName>('select');
 
