@@ -33,6 +33,7 @@ import { ToolsDisableComponent } from './concepts/tools/tools-disable.component'
 import { ToolsRegisterComponent } from './concepts/tools/tools-register.component';
 import { WorkspacesSwitchComponent } from './concepts/workspaces/workspaces-switch.component';
 import { WorkspacesCrudComponent } from './concepts/workspaces/workspaces-crud.component';
+import { ObjectsOrderingComponent } from './concepts/objects/objects-ordering.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -61,6 +62,7 @@ export const routes: Routes = [
       { path: 'objects-query', component: ObjectsQueryComponent },
       { path: 'objects-selection', component: ObjectsSelectionComponent },
       { path: 'objects-grouping', component: ObjectsGroupingComponent },
+      { path: 'objects-ordering', component: ObjectsOrderingComponent },
       { path: 'viewport-change', component: ViewportChangeComponent },
       { path: 'viewport-center', component: ViewportCenterComponent },
       { path: 'viewport-coordinates', component: ViewportCoordinatesComponent },

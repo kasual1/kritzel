@@ -144,9 +144,21 @@ export class KritzelEngine {
 
   /** Context menu items shown when right-clicking the canvas background. */
   @Prop() globalContextMenuItems!: ContextMenuItem[];
+  @Watch('globalContextMenuItems')
+  onGlobalContextMenuItemsChange(newValue: ContextMenuItem[] | undefined) {
+    if (this.contextMenuHandler) {
+      this.contextMenuHandler.globalContextMenuItems = newValue ?? [];
+    }
+  }
 
   /** Context menu items shown when right-clicking a selected object. */
   @Prop() objectContextMenuItems!: ContextMenuItem[];
+  @Watch('objectContextMenuItems')
+  onObjectContextMenuItemsChange(newValue: ContextMenuItem[] | undefined) {
+    if (this.contextMenuHandler) {
+      this.contextMenuHandler.objectContextMenuItems = newValue ?? [];
+    }
+  }
   /** Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine. */
   @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
   @Watch('scaleMax')

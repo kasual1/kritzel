@@ -41,6 +41,32 @@ Handlers manage specific categories of user interaction that are independent of 
 - Handlers are instantiated by the engine and called from the rendering component
 - Keep handlers stateless where possible; use `this._core.store` for shared state
 - Coordinate with the active tool when needed: `this._core.toolRegistry.activeTool`
+- Avoid `any[]` for handler configuration; define dedicated interfaces/types for handler inputs
+- If handlers cache external configuration, ensure components can refresh that configuration when props change
+
+## Runtime Config Updates
+
+Many handlers are created once but must react to changing component props.
+
+Recommended options:
+- Keep config on the component and pass it at call time
+- Or expose explicit update methods/properties on the handler and wire them via component `@Watch()` handlers
+
+Example approach:
+
+```typescript
+export class MyHandler extends KritzelBaseHandler {
+  items: MenuItem[] = [];
+
+  setItems(items: MenuItem[] | undefined): void {
+    this.items = items ?? [];
+  }
+}
+```
+
+Then in the component:
+- Initialize handler with initial props
+- Also call `handler.setItems(...)` inside the corresponding `@Watch()` method
 
 ## Keyboard Shortcut Pattern (Key Handler)
 
