@@ -49,7 +49,6 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
@@ -61,10 +60,6 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
 })
 export class MyDemoComponent {
   themes = [customAngularTheme];
-
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
 }
 ```
 
@@ -109,7 +104,7 @@ Every `<kritzel-editor>` in a demo page must include these bindings:
 |---------|---------|
 | `editorId="<unique-id>"` | Unique identifier per demo (prevents state collision) |
 | `[wheelEnabled]="false"` | Prevents scroll-jacking inside iframes |
-| `[syncConfig]="syncConfig"` | Configures sync providers (use `InMemorySyncProvider` as minimum) |
+| `[syncConfig]="syncConfig"` | Configures sync providers (use `empty array` as to disable) |
 | `[loginConfig]="undefined"` | Disables the login dialog |
 | `[isMoreMenuVisible]="false"` | Hides the more menu (unless the demo needs it) |
 | `[isWorkspaceManagerVisible]="false"` | Hides workspace manager (unless the demo needs it) |

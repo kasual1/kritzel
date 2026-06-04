@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
-import { KritzelEditor, InMemorySyncProvider, KritzelSyncConfig, EditorIsReadyEvent } from 'kritzel-angular';
+import { KritzelEditor, KritzelSyncConfig, EditorIsReadyEvent } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
@@ -14,8 +14,6 @@ import { createSeedObjects } from '../../const/seed-objects';
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
-      [loginConfig]="undefined"
       [isWorkspaceManagerVisible]="false"
       [isMoreMenuVisible]="false"
       (isReady)="onReady($event)"
@@ -30,9 +28,7 @@ export class ComponentsEditorUiComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     for (const obj of createSeedObjects()) {

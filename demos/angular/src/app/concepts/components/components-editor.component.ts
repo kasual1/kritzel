@@ -1,7 +1,6 @@
 import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import {
   KritzelEditor,
-  InMemorySyncProvider,
   KritzelSyncConfig,
   EditorIsReadyEvent,
 } from 'kritzel-angular';
@@ -19,8 +18,6 @@ import { createSeedObjects } from '../../const/seed-objects';
       [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
-      [syncConfig]="syncConfig"
-      [loginConfig]="undefined"
       (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
@@ -38,9 +35,7 @@ export class ComponentsEditorComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     for (const obj of createSeedObjects()) {

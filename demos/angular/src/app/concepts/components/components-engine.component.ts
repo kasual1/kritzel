@@ -7,7 +7,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  InMemorySyncProvider,
   KritzelBrushTool,
   KritzelEraserTool,
   KritzelSelectionTool,
@@ -30,7 +29,7 @@ import { createSeedObjects } from '../../const/seed-objects';
     <div class="engine-wrap">
       <kritzel-engine
         #engine
-        [syncConfig]="syncConfig"
+        
         [wheelEnabled]="false"
         (isEngineReady)="onReady()"
       ></kritzel-engine>
@@ -70,9 +69,7 @@ import { createSeedObjects } from '../../const/seed-objects';
 export class ComponentsEngineComponent {
   @ViewChild('engine', { static: true }) engineRef!: ElementRef<HTMLElement>;
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   private get engine(): any {
     return this.engineRef?.nativeElement;
