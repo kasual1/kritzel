@@ -1,4 +1,5 @@
 import { KritzelEditor } from './kritzel-editor';
+import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 
 // Simple mock for decorators
 jest.mock('@stencil/core', () => ({
@@ -31,6 +32,7 @@ describe('KritzelEditor', () => {
       selectAllObjectsInViewport: jest.fn().mockResolvedValue(undefined),
       clearSelection: jest.fn().mockReturnValue(undefined),
       centerObjectInViewport: jest.fn().mockResolvedValue(undefined),
+      centerObjects: jest.fn().mockResolvedValue(true),
       backToContent: jest.fn().mockResolvedValue(true),
       centerAllObjects: jest.fn().mockResolvedValue(true),
       setViewport: jest.fn().mockResolvedValue(undefined),
@@ -191,6 +193,12 @@ describe('KritzelEditor', () => {
     it('should call zoomTo on engine', async () => {
       await component.zoomTo(2, 50, 50);
       expect(mockEngine.zoomTo).toHaveBeenCalledWith(2, 50, 50);
+    });
+
+    it('should call centerObjects on engine', async () => {
+      const objects = [{ id: 'obj-1' }] as unknown as KritzelBaseObject[];
+      await component.centerObjects(objects, false);
+      expect(mockEngine.centerObjects).toHaveBeenCalledWith(objects, false);
     });
   });
 

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/
 import {
   KritzelEditor,
   EditorIsReadyEvent,
-  InMemorySyncProvider,
+  IndexedDBSyncProvider,
   KritzelBaseObject,
   KritzelSyncConfig,
 } from 'kritzel-angular';
@@ -28,8 +28,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         [wheelEnabled]="false"
         [theme]="'angular-theme'"
         [themes]="themes"
-        [syncConfig]="syncConfig"
-        [loginConfig]="undefined"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"
@@ -73,7 +71,9 @@ export class ObjectsSelectionComponent {
   themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
+    providers: [IndexedDBSyncProvider],
+    
+
   };
 
   selectedObjects = signal<KritzelBaseObject[]>([]);

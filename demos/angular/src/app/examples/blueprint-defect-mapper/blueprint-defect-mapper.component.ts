@@ -8,7 +8,6 @@ import {
   KritzelImage, 
   ShapeType, 
   IndexedDBSyncProvider,
-  InMemorySyncProvider
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
@@ -35,8 +34,6 @@ interface Defect {
           #editorEl
           [themes]="themes"
           [theme]="'angular-theme'"
-          [syncConfig]="syncConfig"
-          [loginConfig]="undefined"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
           (isReady)="onReady()"
@@ -441,9 +438,7 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: [InMemorySyncProvider],
-  };
+  
 
   viewport = signal<KritzelViewportState | null>(null);
   placingMode = signal<boolean>(false);
