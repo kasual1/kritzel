@@ -17,6 +17,7 @@ import { ThemingApplyComponent } from './concepts/theming/theming-apply.componen
 import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
 import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
 import { CollaborationRealtimeComponent } from './concepts/collaboration/collaboration-realtime.component';
+import { CollaborationLocalComponent as PersistenceLocalComponent } from './concepts/persistence/persistence-local.component';
 import { ComponentsEditorComponent } from './concepts/components/components-editor.component';
 import { ComponentsEditorUiComponent } from './concepts/components/components-editor-ui.component';
 import { ComponentsEngineComponent } from './concepts/components/components-engine.component';
@@ -56,6 +57,7 @@ export const routes: Routes = [
       { path: 'theming-apply', component: ThemingApplyComponent },
       { path: 'theming-custom', component: ThemingCustomComponent },
       { path: 'collaboration-local', component: CollaborationLocalComponent },
+      { path: 'persistence-local', component: PersistenceLocalComponent },
       {
         path: 'collaboration-realtime',
         component: CollaborationRealtimeComponent,

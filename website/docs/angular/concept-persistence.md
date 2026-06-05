@@ -17,18 +17,18 @@ IndexedDB persistence is ideal when you want users to keep their canvas state ac
 
 ## Persisting Canvas State with IndexedDB
 
-Configure `IndexedDBSyncProvider` in the `providers` array to make object state durable in the browser.
+Configure `IndexedDBSyncProvider` in `syncConfig.providers` to make object state durable in the browser.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/collaboration-local"
-  repoFiles={['src/app/concepts/collaboration/collaboration-local.component.ts']}
+  demoPath="/concepts/persistence-local"
+  repoFiles={['src/app/concepts/persistence/persistence-local.component.ts']}
 />
 
 ## Related API Methods
 
 - Sync configuration (`[syncConfig]`, `KritzelSyncConfig`)
 - Local persistence provider (`IndexedDBSyncProvider`)
-- Provider composition (`providers` array)
+- Provider list (`syncConfig.providers`)
 
 For a comprehensive view, see the [API Reference](api-reference-editor.md).
