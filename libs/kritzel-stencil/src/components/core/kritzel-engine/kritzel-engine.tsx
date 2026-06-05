@@ -789,6 +789,10 @@ export class KritzelEngine {
     object.zIndex = this.core.store.currentZIndex;
     object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
+    if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+      await object.prepareForInsert();
+    }
+
     // Handle KritzelText: recreate the editor now that _core is available
     // The editor's dispatchTransaction callback needs _core for persisting changes
     if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
@@ -889,6 +893,13 @@ export class KritzelEngine {
   async addObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]> {
     if (objects.length === 0) {
       return [];
+    }
+
+    for (const object of objects) {
+      object._core = this.core;
+      if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+        await object.prepareForInsert();
+      }
     }
 
     this.core.store.objects.transaction(() => {
