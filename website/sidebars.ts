@@ -18,7 +18,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Examples',
       collapsed: true,
-      items: ['example-object-explorer', 'example-blueprint-defect-mapper', 'example-slideshow-presentation', 'example-canvas-map-presentation', 'example-agile-retro', 'example-infinite-canvas-gallery'],
+      items: ['example-object-explorer', 'example-blueprint-defect-mapper', 'example-slideshow-presentation', 'example-canvas-map-presentation', 'example-agile-retro', 'example-infinite-canvas-gallery', 'example-image-annotation-studio'],
     },
     {
       type: 'category',
