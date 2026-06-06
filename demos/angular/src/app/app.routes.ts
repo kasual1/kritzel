@@ -13,6 +13,7 @@ import { SlideshowPresentationComponent } from './examples/slideshow-presentatio
 import { CanvasMapPresentationComponent } from './examples/canvas-map-presentation/canvas-map-presentation.component';
 import { AgileRetroComponent } from './examples/agile-retro/agile-retro.component';
 import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-gallery/infinite-canvas-gallery.component';
+import { ImageAnnotationStudioComponent } from './examples/image-annotation-studio/image-annotation-studio.component';
 import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
 import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
 import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
@@ -121,6 +122,10 @@ export const routes: Routes = [
       {
         path: 'infinite-canvas-gallery',
         component: InfiniteCanvasGalleryComponent,
+      },
+      {
+        path: 'image-annotation-studio',
+        component: ImageAnnotationStudioComponent,
       },
       {
         path: 'collaboration-1',
