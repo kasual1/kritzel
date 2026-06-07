@@ -28,7 +28,7 @@ import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
-import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelUndoState } from '../../..';
+import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelImage, KritzelUndoState } from '../../..';
 import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
 import { ThemeName, KritzelTheme } from '../../../interfaces/theme.interface';
 import { ThemeHelper } from '../../../helpers/theme.helper';
@@ -434,6 +434,16 @@ export class KritzelEditor {
   }
 
   @Method()
+  async zoomIn(factor: number = 1.6, duration: number = 200): Promise<void> {
+    return this.engineRef.zoomIn(factor, duration);
+  }
+
+  @Method()
+  async zoomOut(factor: number = 1.6, duration: number = 200): Promise<void> {
+    return this.engineRef.zoomOut(factor, duration);
+  }
+
+  @Method()
   async getViewport(): Promise<KritzelViewportState> {
     return this.engineRef.getViewport();
   }
@@ -721,6 +731,18 @@ export class KritzelEditor {
       loginConfig: this.loginConfig,
       theme: this.theme
     });
+
+    const bg = new KritzelImage({
+      src: 'http://localhost:4200/assets/floorplan.png',
+      maxWidth: 1200,
+      maxHeight: 900,
+      translateX: -600,
+      translateY: -450,
+    });
+
+    await this.engineRef.addObject(bg);
+
+    await this.engineRef.centerObjects([bg]);
   }
 
   async onEngineReady(event: CustomEvent<KritzelEngineState>) {
