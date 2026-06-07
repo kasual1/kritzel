@@ -1192,6 +1192,26 @@ export class KritzelEngine {
   }
 
   /**
+   * Zooms in by a fixed step, centered on the current viewport center, with a smooth animation.
+   * @param factor - Multiplicative zoom-in step.
+   * @param duration - Animation duration in milliseconds.
+   */
+  @Method()
+  async zoomIn(factor: number, duration: number): Promise<void> {
+    this.viewport.zoomIn(factor, duration);
+  }
+
+  /**
+   * Zooms out by a fixed step, centered on the current viewport center, with a smooth animation.
+   * @param factor - Multiplicative zoom-out step.
+   * @param duration - Animation duration in milliseconds.
+   */
+  @Method()
+  async zoomOut(factor: number, duration: number): Promise<void> {
+    this.viewport.zoomOut(factor, duration);
+  }
+
+  /**
    * Returns the current viewport state including position, scale, and dimensions.
    * @returns The current viewport state.
    */
