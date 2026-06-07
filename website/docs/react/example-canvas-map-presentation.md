@@ -13,7 +13,7 @@ This page demonstrates how to build an immersive, non-linear presentation deck s
 
 ## Prerequisites
 
-Complete the [Quick Start](website/docs/angular/quick-start.md) guide to have a working `<kritzel-editor>` rendered in your application. This example builds on that setup.
+Complete the [Quick Start](quick-start.md) guide to have a working `<kritzel-editor>` rendered in your application. This example builds on that setup.
 
 ---
 
