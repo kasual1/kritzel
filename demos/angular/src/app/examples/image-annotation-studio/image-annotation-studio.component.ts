@@ -34,13 +34,7 @@ type ColorTool = {
 
 @Component({
   selector: 'app-image-annotation-studio',
-  imports: [
-    KritzelEditor,
-    LucideMinus,
-    LucidePlus,
-    LucideRedo2,
-    LucideUndo2,
-  ],
+  imports: [KritzelEditor, LucideMinus, LucidePlus, LucideRedo2, LucideUndo2],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="annotation-page">
@@ -141,8 +135,16 @@ type ColorTool = {
       height: 100%;
       color: #eef2ff;
       background:
-        radial-gradient(circle at 15% 20%, rgba(251, 146, 60, 0.14), transparent 40%),
-        radial-gradient(circle at 85% 78%, rgba(59, 130, 246, 0.16), transparent 38%),
+        radial-gradient(
+          circle at 15% 20%,
+          rgba(251, 146, 60, 0.14),
+          transparent 40%
+        ),
+        radial-gradient(
+          circle at 85% 78%,
+          rgba(59, 130, 246, 0.16),
+          transparent 38%
+        ),
         linear-gradient(120deg, #0d111a 0%, #181c2a 52%, #0f1724 100%);
       font-family: 'Segoe UI', sans-serif;
     }
@@ -381,7 +383,11 @@ export class ImageAnnotationStudioComponent implements OnDestroy {
     },
   };
 
-  readonly themes = [this.annotationThemeDark, angularThemeLight, angularThemeDark];
+  readonly themes = [
+    this.annotationThemeDark,
+    angularThemeLight,
+    angularThemeDark,
+  ];
 
   readonly colorTools: ColorTool[] = [
     { name: 'ink-black', label: 'Black', color: '#030712' },
@@ -464,13 +470,11 @@ export class ImageAnnotationStudioComponent implements OnDestroy {
   }
 
   async zoomIn() {
-    const image = await this.getImageObject();
-    await this.editor.zoomInOnObject(image!, this.zoomStepMultiplier);
+    // TODO: zoom in
   }
 
   async zoomOut() {
-    const image = await this.getImageObject();
-    await this.editor.zoomOutOnObject(image!, this.zoomStepMultiplier);
+    // TODO: zoom out
   }
 
   async save() {
@@ -501,8 +505,8 @@ export class ImageAnnotationStudioComponent implements OnDestroy {
 
   private async syncTextColorToActiveSketchTool() {
     const activeSketchColor =
-      this.colorTools.find(tool => tool.name === this.activeSketchTool())?.color ??
-      this.colorTools[0].color;
+      this.colorTools.find((tool) => tool.name === this.activeSketchTool())
+        ?.color ?? this.colorTools[0].color;
 
     const textColor = {
       light: activeSketchColor,
@@ -545,7 +549,9 @@ export class ImageAnnotationStudioComponent implements OnDestroy {
   }
 
   private async getImageObject(): Promise<KritzelImage | null> {
-    return (await this.editor.getObjectById(this.imageObjectId)) as KritzelImage | null;
+    return (await this.editor.getObjectById(
+      this.imageObjectId,
+    )) as KritzelImage | null;
   }
 
   private lockImagePointerEvents() {
