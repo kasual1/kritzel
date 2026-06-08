@@ -56,6 +56,7 @@ interface Slide {
         [theme]="'angular-theme'"
         [themes]="themes"
         [wheelEnabled]="false"
+        [isControlsVisible]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady()"
@@ -357,6 +358,6 @@ export class SlideshowPresentationComponent {
     const slide = this.slides[index];
     // Smoothly pan search viewport to target center coordinates, keeping scale at 0.85
     // so the slide is slightly smaller than the viewport, showing a nice external frame margin.
-    await this.editor.setViewport(slide.centerX, slide.centerY, 0.85);
+    await this.editor.setViewport(slide.centerX, slide.centerY, 1);
   }
 }

@@ -10,8 +10,6 @@ import { CustomContextMenuObjectInspectorComponent } from './concepts/context-me
 import { ObjectExplorerComponent } from './examples/object-explorer/object-explorer.component';
 import { BlueprintDefectMapperComponent } from './examples/blueprint-defect-mapper/blueprint-defect-mapper.component';
 import { SlideshowPresentationComponent } from './examples/slideshow-presentation/slideshow-presentation.component';
-import { CanvasMapPresentationComponent } from './examples/canvas-map-presentation/canvas-map-presentation.component';
-import { AgileRetroComponent } from './examples/agile-retro/agile-retro.component';
 import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-gallery/infinite-canvas-gallery.component';
 import { ImageAnnotationStudioComponent } from './examples/image-annotation-studio/image-annotation-studio.component';
 import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
@@ -114,11 +112,6 @@ export const routes: Routes = [
         path: 'slideshow-presentation',
         component: SlideshowPresentationComponent,
       },
-      {
-        path: 'canvas-map-presentation',
-        component: CanvasMapPresentationComponent,
-      },
-      { path: 'agile-retro', component: AgileRetroComponent },
       {
         path: 'infinite-canvas-gallery',
         component: InfiniteCanvasGalleryComponent,

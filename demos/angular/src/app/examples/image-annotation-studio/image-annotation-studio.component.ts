@@ -506,7 +506,6 @@ export class ImageAnnotationStudioComponent {
 
     image.translateX = -image.width / 2;
     image.translateY = (-image.height / 2) - 50;
-    image.isEditable = false;
 
     await this.editor.addObject(image);
   }
