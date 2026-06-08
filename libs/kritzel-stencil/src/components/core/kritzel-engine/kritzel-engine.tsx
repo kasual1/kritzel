@@ -876,6 +876,7 @@ export class KritzelEngine {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
     });
 
+    this.emitObjectsChange();
     this.emitObjectsAdded([object]);
 
     return object;
@@ -978,6 +979,7 @@ export class KritzelEngine {
       requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
     });
 
+    this.emitObjectsChange();
     this.emitObjectsAdded(objects);
 
     return objects;
@@ -995,6 +997,7 @@ export class KritzelEngine {
 
     this.core.updateObject(object, updatedProperties);
     this.core.rerender();
+    this.emitObjectsChange();
     this.emitObjectsUpdated([{ object, changedProperties: Object.keys(updatedProperties) }]);
 
     return object;
@@ -1016,6 +1019,7 @@ export class KritzelEngine {
 
     objectsMap.remove(o => o.id === object.id);
     this.core.rerender();
+    this.emitObjectsChange();
     this.emitObjectsRemoved([object]);
 
     return object;
@@ -1043,6 +1047,7 @@ export class KritzelEngine {
     });
 
     this.core.rerender();
+    this.emitObjectsChange();
     this.emitObjectsRemoved(objects);
 
     return objects;

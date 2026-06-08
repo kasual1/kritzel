@@ -1189,4 +1189,92 @@ describe('KritzelEngine', () => {
       expect(b.prepareForInsert).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('programmatic API emits objectsChange', () => {
+    const makeObject = (id = 'obj-1'): any => ({
+      id,
+      scale: 1,
+      workspaceId: '',
+      zIndex: 0,
+      _core: null,
+      generateId: jest.fn().mockReturnValue(id),
+    });
+
+    beforeEach(() => {
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
+      core.store.state.activeWorkspace = { id: 'ws1' } as KritzelWorkspace;
+      core.store.allObjects = [];
+      jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
+    });
+
+    it('addObject emits objectsChange', async () => {
+      const object = makeObject();
+
+      await engine.addObject(object);
+
+      expect((engine as any).objectsChange.emit).toHaveBeenCalled();
+    });
+
+    it('addObjects emits objectsChange', async () => {
+      const objects = [makeObject('a'), makeObject('b')];
+
+      await engine.addObjects(objects);
+
+      expect((engine as any).objectsChange.emit).toHaveBeenCalled();
+    });
+
+    it('updateObject emits objectsChange', async () => {
+      const object = makeObject();
+
+      await engine.updateObject(object, { scale: 2 } as any);
+
+      expect((engine as any).objectsChange.emit).toHaveBeenCalled();
+    });
+
+    it('removeObject emits objectsChange', async () => {
+      const object = makeObject();
+
+      await engine.removeObject(object);
+
+      expect((engine as any).objectsChange.emit).toHaveBeenCalled();
+    });
+
+    it('removeObjects emits objectsChange', async () => {
+      const objects = [makeObject('a'), makeObject('b')];
+
+      await engine.removeObjects(objects);
+
+      expect((engine as any).objectsChange.emit).toHaveBeenCalled();
+    });
+
+    it('addObject emits objectsChange before objectsAdded', async () => {
+      const callOrder: string[] = [];
+      (engine as any).objectsChange.emit = jest.fn(() => callOrder.push('objectsChange'));
+      (engine as any).objectsAdded.emit = jest.fn(() => callOrder.push('objectsAdded'));
+
+      await engine.addObject(makeObject());
+
+      expect(callOrder).toEqual(['objectsChange', 'objectsAdded']);
+    });
+
+    it('removeObject emits objectsChange before objectsRemoved', async () => {
+      const callOrder: string[] = [];
+      (engine as any).objectsChange.emit = jest.fn(() => callOrder.push('objectsChange'));
+      (engine as any).objectsRemoved.emit = jest.fn(() => callOrder.push('objectsRemoved'));
+
+      await engine.removeObject(makeObject());
+
+      expect(callOrder).toEqual(['objectsChange', 'objectsRemoved']);
+    });
+
+    it('updateObject emits objectsChange before objectsUpdated', async () => {
+      const callOrder: string[] = [];
+      (engine as any).objectsChange.emit = jest.fn(() => callOrder.push('objectsChange'));
+      (engine as any).objectsUpdated.emit = jest.fn(() => callOrder.push('objectsUpdated'));
+
+      await engine.updateObject(makeObject(), { scale: 2 } as any);
+
+      expect(callOrder).toEqual(['objectsChange', 'objectsUpdated']);
+    });
+  });
 });
