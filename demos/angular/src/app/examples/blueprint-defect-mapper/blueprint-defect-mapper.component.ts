@@ -44,7 +44,6 @@ interface Defect {
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
           (isReady)="onReady()"
-          (viewportChange)="onViewportChange($event)"
           (click)="onCanvasClick($event)"
         ></kritzel-editor>
 
@@ -189,19 +188,7 @@ interface Defect {
         0 4px 6px -1px rgb(0 0 0 / 0.1),
         0 2px 4px -2px rgb(0 0 0 / 0.1);
       z-index: 10;
-      animation: pulse 1.8s infinite;
       border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    @keyframes pulse {
-      0%,
-      100% {
-        transform: translateX(-50%) scale(1);
-      }
-      50% {
-        transform: translateX(-50%) scale(1.03);
-        opacity: 0.9;
-      }
     }
 
     .sidebar {
@@ -430,7 +417,7 @@ interface Defect {
     }
   `,
 })
-export class BlueprintDefectMapperComponent implements OnDestroy {
+export class BlueprintDefectMapperComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
   @ViewChild('editorEl', { read: ElementRef })
   editorEl!: ElementRef<HTMLElement>;
@@ -438,15 +425,13 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
   themes = [angularThemeLight, angularThemeDark];
 
   private readonly pinSize = 30;
-  private readonly firstSeedPinCenter = { x: 115, y: -260 };
-  private readonly secondSeedPinCenter = { x: -95, y: 245 };
+  private readonly firstSeedPinCenter = { x: -60, y: 145 };
+  private readonly secondSeedPinCenter = { x: 70, y: -150 };
 
   placingMode = signal<boolean>(false);
   defects = signal<Defect[]>([]);
 
   private nextDefectId = 2; // seeded defects account for 1, 2
-  private lockInterval: any;
-  private hasInitialCenteringRun = false;
 
   async onReady() {
     const existing = await this.editor.getAllObjects();
@@ -456,29 +441,25 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
       await this.restoreDefectsFromCanvas();
     }
 
-    await this.centerBackgroundImage();
     await this.normalizeFirstSeedPin();
     await this.normalizeSecondSeedPin();
 
-    // Set initial custom viewport focus directly on the floorplan origin (0, 0)
-    await this.editor.setViewport(0, 0, 0.75);
-
-    // Ensure our background blueprint elements are set to pointer-events: none is repeated
-    // to prevent selection / grabbing of floorplan components.
-    this.lockScenery();
-    this.lockInterval = setInterval(() => this.lockScenery(), 500);
   }
 
   async initializeBlueprint() {
     // 1. Load Blueprint floorplan.png from local assets as unselectable background scenery
-    const bg = await KritzelImage.fromUrl('assets/floorplan.png', {
-      maxWidth: 1200,
-      maxHeight: 900,
-    });
-    bg.id = 'blueprint-bg';
-    bg.translateX = -bg.width / 2;
-    bg.translateY = -bg.height / 2;
 
+    const bg = await KritzelImage.fromUrl(
+      'assets/floorplan.png',
+      {
+        maxWidth: 660,
+        maxHeight: 360,
+      },
+    );
+
+    bg.translateX = -bg.width / 2;
+    bg.translateY = (-bg.height / 2);
+bg
     await this.editor.addObject(bg);
 
     // 2. Seed initial reported defects onto floor plans
@@ -531,20 +512,6 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
     }
 
     this.defects.set(initialList);
-  }
-
-  async centerBackgroundImage() {
-    const bg = (await this.editor.getObjectById('blueprint-bg')) as
-      | KritzelImage
-      | undefined;
-    if (!bg) {
-      return;
-    }
-
-    await this.editor.updateObject(bg, {
-      translateX: -bg.width / 2,
-      translateY: -bg.height / 2,
-    });
   }
 
   async normalizeFirstSeedPin() {
@@ -698,7 +665,6 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
 
     // Deactivate placement mode after success
     this.placingMode.set(false);
-    this.lockScenery();
   }
 
   async zoomToDefect(defect: Defect) {
@@ -707,37 +673,7 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
   }
 
   async resetView() {
-    await this.editor.setViewport(0, 0, 0.75);
-  }
-
-  onViewportChange(event: CustomEvent<KritzelViewportState>) {
-    this.lockScenery();
-
-    // Perform target camera centering once the editor element has non-zero layout dimensions
-    if (
-      !this.hasInitialCenteringRun &&
-      event.detail.width > 0 &&
-      event.detail.height > 0
-    ) {
-      this.hasInitialCenteringRun = true;
-      setTimeout(async () => {
-        await this.editor.setViewport(0, 0, 0.75);
-      }, 50);
-    }
-  }
-
-  lockScenery() {
-    const shadow = this.editorEl?.nativeElement?.shadowRoot;
-    if (!shadow) return;
-
-    const sceneryIds = ['blueprint-bg'];
-
-    for (const id of sceneryIds) {
-      const el = shadow.getElementById(id);
-      if (el) {
-        el.style.pointerEvents = 'none';
-      }
-    }
+    await this.editor.setViewport(0, 0, 1);
   }
 
   async changeDefectStatus(
@@ -818,11 +754,5 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
     }
 
     this.defects.update((list) => list.filter((d) => d.id !== defect.id));
-  }
-
-  ngOnDestroy() {
-    if (this.lockInterval) {
-      clearInterval(this.lockInterval);
-    }
   }
 }
