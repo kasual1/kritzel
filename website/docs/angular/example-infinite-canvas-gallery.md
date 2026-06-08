@@ -17,30 +17,14 @@ Complete the [Quick Start](quick-start.md) guide to have a working `<kritzel-edi
 
 ---
 
-## How the Gallery Canvas Works
+## Featured Concepts
 
-Artworks are plain `KritzelImage` objects loaded from external URLs and placed at absolute world-space coordinates. They are marked non-editable so visitors cannot accidentally move or resize them:
+This example makes use of the following core concepts. Click on the links below to go into the details:
 
-```ts
-const img = await KritzelImage.fromUrl(src, {
-  translateX: art.x,
-  translateY: art.y,
-  maxWidth: art.w,
-  maxHeight: art.h,
-});
-img.isEditable = false;
-await editor.addObject(img);
-```
-
-The entire gallery is seeded once inside `onReady()` — after checking that no objects already exist — then the viewport is set to a zoomed-out overview with `setViewport(0, 0, 0.25)` so visitors immediately see the scattered layout.
-
-The toolbar is reduced to the selection tool only, keeping the UI minimal and the canvas feeling open:
-
-```ts
-controls: KritzelToolbarControl[] = [
-  { name: 'selection', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
-];
-```
+- [Objects](/docs/angular/concept-objects) — loading images with `KritzelImage.fromUrl()` and placing them at world-space coordinates
+- [Viewport](/docs/angular/concept-viewport) — setting an initial zoomed-out overview with `setViewport()`
+- [Tools](/docs/angular/concept-tools) — reducing the toolbar to a single selection tool for a read-only experience
+- [Components](/docs/angular/concept-components) — configuring the editor for a non-editable presentation mode
 
 ---
 

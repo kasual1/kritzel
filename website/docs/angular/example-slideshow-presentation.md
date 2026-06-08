@@ -17,21 +17,13 @@ Complete the [Quick Start](quick-start.md) guide to have a working `<kritzel-edi
 
 ---
 
-## How Slideshow Presentations Work
+## Featured Concepts
 
-A slideshow presentation layout leverages horizontal coordinate tracks to position slides at spaced absolute offsets:
+This example makes use of the following core concepts. Click on the links below to go into the details:
 
-```ts
-interface Slide {
-  title: string;
-  centerX: number;
-  centerY: number;
-}
-```
-
-By setting `viewportBoundaryLeft`, `viewportBoundaryRight`, `viewportBoundaryTop`, and `viewportBoundaryBottom` inputs dynamically per slide, we lock the camera strictly to a boundary defined slightly larger than the slide itself (e.g., boundaries allowed at $\pm 600$ horizontal and $\pm 400$ vertical offsets around the slide center). 
-
-Using a slightly zoomed-out viewport scale of `0.85`, each presentation slide is rendered alongside a clean external margin frame within the active viewer space instead of completely filling the screen. This allows delegates to see slide edges and maintain visual reference.
+- [Viewport](/docs/angular/concept-viewport) — programmatically panning and zooming the camera to center on specific world coordinates
+- [Components](/docs/angular/concept-components) — configuring viewport boundary inputs to lock the camera within slide margins
+- [Objects](/docs/angular/concept-objects) — seeding shape objects at absolute world-space positions to act as slide templates
 
 ---
 
@@ -44,3 +36,7 @@ A curated slides deck with an interactive Angular dashboard header. Clicking nex
   demoPath="/examples/slideshow-presentation"
   repoFiles={['src/app/examples/slideshow-presentation/slideshow-presentation.component.ts']}
 />
+
+Slides are positioned at evenly spaced horizontal offsets and seeded as `KritzelShape` objects in `onReady()`. Navigating between slides calls `setViewport(centerX, centerY, scale)` to pan the camera to the target slide's coordinates. The viewport boundary inputs (`viewportBoundaryLeft`, `viewportBoundaryRight`, etc.) are updated dynamically per slide to clamp the camera within the active slide's margins.
+
+The slightly zoomed-out scale of `0.85` ensures slide edges remain visible, giving users a visual frame of reference rather than a full-bleed view.
