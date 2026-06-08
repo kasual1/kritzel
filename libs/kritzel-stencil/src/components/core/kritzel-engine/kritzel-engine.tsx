@@ -2318,7 +2318,7 @@ export class KritzelEngine {
   ): { multiplied: number; overridden: string } {
     const safeObjectOpacity = Number.isFinite(object.opacity) ? object.opacity : 1;
     const distanceFadeMultiplier = this.shouldApplyDistanceFade(object)
-      ? this.getObjectDistanceFadeMultiplier(object.scale, viewportScale)
+      ? this.getObjectDistanceFadeMultiplier(object.scale!, viewportScale)
       : 1;
 
     const multiplied =

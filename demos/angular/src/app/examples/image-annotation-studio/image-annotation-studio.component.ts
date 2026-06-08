@@ -43,13 +43,14 @@ type ColorTool = {
         editorId="image-annotation-studio"
         [themes]="themes"
         [theme]="'annotation-theme-dark'"
+        [scaleMax]="10"
+        [scaleMin]="0.1"
         [isControlsVisible]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         [isUtilityPanelVisible]="false"
         [wheelEnabled]="false"
         (isReady)="onReady($event)"
-        (viewportChange)="onViewportChange($event)"
       ></kritzel-editor>
 
       <div class="action-bar">
@@ -368,7 +369,7 @@ type ColorTool = {
     }
   `,
 })
-export class ImageAnnotationStudioComponent implements OnDestroy {
+export class ImageAnnotationStudioComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
   @ViewChild('editorHost', { read: ElementRef })
   editorHost!: ElementRef<HTMLElement>;
@@ -403,39 +404,11 @@ export class ImageAnnotationStudioComponent implements OnDestroy {
   readonly activeSketchTool = signal<string>('ink-red');
 
   private imageObjectId = 'annotation-scene-image';
-  private readonly imageTranslateYOffset = -52;
-  private readonly imageFocusOffsetDesktop = 198;
-  private readonly imageFocusOffsetMobile = 162;
-  private readonly zoomStepMultiplier = 1.2;
-  private pointerLockInterval: ReturnType<typeof setInterval> | undefined;
-  private hasCenteredViewport = false;
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     await this.registerColorTools();
     await this.ensureSeedImage();
     await this.activateColorTool(this.activeSketchTool());
-    this.lockImagePointerEvents();
-
-    this.pointerLockInterval = setInterval(() => {
-      this.lockImagePointerEvents();
-    }, 500);
-  }
-
-  onViewportChange(event: CustomEvent<KritzelViewportState>) {
-    if (this.hasCenteredViewport) {
-      return;
-    }
-
-    if (event.detail.width <= 0 || event.detail.height <= 0) {
-      return;
-    }
-
-    this.hasCenteredViewport = true;
-    const imageFocusOffset =
-      event.detail.width <= 900
-        ? this.imageFocusOffsetMobile
-        : this.imageFocusOffsetDesktop;
-    void this.editor.setViewport(0, imageFocusOffset, 1);
   }
 
   async activateColorTool(toolName: string) {
@@ -470,11 +443,11 @@ export class ImageAnnotationStudioComponent implements OnDestroy {
   }
 
   async zoomIn() {
-    // TODO: zoom in
+    await this.editor.zoomIn();
   }
 
   async zoomOut() {
-    // TODO: zoom out
+    await this.editor.zoomOut();
   }
 
   async save() {
@@ -523,11 +496,6 @@ export class ImageAnnotationStudioComponent implements OnDestroy {
   }
 
   private async ensureSeedImage() {
-    const existing = await this.editor.getObjectById(this.imageObjectId);
-    if (existing) {
-      return;
-    }
-
     const image = await KritzelImage.fromUrl(
       'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1800&q=80',
       {
@@ -537,39 +505,9 @@ export class ImageAnnotationStudioComponent implements OnDestroy {
     );
 
     image.translateX = -image.width / 2;
-    image.translateY = -image.height / 2 + this.imageTranslateYOffset;
+    image.translateY = (-image.height / 2) - 50;
     image.isEditable = false;
 
-    // addObject assigns a fresh generated id, so capture the real id it
-    // returns to reliably look the image up later (e.g. for zoom focus).
-    const added = await this.editor.addObject(image);
-    if (added) {
-      this.imageObjectId = added.id;
-    }
-  }
-
-  private async getImageObject(): Promise<KritzelImage | null> {
-    return (await this.editor.getObjectById(
-      this.imageObjectId,
-    )) as KritzelImage | null;
-  }
-
-  private lockImagePointerEvents() {
-    const shadowRoot = this.editorHost?.nativeElement?.shadowRoot;
-    if (!shadowRoot) {
-      return;
-    }
-
-    const imageElement = shadowRoot.getElementById(this.imageObjectId);
-    if (imageElement) {
-      imageElement.style.pointerEvents = 'none';
-    }
-  }
-
-  ngOnDestroy() {
-    if (this.pointerLockInterval) {
-      clearInterval(this.pointerLockInterval);
-      this.pointerLockInterval = undefined;
-    }
+    await this.editor.addObject(image);
   }
 }
