@@ -64,6 +64,7 @@ import { KritzelEngine } from './kritzel-engine';
 import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
+import { KritzelClassHelper } from '../../../helpers/class.helper';
 
 describe('KritzelEngine', () => {
   let engine: KritzelEngine;
@@ -1157,6 +1158,35 @@ describe('KritzelEngine', () => {
       await engine.addObjects([object]);
 
       expect(object.scale).toBe(1);
+    });
+
+    it('addObject calls prepareForInsert for KritzelImage objects', async () => {
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((_: unknown, className: string) => className === 'KritzelImage');
+      const imageObject = {
+        ...makeObject(1),
+        prepareForInsert: jest.fn().mockResolvedValue(undefined),
+      };
+
+      await engine.addObject(imageObject as any);
+
+      expect(imageObject.prepareForInsert).toHaveBeenCalledTimes(1);
+    });
+
+    it('addObjects calls prepareForInsert for each KritzelImage object before transaction insert', async () => {
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((_: unknown, className: string) => className === 'KritzelImage');
+      const a = {
+        ...makeObject(1),
+        prepareForInsert: jest.fn().mockResolvedValue(undefined),
+      };
+      const b = {
+        ...makeObject(2),
+        prepareForInsert: jest.fn().mockResolvedValue(undefined),
+      };
+
+      await engine.addObjects([a as any, b as any]);
+
+      expect(a.prepareForInsert).toHaveBeenCalledTimes(1);
+      expect(b.prepareForInsert).toHaveBeenCalledTimes(1);
     });
   });
 });

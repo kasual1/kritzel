@@ -17,13 +17,14 @@ Before diving into this walkthrough, complete the [Quick Start](./quick-start.md
 
 ---
 
-## How Blueprint Mapping Works
+## Featured Concepts
 
-Building a spatial mapping dashboard in Kritzel involves three primary APIs:
+This example makes use of the following core concepts. Click on the links below to go into the details:
 
-1. **Static Scenery Seeding:** Background floor plan layout is constructed programmatically as a background image with `KritzelImage.fromUrl()` and added via `addObject()`. By configuring the object and setting its DOM `pointer-events` style attribute to `none`, it becomes an unselectable "scenery" element.
-2. **Screen-to-World Coordinate Conversion:** Click coordinates on the browser viewport are captured relative to the editor element and translated into absolute resolution-independent canvas world units with `screenToWorld()`.
-3. **Targeted Viewport Focus:** Highlighting a site defect in an external inspector panel pans and scales the viewport camera utilizing `setViewport(x, y, scale)`, steering camera optics directly over target coordinates without modifying underlying pin locations.
+- [Objects](/docs/angular/concept-objects) — seeding background images and creating shape objects as defect markers
+- [Viewport](/docs/angular/concept-viewport) — converting screen coordinates to world coordinates with `screenToWorld()` and focusing the camera with `setViewport()`
+- [Tools](/docs/angular/concept-tools) — switching to the selection tool programmatically during pin placement mode
+- [Components](/docs/angular/concept-components) — hiding built-in controls and driving all interactions from a custom sidebar
 
 ---
 
