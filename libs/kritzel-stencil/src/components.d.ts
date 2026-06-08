@@ -31,6 +31,7 @@ import { KritzelAlignment } from "./enums/alignment.enum";
 import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
+import { KritzelImage } from "./classes/objects/image.class";
 import { KritzelText } from "./classes/objects/text.class";
 import { KritzelGroup } from "./classes/objects/group.class";
 import { KritzelLine } from "./classes/objects/line.class";
@@ -69,6 +70,7 @@ export { KritzelAlignment } from "./enums/alignment.enum";
 export { Element, Event } from "@stencil/core";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
+export { KritzelImage } from "./classes/objects/image.class";
 export { KritzelText } from "./classes/objects/text.class";
 export { KritzelGroup } from "./classes/objects/group.class";
 export { KritzelLine } from "./classes/objects/line.class";
@@ -376,8 +378,8 @@ export namespace Components {
         "enable": () => Promise<void>;
         "exportSelectedObjectsAsPng": () => Promise<void>;
         "exportSelectedObjectsAsSvg": () => Promise<void>;
-        "exportViewportAsPng": () => Promise<void>;
-        "exportViewportAsSvg": () => Promise<void>;
+        "exportViewportAsPng": (options?: { includeBackground?: boolean; }) => Promise<void>;
+        "exportViewportAsSvg": (options?: { includeBackground?: boolean; }) => Promise<void>;
         "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>;
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
         "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
@@ -386,7 +388,7 @@ export namespace Components {
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
         "getObjectsTotalCount": () => Promise<number>;
-        "getScreenshot": (format?: "png" | "svg") => Promise<string | null>;
+        "getScreenshot": (format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>;
         "getSelectedObjects": () => Promise<KritzelBaseObject[]>;
         "getViewport": () => Promise<KritzelViewportState>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
@@ -497,6 +499,8 @@ export namespace Components {
          */
         "wheelEnabled": boolean;
         "worldToScreen": (x: number, y: number) => Promise<{ x: number; y: number; }>;
+        "zoomIn": (factor?: number, duration?: number) => Promise<void>;
+        "zoomOut": (factor?: number, duration?: number) => Promise<void>;
         "zoomTo": (scale: number, worldX?: number, worldY?: number) => Promise<void>;
     }
     interface KritzelEngine {
@@ -638,12 +642,16 @@ export namespace Components {
         "exportSelectedObjectsAsSvg": (options?: { theme?: "light" | "dark"; padding?: number; }) => Promise<void>;
         /**
           * Exports the current viewport as a PNG file and triggers a browser download.
+          * @param options - Optional export settings.
+          * @param options.includeBackground - Whether to include the canvas background. Defaults to `true`.
          */
-        "exportViewportAsPng": () => Promise<void>;
+        "exportViewportAsPng": (options?: { includeBackground?: boolean; }) => Promise<void>;
         /**
           * Exports the current viewport as an SVG file and triggers a browser download.
+          * @param options - Optional export settings.
+          * @param options.includeBackground - Whether to include the canvas background. Defaults to `true`.
          */
-        "exportViewportAsSvg": () => Promise<void>;
+        "exportViewportAsSvg": (options?: { includeBackground?: boolean; }) => Promise<void>;
         /**
           * Returns all objects that match the given predicate function. Excludes internal selection-related objects (selection groups and selection boxes).
           * @param predicate - A filter function called for each object. Return `true` to include.
@@ -689,9 +697,11 @@ export namespace Components {
         /**
           * Captures a screenshot of the current viewport as a data URL.
           * @param format - The image format: `'png'` (default) or `'svg'`.
+          * @param options - Optional screenshot settings.
+          * @param options.includeBackground - Whether to include the canvas background in the export. Defaults to `true`. Set to `false` for a transparent background.
           * @returns A data URL string of the captured image.
          */
-        "getScreenshot": (format?: "png" | "svg") => Promise<string | null>;
+        "getScreenshot": (format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>;
         /**
           * Returns the currently selected objects. Returns an empty array if nothing is selected.
          */
@@ -953,6 +963,18 @@ export namespace Components {
           * @returns Screen coordinates { x, y } relative to the engine element.
          */
         "worldToScreen": (x: number, y: number) => Promise<{ x: number; y: number; }>;
+        /**
+          * Zooms in by a fixed step, centered on the current viewport center, with a smooth animation.
+          * @param factor - Multiplicative zoom-in step.
+          * @param duration - Animation duration in milliseconds.
+         */
+        "zoomIn": (factor: number, duration: number) => Promise<void>;
+        /**
+          * Zooms out by a fixed step, centered on the current viewport center, with a smooth animation.
+          * @param factor - Multiplicative zoom-out step.
+          * @param duration - Animation duration in milliseconds.
+         */
+        "zoomOut": (factor: number, duration: number) => Promise<void>;
         /**
           * Zooms the viewport to the given scale level. Optionally centers on a world point; if omitted, zooms around the viewport center.
           * @param scale - Target scale level.

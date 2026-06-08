@@ -28,8 +28,22 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 1. **`# <Feature>`** — intro paragraph describing what the page covers and what kind of use cases the reader will find.
 2. **`## Prerequisites`** — link to Quick Start guide.
-3. **`## How <Feature> Works`** — interface definition or brief conceptual explanation (1–2 paragraphs max). Include the relevant TypeScript interface or type if it helps the reader.
+3. **`## Featured Concepts`** — a short list of the key Kritzel concepts showcased in this demo. Each item is a concept name linked to its dedicated documentation page so users can read about it in detail. Keep this to 2–5 bullet points. Do NOT explain the concepts inline — let the linked pages do the teaching.
 4. **`## <Use Case Title>` sections** — each section is a complete, self-contained example named after the scenario it solves (e.g., "Annotation-Only Toolbar", "Diagramming Toolbar", "Custom External Toolbar").
+
+### Featured Concepts Format
+
+```md
+## Featured Concepts
+
+This example makes use of the following core concepts. Follow the links for an in-depth look:
+
+- [Toolbar Configuration](/docs/angular/toolbar) — controlling which tools appear and how they're grouped
+- [Theme Customization](/docs/angular/themes) — applying branded colors to the editor
+- [Event Handling](/docs/angular/events) — reacting to user interactions on the canvas
+```
+
+Each bullet follows the pattern: `[Concept Name](link) — one-line description of how it's used in this demo`. Only link concepts that the demo actually exercises.
 
 ## The LiveDemo Component
 
@@ -77,13 +91,41 @@ Each component is a standalone Angular component following these rules:
 
 ## Example Writing Rules
 
+### Each example section must contain (in order):
+
+1. **Scenario description** (1–3 sentences) — describe what the workspace provides and what interactions are available to the user. Write from the user's perspective ("Users can toggle...", "Clicking a row automatically pans..."). Do not explain implementation — just the experience.
+2. **Admonition** (optional) — a `:::info` or `:::tip` callout highlighting a non-obvious API distinction, a common pitfall, or an important behavioral nuance. Use when the demo exercises an API whose behavior differs from what a developer might assume (e.g., `centerObjectInViewport()` moves the object vs `setViewport()` moves the camera).
+3. **`<LiveDemo>` block** — the embedded preview and source code.
+4. **Implementation notes** (1–2 paragraphs) — explain the key patterns used in the source code. Focus on *why* specific API calls are made and in what order. Mention the lifecycle hook where setup happens (typically `onReady()`), call out ordering dependencies (e.g., "the background image is added first so annotations render on top"), and name the specific API methods used for the core interaction (e.g., `screenToWorld()`, `changeActiveToolByName()`).
+
+### Scenario description rules:
+
+- Write from the end-user's perspective — describe what they see and can do
+- Mention the key interactive affordances (buttons, click actions, sidebar controls)
+- Do NOT explain code or APIs in this section — save that for implementation notes
+- Keep to 1–3 sentences maximum
+
+### Admonition rules:
+
+- Use `:::info <Title>` format with a short descriptive title
+- Reserve for genuinely non-obvious behavior — do not use for basic API explanations
+- The content should prevent a common mistake or clarify a confusing distinction
+- Not every example needs an admonition — only add when there's a real "gotcha"
+
+### Implementation notes rules:
+
+- Appear after the `<LiveDemo>` block
+- Explain the *why* behind the code — not a line-by-line walkthrough
+- Mention specific API method names with backtick formatting
+- Call out ordering dependencies, lifecycle hooks, and interaction patterns
+- Keep to 1–2 short paragraphs — this is not a tutorial
+- Do NOT repeat information already covered in the linked concept pages
+
 ### Each example must:
 
 - Solve a realistic, named scenario (not "Step 3" but "Diagramming Toolbar with Shapes and Lines")
 - Be fully self-contained — a developer can copy it without reading other examples
 - Contain a `<LiveDemo>` block with the appropriate `iframeUrl` and `repoFiles`
-- Start with 1–2 sentences framing the use case scenario
-- End with 1–2 sentences explaining key API details or gotchas
 - Be separated from the next example by a `---` horizontal rule
 
 ### Each example must NOT:

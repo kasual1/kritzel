@@ -28,6 +28,10 @@ describe('KritzelImage', () => {
         get objects() { return this.state.objects; },
         currentZIndex: 5,
       },
+      assetResolver: {
+        put: jest.fn(),
+        resolve: jest.fn(),
+      },
       anchorManager: {
         updateAnchorsForObject: jest.fn(),
       },
@@ -41,6 +45,7 @@ describe('KritzelImage', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('constructor', () => {
@@ -313,6 +318,94 @@ describe('KritzelImage', () => {
 
       expect(result.scaledWidth).toBe(300);
       expect(result.scaledHeight).toBe(300);
+    });
+  });
+
+  describe('prepareForInsert', () => {
+    it('should upload URL source through asset resolver and seed render fields', async () => {
+      const sourceUrl = 'http://localhost:4200/assets/floorplan.png';
+      const blob = new Blob(['image-bytes'], { type: 'image/png' });
+
+      jest.spyOn(globalThis, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        blob: async () => blob,
+      } as Response);
+
+      jest.spyOn(imageObject as any, 'measureImageBlob').mockResolvedValue({
+        naturalWidth: 400,
+        naturalHeight: 200,
+      });
+
+      (mockCore.assetResolver.put as jest.Mock).mockResolvedValue({
+        id: 'asset-1',
+        mimeType: 'image/png',
+      });
+      (mockCore.assetResolver.resolve as jest.Mock).mockResolvedValue('blob:asset-1');
+
+      imageObject.maxWidth = 100;
+      imageObject.maxHeight = 100;
+      imageObject.src = sourceUrl;
+
+      await imageObject.prepareForInsert();
+
+      expect(globalThis.fetch).toHaveBeenCalledWith(sourceUrl);
+      expect(mockCore.assetResolver.put).toHaveBeenCalledWith(blob, {
+        mimeType: 'image/png',
+        kind: 'image',
+        width: 400,
+        height: 200,
+      });
+      expect(imageObject.assetId).toBe('asset-1');
+      expect(imageObject.mimeType).toBe('image/png');
+      expect(imageObject.width).toBe(100);
+      expect(imageObject.height).toBe(50);
+      expect(imageObject.resolvedSrc).toBe('blob:asset-1');
+      expect(imageObject.loadState).toBe('ready');
+      expect(imageObject.src).toBe('');
+    });
+
+    it('should preserve explicit width and height when already provided', async () => {
+      const sourceUrl = 'http://localhost:4200/assets/custom-size.png';
+      const blob = new Blob(['image-bytes'], { type: 'image/png' });
+
+      jest.spyOn(globalThis, 'fetch').mockResolvedValue({
+        ok: true,
+        status: 200,
+        blob: async () => blob,
+      } as Response);
+
+      jest.spyOn(imageObject as any, 'measureImageBlob').mockResolvedValue({
+        naturalWidth: 1000,
+        naturalHeight: 500,
+      });
+
+      (mockCore.assetResolver.put as jest.Mock).mockResolvedValue({
+        id: 'asset-2',
+        mimeType: 'image/png',
+      });
+      (mockCore.assetResolver.resolve as jest.Mock).mockResolvedValue('blob:asset-2');
+
+      imageObject.src = sourceUrl;
+      imageObject.width = 240;
+      imageObject.height = 180;
+
+      await imageObject.prepareForInsert();
+
+      expect(imageObject.width).toBe(240);
+      expect(imageObject.height).toBe(180);
+    });
+
+    it('should no-op when image already has an assetId', async () => {
+      imageObject.assetId = 'existing-asset';
+      imageObject.src = 'http://localhost:4200/assets/floorplan.png';
+
+      const fetchSpy = jest.spyOn(globalThis, 'fetch');
+
+      await imageObject.prepareForInsert();
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(mockCore.assetResolver.put).not.toHaveBeenCalled();
     });
   });
 
