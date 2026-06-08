@@ -590,18 +590,18 @@ export class KritzelEditor {
   }
 
   @Method()
-  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string | null> {
-    return this.engineRef.getScreenshot(format);
+  async getScreenshot(format: 'png' | 'svg' = 'png', options?: { includeBackground?: boolean }): Promise<string | null> {
+    return this.engineRef.getScreenshot(format, options);
   }
 
   @Method()
-  async exportViewportAsPng(): Promise<void> {
-    return this.engineRef.exportViewportAsPng();
+  async exportViewportAsPng(options?: { includeBackground?: boolean }): Promise<void> {
+    return this.engineRef.exportViewportAsPng(options);
   }
 
   @Method()
-  async exportViewportAsSvg(): Promise<void> {
-    return this.engineRef.exportViewportAsSvg();
+  async exportViewportAsSvg(options?: { includeBackground?: boolean }): Promise<void> {
+    return this.engineRef.exportViewportAsSvg(options);
   }
 
   @Method()

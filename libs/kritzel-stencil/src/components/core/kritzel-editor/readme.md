@@ -360,9 +360,15 @@ Type: `Promise<void>`
 
 
 
-### `exportViewportAsPng() => Promise<void>`
+### `exportViewportAsPng(options?: { includeBackground?: boolean; }) => Promise<void>`
 
 
+
+#### Parameters
+
+| Name      | Type                               | Description |
+| --------- | ---------------------------------- | ----------- |
+| `options` | `{ includeBackground?: boolean; }` |             |
 
 #### Returns
 
@@ -370,9 +376,15 @@ Type: `Promise<void>`
 
 
 
-### `exportViewportAsSvg() => Promise<void>`
+### `exportViewportAsSvg(options?: { includeBackground?: boolean; }) => Promise<void>`
 
 
+
+#### Parameters
+
+| Name      | Type                               | Description |
+| --------- | ---------------------------------- | ----------- |
+| `options` | `{ includeBackground?: boolean; }` |             |
 
 #### Returns
 
@@ -472,15 +484,16 @@ Type: `Promise<number>`
 
 
 
-### `getScreenshot(format?: "png" | "svg") => Promise<string | null>`
+### `getScreenshot(format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>`
 
 
 
 #### Parameters
 
-| Name     | Type             | Description |
-| -------- | ---------------- | ----------- |
-| `format` | `"svg" \| "png"` |             |
+| Name      | Type                               | Description |
+| --------- | ---------------------------------- | ----------- |
+| `format`  | `"svg" \| "png"`                   |             |
+| `options` | `{ includeBackground?: boolean; }` |             |
 
 #### Returns
 
