@@ -384,9 +384,15 @@ Type: `Promise<void>`
 
 
 
-### `exportViewportAsPng() => Promise<void>`
+### `exportViewportAsPng(options?: { includeBackground?: boolean; }) => Promise<void>`
 
 Exports the current viewport as a PNG file and triggers a browser download.
+
+#### Parameters
+
+| Name      | Type                               | Description                 |
+| --------- | ---------------------------------- | --------------------------- |
+| `options` | `{ includeBackground?: boolean; }` | - Optional export settings. |
 
 #### Returns
 
@@ -394,9 +400,15 @@ Type: `Promise<void>`
 
 
 
-### `exportViewportAsSvg() => Promise<void>`
+### `exportViewportAsSvg(options?: { includeBackground?: boolean; }) => Promise<void>`
 
 Exports the current viewport as an SVG file and triggers a browser download.
+
+#### Parameters
+
+| Name      | Type                               | Description                 |
+| --------- | ---------------------------------- | --------------------------- |
+| `options` | `{ includeBackground?: boolean; }` | - Optional export settings. |
 
 #### Returns
 
@@ -507,15 +519,16 @@ Type: `Promise<number>`
 
 
 
-### `getScreenshot(format?: "png" | "svg") => Promise<string | null>`
+### `getScreenshot(format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>`
 
 Captures a screenshot of the current viewport as a data URL.
 
 #### Parameters
 
-| Name     | Type             | Description                                       |
-| -------- | ---------------- | ------------------------------------------------- |
-| `format` | `"svg" \| "png"` | - The image format: `'png'` (default) or `'svg'`. |
+| Name      | Type                               | Description                                       |
+| --------- | ---------------------------------- | ------------------------------------------------- |
+| `format`  | `"svg" \| "png"`                   | - The image format: `'png'` (default) or `'svg'`. |
+| `options` | `{ includeBackground?: boolean; }` | - Optional screenshot settings.                   |
 
 #### Returns
 

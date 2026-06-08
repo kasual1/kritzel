@@ -1257,11 +1257,15 @@ export class KritzelEngine {
   /**
    * Captures a screenshot of the current viewport as a data URL.
    * @param format - The image format: `'png'` (default) or `'svg'`.
+   * @param options - Optional screenshot settings.
+   * @param options.includeBackground - Whether to include the canvas background in the export. Defaults to `true`. Set to `false` for a transparent background.
    * @returns A data URL string of the captured image.
    */
   @Method()
-  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string | null> {
+  async getScreenshot(format: 'png' | 'svg' = 'png', options?: { includeBackground?: boolean }): Promise<string | null> {
     if (!this.host) return null;
+
+    const includeBackground = options?.includeBackground ?? true;
 
     // Save critical state before screenshot to restore after
     const savedState = {
@@ -1275,7 +1279,7 @@ export class KritzelEngine {
       scale: this.core.store.state.scale,
     };
 
-    const options = {
+    const screenshotOptions: Record<string, unknown> = {
       filter: (node: HTMLElement) => {
         // Exclude the context menu, debug panel, and awareness cursors from the screenshot
         if (node.tagName === 'KRITZEL-CONTEXT-MENU') {
@@ -1291,12 +1295,16 @@ export class KritzelEngine {
       },
     };
 
+    if (!includeBackground) {
+      screenshotOptions.backgroundColor = 'transparent';
+    }
+
     let result: string;
     try {
       if (format === 'svg') {
-        result = await toSvg(this.host, options);
+        result = await toSvg(this.host, screenshotOptions);
       } else {
-        result = await toPng(this.host, options);
+        result = await toPng(this.host, screenshotOptions);
       }
     } finally {
       // Restore state after screenshot in case cloning caused any side effects
@@ -1314,16 +1322,20 @@ export class KritzelEngine {
     return result;
   }
 
-  /** Exports the current viewport as a PNG file and triggers a browser download. */
+  /**
+   * Exports the current viewport as a PNG file and triggers a browser download.
+   * @param options - Optional export settings.
+   * @param options.includeBackground - Whether to include the canvas background. Defaults to `true`.
+   */
   @Method()
-  async exportViewportAsPng(): Promise<void> {
+  async exportViewportAsPng(options?: { includeBackground?: boolean }): Promise<void> {
     try {
       const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
       // timestamp format: YYYY-MM-DDTHH-mm-ss-sssZ, clearing colons/dots for safe filename
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `${activeWorkspaceName}-${timestamp}.png`;
 
-      const dataUrl = await this.getScreenshot('png');
+      const dataUrl = await this.getScreenshot('png', options);
       if (!dataUrl) {
         console.error('Failed to export viewport as PNG: screenshot could not be generated');
         return;
@@ -1338,16 +1350,20 @@ export class KritzelEngine {
     }
   }
 
-  /** Exports the current viewport as an SVG file and triggers a browser download. */
+  /**
+   * Exports the current viewport as an SVG file and triggers a browser download.
+   * @param options - Optional export settings.
+   * @param options.includeBackground - Whether to include the canvas background. Defaults to `true`.
+   */
   @Method()
-  async exportViewportAsSvg(): Promise<void> {
+  async exportViewportAsSvg(options?: { includeBackground?: boolean }): Promise<void> {
     try {
       const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
       // timestamp format: YYYY-MM-DDTHH-mm-ss-sssZ, clearing colons/dots for safe filename
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `${activeWorkspaceName}-${timestamp}.svg`;
 
-      const dataUrl = await this.getScreenshot('svg');
+      const dataUrl = await this.getScreenshot('svg', options);
       if (!dataUrl) {
         console.error('Failed to export viewport as SVG: screenshot could not be generated');
         return;

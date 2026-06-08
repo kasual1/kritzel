@@ -378,8 +378,8 @@ export namespace Components {
         "enable": () => Promise<void>;
         "exportSelectedObjectsAsPng": () => Promise<void>;
         "exportSelectedObjectsAsSvg": () => Promise<void>;
-        "exportViewportAsPng": () => Promise<void>;
-        "exportViewportAsSvg": () => Promise<void>;
+        "exportViewportAsPng": (options?: { includeBackground?: boolean; }) => Promise<void>;
+        "exportViewportAsSvg": (options?: { includeBackground?: boolean; }) => Promise<void>;
         "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>;
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
         "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
@@ -388,7 +388,7 @@ export namespace Components {
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
         "getObjectsTotalCount": () => Promise<number>;
-        "getScreenshot": (format?: "png" | "svg") => Promise<string | null>;
+        "getScreenshot": (format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>;
         "getSelectedObjects": () => Promise<KritzelBaseObject[]>;
         "getViewport": () => Promise<KritzelViewportState>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
@@ -642,12 +642,16 @@ export namespace Components {
         "exportSelectedObjectsAsSvg": (options?: { theme?: "light" | "dark"; padding?: number; }) => Promise<void>;
         /**
           * Exports the current viewport as a PNG file and triggers a browser download.
+          * @param options - Optional export settings.
+          * @param options.includeBackground - Whether to include the canvas background. Defaults to `true`.
          */
-        "exportViewportAsPng": () => Promise<void>;
+        "exportViewportAsPng": (options?: { includeBackground?: boolean; }) => Promise<void>;
         /**
           * Exports the current viewport as an SVG file and triggers a browser download.
+          * @param options - Optional export settings.
+          * @param options.includeBackground - Whether to include the canvas background. Defaults to `true`.
          */
-        "exportViewportAsSvg": () => Promise<void>;
+        "exportViewportAsSvg": (options?: { includeBackground?: boolean; }) => Promise<void>;
         /**
           * Returns all objects that match the given predicate function. Excludes internal selection-related objects (selection groups and selection boxes).
           * @param predicate - A filter function called for each object. Return `true` to include.
@@ -693,9 +697,11 @@ export namespace Components {
         /**
           * Captures a screenshot of the current viewport as a data URL.
           * @param format - The image format: `'png'` (default) or `'svg'`.
+          * @param options - Optional screenshot settings.
+          * @param options.includeBackground - Whether to include the canvas background in the export. Defaults to `true`. Set to `false` for a transparent background.
           * @returns A data URL string of the captured image.
          */
-        "getScreenshot": (format?: "png" | "svg") => Promise<string | null>;
+        "getScreenshot": (format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>;
         /**
           * Returns the currently selected objects. Returns an empty array if nothing is selected.
          */
