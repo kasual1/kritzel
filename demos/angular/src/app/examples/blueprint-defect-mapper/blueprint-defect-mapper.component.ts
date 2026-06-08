@@ -43,13 +43,14 @@ interface Defect {
           [isControlsVisible]="false"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
+          [wheelEnabled]="false"
           (isReady)="onReady()"
           (click)="onCanvasClick($event)"
         ></kritzel-editor>
 
         @if (placingMode()) {
           <div class="placing-toast">
-            📍 Click anywhere on the blueprint to place a defect pin
+            Click anywhere on the blueprint to place a defect pin
           </div>
         }
       </div>
@@ -71,9 +72,9 @@ interface Defect {
             (click)="togglePlacingMode()"
           >
             @if (placingMode()) {
-              🔴 Cancel Pin Placement
+              Cancel Pin Placement
             } @else {
-              📍 Place New Defect Pin
+              Place New Defect Pin
             }
           </button>
           <button class="reset-btn" (click)="resetView()">Reset Zoom</button>
@@ -426,7 +427,7 @@ export class BlueprintDefectMapperComponent {
 
   private readonly pinSize = 30;
   private readonly firstSeedPinCenter = { x: -60, y: 145 };
-  private readonly secondSeedPinCenter = { x: 70, y: -150 };
+  private readonly secondSeedPinCenter = { x: 135, y: -80 };
 
   placingMode = signal<boolean>(false);
   defects = signal<Defect[]>([]);
@@ -466,16 +467,16 @@ bg
     const seedPins = [
       {
         id: 'defect-1',
-        title: 'Wall Stress Fracture',
-        category: 'Structural',
+        title: 'Kitchen Sink Drain Clog',
+        category: 'Plumbing',
         x: this.firstSeedPinCenter.x,
         y: this.firstSeedPinCenter.y,
         status: 'Outstanding' as const,
       },
       {
         id: 'defect-2',
-        title: 'HVAC Condensation Leak',
-        category: 'HVAC',
+        title: 'Bathroom Toilet Running',
+        category: 'Plumbing',
         x: this.secondSeedPinCenter.x,
         y: this.secondSeedPinCenter.y,
         status: 'In Progress' as const,
@@ -568,11 +569,11 @@ bg
       let title = 'Defect';
       let category = 'Facility';
       if (id === 'defect-1') {
-        title = 'Wall Stress Fracture';
-        category = 'Structural';
+        title = 'Kitchen Sink Drain Clog';
+        category = 'Plumbing';
       } else if (id === 'defect-2') {
-        title = 'HVAC Condensation Leak';
-        category = 'HVAC';
+        title = 'Bathroom Toilet Running';
+        category = 'Plumbing';
       } else if (id === 'defect-3') {
         title = 'Exposed Electrical Terminal';
         category = 'Electrical';

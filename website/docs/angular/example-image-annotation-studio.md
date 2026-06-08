@@ -17,21 +17,19 @@ Complete the [Quick Start](./quick-start.md) guide to get a working Kritzel edit
 
 ---
 
-## How Image Annotation Works
+## Featured Concepts
 
-The implementation combines three key ideas:
+This example makes use of the following core concepts. Click on the links below to go into the details:
 
-1. Register multiple brush tools, each with a fixed color, then activate them from external UI buttons.
-2. Seed a centered background image once in `onReady()` so every session starts with the same visual anchor.
-3. Keep the image non-interactive with `pointer-events: none` so annotations always remain the primary interaction.
-
-This pattern is useful when you want Kritzel drawing power with a fully custom product UI instead of built-in controls.
+- [Tools](/docs/angular/concept-tools) — registering multiple brush tools with fixed colors and switching between them programmatically
+- [Objects](/docs/angular/concept-objects) — seeding a centered background image as non-interactive scenery
+- [Components](/docs/angular/concept-components) — driving editor behavior from a custom external toolbar via `changeActiveToolByName()`
 
 ---
 
 ## Screenshot-Style Annotation Canvas with External Color Tools
 
-This scenario mirrors a media review flow: users select a color swatch, sketch directly over the image, or switch to text mode for callouts.
+Users pick a color from a row of circular swatches in a custom bottom toolbar, then sketch freehand annotations directly over the image. A mode toggle switches between brush drawing and text placement for callouts. The built-in editor controls are hidden — all interaction flows through the external toolbar.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -39,4 +37,4 @@ This scenario mirrors a media review flow: users select a color swatch, sketch d
   repoFiles={['src/app/examples/image-annotation-studio/image-annotation-studio.component.ts']}
 />
 
-The custom toolbar drives editor behavior through `changeActiveToolByName(...)`, while Kritzel handles object creation, persistence, and viewport interaction behind the scenes.
+The background image is loaded once in `onReady()` using `KritzelImage.fromUrl()` and centered on the canvas. It is marked non-editable with `isEditable = false` so annotations always remain the primary interaction layer. Each color swatch registers a separate brush tool with a fixed stroke color, and clicking a swatch calls `changeActiveToolByName(...)` to activate the corresponding tool without any built-in UI involvement.
