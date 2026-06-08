@@ -10,13 +10,13 @@ import { CustomContextMenuObjectInspectorComponent } from './concepts/context-me
 import { ObjectExplorerComponent } from './examples/object-explorer/object-explorer.component';
 import { BlueprintDefectMapperComponent } from './examples/blueprint-defect-mapper/blueprint-defect-mapper.component';
 import { SlideshowPresentationComponent } from './examples/slideshow-presentation/slideshow-presentation.component';
-import { CanvasMapPresentationComponent } from './examples/canvas-map-presentation/canvas-map-presentation.component';
-import { AgileRetroComponent } from './examples/agile-retro/agile-retro.component';
 import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-gallery/infinite-canvas-gallery.component';
+import { ImageAnnotationStudioComponent } from './examples/image-annotation-studio/image-annotation-studio.component';
 import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
 import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
 import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
 import { CollaborationRealtimeComponent } from './concepts/collaboration/collaboration-realtime.component';
+import { CollaborationLocalComponent as PersistenceLocalComponent } from './concepts/persistence/persistence-local.component';
 import { ComponentsEditorComponent } from './concepts/components/components-editor.component';
 import { ComponentsEditorUiComponent } from './concepts/components/components-editor-ui.component';
 import { ComponentsEngineComponent } from './concepts/components/components-engine.component';
@@ -56,6 +56,7 @@ export const routes: Routes = [
       { path: 'theming-apply', component: ThemingApplyComponent },
       { path: 'theming-custom', component: ThemingCustomComponent },
       { path: 'collaboration-local', component: CollaborationLocalComponent },
+      { path: 'persistence-local', component: PersistenceLocalComponent },
       {
         path: 'collaboration-realtime',
         component: CollaborationRealtimeComponent,
@@ -112,13 +113,12 @@ export const routes: Routes = [
         component: SlideshowPresentationComponent,
       },
       {
-        path: 'canvas-map-presentation',
-        component: CanvasMapPresentationComponent,
-      },
-      { path: 'agile-retro', component: AgileRetroComponent },
-      {
         path: 'infinite-canvas-gallery',
         component: InfiniteCanvasGalleryComponent,
+      },
+      {
+        path: 'image-annotation-studio',
+        component: ImageAnnotationStudioComponent,
       },
       {
         path: 'collaboration-1',

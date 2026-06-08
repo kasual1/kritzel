@@ -384,9 +384,15 @@ Type: `Promise<void>`
 
 
 
-### `exportViewportAsPng() => Promise<void>`
+### `exportViewportAsPng(options?: { includeBackground?: boolean; }) => Promise<void>`
 
 Exports the current viewport as a PNG file and triggers a browser download.
+
+#### Parameters
+
+| Name      | Type                               | Description                 |
+| --------- | ---------------------------------- | --------------------------- |
+| `options` | `{ includeBackground?: boolean; }` | - Optional export settings. |
 
 #### Returns
 
@@ -394,9 +400,15 @@ Type: `Promise<void>`
 
 
 
-### `exportViewportAsSvg() => Promise<void>`
+### `exportViewportAsSvg(options?: { includeBackground?: boolean; }) => Promise<void>`
 
 Exports the current viewport as an SVG file and triggers a browser download.
+
+#### Parameters
+
+| Name      | Type                               | Description                 |
+| --------- | ---------------------------------- | --------------------------- |
+| `options` | `{ includeBackground?: boolean; }` | - Optional export settings. |
 
 #### Returns
 
@@ -507,15 +519,16 @@ Type: `Promise<number>`
 
 
 
-### `getScreenshot(format?: "png" | "svg") => Promise<string | null>`
+### `getScreenshot(format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>`
 
 Captures a screenshot of the current viewport as a data URL.
 
 #### Parameters
 
-| Name     | Type             | Description                                       |
-| -------- | ---------------- | ------------------------------------------------- |
-| `format` | `"svg" \| "png"` | - The image format: `'png'` (default) or `'svg'`. |
+| Name      | Type                               | Description                                       |
+| --------- | ---------------------------------- | ------------------------------------------------- |
+| `format`  | `"svg" \| "png"`                   | - The image format: `'png'` (default) or `'svg'`. |
+| `options` | `{ includeBackground?: boolean; }` | - Optional screenshot settings.                   |
 
 #### Returns
 
@@ -1016,6 +1029,40 @@ Converts world coordinates to screen-relative pixel coordinates.
 Type: `Promise<{ x: number; y: number; }>`
 
 Screen coordinates { x, y } relative to the engine element.
+
+### `zoomIn(factor: number, duration: number) => Promise<void>`
+
+Zooms in by a fixed step, centered on the current viewport center, with a smooth animation.
+
+#### Parameters
+
+| Name       | Type     | Description                           |
+| ---------- | -------- | ------------------------------------- |
+| `factor`   | `number` | - Multiplicative zoom-in step.        |
+| `duration` | `number` | - Animation duration in milliseconds. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `zoomOut(factor: number, duration: number) => Promise<void>`
+
+Zooms out by a fixed step, centered on the current viewport center, with a smooth animation.
+
+#### Parameters
+
+| Name       | Type     | Description                           |
+| ---------- | -------- | ------------------------------------- |
+| `factor`   | `number` | - Multiplicative zoom-out step.       |
+| `duration` | `number` | - Animation duration in milliseconds. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 ### `zoomTo(scale: number, worldX?: number, worldY?: number) => Promise<void>`
 

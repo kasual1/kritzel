@@ -361,6 +361,75 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   }
 
   /**
+   * Prepares image objects for insertion into the canvas while preserving
+   * the standard object-first flow (`new KritzelImage(...); addObject(image)`).
+   *
+   * Behavior:
+   * - If `assetId` is already set, no-op.
+   * - If `src` is set (URL or data URL), uploads bytes through the asset
+   *   resolver, fills `assetId`/`mimeType`, computes dimensions when needed,
+   *   and seeds `resolvedSrc` for immediate rendering.
+   */
+  async prepareForInsert(): Promise<void> {
+    if (this.assetId || !this.src) {
+      return;
+    }
+    if (!this._core?.assetResolver) {
+      return;
+    }
+
+    const source = this.src;
+    const response = await fetch(source);
+    if (!response.ok) {
+      throw new Error(`Failed to load image source: ${source} (HTTP ${response.status})`);
+    }
+
+    const blob = await response.blob();
+    const mimeType = blob.type || 'image/png';
+    const { naturalWidth, naturalHeight } = await this.measureImageBlob(blob);
+
+    const asset = await this._core.assetResolver.put(blob, {
+      mimeType,
+      kind: 'image',
+      width: naturalWidth,
+      height: naturalHeight,
+    });
+
+    this.assetId = asset.id;
+    this.mimeType = asset.mimeType;
+
+    if (this.width <= 0 || this.height <= 0) {
+      const { scaledWidth, scaledHeight } = this.calculateScaledDimensions({
+        width: naturalWidth,
+        height: naturalHeight,
+      } as HTMLImageElement);
+      this.width = scaledWidth;
+      this.height = scaledHeight;
+    }
+
+    this.resolvedSrc = await this._core.assetResolver.resolve(asset.id);
+    this.loadState = 'ready';
+    this.src = '';
+  }
+
+  /**
+   * Measures intrinsic image dimensions from a Blob.
+   */
+  private async measureImageBlob(blob: Blob): Promise<{ naturalWidth: number; naturalHeight: number }> {
+    const objectUrl = URL.createObjectURL(blob);
+    try {
+      return await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve({ naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight });
+        img.onerror = err => reject(err);
+        img.src = objectUrl;
+      });
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+
+  /**
    * Overrides base mount to kick off asset resolution the first time
    * the image is attached to the DOM. Legacy images persisted with an
    * inline `src` data URL are opportunistically migrated to the asset

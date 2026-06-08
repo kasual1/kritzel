@@ -461,6 +461,98 @@ export class KritzelViewport {
   }
 
   /**
+   * Zooms in by a fixed step, centered on the current viewport center,
+   * with a smooth animation. The resulting scale is clamped to the allowed range.
+   * @param factor - Multiplicative zoom-in step
+   * @param duration - Animation duration in milliseconds
+   */
+  zoomIn(factor: number, duration: number): void {
+    this.animateZoomAroundViewportCenter(factor, duration);
+  }
+
+  /**
+   * Zooms out by a fixed step, centered on the current viewport center,
+   * with a smooth animation. The resulting scale is clamped to the allowed range.
+   * @param factor - Multiplicative zoom-out step
+   * @param duration - Animation duration in milliseconds
+   */
+  zoomOut(factor: number, duration: number): void {
+    this.animateZoomAroundViewportCenter(1 / factor, duration);
+  }
+
+  /**
+   * Smoothly zooms around the viewport center, keeping the center world point
+   * fixed for the entire animation. The translation is recomputed from the fixed
+   * center point on every frame (rather than interpolated independently), which
+   * guarantees the center never drifts and the viewport does not jump.
+   * The resulting scale is clamped to the allowed range and the translation is
+   * clamped to the viewport boundaries.
+   * @param scaleFactor - Multiplicative scale factor (>1 zooms in, <1 zooms out)
+   * @param duration - Animation duration in milliseconds
+   */
+  private animateZoomAroundViewportCenter(scaleFactor: number, duration: number): void {
+    this.cancelViewportAnimation();
+
+    const state = this._core.store.state;
+    const startScale = state.scale;
+    const effectiveMinScale = this.getEffectiveMinScale();
+    const targetScale = Math.min(state.scaleMax, Math.max(effectiveMinScale, startScale * scaleFactor));
+
+    // The world point currently under the viewport center stays fixed.
+    const centerScreenX = state.viewportWidth / 2;
+    const centerScreenY = state.viewportHeight / 2;
+    const centerWorldX = (centerScreenX - state.translateX) / startScale;
+    const centerWorldY = (centerScreenY - state.translateY) / startScale;
+
+    if (targetScale === startScale || duration <= 0) {
+      this.applyZoomAroundCenter(targetScale, centerScreenX, centerScreenY, centerWorldX, centerWorldY);
+      state.isScaling = true;
+      this._core.rerender();
+      this._debounceUpdate();
+      this._debounceEndScaling();
+      return;
+    }
+
+    const startTime = performance.now();
+    state.isScaling = true;
+
+    const animate = (currentTime: number): void => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // easeInOutCubic for a smooth ramp in and out
+      const eased = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      const frameScale = startScale + (targetScale - startScale) * eased;
+      this.applyZoomAroundCenter(frameScale, centerScreenX, centerScreenY, centerWorldX, centerWorldY);
+      this._core.rerender();
+
+      if (progress < 1) {
+        this._animationFrameId = requestAnimationFrame(animate);
+      } else {
+        this._animationFrameId = null;
+        state.isScaling = false;
+        this._core.rerender();
+        this._debounceUpdate();
+      }
+    };
+
+    this._animationFrameId = requestAnimationFrame(animate);
+  }
+
+  /**
+   * Applies a single zoom step that keeps the given world point anchored to the
+   * given screen point at the specified scale, clamped to the viewport boundaries.
+   */
+  private applyZoomAroundCenter(scale: number, screenX: number, screenY: number, worldX: number, worldY: number): void {
+    const state = this._core.store.state;
+    state.scale = scale;
+    const clamped = this.clampTranslate(screenX - worldX * scale, screenY - worldY * scale);
+    state.translateX = clamped.translateX;
+    state.translateY = clamped.translateY;
+    state.hasViewportChanged = true;
+  }
+
+  /**
    * Centers a given object in the viewport without changing the scale.
    * The object's center point will be positioned at the viewport center.
    * Respects viewport boundary constraints.

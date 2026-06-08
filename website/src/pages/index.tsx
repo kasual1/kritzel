@@ -21,7 +21,7 @@ import React from "react";
 
 // Separate component to properly use hooks
 function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }) {
-  const { KritzelEditor } = require("kritzel-react");
+  const { KritzelEditor, IndexedDBSyncProvider } = require("kritzel-react");
   const editorRef = React.useRef<any>(null);
   const isLoadedRef = React.useRef(false);
   const observerRef = React.useRef<ResizeObserver | null>(null);
@@ -109,7 +109,16 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      <KritzelEditor editorId="homepage" ref={editorRef} wheelEnabled={false} cursorTarget={containerEl} onIsReady={handleReady} loginConfig={null} isWorkspaceManagerVisible={false} isMoreMenuVisible={true} />
+      <KritzelEditor
+        editorId="homepage"
+        ref={editorRef}
+        syncConfig={{ providers: [IndexedDBSyncProvider] }}
+        wheelEnabled={false}
+        cursorTarget={containerEl}
+        onIsReady={handleReady}
+        isWorkspaceManagerVisible={false}
+        isMoreMenuVisible={true}
+      />
     </div>
   );
 }

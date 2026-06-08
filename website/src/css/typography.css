@@ -52,6 +52,11 @@ p {
   font-family: Arial, sans-serif !important;
 }
 
+.markdown em,
+.markdown i {
+  font-family: Arial, sans-serif !important;
+}
+
 table {
   display: table;
   width: 100%;

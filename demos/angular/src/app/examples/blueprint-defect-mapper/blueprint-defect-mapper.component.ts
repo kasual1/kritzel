@@ -1,12 +1,18 @@
-import { Component, ChangeDetectionStrategy, ViewChild, ElementRef, signal, OnDestroy } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-import { 
-  KritzelEditor, 
-  KritzelViewportState, 
-  KritzelSyncConfig, 
-  KritzelShape, 
-  KritzelImage, 
-  ShapeType, 
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ViewChild,
+  ElementRef,
+  signal,
+  OnDestroy,
+} from '@angular/core';
+import {
+  KritzelEditor,
+  KritzelViewportState,
+  KritzelSyncConfig,
+  KritzelShape,
+  KritzelImage,
+  ShapeType,
   IndexedDBSyncProvider,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
@@ -24,7 +30,7 @@ interface Defect {
 
 @Component({
   selector: 'app-blueprint-defect-mapper',
-  imports: [KritzelEditor, DecimalPipe],
+  imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mapper-workspace">
@@ -34,16 +40,17 @@ interface Defect {
           #editorEl
           [themes]="themes"
           [theme]="'angular-theme'"
+          [isControlsVisible]="false"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
+          [wheelEnabled]="false"
           (isReady)="onReady()"
-          (viewportChange)="onViewportChange($event)"
           (click)="onCanvasClick($event)"
         ></kritzel-editor>
-        
+
         @if (placingMode()) {
           <div class="placing-toast">
-            📍 Click anywhere on the blueprint to place a defect pin
+            Click anywhere on the blueprint to place a defect pin
           </div>
         }
       </div>
@@ -52,42 +59,25 @@ interface Defect {
         <div class="sidebar-header">
           <span class="badge">Facilities</span>
           <h2 class="sidebar-title">Blueprint Defect Mapper</h2>
-          <p class="sidebar-desc">Report and monitor structural defects directly onto floor plan blueprints.</p>
+          <p class="sidebar-desc">
+            Report and monitor structural defects directly onto floor plan
+            blueprints.
+          </p>
         </div>
 
         <div class="map-controls">
-          <button 
-            class="action-btn" 
-            [class.active]="placingMode()" 
+          <button
+            class="action-btn"
+            [class.active]="placingMode()"
             (click)="togglePlacingMode()"
           >
             @if (placingMode()) {
-              🔴 Cancel Pin Placement
+              Cancel Pin Placement
             } @else {
-              📍 Place New Defect Pin
+              Place New Defect Pin
             }
           </button>
           <button class="reset-btn" (click)="resetView()">Reset Zoom</button>
-        </div>
-
-        <!-- Coordinates Status Hub -->
-        <div class="coord-inspector">
-          <div class="section-sub">Coordinate Monitor</div>
-          <div class="coord-readout">
-            <div>
-              World Pan: 
-              <span class="mon-val">
-                X: {{ (viewport()?.translateX ?? 0) | number:'1.0-0' }} 
-                Y: {{ (viewport()?.translateY ?? 0) | number:'1.0-0' }}
-              </span>
-            </div>
-            <div>
-              Zoom Level: 
-              <span class="mon-val">
-                {{ ((viewport()?.scale ?? 1) * 100) | number:'1.0-0' }}%
-              </span>
-            </div>
-          </div>
         </div>
 
         <!-- Site Defects Board -->
@@ -95,15 +85,21 @@ interface Defect {
           <div class="section-title-row">
             <h3>Reported Defects ({{ defects().length }})</h3>
           </div>
-          
+
           <div class="defects-list">
             @if (defects().length === 0) {
-              <div class="empty-list">No defects reported. Click "Place New Defect Pin" to report site defects.</div>
+              <div class="empty-list">
+                No defects reported. Click "Place New Defect Pin" to report site
+                defects.
+              </div>
             } @else {
               @for (d of defects(); track d.id) {
                 <div class="defect-card" (click)="zoomToDefect(d)">
                   <div class="defect-header">
-                    <span class="status-indicator" [class]="d.status.toLowerCase().replace(' ', '-')"></span>
+                    <span
+                      class="status-indicator"
+                      [class]="d.status.toLowerCase().replace(' ', '-')"
+                    ></span>
                     <span class="defect-title">{{ d.title }}</span>
                     <span class="defect-cat">{{ d.category }}</span>
                   </div>
@@ -111,12 +107,38 @@ interface Defect {
                     Units: x: {{ d.x }}, y: {{ d.y }}
                   </div>
                   <div class="defect-footer">
-                    <select (click)="$event.stopPropagation()" (change)="changeDefectStatus(d, $any($event.target).value)" class="status-select">
-                      <option [selected]="d.status === 'Outstanding'" value="Outstanding">Outstanding</option>
-                      <option [selected]="d.status === 'In Progress'" value="In Progress">In Progress</option>
-                      <option [selected]="d.status === 'Resolved'" value="Resolved">Resolved</option>
+                    <select
+                      (click)="$event.stopPropagation()"
+                      (change)="
+                        changeDefectStatus(d, $any($event.target).value)
+                      "
+                      class="status-select"
+                    >
+                      <option
+                        [selected]="d.status === 'Outstanding'"
+                        value="Outstanding"
+                      >
+                        Outstanding
+                      </option>
+                      <option
+                        [selected]="d.status === 'In Progress'"
+                        value="In Progress"
+                      >
+                        In Progress
+                      </option>
+                      <option
+                        [selected]="d.status === 'Resolved'"
+                        value="Resolved"
+                      >
+                        Resolved
+                      </option>
                     </select>
-                    <button class="delete-btn" (click)="deleteDefect(d, $event)">Delete</button>
+                    <button
+                      class="delete-btn"
+                      (click)="deleteDefect(d, $event)"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               }
@@ -163,15 +185,11 @@ interface Defect {
       border-radius: 99px;
       font-size: 13px;
       font-weight: 500;
-      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      box-shadow:
+        0 4px 6px -1px rgb(0 0 0 / 0.1),
+        0 2px 4px -2px rgb(0 0 0 / 0.1);
       z-index: 10;
-      animation: pulse 1.8s infinite;
       border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: translateX(-50%) scale(1); }
-      50% { transform: translateX(-50%) scale(1.03); opacity: 0.9; }
     }
 
     .sidebar {
@@ -266,38 +284,6 @@ interface Defect {
       background: #f0f0f0;
     }
 
-    .coord-inspector {
-      padding: 12px 16px;
-      background: #f8fafc;
-      border-bottom: 1px solid #ebebeb;
-      font-size: 12px;
-      color: #475569;
-    }
-
-    .section-sub {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #64748b;
-      margin-bottom: 6px;
-      letter-spacing: 0.5px;
-    }
-
-    .coord-readout {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .mon-val {
-      font-family: monospace;
-      font-weight: 600;
-      color: #334155;
-      background: #f1f5f9;
-      padding: 1px 4px;
-      border-radius: 3px;
-    }
-
     .defects-section {
       flex: 1;
       display: flex;
@@ -345,7 +331,7 @@ interface Defect {
 
     .defect-card:hover {
       border-color: #dd0031;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }
 
     .defect-header {
@@ -432,21 +418,21 @@ interface Defect {
     }
   `,
 })
-export class BlueprintDefectMapperComponent implements OnDestroy {
+export class BlueprintDefectMapperComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
-  @ViewChild('editorEl', { read: ElementRef }) editorEl!: ElementRef<HTMLElement>;
+  @ViewChild('editorEl', { read: ElementRef })
+  editorEl!: ElementRef<HTMLElement>;
 
   themes = [angularThemeLight, angularThemeDark];
 
-  
+  private readonly pinSize = 30;
+  private readonly firstSeedPinCenter = { x: -60, y: 145 };
+  private readonly secondSeedPinCenter = { x: 135, y: -80 };
 
-  viewport = signal<KritzelViewportState | null>(null);
   placingMode = signal<boolean>(false);
   defects = signal<Defect[]>([]);
-  
+
   private nextDefectId = 2; // seeded defects account for 1, 2
-  private lockInterval: any;
-  private hasInitialCenteringRun = false;
 
   async onReady() {
     const existing = await this.editor.getAllObjects();
@@ -456,31 +442,45 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
       await this.restoreDefectsFromCanvas();
     }
 
-    // Set initial custom viewport focus directly on the floorplan origin (0, 0)
-    await this.editor.setViewport(0, 0, 0.75);
+    await this.normalizeFirstSeedPin();
+    await this.normalizeSecondSeedPin();
 
-    // Ensure our background blueprint elements are set to pointer-events: none is repeated 
-    // to prevent selection / grabbing of floorplan components.
-    this.lockScenery();
-    this.lockInterval = setInterval(() => this.lockScenery(), 500);
   }
 
   async initializeBlueprint() {
     // 1. Load Blueprint floorplan.png from local assets as unselectable background scenery
-    const bg = await KritzelImage.fromUrl('assets/floorplan.png', {
-      maxWidth: 1200,
-      maxHeight: 900,
-      translateX: -600,
-      translateY: -450,
-    });
-    bg.id = 'blueprint-bg';
-    bg.isEditable = false;
+
+    const bg = await KritzelImage.fromUrl(
+      'assets/floorplan.png',
+      {
+        maxWidth: 660,
+        maxHeight: 360,
+      },
+    );
+
+    bg.translateX = -bg.width / 2;
+    bg.translateY = (-bg.height / 2);
+bg
     await this.editor.addObject(bg);
 
     // 2. Seed initial reported defects onto floor plans
     const seedPins = [
-      { id: 'defect-1', title: 'Wall Stress Fracture', category: 'Structural', x: -300, y: -200, status: 'Outstanding' as const },
-      { id: 'defect-2', title: 'HVAC Condensation Leak', category: 'HVAC', x: 300, y: -200, status: 'In Progress' as const },
+      {
+        id: 'defect-1',
+        title: 'Kitchen Sink Drain Clog',
+        category: 'Plumbing',
+        x: this.firstSeedPinCenter.x,
+        y: this.firstSeedPinCenter.y,
+        status: 'Outstanding' as const,
+      },
+      {
+        id: 'defect-2',
+        title: 'Bathroom Toilet Running',
+        category: 'Plumbing',
+        x: this.secondSeedPinCenter.x,
+        y: this.secondSeedPinCenter.y,
+        status: 'In Progress' as const,
+      },
     ];
 
     const initialList: Defect[] = [];
@@ -488,10 +488,10 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
     for (const d of seedPins) {
       const pinId = `pin-${d.id}`;
       const pin = new KritzelShape({
-        translateX: d.x - 15,
-        translateY: d.y - 15,
-        width: 30,
-        height: 30,
+        translateX: d.x - this.pinSize / 2,
+        translateY: d.y - this.pinSize / 2,
+        width: this.pinSize,
+        height: this.pinSize,
         shapeType: ShapeType.Ellipse,
         fillColor: this.getPinColor(d.status),
         strokeColor: { light: '#ffffff', dark: '#ffffff' },
@@ -515,15 +515,49 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
     this.defects.set(initialList);
   }
 
+  async normalizeFirstSeedPin() {
+    const firstPin = (await this.editor.getObjectById('pin-defect-1')) as
+      | KritzelShape
+      | undefined;
+    if (!firstPin) {
+      return;
+    }
+
+    await this.editor.updateObject(firstPin, {
+      translateX: this.firstSeedPinCenter.x - this.pinSize / 2,
+      translateY: this.firstSeedPinCenter.y - this.pinSize / 2,
+      width: this.pinSize,
+      height: this.pinSize,
+    });
+  }
+
+  async normalizeSecondSeedPin() {
+    const secondPin = (await this.editor.getObjectById('pin-defect-2')) as
+      | KritzelShape
+      | undefined;
+    if (!secondPin) {
+      return;
+    }
+
+    await this.editor.updateObject(secondPin, {
+      translateX: this.secondSeedPinCenter.x - this.pinSize / 2,
+      translateY: this.secondSeedPinCenter.y - this.pinSize / 2,
+      width: this.pinSize,
+      height: this.pinSize,
+    });
+  }
+
   async restoreDefectsFromCanvas() {
     const all = await this.editor.getAllObjects();
-    const pinObjects = all.filter(o => o.id.startsWith('pin-') && o instanceof KritzelShape) as KritzelShape[];
-    
+    const pinObjects = all.filter(
+      (o) => o.id.startsWith('pin-') && o instanceof KritzelShape,
+    ) as KritzelShape[];
+
     const restoredList: Defect[] = [];
-    pinObjects.forEach(pin => {
+    pinObjects.forEach((pin) => {
       const parts = pin.id.split('-');
       const id = parts.slice(1).join('-');
-      
+
       let status: 'Outstanding' | 'In Progress' | 'Resolved' = 'Outstanding';
       const fillLight = (pin.fillColor as any)?.light;
       if (fillLight === '#f59e0b') {
@@ -534,22 +568,38 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
 
       let title = 'Defect';
       let category = 'Facility';
-      if (id === 'defect-1') { title = 'Wall Stress Fracture'; category = 'Structural'; }
-      else if (id === 'defect-2') { title = 'HVAC Condensation Leak'; category = 'HVAC'; }
-      else if (id === 'defect-3') { title = 'Exposed Electrical Terminal'; category = 'Electrical'; }
-      else {
+      if (id === 'defect-1') {
+        title = 'Kitchen Sink Drain Clog';
+        category = 'Plumbing';
+      } else if (id === 'defect-2') {
+        title = 'Bathroom Toilet Running';
+        category = 'Plumbing';
+      } else if (id === 'defect-3') {
+        title = 'Exposed Electrical Terminal';
+        category = 'Electrical';
+      } else {
         title = `Pinned Defect ${id}`;
         category = 'Manual';
       }
 
+      const isFirstSeedPin = pin.id === 'pin-defect-1';
+      const isSecondSeedPin = pin.id === 'pin-defect-2';
       restoredList.push({
         id: id || pin.id,
         title,
         category,
-        x: Math.round(pin.translateX + 15),
-        y: Math.round(pin.translateY + 15),
+        x: isFirstSeedPin
+          ? this.firstSeedPinCenter.x
+          : isSecondSeedPin
+            ? this.secondSeedPinCenter.x
+          : Math.round(pin.translateX + pin.width / 2),
+        y: isFirstSeedPin
+          ? this.firstSeedPinCenter.y
+          : isSecondSeedPin
+            ? this.secondSeedPinCenter.y
+          : Math.round(pin.translateY + pin.height / 2),
         status,
-        pinId: pin.id
+        pinId: pin.id,
       });
     });
 
@@ -582,16 +632,16 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
 
     // Convert screen pointer location relative to container into real-world blueprint units
     const worldPos = await this.editor.screenToWorld(screenX, screenY);
-    
+
     // Add customized defect circular marker
     const defectId = `defect-user-${++this.nextDefectId}`;
     const pinId = `pin-${defectId}`;
-    
+
     const pin = new KritzelShape({
-      translateX: worldPos.x - 15,
-      translateY: worldPos.y - 15,
-      width: 30,
-      height: 30,
+      translateX: worldPos.x - this.pinSize / 2,
+      translateY: worldPos.y - this.pinSize / 2,
+      width: this.pinSize,
+      height: this.pinSize,
       shapeType: ShapeType.Ellipse,
       fillColor: this.getPinColor('Outstanding'),
       strokeColor: { light: '#ffffff', dark: '#ffffff' },
@@ -612,11 +662,10 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
       pinId: pinId,
     };
 
-    this.defects.update(list => [...list, newDefect]);
-    
+    this.defects.update((list) => [...list, newDefect]);
+
     // Deactivate placement mode after success
     this.placingMode.set(false);
-    this.lockScenery();
   }
 
   async zoomToDefect(defect: Defect) {
@@ -625,61 +674,86 @@ export class BlueprintDefectMapperComponent implements OnDestroy {
   }
 
   async resetView() {
-    await this.editor.setViewport(0, 0, 0.75);
+    await this.editor.setViewport(0, 0, 1);
   }
 
-  onViewportChange(event: CustomEvent<KritzelViewportState>) {
-    this.viewport.set(event.detail);
-    this.lockScenery();
+  async changeDefectStatus(
+    defect: Defect,
+    newStatus: 'Outstanding' | 'In Progress' | 'Resolved',
+  ) {
+    this.defects.update((list) =>
+      list.map((d) => (d.id === defect.id ? { ...d, status: newStatus } : d)),
+    );
 
-    // Perform target camera centering once the editor element has non-zero layout dimensions
-    if (!this.hasInitialCenteringRun && event.detail.width > 0 && event.detail.height > 0) {
-      this.hasInitialCenteringRun = true;
-      setTimeout(async () => {
-        await this.editor.setViewport(0, 0, 0.75);
-      }, 50);
+    const pin = (await this.editor.getObjectById(defect.pinId)) as KritzelShape;
+    if (pin) {
+      await this.editor.updateObject(pin, {
+        fillColor: this.getPinColor(newStatus),
+      });
     }
   }
 
-  lockScenery() {
-    const shadow = this.editorEl?.nativeElement?.shadowRoot;
-    if (!shadow) return;
+  async findPinsForDefect(defect: Defect): Promise<KritzelShape[]> {
+    const idCandidates = Array.from(
+      new Set([defect.pinId, `pin-${defect.id}`, defect.id]),
+    );
 
-    const sceneryIds = [
-      'blueprint-bg'
-    ];
-
-    for (const id of sceneryIds) {
-      const el = shadow.getElementById(id);
-      if (el) {
-        el.style.pointerEvents = 'none';
+    const directMatches: KritzelShape[] = [];
+    for (const id of idCandidates) {
+      const pin = (await this.editor.getObjectById(id)) as KritzelShape | null;
+      if (pin && pin instanceof KritzelShape && pin.shapeType === ShapeType.Ellipse) {
+        directMatches.push(pin);
       }
     }
-  }
 
-  async changeDefectStatus(defect: Defect, newStatus: 'Outstanding' | 'In Progress' | 'Resolved') {
-    this.defects.update(list => list.map(d => d.id === defect.id ? { ...d, status: newStatus } : d));
-    
-    const pin = await this.editor.getObjectById(defect.pinId) as KritzelShape;
-    if (pin) {
-      await this.editor.updateObject(pin, { fillColor: this.getPinColor(newStatus) });
+    if (directMatches.length > 0) {
+      return directMatches;
     }
+
+    const all = await this.editor.getAllObjects();
+    const idMatches = all.filter(
+      (obj) =>
+        obj instanceof KritzelShape &&
+        obj.shapeType === ShapeType.Ellipse &&
+        idCandidates.includes(obj.id),
+    ) as KritzelShape[];
+
+    if (idMatches.length > 0) {
+      return idMatches;
+    }
+
+    // Fallback for legacy/persisted IDs: match the nearest pin to the defect coordinates.
+    const ellipsePins = all.filter(
+      (obj) => obj instanceof KritzelShape && obj.shapeType === ShapeType.Ellipse,
+    ) as KritzelShape[];
+
+    const maxDistance = this.pinSize;
+    let bestMatch: KritzelShape | null = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    for (const pin of ellipsePins) {
+      const centerX = pin.translateX + pin.width / 2;
+      const centerY = pin.translateY + pin.height / 2;
+      const distance = Math.hypot(centerX - defect.x, centerY - defect.y);
+      if (distance <= maxDistance && distance < bestDistance) {
+        bestMatch = pin;
+        bestDistance = distance;
+      }
+    }
+
+    return bestMatch ? [bestMatch] : [];
   }
 
   async deleteDefect(defect: Defect, event: MouseEvent) {
     event.stopPropagation();
-    
-    const pin = await this.editor.getObjectById(defect.pinId);
-    if (pin) {
-      await this.editor.removeObject(pin);
-    }
-    
-    this.defects.update(list => list.filter(d => d.id !== defect.id));
-  }
 
-  ngOnDestroy() {
-    if (this.lockInterval) {
-      clearInterval(this.lockInterval);
+    const pins = await this.findPinsForDefect(defect);
+    if (pins.length === 1) {
+      await this.editor.removeObject(pins[0]);
+    } else if (pins.length > 1) {
+      await this.editor.removeObjects(pins);
     }
+
+    this.defects.update((list) => list.filter((d) => d.id !== defect.id));
   }
 }
