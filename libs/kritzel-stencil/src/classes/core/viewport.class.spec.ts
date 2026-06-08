@@ -1719,4 +1719,140 @@ describe('KritzelViewport', () => {
       expect(calledScale).toBe(5);
     });
   });
+
+  describe('zoomIn', () => {
+    it('should zoom in by the default factor while keeping the viewport center fixed (instant)', () => {
+      mockState.scale = 1;
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      // duration 0 applies the zoom instantly for deterministic assertions
+      viewport.zoomIn(1.2, 0);
+
+      // Default factor 1.2 -> newScale = 1.2
+      expect(mockState.scale).toBeCloseTo(1.2);
+
+      // The world point at the viewport center must stay at the center.
+      const centerWorldXBefore = (1000 / 2 - 0) / 1;
+      const centerWorldYBefore = (800 / 2 - 0) / 1;
+      const centerWorldXAfter = (1000 / 2 - mockState.translateX) / mockState.scale;
+      const centerWorldYAfter = (800 / 2 - mockState.translateY) / mockState.scale;
+      expect(centerWorldXAfter).toBeCloseTo(centerWorldXBefore);
+      expect(centerWorldYAfter).toBeCloseTo(centerWorldYBefore);
+    });
+
+    it('should zoom in by a custom factor', () => {
+      mockState.scale = 2;
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      viewport.zoomIn(1.5, 0);
+
+      expect(mockState.scale).toBeCloseTo(3);
+    });
+
+    it('should schedule an animation when a positive duration is given', () => {
+      mockState.scale = 1;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      const rafSpy = jest.spyOn(global, 'requestAnimationFrame').mockReturnValue(1 as unknown as number);
+
+      viewport.zoomIn(1.6, 200);
+
+      expect(rafSpy).toHaveBeenCalled();
+      rafSpy.mockRestore();
+    });
+
+    it('should keep the viewport center fixed throughout an animated zoom', () => {
+      mockState.scale = 1;
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      const centerWorldXBefore = (1000 / 2 - 0) / 1;
+      const centerWorldYBefore = (800 / 2 - 0) / 1;
+
+      // Drive the animation frames manually at fixed timestamps.
+      let now = 0;
+      jest.spyOn(performance, 'now').mockImplementation(() => now);
+      const callbacks: FrameRequestCallback[] = [];
+      jest.spyOn(global, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+        callbacks.push(cb);
+        return callbacks.length as unknown as number;
+      });
+
+      viewport.zoomIn(1.5, 200);
+
+      // Step through the animation; center must stay fixed at every frame.
+      for (const time of [50, 100, 150, 200]) {
+        now = time;
+        const cb = callbacks.shift();
+        cb?.(time);
+
+        const centerWorldXAfter = (1000 / 2 - mockState.translateX) / mockState.scale;
+        const centerWorldYAfter = (800 / 2 - mockState.translateY) / mockState.scale;
+        expect(centerWorldXAfter).toBeCloseTo(centerWorldXBefore);
+        expect(centerWorldYAfter).toBeCloseTo(centerWorldYBefore);
+      }
+
+      // Final scale reached.
+      expect(mockState.scale).toBeCloseTo(1.5);
+
+      jest.restoreAllMocks();
+    });
+
+    it('should clamp to scaleMax when zooming in past the limit', () => {
+      mockState.scale = 4.5;
+      mockState.scaleMax = 5;
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      viewport.zoomIn(2, 0);
+
+      expect(mockState.scale).toBe(5);
+    });
+  });
+
+  describe('zoomOut', () => {
+    it('should zoom out by the default factor while keeping the viewport center fixed (instant)', () => {
+      mockState.scale = 1.2;
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      const centerWorldXBefore = (1000 / 2 - 0) / 1.2;
+      const centerWorldYBefore = (800 / 2 - 0) / 1.2;
+
+      viewport.zoomOut(1.2, 0);
+
+      // Default factor 1.2 -> newScale = 1.2 / 1.2 = 1
+      expect(mockState.scale).toBeCloseTo(1);
+
+      const centerWorldXAfter = (1000 / 2 - mockState.translateX) / mockState.scale;
+      const centerWorldYAfter = (800 / 2 - mockState.translateY) / mockState.scale;
+      expect(centerWorldXAfter).toBeCloseTo(centerWorldXBefore);
+      expect(centerWorldYAfter).toBeCloseTo(centerWorldYBefore);
+    });
+
+    it('should zoom out by a custom factor', () => {
+      mockState.scale = 3;
+      mockState.translateX = 0;
+      mockState.translateY = 0;
+      mockState.viewportWidth = 1000;
+      mockState.viewportHeight = 800;
+
+      viewport.zoomOut(1.5, 0);
+
+      expect(mockState.scale).toBeCloseTo(2);
+    });
+  });
 });

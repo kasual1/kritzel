@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 
 import { KritzelEditor } from 'kritzel-angular';
 import { angularThemeLight } from '../const/angular-theme-light';

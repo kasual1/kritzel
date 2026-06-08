@@ -575,18 +575,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       width: 50%;
     }
 
-    @media (max-width: 980px) {
-      .content-shell {
-        flex-direction: column;
-      }
 
-      aside {
-        width: 100%;
-        max-height: 42%;
-        border-left: none;
-        border-top: 1px solid #ebebeb;
-      }
-    }
   `,
 })
 export class ObjectExplorerComponent implements OnDestroy {
