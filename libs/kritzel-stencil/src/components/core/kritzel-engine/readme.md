@@ -1017,6 +1017,40 @@ Type: `Promise<{ x: number; y: number; }>`
 
 Screen coordinates { x, y } relative to the engine element.
 
+### `zoomIn(factor: number, duration: number) => Promise<void>`
+
+Zooms in by a fixed step, centered on the current viewport center, with a smooth animation.
+
+#### Parameters
+
+| Name       | Type     | Description                           |
+| ---------- | -------- | ------------------------------------- |
+| `factor`   | `number` | - Multiplicative zoom-in step.        |
+| `duration` | `number` | - Animation duration in milliseconds. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `zoomOut(factor: number, duration: number) => Promise<void>`
+
+Zooms out by a fixed step, centered on the current viewport center, with a smooth animation.
+
+#### Parameters
+
+| Name       | Type     | Description                           |
+| ---------- | -------- | ------------------------------------- |
+| `factor`   | `number` | - Multiplicative zoom-out step.       |
+| `duration` | `number` | - Animation duration in milliseconds. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `zoomTo(scale: number, worldX?: number, worldY?: number) => Promise<void>`
 
 Zooms the viewport to the given scale level.

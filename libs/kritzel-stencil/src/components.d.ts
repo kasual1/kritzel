@@ -499,6 +499,8 @@ export namespace Components {
          */
         "wheelEnabled": boolean;
         "worldToScreen": (x: number, y: number) => Promise<{ x: number; y: number; }>;
+        "zoomIn": (factor?: number, duration?: number) => Promise<void>;
+        "zoomOut": (factor?: number, duration?: number) => Promise<void>;
         "zoomTo": (scale: number, worldX?: number, worldY?: number) => Promise<void>;
     }
     interface KritzelEngine {
@@ -955,6 +957,18 @@ export namespace Components {
           * @returns Screen coordinates { x, y } relative to the engine element.
          */
         "worldToScreen": (x: number, y: number) => Promise<{ x: number; y: number; }>;
+        /**
+          * Zooms in by a fixed step, centered on the current viewport center, with a smooth animation.
+          * @param factor - Multiplicative zoom-in step.
+          * @param duration - Animation duration in milliseconds.
+         */
+        "zoomIn": (factor: number, duration: number) => Promise<void>;
+        /**
+          * Zooms out by a fixed step, centered on the current viewport center, with a smooth animation.
+          * @param factor - Multiplicative zoom-out step.
+          * @param duration - Animation duration in milliseconds.
+         */
+        "zoomOut": (factor: number, duration: number) => Promise<void>;
         /**
           * Zooms the viewport to the given scale level. Optionally centers on a world point; if omitted, zooms around the viewport center.
           * @param scale - Target scale level.

@@ -915,6 +915,40 @@ Type: `Promise<{ x: number; y: number; }>`
 
 
 
+### `zoomIn(factor?: number, duration?: number) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name       | Type     | Description |
+| ---------- | -------- | ----------- |
+| `factor`   | `number` |             |
+| `duration` | `number` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `zoomOut(factor?: number, duration?: number) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name       | Type     | Description |
+| ---------- | -------- | ----------- |
+| `factor`   | `number` |             |
+| `duration` | `number` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `zoomTo(scale: number, worldX?: number, worldY?: number) => Promise<void>`
 
 
