@@ -1,196 +1,56 @@
 ---
 sidebar_label: Collaboration
-title: "Real-time Collaboration | Kritzel for React"
-description: "Enable real-time multi-user editing on the Kritzel canvas in your React app using Hocuspocus and Yjs."
+displayed_sidebar: tutorialSidebar
+title: "Collaboration Concept | Kritzel for React"
+description: "Understand the core concept of Collaboration in Kritzel - cross-tab sync and multi-user editing using Yjs providers."
 ---
+
+import LiveDemo from '@site/src/components/LiveDemo';
+
 # Collaboration
 
-Kritzel uses [Yjs](https://yjs.dev/) CRDTs under the hood for real-time collaboration and persistence. All canvas objects are stored in a Yjs document (`Y.Doc`), enabling conflict-free merging across multiple clients.
+## Overview
 
-## Configuring Sync Providers
+Kritzel uses [Yjs](https://yjs.dev/) CRDTs under the hood for all data synchronization and persistence. Every canvas object lives inside a Yjs document (`Y.Doc`), which means changes merge conflict-free across any number of clients, whether they are browser tabs on the same machine or users on opposite sides of the world.
 
-Pass a `syncConfig` prop to `<KritzelEditor>` or `<kritzel-engine>`:
+You configure collaboration through the `syncConfig` prop on `<KritzelEditor>` (or `<KritzelEngine>`). This prop accepts a list of **providers** that control *where* and *how* document state is shared. Providers are composable and can combine local browser channels with network transport.
 
-```ts
-import { IndexedDBSyncProvider, WebSocketSyncProvider } from 'kritzel-stencil';
+## Cross-Tab Sync
 
-const editor = document.querySelector('kritzel-editor');
-editor.syncConfig = {
-  providers: [
-    IndexedDBSyncProvider,
-    WebSocketSyncProvider.with({ url: 'wss://your-server.com' }),
-  ],
-};
-```
+For same-device collaboration across multiple browser tabs, use `BroadcastSyncProvider`. It synchronizes document updates in real time through the BroadcastChannel API.
 
-## Available Providers
+This is useful when users open the same board in multiple tabs and expect immediate consistency.
 
-### `IndexedDBSyncProvider`
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  demoPath="/concepts/collaboration-local"
+  repoFiles={['src/pages/concepts/collaboration/collaboration-local.tsx']}
+/>
 
-Persists canvas data locally in IndexedDB. Data survives page reloads and browser restarts.
+## Real-Time Multi-User Sync
 
-```ts
-import { IndexedDBSyncProvider } from 'kritzel-stencil';
+To collaborate across devices or users, add a network provider. Kritzel supports two WebSocket-based providers:
 
-editor.syncConfig = {
-  providers: [IndexedDBSyncProvider],
-};
-```
+- `WebSocketSyncProvider` - connects to any [y-websocket](https://github.com/yjs/y-websocket)-compatible server.
+- `HocuspocusSyncProvider` - connects to a [Hocuspocus](https://tiptap.dev/hocuspocus) server with built-in support for authentication tokens and multiplexed connections.
 
-### `BroadcastSyncProvider`
+A common production pattern combines local persistence (for offline resilience) with a network provider (for real-time sync):
 
-Syncs canvas data across browser tabs using the BroadcastChannel API. Useful for same-browser multi-tab editing.
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  demoPath="/concepts/collaboration-realtime"
+  repoFiles={['src/pages/concepts/collaboration/collaboration-realtime.tsx']}
+/>
 
-```ts
-import { BroadcastSyncProvider } from 'kritzel-stencil';
+## Multiplexing Connections
 
-editor.syncConfig = {
-  providers: [BroadcastSyncProvider],
-};
-```
+When your application manages multiple documents simultaneously (for example, a workspace switcher), the `HocuspocusSyncProvider` supports multiplexing by sharing a single WebSocket connection for all documents. This reduces connection overhead, avoids redundant authentication handshakes, and makes document switching instantaneous since the connection is already established.
 
-### `InMemorySyncProvider`
+## Related API Methods
 
-Holds canvas data in memory for the current page session. State survives the component being removed from the DOM and remounted, but is lost on page reload. Intended for documentation demos.
+- Sync configuration (`syncConfig` prop, provider composition)
+- Provider factories (`WebSocketSyncProvider.with()`, `HocuspocusSyncProvider.with()`)
+- Multiplexing lifecycle (`HocuspocusSyncProvider.createSharedWebSocket()`, `HocuspocusSyncProvider.destroySharedWebSocket()`)
+- Cross-tab provider (`BroadcastSyncProvider`)
 
-```ts
-import { InMemorySyncProvider } from 'kritzel-stencil';
-
-editor.syncConfig = {
-  providers: [InMemorySyncProvider],
-};
-```
-
-You can clear the cache programmatically — useful for a "reset canvas" button in a demo:
-
-```ts
-import { InMemorySyncProvider } from 'kritzel-stencil';
-
-// Clear state for a specific doc name
-InMemorySyncProvider.clear('my-doc-name');
-
-// Clear all in-memory state
-InMemorySyncProvider.clear();
-```
-
-### `WebSocketSyncProvider`
-
-Real-time sync via a WebSocket server (compatible with [y-websocket](https://github.com/yjs/y-websocket)).
-
-```ts
-import { WebSocketSyncProvider } from 'kritzel-stencil';
-
-editor.syncConfig = {
-  providers: [
-    WebSocketSyncProvider.with({ url: 'wss://your-server.com' }),
-  ],
-};
-```
-
-### `HocuspocusSyncProvider`
-
-Real-time sync via a [Hocuspocus](https://tiptap.dev/hocuspocus) server. Supports authentication tokens and multiplexed WebSocket connections.
-
-```ts
-import { HocuspocusSyncProvider } from 'kritzel-stencil';
-
-editor.syncConfig = {
-  providers: [
-    HocuspocusSyncProvider.with({
-      url: 'wss://your-hocuspocus-server.com',
-      token: 'your-auth-token',
-    }),
-  ],
-};
-```
-
-## Combining Providers
-
-Providers can be combined. A common pattern is local persistence + remote sync:
-
-```ts
-editor.syncConfig = {
-  providers: [
-    IndexedDBSyncProvider,                                         // local persistence
-    BroadcastSyncProvider,                                         // cross-tab sync
-    WebSocketSyncProvider.with({ url: 'wss://your-server.com' }), // remote sync
-  ],
-};
-```
-
-## Hocuspocus Multiplexing
-
-When working with multiple documents (e.g. multiple workspaces connecting to different rooms), the Hocuspocus provider supports multiplexing — sharing a single WebSocket connection across all documents.
-
-### Setup
-
-```ts
-import { HocuspocusSyncProvider } from 'kritzel-stencil';
-
-// Step 1: Create a shared WebSocket connection (once)
-HocuspocusSyncProvider.createSharedWebSocket({
-  url: 'ws://localhost:1234',
-  onConnect: () => console.log('WebSocket connected'),
-  onDisconnect: () => console.log('WebSocket disconnected'),
-});
-
-// Step 2: Create providers that share the connection
-const provider1 = new HocuspocusSyncProvider('document-1', doc1, {
-  token: 'token-for-doc1',
-});
-
-const provider2 = new HocuspocusSyncProvider('document-2', doc2, {
-  token: 'token-for-doc2',
-});
-
-await Promise.all([provider1.connect(), provider2.connect()]);
-```
-
-### Factory Pattern
-
-```ts
-const factory = HocuspocusSyncProvider.with({
-  quiet: false,
-  onConnect: () => console.log('Connected'),
-});
-
-const provider1 = factory.create('document-1', doc1);
-const provider2 = factory.create('document-2', doc2);
-```
-
-### Cleanup
-
-```ts
-provider1.destroy();
-provider2.destroy();
-HocuspocusSyncProvider.destroySharedWebSocket();
-```
-
-### Benefits of Multiplexing
-
-- Single WebSocket connection for all documents
-- Reduced overhead — no multiple handshakes
-- Better resource usage — less memory and network
-- Faster document switching — connection already established
-- Shared authentication — authenticate once per connection
-
-## Hocuspocus Configuration Options
-
-```ts
-interface HocuspocusOptions {
-  url?: string;                    // Server URL (standalone mode only)
-  name?: string;                   // Override document name
-  token?: string | (() => string) | (() => Promise<string>); // Auth token
-  websocketProvider?: HocuspocusProviderWebsocket; // For multiplexing
-  quiet?: boolean;                 // Suppress console logs
-  forceSyncInterval?: false | number; // Force sync interval (ms)
-  WebSocketPolyfill?: any;         // For Node.js environments
-
-  // Callbacks
-  onConnect?: () => void;
-  onDisconnect?: () => void;
-  onSynced?: () => void;
-  onAuthenticationFailed?: (data: any) => void;
-  onStatus?: (data: { status: string }) => void;
-}
-```
+For a comprehensive view, see the [API Reference](api-reference-editor.md).
