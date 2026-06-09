@@ -13,7 +13,7 @@ This page walkthrough demonstrates how to build an interactive floor plan or blu
 
 ## Prerequisites
 
-Before diving into this walkthrough, complete the [Quick Start](./quick-start.md) guide to set up `<kritzel-editor>` in your Angular application.
+Before diving into this walkthrough, complete the [Quick Start](./quick-start.md) guide to set up `<KritzelEditor>` in your Angular application.
 
 ---
 
@@ -45,4 +45,4 @@ Instead, to center the camera viewport on a static image background or a station
 
 The background scenery is registered directly in `onReady()` when the canvas activates. Because we want user-drawn drawings or shapes to sit on top of the architectural drawing, the image scenery item is loaded and pushed first. The custom `pointer-events: none` property applied to the blueprint layer allows users to select manually added pins or draw arrows over the blueprint scenery without dragging the floorplan background by mistake.
 
-To convert a standard mouse or pointer click into coordinate units, we measure the click relative to our `<kritzel-editor>` bounds and pass it to `screenToWorld(x, y)`. The resulting absolute coordinates act as the center pivot when constructing our customized circular `KritzelShape` pin objects on the canvas.
+To convert a standard mouse or pointer click into coordinate units, we measure the click relative to our `<KritzelEditor>` bounds and pass it to `screenToWorld(x, y)`. The resulting absolute coordinates act as the center pivot when constructing our customized circular `KritzelShape` pin objects on the canvas.

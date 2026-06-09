@@ -1,115 +1,150 @@
 ---
-
 sidebar_label: Basic Usage
 displayed_sidebar: tutorialSidebar
 title: "Basic Usage | Kritzel for React"
 description: "Programmatically interact with the Kritzel editor instance in your React app: load objects, change tools, and respond to events."
 ---
 
+import LiveDemo from '@site/src/components/LiveDemo';
+
 # Basic Usage
 
-Once you have `<KritzelEditor />` rendering in your application, you can start interacting with the canvas programmatically.
+Once you have `<KritzelEditor>` rendering in your application, you can start interacting with the canvas programmatically. The editor acts as a stateful engine: it manages the view, drawing state, and objects internally, exposing its outward state through DOM events and providing asynchronous methods for programmatic mutations.
 
-## Accessing the Editor Instance
+## Understanding the Editor Lifecycle
 
-To interact with the editor, use the `onIsReady` event to access the `HTMLKritzelEditorElement` instance. Note that most API methods are asynchronous and return Promises.
+Before making API calls, you must wait for the editor to fully initialize. The `<KritzelEditor>` emits an `isReady` event when the engine is mounted, the internal rendering context is created, and default workspaces are loaded.
 
 ```tsx
-import { useState } from "react";
-import { KritzelEditor } from "kritzel-react";
+import { useEffect, useRef } from 'react';
+import { KritzelEditor } from 'kritzel-react';
 
-function App() {
-  const [editor, setEditor] = useState<HTMLKritzelEditorElement | null>(null);
+export function App() {
+  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
 
-  const onIsReady = (event: CustomEvent<HTMLKritzelEditorElement>) => {
-    setEditor(event.detail);
-  };
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
 
-  return <KritzelEditor onIsReady={onIsReady} />;
+    const handleReady = (event: Event) => {
+      const detail = (event as CustomEvent<HTMLKritzelEditorElement>).detail;
+      console.log('Editor is fully initialized and ready!', detail);
+    };
+
+    editor.addEventListener('isReady', handleReady);
+    return () => editor.removeEventListener('isReady', handleReady);
+  }, []);
+
+  return <KritzelEditor ref={editorRef} style={{ display: 'block', width: '100%', height: '100vh' }} />;
 }
 ```
 
-## Changing Tools
+## Changing Tools Programmatically
 
-You can programmatically change the active drawing tool currently used by the canvas.
+The editor supports several built-in tools, for example `brush`, `eraser`, `select`, and `pan`. You can programmatically switch between them using the `changeActiveToolByName` method. All editor mutations are asynchronous.
 
 ```tsx
-const setBrushTool = async () => {
+async function setBrushTool(editor: HTMLKritzelEditorElement | null) {
   if (editor) {
-    await editor.setActiveTool('brush');
+    await editor.changeActiveToolByName('brush');
   }
-};
+}
 
-const setSelectTool = async () => {
+async function setSelectTool(editor: HTMLKritzelEditorElement | null) {
   if (editor) {
-    await editor.setActiveTool('select');
+    await editor.changeActiveToolByName('select');
   }
-};
+}
+```
+
+## Working with the Object Model
+
+Kritzel elements on the canvas, such as shapes, text, and drawings, are represented as objects. You can listen to `objectsChange` to sync external UI like a layer panel or status bar, and use API methods to query or manipulate objects.
+
+For instance, adding a text element programmatically:
+
+```tsx
+import { KritzelText } from 'kritzel-react';
+
+async function addText(editor: HTMLKritzelEditorElement | null) {
+  if (!editor) return;
+
+  const text = new KritzelText({
+    text: 'Programmatic text!',
+    translateX: 0,
+    translateY: 0,
+    fontSize: 24,
+    fontFamily: 'Arial',
+    fontColor: '#ff0000',
+  });
+
+  await editor.addObject(text);
+  await editor.selectObjects([text]);
+}
+```
+
+## Interacting with the Viewport
+
+The editor allows you to programmatically control the viewport, or camera, to zoom, pan, or center on specific coordinates or objects.
+
+```tsx
+async function zoomIn(editor: HTMLKritzelEditorElement | null) {
+  if (editor) {
+    await editor.zoomTo(1.5);
+  }
+}
+
+async function focusOnObject(editor: HTMLKritzelEditorElement | null, targetObject: any) {
+  if (editor) {
+    await editor.centerObjectInViewport(targetObject);
+  }
+}
 ```
 
 ## Listening to Events
 
-The Kritzel component emits several events to help you stay updated about changes happening inside the canvas.
+Bind to DOM events on the custom element `<KritzelEditor>` to stay updated on canvas changes.
 
 ```tsx
-function App() {
-  const onObjectsChange = (event: CustomEvent) => {
-    console.log("Canvas objects have changed:", event.detail);
-  };
+import { useEffect, useRef } from 'react';
+import { KritzelEditor } from 'kritzel-react';
 
-  const onViewportChange = (event: CustomEvent) => {
-    console.log("Viewport updated:", event.detail);
-  };
+export function CanvasStatus() {
+  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
 
-  return (
-    <KritzelEditor 
-      onIsReady={onIsReady} 
-      onObjectsChange={onObjectsChange}
-      onViewportChange={onViewportChange}
-    />
-  );
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const onObjectsChange = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      console.log('Canvas objects updated:', detail.objects.length);
+    };
+
+    const onViewportChange = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      console.log('Viewport updated:', detail);
+    };
+
+    editor.addEventListener('objectsChange', onObjectsChange);
+    editor.addEventListener('viewportChange', onViewportChange);
+
+    return () => {
+      editor.removeEventListener('objectsChange', onObjectsChange);
+      editor.removeEventListener('viewportChange', onViewportChange);
+    };
+  }, []);
+
+  return <KritzelEditor ref={editorRef} style={{ display: 'block', width: '100%', height: '100vh' }} />;
 }
 ```
 
-## Calling Methods
+## Interactive Basic Usage Example
 
-You can call methods directly on the editor instance object. All methods are async and return Promises:
+Below is a complete example combining everything covered in this guide. It provides a simple custom toolbar to trigger tools, insert programmatic text, zoom into the canvas, and displays a dynamic counter of the total objects.
 
-```tsx
-const zoomIn = async () => {
-  if (editor) {
-    await editor.zoomTo(1.5);
-  }
-};
-
-const undoAction = async () => {
-  if (editor) {
-    await editor.undo();
-  }
-};
-```
-
-## Adding and Modifying Objects
-
-You can add objects to the canvas programmatically using the provided classes such as `KritzelText`, `KritzelPath`, or `KritzelShape`.
-
-```tsx
-import { KritzelText } from "kritzel-react";
-
-const addText = async () => {
-  if (editor) {
-    const text = new KritzelText({
-      value: "Programmatic text!",
-      translateX: 0,
-      translateY: 0,
-      fontSize: 24,
-      fontFamily: "Arial",
-      fontColor: "#ff0000"
-    });
-
-    await editor.addObject(text);
-    await editor.centerObjectInViewport(text);
-    await editor.selectObjects([text]); // Automatically select it
-  }
-};
-```
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoFiles={['src/pages/examples/BasicUsagePage.tsx']}
+  demoPath="/basic-usage"
+/>

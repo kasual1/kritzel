@@ -9,11 +9,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 # Infinite Canvas Gallery
 
-This page demonstrates how to use `<kritzel-editor>` as a read-only infinite canvas for displaying scattered visual content. Inspired by infinite-canvas art experiences, each artwork is placed at an arbitrary coordinate across a large 2D world. Visitors can pan freely and scroll to zoom in on individual pieces without any drawing or editing tools in the way.
+This page demonstrates how to use `<KritzelEditor>` as a read-only infinite canvas for displaying scattered visual content. Inspired by infinite-canvas art experiences, each artwork is placed at an arbitrary coordinate across a large 2D world. Visitors can pan freely and scroll to zoom in on individual pieces without any drawing or editing tools in the way.
 
 ## Prerequisites
 
-Complete the [Quick Start](quick-start.md) guide to have a working `<kritzel-editor>` rendered in your application. This example builds on that setup.
+Complete the [Quick Start](quick-start.md) guide to have a working `<KritzelEditor>` rendered in your application. This example builds on that setup.
 
 ---
 

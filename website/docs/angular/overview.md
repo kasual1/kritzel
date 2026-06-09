@@ -12,7 +12,7 @@ keywords:
 
 # Overview
 
-Kritzel is a framework-agnostic infinite canvas and collaborative whiteboard engine. It provides web components that work natively in any framework — with first-class wrappers for React, Vue, and Angular.
+Kritzel is a framework-agnostic infinite canvas and collaborative whiteboard engine. It provides web components that work natively in any framework, with a first-class Angular wrapper for idiomatic template integration.
 
 Kritzel handles the hard parts of canvas-based applications — infinite pan/zoom, hit-testing, CRDT-based collaboration, undo/redo, and cross-browser rendering — so you can focus on your product's domain logic.
 

@@ -12,7 +12,7 @@ Kritzel is built around two primary web components that serve different architec
 
 ## The Editor
 
-The Editor (`<kritzel-editor>`) is the high-level, "batteries-included" component. When you drop this into your application, you immediately get a fully functioning collaborative whiteboard. 
+The Editor (`<KritzelEditor>`) is the high-level, "batteries-included" component. When you drop this into your application, you immediately get a fully functioning collaborative whiteboard. 
 
 ### What it includes:
 - The infinite canvas itself
