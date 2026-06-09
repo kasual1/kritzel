@@ -14,7 +14,7 @@ const DEFAULT_DEMO_BASE_URLS = IS_PRODUCTION
   : {
     angular: "http://localhost:4200",
     react: "http://localhost:5173",
-    vue: "http://localhost:5175",
+    vue: "http://localhost:5174",
   };
 
 const DEMO_BASE_URLS = {
