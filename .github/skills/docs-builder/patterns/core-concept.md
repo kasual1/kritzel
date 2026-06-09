@@ -114,3 +114,16 @@ Based on past learnings, always strictly follow these operational rules when upd
 ### 7. Collaboration
 - **Concept:** Real-time synchronization leveraging multiplayer providers (e.g., Yjs, Hocuspocus).
 - **Relevant Usage:** Establishing connection configurations and tracking presence hooks.
+
+## Porting Checklist (When Explicitly Requested)
+
+Core Concept pages are authored in Angular first. If React/Vue translations are explicitly requested, follow [`framework-porting.md`](framework-porting.md).
+
+Quick checks before finishing:
+
+1. Keep conceptual sections aligned across frameworks (Overview, focused demos, Related API Methods).
+2. Translate framework-specific naming in prose and snippets.
+3. In React/Vue docs, use `<KritzelEditor>` and avoid `<kritzel-editor>`.
+4. In Vue docs, use `html` fences for embedded component/template snippets.
+5. Port `<LiveDemo>` with framework-specific `repoUrl` and matching `repoFiles` extensions.
+6. Re-validate internal links for each framework docs tree.

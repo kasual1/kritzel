@@ -61,6 +61,15 @@ When adding or porting <LiveDemo> blocks:
 - Still add <LiveDemo> in markdown with expected target file paths.
 - Ensure paths are plausible for the target framework layout.
 
+6. Keep `demoPath`, router registration, and local docs config aligned.
+- The target demo app must register the matching route.
+- `repoFiles` must match the real file location in the demo project.
+- For local docs preview, verify `website/docusaurus.config.ts` points to the framework's actual dev server port.
+
+7. Prefer `demoPath` for framework-relative previews.
+- Use `demoPath` with framework-aware base URLs unless an explicit absolute `iframeUrl` is required.
+- Ensure `demoPath` starts with `/` and matches the router path exactly.
+
 ## Quick Mapping Reference
 
 - Package imports:
@@ -84,6 +93,9 @@ After porting, verify:
 3. Vue docs do not contain vue-fenced embedded snippets; use html for those snippets.
 4. All intra-doc links resolve to existing pages.
 5. <LiveDemo> blocks use correct framework repo URLs and file extensions.
+6. Every `<LiveDemo demoPath="...">` resolves in the framework router.
+7. `website/docusaurus.config.ts` local `demoBaseUrls` values match currently used framework dev ports.
+8. `repoFiles` paths exist and reflect current folder structure (no stale `examples/` paths after moves).
 
 ## Suggested Search Checks
 
