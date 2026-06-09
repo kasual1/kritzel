@@ -53,6 +53,7 @@ Detailed conventions for each documentation category live in the `patterns/` sub
 - [`patterns/examples.md`](patterns/examples.md) — How to write, structure, and maintain example pages
 - [`patterns/core-concept.md`](patterns/core-concept.md) — How to write, structure, and maintain core concept pages
 - [`patterns/angular-demo-pages.md`](patterns/angular-demo-pages.md) — How to create Angular demo components that back `<LiveDemo>` embeds
+- [`patterns/framework-porting.md`](patterns/framework-porting.md) — How to port Angular source docs to React and Vue consistently
 
 ## Workflow
 
@@ -61,3 +62,7 @@ Detailed conventions for each documentation category live in the `patterns/` sub
 3. Author or edit the `.md` file in `website/docs/angular/`.
 4. Register the page in `website/sidebars.ts` if it is new.
 5. Verify `LiveDemo` references point to existing demo components.
+
+## Translation Workflow (When Explicitly Requested)
+
+Normally, docs-builder focuses on Angular source docs only. If a task explicitly requests React and Vue equivalents, use `patterns/framework-porting.md` to perform a structured translation pass from Angular to both target frameworks.
