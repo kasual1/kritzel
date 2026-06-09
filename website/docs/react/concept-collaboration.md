@@ -9,7 +9,7 @@ Kritzel uses [Yjs](https://yjs.dev/) CRDTs under the hood for real-time collabor
 
 ## Configuring Sync Providers
 
-Pass a `syncConfig` prop to `<kritzel-editor>` or `<kritzel-engine>`:
+Pass a `syncConfig` prop to `<KritzelEditor>` or `<kritzel-engine>`:
 
 ```ts
 import { IndexedDBSyncProvider, WebSocketSyncProvider } from 'kritzel-stencil';

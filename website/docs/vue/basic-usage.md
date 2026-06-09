@@ -1,131 +1,131 @@
 ---
-
 sidebar_label: Basic Usage
 displayed_sidebar: tutorialSidebar
 title: "Basic Usage | Kritzel for Vue"
 description: "Programmatically interact with the Kritzel editor instance in your Vue app: load objects, change tools, and respond to events."
 ---
 
+import LiveDemo from '@site/src/components/LiveDemo';
+
 # Basic Usage
 
-Once you have `<kritzel-editor>` rendering in your application, you can start interacting with the canvas programmatically.
+Once you have `<KritzelEditor>` rendering in your application, you can start interacting with the canvas programmatically. The editor acts as a stateful engine: it manages the view, drawing state, and objects internally, exposing its outward state through DOM events and providing asynchronous methods for programmatic mutations.
 
-## Accessing the Editor Instance
+## Understanding the Editor Lifecycle
 
-To interact with the editor, use a `ref` on the `<kritzel-editor>` component to access the instance. Note that most API methods are asynchronous and return Promises.
+Before making API calls, you must wait for the editor to fully initialize. The `<KritzelEditor>` emits an `isReady` event when the engine is mounted, the internal rendering context is created, and default workspaces are loaded.
 
-```vue
-<template>
-  <kritzel-editor ref="editorRef" @isReady="onReady"></kritzel-editor>
-</template>
-
+```html
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
+import { KritzelEditor } from 'kritzel-vue'
 
-const editorRef = ref<HTMLKritzelEditorElement | null>(null);
+const editor = ref<HTMLKritzelEditorElement | null>(null)
 
-const onReady = (event: CustomEvent<HTMLKritzelEditorElement>) => {
-  console.log("Editor is ready:", event.detail);
-};
+function onReady(event: Event) {
+  const detail = (event as CustomEvent<HTMLKritzelEditorElement>).detail
+  console.log('Editor is fully initialized and ready!', detail)
+}
+</script>
+
+<template>
+  <KritzelEditor ref="editor" @isReady="onReady" style="display: block; width: 100%; height: 100vh" />
+</template>
+```
+
+## Changing Tools Programmatically
+
+The editor supports several built-in tools, for example `brush`, `eraser`, `select`, and `pan`. You can programmatically switch between them using the `changeActiveToolByName` method. All editor mutations are asynchronous.
+
+```ts
+async function setBrushTool(editor: HTMLKritzelEditorElement | null) {
+  if (editor) {
+    await editor.changeActiveToolByName('brush')
+  }
+}
+
+async function setSelectTool(editor: HTMLKritzelEditorElement | null) {
+  if (editor) {
+    await editor.changeActiveToolByName('select')
+  }
+}
+```
+
+## Working with the Object Model
+
+Kritzel elements on the canvas, such as shapes, text, and drawings, are represented as objects. You can listen to `objectsChange` to sync external UI like a layer panel or status bar, and use API methods to query or manipulate objects.
+
+For instance, adding a text element programmatically:
+
+```html
+<script setup lang="ts">
+import { KritzelText } from 'kritzel-vue'
+
+async function addText(editor: HTMLKritzelEditorElement | null) {
+  if (!editor) return
+
+  const text = new KritzelText({
+    text: 'Programmatic text!',
+    translateX: 0,
+    translateY: 0,
+    fontSize: 24,
+    fontFamily: 'Arial',
+    fontColor: '#ff0000',
+  })
+
+  await editor.addObject(text)
+  await editor.selectObjects([text])
+}
 </script>
 ```
 
-## Changing Tools
+## Interacting with the Viewport
 
-You can programmatically change the active drawing tool currently used by the canvas.
+The editor allows you to programmatically control the viewport, or camera, to zoom, pan, or center on specific coordinates or objects.
 
-```vue
-<template>
-  <div class="toolbar">
-    <button @click="setBrushTool">Brush</button>
-    <button @click="setSelectTool">Select</button>
-  </div>
-  <kritzel-editor ref="editorRef" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-
-const editorRef = ref<HTMLKritzelEditorElement | null>(null);
-
-const setBrushTool = async () => {
-  if (editorRef.value) {
-    await editorRef.value.setActiveTool('brush');
+```ts
+async function zoomIn(editor: HTMLKritzelEditorElement | null) {
+  if (editor) {
+    await editor.zoomTo(1.5)
   }
-};
+}
 
-const setSelectTool = async () => {
-  if (editorRef.value) {
-    await editorRef.value.setActiveTool('select');
+async function focusOnObject(editor: HTMLKritzelEditorElement | null, targetObject: any) {
+  if (editor) {
+    await editor.centerObjectInViewport(targetObject)
   }
-};
-</script>
+}
 ```
 
 ## Listening to Events
 
-Using the `@` syntax in Vue, you can bind event listeners to stay updated about changes happening inside the canvas.
+Bind to DOM events on the custom element `<KritzelEditor>` to stay updated on canvas changes.
 
-```vue
-<template>
-  <kritzel-editor 
-    @objectsChange="onObjectsChange"
-    @viewportChange="onViewportChange"
-  ></kritzel-editor>
-</template>
-
-<script setup lang="ts">
-const onObjectsChange = (event: CustomEvent) => {
-  console.log("Canvas objects have changed:", event.detail);
-};
-
-const onViewportChange = (event: CustomEvent) => {
-  console.log("Viewport updated:", event.detail);
-};
-</script>
+```html
+<KritzelEditor
+  @objectsChange="onObjectsChange"
+  @viewportChange="onViewportChange">
+</KritzelEditor>
 ```
-
-## Calling Methods
-
-You can use the template `editorRef` to call component methods.
-
-```vue
-<script setup lang="ts">
-const zoomIn = async () => {
-  if (editorRef.value) {
-    await editorRef.value.zoomTo(1.5);
-  }
-};
-
-const undoAction = async () => {
-  if (editorRef.value) {
-    await editorRef.value.undo();
-  }
-};
-</script>
-```
-
-## Adding and Modifying Objects
-
-You can add objects to the canvas programmatically using the provided classes such as `KritzelText`, `KritzelPath`, or `KritzelShape`.
 
 ```ts
-import { KritzelText } from "kritzel-vue";
+function onObjectsChange(event: Event) {
+  const detail = (event as CustomEvent).detail
+  console.log('Canvas objects updated:', detail.objects.length)
+}
 
-const addText = async () => {
-  if (editorRef.value) {
-    const text = new KritzelText({
-      value: "Programmatic text!",
-      translateX: 0,
-      translateY: 0,
-      fontSize: 24,
-      fontFamily: "Arial",
-      fontColor: "#ff0000"
-    });
-
-    await editorRef.value.addObject(text);
-    await editorRef.value.centerObjectInViewport(text);
-    await editorRef.value.selectObjects([text]); // Automatically select it
-  }
-};
+function onViewportChange(event: Event) {
+  const detail = (event as CustomEvent).detail
+  console.log('Viewport updated:', detail)
+}
 ```
+
+## Interactive Basic Usage Example
+
+Below is a complete example combining everything covered in this guide. It provides a simple custom toolbar to trigger tools, insert programmatic text, zoom into the canvas, and displays a dynamic counter of the total objects.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoFiles={['src/pages/examples/BasicUsagePage.vue']}
+  demoPath="/basic-usage"
+/>

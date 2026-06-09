@@ -10,7 +10,7 @@ description: "Complete API reference for the headless Kritzel engine: rendering,
 
 The `<kritzel-engine>` is the low-level headless canvas primitive. It handles rendering, viewport management, pointer events, undo/redo, and workspace management with no built-in UI chrome.
 
-All methods are async and return Promises. The `<kritzel-editor>` exposes all the same methods.
+All methods are async and return Promises. The `<KritzelEditor>` exposes all the same methods.
 
 ## Props
 
