@@ -14,6 +14,12 @@ React demo pages are the React components that back `<LiveDemo>` embeds in docum
 
 Use existing folder conventions in the target repo. If the feature already has a dedicated folder (for example `basic-usage/`), keep using it.
 
+## File Naming Convention
+
+**React page component files use `PascalCase` with a `Page` suffix** (e.g. `WorkspacesSwitchPage.tsx`, `ToolsChangePage.tsx`). This follows the standard React community convention where component files are PascalCase. The exported component name matches the filename.
+
+Folder names stay `kebab-case` (e.g. `workspaces/`, `context-menus/`). Non-component utility/helper files (e.g. `concept-shared.ts`, `seed-objects.ts`) stay `kebab-case` — PascalCase applies to component files only.
+
 ## Routing Registration
 
 Every React demo page must be registered in `demos/react/src/App.tsx`:

@@ -14,6 +14,12 @@ Vue demo pages are Vue SFCs that back `<LiveDemo>` embeds in documentation pages
 
 Use existing folder conventions in the target repo. If a dedicated folder already exists (for example `basic-usage/`), keep using it.
 
+## File Naming Convention
+
+**Vue SFC page files use `PascalCase` with a `Page` suffix** (e.g. `WorkspacesSwitchPage.vue`, `ToolsChangePage.vue`). This follows the official Vue Style Guide recommendation that single-file component filenames be PascalCase.
+
+Folder names stay `kebab-case` (e.g. `workspaces/`, `context-menus/`). Non-component utility/helper files (e.g. `concept-shared.ts`, `seed-objects.ts`, `custom-vue-theme.ts`) stay `kebab-case` — PascalCase applies to SFC component files only.
+
 ## Routing Registration
 
 Every Vue demo page must be registered in `demos/vue/src/router.ts`:
