@@ -16,9 +16,9 @@ License keys are available at [kritzel.dev/pricing](https://kritzel.dev/pricing)
 
 ## Activating Your License
 
-Pass your license key to the `<kritzel-editor>` or `<kritzel-engine>` component via the `licenseKey` prop:
+Pass your license key to the `<KritzelEditor>` or `<kritzel-engine>` component via the `licenseKey` prop:
 
-```vue
+```html
 <template>
   <KritzelEditor
     licenseKey="YOUR_LICENSE_KEY"
@@ -42,7 +42,7 @@ The license key is validated at runtime. If the key is missing or invalid, the c
 **Does the license key get exposed to end users?**
 The license key is embedded in your frontend bundle. We recommend using an environment variable to keep it out of version control:
 
-```vue
+```html
 <KritzelEditor :licenseKey="VITE_KRITZEL_LICENSE" />
 ```
 

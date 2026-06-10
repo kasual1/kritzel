@@ -1,0 +1,48 @@
+import {
+  computed,
+  ref,
+  useTemplateRef,
+  type ComponentPublicInstance,
+  type Ref,
+} from "vue";
+
+/**
+ * Resolves the native Kritzel editor element from a specific Vue template ref.
+ *
+ * Because `<KritzelEditor>` is a Vue component (not a raw custom element),
+ * a template ref points to the component instance rather than the DOM element.
+ * Pass the same ref that is bound in your template to make sure the resolved
+ * editor always belongs to that exact component instance.
+ *
+ * @example
+ * ```vue
+ * <script setup lang="ts">
+ * import { KritzelEditor, getEditorRef } from 'kritzel-vue'
+ * import { ref, type ComponentPublicInstance } from 'vue'
+ *
+ * const editorComponent = ref<ComponentPublicInstance | null>(null)
+ * const editor = getEditorRef(editorComponent)
+ *
+ * async function onReady() {
+ *   await editor.value?.addObject(...)
+ * }
+ * </script>
+ *
+ * <template>
+ *   <KritzelEditor ref="editorComponent" @isReady="onReady" />
+ * </template>
+ * ```
+ */
+export function getEditorRef(componentRef: string) {
+  const editorComponent = useTemplateRef<ComponentPublicInstance>(componentRef);
+  return computed(() => {
+    const value = editorComponent.value;
+    if (!value) {
+      return null;
+    }
+
+    return "$el" in value
+      ? ((value.$el as HTMLKritzelEditorElement | undefined) ?? null)
+      : value;
+  });
+}
