@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
   IndexedDBSyncProvider,
   KritzelEditor,
@@ -13,6 +13,7 @@ import {
   seedEditor,
   toolbarStyle,
 } from '../shared/concept-shared'
+import { ref } from 'vue'
 
 const editor = ref<HTMLKritzelEditorElement | null>(null)
 
@@ -36,11 +37,11 @@ async function onReady() {
     <KritzelEditor
       ref="editor"
       editorId="persistence-local"
-      :wheelEnabled="false"
-      :syncConfig="syncConfig"
       theme="vue-theme"
       :themes="[customVueTheme]"
+      :syncConfig="syncConfig"
       :loginConfig="undefined"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"

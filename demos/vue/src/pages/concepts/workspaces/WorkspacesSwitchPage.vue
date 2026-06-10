@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
   InMemorySyncProvider,
   KritzelEditor,
@@ -14,9 +14,11 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
+  getEditorRef,
 } from '../shared/concept-shared'
+import { ref } from 'vue';
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const workspaces = ref<KritzelWorkspace[]>([])
 const activeWorkspaceId = ref<string | undefined>(undefined)
 
@@ -52,13 +54,13 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
       </button>
     </div>
     <KritzelEditor
-      ref="editor"
+      ref="editorComponent"
       editorId="workspaces-switch"
-      :wheelEnabled="false"
       theme="vue-theme"
       :themes="[customVueTheme]"
       :syncConfig="syncConfig"
       :activeWorkspaceId="activeWorkspaceId"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
+  KritzelEditor,
   type KritzelBaseObject,
 } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
@@ -10,9 +11,11 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
+  getEditorRef,
 } from '../shared/concept-shared'
+import { ref } from 'vue';
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const objects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
 
 async function refreshObjects() {
@@ -78,12 +81,12 @@ async function onReady() {
       <button :style="buttonStyle(false)" @click="sendToBack">Send to Back</button>
     </div>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
-      <kritzel-editor
-        ref="editor"
+      <KritzelEditor
+        ref="editorComponent"
         editorId="objects-ordering"
-        :wheelEnabled="false"
         theme="vue-theme"
         :themes="[customVueTheme]"
+        :wheelEnabled="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :style="editorStyle"

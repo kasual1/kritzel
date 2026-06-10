@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
+import { KritzelEditor } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
 import {
   buttonStyle,
@@ -8,7 +9,9 @@ import {
   seedEditor,
   statusBarStyle,
   toolbarStyle,
+  getEditorRef,
 } from '../shared/concept-shared'
+import { ref } from 'vue'
 
 type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text'
 
@@ -21,7 +24,7 @@ const tools: Array<{ name: ToolName; label: string }> = [
   { name: 'text', label: 'Text' },
 ]
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const activeTool = ref<ToolName>('select')
 
 async function setTool(name: ToolName) {
@@ -48,12 +51,12 @@ async function onReady() {
         {{ tool.label }}
       </button>
     </div>
-    <kritzel-editor
-      ref="editor"
+    <KritzelEditor
+      ref="editorComponent"
       editorId="tools-change"
-      :wheelEnabled="false"
       theme="vue-theme"
       :themes="[customVueTheme]"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :isControlsVisible="false"

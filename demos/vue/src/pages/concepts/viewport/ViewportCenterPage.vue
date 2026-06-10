@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
+import { KritzelEditor } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
 import {
   buttonStyle,
@@ -7,11 +8,13 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
+  getEditorRef,
 } from '../shared/concept-shared'
+import { ref } from 'vue';
 
 type ObjectItem = Parameters<HTMLKritzelEditorElement['centerObjects']>[0][number]
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const objects = ref<ObjectItem[]>([])
 
 async function onReady() {
@@ -40,12 +43,12 @@ async function centerOn(index: number) {
       <button :style="buttonStyle(false)" :disabled="objects.length < 4" @click="centerOn(3)">Center on Path</button>
       <button :style="buttonStyle(false)" @click="editor?.backToContent()">Back to Content</button>
     </div>
-    <kritzel-editor
-      ref="editor"
+    <KritzelEditor
+      ref="editorComponent"
       editorId="viewport-center"
-      :wheelEnabled="false"
       theme="vue-theme"
       :themes="[customVueTheme]"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"

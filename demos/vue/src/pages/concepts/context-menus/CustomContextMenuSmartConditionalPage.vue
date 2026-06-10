@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
+  KritzelEditor,
   type ContextMenuItem,
 } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
-import { editorStyle, hostStyle, seedEditor } from '../shared/concept-shared'
+import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 
 const globalItems: ContextMenuItem[] = [
   {
@@ -22,6 +23,7 @@ const globalItems: ContextMenuItem[] = [
     label: 'Select All',
     icon: 'select-all',
     group: 'clipboard',
+    disabled: async () => ((await editor.value?.getObjectsInViewport()) ?? []).length === 0,
     action: async () => {
       await editor.value?.selectAllObjectsInViewport()
     },
@@ -47,19 +49,13 @@ const objectItems: ContextMenuItem[] = [
     },
   },
   {
-    label: 'Parent',
-    group: 'arrange',
-    children: [
-      { label: 'Child 1', action: async () => window.alert('Child 1 clicked') },
-      {
-        label: 'Child 2',
-        children: [
-          { label: 'Grandchild 1', action: async () => window.alert('Grandchild 1 clicked') },
-          { label: 'Grandchild 2', action: async () => window.alert('Grandchild 2 clicked') },
-        ],
-      },
-      { label: 'Child 3', action: async () => window.alert('Child 3 clicked') },
-    ],
+    label: 'Export as PNG',
+    icon: 'download',
+    group: 'export',
+    visible: async (_menu, objects) => objects.length === 1,
+    action: async () => {
+      await editor.value?.exportSelectedObjectsAsPng()
+    },
   },
   {
     label: 'Delete',
@@ -93,14 +89,14 @@ async function onReady() {
 
 <template>
   <div :style="hostStyle">
-    <kritzel-editor
-      ref="editor"
-      editorId="custom-context-menu-object-inspector"
-      :wheelEnabled="false"
+    <KritzelEditor
+      ref="editorComponent"
+      editorId="custom-context-menu-smart-conditional"
       theme="vue-theme"
       :themes="[customVueTheme]"
       :globalContextMenuItems="globalItems"
       :objectContextMenuItems="objectItems"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"

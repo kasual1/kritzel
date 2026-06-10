@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
   KritzelBrushTool,
   KritzelEraserTool,
@@ -7,6 +7,7 @@ import {
 } from 'kritzel-vue'
 import { buttonStyle, hostStyle, toolbarStyle } from '../shared/concept-shared'
 import { createSeedObjects } from '../../basic-usage/seed-objects'
+import { ref } from 'vue'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const engine = ref<any>(null)

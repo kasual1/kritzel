@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
+  getEditorRef,
+  KritzelEditor,
   KritzelPath,
   KritzelShape,
   ShapeType,
@@ -14,8 +16,9 @@ import {
   seedEditor,
   toolbarStyle,
 } from '../shared/concept-shared'
+import { ref } from 'vue';
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const objects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
 
 async function refreshObjects() {
@@ -106,12 +109,12 @@ async function onReady() {
       <button :style="buttonStyle(false)" :disabled="objects.length === 0" @click="removeLastObject">Remove Last</button>
       <span :style="{ marginLeft: 'auto', fontSize: '13px' }">Objects: {{ objects.length }}</span>
     </div>
-    <kritzel-editor
-      ref="editor"
+    <KritzelEditor
+      ref="editorComponent"
       editorId="objects-add-remove"
-      :wheelEnabled="false"
       theme="vue-theme"
       :themes="[customVueTheme]"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"
