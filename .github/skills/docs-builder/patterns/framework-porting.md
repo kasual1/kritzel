@@ -57,16 +57,22 @@ When adding or porting <LiveDemo> blocks:
 - React: .tsx
 - Vue: .vue
 
-5. If demo source does not exist yet, placeholders are allowed when explicitly requested.
+5. Convert demo page filename casing to the target framework convention.
+- Angular: kebab-case with `.component.ts` suffix (e.g. `workspaces-switch.component.ts`).
+- React: PascalCase with `Page` suffix and `.tsx` (e.g. `WorkspacesSwitchPage.tsx`).
+- Vue: PascalCase with `Page` suffix and `.vue` (e.g. `WorkspacesSwitchPage.vue`).
+- Folder names stay kebab-case in all frameworks; non-component helper files (e.g. `concept-shared.ts`) stay kebab-case.
+
+6. If demo source does not exist yet, placeholders are allowed when explicitly requested.
 - Still add <LiveDemo> in markdown with expected target file paths.
 - Ensure paths are plausible for the target framework layout.
 
-6. Keep `demoPath`, router registration, and local docs config aligned.
+7. Keep `demoPath`, router registration, and local docs config aligned.
 - The target demo app must register the matching route.
 - `repoFiles` must match the real file location in the demo project.
 - For local docs preview, verify `website/docusaurus.config.ts` points to the framework's actual dev server port.
 
-7. Prefer `demoPath` for framework-relative previews.
+8. Prefer `demoPath` for framework-relative previews.
 - Use `demoPath` with framework-aware base URLs unless an explicit absolute `iframeUrl` is required.
 - Ensure `demoPath` starts with `/` and matches the router path exactly.
 
