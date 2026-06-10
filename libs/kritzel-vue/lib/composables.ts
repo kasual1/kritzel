@@ -1,9 +1,7 @@
 import {
   computed,
-  ref,
   useTemplateRef,
   type ComponentPublicInstance,
-  type Ref,
 } from "vue";
 
 /**
