@@ -2,8 +2,15 @@
 sidebar_label: Quick Start
 title: "Quick Start | Kritzel for Vue"
 description: "Install and integrate the Kritzel infinite canvas into your Vue application in minutes."
+keywords:
+  - vue whiteboard
+  - vue infinite canvas
+  - kritzel
 ---
-# Getting Started
+
+# Quick Start
+
+The following guide gets you a full Kritzel editor setup in under five minutes.
 
 ## Installation
 
@@ -11,33 +18,47 @@ description: "Install and integrate the Kritzel infinite canvas into your Vue ap
 npm install kritzel-vue
 ```
 
-## Quick Start
+## Setup
 
-Register the component library in your app entry point:
+Render Kritzel in your component:
 
-```ts
-// main.ts
-import { createApp } from 'vue';
-import { ComponentLibrary } from 'kritzel-vue';
-import App from './App.vue';
+```html title="Editor.vue"
+<script setup lang="ts">
+import { KritzelEditor } from 'kritzel-vue'
+</script>
 
-createApp(App).use(ComponentLibrary).mount('#app');
-```
-
-Then use the component in your template:
-
-```html
-<!-- App.vue -->
 <template>
-  <kritzel-editor></kritzel-editor>
+  <KritzelEditor style="display: block; width: 100%; height: 100vh" />
 </template>
 ```
 
+This renders the editor with the **full default toolbar**: selection, brush, eraser, line, shape, text, and image tools.
+
 ## Optional Enhancements
+
+### Persist Canvas State
+
+By default, the editor uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
+
+For provider behavior details and persistence guidance, see the [Persistence concept](concept-persistence.md).
+
+```html title="Editor.vue"
+<script setup lang="ts">
+import { KritzelEditor, IndexedDBSyncProvider } from 'kritzel-vue'
+
+const syncConfig = {
+  providers: [IndexedDBSyncProvider],
+}
+</script>
+
+<template>
+  <KritzelEditor :syncConfig="syncConfig" style="display: block; width: 100%; height: 100vh" />
+</template>
+```
 
 ### Apply Full Viewport Styling
 
-To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `style.css`):
+To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet, for example `styles.css`:
 
 ```css
 html,
@@ -53,20 +74,20 @@ body,
 
 ### Include Mobile Viewport Meta Tag
 
-For optimal rendering and responsiveness on mobile devices, add this meta tag within the `<head>` section of your `index.html`:
+For optimal rendering and responsiveness on mobile devices, add this meta tag within the `head` section of your `index.html`:
 
 ```html
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta charset="utf-8">
+    <title>Vue App</title>
+    <base href="/">
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0, interactive-widget=resizes-content" />
-    <title>Vite + Vue + TS</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
   </head>
   <body>
     <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
 ```

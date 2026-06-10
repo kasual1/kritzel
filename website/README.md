@@ -18,14 +18,14 @@ To point LiveDemo previews to a local demo app while running docs locally, set `
 
 ```powershell
 $env:DEMO_BASE_URL_ANGULAR="http://localhost:4200"
-$env:DEMO_BASE_URL_REACT="http://localhost:5175"
-$env:DEMO_BASE_URL_VUE="http://localhost:5175"
+$env:DEMO_BASE_URL_REACT="http://localhost:5173"
+$env:DEMO_BASE_URL_VUE="http://localhost:5174"
 yarn start
 ```
 
 If these are not set, defaults are chosen by environment:
 
-- Development (`yarn start`): Angular `http://localhost:4200`, React/Vue `http://localhost:5175`
+- Development (`yarn start`): Angular `http://localhost:4200`, React `http://localhost:5173`, Vue `http://localhost:5174`
 - Production build (`yarn build`): `https://kasual1.github.io/kritzel-demos/{angular|react|vue}`
 
 This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.

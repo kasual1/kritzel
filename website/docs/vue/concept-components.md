@@ -1,53 +1,82 @@
 ---
-
 sidebar_label: Components
 displayed_sidebar: tutorialSidebar
-title: "Core Components | Kritzel for Vue"
-description: "Understand the Kritzel editor and engine web components and how to use them in Vue."
+title: "Components Concept | Kritzel for Vue"
+description: "Understand the core concept of Components in Kritzel."
 ---
 
-# Core Components
+import LiveDemo from '@site/src/components/LiveDemo';
 
-Kritzel is built around two primary web components that serve different architectural needs depending on your application.
+# Components
 
-## The Editor
+## Overview
 
-The Editor (`<kritzel-editor>`) is the high-level, "batteries-included" component. When you drop this into your application, you immediately get a fully functioning collaborative whiteboard. 
+Kritzel is built around two primary components that serve different architectural needs depending on your application. `<KritzelEditor>` is a high-level, batteries-included component providing a complete whiteboard UI, while `<KritzelEngine>` is a headless rendering primitive for deeply custom integrations. Both components share an identical public API exposing asynchronous methods (returning Promises) for managing state, viewports, tools, and objects.
 
-### What it includes:
-- The infinite canvas itself
-- A default toolbar with all standard tools (Brush, Selection, Shapes, Text, etc.)
-- A floating utility panel (Zoom controls, Undo/Redo)
-- Right-click context menus for the canvas and specific objects
-- Settings and export dialogs
-- Workspace management
+## Using the Editor Component
 
-**When to use it:** Use the Editor when you want a complete whiteboard experience out-of-the-box and don't need to heavily customize the surrounding UI chrome.
+When you want a complete whiteboard experience out of the box, use `<KritzelEditor>`. It includes toolbars, utility panels, context menus, and settings dialogs, which can be configured via props.
 
-### Configuration
+### Basic Initialization
 
-You can configure the Editor's behavior and layout via properties. Common configurations include:
-- **UI Toggles:** Show or hide built-in elements like the toolbar (`isControlsVisible`) or the utility panel (`isUtilityPanelVisible`).
-- **Viewport Boundaries:** Restrict how far users can pan across the canvas (`viewportBoundaryLeft`, `viewportBoundaryRight`, etc.).
-- **Zoom Limits:** Define the minimum and maximum permitted zoom levels (`scaleMin`, `scaleMax`).
-- **Custom Toolbars:** Override the default built-in tools by passing a custom array of tools and config options to the `controls` property.
+The basic implementation of the Editor requires zero configuration. You simply render the component, and a fully functional whiteboard will fit its container.
 
-## The Engine
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  demoPath="/concepts/components-editor"
+  repoFiles={['src/pages/concepts/components/components-editor.vue']}
+/>
 
-The Engine (`<kritzel-engine>`) is the low-level rendering and interaction primitive. It is completely "headless" concerning standard UI elements—it contains no toolbars, no floating panels, and no default menus.
+### Waiting for Initialization
 
-### What it handles:
-- Canvas rendering
-- Viewport management (pan, zoom)
-- Pointer event handling and tool interception
-- Undo/redo stacks and Yjs synchronization
+Because Kritzel performs asynchronous setup tasks internally (such as creating canvas elements and syncing state), you must wait for the `isReady` event before calling programmatic API methods:
 
-**When to use it:** Use the Engine when you are building a deeply custom application where Kritzel is just a piece of the puzzle. You can build your own HTML/CSS UI around it and drive the Engine entirely via its programmatic API.
+```html
+<script setup lang="ts">
 
-### Configuration
+import { KritzelEditor } from 'kritzel-vue'
 
-Because the Engine is headless, configuring it typically revolves around core functionality rather than UI layout:
-- **Viewport Boundaries & Zoom Limits:** Just like the Editor, you can restrain pan and zoom coordinates.
-- **Context Menus:** Supply custom arrays for `globalContextMenuItems` and `objectContextMenuItems` to build your own right-click context menus.
-- **Sync Providers:** Pass a `syncConfig` object to configure Yjs providers (e.g., WebSocket, IndexedDB) for real-time collaboration.
-- **Theme:** Manually set the canvas rendering appearance by toggling the `theme` property between `'light'` and `'dark'`.
+const editor = ref<HTMLKritzelEditorElement | null>(null)
+
+async function onEditorReady() {
+  await editor.value?.setViewport({ pan: { x: 0, y: 0 }, zoom: 1 })
+}
+</script>
+
+<template>
+  <KritzelEditor ref="editor" @isReady="onEditorReady" />
+</template>
+```
+
+### Customizing the Editor UI
+
+You can toggle visibility for built-in UI components using props. For example, setting `isWorkspaceManagerVisible` and `isMoreMenuVisible` to `false` hides both areas and creates a more minimal interface while retaining all core whiteboard functionality.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  demoPath="/concepts/components-editor-ui"
+  repoFiles={['src/pages/concepts/components/components-editor-ui.vue']}
+/>
+
+## Using the Engine Component
+
+When you need a deeply custom application without built-in UI chrome, use `<KritzelEngine>`. You can build your own HTML and CSS UI around it and drive the Engine entirely via its programmatic API. The demo below shows how to bind external standard HTML buttons to the headless Engine.
+
+Unlike the Editor, the Engine **does not register any drawing tools by default**. The Editor automatically registers tools through its built-in controls. When using the Engine directly, you must call `registerTool()` for each tool you want to use before calling `changeActiveTool()` or `changeActiveToolByName()`.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  demoPath="/concepts/components-engine"
+  repoFiles={['src/pages/concepts/components/components-engine.vue']}
+/>
+
+## Related API Methods
+
+Since both components share the same API surface for interacting with whiteboard state, you can use these methods and properties on both:
+
+- Viewport and boundaries (`viewportBoundaryLeft`, `viewportBoundaryRight`, `scaleMin`, `scaleMax`)
+- Theme management (`theme` prop)
+- Context menu configuration (`globalContextMenuItems`, `objectContextMenuItems`)
+- Editor-specific options like `isControlsVisible` or `isUtilityPanelVisible` (Editor only)
+
+For a comprehensive view, see the [API Reference](api-reference-editor.md).

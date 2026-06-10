@@ -53,6 +53,32 @@ Detailed conventions for each documentation category live in the `patterns/` sub
 - [`patterns/examples.md`](patterns/examples.md) — How to write, structure, and maintain example pages
 - [`patterns/core-concept.md`](patterns/core-concept.md) — How to write, structure, and maintain core concept pages
 - [`patterns/angular-demo-pages.md`](patterns/angular-demo-pages.md) — How to create Angular demo components that back `<LiveDemo>` embeds
+- [`patterns/react-demo-pages.md`](patterns/react-demo-pages.md) — How to create React demo pages that back `<LiveDemo>` embeds
+- [`patterns/vue-demo-pages.md`](patterns/vue-demo-pages.md) — How to create Vue demo pages that back `<LiveDemo>` embeds
+- [`patterns/framework-porting.md`](patterns/framework-porting.md) — How to port Angular source docs to React and Vue consistently
+
+## Cross-Framework LiveDemo Reliability Rules
+
+Apply these rules whenever docs include `<LiveDemo>` (especially during Angular -> React/Vue translation):
+
+1. Treat `demoPath` as a runtime contract.
+- `demoPath` must resolve in the target demo app router (`react/src/App.tsx`, `vue/src/router.ts`, `angular/src/app/app.routes.ts`).
+- If the route does not exist, create it before finishing docs edits.
+
+2. Keep `repoFiles` and actual demo file paths in sync.
+- If demo files move folders (for example from `examples/` to `basic-usage/`), update docs immediately.
+- Never leave stale `repoFiles` paths after restructuring demo source.
+
+3. Validate local preview base URLs used by Docusaurus.
+- `<LiveDemo demoPath="...">` resolves via `website/docusaurus.config.ts` (`customFields.demoBaseUrls`).
+- During local development, ensure each framework's base URL points to the actual running dev server port.
+
+4. Prefer explicit framework parity checks after porting.
+- For each translated page, confirm: route exists, demo renders, code tab loads files, and framework-specific imports/snippets are correct.
+
+5. Keep docs source-of-truth and translation scope explicit.
+- Angular remains source-of-truth by default.
+- When a task explicitly requests React/Vue updates, perform full translation plus demo wiring checks, not markdown-only edits.
 
 ## Workflow
 
@@ -61,3 +87,9 @@ Detailed conventions for each documentation category live in the `patterns/` sub
 3. Author or edit the `.md` file in `website/docs/angular/`.
 4. Register the page in `website/sidebars.ts` if it is new.
 5. Verify `LiveDemo` references point to existing demo components.
+
+## Translation Workflow (When Explicitly Requested)
+
+Normally, docs-builder focuses on Angular source docs only. If a task explicitly requests React and Vue equivalents, use `patterns/framework-porting.md` to perform a structured translation pass from Angular to both target frameworks.
+
+When the translation also requires runnable framework demos, apply `patterns/react-demo-pages.md` and `patterns/vue-demo-pages.md` to implement and register corresponding demo routes.

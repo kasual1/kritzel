@@ -2,79 +2,69 @@
 sidebar_label: Quick Start
 title: "Quick Start | Kritzel for React"
 description: "Install and integrate the Kritzel infinite canvas into your React application in minutes."
+keywords:
+  - react whiteboard
+  - react infinite canvas
+  - kritzel
 ---
-# Getting Started
 
-This guide shows how to quickly add Kritzel to your project.
+# Quick Start
 
-A full working example is available [here](https://stackblitz.com/edit/vitejs-vite-aqewrbmu?file=src%2FApp.tsx).
+The following guide gets you a full Kritzel editor setup in under five minutes.
 
 ## Installation
-
-First, install the Kritzel React package:
 
 ```bash
 npm install kritzel-react
 ```
 
-
 ## Setup
 
-Follow these steps to set up KritzelEditor in your React project.
+Render Kritzel in your component:
 
-### Adjust Your App Component
+```tsx title="Editor.tsx"
+import { KritzelEditor } from 'kritzel-react';
 
-Edit your `App.tsx` as follows:
-
-```tsx
-import "./App.css";
-import { KritzelEditor, KritzelText } from "kritzel-react";
-
-function App() {
-  let editor: HTMLKritzelEditorElement | null = null;
-
-  async function onIsReady(
-    event: CustomEvent<HTMLKritzelEditorElement>
-  ): Promise<void> {
-    editor = event.detail;
-
-    const text = new KritzelText({
-      value: "Hello Kritzel!",
-      translateX: 0,
-      translateY: 0,
-      fontSize: 24,
-      fontFamily: "Arial",
-      fontColor: "#000000",
-      height: 200,
-      width: 200,
-    });
-
-    editor.addObject(text);
-    editor.centerObjectInViewport(text);
-    editor.selectObjects([text]);
-  }
-
-  return (
-    <div className="app">
-      <KritzelEditor onIsReady={onIsReady}></KritzelEditor>
-    </div>
-  );
+export function Editor() {
+  return <KritzelEditor style={{ display: 'block', width: '100%', height: '100vh' }} />;
 }
-
-export default App;
 ```
+
+This renders the editor with the **full default toolbar**: selection, brush, eraser, line, shape, text, and image tools.
 
 ## Optional Enhancements
 
+### Persist Canvas State
+
+By default, the editor uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
+
+For provider behavior details and persistence guidance, see the [Persistence concept](concept-persistence.md).
+
+```tsx title="Editor.tsx"
+import { KritzelEditor, IndexedDBSyncProvider } from 'kritzel-react';
+
+export function Editor() {
+  const syncConfig = {
+    providers: [IndexedDBSyncProvider],
+  };
+
+  return (
+    <KritzelEditor
+      syncConfig={syncConfig}
+      style={{ display: 'block', width: '100%', height: '100vh' }}
+    />
+  );
+}
+```
+
 ### Apply Full Viewport Styling
 
-To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `App.css`):
+To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet, for example `styles.css`:
 
 ```css
 html,
 body,
-#root,
-.app {
+#root {
   width: 100dvw;
   height: 100dvh;
   margin: 0;
@@ -85,20 +75,20 @@ body,
 
 ### Include Mobile Viewport Meta Tag
 
-For optimal rendering and responsiveness on mobile devices, add this meta tag within the `<head>` section of your `index.html`:
+For optimal rendering and responsiveness on mobile devices, add this meta tag within the `head` section of your `index.html`:
 
 ```html
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta charset="utf-8">
+    <title>React App</title>
+    <base href="/">
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0, interactive-widget=resizes-content" />
-    <title>Vite + React + TS</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
 ```
