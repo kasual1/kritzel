@@ -1,0 +1,54 @@
+import { useMemo, useRef } from "react";
+import {
+  HocuspocusSyncProvider,
+  IndexedDBSyncProvider,
+  KritzelEditor,
+  type HTMLKritzelEditorElement,
+  type KritzelSyncConfig,
+} from "kritzel-react";
+import { customReactTheme } from "../../../const/custom-react-theme";
+import {
+  editorStyle,
+  hostStyle,
+  seedEditor,
+  toolbarStyle,
+} from "../shared/concept-shared";
+
+export function CollaborationRealtimePage() {
+  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const syncConfig = useMemo<KritzelSyncConfig>(
+    () => ({
+      providers: [
+        IndexedDBSyncProvider,
+        HocuspocusSyncProvider.with({ url: "wss://your-hocuspocus-server.com" }),
+      ],
+    }),
+    [],
+  );
+
+  return (
+    <div style={{ ...hostStyle, background: "radial-gradient(circle at 0% 0%, #e9f8ff 0%, #ffffff 42%)" }}>
+      <div style={toolbarStyle}>
+        <span style={{ fontWeight: 700, color: "#087ea4", fontSize: "13px" }}>Real-time Sync</span>
+        <span style={{ fontSize: "12px", color: "#065d7a" }}>Configured for Hocuspocus server</span>
+      </div>
+      <KritzelEditor
+        ref={editorRef}
+        editorId="collaboration-realtime"
+        wheelEnabled={false}
+        syncConfig={syncConfig}
+        theme="react-theme"
+        themes={[customReactTheme]}
+        loginConfig={undefined}
+        isMoreMenuVisible={false}
+        isWorkspaceManagerVisible={false}
+        onIsReady={() => {
+          if (editorRef.current) {
+            void seedEditor(editorRef.current);
+          }
+        }}
+        style={editorStyle}
+      />
+    </div>
+  );
+}

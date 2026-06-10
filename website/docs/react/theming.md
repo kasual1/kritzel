@@ -15,7 +15,7 @@ Kritzel includes built-in light and dark themes. Themes are applied via CSS vari
 <kritzel-engine theme="dark"></kritzel-engine>
 ```
 
-### On `<kritzel-editor>`
+### On `<KritzelEditor>`
 
 The editor manages the theme internally and emits a `themeChange` event when it changes. The user can toggle the theme through the settings panel.
 

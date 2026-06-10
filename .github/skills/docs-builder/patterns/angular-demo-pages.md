@@ -11,6 +11,16 @@ Angular demo pages are the standalone Angular components that back `<LiveDemo>` 
 | Example demos | `demos/angular/src/app/examples/<feature>/<feature>-<example-name>.component.ts` |
 | Concept demos | `demos/angular/src/app/concepts/<concept>/<concept>-<focus>.component.ts` |
 
+## File Naming Convention
+
+**Angular component files use `kebab-case` with a `.component.ts` suffix** (e.g. `workspaces-switch.component.ts`, `tools-change.component.ts`), following the Angular style guide. This differs from React (`PascalCase` `.tsx`) and Vue (`PascalCase` `.vue`), which use PascalCase for component files. When porting between frameworks, convert filenames accordingly:
+
+| Framework | Example filename |
+|-----------|-----------------|
+| Angular | `workspaces-switch.component.ts` (kebab-case) |
+| React | `WorkspacesSwitchPage.tsx` (PascalCase) |
+| Vue | `WorkspacesSwitchPage.vue` (PascalCase) |
+
 ## Routing Registration
 
 Every demo component **must** be registered in `demos/angular/src/app/app.routes.ts`:
