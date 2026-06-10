@@ -210,3 +210,16 @@ Readers copy these examples as starting points. If custom UI uses generic colors
 ## Relationship to Other Frameworks
 
 Example pages are written for **Angular only**. The React and Vue equivalents are created by a separate translation process. Do not create or edit files in `website/docs/react/` or `website/docs/vue/` when using this pattern.
+
+## Porting Checklist (When Explicitly Requested)
+
+If a task explicitly requests React/Vue equivalents, apply [`framework-porting.md`](framework-porting.md) after the Angular source page is finalized.
+
+Quick checks before finishing:
+
+1. React/Vue pages preserve the Angular section structure and scenario order.
+2. Framework naming is translated in frontmatter and prose (no Angular-specific wording where framework-specific).
+3. React/Vue docs use `<KritzelEditor>` (not `<kritzel-editor>`).
+4. Vue embedded component/template snippets use `html` fences (not `vue`).
+5. `<LiveDemo>` uses framework-specific `repoUrl` and file extensions (`.tsx` for React, `.vue` for Vue).
+6. Links in translated pages resolve to existing framework docs.

@@ -8,7 +8,7 @@ description: "Complete API reference for the Kritzel editor component: props, me
 
 # Editor
 
-The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It wraps `<kritzel-engine>` and adds a toolbar, utility panel, context menus, dialogs, and workspace management.
+The `<KritzelEditor>` is the high-level, full-featured whiteboard component. It wraps `<kritzel-engine>` and adds a toolbar, utility panel, context menus, dialogs, and workspace management.
 
 All methods are async and return Promises. The editor exposes all the same methods as the engine.
 

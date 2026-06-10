@@ -9,7 +9,7 @@ Kritzel includes seven built-in drawing tools. All tools extend `KritzelBaseTool
 
 ## Default Toolbar
 
-The `<kritzel-editor>` component registers these tools by default:
+The `<KritzelEditor>` component registers these tools by default:
 
 | Tool | Class | Icon | Creates |
 |------|-------|------|---------|
@@ -182,7 +182,7 @@ Custom tools should extend `KritzelBaseTool` and implement the pointer event han
 
 ## Customizing the Toolbar
 
-Pass a custom `controls` prop to `<kritzel-editor>` to change which tools appear:
+Pass a custom `controls` prop to `<KritzelEditor>` to change which tools appear:
 
 ```ts
 import { KritzelBrushTool, KritzelSelectionTool, KritzelEraserTool } from 'kritzel-stencil';

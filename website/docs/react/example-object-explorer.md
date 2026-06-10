@@ -13,7 +13,7 @@ This page demonstrates how to build a full object explorer experience on top of 
 
 ## Prerequisites
 
-Complete the [Quick Start](./quick-start.md) guide to have a working `<kritzel-editor>` rendered in your application. This example builds on that setup.
+Complete the [Quick Start](./quick-start.md) guide to have a working `<KritzelEditor>` rendered in your application. This example builds on that setup.
 
 ---
 

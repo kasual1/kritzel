@@ -64,7 +64,7 @@ interface KritzelShortcut {
 
 ### `KritzelToolbarControl`
 
-Defines a toolbar item for the `controls` prop on `<kritzel-editor>`.
+Defines a toolbar item for the `controls` prop on `<KritzelEditor>`.
 
 ```ts
 interface KritzelToolbarControl {
