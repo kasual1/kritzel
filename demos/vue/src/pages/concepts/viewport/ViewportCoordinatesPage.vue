@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
+import { KritzelEditor } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
 import {
   buttonStyle,
@@ -7,9 +8,11 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
+  getEditorRef,
 } from '../shared/concept-shared'
+import { ref } from 'vue';
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const worldCoords = ref<{ x: number; y: number } | null>(null)
 const screenCoords = ref<{ x: number; y: number } | null>(null)
 const screenX = ref(200)
@@ -52,12 +55,12 @@ async function onReady() {
         {{ screenCoords ? `Screen: (${screenCoords.x.toFixed(1)}, ${screenCoords.y.toFixed(1)})` : '' }}
       </span>
     </div>
-    <kritzel-editor
-      ref="editor"
+    <KritzelEditor
+      ref="editorComponent"
       editorId="viewport-coordinates"
-      :wheelEnabled="false"
       theme="vue-theme"
       :themes="[customVueTheme]"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"

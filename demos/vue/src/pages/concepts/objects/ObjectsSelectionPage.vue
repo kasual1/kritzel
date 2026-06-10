@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { KritzelBaseObject } from 'kritzel-vue'
+
+import { KritzelEditor, type KritzelBaseObject } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
 import {
   buttonStyle,
@@ -8,9 +8,11 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
+  getEditorRef,
 } from '../shared/concept-shared'
+import { ref } from 'vue';
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const selectedObjects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
 
 async function refreshSelection() {
@@ -54,12 +56,12 @@ async function onReady() {
       <span :style="{ marginLeft: 'auto', fontSize: '13px' }">Selected: {{ selectedObjects.length }}</span>
     </div>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
-      <kritzel-editor
-        ref="editor"
+      <KritzelEditor
+        ref="editorComponent"
         editorId="objects-selection"
-        :wheelEnabled="false"
         theme="vue-theme"
         :themes="[customVueTheme]"
+        :wheelEnabled="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :style="editorStyle"

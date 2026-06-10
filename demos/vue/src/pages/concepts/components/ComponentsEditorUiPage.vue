@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { KritzelEditor } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
-import { editorStyle, hostStyle, seedEditor } from '../shared/concept-shared'
+import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 
 async function onReady() {
   if (editor.value) {
@@ -14,12 +14,12 @@ async function onReady() {
 
 <template>
   <div :style="hostStyle">
-    <kritzel-editor
-      ref="editor"
+    <KritzelEditor
+      ref="editorComponent"
       editorId="components-editor-ui"
-      :wheelEnabled="false"
       theme="vue-theme"
       :themes="[customVueTheme]"
+      :wheelEnabled="false"
       :isWorkspaceManagerVisible="false"
       :isMoreMenuVisible="false"
       :style="editorStyle"

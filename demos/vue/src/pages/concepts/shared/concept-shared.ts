@@ -1,6 +1,9 @@
-import type { CSSProperties } from 'vue'
+import { type CSSProperties } from 'vue'
 import type { KritzelBaseObject } from 'kritzel-vue'
+import { getEditorRef } from 'kritzel-vue'
 import { createSeedObjects } from '../../basic-usage/seed-objects'
+
+export { getEditorRef }
 
 export const accent = '#42b883'
 export const accentDark = '#369a6e'

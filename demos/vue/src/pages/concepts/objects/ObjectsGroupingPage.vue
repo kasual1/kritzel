@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
+  getEditorRef,
+  KritzelEditor,
   type KritzelBaseObject,
 } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
@@ -11,8 +13,9 @@ import {
   seedEditor,
   toolbarStyle,
 } from '../shared/concept-shared'
+import { ref } from 'vue';
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const objects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
 
 async function refreshObjects() {
@@ -55,12 +58,12 @@ async function onReady() {
       <button :style="buttonStyle(false)" @click="ungroup">Ungroup</button>
     </div>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
-      <kritzel-editor
-        ref="editor"
+      <KritzelEditor
+        ref="editorComponent"
         editorId="objects-grouping"
-        :wheelEnabled="false"
         theme="vue-theme"
         :themes="[customVueTheme]"
+        :wheelEnabled="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :style="editorStyle"

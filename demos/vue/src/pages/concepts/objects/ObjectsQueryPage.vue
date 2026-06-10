@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
+  KritzelEditor,
   type KritzelBaseObject,
 } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
@@ -10,9 +11,11 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
+  getEditorRef,
 } from '../shared/concept-shared'
+import { ref } from 'vue';
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const results = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
 const totalCount = ref(0)
 
@@ -51,12 +54,12 @@ async function onReady() {
       <span :style="{ marginLeft: 'auto', fontSize: '13px' }">Total: {{ totalCount }}</span>
     </div>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
-      <kritzel-editor
-        ref="editor"
+      <KritzelEditor
+        ref="editorComponent"
         editorId="objects-query"
-        :wheelEnabled="false"
         theme="vue-theme"
         :themes="[customVueTheme]"
+        :wheelEnabled="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :style="editorStyle"

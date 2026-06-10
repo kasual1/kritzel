@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import {
+  getEditorRef,
+  KritzelEditor,
   type ContextMenuItem,
 } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
-import { editorStyle, hostStyle, seedEditor } from '../shared/concept-shared'
+import { editorStyle, hostStyle, seedEditor } from '../shared/concept-shared';
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 
 const globalItems: ContextMenuItem[] = [
   {
@@ -37,14 +38,14 @@ async function onReady() {
 
 <template>
   <div :style="hostStyle">
-    <kritzel-editor
-      ref="editor"
+    <KritzelEditor
+      ref="editorComponent"
       editorId="custom-context-menu-canvas-quick-actions"
-      :wheelEnabled="false"
       theme="vue-theme"
       :themes="[customVueTheme]"
       :globalContextMenuItems="globalItems"
       :objectContextMenuItems="[]"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"

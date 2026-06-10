@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
   HocuspocusSyncProvider,
   IndexedDBSyncProvider,
@@ -14,6 +14,7 @@ import {
   seedEditor,
   toolbarStyle,
 } from '../shared/concept-shared'
+import { ref } from 'vue'
 
 const editor = ref<HTMLKritzelEditorElement | null>(null)
 

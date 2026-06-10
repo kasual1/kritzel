@@ -17,7 +17,7 @@ Before making API calls, you must wait for the editor to fully initialize. The `
 
 ```html
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import { KritzelEditor } from 'kritzel-vue'
 
 const editor = ref<HTMLKritzelEditorElement | null>(null)

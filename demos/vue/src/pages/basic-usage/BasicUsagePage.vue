@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import {
+  getEditorRef,
   InMemorySyncProvider,
   KritzelBaseObject,
   KritzelEditor,
@@ -12,7 +13,7 @@ import { createSeedObjects } from './seed-objects'
 
 type ToolName = 'brush' | 'select'
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const isReady = ref(false)
 const activeTool = ref<ToolName>('select')
 const objectsCount = ref(0)
@@ -108,13 +109,13 @@ async function zoomIn() {
     </header>
 
     <KritzelEditor
-      ref="editor"
+      ref="editorComponent"
       editorId="basic-usage"
-      :wheelEnabled="false"
-      :syncConfig="syncConfig"
       theme="vue-theme"
       :themes="[customVueTheme]"
+      :syncConfig="syncConfig"
       :loginConfig="undefined"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :isControlsVisible="false"

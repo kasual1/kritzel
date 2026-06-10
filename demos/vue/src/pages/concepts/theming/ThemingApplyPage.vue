@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
   KritzelEditor,
   darkTheme,
@@ -13,6 +13,7 @@ import {
   seedEditor,
   toolbarStyle,
 } from '../shared/concept-shared'
+import { ref } from 'vue'
 
 const themedDark: KritzelTheme = {
   ...darkTheme,

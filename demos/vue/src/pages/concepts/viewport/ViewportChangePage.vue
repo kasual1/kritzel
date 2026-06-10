@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import {
+  KritzelEditor,
   type KritzelViewportState,
 } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
@@ -11,9 +12,11 @@ import {
   seedEditor,
   statusBarStyle,
   toolbarStyle,
+  getEditorRef,
 } from '../shared/concept-shared'
+import { ref } from 'vue';
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 const viewport = ref<KritzelViewportState | null>(null)
 
 async function zoomIn() {
@@ -46,12 +49,12 @@ function onViewportChange(event: CustomEvent<KritzelViewportState>) {
       <button :style="buttonStyle(false)" @click="zoomOut">Zoom Out</button>
       <button :style="buttonStyle(false)" @click="editor?.setViewport(100, 100, 0.5)">Set (100, 100, 0.5)</button>
     </div>
-    <kritzel-editor
-      ref="editor"
+    <KritzelEditor
+      ref="editorComponent"
       editorId="viewport-change"
-      :wheelEnabled="false"
       theme="vue-theme"
       :themes="[customVueTheme]"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"

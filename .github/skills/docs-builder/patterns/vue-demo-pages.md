@@ -24,16 +24,28 @@ Every Vue demo page must be registered in `demos/vue/src/router.ts`:
 
 Without the route, the `<LiveDemo>` preview iframe will not load.
 
+## Component Tag Rule
+
+**Always use the PascalCase Vue component `<KritzelEditor>` (imported from `kritzel-vue`).** Never use the native web component tag `<kritzel-editor>` in Vue demo pages.
+
+Reasons:
+- The Vue wrapper registers the custom element lazily via `defineCustomElement`, ensuring tree-shaking and proper SSR compat.
+- It enables typed props, Vue event handling (`@isReady`), and consistent component registration.
+- It follows Vue single-file component conventions.
+
 ## Component Scaffold
 
 ```vue
 <script setup lang="ts">
+
 import {
   InMemorySyncProvider,
   KritzelEditor,
   type KritzelSyncConfig,
 } from 'kritzel-vue'
 import { customVueTheme } from '../../const/custom-vue-theme'
+
+const editor = ref<HTMLKritzelEditorElement | null>(null)
 
 const syncConfig: KritzelSyncConfig = {
   providers: [InMemorySyncProvider],
@@ -42,6 +54,7 @@ const syncConfig: KritzelSyncConfig = {
 
 <template>
   <KritzelEditor
+    ref="editor"
     editorId="my-demo"
     :wheelEnabled="false"
     :syncConfig="syncConfig"
@@ -69,6 +82,7 @@ Every `<KritzelEditor>` in a Vue demo page should include:
 
 | Prop | Purpose |
 |------|---------|
+| `ref="editor"` | Template ref for programmatic access |
 | `editorId="<unique-id>"` | Prevents state collision across demos |
 | `:wheelEnabled="false"` | Prevents scroll-jacking in docs iframes |
 | `:syncConfig="..."` | Explicit sync provider behavior |
@@ -78,9 +92,40 @@ Every `<KritzelEditor>` in a Vue demo page should include:
 | `theme="vue-theme"` | Applies framework theme |
 | `:themes="[customVueTheme]"` | Provides theme definition |
 
+## Editor Ref Access
+
+To call editor methods (e.g. `addObject`, `getAllObjects`, `changeActiveToolByName`), use a template ref typed as `HTMLKritzelEditorElement`:
+
+```ts
+
+import { KritzelEditor } from 'kritzel-vue'
+
+const editor = ref<HTMLKritzelEditorElement | null>(null)
+```
+
+Then bind it in the template:
+
+```html
+<KritzelEditor ref="editor" ... @isReady="onReady" />
+```
+
+This works because the Stencil Vue wrapper (created via `defineContainer`) renders the native `kritzel-editor` custom element internally. Vue's component instance proxy forwards property and method access to the underlying element, so `editor.value?.addObject(...)` behaves as if you held the raw `HTMLKritzelEditorElement`.
+
 ## Seeding Objects
 
-When a demo needs initial canvas content, use a shared helper (`createSeedObjects`) local to the Vue demo app and seed on editor readiness.
+When a demo needs initial canvas content, use the shared helper (`seedEditor`) and call it inside the `@isReady` handler:
+
+```ts
+import { seedEditor } from '../shared/concept-shared'
+
+async function onReady() {
+  if (editor.value) {
+    await seedEditor(editor.value)
+  }
+}
+```
+
+The `seedEditor` helper accepts anything with an `addObject` method, which the ref satisfies directly.
 
 Benefits:
 - Consistent visuals across docs demos

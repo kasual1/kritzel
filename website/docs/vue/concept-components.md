@@ -33,7 +33,7 @@ Because Kritzel performs asynchronous setup tasks internally (such as creating c
 
 ```html
 <script setup lang="ts">
-import { ref } from 'vue'
+
 import { KritzelEditor } from 'kritzel-vue'
 
 const editor = ref<HTMLKritzelEditorElement | null>(null)
