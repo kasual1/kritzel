@@ -2,6 +2,7 @@
 
 import {
   BroadcastSyncProvider,
+  getEditorRef,
   KritzelEditor,
   type KritzelSyncConfig,
 } from 'kritzel-vue'
@@ -13,9 +14,8 @@ import {
   seedEditor,
   toolbarStyle,
 } from '../shared/concept-shared'
-import { ref } from 'vue'
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 
 const syncConfig: KritzelSyncConfig = {
   providers: [BroadcastSyncProvider],
@@ -35,7 +35,7 @@ async function onReady() {
       <span :style="{ fontSize: '12px', color: accentDark }">BroadcastChannel enabled</span>
     </div>
     <KritzelEditor
-      ref="editor"
+      ref="editorComponent"
       editorId="collaboration-local"
       theme="vue-theme"
       :themes="[customVueTheme]"
