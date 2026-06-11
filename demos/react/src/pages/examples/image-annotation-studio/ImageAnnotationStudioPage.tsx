@@ -48,7 +48,7 @@ const hostStyle: CSSProperties = {
   color: "#eef2ff",
   background:
     "radial-gradient(circle at 15% 20%, rgba(251, 146, 60, 0.14), transparent 40%), radial-gradient(circle at 85% 78%, rgba(59, 130, 246, 0.16), transparent 38%), linear-gradient(120deg, #0d111a 0%, #181c2a 52%, #0f1724 100%)",
-  fontFamily: "'Segoe UI', sans-serif",
+  fontFamily: "Inter, Segoe UI, sans-serif",
 };
 
 const editorStyle: CSSProperties = {

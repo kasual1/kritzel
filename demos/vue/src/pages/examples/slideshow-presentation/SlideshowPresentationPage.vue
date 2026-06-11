@@ -51,7 +51,7 @@ async function seedSlides() {
       height: 450,
       shapeType: ShapeType.Rectangle,
       fillColor: { light: '#ffffff', dark: '#1b1b1e' },
-      strokeColor: { light: '#dd0031', dark: '#b30027' },
+      strokeColor: { light: '#42b883', dark: '#369a6e' },
       strokeWidth: 4,
     }),
   )
@@ -62,7 +62,7 @@ async function seedSlides() {
       translateX: -350,
       translateY: -150,
       fontSize: 36,
-      fontColor: { light: '#dd0031', dark: '#ff4d6d' },
+      fontColor: { light: '#42b883', dark: '#7ee2b8' },
     }),
   )
 
@@ -99,7 +99,7 @@ async function seedSlides() {
       height: 450,
       shapeType: ShapeType.Rectangle,
       fillColor: { light: '#ffffff', dark: '#1b1b1e' },
-      strokeColor: { light: '#dd0031', dark: '#b30027' },
+      strokeColor: { light: '#42b883', dark: '#369a6e' },
       strokeWidth: 4,
     }),
   )
@@ -110,7 +110,7 @@ async function seedSlides() {
       translateX: 850,
       translateY: -150,
       fontSize: 36,
-      fontColor: { light: '#dd0031', dark: '#ff4d6d' },
+      fontColor: { light: '#42b883', dark: '#7ee2b8' },
     }),
   )
 
@@ -147,7 +147,7 @@ async function seedSlides() {
       height: 450,
       shapeType: ShapeType.Rectangle,
       fillColor: { light: '#ffffff', dark: '#1b1b1e' },
-      strokeColor: { light: '#dd0031', dark: '#b30027' },
+      strokeColor: { light: '#42b883', dark: '#369a6e' },
       strokeWidth: 4,
     }),
   )
@@ -158,7 +158,7 @@ async function seedSlides() {
       translateX: 2050,
       translateY: -150,
       fontSize: 36,
-      fontColor: { light: '#dd0031', dark: '#ff4d6d' },
+      fontColor: { light: '#42b883', dark: '#7ee2b8' },
     }),
   )
 
@@ -268,8 +268,9 @@ async function navigateToSlide(index: number) {
   display: flex;
   flex-direction: column;
   height: 100%;
-  font-family: Roboto, sans-serif;
-  background-color: #fafafa;
+  font-family: Inter, Segoe UI, sans-serif;
+  background:
+    linear-gradient(180deg, rgba(244, 251, 247, 1) 0%, rgba(233, 246, 239, 1) 100%);
 }
 
 .presentation-header {
@@ -278,8 +279,8 @@ async function navigateToSlide(index: number) {
   align-items: center;
   padding: 12px 24px;
   background: #ffffff;
-  border-bottom: 1px solid #ebebeb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #d4ece0;
+  box-shadow: 0 1px 3px rgba(66, 184, 131, 0.06);
 }
 
 .brand {
@@ -293,8 +294,8 @@ async function navigateToSlide(index: number) {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  background-color: rgba(221, 0, 48, 0.1);
-  color: #dd0031;
+  background-color: rgba(66, 184, 131, 0.1);
+  color: #42b883;
   padding: 2px 8px;
   border-radius: 99px;
   letter-spacing: 0.5px;
@@ -304,7 +305,7 @@ async function navigateToSlide(index: number) {
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #333333;
+  color: #214f3d;
 }
 
 .controls-group {
@@ -317,7 +318,7 @@ async function navigateToSlide(index: number) {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #f0f0f0;
+  background: rgba(66, 184, 131, 0.08);
   padding: 4px;
   border-radius: 8px;
 }
@@ -327,19 +328,19 @@ async function navigateToSlide(index: number) {
   align-items: center;
   gap: 6px;
   padding: 6px 16px;
-  border: none;
+  border: 1px solid #c9e6d8;
   border-radius: 6px;
   background: #ffffff;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  color: #333333;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: #42b883;
+  box-shadow: 0 1px 2px rgba(66, 184, 131, 0.08);
   transition: all 0.2s ease;
 }
 
 .nav-btn:hover:not(:disabled) {
-  background: #dd0031;
+  background: #42b883;
   color: #ffffff;
 }
 
@@ -351,7 +352,7 @@ async function navigateToSlide(index: number) {
 
 .slide-indicator {
   font-size: 13px;
-  color: #555555;
+  color: #587467;
   min-width: 90px;
   text-align: center;
 }

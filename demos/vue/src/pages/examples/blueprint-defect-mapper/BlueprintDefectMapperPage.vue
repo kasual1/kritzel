@@ -455,8 +455,9 @@ function statusClass(status: DefectStatus): string {
   display: flex;
   height: 100%;
   width: 100%;
-  font-family: Roboto, sans-serif;
-  background: #fafafa;
+  font-family: Inter, Segoe UI, sans-serif;
+  background:
+    linear-gradient(180deg, rgba(244, 251, 247, 1) 0%, rgba(233, 246, 239, 1) 100%);
 }
 
 .editor-pane {
@@ -470,7 +471,7 @@ function statusClass(status: DefectStatus): string {
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(221, 0, 49, 0.95);
+  background: rgba(66, 184, 131, 0.96);
   color: white;
   padding: 8px 20px;
   border-radius: 99px;
@@ -485,17 +486,17 @@ function statusClass(status: DefectStatus): string {
 
 .sidebar {
   width: 320px;
-  border-left: 1px solid #ebebeb;
+  border-left: 1px solid #d4ece0;
   background: #ffffff;
   display: flex;
   flex-direction: column;
   height: 100%;
-  box-shadow: -1px 0 3px rgba(0, 0, 0, 0.02);
+  box-shadow: -1px 0 3px rgba(66, 184, 131, 0.05);
 }
 
 .sidebar-header {
   padding: 16px;
-  border-bottom: 1px solid #ebebeb;
+  border-bottom: 1px solid #d4ece0;
 }
 
 .badge {
@@ -503,8 +504,8 @@ function statusClass(status: DefectStatus): string {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  background-color: rgba(221, 0, 48, 0.1);
-  color: #dd0031;
+  background-color: rgba(66, 184, 131, 0.1);
+  color: #42b883;
   padding: 2px 8px;
   border-radius: 99px;
   letter-spacing: 0.5px;
@@ -515,13 +516,13 @@ function statusClass(status: DefectStatus): string {
   margin: 0 0 4px 0;
   font-size: 18px;
   font-weight: 600;
-  color: #333333;
+  color: #214f3d;
 }
 
 .sidebar-desc {
   margin: 0;
   font-size: 12px;
-  color: #666666;
+  color: #587467;
   line-height: 1.4;
 }
 
@@ -529,17 +530,17 @@ function statusClass(status: DefectStatus): string {
   display: flex;
   gap: 8px;
   padding: 12px 16px;
-  background: #fcfcfc;
-  border-bottom: 1px solid #ebebeb;
+  background: rgba(66, 184, 131, 0.03);
+  border-bottom: 1px solid #d4ece0;
 }
 
 .action-btn {
   flex: 1;
   padding: 8px 12px;
-  border: 1px solid #dd0031;
+  border: 1px solid #42b883;
   border-radius: 6px;
   background: #ffffff;
-  color: #dd0031;
+  color: #42b883;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -551,16 +552,16 @@ function statusClass(status: DefectStatus): string {
 
 .action-btn:hover,
 .action-btn.active {
-  background: #dd0031;
+  background: #42b883;
   color: #ffffff;
 }
 
 .reset-btn {
   padding: 8px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #c9e6d8;
   border-radius: 6px;
   background: #ffffff;
-  color: #333333;
+  color: #2c5f49;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -568,7 +569,7 @@ function statusClass(status: DefectStatus): string {
 }
 
 .reset-btn:hover {
-  background: #f0f0f0;
+  background: rgba(66, 184, 131, 0.07);
 }
 
 .defects-section {
@@ -585,7 +586,7 @@ function statusClass(status: DefectStatus): string {
 .section-title-row h3 {
   margin: 0;
   font-size: 14px;
-  color: #333;
+  color: #214f3d;
   font-weight: 600;
 }
 
@@ -601,14 +602,14 @@ function statusClass(status: DefectStatus): string {
 .empty-list {
   padding: 32px 16px;
   text-align: center;
-  color: #94a3b8;
+  color: #587467;
   font-size: 13px;
-  border: 1px dashed #e2e8f0;
+  border: 1px dashed #c9e6d8;
   border-radius: 8px;
 }
 
 .defect-card {
-  border: 1px solid #ebebeb;
+  border: 1px solid #d4ece0;
   border-radius: 8px;
   padding: 10px 12px;
   cursor: pointer;
@@ -617,8 +618,8 @@ function statusClass(status: DefectStatus): string {
 }
 
 .defect-card:hover {
-  border-color: #dd0031;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  border-color: #42b883;
+  box-shadow: 0 2px 4px rgba(66, 184, 131, 0.08);
 }
 
 .defect-header {
@@ -636,7 +637,7 @@ function statusClass(status: DefectStatus): string {
 }
 
 .status-indicator.outstanding {
-  background-color: #dd0031;
+  background-color: #42b883;
 }
 
 .status-indicator.in-progress {
@@ -659,8 +660,8 @@ function statusClass(status: DefectStatus): string {
 
 .defect-cat {
   font-size: 10px;
-  background: #f1f5f9;
-  color: #475569;
+  background: rgba(66, 184, 131, 0.08);
+  color: #2c5f49;
   padding: 2px 6px;
   border-radius: 99px;
   font-weight: 500;
@@ -668,7 +669,7 @@ function statusClass(status: DefectStatus): string {
 
 .defect-body {
   font-size: 11px;
-  color: #64748b;
+  color: #587467;
   margin-bottom: 8px;
   font-family: monospace;
 }
@@ -678,17 +679,17 @@ function statusClass(status: DefectStatus): string {
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid #e4f1ea;
   padding-top: 8px;
 }
 
 .status-select {
   font-size: 11px;
   padding: 3px 6px;
-  border: 1px solid #ccc;
+  border: 1px solid #c9e6d8;
   border-radius: 4px;
   background: white;
-  color: #333;
+  color: #214f3d;
 }
 
 .delete-btn {
@@ -701,6 +702,6 @@ function statusClass(status: DefectStatus): string {
 }
 
 .delete-btn:hover {
-  color: #dd0031;
+  color: #42b883;
 }
 </style>

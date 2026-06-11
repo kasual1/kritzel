@@ -29,9 +29,10 @@ const hostStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   height: "100%",
-  fontFamily: "Roboto, sans-serif",
-  backgroundColor: "#fafafa",
-  color: "#333333",
+  fontFamily: "Inter, Segoe UI, sans-serif",
+  background:
+    "linear-gradient(180deg, rgba(245, 250, 252, 1) 0%, rgba(235, 246, 250, 1) 100%)",
+  color: "#16313c",
 };
 
 const contentShellStyle: CSSProperties = {
@@ -54,7 +55,7 @@ const editorStyle: CSSProperties = {
 const asideStyle: CSSProperties = {
   width: "340px",
   overflowY: "auto",
-  borderLeft: "1px solid #ebebeb",
+  borderLeft: "1px solid #d8e8ee",
   backgroundColor: "#ffffff",
   padding: "12px",
   fontSize: "13px",
@@ -68,8 +69,8 @@ const taglineStyle: CSSProperties = {
   fontSize: "11px",
   fontWeight: 700,
   textTransform: "uppercase",
-  backgroundColor: "rgba(221, 0, 48, 0.1)",
-  color: "#dd0031",
+  backgroundColor: "rgba(8, 126, 164, 0.1)",
+  color: "#087ea4",
   padding: "2px 8px",
   borderRadius: "99px",
   letterSpacing: "0.5px",
@@ -79,7 +80,7 @@ const taglineStyle: CSSProperties = {
 const sectionHeadingStyle: CSSProperties = {
   margin: "0 0 8px 0",
   fontSize: "12px",
-  color: "#777777",
+  color: "#416173",
   textTransform: "uppercase",
   letterSpacing: "0.5px",
 };
@@ -88,7 +89,7 @@ const searchInputStyle: CSSProperties = {
   width: "100%",
   boxSizing: "border-box",
   padding: "6px 8px",
-  border: "1px solid #ebebeb",
+  border: "1px solid #cfe0e7",
   borderRadius: "4px",
   marginBottom: "10px",
   fontSize: "12px",
@@ -97,17 +98,17 @@ const searchInputStyle: CSSProperties = {
 const treeContainerStyle: CSSProperties = {
   maxHeight: "320px",
   overflowY: "auto",
-  border: "1px solid #ebebeb",
+  border: "1px solid #d8e8ee",
   borderRadius: "4px",
-  background: "#fafafa",
+  background: "rgba(8, 126, 164, 0.02)",
   padding: "4px",
 };
 
 const inspectorStyle: CSSProperties = {
-  background: "#fafafa",
+  background: "rgba(8, 126, 164, 0.02)",
   padding: "10px",
   borderRadius: "4px",
-  border: "1px solid #ebebeb",
+  border: "1px solid #d8e8ee",
 };
 
 const inspectorFieldStyle: CSSProperties = {
@@ -119,7 +120,7 @@ const inspectorFieldStyle: CSSProperties = {
 
 const inspectorLabelStyle: CSSProperties = {
   fontWeight: 600,
-  color: "#555555",
+  color: "#49616f",
   fontSize: "11px",
   textTransform: "uppercase",
   letterSpacing: "0.2px",
@@ -127,11 +128,11 @@ const inspectorLabelStyle: CSSProperties = {
 
 const inspectorInputStyle: CSSProperties = {
   padding: "4px 6px",
-  border: "1px solid #ddd",
+  border: "1px solid #cfe0e7",
   borderRadius: "3px",
   fontSize: "12px",
   fontFamily: "inherit",
-  color: "#333333",
+  color: "#16313c",
   background: "#ffffff",
 };
 
@@ -141,9 +142,9 @@ function filterChipStyle(active: boolean): CSSProperties {
     fontSize: "11px",
     borderRadius: "12px",
     boxShadow: "none",
-    border: "1px solid #ebebeb",
-    background: active ? "#dd0031" : "#f0f0f0",
-    color: active ? "#ffffff" : "#333333",
+    border: `1px solid ${active ? "#087ea4" : "#d8e8ee"}`,
+    background: active ? "#087ea4" : "rgba(8, 126, 164, 0.06)",
+    color: active ? "#ffffff" : "#087ea4",
     cursor: "pointer",
     fontFamily: "inherit",
   };
@@ -454,8 +455,8 @@ export function ObjectExplorerPage() {
             paddingLeft: `${depth * 16 + 6}px`,
             borderRadius: "4px",
             marginBottom: "1px",
-            background: isSelected ? "#ffebee" : "transparent",
-            borderLeft: isSelected ? "3px solid #dd0031" : "3px solid transparent",
+              background: isSelected ? "rgba(8, 126, 164, 0.08)" : "transparent",
+              borderLeft: isSelected ? "3px solid #087ea4" : "3px solid transparent",
             opacity: obj.isVisible === false ? 0.6 : 1,
           }}
         >
@@ -464,7 +465,7 @@ export function ObjectExplorerPage() {
               width: "16px",
               textAlign: "center",
               fontSize: "10px",
-              color: "#666666",
+              color: "#4d6a79",
               cursor: "pointer",
               userSelect: "none",
               flexShrink: 0,
@@ -496,7 +497,7 @@ export function ObjectExplorerPage() {
             >
               {getDisplayName(obj)}
             </span>
-            <span style={{ color: "#999999", fontSize: "10px", flexShrink: 0 }}>
+            <span style={{ color: "#6e8794", fontSize: "10px", flexShrink: 0 }}>
               {obj.id.slice(0, 4)}
             </span>
           </div>
@@ -508,7 +509,7 @@ export function ObjectExplorerPage() {
               padding: "2px 4px",
               borderRadius: "3px",
               fontSize: "10px",
-              color: "#666666",
+              color: "#6e8794",
               cursor: "pointer",
             }}
             onClick={(event) => void deleteTreeObject(event, obj)}
@@ -554,9 +555,9 @@ export function ObjectExplorerPage() {
         </div>
 
         <aside style={asideStyle}>
-          <div style={{ borderBottom: "1px solid #ebebeb", paddingBottom: "10px" }}>
+          <div style={{ borderBottom: "1px solid #d8e8ee", paddingBottom: "10px" }}>
             <span style={taglineStyle}>Explorer Mode</span>
-            <h2 style={{ margin: 0, color: "#dd0031", fontSize: "18px", lineHeight: 1.2 }}>
+            <h2 style={{ margin: 0, color: "#087ea4", fontSize: "18px", lineHeight: 1.2 }}>
               Hierarchical Object Explorer
             </h2>
           </div>
@@ -721,7 +722,7 @@ export function ObjectExplorerPage() {
                   step="0.1"
                   value={selectedObject.opacity ?? 1}
                   onChange={(event) => void updateSelectedProperty("opacity", event)}
-                  style={{ width: "100%", accentColor: "#dd0031", cursor: "pointer" }}
+                  style={{ width: "100%", accentColor: "#087ea4", cursor: "pointer" }}
                 />
               </div>
             </section>

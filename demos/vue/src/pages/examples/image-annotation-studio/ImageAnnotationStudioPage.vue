@@ -318,7 +318,7 @@ async function ensureSeedImage() {
       transparent 38%
     ),
     linear-gradient(120deg, #0d111a 0%, #181c2a 52%, #0f1724 100%);
-  font-family: 'Segoe UI', sans-serif;
+  font-family: Inter, Segoe UI, sans-serif;
 }
 
 .tool-dock {
@@ -388,13 +388,13 @@ async function ensureSeedImage() {
 }
 
 .action-btn.primary {
-  background: rgba(221, 0, 49, 0.92);
+  background: rgba(66, 184, 131, 0.92);
   border-color: rgba(255, 255, 255, 0.35);
   color: #ffffff;
 }
 
 .action-btn.primary:hover {
-  background: rgba(179, 0, 40, 0.96);
+  background: rgba(54, 154, 110, 0.96);
 }
 
 .zoom-btn,
