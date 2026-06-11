@@ -598,7 +598,7 @@ export namespace Components {
         /**
           * Debug info display options controlling which debug overlays are visible
          */
-        "debugInfo": KritzelDebugInfo;
+        "debugInfo"?: KritzelDebugInfo;
         /**
           * Deletes the currently selected objects from the canvas.
          */
@@ -730,7 +730,7 @@ export namespace Components {
         /**
           * Context menu items shown when right-clicking the canvas background.
          */
-        "globalContextMenuItems": ContextMenuItem[];
+        "globalContextMenuItems"?: ContextMenuItem[];
         /**
           * Groups the currently selected objects into a single selection group.
          */
@@ -785,7 +785,7 @@ export namespace Components {
         /**
           * Context menu items shown when right-clicking a selected object.
          */
-        "objectContextMenuItems": ContextMenuItem[];
+        "objectContextMenuItems"?: ContextMenuItem[];
         /**
           * Programmatically opens the context menu at a specified world-coordinate position. If `objectId` is provided and found, the object context menu is shown for that object. If no `objectId` is provided but a selection group already exists, the object context menu is shown. Otherwise, the global context menu is shown.
           * @param options.x - The X position in world (canvas) coordinates.
@@ -2659,7 +2659,7 @@ declare namespace LocalJSX {
         /**
           * Debug info display options controlling which debug overlays are visible
          */
-        "debugInfo": KritzelDebugInfo;
+        "debugInfo"?: KritzelDebugInfo;
         /**
           * Optional unique identifier for namespacing storage keys across multiple editor instances.
          */
@@ -2667,7 +2667,7 @@ declare namespace LocalJSX {
         /**
           * Context menu items shown when right-clicking the canvas background.
          */
-        "globalContextMenuItems": ContextMenuItem[];
+        "globalContextMenuItems"?: ContextMenuItem[];
         /**
           * External loading state. Combined with internal workspace-loading state to drive the overlay.
           * @default false
@@ -2686,7 +2686,7 @@ declare namespace LocalJSX {
         /**
           * Context menu items shown when right-clicking a selected object.
          */
-        "objectContextMenuItems": ContextMenuItem[];
+        "objectContextMenuItems"?: ContextMenuItem[];
         /**
           * Emitted when the active drawing tool changes.
          */

@@ -143,7 +143,7 @@ export class KritzelEngine {
   }
 
   /** Context menu items shown when right-clicking the canvas background. */
-  @Prop() globalContextMenuItems!: ContextMenuItem[];
+  @Prop() globalContextMenuItems?: ContextMenuItem[];
   @Watch('globalContextMenuItems')
   onGlobalContextMenuItemsChange(newValue: ContextMenuItem[] | undefined) {
     if (this.contextMenuHandler) {
@@ -152,7 +152,7 @@ export class KritzelEngine {
   }
 
   /** Context menu items shown when right-clicking a selected object. */
-  @Prop() objectContextMenuItems!: ContextMenuItem[];
+  @Prop() objectContextMenuItems?: ContextMenuItem[];
   @Watch('objectContextMenuItems')
   onObjectContextMenuItemsChange(newValue: ContextMenuItem[] | undefined) {
     if (this.contextMenuHandler) {
@@ -250,7 +250,7 @@ export class KritzelEngine {
   }
 
   /** Debug info display options controlling which debug overlays are visible */
-  @Prop() debugInfo!: KritzelDebugInfo;
+  @Prop() debugInfo?: KritzelDebugInfo;
   @Watch('debugInfo')
   onDebugInfoChange(newValue: KritzelDebugInfo) {
     if (newValue) {
@@ -1982,7 +1982,7 @@ export class KritzelEngine {
 
   async componentDidLoad() {
     setTimeout(async () => {
-      this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems, this.objectContextMenuItems);
+      this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems ?? [], this.objectContextMenuItems ?? []);
       this.keyHandler = new KritzelKeyHandler(this.core);
       this.viewport = new KritzelViewport(this.core, this.host);
       this._isViewportReady = true;
