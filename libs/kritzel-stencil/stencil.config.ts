@@ -11,7 +11,6 @@ const INTERNAL_COMPONENTS = [
   'kritzel-controls',
   'kritzel-cursor-trail',
   'kritzel-dropdown',
-  'kritzel-engine',
   'kritzel-font',
   'kritzel-font-family',
   'kritzel-font-size',

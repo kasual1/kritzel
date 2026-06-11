@@ -21,7 +21,7 @@ import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
 import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
-import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
+import { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
 import { LoginEvent } from "./events/login.event";
 import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
@@ -60,7 +60,7 @@ export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
 export { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
-export { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
+export { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
 export { LoginEvent } from "./events/login.event";
 export { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
@@ -598,7 +598,7 @@ export namespace Components {
         /**
           * Debug info display options controlling which debug overlays are visible
          */
-        "debugInfo": KritzelDebugInfo;
+        "debugInfo"?: KritzelDebugInfo;
         /**
           * Deletes the currently selected objects from the canvas.
          */
@@ -730,7 +730,7 @@ export namespace Components {
         /**
           * Context menu items shown when right-clicking the canvas background.
          */
-        "globalContextMenuItems": ContextMenuItem[];
+        "globalContextMenuItems"?: ContextMenuItem[];
         /**
           * Groups the currently selected objects into a single selection group.
          */
@@ -785,7 +785,7 @@ export namespace Components {
         /**
           * Context menu items shown when right-clicking a selected object.
          */
-        "objectContextMenuItems": ContextMenuItem[];
+        "objectContextMenuItems"?: ContextMenuItem[];
         /**
           * Programmatically opens the context menu at a specified world-coordinate position. If `objectId` is provided and found, the object context menu is shown for that object. If no `objectId` is provided but a selection group already exists, the object context menu is shown. Otherwise, the global context menu is shown.
           * @param options.x - The X position in world (canvas) coordinates.
@@ -1742,7 +1742,7 @@ declare global {
         "objectsRemoved": ObjectsRemovedEvent;
         "objectsUpdated": ObjectsUpdatedEvent;
         "undoStateChange": KritzelUndoState;
-        "objectsInViewportChange": KritzelBaseObject<Element>[];
+        "objectsInViewportChange": ObjectsInViewportChangeEvent;
         "viewportChange": KritzelViewportState;
         "awarenessChange": Map<number, Record<string, any>>;
     }
@@ -2659,7 +2659,7 @@ declare namespace LocalJSX {
         /**
           * Debug info display options controlling which debug overlays are visible
          */
-        "debugInfo": KritzelDebugInfo;
+        "debugInfo"?: KritzelDebugInfo;
         /**
           * Optional unique identifier for namespacing storage keys across multiple editor instances.
          */
@@ -2667,7 +2667,7 @@ declare namespace LocalJSX {
         /**
           * Context menu items shown when right-clicking the canvas background.
          */
-        "globalContextMenuItems": ContextMenuItem[];
+        "globalContextMenuItems"?: ContextMenuItem[];
         /**
           * External loading state. Combined with internal workspace-loading state to drive the overlay.
           * @default false
@@ -2686,7 +2686,7 @@ declare namespace LocalJSX {
         /**
           * Context menu items shown when right-clicking a selected object.
          */
-        "objectContextMenuItems": ContextMenuItem[];
+        "objectContextMenuItems"?: ContextMenuItem[];
         /**
           * Emitted when the active drawing tool changes.
          */
@@ -2718,7 +2718,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).
          */
-        "onObjectsInViewportChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject<Element>[]>) => void;
+        "onObjectsInViewportChange"?: (event: KritzelEngineCustomEvent<ObjectsInViewportChangeEvent>) => void;
         /**
           * Emitted when one or more objects are removed from the canvas.
          */

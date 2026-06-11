@@ -8,6 +8,7 @@ export const DIRECTIVES = [
   d.KritzelCurrentUserDialog,
   d.KritzelDialog,
   d.KritzelEditor,
+  d.KritzelEngine,
   d.KritzelExport,
   d.KritzelInput,
   d.KritzelLineEndings,

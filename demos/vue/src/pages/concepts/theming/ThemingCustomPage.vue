@@ -1,12 +1,12 @@
 <script setup lang="ts">
 
 import {
+  getEditorRef,
   KritzelEditor,
   lightTheme,
   type KritzelTheme,
 } from 'kritzel-vue'
 import { seedEditor } from '../shared/concept-shared'
-import { ref } from 'vue'
 
 const brandPurple = '#7c3aed'
 const brandPurpleHover = '#6d28d9'
@@ -246,7 +246,7 @@ const brandedPurpleFlatTheme: KritzelTheme = {
   },
 }
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editor');
 
 async function onReady() {
   if (editor.value) {

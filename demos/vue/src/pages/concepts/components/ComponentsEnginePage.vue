@@ -1,16 +1,16 @@
 <script setup lang="ts">
 
 import {
+  getEngineRef,
   KritzelBrushTool,
   KritzelEraserTool,
   KritzelSelectionTool,
+  KritzelEngine
 } from 'kritzel-vue'
 import { buttonStyle, hostStyle, toolbarStyle } from '../shared/concept-shared'
 import { createSeedObjects } from '../../basic-usage/seed-objects'
-import { ref } from 'vue'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const engine = ref<any>(null)
+const engine = getEngineRef('engineComponent');
 
 async function withEngine(action: (engine: any) => Promise<void>) {
   if (engine.value) {
@@ -45,12 +45,7 @@ async function onReady() {
       <button :style="buttonStyle(false)" @click="withEngine((e) => e.undo())">Undo</button>
       <button :style="buttonStyle(false)" @click="withEngine((e) => e.redo())">Redo</button>
     </div>
-    <kritzel-engine
-      ref="engine"
-      editorId="components-engine"
-      :wheelEnabled="false"
-      :style="{ flex: 1, minHeight: 0, display: 'block' }"
-      @isEngineReady="onReady"
-    />
+    <KritzelEngine ref="engineComponent" editorId="components-engine" :wheelEnabled="false"
+      :style="{ flex: 1, minHeight: 0, display: 'block' }" @isEngineReady="onReady" />
   </div>
 </template>

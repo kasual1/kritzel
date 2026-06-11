@@ -3,7 +3,7 @@ import {
   InMemorySyncProvider,
   KritzelEditor,
   type ActiveWorkspaceChangeEvent,
-  type HTMLKritzelEditorElement,
+  HTMLKritzelEditorElement,
   type KritzelSyncConfig,
   type KritzelWorkspace,
 } from "kritzel-react";

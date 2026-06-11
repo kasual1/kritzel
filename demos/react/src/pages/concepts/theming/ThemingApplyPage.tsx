@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import {
   KritzelEditor,
   darkTheme,
-  type HTMLKritzelEditorElement,
+  HTMLKritzelEditorElement,
   type KritzelTheme,
 } from "kritzel-react";
 import { customReactTheme } from "../../../const/custom-react-theme";

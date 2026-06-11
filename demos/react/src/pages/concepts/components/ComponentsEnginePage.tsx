@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import {
   KritzelBrushTool,
+  KritzelEngine,
   KritzelEraserTool,
   KritzelSelectionTool,
 } from "kritzel-react";
@@ -8,9 +9,9 @@ import { buttonStyle, hostStyle, toolbarStyle } from "../shared/concept-shared";
 import { createSeedObjects } from "../../basic-usage/seed-objects";
 
 export function ComponentsEnginePage() {
-  const engineRef = useRef<any>(null);
+  const engineRef = useRef<HTMLKritzelEngineElement | null>(null);
 
-  async function withEngine(action: (engine: any) => Promise<void>) {
+  async function withEngine(action: (engine: HTMLKritzelEngineElement) => Promise<void>) {
     if (engineRef.current) {
       await action(engineRef.current);
     }
@@ -42,7 +43,7 @@ export function ComponentsEnginePage() {
         <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.undo())}>Undo</button>
         <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.redo())}>Redo</button>
       </div>
-      <kritzel-engine
+      <KritzelEngine
         ref={engineRef}
         editorId="components-engine"
         wheelEnabled={false}

@@ -4,7 +4,7 @@ import {
   KritzelEditor,
   KritzelWorkspace,
   type ActiveWorkspaceChangeEvent,
-  type HTMLKritzelEditorElement,
+  HTMLKritzelEditorElement,
   type KritzelSyncConfig,
 } from "kritzel-react";
 import { customReactTheme } from "../../../const/custom-react-theme";

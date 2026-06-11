@@ -13,7 +13,7 @@ import { createSeedObjects } from './seed-objects'
 
 type ToolName = 'brush' | 'select'
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const isReady = ref(false)
 const activeTool = ref<ToolName>('select')
 const objectsCount = ref(0)
@@ -109,7 +109,7 @@ async function zoomIn() {
     </header>
 
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="basic-usage"
       theme="vue-theme"
       :themes="[customVueTheme]"

@@ -12,7 +12,7 @@ import {
 } from '../shared/concept-shared'
 import { ref } from 'vue';
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const isDisabled = ref(true)
 
 async function onReady() {
@@ -51,7 +51,7 @@ async function toggle() {
       </span>
     </div>
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="tools-disable"
       theme="vue-theme"
       :themes="[customVueTheme]"
