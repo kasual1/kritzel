@@ -3,7 +3,7 @@ import { getEditorRef, KritzelEditor } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
 import { editorStyle, hostStyle, seedEditor } from '../shared/concept-shared'
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 
 async function onReady() {
   if (editor.value) {
@@ -15,7 +15,7 @@ async function onReady() {
 <template>
   <div :style="hostStyle">
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="components-editor-ui"
       theme="vue-theme"
       :themes="[customVueTheme]"

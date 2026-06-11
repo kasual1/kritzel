@@ -2,7 +2,7 @@ import { useMemo, useRef } from "react";
 import {
   KritzelEditor,
   type ContextMenuItem,
-  type HTMLKritzelEditorElement,
+  HTMLKritzelEditorElement,
 } from "kritzel-react";
 import { customReactTheme } from "../../../const/custom-react-theme";
 import { editorStyle, hostStyle, seedEditor } from "../shared/concept-shared";

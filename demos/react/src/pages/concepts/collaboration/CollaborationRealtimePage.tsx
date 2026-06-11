@@ -3,7 +3,7 @@ import {
   HocuspocusSyncProvider,
   IndexedDBSyncProvider,
   KritzelEditor,
-  type HTMLKritzelEditorElement,
+  HTMLKritzelEditorElement,
   type KritzelSyncConfig,
 } from "kritzel-react";
 import { customReactTheme } from "../../../const/custom-react-theme";

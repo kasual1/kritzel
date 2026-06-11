@@ -4,7 +4,7 @@ import {
   KritzelPath,
   KritzelShape,
   ShapeType,
-  type HTMLKritzelEditorElement,
+  HTMLKritzelEditorElement,
   type KritzelBaseObject,
 } from "kritzel-react";
 import { customReactTheme } from "../../../const/custom-react-theme";

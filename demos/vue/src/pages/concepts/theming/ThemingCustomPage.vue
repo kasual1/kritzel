@@ -246,7 +246,7 @@ const brandedPurpleFlatTheme: KritzelTheme = {
   },
 }
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 
 async function onReady() {
   if (editor.value) {
@@ -264,7 +264,7 @@ async function onReady() {
     }"
   >
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="theming-custom"
       theme="branded-purple-flat"
       :themes="[brandedPurpleFlatTheme]"

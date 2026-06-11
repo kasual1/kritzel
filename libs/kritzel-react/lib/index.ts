@@ -32,6 +32,8 @@ export {
 } from 'kritzel-stencil';
 
 export type {
+    HTMLKritzelEditorElement,
+    HTMLKritzelEngineElement,
     KritzelToolbarControl,
     KritzelBrushToolConfig,
     KritzelLineToolConfig,

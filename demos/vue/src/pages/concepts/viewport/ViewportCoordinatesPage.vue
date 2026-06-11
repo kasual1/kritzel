@@ -12,7 +12,7 @@ import {
 } from '../shared/concept-shared'
 import { ref } from 'vue';
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const worldCoords = ref<{ x: number; y: number } | null>(null)
 const screenCoords = ref<{ x: number; y: number } | null>(null)
 const screenX = ref(200)
@@ -56,7 +56,7 @@ async function onReady() {
       </span>
     </div>
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="viewport-coordinates"
       theme="vue-theme"
       :themes="[customVueTheme]"

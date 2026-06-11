@@ -12,7 +12,7 @@ import {
 } from '../shared/concept-shared'
 import { ref } from 'vue';
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const selectedObjects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
 
 async function refreshSelection() {
@@ -57,7 +57,7 @@ async function onReady() {
     </div>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
       <KritzelEditor
-        ref="editorComponent"
+        ref="editor"
         editorId="objects-selection"
         theme="vue-theme"
         :themes="[customVueTheme]"

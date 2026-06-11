@@ -48,9 +48,7 @@ export function buttonStyle(active = false): CSSProperties {
   };
 }
 
-export async function seedEditor(editor: {
-  addObject: (object: KritzelBaseObject<HTMLElement | SVGElement>) => Promise<void>;
-}) {
+export async function seedEditor(editor: HTMLKritzelEditorElement) {
   for (const obj of createSeedObjects()) {
     await editor.addObject(obj as KritzelBaseObject<HTMLElement | SVGElement>);
   }

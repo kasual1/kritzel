@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import {
   KritzelEditor,
-  type HTMLKritzelEditorElement,
+  HTMLKritzelEditorElement,
 } from "kritzel-react";
 import { customReactTheme } from "../../../const/custom-react-theme";
 import {

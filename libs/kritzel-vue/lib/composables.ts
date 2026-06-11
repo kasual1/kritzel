@@ -27,7 +27,7 @@ import {
  * </script>
  *
  * <template>
- *   <KritzelEditor ref="editorComponent" @isReady="onReady" />
+ *   <KritzelEditor ref="editor" @isReady="onReady" />
  * </template>
  * ```
  */

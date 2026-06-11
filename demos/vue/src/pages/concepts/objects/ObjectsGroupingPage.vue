@@ -15,7 +15,7 @@ import {
 } from '../shared/concept-shared'
 import { ref } from 'vue';
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const objects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
 
 async function refreshObjects() {
@@ -59,7 +59,7 @@ async function onReady() {
     </div>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
       <KritzelEditor
-        ref="editorComponent"
+        ref="editor"
         editorId="objects-grouping"
         theme="vue-theme"
         :themes="[customVueTheme]"
