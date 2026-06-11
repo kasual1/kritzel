@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import {
+  getEditorRef,
   HocuspocusSyncProvider,
   IndexedDBSyncProvider,
   KritzelEditor,
@@ -14,9 +15,8 @@ import {
   seedEditor,
   toolbarStyle,
 } from '../shared/concept-shared'
-import { ref } from 'vue'
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editorComponent');
 
 const syncConfig: KritzelSyncConfig = {
   providers: [
@@ -39,13 +39,13 @@ async function onReady() {
       <span :style="{ fontSize: '12px', color: accentDark }">Configured for Hocuspocus server</span>
     </div>
     <KritzelEditor
-      ref="editor"
+      ref="editorComponent"
       editorId="collaboration-realtime"
-      :wheelEnabled="false"
-      :syncConfig="syncConfig"
       theme="vue-theme"
       :themes="[customVueTheme]"
+      :syncConfig="syncConfig"
       :loginConfig="undefined"
+      :wheelEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"
