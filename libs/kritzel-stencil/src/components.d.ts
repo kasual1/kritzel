@@ -21,7 +21,7 @@ import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
 import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
-import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
+import { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
 import { LoginEvent } from "./events/login.event";
 import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
@@ -60,7 +60,7 @@ export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
 export { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
-export { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
+export { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
 export { LoginEvent } from "./events/login.event";
 export { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
@@ -1742,7 +1742,7 @@ declare global {
         "objectsRemoved": ObjectsRemovedEvent;
         "objectsUpdated": ObjectsUpdatedEvent;
         "undoStateChange": KritzelUndoState;
-        "objectsInViewportChange": KritzelBaseObject<Element>[];
+        "objectsInViewportChange": ObjectsInViewportChangeEvent;
         "viewportChange": KritzelViewportState;
         "awarenessChange": Map<number, Record<string, any>>;
     }
@@ -2718,7 +2718,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).
          */
-        "onObjectsInViewportChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject<Element>[]>) => void;
+        "onObjectsInViewportChange"?: (event: KritzelEngineCustomEvent<ObjectsInViewportChangeEvent>) => void;
         /**
           * Emitted when one or more objects are removed from the canvas.
          */

@@ -11,6 +11,7 @@ import { defineCustomElement as defineKritzelButton } from '../../kritzel-stenci
 import { defineCustomElement as defineKritzelCurrentUserDialog } from '../../kritzel-stencil/dist/components/kritzel-current-user-dialog.js';
 import { defineCustomElement as defineKritzelDialog } from '../../kritzel-stencil/dist/components/kritzel-dialog.js';
 import { defineCustomElement as defineKritzelEditor } from '../../kritzel-stencil/dist/components/kritzel-editor.js';
+import { defineCustomElement as defineKritzelEngine } from '../../kritzel-stencil/dist/components/kritzel-engine.js';
 import { defineCustomElement as defineKritzelExport } from '../../kritzel-stencil/dist/components/kritzel-export.js';
 import { defineCustomElement as defineKritzelInput } from '../../kritzel-stencil/dist/components/kritzel-input.js';
 import { defineCustomElement as defineKritzelLineEndings } from '../../kritzel-stencil/dist/components/kritzel-line-endings.js';
@@ -128,6 +129,61 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'logout',
   'login',
   'isPublicChange',
+  'awarenessChange'
+]);
+
+
+export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__*/ defineContainer<JSX.KritzelEngine>('kritzel-engine', defineKritzelEngine, [
+  'workspace',
+  'editorId',
+  'activeWorkspaceId',
+  'syncConfig',
+  'assetStorageConfig',
+  'user',
+  'globalContextMenuItems',
+  'objectContextMenuItems',
+  'scaleMax',
+  'scaleMin',
+  'cursorTarget',
+  'lockDrawingScale',
+  'isObjectDistanceFadingActive',
+  'theme',
+  'themes',
+  'viewportBoundaryLeft',
+  'viewportBoundaryRight',
+  'viewportBoundaryTop',
+  'viewportBoundaryBottom',
+  'debugInfo',
+  'wheelEnabled',
+  'isLoading',
+  'isEngineReady',
+  'activeToolChange',
+  'objectsSelectionChange',
+  'workspacesChange',
+  'activeWorkspaceChange',
+  'longpress',
+  'objectsChange',
+  'objectsAdded',
+  'objectsRemoved',
+  'objectsUpdated',
+  'undoStateChange',
+  'objectsInViewportChange',
+  'viewportChange',
+  'awarenessChange'
+], [
+  'isEngineReady',
+  'activeToolChange',
+  'objectsSelectionChange',
+  'workspacesChange',
+  'activeWorkspaceChange',
+  'longpress',
+  'objectsChange',
+  'objectsAdded',
+  'objectsRemoved',
+  'objectsUpdated',
+  'undoStateChange',
+  'objectsInViewportChange',
+  'viewportChange',
   'awarenessChange'
 ]);
 

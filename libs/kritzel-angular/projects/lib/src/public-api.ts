@@ -50,4 +50,5 @@ export type {
     ObjectsAddedEvent,
     ObjectsRemovedEvent,
     ObjectsUpdatedEvent,
+    ObjectsInViewportChangeEvent,
 } from 'kritzel-stencil';
