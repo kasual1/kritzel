@@ -18,6 +18,7 @@ Before making API calls, you must wait for the editor to fully initialize. The `
 
 ```ts
 import { Component, ViewChild, ElementRef } from '@angular/core';
+import { EditorIsReadyEvent } from 'kritzel-angular';
 
 @Component({
   selector: 'app-root',
@@ -31,15 +32,15 @@ export class AppComponent {
   }
 
   onReady(event: Event) {
-    const detail = (event as CustomEvent<HTMLKritzelEditorElement>).detail;
-    console.log('Editor is fully initialized and ready!', detail);
+    const detail = (event as CustomEvent<EditorIsReadyEvent>).detail;
+    console.log('Editor is fully initialized and ready!', detail.activeWorkspace);
   }
 }
 ```
 
 ## Changing Tools Programmatically
 
-The editor supports several built-in tools (e.g., `brush`, `eraser`, `select`, `pan`). You can programmatically switch between them using the `changeActiveToolByName` method. All editor mutations are asynchronous.
+The default editor toolbar registers these built-in tools: `selection`, `brush`, `eraser`, `line`, `shape`, `text`, and `image`. You can programmatically switch between them using the `changeActiveToolByName` method — the name must match the tool's registered name (the `name` of the corresponding `controls` entry when you customize the toolbar). All editor mutations are asynchronous.
 
 ```ts
 async setBrushTool() {
@@ -48,9 +49,9 @@ async setBrushTool() {
   }
 }
 
-async setSelectTool() {
+async setSelectionTool() {
   if (this.editor) {
-    await this.editor.changeActiveToolByName('select');
+    await this.editor.changeActiveToolByName('selection');
   }
 }
 ```
@@ -68,12 +69,12 @@ async addText() {
   if (!this.editor) return;
 
   const text = new KritzelText({
-    value: "Programmatic text!",
+    text: "Programmatic text!",
     translateX: 0,
     translateY: 0,
     fontSize: 24,
     fontFamily: "Arial",
-    fontColor: "#ff0000"
+    fontColor: { light: "#ff0000", dark: "#ff6666" }
   });
 
   await this.editor.addObject(text);
@@ -111,14 +112,16 @@ Bind to Angular events on the custom element `<kritzel-editor>` to stay updated 
 ```
 
 ```ts
+import { KritzelBaseObject, KritzelViewportState } from 'kritzel-angular';
+
 onObjectsChange(event: Event) {
-  const detail = (event as CustomEvent).detail;
-  console.log("Canvas objects updated:", detail.objects.length);
+  const objects = (event as CustomEvent<KritzelBaseObject[]>).detail;
+  console.log("Canvas objects updated:", objects.length);
 }
 
 onViewportChange(event: Event) {
-  const detail = (event as CustomEvent).detail;
-  console.log("Viewport updated:", detail);
+  const viewport = (event as CustomEvent<KritzelViewportState>).detail;
+  console.log("Viewport updated:", viewport);
 }
 ```
 

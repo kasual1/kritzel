@@ -21,6 +21,7 @@ export * from './classes/objects/line.class';
 export * from './classes/objects/group.class';
 export * from './classes/objects/shape.class';
 
+export * from './classes/tools/base-tool.class';
 export * from './classes/tools/brush-tool.class';
 export * from './classes/tools/line-tool.class';
 export * from './classes/tools/eraser-tool.class';
@@ -62,6 +63,12 @@ export * from './interfaces/viewport-state.interface';
 export * from './interfaces/user.interface';
 export * from './interfaces/theme.interface';
 export * from './interfaces/shortcut.interface';
+export * from './interfaces/undo-state.interface';
+export * from './interfaces/share.interface';
+export * from './interfaces/engine-state.interface';
+export * from './interfaces/debug-info.interface';
+export * from './interfaces/bounding-box.interface';
+export * from './interfaces/polygon.interface';
 
 export * from './configs/default-brush-tool.config';
 export * from './configs/default-text-tool.config';

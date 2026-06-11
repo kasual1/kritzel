@@ -10,6 +10,7 @@ export {
     KritzelLine,
     KritzelShape,
     KritzelGroup,
+    KritzelBaseTool,
     KritzelBrushTool,
     KritzelTextTool,
     KritzelLineTool,
@@ -53,4 +54,9 @@ export type {
     ObjectsRemovedEvent,
     ObjectsUpdatedEvent,
     ObjectsInViewportChangeEvent,
+    KritzelUndoState,
+    IKritzelIsPublicChangedEvent,
+    KritzelEngineState,
+    KritzelDebugInfo,
+    IKritzelUser,
 } from 'kritzel-stencil';

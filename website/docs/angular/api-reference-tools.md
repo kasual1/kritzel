@@ -62,20 +62,20 @@ Deserializes a plain object into this tool instance, restoring state from storag
 
 Kritzel bundles several native tools that inherit from `KritzelBaseTool`:
 
-- **`SelectionTool`**: Base tool for selecting, moving, resizing, and transforming objects.
-- **`BrushTool`**: Draws freehand vector curves.
-- **`LineTool`**: Draws straight connecting lines.
-- **`ShapeTool`**: Draws geometric shapes like rectangles and ellipses.
-- **`TextTool`**: Places and edits rich text structures.
-- **`EraserTool`**: Computes intersections directly to erase portions of strokes or whole objects.
-- **`ImageTool`**: Places and transforms visual media frames.
+- **`KritzelSelectionTool`**: Base tool for selecting, moving, resizing, and transforming objects.
+- **`KritzelBrushTool`**: Draws freehand vector curves.
+- **`KritzelLineTool`**: Draws straight connecting lines.
+- **`KritzelShapeTool`**: Draws geometric shapes like rectangles and ellipses.
+- **`KritzelTextTool`**: Places and edits rich text structures.
+- **`KritzelEraserTool`**: Computes intersections directly to erase portions of strokes or whole objects.
+- **`KritzelImageTool`**: Places and transforms visual media frames.
 
 ### Registering and Enabling a Tool
 
 To inject a custom built tool, utilize the `registerTool()` method on the editor or engine:
 
 ```ts
-import { KritzelBaseTool } from 'kritzel-stencil';
+import { KritzelBaseTool } from 'kritzel-angular';
 
 export class MyCustomTool extends KritzelBaseTool {
   name = 'my-custom-tool';
@@ -86,6 +86,8 @@ export class MyCustomTool extends KritzelBaseTool {
 }
 
 // In your application logic:
-await editor.registerTool('my-custom-tool', MyCustomTool, {});
-await editor.changeActiveTool('my-custom-tool');
+const tool = await editor.registerTool('my-custom-tool', MyCustomTool, {});
+await editor.changeActiveTool(tool);
+// or, equivalently, by its registered name:
+await editor.changeActiveToolByName('my-custom-tool');
 ```
