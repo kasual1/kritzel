@@ -86,6 +86,24 @@ Every `<KritzelEditor>` in a React demo page should include:
 | `theme="react-theme"` | Applies framework theme |
 | `themes={[customReactTheme]}` | Provides theme definition |
 
+## Editor / Engine Ref Access
+
+**In React the native element is available directly via `useRef` \u2014 no helper or composable is needed.** Type the ref as `HTMLKritzelEditorElement` (or `HTMLKritzelEngineElement`) and pass it to the component's `ref` prop:
+
+```tsx
+import { useRef } from 'react';
+import { KritzelEditor, type HTMLKritzelEditorElement } from 'kritzel-react';
+
+const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+
+// ...
+<KritzelEditor ref={editorRef} ... />
+```
+
+`editorRef.current` resolves to the real `HTMLKritzelEditorElement`, so `editorRef.current?.addObject(...)` works as-is.
+
+> Contrast with Vue: Vue requires the `getEditorRef` / `getEngineRef` composables from `kritzel-vue` because `<KritzelEditor>`/`<KritzelEngine>` template refs point at the component instance, not the element. React (and Angular) resolve the native element directly.
+
 ## Seeding Objects
 
 When a demo needs initial canvas content, use a shared helper (`createSeedObjects`) local to the framework demo app and seed during readiness handling.
