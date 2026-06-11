@@ -80,6 +80,11 @@ Apply these rules whenever docs include `<LiveDemo>` (especially during Angular 
 - Angular remains source-of-truth by default.
 - When a task explicitly requests React/Vue updates, perform full translation plus demo wiring checks, not markdown-only edits.
 
+6. Account for framework-specific editor/engine ref access.
+- Vue demos must resolve the editor/engine via the `getEditorRef` / `getEngineRef` composables from `kritzel-vue` (a Vue template ref points at the component instance, not the native element).
+- Angular and React resolve the native `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement` directly (Angular `viewChild`/`ElementRef`, React `useRef`) — no composable needed.
+- See `patterns/vue-demo-pages.md` ("Editor / Engine Ref Access") for the required Vue usage.
+
 ## Workflow
 
 1. Identify which category the page belongs to.
