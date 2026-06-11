@@ -7,7 +7,7 @@ import {
 import { customVueTheme } from '../../../const/custom-vue-theme'
 import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 
 const globalItems: ContextMenuItem[] = [
   {
@@ -77,7 +77,7 @@ async function onReady() {
 <template>
   <div :style="hostStyle">
     <KritzelEditor 
-    ref="editorComponent"
+    ref="editor"
     editorId="custom-context-menu-clipboard-actions"
     theme="vue-theme"
     :themes="[customVueTheme]"

@@ -15,7 +15,7 @@ import {
 } from '../shared/concept-shared'
 import { ref } from 'vue';
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const results = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
 const totalCount = ref(0)
 
@@ -55,7 +55,7 @@ async function onReady() {
     </div>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
       <KritzelEditor
-        ref="editorComponent"
+        ref="editor"
         editorId="objects-query"
         theme="vue-theme"
         :themes="[customVueTheme]"

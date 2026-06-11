@@ -15,7 +15,7 @@ import {
   toolbarStyle,
 } from '../shared/concept-shared'
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 
 const syncConfig: KritzelSyncConfig = {
   providers: [BroadcastSyncProvider],
@@ -35,7 +35,7 @@ async function onReady() {
       <span :style="{ fontSize: '12px', color: accentDark }">BroadcastChannel enabled</span>
     </div>
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="collaboration-local"
       theme="vue-theme"
       :themes="[customVueTheme]"

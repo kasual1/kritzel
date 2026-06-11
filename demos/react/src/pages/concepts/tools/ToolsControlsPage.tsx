@@ -4,7 +4,7 @@ import {
   KritzelEditor,
   KritzelSelectionTool,
   KritzelTextTool,
-  type HTMLKritzelEditorElement,
+  HTMLKritzelEditorElement,
   type KritzelToolbarControl,
 } from "kritzel-react";
 import { customReactTheme } from "../../../const/custom-react-theme";

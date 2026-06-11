@@ -21,7 +21,7 @@ const themedDark: KritzelTheme = {
   name: 'vue-theme-dark',
 }
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const activeName = ref('vue-theme')
 
 async function onReady() {
@@ -38,7 +38,7 @@ async function onReady() {
       <button :style="buttonStyle(activeName === 'vue-theme-dark')" @click="activeName = 'vue-theme-dark'">Dark</button>
     </div>
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="theming-apply"
       :theme="activeName"
       :themes="[customVueTheme, themedDark]"

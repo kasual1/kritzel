@@ -18,7 +18,7 @@ import {
 } from '../shared/concept-shared'
 import { ref } from 'vue';
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const objects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
 
 async function refreshObjects() {
@@ -110,7 +110,7 @@ async function onReady() {
       <span :style="{ marginLeft: 'auto', fontSize: '13px' }">Objects: {{ objects.length }}</span>
     </div>
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="objects-add-remove"
       theme="vue-theme"
       :themes="[customVueTheme]"

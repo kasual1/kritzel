@@ -16,7 +16,7 @@ import {
   toolbarStyle,
 } from '../shared/concept-shared'
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 
 const syncConfig: KritzelSyncConfig = {
   providers: [
@@ -39,7 +39,7 @@ async function onReady() {
       <span :style="{ fontSize: '12px', color: accentDark }">Configured for Hocuspocus server</span>
     </div>
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="collaboration-realtime"
       theme="vue-theme"
       :themes="[customVueTheme]"

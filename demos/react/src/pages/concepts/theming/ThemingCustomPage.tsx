@@ -2,7 +2,7 @@ import { useRef } from "react";
 import {
   KritzelEditor,
   lightTheme,
-  type HTMLKritzelEditorElement,
+  HTMLKritzelEditorElement,
   type KritzelTheme,
 } from "kritzel-react";
 import { seedEditor } from "../shared/concept-shared";

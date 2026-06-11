@@ -4,7 +4,7 @@ import {
   KritzelEditor,
   KritzelSelectionTool,
   KritzelTextTool,
-  type HTMLKritzelEditorElement,
+  HTMLKritzelEditorElement,
   type KritzelBrushToolConfig,
   type KritzelToolbarControl,
 } from "kritzel-react";

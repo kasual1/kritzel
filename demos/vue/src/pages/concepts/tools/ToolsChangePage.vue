@@ -24,7 +24,7 @@ const tools: Array<{ name: ToolName; label: string }> = [
   { name: 'text', label: 'Text' },
 ]
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const activeTool = ref<ToolName>('select')
 
 async function setTool(name: ToolName) {
@@ -52,7 +52,7 @@ async function onReady() {
       </button>
     </div>
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="tools-change"
       theme="vue-theme"
       :themes="[customVueTheme]"

@@ -10,6 +10,9 @@
 
 export type * from './components';
 
+export type HTMLKritzelEditorElement = HTMLElementTagNameMap['kritzel-editor'];
+export type HTMLKritzelEngineElement = HTMLElementTagNameMap['kritzel-engine'];
+
 export * from './classes/objects/base-object.class';
 export * from './classes/objects/text.class';
 export * from './classes/objects/path.class';
