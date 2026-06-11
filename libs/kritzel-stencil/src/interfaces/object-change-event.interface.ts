@@ -22,3 +22,11 @@ export interface ObjectsRemovedEvent {
 export interface ObjectsUpdatedEvent {
     objects: { object: KritzelBaseObject; changedProperties: string[] }[];
 }
+
+/**
+ * Payload emitted when the set of objects visible in the current viewport changes
+ * (e.g., after a pan or zoom).
+ * Kept as a named alias so wrapper proxy generators don't try to import
+ * the DOM global `Element` from `kritzel-stencil` (which causes TS2749).
+ */
+export type ObjectsInViewportChangeEvent = KritzelBaseObject<Element>[];

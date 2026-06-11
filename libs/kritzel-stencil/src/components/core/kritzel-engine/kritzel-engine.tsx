@@ -42,7 +42,7 @@ import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelViewportState } from '../../../interfaces/viewport-state.interface';
 import { ObjectHelper } from '../../../helpers/object.helper';
-import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from '../../../interfaces/object-change-event.interface';
+import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInViewportChangeEvent } from '../../../interfaces/object-change-event.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
 
 @Component({
@@ -302,7 +302,7 @@ export class KritzelEngine {
   @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
 
   /** Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom). */
-  @Event() objectsInViewportChange!: EventEmitter<KritzelBaseObject<Element>[]>;
+  @Event() objectsInViewportChange!: EventEmitter<ObjectsInViewportChangeEvent>;
 
   /** Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize). */
   @Event() viewportChange!: EventEmitter<KritzelViewportState>;
