@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import {
   KritzelBrushTool,
+  KritzelEngine,
   KritzelEraserTool,
   KritzelSelectionTool,
 } from "kritzel-react";
@@ -42,7 +43,7 @@ export function ComponentsEnginePage() {
         <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.undo())}>Undo</button>
         <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.redo())}>Redo</button>
       </div>
-      <kritzel-engine
+      <KritzelEngine
         ref={engineRef}
         editorId="components-engine"
         wheelEnabled={false}
