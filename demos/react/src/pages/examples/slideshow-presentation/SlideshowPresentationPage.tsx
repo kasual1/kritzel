@@ -24,8 +24,9 @@ const hostStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   height: "100%",
-  fontFamily: "Roboto, sans-serif",
-  backgroundColor: "#fafafa",
+  fontFamily: "Inter, Segoe UI, sans-serif",
+  background:
+    "linear-gradient(180deg, rgba(245, 250, 252, 1) 0%, rgba(235, 246, 250, 1) 100%)",
 };
 
 const headerStyle: CSSProperties = {
@@ -34,8 +35,8 @@ const headerStyle: CSSProperties = {
   alignItems: "center",
   padding: "12px 24px",
   background: "#ffffff",
-  borderBottom: "1px solid #ebebeb",
-  boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+  borderBottom: "1px solid #d8e8ee",
+  boxShadow: "0 1px 3px rgba(8, 126, 164, 0.06)",
 };
 
 const badgeStyle: CSSProperties = {
@@ -54,21 +55,21 @@ const titleStyle: CSSProperties = {
   margin: 0,
   fontSize: "20px",
   fontWeight: 600,
-  color: "#333333",
+  color: "#16313c",
 };
 
 const navButtonsStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: "12px",
-  background: "#f0f0f0",
+  background: "rgba(8, 126, 164, 0.08)",
   padding: "4px",
   borderRadius: "8px",
 };
 
 const slideIndicatorStyle: CSSProperties = {
   fontSize: "13px",
-  color: "#555555",
+  color: "#416173",
   minWidth: "90px",
   textAlign: "center",
 };
@@ -90,14 +91,14 @@ function navButtonStyle(disabled: boolean): CSSProperties {
     alignItems: "center",
     gap: "6px",
     padding: "6px 16px",
-    border: "none",
+    border: "1px solid #cfe0e7",
     borderRadius: "6px",
     background: "#ffffff",
     cursor: disabled ? "not-allowed" : "pointer",
     fontSize: "13px",
     fontWeight: 500,
-    color: "#333333",
-    boxShadow: disabled ? "none" : "0 1px 2px rgba(0, 0, 0, 0.05)",
+    color: disabled ? "#8aa0aa" : "#087ea4",
+    boxShadow: disabled ? "none" : "0 1px 2px rgba(8, 126, 164, 0.08)",
     opacity: disabled ? 0.5 : 1,
     transition: "all 0.2s ease",
   };

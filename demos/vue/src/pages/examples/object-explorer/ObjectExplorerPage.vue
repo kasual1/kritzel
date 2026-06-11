@@ -554,9 +554,10 @@ async function seedObjects() {
   display: flex;
   height: 100%;
   min-height: 0;
-  font-family: Roboto, sans-serif;
-  background-color: #fafafa;
-  color: #333333;
+  font-family: Inter, Segoe UI, sans-serif;
+  background:
+    linear-gradient(180deg, rgba(244, 251, 247, 1) 0%, rgba(233, 246, 239, 1) 100%);
+  color: #214f3d;
 }
 
 .editor-container {
@@ -567,7 +568,7 @@ async function seedObjects() {
 aside {
   width: 340px;
   overflow-y: auto;
-  border-left: 1px solid #ebebeb;
+  border-left: 1px solid #d4ece0;
   background-color: #ffffff;
   padding: 12px;
   font-size: 13px;
@@ -577,7 +578,7 @@ aside {
 }
 
 .panel-header {
-  border-bottom: 1px solid #ebebeb;
+  border-bottom: 1px solid #d4ece0;
   padding-bottom: 10px;
 }
 
@@ -586,8 +587,8 @@ aside {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  background-color: rgba(221, 0, 48, 0.1);
-  color: #dd0031;
+  background-color: rgba(66, 184, 131, 0.1);
+  color: #42b883;
   padding: 2px 8px;
   border-radius: 99px;
   letter-spacing: 0.5px;
@@ -596,7 +597,7 @@ aside {
 
 .panel-title {
   margin: 0;
-  color: #dd0031;
+  color: #42b883;
   font-size: 18px;
   line-height: 1.2;
 }
@@ -604,13 +605,13 @@ aside {
 h4 {
   margin: 0 0 8px 0;
   font-size: 12px;
-  color: #777777;
+  color: #587467;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .section {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e4f1ea;
   padding-bottom: 10px;
 }
 
@@ -621,20 +622,20 @@ h4 {
 
 button {
   background: #ffffff;
-  border: none;
+  border: 1px solid #c9e6d8;
   border-radius: 6px;
   padding: 6px 10px;
   cursor: pointer;
   font-size: 12px;
   font-family: inherit;
-  color: #333333;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: #214f3d;
+  box-shadow: 0 1px 2px rgba(66, 184, 131, 0.06);
   transition: all 0.2s ease;
 }
 
 button:hover,
 button.active {
-  background: #dd0031;
+  background: #42b883;
   color: #ffffff;
 }
 
@@ -642,7 +643,7 @@ button.active {
   width: 100%;
   box-sizing: border-box;
   padding: 6px 8px;
-  border: 1px solid #ebebeb;
+  border: 1px solid #c9e6d8;
   border-radius: 4px;
   margin-bottom: 10px;
   font-size: 12px;
@@ -650,12 +651,12 @@ button.active {
 
 .search-input:focus {
   outline: none;
-  border-color: #dd0031;
+  border-color: #42b883;
 }
 
 .filter-header {
   font-size: 11px;
-  color: #999999;
+  color: #6d8579;
   margin: 6px 0 4px 0;
   text-transform: uppercase;
   letter-spacing: 0.2px;
@@ -673,23 +674,24 @@ button.active {
   font-size: 11px;
   border-radius: 12px;
   box-shadow: none;
-  border: 1px solid #ebebeb;
-  background: #f0f0f0;
+  border: 1px solid #d4ece0;
+  background: rgba(66, 184, 131, 0.06);
+  color: #42b883;
 }
 
 .tree-container {
   max-height: 320px;
   overflow-y: auto;
-  border: 1px solid #ebebeb;
+  border: 1px solid #d4ece0;
   border-radius: 4px;
-  background: #fafafa;
+  background: rgba(66, 184, 131, 0.02);
   padding: 4px;
 }
 
 .empty-msg {
   padding: 12px;
   text-align: center;
-  color: #999999;
+  color: #6d8579;
 }
 
 .tree-node {
@@ -702,12 +704,12 @@ button.active {
 }
 
 .tree-node:hover {
-  background: #f0f0f0;
+  background: rgba(66, 184, 131, 0.06);
 }
 
 .tree-node.selected {
-  background: #ffebee;
-  border-left: 3px solid #dd0031;
+  background: rgba(66, 184, 131, 0.08);
+  border-left: 3px solid #42b883;
 }
 
 .tree-node.hidden-obj {
@@ -718,7 +720,7 @@ button.active {
   width: 16px;
   text-align: center;
   font-size: 10px;
-  color: #666666;
+  color: #587467;
   cursor: pointer;
   user-select: none;
   flex-shrink: 0;
@@ -742,7 +744,7 @@ button.active {
 }
 
 .node-id {
-  color: #999999;
+  color: #6d8579;
   font-size: 10px;
   flex-shrink: 0;
 }
@@ -765,20 +767,20 @@ button.active {
   padding: 2px 4px;
   border-radius: 3px;
   font-size: 10px;
-  color: #666666;
+  color: #587467;
   box-shadow: none;
 }
 
 .node-action.delete:hover {
-  background: #ffebee;
-  color: #dd0031;
+  background: rgba(66, 184, 131, 0.08);
+  color: #42b883;
 }
 
 .inspector {
-  background: #fafafa;
+  background: rgba(66, 184, 131, 0.02);
   padding: 10px;
   border-radius: 4px;
-  border: 1px solid #ebebeb;
+  border: 1px solid #d4ece0;
 }
 
 .inspector-field {
@@ -790,7 +792,7 @@ button.active {
 
 .inspector-field label {
   font-weight: 600;
-  color: #555555;
+  color: #587467;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.2px;
@@ -800,17 +802,17 @@ button.active {
 .inspector-field input[type='number'],
 .inspector-field input[type='color'] {
   padding: 4px 6px;
-  border: 1px solid #ddd;
+  border: 1px solid #c9e6d8;
   border-radius: 3px;
   font-size: 12px;
   font-family: inherit;
-  color: #333333;
+  color: #214f3d;
   background: #ffffff;
 }
 
 .inspector-field input:focus {
   outline: none;
-  border-color: #dd0031;
+  border-color: #42b883;
 }
 
 .inspector-field input[type='range'] {
@@ -820,8 +822,8 @@ button.active {
   height: 6px;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(90deg, #dd0031, #b30027);
-  accent-color: #dd0031;
+  background: linear-gradient(90deg, #42b883, #369a6e);
+  accent-color: #42b883;
   cursor: pointer;
 }
 
@@ -832,7 +834,7 @@ button.active {
   height: 14px;
   border-radius: 50%;
   border: 2px solid #ffffff;
-  background: #dd0031;
+  background: #42b883;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   transition: transform 0.15s ease;
 }
@@ -845,7 +847,7 @@ button.active {
   height: 6px;
   border: none;
   border-radius: 999px;
-  background: linear-gradient(90deg, #dd0031, #b30027);
+  background: linear-gradient(90deg, #42b883, #369a6e);
 }
 
 .inspector-field input[type='range']::-moz-range-thumb {
@@ -853,14 +855,14 @@ button.active {
   height: 14px;
   border-radius: 50%;
   border: 2px solid #ffffff;
-  background: #dd0031;
+  background: #42b883;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   cursor: pointer;
 }
 
 .input-disabled {
-  background: #eee;
-  color: #777;
+  background: #eef7f2;
+  color: #6d8579;
 }
 
 .coords-row {

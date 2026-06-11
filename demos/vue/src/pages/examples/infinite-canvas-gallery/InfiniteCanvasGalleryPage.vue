@@ -286,7 +286,10 @@ async function syncVisibleObjects(viewport: KritzelViewportState) {
   position: relative;
   height: 100%;
   width: 100%;
-  background: #f5f5f0;
-  font-family: Roboto, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(66, 184, 131, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(244, 251, 247, 1) 0%, rgba(233, 246, 239, 1) 100%);
+  font-family: Inter, Segoe UI, sans-serif;
+  color: #214f3d;
 }
 </style>

@@ -35,8 +35,9 @@ const hostStyle: CSSProperties = {
   display: "flex",
   height: "100%",
   width: "100%",
-  fontFamily: "Roboto, sans-serif",
-  background: "#fafafa",
+  fontFamily: "Inter, Segoe UI, sans-serif",
+  background:
+    "linear-gradient(180deg, rgba(245, 250, 252, 1) 0%, rgba(235, 246, 250, 1) 100%)",
 };
 
 const editorPaneStyle: CSSProperties = {
@@ -56,7 +57,7 @@ const placingToastStyle: CSSProperties = {
   top: "16px",
   left: "50%",
   transform: "translateX(-50%)",
-  background: "rgba(221, 0, 49, 0.95)",
+  background: "rgba(8, 126, 164, 0.96)",
   color: "white",
   padding: "8px 20px",
   borderRadius: "99px",
@@ -69,17 +70,17 @@ const placingToastStyle: CSSProperties = {
 
 const sidebarStyle: CSSProperties = {
   width: "320px",
-  borderLeft: "1px solid #ebebeb",
+  borderLeft: "1px solid #d8e8ee",
   background: "#ffffff",
   display: "flex",
   flexDirection: "column",
   height: "100%",
-  boxShadow: "-1px 0 3px rgba(0, 0, 0, 0.02)",
+  boxShadow: "-1px 0 3px rgba(8, 126, 164, 0.05)",
 };
 
 const sidebarHeaderStyle: CSSProperties = {
   padding: "16px",
-  borderBottom: "1px solid #ebebeb",
+  borderBottom: "1px solid #d8e8ee",
 };
 
 const badgeStyle: CSSProperties = {
@@ -87,8 +88,8 @@ const badgeStyle: CSSProperties = {
   fontSize: "11px",
   fontWeight: 700,
   textTransform: "uppercase",
-  backgroundColor: "rgba(221, 0, 48, 0.1)",
-  color: "#dd0031",
+  backgroundColor: "rgba(8, 126, 164, 0.1)",
+  color: "#087ea4",
   padding: "2px 8px",
   borderRadius: "99px",
   letterSpacing: "0.5px",
@@ -99,18 +100,18 @@ const mapControlsStyle: CSSProperties = {
   display: "flex",
   gap: "8px",
   padding: "12px 16px",
-  background: "#fcfcfc",
-  borderBottom: "1px solid #ebebeb",
+  background: "rgba(8, 126, 164, 0.03)",
+  borderBottom: "1px solid #d8e8ee",
 };
 
 function actionBtnStyle(active: boolean): CSSProperties {
   return {
     flex: 1,
     padding: "8px 12px",
-    border: "1px solid #dd0031",
+    border: "1px solid #087ea4",
     borderRadius: "6px",
-    background: active ? "#dd0031" : "#ffffff",
-    color: active ? "#ffffff" : "#dd0031",
+    background: active ? "#087ea4" : "#ffffff",
+    color: active ? "#ffffff" : "#087ea4",
     fontSize: "13px",
     fontWeight: 600,
     cursor: "pointer",
@@ -123,10 +124,10 @@ function actionBtnStyle(active: boolean): CSSProperties {
 
 const resetBtnStyle: CSSProperties = {
   padding: "8px 12px",
-  border: "1px solid #ccc",
+  border: "1px solid #cfe0e7",
   borderRadius: "6px",
   background: "#ffffff",
-  color: "#333333",
+  color: "#065d7a",
   fontSize: "13px",
   fontWeight: 500,
   cursor: "pointer",
@@ -145,14 +146,14 @@ const defectsListStyle: CSSProperties = {
 const emptyListStyle: CSSProperties = {
   padding: "32px 16px",
   textAlign: "center",
-  color: "#94a3b8",
+  color: "#5b7180",
   fontSize: "13px",
-  border: "1px dashed #e2e8f0",
+  border: "1px dashed #cfe0e7",
   borderRadius: "8px",
 };
 
 const defectCardStyle: CSSProperties = {
-  border: "1px solid #ebebeb",
+  border: "1px solid #d8e8ee",
   borderRadius: "8px",
   padding: "10px 12px",
   cursor: "pointer",
@@ -161,7 +162,7 @@ const defectCardStyle: CSSProperties = {
 };
 
 const statusColors: Record<DefectStatus, string> = {
-  Outstanding: "#dd0031",
+  Outstanding: "#087ea4",
   "In Progress": "#f59e0b",
   Resolved: "#10b981",
 };

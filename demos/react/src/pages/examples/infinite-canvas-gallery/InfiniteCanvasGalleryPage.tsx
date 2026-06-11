@@ -64,8 +64,10 @@ const hostStyle: CSSProperties = {
   display: "flex",
   flexDirection: "column",
   height: "100%",
-  fontFamily: "Roboto, sans-serif",
-  background: "#f5f5f0",
+  fontFamily: "Inter, Segoe UI, sans-serif",
+  background:
+    "radial-gradient(circle at top left, rgba(8, 126, 164, 0.12), transparent 32%), linear-gradient(180deg, rgba(245, 250, 252, 1) 0%, rgba(235, 246, 250, 1) 100%)",
+  color: "#16313c",
 };
 
 const canvasWrapperStyle: CSSProperties = {
@@ -299,7 +301,7 @@ export function InfiniteCanvasGalleryPage() {
           onIsReady={() => {
             void onReady();
           }}
-          onViewportChange={(event) => {
+          onViewportChange={(event: CustomEvent<KritzelViewportState>) => {
             onViewportChange((event as CustomEvent<KritzelViewportState>).detail);
           }}
           style={editorStyle}
