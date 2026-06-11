@@ -30,6 +30,7 @@ import { ViewportCenterPage } from "./pages/concepts/viewport/ViewportCenterPage
 import { ViewportCoordinatesPage } from "./pages/concepts/viewport/ViewportCoordinatesPage";
 import { WorkspacesSwitchPage } from "./pages/concepts/workspaces/WorkspacesSwitchPage";
 import { WorkspacesCrudPage } from "./pages/concepts/workspaces/WorkspacesCrudPage";
+import { QuickstartPage } from "./pages/getting-started/QuickstartPage";
 import { ObjectExplorerPage } from "./pages/examples/object-explorer/ObjectExplorerPage";
 import { BlueprintDefectMapperPage } from "./pages/examples/blueprint-defect-mapper/BlueprintDefectMapperPage";
 import { SlideshowPresentationPage } from "./pages/examples/slideshow-presentation/SlideshowPresentationPage";
@@ -71,6 +72,7 @@ function App() {
         <Route path="/concepts/viewport-coordinates" element={<ViewportCoordinatesPage />} />
         <Route path="/concepts/workspaces-switch" element={<WorkspacesSwitchPage />} />
         <Route path="/concepts/workspaces-crud" element={<WorkspacesCrudPage />} />
+        <Route path="/getting-started" element={<QuickstartPage />} />
         <Route path="/examples/object-explorer" element={<ObjectExplorerPage />} />
         <Route path="/examples/blueprint-defect-mapper" element={<BlueprintDefectMapperPage />} />
         <Route path="/examples/slideshow-presentation" element={<SlideshowPresentationPage />} />
