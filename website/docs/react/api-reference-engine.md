@@ -6,7 +6,7 @@ title: "Engine API Reference | Kritzel for React"
 description: "Complete API reference for the headless Kritzel engine: rendering, viewport, pointer events, and workspace management."
 ---
 
-# API Reference — Engine
+# Engine
 
 The `<kritzel-engine>` is the low-level headless canvas primitive. It handles rendering, viewport management, pointer events, undo/redo, and workspace management with no built-in UI chrome.
 
