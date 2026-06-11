@@ -162,6 +162,8 @@ export class MyEngineDemoComponent {
 }
 ```
 
+> **Editor / engine ref access is direct in Angular** — a `viewChild`/`ElementRef` (or the `KritzelEditor` directive instance) resolves to the native `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement` out of the box, so `this.editor.addObject(...)` works without any helper. This differs from Vue, which requires the `getEditorRef` / `getEngineRef` composables from `kritzel-vue` to unwrap the component instance to the underlying element.
+
 ## Seeding Objects with `createSeedObjects()`
 
 When a demo needs pre-existing objects on the canvas (e.g., to demonstrate selection, viewport navigation, querying, grouping, or any feature that operates on objects), use the shared `createSeedObjects()` helper from `demos/angular/src/app/const/seed-objects.ts`. This ensures **visual consistency** across all demo pages — users see the same recognizable set of shapes, paths, and lines everywhere.

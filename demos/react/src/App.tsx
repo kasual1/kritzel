@@ -30,6 +30,11 @@ import { ViewportCenterPage } from "./pages/concepts/viewport/ViewportCenterPage
 import { ViewportCoordinatesPage } from "./pages/concepts/viewport/ViewportCoordinatesPage";
 import { WorkspacesSwitchPage } from "./pages/concepts/workspaces/WorkspacesSwitchPage";
 import { WorkspacesCrudPage } from "./pages/concepts/workspaces/WorkspacesCrudPage";
+import { ObjectExplorerPage } from "./pages/examples/object-explorer/ObjectExplorerPage";
+import { BlueprintDefectMapperPage } from "./pages/examples/blueprint-defect-mapper/BlueprintDefectMapperPage";
+import { SlideshowPresentationPage } from "./pages/examples/slideshow-presentation/SlideshowPresentationPage";
+import { InfiniteCanvasGalleryPage } from "./pages/examples/infinite-canvas-gallery/InfiniteCanvasGalleryPage";
+import { ImageAnnotationStudioPage } from "./pages/examples/image-annotation-studio/ImageAnnotationStudioPage";
 
 function App() {
   return (
@@ -66,6 +71,11 @@ function App() {
         <Route path="/concepts/viewport-coordinates" element={<ViewportCoordinatesPage />} />
         <Route path="/concepts/workspaces-switch" element={<WorkspacesSwitchPage />} />
         <Route path="/concepts/workspaces-crud" element={<WorkspacesCrudPage />} />
+        <Route path="/examples/object-explorer" element={<ObjectExplorerPage />} />
+        <Route path="/examples/blueprint-defect-mapper" element={<BlueprintDefectMapperPage />} />
+        <Route path="/examples/slideshow-presentation" element={<SlideshowPresentationPage />} />
+        <Route path="/examples/infinite-canvas-gallery" element={<InfiniteCanvasGalleryPage />} />
+        <Route path="/examples/image-annotation-studio" element={<ImageAnnotationStudioPage />} />
         <Route path="*" element={<Navigate to="/e2e/editor" replace />} />
       </Routes>
     </HashRouter>

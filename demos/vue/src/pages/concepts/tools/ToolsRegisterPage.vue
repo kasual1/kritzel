@@ -87,7 +87,7 @@ const controls: KritzelToolbarControl[] = [
   },
 ]
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 
 async function onReady() {
   if (!editor.value) {
@@ -102,7 +102,7 @@ async function onReady() {
 <template>
   <div :style="hostStyle">
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="tools-register"
       theme="vue-theme"
       :themes="[customVueTheme]"

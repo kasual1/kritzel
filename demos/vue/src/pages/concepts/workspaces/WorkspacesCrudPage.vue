@@ -17,7 +17,7 @@ import {
 } from '../shared/concept-shared'
 import { ref } from 'vue';
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 
 type WorkspaceItem = Awaited<ReturnType<HTMLKritzelEditorElement['getWorkspaces']>>[number]
 
@@ -116,7 +116,7 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
       </button>
     </div>
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="workspaces-crud"
       theme="vue-theme"
       :themes="[customVueTheme]"

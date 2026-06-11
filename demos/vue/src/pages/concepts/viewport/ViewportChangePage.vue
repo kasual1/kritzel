@@ -16,7 +16,7 @@ import {
 } from '../shared/concept-shared'
 import { ref } from 'vue';
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const viewport = ref<KritzelViewportState | null>(null)
 
 async function zoomIn() {
@@ -50,7 +50,7 @@ function onViewportChange(event: CustomEvent<KritzelViewportState>) {
       <button :style="buttonStyle(false)" @click="editor?.setViewport(100, 100, 0.5)">Set (100, 100, 0.5)</button>
     </div>
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="viewport-change"
       theme="vue-theme"
       :themes="[customVueTheme]"

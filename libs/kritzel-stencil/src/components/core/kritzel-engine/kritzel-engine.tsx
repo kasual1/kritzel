@@ -42,7 +42,7 @@ import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelViewportState } from '../../../interfaces/viewport-state.interface';
 import { ObjectHelper } from '../../../helpers/object.helper';
-import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from '../../../interfaces/object-change-event.interface';
+import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInViewportChangeEvent } from '../../../interfaces/object-change-event.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
 
 @Component({
@@ -143,7 +143,7 @@ export class KritzelEngine {
   }
 
   /** Context menu items shown when right-clicking the canvas background. */
-  @Prop() globalContextMenuItems!: ContextMenuItem[];
+  @Prop() globalContextMenuItems?: ContextMenuItem[];
   @Watch('globalContextMenuItems')
   onGlobalContextMenuItemsChange(newValue: ContextMenuItem[] | undefined) {
     if (this.contextMenuHandler) {
@@ -152,7 +152,7 @@ export class KritzelEngine {
   }
 
   /** Context menu items shown when right-clicking a selected object. */
-  @Prop() objectContextMenuItems!: ContextMenuItem[];
+  @Prop() objectContextMenuItems?: ContextMenuItem[];
   @Watch('objectContextMenuItems')
   onObjectContextMenuItemsChange(newValue: ContextMenuItem[] | undefined) {
     if (this.contextMenuHandler) {
@@ -250,7 +250,7 @@ export class KritzelEngine {
   }
 
   /** Debug info display options controlling which debug overlays are visible */
-  @Prop() debugInfo!: KritzelDebugInfo;
+  @Prop() debugInfo?: KritzelDebugInfo;
   @Watch('debugInfo')
   onDebugInfoChange(newValue: KritzelDebugInfo) {
     if (newValue) {
@@ -302,7 +302,7 @@ export class KritzelEngine {
   @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
 
   /** Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom). */
-  @Event() objectsInViewportChange!: EventEmitter<KritzelBaseObject<Element>[]>;
+  @Event() objectsInViewportChange!: EventEmitter<ObjectsInViewportChangeEvent>;
 
   /** Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize). */
   @Event() viewportChange!: EventEmitter<KritzelViewportState>;
@@ -1982,7 +1982,7 @@ export class KritzelEngine {
 
   async componentDidLoad() {
     setTimeout(async () => {
-      this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems, this.objectContextMenuItems);
+      this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems ?? [], this.objectContextMenuItems ?? []);
       this.keyHandler = new KritzelKeyHandler(this.core);
       this.viewport = new KritzelViewport(this.core, this.host);
       this._isViewportReady = true;

@@ -14,7 +14,7 @@ import { ref } from 'vue';
 
 type ObjectItem = Parameters<HTMLKritzelEditorElement['centerObjects']>[0][number]
 
-const editor = getEditorRef('editorComponent');
+const editor = getEditorRef('editor');
 const objects = ref<ObjectItem[]>([])
 
 async function onReady() {
@@ -44,7 +44,7 @@ async function centerOn(index: number) {
       <button :style="buttonStyle(false)" @click="editor?.backToContent()">Back to Content</button>
     </div>
     <KritzelEditor
-      ref="editorComponent"
+      ref="editor"
       editorId="viewport-center"
       theme="vue-theme"
       :themes="[customVueTheme]"

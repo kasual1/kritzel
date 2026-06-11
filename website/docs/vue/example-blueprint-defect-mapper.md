@@ -1,7 +1,7 @@
 ---
 sidebar_label: Blueprint Defect Mapper
 displayed_sidebar: tutorialSidebar
-title: "Interactive Blueprint & Defect Pin Mapper | Kritzel for Angular"
+title: "Interactive Blueprint & Defect Pin Mapper | Kritzel for Vue"
 description: "Incorporate static architectural blueprints and allow facility inspectors to register defect pins onto custom vector layouts."
 ---
 
@@ -13,17 +13,18 @@ This page walkthrough demonstrates how to build an interactive floor plan or blu
 
 ## Prerequisites
 
-Before diving into this walkthrough, complete the [Quick Start](./quick-start.md) guide to set up `<KritzelEditor>` in your Angular application.
+Before diving into this walkthrough, complete the [Quick Start](./quick-start.md) guide to set up `<KritzelEditor>` in your Vue application.
 
 ---
 
-## How Blueprint Mapping Works
+## Featured Concepts
 
-Building a spatial mapping dashboard in Kritzel involves three primary APIs:
+This example makes use of the following core concepts. Click on the links below to go into the details:
 
-1. **Static Scenery Seeding:** Background floor plan layout is constructed programmatically as a background image with `KritzelImage.fromUrl()` and added via `addObject()`. By configuring the object and setting its DOM `pointer-events` style attribute to `none`, it becomes an unselectable "scenery" element.
-2. **Screen-to-World Coordinate Conversion:** Click coordinates on the browser viewport are captured relative to the editor element and translated into absolute resolution-independent canvas world units with `screenToWorld()`.
-3. **Targeted Viewport Focus:** Highlighting a site defect in an external inspector panel pans and scales the viewport camera utilizing `setViewport(x, y, scale)`, steering camera optics directly over target coordinates without modifying underlying pin locations.
+- [Objects](/docs/vue/concept-objects) - seeding background images and creating shape objects as defect markers
+- [Viewport](/docs/vue/concept-viewport) - converting screen coordinates to world coordinates with `screenToWorld()` and focusing the camera with `setViewport()`
+- [Tools](/docs/vue/concept-tools) - switching to the selection tool programmatically during pin placement mode
+- [Components](/docs/vue/concept-components) - hiding built-in controls and driving all interactions from a custom sidebar
 
 ---
 
@@ -38,9 +39,9 @@ Instead, to center the camera viewport on a static image background or a station
 :::
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
   demoPath="/examples/blueprint-defect-mapper"
-  repoFiles={['src/app/examples/blueprint-defect-mapper/blueprint-defect-mapper.component.ts']}
+  repoFiles={['src/pages/examples/blueprint-defect-mapper/BlueprintDefectMapperPage.vue']}
 />
 
 The background scenery is registered directly in `onReady()` when the canvas activates. Because we want user-drawn drawings or shapes to sit on top of the architectural drawing, the image scenery item is loaded and pushed first. The custom `pointer-events: none` property applied to the blueprint layer allows users to select manually added pins or draw arrows over the blueprint scenery without dragging the floorplan background by mistake.

@@ -3,6 +3,7 @@
 import {
   KritzelEditor,
   darkTheme,
+  getEditorRef,
   type KritzelTheme,
 } from 'kritzel-vue'
 import { customVueTheme } from '../../../const/custom-vue-theme'
@@ -20,7 +21,7 @@ const themedDark: KritzelTheme = {
   name: 'vue-theme-dark',
 }
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editor');
 const activeName = ref('vue-theme')
 
 async function onReady() {

@@ -47,11 +47,13 @@ Reasons:
 import {
   InMemorySyncProvider,
   KritzelEditor,
+  getEditorRef,
   type KritzelSyncConfig,
 } from 'kritzel-vue'
 import { customVueTheme } from '../../const/custom-vue-theme'
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+// Resolve the native editor element from the template ref named "editor".
+const editor = getEditorRef('editor')
 
 const syncConfig: KritzelSyncConfig = {
   providers: [InMemorySyncProvider],
@@ -88,7 +90,7 @@ Every `<KritzelEditor>` in a Vue demo page should include:
 
 | Prop | Purpose |
 |------|---------|
-| `ref="editor"` | Template ref for programmatic access |
+| `ref=\"editor\"` | Template ref name passed to `getEditorRef('editor')` for programmatic access |
 | `editorId="<unique-id>"` | Prevents state collision across demos |
 | `:wheelEnabled="false"` | Prevents scroll-jacking in docs iframes |
 | `:syncConfig="..."` | Explicit sync provider behavior |
@@ -98,24 +100,40 @@ Every `<KritzelEditor>` in a Vue demo page should include:
 | `theme="vue-theme"` | Applies framework theme |
 | `:themes="[customVueTheme]"` | Provides theme definition |
 
-## Editor Ref Access
+## Editor / Engine Ref Access (Vue-specific)
 
-To call editor methods (e.g. `addObject`, `getAllObjects`, `changeActiveToolByName`), use a template ref typed as `HTMLKritzelEditorElement`:
+**In Vue you must resolve the native element through the `getEditorRef` / `getEngineRef` composables exported from `kritzel-vue`.** Do not type a raw `ref<HTMLKritzelEditorElement>` and expect it to point at the element.
+
+Unlike Angular and React — where a template/element ref resolves directly to the native `HTMLKritzelEditorElement` (or `HTMLKritzelEngineElement`) out of the box — `<KritzelEditor>` and `<KritzelEngine>` are Vue components. A Vue template ref points at the **component instance proxy**, not the underlying custom element, so calling editor/engine methods on it directly is unreliable.
+
+The composables unwrap the component instance's `$el` to the real custom element:
 
 ```ts
+import { KritzelEditor, getEditorRef } from 'kritzel-vue'
 
-import { KritzelEditor } from 'kritzel-vue'
-
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+// Pass the template ref NAME (string) — it must match `ref="..."` in the template.
+const editor = getEditorRef('editor')
 ```
 
-Then bind it in the template:
+Then bind the matching ref in the template:
 
 ```html
 <KritzelEditor ref="editor" ... @isReady="onReady" />
 ```
 
-This works because the Stencil Vue wrapper (created via `defineContainer`) renders the native `kritzel-editor` custom element internally. Vue's component instance proxy forwards property and method access to the underlying element, so `editor.value?.addObject(...)` behaves as if you held the raw `HTMLKritzelEditorElement`.
+Now `editor.value?.addObject(...)` operates on the real `HTMLKritzelEditorElement`.
+
+For the engine, use `getEngineRef` the same way:
+
+```ts
+import { getEngineRef } from 'kritzel-vue'
+
+const engine = getEngineRef('engine') // matches `ref="engine"` in the template
+```
+
+> Both composables return a `computed` ref that resolves to the native element (or `null` until mounted). Always guard with optional chaining (`editor.value?.`).
+>
+> Reminder: this composable indirection is **Vue-only**. Angular (`viewChild`/`ElementRef`) and React (`useRef<HTMLKritzelEditorElement>`) resolve the native element directly without any helper.
 
 ## Seeding Objects
 

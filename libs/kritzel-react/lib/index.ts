@@ -32,6 +32,8 @@ export {
 } from 'kritzel-stencil';
 
 export type {
+    HTMLKritzelEditorElement,
+    HTMLKritzelEngineElement,
     KritzelToolbarControl,
     KritzelBrushToolConfig,
     KritzelLineToolConfig,
@@ -49,4 +51,5 @@ export type {
     ObjectsAddedEvent,
     ObjectsRemovedEvent,
     ObjectsUpdatedEvent,
+    ObjectsInViewportChangeEvent,
 } from 'kritzel-stencil';

@@ -2,6 +2,7 @@
 
 import {
   BroadcastSyncProvider,
+  getEditorRef,
   KritzelEditor,
   type KritzelSyncConfig,
 } from 'kritzel-vue'
@@ -13,9 +14,8 @@ import {
   seedEditor,
   toolbarStyle,
 } from '../shared/concept-shared'
-import { ref } from 'vue'
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editor');
 
 const syncConfig: KritzelSyncConfig = {
   providers: [BroadcastSyncProvider],

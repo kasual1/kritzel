@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import {
+  getEditorRef,
   IndexedDBSyncProvider,
   KritzelEditor,
   type KritzelSyncConfig,
@@ -13,9 +14,8 @@ import {
   seedEditor,
   toolbarStyle,
 } from '../shared/concept-shared'
-import { ref } from 'vue'
 
-const editor = ref<HTMLKritzelEditorElement | null>(null)
+const editor = getEditorRef('editor');
 
 const syncConfig: KritzelSyncConfig = {
   providers: [IndexedDBSyncProvider],

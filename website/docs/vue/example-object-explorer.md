@@ -1,7 +1,7 @@
 ---
 sidebar_label: Object Explorer
 displayed_sidebar: tutorialSidebar
-title: "Object Explorer Example | Kritzel for Angular"
+title: "Object Explorer Example | Kritzel for Vue"
 description: "Build a structured tree-based object explorer with filtering, visibility toggles, and a live inspector for canvas objects."
 ---
 
@@ -9,7 +9,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 # Object Explorer
 
-This page demonstrates how to build a full object explorer experience on top of Kritzel, including hierarchical group navigation, multi-criteria filtering, object creation actions, and direct property editing in a live inspector.
+This page demonstrates how to build a full object explorer experience on top of the Kritzel library, including hierarchical group navigation, multi-criteria filtering, object creation actions, and direct property editing in a live inspector.
 
 ## Prerequisites
 
@@ -17,19 +17,13 @@ Complete the [Quick Start](./quick-start.md) guide to have a working `<KritzelEd
 
 ---
 
-## How Object Explorer Works
+## Featured Concepts
 
-A tree-based explorer tracks all canvas objects and derives root-level entries by subtracting group child IDs from the full object list:
+This example makes use of the following core concepts. Click on the links below to go into the details:
 
-```ts
-interface ObjectExplorerFilters {
-  searchQuery: string;
-  selectedTypes: Set<string>;
-  visibility: 'all' | 'visible' | 'hidden';
-}
-```
-
-When combined with `objectsAdded`, `objectsUpdated`, and `objectsRemoved`, the side panel always reflects the live editor state. Selecting an entry can pan and select the corresponding object on canvas, while inspector controls call `updateObject()` to apply partial updates in real time.
+- [Objects](/docs/vue/concept-objects) - querying, updating, and removing canvas objects programmatically
+- [Components](/docs/vue/concept-components) - listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
+- [Viewport](/docs/vue/concept-viewport) - panning and zooming to focus on a selected object
 
 ---
 
@@ -38,7 +32,11 @@ When combined with `objectsAdded`, `objectsUpdated`, and `objectsRemoved`, the s
 A presentation-style explorer layout with a dashboard header, grouped tree navigation, and an inline inspector for updating coordinates, dimensions, text, fill colors, and visibility behavior.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
   demoPath="/examples/object-explorer"
-  repoFiles={['src/app/examples/object-explorer/object-explorer.component.ts']}
+  repoFiles={['src/pages/examples/object-explorer/ObjectExplorerPage.vue']}
 />
+
+The object list is seeded in `onReady()` and kept in sync via the `objectsAdded`, `objectsRemoved`, and `objectsUpdated` event callbacks. Root objects are derived by filtering out any IDs that appear as children inside `KritzelGroup` objects. Selecting a tree node calls `updateObject()` to apply property changes from the inspector fields in real time.
+
+Clicking a tree entry highlights the corresponding canvas object and pans the viewport to bring it into view using `setViewport()`. The tree supports expand/collapse for groups, text search across IDs and types, and type-based chip filters - all driven purely from the local signal state without additional API calls.

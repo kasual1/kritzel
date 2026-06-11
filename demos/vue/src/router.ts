@@ -29,6 +29,11 @@ import ViewportCenterPage from './pages/concepts/viewport/ViewportCenterPage.vue
 import ViewportCoordinatesPage from './pages/concepts/viewport/ViewportCoordinatesPage.vue'
 import WorkspacesSwitchPage from './pages/concepts/workspaces/WorkspacesSwitchPage.vue'
 import WorkspacesCrudPage from './pages/concepts/workspaces/WorkspacesCrudPage.vue'
+import ObjectExplorerPage from './pages/examples/object-explorer/ObjectExplorerPage.vue'
+import BlueprintDefectMapperPage from './pages/examples/blueprint-defect-mapper/BlueprintDefectMapperPage.vue'
+import SlideshowPresentationPage from './pages/examples/slideshow-presentation/SlideshowPresentationPage.vue'
+import InfiniteCanvasGalleryPage from './pages/examples/infinite-canvas-gallery/InfiniteCanvasGalleryPage.vue'
+import ImageAnnotationStudioPage from './pages/examples/image-annotation-studio/ImageAnnotationStudioPage.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -92,6 +97,11 @@ export const router = createRouter({
     {
       path: '/examples',
       children: [
+        { path: 'object-explorer', component: ObjectExplorerPage },
+        { path: 'blueprint-defect-mapper', component: BlueprintDefectMapperPage },
+        { path: 'slideshow-presentation', component: SlideshowPresentationPage },
+        { path: 'infinite-canvas-gallery', component: InfiniteCanvasGalleryPage },
+        { path: 'image-annotation-studio', component: ImageAnnotationStudioPage },
       ],
     },
     { path: '/:pathMatch(.*)*', redirect: '/e2e/editor' },
