@@ -17,7 +17,7 @@ Before making API calls, you must wait for the editor to fully initialize. The `
 
 ```tsx
 import { useEffect, useRef } from 'react';
-import { KritzelEditor } from 'kritzel-react';
+import { KritzelEditor, EditorIsReadyEvent } from 'kritzel-react';
 
 export function App() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
@@ -27,8 +27,8 @@ export function App() {
     if (!editor) return;
 
     const handleReady = (event: Event) => {
-      const detail = (event as CustomEvent<HTMLKritzelEditorElement>).detail;
-      console.log('Editor is fully initialized and ready!', detail);
+      const detail = (event as CustomEvent<EditorIsReadyEvent>).detail;
+      console.log('Editor is fully initialized and ready!', detail.activeWorkspace);
     };
 
     editor.addEventListener('isReady', handleReady);
@@ -41,7 +41,7 @@ export function App() {
 
 ## Changing Tools Programmatically
 
-The editor supports several built-in tools, for example `brush`, `eraser`, `select`, and `pan`. You can programmatically switch between them using the `changeActiveToolByName` method. All editor mutations are asynchronous.
+The default editor toolbar registers these built-in tools: `selection`, `brush`, `eraser`, `line`, `shape`, `text`, and `image`. You can programmatically switch between them using the `changeActiveToolByName` method — the name must match the tool's registered name (the `name` of the corresponding `controls` entry when you customize the toolbar). All editor mutations are asynchronous.
 
 ```tsx
 async function setBrushTool(editor: HTMLKritzelEditorElement | null) {
@@ -50,9 +50,9 @@ async function setBrushTool(editor: HTMLKritzelEditorElement | null) {
   }
 }
 
-async function setSelectTool(editor: HTMLKritzelEditorElement | null) {
+async function setSelectionTool(editor: HTMLKritzelEditorElement | null) {
   if (editor) {
-    await editor.changeActiveToolByName('select');
+    await editor.changeActiveToolByName('selection');
   }
 }
 ```
@@ -75,7 +75,7 @@ async function addText(editor: HTMLKritzelEditorElement | null) {
     translateY: 0,
     fontSize: 24,
     fontFamily: 'Arial',
-    fontColor: '#ff0000',
+    fontColor: { light: '#ff0000', dark: '#ff6666' },
   });
 
   await editor.addObject(text);
@@ -107,7 +107,7 @@ Bind to DOM events on the custom element `<KritzelEditor>` to stay updated on ca
 
 ```tsx
 import { useEffect, useRef } from 'react';
-import { KritzelEditor } from 'kritzel-react';
+import { KritzelEditor, KritzelBaseObject } from 'kritzel-react';
 
 export function CanvasStatus() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
@@ -117,8 +117,8 @@ export function CanvasStatus() {
     if (!editor) return;
 
     const onObjectsChange = (event: Event) => {
-      const detail = (event as CustomEvent).detail;
-      console.log('Canvas objects updated:', detail.objects.length);
+      const objects = (event as CustomEvent<KritzelBaseObject[]>).detail;
+      console.log('Canvas objects updated:', objects.length);
     };
 
     const onViewportChange = (event: Event) => {
