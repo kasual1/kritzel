@@ -199,15 +199,22 @@ class KritzelWorkspace {
   name: string;
   createdAt: Date;
   updatedAt: Date;
+  isPublic: boolean;
   viewport: {
-    translateX: number;
-    translateY: number;
+    centerWorldX: number;
+    centerWorldY: number;
     scale: number;
   };
+
+  constructor(
+    id: string,
+    name: string,
+    viewport?: { centerWorldX: number; centerWorldY: number; scale: number },
+  );
 }
 ```
 
-Default viewport: `{ translateX: 0, translateY: 0, scale: 1 }`.
+Default viewport: `{ centerWorldX: 0, centerWorldY: 0, scale: 1 }`.
 
 ---
 
@@ -246,6 +253,6 @@ enum ShapeType {
 
 | Type | Definition | Description |
 |------|------------|-------------|
-| ThemeName | 'light' \| 'dark' | Theme identifier |
+| ThemeName | 'light' \| 'dark' \| string | Theme identifier — built-in names or the name of a custom theme |
 | ThemeAwareColor | &#123; light: string; dark: string; label?: string &#125; | Color that adapts to active theme |
 | ColorPalette | readonly ThemeAwareColor[] | Array of theme-aware colors |

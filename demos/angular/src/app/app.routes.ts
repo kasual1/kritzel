@@ -7,6 +7,7 @@ import { CustomContextMenuCanvasQuickActionsComponent } from './concepts/context
 import { CustomContextMenuClipboardActionsComponent } from './concepts/context-menus/custom-context-menu-clipboard-actions.component';
 import { CustomContextMenuSmartConditionalComponent } from './concepts/context-menus/custom-context-menu-smart-conditional.component';
 import { CustomContextMenuObjectInspectorComponent } from './concepts/context-menus/custom-context-menu-object-inspector.component';
+import { QuickstartComponent } from './getting-started/quickstart.component';
 import { ObjectExplorerComponent } from './examples/object-explorer/object-explorer.component';
 import { BlueprintDefectMapperComponent } from './examples/blueprint-defect-mapper/blueprint-defect-mapper.component';
 import { SlideshowPresentationComponent } from './examples/slideshow-presentation/slideshow-presentation.component';
@@ -49,6 +50,10 @@ export const routes: Routes = [
   {
     path: 'basic-usage',
     component: BasicUsageComponent,
+  },
+  {
+    path: 'getting-started',
+    component: QuickstartComponent,
   },
   {
     path: 'concepts',

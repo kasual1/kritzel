@@ -185,7 +185,7 @@ Custom tools should extend `KritzelBaseTool` and implement the pointer event han
 Pass a custom `controls` prop to `<kritzel-editor>` to change which tools appear:
 
 ```ts
-import { KritzelBrushTool, KritzelSelectionTool, KritzelEraserTool } from 'kritzel-stencil';
+import { KritzelBrushTool, KritzelSelectionTool, KritzelEraserTool } from 'kritzel-angular';
 
 const controls = [
   { name: 'selection', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
