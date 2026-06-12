@@ -8,6 +8,8 @@ keywords:
   - kritzel
 ---
 
+import LiveDemo from '@site/src/components/LiveDemo';
+
 # Quick Start
 
 The following guide gets you a full Kritzel editor setup in under five minutes.
@@ -33,6 +35,12 @@ import { KritzelEditor } from 'kritzel-vue'
 ```
 
 This renders the editor with the **full default toolbar**: selection, brush, eraser, line, shape, text, and image tools.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  demoPath="/getting-started"
+  repoFiles={['src/pages/getting-started/QuickstartPage.vue']}
+/>
 
 ## Optional Enhancements
 

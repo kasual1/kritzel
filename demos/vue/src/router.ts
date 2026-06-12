@@ -34,6 +34,7 @@ import BlueprintDefectMapperPage from './pages/examples/blueprint-defect-mapper/
 import SlideshowPresentationPage from './pages/examples/slideshow-presentation/SlideshowPresentationPage.vue'
 import InfiniteCanvasGalleryPage from './pages/examples/infinite-canvas-gallery/InfiniteCanvasGalleryPage.vue'
 import ImageAnnotationStudioPage from './pages/examples/image-annotation-studio/ImageAnnotationStudioPage.vue'
+import QuickstartPage from './pages/getting-started/QuickstartPage.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -93,6 +94,10 @@ export const router = createRouter({
         { path: 'workspaces-switch', component: WorkspacesSwitchPage },
         { path: 'workspaces-crud', component: WorkspacesCrudPage },
       ],
+    },
+    {
+      path: '/getting-started',
+      component: QuickstartPage,
     },
     {
       path: '/examples',
