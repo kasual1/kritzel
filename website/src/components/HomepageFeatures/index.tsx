@@ -35,8 +35,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/code.svg").default,
     description: (
       <>
-        Integrates seamlessly with any JavaScript framework like React, Vue,
-        Angular, or plain JavaScript. Focus on creativity, not compatibility.
+        Kritzel integrates seamlessly with any modernJavaScript framework like React, Vue or Angular. Focus on creativity, not compatibility.
       </>
     ),
   },
@@ -55,8 +54,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/cross-device.svg").default,
     description: (
       <>
-        Kritzel works on any platform that supports JavaScript, including
-        desktops, tablets, and mobile devices. Create anywhere, anytime.
+        Kritzel features native support for desktop, tablet, and mobile devices. 
+        Build once and deliver a responsive canvas experience across all platforms.
       </>
     ),
   },
