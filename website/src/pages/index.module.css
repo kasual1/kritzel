@@ -27,7 +27,7 @@
 }
 
 .heroTitle {
-  font-size: 4rem;
+  font-size: 3rem;
   /* Adjusted for prominence */
   font-weight: bold;
   line-height: 1.2;
@@ -157,7 +157,7 @@
 }
 
 .infoTitle {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: bold;
   margin-bottom: 1rem;
   color: var(--ifm-heading-color);
@@ -196,6 +196,14 @@
   height: auto;
 }
 
+.infoGraphicSmall svg {
+  max-width: 450px;
+}
+
+.infoGraphicLarge svg {
+  max-width: 650px;
+}
+
 @media screen and (max-width: 768px) {
 
   .infoRow {
@@ -222,5 +230,13 @@
 
   .infoGraphic svg {
     max-width: 400px;
+  }
+
+  .infoGraphicSmall svg {
+    max-width: 360px;
+  }
+
+  .infoGraphicLarge svg {
+    max-width: 430px;
   }
 }

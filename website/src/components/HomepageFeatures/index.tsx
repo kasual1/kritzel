@@ -15,8 +15,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/infinite.svg").default,
     description: (
       <>
-        Experience an infinite canvas that expands with your creativity,
-        perfect for sketching, painting, or designing without limits.
+        Deploy an infinite canvas that expands with your users' creativity, 
+        allowing them to sketch, paint, or design without limits.
       </>
     ),
   },
@@ -25,7 +25,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/lock.svg").default,
     description: (
       <>
-        Collaborate with others in real-time, making it easy to work together on projects, share ideas, and get feedback instantly.
+        Enable users to collaborate in real-time, making it easy for teams 
+        to work together on projects, share ideas, and see changes instantly.
       </>
     ),
   },
@@ -60,12 +61,11 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: "Simple Interface",
-    Svg: require("@site/static/img/cable.svg").default,
+    title: "AI Ready",
+    Svg: require("@site/static/img/ai.svg").default,
     description: (
       <>
-        Enjoy a clean and intuitive interface that makes it easy to integrate Kritzel
-        into your projects.
+        Enhance your agentic coding workflow with ready made skills and a dedicated MCP server.
       </>
     ),
   },

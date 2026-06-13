@@ -197,11 +197,6 @@ const config: Config = {
           label: 'Angular',
           items: [
             {
-              label: 'Angular',
-              to: '/docs/angular/overview',
-              activeBasePath: 'docs/angular'
-            },
-            {
               label: 'React',
               to: '/docs/react/overview',
               activeBasePath: 'docs/react'
@@ -210,6 +205,11 @@ const config: Config = {
               label: 'Vue',
               to: '/docs/vue/overview',
               activeBasePath: 'docs/vue'
+            },
+            {
+              label: 'Angular',
+              to: '/docs/angular/overview',
+              activeBasePath: 'docs/angular'
             },
           ],
         },
