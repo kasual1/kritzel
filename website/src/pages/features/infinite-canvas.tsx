@@ -8,7 +8,7 @@ import styles from "./feature.module.css";
 
 export default function InfiniteCanvas(): ReactNode {
   return (
-    <Layout title="Infinite Canvas" description="Explore a boundless workspace where your creativity has no limits">
+    <Layout title="Infinite Canvas Engine" description="Explore a boundless workspace where your creativity has no limits">
       <header className={styles.header}>
         <div className="container">
           <Heading as="h1" className={styles.headerTitle}>

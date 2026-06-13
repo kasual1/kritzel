@@ -127,7 +127,7 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
 const infoGraphicsData = [
  {
     Graphic: InfoGraphic1,
-    title: "Infinite Canvas Engine",
+    title: "Infinite Canvas",
     description: "High-performance, hardware-accelerated canvas supporting infinite panning, zooming, and coordinate mapping out of the box.",
     link: "/features/infinite-canvas",
     linkText: "Learn more",
