@@ -10,6 +10,7 @@ import InfoGraphic1 from "@site/static/img/info_graphic-1.svg";
 import InfoGraphic2 from "@site/static/img/info_graphic-2.svg";
 import InfoGraphic3 from "@site/static/img/info_graphic-3.svg";
 import InfoGraphic4 from "@site/static/img/info_graphic-4.svg";
+import InfoGraphic5 from "@site/static/img/info_graphic-5.svg";
 import BrowserOnly from "@docusaurus/BrowserOnly";
 
 import useBaseUrl from "@docusaurus/useBaseUrl";
@@ -124,32 +125,41 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
 }
 
 const infoGraphicsData = [
-  {
+ {
     Graphic: InfoGraphic1,
-    title: "Infinite Canvas",
-    description: "Explore a boundless workspace where your creativity has no limits. Pan, zoom, and navigate freely across an endless digital canvas.",
+    title: "Infinite Canvas Engine",
+    description: "High-performance, hardware-accelerated canvas supporting infinite panning, zooming, and coordinate mapping out of the box.",
     link: "/features/infinite-canvas",
     linkText: "Learn more",
   },
   {
     Graphic: InfoGraphic2,
     title: "Framework Agnostic",
-    description: "Seamlessly integrate with Angular, React, or Vue. Kritzel adapts to your tech stack, not the other way around.",
+    description: "Built as native Web Components. Drop Kritzel into React, Angular, Vue, or vanilla JS without worrying about wrapper overhead.",
     link: "/features/framework-agnostic",
     linkText: "Learn more",
   },
   {
     Graphic: InfoGraphic3,
-    title: "Powerful Drawing Tools",
-    description: "From brushes to shapes, text to images—all the tools you need to bring your ideas to life with precision and ease.",
+    title: "Extensible Drawing Tools",
+    description: "A robust set of built-in primitives—brushes, shapes, text, and images—exposed via a clean API for easy customization and control.",
     link: "/features/drawing-tools",
     linkText: "Learn more",
   },
   {
     Graphic: InfoGraphic4,
-    title: "Real-time Collaboration",
-    description: "Work together in real-time with built-in collaboration features. See changes instantly as your team creates together.",
+    graphicClassName: "infoGraphicSmall",
+    title: "Realtime Collaboration",
+    description: "Built-in state synchronization hooks and CRDT-ready structures to implement multiplayer collaboration with minimal backend boilerplate.",
     link: "/features/real-time-collaboration",
+    linkText: "Learn more",
+  },
+ {
+    Graphic: InfoGraphic5,
+    graphicClassName: "infoGraphicLarge",
+    title: "AI Native",
+    description: "Features built-in Skills and a MCP server, allowing AI agents to read, modify, and render canvas states directly.",
+    link: "/features/ai-integration",
     linkText: "Learn more",
   },
 ];
@@ -175,9 +185,9 @@ function HomepageHeader() {
           Experiences in Minutes.
         </Heading>
         <p className={clsx("hero__subtitle", styles.heroSubtitle)}>
-          The high-performance, real-time collaboration canvas library 
+          Kritzel is a framework-agnostic, infinite canvas library 
           <br />
-          built for React, Vue, and Angular.
+          with easy integration for React, Vue, and Angular.
         </p>
         <div className={styles.editorContainer}>
           <BrowserOnly fallback={<div className={styles.editorPlaceholder}>Loading editor...</div>}>
@@ -231,7 +241,7 @@ function InfoGraphicsSection() {
               {item.linkText} <ArrowRight style={{ width: "1em", height: "1em", verticalAlign: "middle", fill: "#1a1a2e" }} />
             </Link>
           </div>
-          <div className={styles.infoGraphic}>
+          <div className={clsx(styles.infoGraphic, item.graphicClassName && styles[item.graphicClassName as keyof typeof styles])}>
             <item.Graphic />
           </div>
         </div>
