@@ -393,6 +393,28 @@ describe('KritzelSvgExportHelper', () => {
         expect(result).toContain('font-size: 16pt');
         expect(result).toContain('color: #333333');
       });
+
+      it('should export text without foreignObject in raster-safe mode', () => {
+        const text = new KritzelText({
+          text: 'Hello\nWorld',
+          translateX: 50,
+          translateY: 100,
+          fontSize: 16,
+          fontFamily: 'Arial',
+          fontColor: { light: '#333333', dark: '#cccccc' },
+        });
+        text.width = 100;
+        text.height = 40;
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(text, 'light', undefined, true);
+
+        expect(result).toContain('<g transform="translate(50, 100)"');
+        expect(result).not.toContain('<foreignObject');
+        expect(result).toContain('<text ');
+        expect(result).toContain('font-family="Arial"');
+        expect(result).toContain('fill="#333333"');
+        expect(result).toContain('<tspan');
+      });
     });
 
     describe('KritzelImage', () => {
@@ -412,6 +434,72 @@ describe('KritzelSvgExportHelper', () => {
         expect(result).toContain('<image href="data:image/png;base64,ABC123"');
         expect(result).toContain('width="150"');
         expect(result).toContain('height="100"');
+      });
+
+      it('should prefer the inlined data URL from imageDataUrls over resolvedSrc', () => {
+        const image = new KritzelImage({
+          translateX: 0,
+          translateY: 0,
+          width: 100,
+          height: 100,
+          scale: 1,
+        });
+        image.id = 'img-1';
+        // A blob: URL would render as a broken image once rasterized.
+        image.resolvedSrc = 'blob:https://example.com/abc';
+
+        const imageDataUrls = new Map<string, string>([['img-1', 'data:image/png;base64,INLINED']]);
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(image, undefined, imageDataUrls);
+
+        expect(result).toContain('<image href="data:image/png;base64,INLINED"');
+        expect(result).not.toContain('blob:https://example.com/abc');
+      });
+    });
+
+    describe('resolveImageDataUrls', () => {
+      it('returns an empty map when there are no objects', async () => {
+        const result = await KritzelSvgExportHelper.resolveImageDataUrls([]);
+        expect(result.size).toBe(0);
+      });
+
+      it('uses the legacy inline data URL src without touching the resolver', async () => {
+        const image = new KritzelImage({ src: 'data:image/png;base64,LEGACY', width: 10, height: 10, scale: 1 });
+        image.id = 'img-legacy';
+
+        const fetchBlob = jest.fn();
+        const result = await KritzelSvgExportHelper.resolveImageDataUrls([image], { fetchBlob });
+
+        expect(result.get('img-legacy')).toBe('data:image/png;base64,LEGACY');
+        expect(fetchBlob).not.toHaveBeenCalled();
+      });
+
+      it('fetches asset bytes and inlines them as a data URL', async () => {
+        const image = new KritzelImage({ width: 10, height: 10, scale: 1 });
+        image.id = 'img-asset';
+        image.assetId = 'asset-123';
+
+        const blob = new Blob(['hello'], { type: 'image/png' });
+        const fetchBlob = jest.fn().mockResolvedValue(blob);
+
+        const result = await KritzelSvgExportHelper.resolveImageDataUrls([image], { fetchBlob });
+
+        expect(fetchBlob).toHaveBeenCalledWith('asset-123');
+        expect(result.get('img-asset')).toMatch(/^data:image\/png;base64,/);
+      });
+
+      it('omits images whose asset fails to resolve', async () => {
+        const image = new KritzelImage({ width: 10, height: 10, scale: 1 });
+        image.id = 'img-missing';
+        image.assetId = 'asset-missing';
+
+        const fetchBlob = jest.fn().mockRejectedValue(new Error('not found'));
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        const result = await KritzelSvgExportHelper.resolveImageDataUrls([image], { fetchBlob });
+
+        expect(result.has('img-missing')).toBe(false);
+        warnSpy.mockRestore();
       });
     });
 
