@@ -14,6 +14,7 @@ import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 import { KritzelColorHelper } from '../../helpers/color.helper';
+import { KritzelMathHelper } from '../../helpers/math.helper';
 
 export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelShape';
@@ -85,6 +86,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     y?: number;
     translateX?: number;
     translateY?: number;
+    rotation?: number;
     width?: number;
     height?: number;
     shapeType?: ShapeType;
@@ -108,6 +110,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.y = config.y ?? 0;
       this.translateX = config.translateX ?? 0;
       this.translateY = config.translateY ?? 0;
+      this.rotation = KritzelMathHelper.degreesToRadians(config.rotation ?? 0);
       this.width = config.width ?? 100;
       this.height = config.height ?? 100;
       this.shapeType = config.shapeType ?? ShapeType.Rectangle;
@@ -137,6 +140,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       y?: number;
       translateX?: number;
       translateY?: number;
+      rotation?: number;
       width?: number;
       height?: number;
       shapeType?: ShapeType;
@@ -160,6 +164,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     object.y = config?.y ?? 0;
     object.translateX = config?.translateX ?? 0;
     object.translateY = config?.translateY ?? 0;
+    object.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     object.width = config?.width ?? 100;
     object.height = config?.height ?? 100;
     object.shapeType = config?.shapeType ?? ShapeType.Rectangle;

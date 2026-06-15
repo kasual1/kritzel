@@ -137,4 +137,26 @@ test.describe('Image objects', () => {
     // Higher threshold because canvas-generated text anti-aliasing varies between runs
     await expect(editorPage.engine).toHaveScreenshot({ maxDiffPixelRatio: 0.05 });
   });
+
+  test('visual: rotated image stores rotation property', async ({ editorPage }) => {
+    const rotationDegrees = 60;
+    const expectedRadians = rotationDegrees * (Math.PI / 180);
+    const src = await generateDataUri(editorPage, 120, 90, '#ae3ec9');
+
+    await editorPage.prepareWaitForObjectsAdded();
+
+    const image = await editorPage.addImage({
+      src,
+      translateX: 260,
+      translateY: 130,
+      rotation: rotationDegrees,
+    });
+
+    await editorPage.waitForObjectsAdded();
+
+    const imageObject = await editorPage.getObjectById<any>(image.id);
+    expect(imageObject?.rotation).toBeCloseTo(expectedRadians, 4);
+
+    await expect(editorPage.engine).toHaveScreenshot({ maxDiffPixelRatio: 0.05 });
+  });
 });

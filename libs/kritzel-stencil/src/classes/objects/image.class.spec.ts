@@ -83,6 +83,14 @@ describe('KritzelImage', () => {
       expect(customImage.scale).toBe(2);
     });
 
+    it('should convert constructor rotation from degrees to radians', () => {
+      const customImage = new KritzelImage({
+        rotation: -90,
+      });
+
+      expect(customImage.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+
     it('should generate a unique id on instantiation', () => {
       const img1 = new KritzelImage();
       const img2 = new KritzelImage();
@@ -138,6 +146,12 @@ describe('KritzelImage', () => {
       const img1 = KritzelImage.create(mockCore);
       const img2 = KritzelImage.create(mockCore);
       expect(img1.id).not.toBe(img2.id);
+    });
+
+    it('should convert create rotation from degrees to radians', () => {
+      const image = KritzelImage.create(mockCore, { rotation: -90 });
+
+      expect(image.rotation).toBeCloseTo(-Math.PI / 2);
     });
   });
 

@@ -147,6 +147,12 @@ describe('KritzelSelectionGroup', () => {
       const group2 = KritzelSelectionGroup.create(mockCore);
       expect(group1.id).not.toBe(group2.id);
     });
+
+    it('should convert create rotation from degrees to radians', () => {
+      const group = KritzelSelectionGroup.create(mockCore, { rotation: -90 });
+
+      expect(group.rotation).toBeCloseTo(-Math.PI / 2);
+    });
   });
 
   describe('objects getter', () => {

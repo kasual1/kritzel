@@ -7,34 +7,6 @@ import {
 } from 'kritzel-vue'
 
 export function createSeedObjects(): KritzelBaseObject[] {
-  const path = new KritzelPath({
-    points: [
-      [0, 0, 0.5],
-      [15, -20, 0.5],
-      [30, -40, 0.5],
-      [45, -25, 0.5],
-      [60, -10, 0.5],
-      [75, -30, 0.5],
-      [90, -50, 0.5],
-      [105, -35, 0.5],
-      [120, -20, 0.5],
-      [135, -40, 0.5],
-      [150, -60, 0.5],
-      [165, -45, 0.5],
-      [180, -30, 0.5],
-      [195, -50, 0.5],
-      [210, -70, 0.5],
-      [225, -55, 0.5],
-      [240, -40, 0.5],
-    ],
-    translateX: -75,
-    translateY: 125,
-    strokeWidth: 8,
-    fill: { light: '#ff9800', dark: '#ffb74d' },
-  })
-
-  path.rotation = (40 * Math.PI) / 180
-
   return [
     new KritzelShape({
       translateX: 20,
@@ -64,6 +36,31 @@ export function createSeedObjects(): KritzelBaseObject[] {
       stroke: { light: '#4caf50', dark: '#81c784' },
       strokeWidth: 3,
     }),
-    path,
+    new KritzelPath({
+      points: [
+        [0, 0, 0.5],
+        [15, -20, 0.5],
+        [30, -40, 0.5],
+        [45, -25, 0.5],
+        [60, -10, 0.5],
+        [75, -30, 0.5],
+        [90, -50, 0.5],
+        [105, -35, 0.5],
+        [120, -20, 0.5],
+        [135, -40, 0.5],
+        [150, -60, 0.5],
+        [165, -45, 0.5],
+        [180, -30, 0.5],
+        [195, -50, 0.5],
+        [210, -70, 0.5],
+        [225, -55, 0.5],
+        [240, -40, 0.5],
+      ],
+      translateX: -125,
+      translateY: 125,
+      strokeWidth: 8,
+      fill: { light: '#ff9800', dark: '#ffb74d' },
+      rotation: 40,
+    }),
   ]
 }

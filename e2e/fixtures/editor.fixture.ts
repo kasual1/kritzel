@@ -57,6 +57,7 @@ export interface KritzelShapeConfig {
   shapeType?: ShapeType;
   translateX?: number;
   translateY?: number;
+  rotation?: number;
   width?: number;
   height?: number;
   fillColor?: ThemeAwareColor;
@@ -72,6 +73,7 @@ export interface KritzelPathConfig {
   points: number[][];
   translateX?: number;
   translateY?: number;
+  rotation?: number;
   strokeWidth?: number;
   fill?: ThemeAwareColor;
   lineSlack?: number;
@@ -82,6 +84,7 @@ export interface KritzelTextConfig {
   text?: string;
   translateX?: number;
   translateY?: number;
+  rotation?: number;
   fontSize?: number;
   fontFamily?: string;
   fontColor?: ThemeAwareColor;
@@ -99,6 +102,7 @@ export interface KritzelLineConfig {
   controlY?: number;
   translateX?: number;
   translateY?: number;
+  rotation?: number;
   strokeWidth?: number;
   stroke?: ThemeAwareColor;
   scale?: number;
@@ -117,6 +121,7 @@ export interface KritzelImageConfig {
   y?: number;
   translateX?: number;
   translateY?: number;
+  rotation?: number;
   width?: number;
   height?: number;
   maxWidth?: number;

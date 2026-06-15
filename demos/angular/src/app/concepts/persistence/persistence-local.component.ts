@@ -110,6 +110,11 @@ export class CollaborationLocalComponent {
   };
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+    const existing = await this.editor.getAllObjects();
+    if (existing.length > 0) {
+      return;
+    }
+
     for (const obj of createSeedObjects()) {
       await this.editor.addObject(obj);
     }

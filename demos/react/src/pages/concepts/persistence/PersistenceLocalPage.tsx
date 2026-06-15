@@ -37,9 +37,19 @@ export function PersistenceLocalPage() {
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {
-          if (editorRef.current) {
-            void seedEditor(editorRef.current);
+          const editor = editorRef.current;
+          if (!editor) {
+            return;
           }
+
+          void (async () => {
+            const existing = await editor.getAllObjects();
+            if (existing.length > 0) {
+              return;
+            }
+
+            await seedEditor(editor);
+          })();
         }}
         style={editorStyle}
       />

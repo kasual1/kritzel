@@ -80,6 +80,37 @@ describe('KritzelPath', () => {
       expect(configuredPath.fill).toEqual(themeAwareColor);
     });
 
+    it('should convert constructor rotation from degrees to radians', () => {
+      const configuredPath = new KritzelPath({
+        points: [[10, 10], [20, 20]],
+        rotation: -90,
+      });
+
+      expect(configuredPath.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+
+    it('should keep the same base placement with and without constructor rotation', () => {
+      const points = [[0, 0], [50, 50], [100, 0]];
+      const withoutRotation = new KritzelPath({
+        points,
+        translateX: 120,
+        translateY: 240,
+        strokeWidth: 8,
+      });
+      const withRotation = new KritzelPath({
+        points,
+        translateX: 120,
+        translateY: 240,
+        strokeWidth: 8,
+        rotation: -90,
+      });
+
+      expect(withRotation.translateX).toBeCloseTo(withoutRotation.translateX);
+      expect(withRotation.translateY).toBeCloseTo(withoutRotation.translateY);
+      expect(withRotation.width).toBeCloseTo(withoutRotation.width);
+      expect(withRotation.height).toBeCloseTo(withoutRotation.height);
+    });
+
     it('should generate an SVG path string', () => {
       expect(path.d).toBeDefined();
       expect(typeof path.d).toBe('string');
@@ -106,6 +137,15 @@ describe('KritzelPath', () => {
       expect(createdPath.workspaceId).toBe('workspace-1');
       expect(createdPath.zIndex).toBe(1);
       expect(createdPath.fill).toEqual(themeAwareColor);
+    });
+
+    it('should convert create rotation from degrees to radians', () => {
+      const createdPath = KritzelPath.create(mockCore, {
+        points: [[0, 0], [10, 10]],
+        rotation: -90,
+      });
+
+      expect(createdPath.rotation).toBeCloseTo(-Math.PI / 2);
     });
 
     it('should use default options when not provided', () => {
