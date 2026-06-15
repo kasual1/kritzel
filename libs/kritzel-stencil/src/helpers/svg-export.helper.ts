@@ -205,13 +205,53 @@ export class KritzelSvgExportHelper {
    * @param blob - The blob to encode
    * @returns Promise resolving to the data URL string
    */
-  private static blobToDataUrl(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(blob);
-    });
+  private static async blobToDataUrl(blob: Blob): Promise<string> {
+    // Prefer FileReader in browser-like runtimes for efficiency.
+    const hasFileReader = typeof FileReader !== 'undefined';
+    if (hasFileReader) {
+      try {
+        return await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === 'string') {
+              resolve(reader.result);
+              return;
+            }
+            reject(new Error('FileReader result is not a string'));
+          };
+          reader.onerror = () => reject(reader.error ?? new Error('Failed to read blob as data URL'));
+          reader.readAsDataURL(blob);
+        });
+      } catch {
+        // Fall through to the ArrayBuffer-based encoder.
+      }
+    }
+
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    const mimeType = blob.type || 'application/octet-stream';
+    return `data:${mimeType};base64,${this.uint8ToBase64(bytes)}`;
+  }
+
+  /**
+   * Encodes a byte array to base64 across browser and Node-like runtimes.
+   */
+  private static uint8ToBase64(bytes: Uint8Array): string {
+    if (typeof Buffer !== 'undefined') {
+      return Buffer.from(bytes).toString('base64');
+    }
+
+    let binary = '';
+    const chunkSize = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+      binary += String.fromCharCode(...chunk);
+    }
+
+    if (typeof btoa === 'function') {
+      return btoa(binary);
+    }
+
+    throw new Error('No base64 encoder available in this runtime');
   }
 
   /**
@@ -305,10 +345,11 @@ export class KritzelSvgExportHelper {
     const fill = KritzelColorHelper.resolveThemeColor(path.fill, theme);
     const stroke = KritzelColorHelper.resolveThemeColor(path.stroke, theme);
     const opacity = path.opacity !== 1 ? ` opacity="${path.opacity}"` : '';
+    const scale = this.getObjectScale(path);
 
     // Path needs to be wrapped in a g with translation since path.d uses local coordinates
     return `<g transform="${transform}"${opacity}>
-    <svg viewBox="${path.viewBox}" width="${path.totalWidth / path.scale}" height="${path.totalHeight / path.scale}" overflow="visible">
+    <svg viewBox="${path.viewBox}" width="${path.totalWidth / scale}" height="${path.totalHeight / scale}" overflow="visible">
       <path d="${path.d}" fill="${fill || 'none'}" stroke="${stroke || 'none'}"${path.strokeWidth ? ` stroke-width="${path.strokeWidth}"` : ''}/>
     </svg>
   </g>`;
@@ -324,12 +365,13 @@ export class KritzelSvgExportHelper {
     const transform = this.buildTransform(line);
     const stroke = KritzelColorHelper.resolveThemeColor(line.stroke, theme);
     const opacity = line.opacity !== 1 ? ` opacity="${line.opacity}"` : '';
+    const scale = this.getObjectScale(line);
     
     const markerStart = line.hasStartArrow ? ` marker-start="url(#${line.startMarkerId})"` : '';
     const markerEnd = line.hasEndArrow ? ` marker-end="url(#${line.endMarkerId})"` : '';
 
     return `<g transform="${transform}"${opacity}>
-    <svg viewBox="${line.viewBox}" width="${line.totalWidth / line.scale}" height="${line.totalHeight / line.scale}" overflow="visible">
+    <svg viewBox="${line.viewBox}" width="${line.totalWidth / scale}" height="${line.totalHeight / scale}" overflow="visible">
       <path d="${line.d}" fill="none" stroke="${stroke}" stroke-width="${line.strokeWidth}" stroke-linecap="round"${markerStart}${markerEnd}/>
     </svg>
   </g>`;
@@ -346,6 +388,7 @@ export class KritzelSvgExportHelper {
     const fill = KritzelColorHelper.resolveThemeColor(shape.fillColor, theme);
     const stroke = KritzelColorHelper.resolveThemeColor(shape.strokeColor, theme);
     const opacity = shape.opacity !== 1 ? ` opacity="${shape.opacity}"` : '';
+    const scale = this.getObjectScale(shape);
 
     // Get the SVG path for the shape
     const pathD = shape.getSvgPath();
@@ -368,7 +411,7 @@ export class KritzelSvgExportHelper {
     }
 
     return `<g transform="${transform}"${opacity}>
-    <svg viewBox="${shape.viewBox}" width="${shape.totalWidth / shape.scale}" height="${shape.totalHeight / shape.scale}" overflow="visible" preserveAspectRatio="none">
+    <svg viewBox="${shape.viewBox}" width="${shape.totalWidth / scale}" height="${shape.totalHeight / scale}" overflow="visible" preserveAspectRatio="none">
       <path d="${pathD}" fill="${fill || 'transparent'}" stroke="${stroke}" stroke-width="${shape.strokeWidth}"/>${textContent}
     </svg>
   </g>`;
@@ -389,13 +432,14 @@ export class KritzelSvgExportHelper {
     const opacity = text.opacity !== 1 ? ` opacity="${text.opacity}"` : '';
     const fontColor = KritzelColorHelper.resolveThemeColor(text.fontColor, theme);
     const bgColor = KritzelColorHelper.resolveThemeColor(text.backgroundColor, theme);
+    const scale = this.getObjectScale(text);
 
     // Convert ProseMirror content to HTML
     const htmlContent = this.prosemirrorToHtml(text.content, text, theme);
     
     // Calculate dimensions accounting for scale
-    const width = text.totalWidth / text.scale;
-    const height = text.totalHeight / text.scale;
+    const width = text.totalWidth / scale;
+    const height = text.totalHeight / scale;
 
     return `<g transform="${transform}"${opacity}>
     <foreignObject x="0" y="0" width="${width}" height="${height}">
@@ -416,9 +460,10 @@ export class KritzelSvgExportHelper {
     const opacity = text.opacity !== 1 ? ` opacity="${text.opacity}"` : '';
     const fontColor = KritzelColorHelper.resolveThemeColor(text.fontColor, theme);
     const bgColor = KritzelColorHelper.resolveThemeColor(text.backgroundColor, theme);
+    const scale = this.getObjectScale(text);
 
-    const width = text.totalWidth / text.scale;
-    const height = text.totalHeight / text.scale;
+    const width = text.totalWidth / scale;
+    const height = text.totalHeight / scale;
 
     const lines = this.prosemirrorToPlainTextLines(text.content);
     const resolvedLines = lines.length > 0 ? lines : [''];
@@ -464,10 +509,11 @@ export class KritzelSvgExportHelper {
   private static imageToSvg(image: KritzelImage, imageDataUrls?: Map<string, string>): string {
     const transform = this.buildTransform(image);
     const opacity = image.opacity !== 1 ? ` opacity="${image.opacity}"` : '';
+    const scale = this.getObjectScale(image);
     
     // Calculate dimensions
-    const width = image.totalWidth / image.scale;
-    const height = image.totalHeight / image.scale;
+    const width = image.totalWidth / scale;
+    const height = image.totalHeight / scale;
 
     const href = imageDataUrls?.get(image.id) || image.resolvedSrc || image.src || '';
 
@@ -514,19 +560,28 @@ export class KritzelSvgExportHelper {
    */
   private static buildTransform(object: KritzelBaseObject): string {
     const transforms: string[] = [];
+    const scale = this.getObjectScale(object);
 
     // Translation
     transforms.push(`translate(${object.translateX}, ${object.translateY})`);
 
     // Rotation around center
     if (object.rotation !== 0) {
-      const centerX = object.totalWidth / 2 / object.scale;
-      const centerY = object.totalHeight / 2 / object.scale;
+      const centerX = object.totalWidth / 2 / scale;
+      const centerY = object.totalHeight / 2 / scale;
       const degrees = object.rotation * (180 / Math.PI);
       transforms.push(`rotate(${degrees}, ${centerX}, ${centerY})`);
     }
 
     return transforms.join(' ');
+  }
+
+  /**
+   * Returns a safe non-zero scale for export geometry calculations.
+   */
+  private static getObjectScale(object: KritzelBaseObject): number {
+    const scale = object.scale ?? 1;
+    return scale === 0 ? 1 : scale;
   }
 
   /**
