@@ -11,6 +11,7 @@ import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 import { KritzelColorHelper } from '../../helpers/color.helper';
+import { KritzelMathHelper } from '../../helpers/math.helper';
 
 /**
  * Represents a text object on the canvas that supports rich text editing via ProseMirror.
@@ -96,12 +97,15 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     height?: number;
     width?: number;
     scale?: number;
+    rotation?: number;
     initialWidth?: number;
     initialHeight?: number;
     scaleX?: number;
     scaleY?: number;
   }) {
     super();
+
+    this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
 
     // Always create the editor so setContent() works immediately
     this.editor = this.createEditor();
@@ -146,7 +150,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    * @param scale - Optional scale factor (defaults to current viewport scale).
    * @returns A new, fully initialized KritzelText instance.
    */
-  static override create(core: KritzelCore, fontSize?: number, fontFamily?: string, scale?: number): KritzelText {
+  static override create(core: KritzelCore, fontSize?: number, fontFamily?: string, scale?: number, rotation?: number): KritzelText {
     const object = new KritzelText();
 
     object._core = core;
@@ -157,6 +161,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
     object.fontFamily = fontFamily || 'Arial';
     object.translateX = 0;
     object.translateY = 0;
+    object.rotation = KritzelMathHelper.degreesToRadians(rotation ?? 0);
 
     const coreScale = core.store.state.scale;
     const effectiveScale = coreScale < 0 ? coreScale : 1;

@@ -2,6 +2,7 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelClassHelper } from '../../helpers/class.helper';
+import { KritzelMathHelper } from '../../helpers/math.helper';
 
 /**
  * KritzelGroup represents a permanent grouping of objects that act as a single unit.
@@ -17,6 +18,11 @@ import { KritzelClassHelper } from '../../helpers/class.helper';
  */
 export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     override __class__: string = 'KritzelGroup';
+
+    constructor(config?: { rotation?: number }) {
+        super();
+        this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
+    }
 
     /**
      * IDs of child objects within this group.
@@ -76,8 +82,8 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
      * @param core - The KritzelCore instance providing access to store and state management.
      * @returns A new KritzelGroup instance configured with the core context.
      */
-    static override create(core: KritzelCore): KritzelGroup {
-        const group = new KritzelGroup();
+    static override create(core: KritzelCore, config?: { rotation?: number }): KritzelGroup {
+        const group = new KritzelGroup(config);
 
         group._core = core;
         group.id = group.generateId();

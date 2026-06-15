@@ -49,12 +49,13 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    * @param config.fill - Theme-aware fill color with light and dark variants
    * @param config.lineSlack - Additional padding for bounding box calculations (default: 0.5)
    */
-  constructor(config?: { points: number[][]; translateX?: number; translateY?: number; scale?: number; strokeWidth?: number; fill?: ThemeAwareColor; lineSlack?: number }) {
+  constructor(config?: { points: number[][]; translateX?: number; translateY?: number; rotation?: number; scale?: number; strokeWidth?: number; fill?: ThemeAwareColor; lineSlack?: number }) {
     super();
     this.options = config;
     this.points = config?.points ?? [];
     this.translateX = config?.translateX ?? 0;
     this.translateY = config?.translateY ?? 0;
+    this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     this.scale = config?.scale ?? 1;
     this.strokeWidth = config?.strokeWidth ?? 8;
     this.fill = config?.fill ?? { light: '#000000', dark: '#ffffff' };
@@ -80,6 +81,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     object.points = options?.points ?? [];
     object.translateX = options?.translateX ?? 0;
     object.translateY = options?.translateY ?? 0;
+    object.rotation = KritzelMathHelper.degreesToRadians(options?.rotation ?? 0);
     object.scale = options?.scale ?? 1;
     object.strokeWidth = options?.strokeWidth ?? 8;
     object.fill = options?.fill ?? { light: '#000000', dark: '#ffffff' };

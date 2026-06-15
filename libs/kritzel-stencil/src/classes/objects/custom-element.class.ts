@@ -1,5 +1,6 @@
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
+import { KritzelMathHelper } from '../../helpers/math.helper';
 
 /**
  * Represents a custom HTML element that can be placed and manipulated on the Kritzel canvas.
@@ -25,12 +26,13 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @param config.height - Initial height in pixels. Defaults to 0.
    * @param config.width - Initial width in pixels. Defaults to 0.
    */
-  constructor(config?: { element: HTMLElement; translateX?: number; translateY?: number; scale?: number, height?: number; width?: number }) {
+  constructor(config?: { element: HTMLElement; translateX?: number; translateY?: number; rotation?: number; scale?: number, height?: number; width?: number }) {
     super();
 
     if (config) {
       this.translateX = config.translateX || 0;
       this.translateY = config.translateY || 0;
+      this.rotation = KritzelMathHelper.degreesToRadians(config.rotation ?? 0);
       this.scale = config.scale || 1;
       this.element = config.element;
       this.height = config.height || 0;
@@ -55,6 +57,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     element: HTMLElement;
     translateX?: number;
     translateY?: number;
+    rotation?: number;
     scale?: number;
     height?: number;
     width?: number;

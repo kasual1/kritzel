@@ -28,7 +28,7 @@ import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
-import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelUndoState } from '../../..';
+import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelText, KritzelUndoState } from '../../..';
 import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
 import { ThemeName, KritzelTheme } from '../../../interfaces/theme.interface';
 import { ThemeHelper } from '../../../helpers/theme.helper';
@@ -743,6 +743,15 @@ export class KritzelEditor {
     this.workspaces = event.detail.workspaces;
     this.currentIsPublic = await this.engineRef.getIsPublic();
     this.loadShortcuts();
+
+    const text = new KritzelText({
+      text: 'Welcome to Kritzel!',
+      translateX: 100,
+      translateY: 100,
+      rotation: -90
+    });
+
+    this.engineRef.addObject(text);
   }
 
   handleWorkspacesChange(event: CustomEvent<KritzelWorkspace[]>) {

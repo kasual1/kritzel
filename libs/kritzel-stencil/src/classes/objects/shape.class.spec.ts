@@ -245,6 +245,14 @@ describe('KritzelShape', () => {
       expect(shapeObject.content).toBeNull();
       expect(shapeObject.uneditedObject).toBeNull();
     });
+
+    it('should convert constructor rotation from degrees to radians', () => {
+      const configuredShape = new KritzelShape({
+        rotation: -90,
+      });
+
+      expect(configuredShape.rotation).toBeCloseTo(-Math.PI / 2);
+    });
   });
 
   describe('static create', () => {
@@ -293,6 +301,14 @@ describe('KritzelShape', () => {
       expect(createdShape.fillColor).toEqual({ light: 'transparent', dark: 'transparent' });
       expect(createdShape.strokeColor).toEqual({ light: '#000000', dark: '#ffffff' });
       expect(createdShape.strokeWidth).toBe(4);
+    });
+
+    it('should convert create rotation from degrees to radians', () => {
+      const createdShape = KritzelShape.create(mockCore, {
+        rotation: -90,
+      });
+
+      expect(createdShape.rotation).toBeCloseTo(-Math.PI / 2);
     });
   });
 

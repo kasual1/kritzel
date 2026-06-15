@@ -2,6 +2,7 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelAssetLoadState } from '../../interfaces/asset.interface';
 import { AssetNotFoundError } from '../providers/assets/asset-resolver.class';
 import { KritzelBaseObject } from './base-object.class';
+import { KritzelMathHelper } from '../../helpers/math.helper';
 
 /**
  * Represents an image object on the canvas.
@@ -120,6 +121,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     this.y = config?.y || 0;
     this.translateX = config?.translateX || 0;
     this.translateY = config?.translateY || 0;
+    this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     this.scale = config?.scale || 1;
     this.width = config?.width || 0;
     this.height = config?.height || 0;
@@ -134,18 +136,19 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
    * @param core - The KritzelCore instance providing access to store and state management.
    * @returns A new KritzelImage instance configured with the core context.
    */
-  static override create(core: KritzelCore): KritzelImage {
-    const object = new KritzelImage();
+  static override create(core: KritzelCore, config?: Partial<KritzelImage>): KritzelImage {
+    const object = new KritzelImage(config);
 
     object._core = core;
     object.id = object.generateId();
     object.workspaceId = core.store.state.activeWorkspace!.id;
     object.userId = core.user?.id;
-    object.x = 0;
-    object.y = 0;
-    object.translateX = 0;
-    object.translateY = 0;
-    object.scale = object._core.store.state.scale;
+    object.x = config?.x ?? 0;
+    object.y = config?.y ?? 0;
+    object.translateX = config?.translateX ?? 0;
+    object.translateY = config?.translateY ?? 0;
+    object.scale = config?.scale ?? object._core.store.state.scale;
+    object.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     object.zIndex = core.store.currentZIndex;
 
     return object;

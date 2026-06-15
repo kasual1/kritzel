@@ -8,6 +8,7 @@ import { LineAnchor } from '../../interfaces/anchor.interface';
 import { ArrowHeadStyle, LineArrowConfig } from '../../interfaces/arrow-head.interface';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 import { KritzelColorHelper } from '../../helpers/color.helper';
+import { KritzelMathHelper } from '../../helpers/math.helper';
 
 export class KritzelLine extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelLine';
@@ -75,6 +76,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     this.controlY = config?.controlY;
     this.translateX = config?.translateX ?? 0;
     this.translateY = config?.translateY ?? 0;
+    this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     this.scale = config?.scale ?? 1;
     this.strokeWidth = config?.strokeWidth ?? 4;
     this.stroke = config?.stroke ?? { light: '#000000', dark: '#ffffff' };
@@ -107,6 +109,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
     object.controlY = options?.controlY;
     object.translateX = options?.translateX ?? 0;
     object.translateY = options?.translateY ?? 0;
+    object.rotation = KritzelMathHelper.degreesToRadians(options?.rotation ?? 0);
     object.scale = options?.scale ?? 1;
     object.strokeWidth = options?.strokeWidth ?? 4;
     object.stroke = options?.stroke ?? { light: '#000000', dark: '#ffffff' };
