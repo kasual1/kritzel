@@ -714,10 +714,10 @@ export namespace Components {
         "getSelectedObjectsAsPngDataUrl": (options?: { theme?: "light" | "dark"; padding?: number; scale?: number; }) => Promise<string | null>;
         /**
           * Generates an SVG string from the currently selected objects. Creates clean, standards-compliant SVG markup by directly serializing object properties.
-          * @param options - Optional export settings (theme, padding).
+          * @param options - Optional export settings (theme, padding, raster-safe mode for canvas export).
           * @returns SVG markup string, or null if no objects are selected.
          */
-        "getSelectedObjectsAsSvgString": (options?: { theme?: "light" | "dark"; padding?: number; }) => Promise<string | null>;
+        "getSelectedObjectsAsSvgString": (options?: { theme?: "light" | "dark"; padding?: number; rasterSafeForCanvas?: boolean; }) => Promise<string | null>;
         /**
           * Returns the current viewport state including position, scale, and dimensions.
           * @returns The current viewport state.
