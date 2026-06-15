@@ -114,6 +114,18 @@ describe('KritzelLine', () => {
       expect(configuredLine.scale).toBe(2);
     });
 
+    it('should convert constructor rotation from degrees to radians', () => {
+      const configuredLine = new KritzelLine({
+        startX: 10,
+        startY: 20,
+        endX: 110,
+        endY: 120,
+        rotation: -90,
+      });
+
+      expect(configuredLine.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+
     it('should create a curved line with control point', () => {
       const curvedLine = new KritzelLine({
         startX: 0,
@@ -189,6 +201,18 @@ describe('KritzelLine', () => {
       expect(createdLine.endY).toBe(0);
       expect(createdLine.strokeWidth).toBe(4);
       expect(createdLine.stroke).toEqual({ light: '#000000', dark: '#ffffff' });
+    });
+
+    it('should convert create rotation from degrees to radians', () => {
+      const createdLine = KritzelLine.create(mockCore, {
+        startX: 0,
+        startY: 0,
+        endX: 100,
+        endY: 100,
+        rotation: -90,
+      });
+
+      expect(createdLine.rotation).toBeCloseTo(-Math.PI / 2);
     });
   });
 

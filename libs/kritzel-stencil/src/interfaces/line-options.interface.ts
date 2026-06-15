@@ -11,6 +11,8 @@ export interface KritzelLineOptions {
   controlY?: number;
   translateX?: number;
   translateY?: number;
+  /** Rotation in degrees at initialization time. */
+  rotation?: number;
   scale?: number;
   stroke?: ThemeAwareColor;
   strokeWidth?: number;

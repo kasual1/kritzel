@@ -203,6 +203,15 @@ describe('KritzelText', () => {
       expect(textObject.content).toBeNull();
       expect(textObject.uneditedObject).toBeNull();
     });
+
+    it('should convert constructor rotation from degrees to radians', () => {
+      const configuredText = new KritzelText({
+        text: 'Hello',
+        rotation: -90,
+      });
+
+      expect(configuredText.rotation).toBeCloseTo(-Math.PI / 2);
+    });
   });
 
   describe('static create', () => {
@@ -235,6 +244,12 @@ describe('KritzelText', () => {
       const createdText = KritzelText.create(mockCore);
 
       expect(createdText.editor).toBeDefined();
+    });
+
+    it('should convert create rotation from degrees to radians', () => {
+      const createdText = KritzelText.create(mockCore, 12, 'Helvetica', undefined, -90);
+
+      expect(createdText.rotation).toBeCloseTo(-Math.PI / 2);
     });
   });
 
