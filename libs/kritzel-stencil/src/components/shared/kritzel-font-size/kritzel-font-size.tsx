@@ -26,9 +26,11 @@ export class KritzelFontSize {
 
   render() {
     const color = 'var(--kritzel-global-text-primary)';
+    const sizes = this.sizes ?? [];
+
     return (
       <Host>
-        {this.sizes.map(size => (
+        {sizes.map(size => (
           <div
             tabIndex={0}
             class={{
