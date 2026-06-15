@@ -222,7 +222,7 @@ export class KritzelToolConfig {
         return (
           <kritzel-stroke-size
             key={control.type}
-            sizes={this.sizes.length > 0 ? this.sizes : undefined}
+            sizes={this.sizes}
             selectedSize={value}
             onSizeChange={this.handleSizeChange}
           ></kritzel-stroke-size>
@@ -232,7 +232,7 @@ export class KritzelToolConfig {
         return (
           <kritzel-font-size
             key={control.type}
-            sizes={this.sizes.length > 0 ? this.sizes : undefined}
+            sizes={this.sizes}
             selectedSize={value}
             fontFamily={(this.tool as any).fontFamily}
             onSizeChange={this.handleSizeChange}
