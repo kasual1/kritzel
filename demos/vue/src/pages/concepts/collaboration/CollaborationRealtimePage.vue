@@ -27,6 +27,11 @@ const syncConfig: KritzelSyncConfig = {
 
 async function onReady() {
   if (editor.value) {
+    const existing = await editor.value.getAllObjects()
+    if (existing.length > 0) {
+      return
+    }
+
     await seedEditor(editor.value)
   }
 }

@@ -28,7 +28,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   isDebugInfoVisible: boolean = true;
   isCompleted: boolean = false;
 
-  private _adjustedPoints?: number[][] = null;
+  private _adjustedPoints: number[][] | null = null;
 
   /**
    * Gets the SVG viewBox string based on the path's position and dimensions.
@@ -142,8 +142,12 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     this.x = Math.min(...this.points.map(p => p[0])) - this.strokeWidth / 2;
     this.y = Math.min(...this.points.map(p => p[1])) - this.strokeWidth / 2;
 
-    this.translateX = x;
-    this.translateY = y;
+    if (x !== null) {
+      this.translateX = x;
+    }
+    if (y !== null) {
+      this.translateY = y;
+    }
 
     this._adjustedPoints = null;
 
@@ -389,21 +393,15 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
 
   /**
    * Updates width, height, x, y, translateX, and translateY based on current points.
-   * Accounts for rotation and stroke width in the calculations.
+   * Uses the unrotated local points and stroke width for base dimensions.
    * Called during initial setup to establish the path's dimensions and position.
    */
   private updateDimensions(): void {
-    const rotatedPoints = this.points.map(([x, y]) => {
-      const rotatedX = x * Math.cos(this.rotation) - y * Math.sin(this.rotation);
-      const rotatedY = x * Math.sin(this.rotation) + y * Math.cos(this.rotation);
-      return [rotatedX, rotatedY];
-    });
+    const minX = Math.min(...this.points.map(p => p[0])) - this.strokeWidth / 2;
+    const minY = Math.min(...this.points.map(p => p[1])) - this.strokeWidth / 2;
 
-    const minX = Math.min(...rotatedPoints.map(p => p[0] - this.strokeWidth / 2));
-    const minY = Math.min(...rotatedPoints.map(p => p[1] - this.strokeWidth / 2));
-
-    const maxX = Math.max(...rotatedPoints.map(p => p[0] + this.strokeWidth / 2));
-    const maxY = Math.max(...rotatedPoints.map(p => p[1] + this.strokeWidth / 2));
+    const maxX = Math.max(...this.points.map(p => p[0])) + this.strokeWidth / 2;
+    const maxY = Math.max(...this.points.map(p => p[1])) + this.strokeWidth / 2;
 
     this.width = maxX - minX + this.lineSlack;
     this.height = maxY - minY + this.lineSlack;

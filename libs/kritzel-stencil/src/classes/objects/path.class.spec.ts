@@ -89,6 +89,28 @@ describe('KritzelPath', () => {
       expect(configuredPath.rotation).toBeCloseTo(-Math.PI / 2);
     });
 
+    it('should keep the same base placement with and without constructor rotation', () => {
+      const points = [[0, 0], [50, 50], [100, 0]];
+      const withoutRotation = new KritzelPath({
+        points,
+        translateX: 120,
+        translateY: 240,
+        strokeWidth: 8,
+      });
+      const withRotation = new KritzelPath({
+        points,
+        translateX: 120,
+        translateY: 240,
+        strokeWidth: 8,
+        rotation: -90,
+      });
+
+      expect(withRotation.translateX).toBeCloseTo(withoutRotation.translateX);
+      expect(withRotation.translateY).toBeCloseTo(withoutRotation.translateY);
+      expect(withRotation.width).toBeCloseTo(withoutRotation.width);
+      expect(withRotation.height).toBeCloseTo(withoutRotation.height);
+    });
+
     it('should generate an SVG path string', () => {
       expect(path.d).toBeDefined();
       expect(typeof path.d).toBe('string');
