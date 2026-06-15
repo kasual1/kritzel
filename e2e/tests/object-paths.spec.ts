@@ -161,4 +161,33 @@ test.describe('Path objects', () => {
 
     await expect(editorPage.engine).toHaveScreenshot();
   });
+
+  test('visual: rotated path stores rotation property', async ({ editorPage }) => {
+    const rotationDegrees = -30;
+    const expectedRadians = rotationDegrees * (Math.PI / 180);
+
+    await editorPage.prepareWaitForObjectsAdded();
+
+    const path = await editorPage.addPath({
+      points: [
+        [0, 0],
+        [45, 70],
+        [90, 20],
+        [135, 65],
+        [180, 0],
+      ],
+      translateX: 180,
+      translateY: 180,
+      strokeWidth: 6,
+      fill: { light: '#343a40', dark: '#343a40' },
+      rotation: rotationDegrees,
+    });
+
+    await editorPage.waitForObjectsAdded();
+
+    const pathObject = await editorPage.getObjectById<any>(path.id);
+    expect(pathObject?.rotation).toBeCloseTo(expectedRadians, 4);
+
+    await expect(editorPage.engine).toHaveScreenshot();
+  });
 });

@@ -89,6 +89,7 @@ async function onCanvasClick(ev: MouseEvent) {
     shapeType: ShapeType.Ellipse,
     translateX: x - 25, translateY: y - 25,        // center 50×50 pin on click
     width: 50, height: 50,
+    rotation: -15,
     fillColor: { light: '#e53935', dark: '#ef5350' },
     strokeColor: { light: '#000000', dark: '#ffffff' },
     strokeWidth: 2,
@@ -229,11 +230,14 @@ export function createSeedObjects(): KritzelBaseObject[] {
   return [
     new KritzelShape({ translateX: 20, translateY: -150, width: 120, height: 120,
       shapeType: ShapeType.Rectangle,
+      rotation: 10,
       fillColor: { light: '#fce4ec', dark: '#880e4f' },
       strokeColor: { light: '#c62828', dark: '#ef9a9a' }, strokeWidth: 3 }),
     new KritzelLine({ startX: -170, startY: 10, endX: 130, endY: 10,
+      rotation: -5,
       stroke: { light: '#4caf50', dark: '#81c784' }, strokeWidth: 3 }),
     new KritzelText({ text: 'Welcome!', translateX: -60, translateY: -40, fontSize: 24,
+      rotation: -90,
       fontColor: { light: '#1f2937', dark: '#f3f4f6' } }),
   ];
 }

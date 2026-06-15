@@ -4,6 +4,8 @@ export interface KritzelPathOptions {
   points: number[][];
   translateX?: number;
   translateY?: number;
+  /** Rotation in degrees at initialization time. */
+  rotation?: number;
   scale?: number;
   stroke?: ThemeAwareColor;
   strokeWidth?: number;

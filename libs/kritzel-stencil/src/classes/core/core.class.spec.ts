@@ -4,6 +4,11 @@ import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
+import { KritzelPath } from '../objects/path.class';
+import { KritzelText } from '../objects/text.class';
+import { KritzelImage } from '../objects/image.class';
+import { KritzelShape } from '../objects/shape.class';
+import { KritzelCustomElement } from '../objects/custom-element.class';
 import { KritzelBaseTool } from '../tools/base-tool.class';
 import { KritzelWorkspace } from './workspace.class';
 import { KritzelStore } from './store.class';
@@ -12,6 +17,7 @@ import { KritzelAppStateMap } from '../structures/app-state-map.structure';
 import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelCursorManager } from '../managers/cursor.manager';
 import { KritzelThemeManager } from '../managers/theme.manager';
+import { ShapeType } from '../../enums/shape-type.enum';
 // Mock the asset resolver so `initializeYjs` doesn't hit the real IndexedDB
 // provider during unit tests (jsdom does not expose a global `indexedDB`).
 jest.mock('../providers/assets/asset-resolver.class');
@@ -484,6 +490,102 @@ describe('KritzelCore', () => {
       core.addObject(obj);
 
       expect(mockObjectsMap.insert).toHaveBeenCalledWith(obj);
+    });
+
+    it('should add a rotated path object', () => {
+      const obj = new KritzelPath({
+        points: [[0, 0], [10, 10]],
+        rotation: -90,
+      });
+
+      core.addObject(obj);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(obj);
+      expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+
+    it('should add a rotated line object', () => {
+      const obj = new KritzelLine({
+        startX: 0,
+        startY: 0,
+        endX: 100,
+        endY: 50,
+        rotation: -90,
+      });
+
+      core.addObject(obj);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(obj);
+      expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+
+    it('should add a rotated text object', () => {
+      const obj = new KritzelText({
+        rotation: -90,
+      });
+
+      core.addObject(obj);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(obj);
+      expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+
+    it('should add a rotated image object', () => {
+      const obj = new KritzelImage({
+        rotation: -90,
+      });
+
+      core.addObject(obj);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(obj);
+      expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+
+    it('should add a rotated shape object', () => {
+      const obj = new KritzelShape({
+        shapeType: ShapeType.Rectangle,
+        rotation: -90,
+      });
+
+      core.addObject(obj);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(obj);
+      expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+
+    it('should add a rotated custom element object', () => {
+      const element = document.createElement('div');
+      const obj = new KritzelCustomElement({
+        element,
+        rotation: -90,
+      });
+
+      core.addObject(obj);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(obj);
+      expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+
+    it('should add a rotated group object', () => {
+      const obj = new KritzelGroup({
+        rotation: -90,
+      });
+
+      core.addObject(obj);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(obj);
+      expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+
+    it('should add a rotated selection group object', () => {
+      const obj = new KritzelSelectionGroup({
+        rotation: -90,
+      });
+
+      core.addObject(obj);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(obj);
+      expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
     });
   });
 

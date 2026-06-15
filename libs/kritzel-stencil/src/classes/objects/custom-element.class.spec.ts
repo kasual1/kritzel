@@ -84,6 +84,16 @@ describe('KritzelCustomElement', () => {
       expect(obj.width).toBe(0);
       expect(obj.height).toBe(0);
     });
+
+    it('should convert constructor rotation from degrees to radians', () => {
+      const element = createMockElement();
+      const obj = new KritzelCustomElement({
+        element,
+        rotation: -90,
+      });
+
+      expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
+    });
   });
 
   describe('create', () => {
@@ -120,6 +130,16 @@ describe('KritzelCustomElement', () => {
       expect(obj.scale).toBe(3);
       expect(obj.width).toBe(200);
       expect(obj.height).toBe(300);
+    });
+
+    it('should convert create rotation from degrees to radians', () => {
+      const element = createMockElement();
+      const obj = KritzelCustomElement.create(mockCore, {
+        element,
+        rotation: -90,
+      }) as KritzelCustomElement;
+
+      expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
     });
   });
 

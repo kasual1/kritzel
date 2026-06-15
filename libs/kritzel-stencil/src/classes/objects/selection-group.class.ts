@@ -4,6 +4,7 @@ import { KritzelBaseObject } from './base-object.class';
 import { KritzelGroup } from './group.class';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
+import { KritzelMathHelper } from '../../helpers/math.helper';
 
 /**
  * Represents a snapshot of an object's transform state at a specific point in time.
@@ -38,6 +39,11 @@ interface UnchangedObjectSnapshot {
  */
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override __class__: string = 'KritzelSelectionGroup';
+
+  constructor(config?: { rotation?: number }) {
+    super();
+    this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
+  }
 
   // Store only object IDs instead of full objects
   private _objectIds: string[] = [];
@@ -136,8 +142,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
    * @param core - The KritzelCore instance to associate with this selection group
    * @returns A new KritzelSelectionGroup instance configured with default settings
    */
-  static override create(core: KritzelCore): KritzelSelectionGroup {
-    const object = new KritzelSelectionGroup();
+  static override create(core: KritzelCore, config?: { rotation?: number }): KritzelSelectionGroup {
+    const object = new KritzelSelectionGroup(config);
 
     object._core = core;
     object.id = object.generateId();
