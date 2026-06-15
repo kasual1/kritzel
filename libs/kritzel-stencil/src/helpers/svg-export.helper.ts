@@ -20,6 +20,29 @@ export interface SvgExportOptions {
   padding?: number;
   /** Whether to include XML declaration. Defaults to true. */
   includeXmlDeclaration?: boolean;
+  /**
+   * Enables raster-safe serialization for objects that normally rely on
+   * `<foreignObject>` (currently text). Use this when the generated SVG is
+   * rendered into an `<img>` and then drawn to a canvas for PNG export.
+   */
+  rasterSafeForCanvas?: boolean;
+  /**
+   * Map of image object id -> inlined `data:` URL used to embed image
+   * bytes directly into the exported markup. Required for the bytes to
+   * survive rasterization (e.g. SVG -> PNG), because browsers refuse to
+   * load external/`blob:` resources referenced from an SVG loaded into
+   * an `<img>` element. Populate via {@link KritzelSvgExportHelper.resolveImageDataUrls}.
+   */
+  imageDataUrls?: Map<string, string>;
+}
+
+/**
+ * Minimal structural contract for the asset resolver dependency used by
+ * the export inlining path. Declared structurally to keep this helper
+ * decoupled from the concrete resolver implementation.
+ */
+export interface SvgExportAssetResolver {
+  fetchBlob(id: string): Promise<Blob>;
 }
 
 /**
@@ -67,7 +90,7 @@ export class KritzelSvgExportHelper {
    * @returns SVG document string
    */
   static generateSvg(objects: KritzelBaseObject[], options: SvgExportOptions = {}): string {
-    const { theme, padding = 0, includeXmlDeclaration = true } = options;
+    const { theme, padding = 0, includeXmlDeclaration = true, rasterSafeForCanvas = false, imageDataUrls } = options;
 
     if (!objects || objects.length === 0) {
       return '';
@@ -93,7 +116,7 @@ export class KritzelSvgExportHelper {
     // Generate SVG elements for each object
     const elements = objects
       .sort((a, b) => a.zIndex - b.zIndex)
-      .map(obj => this.objectToSvgElement(obj, theme))
+      .map(obj => this.objectToSvgElement(obj, theme, imageDataUrls, rasterSafeForCanvas))
       .filter(Boolean)
       .join('\n  ');
 
@@ -122,6 +145,73 @@ export class KritzelSvgExportHelper {
     }
     
     return result;
+  }
+
+  /**
+   * Resolves every image referenced by the given objects (including those
+   * nested inside groups) to an inlined `data:` URL, keyed by object id.
+   *
+   * This is required for export flows that rasterize the SVG (e.g. PNG
+   * export): an SVG loaded into an `<img>` element will NOT load external
+   * or `blob:` resources, so a `<image href="blob:...">` renders as a
+   * broken-image placeholder. Embedding the bytes as a base64 `data:` URL
+   * makes the image self-contained and survive rasterization.
+   *
+   * Resolution is best-effort: images that fail to resolve are simply
+   * omitted from the map, and the SVG falls back to whatever `href` the
+   * synchronous path would have produced.
+   * @param objects - Objects to inline images for
+   * @param assetResolver - Resolver used to fetch asset bytes; optional
+   * @returns Map of image object id -> inlined `data:` URL
+   */
+  static async resolveImageDataUrls(objects: KritzelBaseObject[], assetResolver?: SvgExportAssetResolver): Promise<Map<string, string>> {
+    const dataUrls = new Map<string, string>();
+
+    if (!objects || objects.length === 0) {
+      return dataUrls;
+    }
+
+    const images = this.flattenObjects(objects).filter((obj): obj is KritzelImage => KritzelClassHelper.isInstanceOf<KritzelImage>(obj, 'KritzelImage'));
+
+    await Promise.all(
+      images.map(async image => {
+        // Legacy inline data URL is already embeddable as-is.
+        if (image.src?.startsWith('data:')) {
+          dataUrls.set(image.id, image.src);
+          return;
+        }
+        // A resolvedSrc that is itself a data URL can be embedded directly.
+        if (image.resolvedSrc?.startsWith('data:')) {
+          dataUrls.set(image.id, image.resolvedSrc);
+          return;
+        }
+        if (!image.assetId || !assetResolver) {
+          return;
+        }
+        try {
+          const blob = await assetResolver.fetchBlob(image.assetId);
+          dataUrls.set(image.id, await this.blobToDataUrl(blob));
+        } catch (err) {
+          console.warn(`[KritzelSvgExportHelper] Failed to inline image asset ${image.assetId} for export:`, err);
+        }
+      }),
+    );
+
+    return dataUrls;
+  }
+
+  /**
+   * Reads a Blob into a base64 `data:` URL.
+   * @param blob - The blob to encode
+   * @returns Promise resolving to the data URL string
+   */
+  private static blobToDataUrl(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
   }
 
   /**
@@ -173,9 +263,15 @@ export class KritzelSvgExportHelper {
    * Converts a Kritzel object to its SVG element representation.
    * @param object - The object to convert
    * @param theme - Theme for color resolution
+   * @param imageDataUrls - Optional map of image id -> inlined data URL
    * @returns SVG element string, or empty string if object type is not supported
    */
-  static objectToSvgElement(object: KritzelBaseObject, theme?: ThemeName): string {
+  static objectToSvgElement(
+    object: KritzelBaseObject,
+    theme?: ThemeName,
+    imageDataUrls?: Map<string, string>,
+    rasterSafeForCanvas: boolean = false,
+  ): string {
     if (KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath')) {
       return this.pathToSvg(object, theme);
     }
@@ -186,13 +282,13 @@ export class KritzelSvgExportHelper {
       return this.shapeToSvg(object, theme);
     }
     if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
-      return this.textToSvg(object, theme);
+      return this.textToSvg(object, theme, rasterSafeForCanvas);
     }
     if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
-      return this.imageToSvg(object);
+      return this.imageToSvg(object, imageDataUrls);
     }
     if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
-      return this.groupToSvg(object, theme);
+      return this.groupToSvg(object, theme, imageDataUrls, rasterSafeForCanvas);
     }
 
     return '';
@@ -284,7 +380,11 @@ export class KritzelSvgExportHelper {
    * @param theme - Theme for color resolution
    * @returns SVG element string
    */
-  private static textToSvg(text: KritzelText, theme?: ThemeName): string {
+  private static textToSvg(text: KritzelText, theme?: ThemeName, rasterSafeForCanvas: boolean = false): string {
+    if (rasterSafeForCanvas) {
+      return this.textToSvgRasterSafe(text, theme);
+    }
+
     const transform = this.buildTransform(text);
     const opacity = text.opacity !== 1 ? ` opacity="${text.opacity}"` : '';
     const fontColor = KritzelColorHelper.resolveThemeColor(text.fontColor, theme);
@@ -307,20 +407,61 @@ export class KritzelSvgExportHelper {
   }
 
   /**
+   * Converts a KritzelText to SVG using pure SVG text primitives.
+   * This path avoids `<foreignObject>`, which taints canvases when the
+   * generated SVG is rasterized through `<img>` and `drawImage`.
+   */
+  private static textToSvgRasterSafe(text: KritzelText, theme?: ThemeName): string {
+    const transform = this.buildTransform(text);
+    const opacity = text.opacity !== 1 ? ` opacity="${text.opacity}"` : '';
+    const fontColor = KritzelColorHelper.resolveThemeColor(text.fontColor, theme);
+    const bgColor = KritzelColorHelper.resolveThemeColor(text.backgroundColor, theme);
+
+    const width = text.totalWidth / text.scale;
+    const height = text.totalHeight / text.scale;
+
+    const lines = this.prosemirrorToPlainTextLines(text.content);
+    const resolvedLines = lines.length > 0 ? lines : [''];
+
+    const resolvedFontSize = Math.max(1, text.fontSize * (text.scaleFactor || 1));
+    const lineHeight = resolvedFontSize * 1.2;
+    const startY = resolvedFontSize;
+
+    const bgRect = bgColor && bgColor !== 'transparent'
+      ? `<rect x="0" y="0" width="${width}" height="${height}" fill="${bgColor}"/>`
+      : '';
+
+    const tspans = resolvedLines
+      .map((line, index) => {
+        const y = startY + index * lineHeight;
+        return `<tspan x="0" y="${y}" xml:space="preserve">${this.escapeHtml(line)}</tspan>`;
+      })
+      .join('');
+
+    return `<g transform="${transform}"${opacity}>
+    ${bgRect}
+    <text font-family="${this.escapeHtml(text.fontFamily)}" font-size="${resolvedFontSize}" fill="${fontColor}">${tspans}</text>
+  </g>`;
+  }
+
+  /**
    * Converts a KritzelImage to SVG.
    *
-   * Uses `resolvedSrc` when available (populated by the renderer via the
-   * asset resolver), falling back to the legacy inline `src` field for
+   * Prefers an inlined `data:` URL from `imageDataUrls` (keyed by object
+   * id) when provided, so the embedded bytes survive rasterization to
+   * PNG. Falls back to `resolvedSrc` (populated by the renderer via the
+   * asset resolver) and finally the legacy inline `src` field for
    * documents persisted before the asset layer existed.
    *
-   * Note: SVG export is synchronous and cannot await asset bytes from a
-   * remote provider. Callers that need the fully rasterized image bytes
-   * embedded in the exported SVG should pre-resolve assets via
-   * `core.assetResolver.fetchBlob` and inline them as data URLs.
+   * Note: a `blob:` `resolvedSrc` renders correctly on-canvas but becomes
+   * a broken-image placeholder once the SVG is loaded into an `<img>` and
+   * drawn to a canvas. Callers that rasterize the SVG must pass
+   * `imageDataUrls` (see {@link KritzelSvgExportHelper.resolveImageDataUrls}).
    * @param image - The image object
+   * @param imageDataUrls - Optional map of image id -> inlined data URL
    * @returns SVG element string
    */
-  private static imageToSvg(image: KritzelImage): string {
+  private static imageToSvg(image: KritzelImage, imageDataUrls?: Map<string, string>): string {
     const transform = this.buildTransform(image);
     const opacity = image.opacity !== 1 ? ` opacity="${image.opacity}"` : '';
     
@@ -328,7 +469,7 @@ export class KritzelSvgExportHelper {
     const width = image.totalWidth / image.scale;
     const height = image.totalHeight / image.scale;
 
-    const href = image.resolvedSrc || image.src || '';
+    const href = imageDataUrls?.get(image.id) || image.resolvedSrc || image.src || '';
 
     return `<g transform="${transform}"${opacity}>
     <image href="${href}" x="0" y="0" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/>
@@ -339,12 +480,18 @@ export class KritzelSvgExportHelper {
    * Converts a KritzelGroup to SVG by recursively converting children.
    * @param group - The group object
    * @param theme - Theme for color resolution
+   * @param imageDataUrls - Optional map of image id -> inlined data URL
    * @returns SVG element string
    */
-  private static groupToSvg(group: KritzelGroup, theme?: ThemeName): string {
+  private static groupToSvg(
+    group: KritzelGroup,
+    theme?: ThemeName,
+    imageDataUrls?: Map<string, string>,
+    rasterSafeForCanvas: boolean = false,
+  ): string {
     const children = group.children
       .sort((a, b) => a.zIndex - b.zIndex)
-      .map(child => this.objectToSvgElement(child, theme))
+      .map(child => this.objectToSvgElement(child, theme, imageDataUrls, rasterSafeForCanvas))
       .filter(Boolean)
       .join('\n    ');
 
@@ -443,6 +590,60 @@ export class KritzelSvgExportHelper {
           return node.content.map((n: any) => this.nodeToHtml(n, theme)).join('');
         }
         return '';
+    }
+  }
+
+  /**
+   * Converts ProseMirror JSON content to plain-text lines.
+   * Used by raster-safe SVG export, which cannot depend on HTML/foreignObject.
+   */
+  private static prosemirrorToPlainTextLines(content: any): string[] {
+    if (!content || !Array.isArray(content.content)) {
+      return [];
+    }
+
+    const plainText = content.content
+      .map((node: any) => this.nodeToPlainText(node))
+      .join('')
+      .replace(/\r\n/g, '\n')
+      .replace(/\n+$/, '');
+
+    if (!plainText) {
+      return [];
+    }
+
+    return plainText.split('\n');
+  }
+
+  /**
+   * Converts a ProseMirror node tree into plain text.
+   */
+  private static nodeToPlainText(node: any): string {
+    if (!node) {
+      return '';
+    }
+
+    switch (node.type) {
+      case 'text':
+        return node.text || '';
+      case 'hard_break':
+        return '\n';
+      case 'paragraph': {
+        const paragraph = Array.isArray(node.content)
+          ? node.content.map((child: any) => this.nodeToPlainText(child)).join('')
+          : '';
+        return `${paragraph}\n`;
+      }
+      case 'list_item': {
+        const item = Array.isArray(node.content)
+          ? node.content.map((child: any) => this.nodeToPlainText(child)).join('')
+          : '';
+        return `- ${item.trim()}\n`;
+      }
+      default:
+        return Array.isArray(node.content)
+          ? node.content.map((child: any) => this.nodeToPlainText(child)).join('')
+          : '';
     }
   }
 
