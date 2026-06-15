@@ -114,4 +114,28 @@ test.describe('Text objects', () => {
 
     await expect(editorPage.engine).toHaveScreenshot();
   });
+
+  test('visual: rotated text stores rotation property', async ({ editorPage }) => {
+    const rotationDegrees = 20;
+    const expectedRadians = rotationDegrees * (Math.PI / 180);
+
+    await editorPage.prepareWaitForObjectsAdded();
+
+    const text = await editorPage.addText({
+      text: 'Rotate Me',
+      translateX: 250,
+      translateY: 170,
+      fontSize: 40,
+      fontFamily: 'Arial',
+      fontColor: { light: '#1c7ed6', dark: '#1c7ed6' },
+      rotation: rotationDegrees,
+    });
+
+    await editorPage.waitForObjectsAdded();
+
+    const textObject = await editorPage.getObjectById<any>(text.id);
+    expect(textObject?.rotation).toBeCloseTo(expectedRadians, 4);
+
+    await expect(editorPage.engine).toHaveScreenshot();
+  });
 });

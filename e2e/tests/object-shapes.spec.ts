@@ -284,6 +284,63 @@ test.describe('Shape objects', () => {
     await expect(editorPage.engine).toHaveScreenshot();
   });
 
+  test('visual: rotated rectangle, ellipse, and triangle', async ({ editorPage }) => {
+    const toRadians = (degrees: number) => degrees * (Math.PI / 180);
+
+    const rectangleRotationDegrees = 22.5;
+    const ellipseRotationDegrees = -26;
+    const triangleRotationDegrees = 36;
+
+    await editorPage.prepareWaitForObjectsAdded();
+    const rectangle = await editorPage.addShape({
+      shapeType: 'rectangle',
+      translateX: 80,
+      translateY: 80,
+      width: 130,
+      height: 95,
+      rotation: rectangleRotationDegrees,
+      fillColor: { light: '#ff6b6b', dark: '#ff6b6b' },
+    });
+
+    await editorPage.waitForObjectsAdded();
+    await editorPage.prepareWaitForObjectsAdded();
+
+    const ellipse = await editorPage.addShape({
+      shapeType: 'ellipse',
+      translateX: 280,
+      translateY: 90,
+      width: 130,
+      height: 95,
+      rotation: ellipseRotationDegrees,
+      fillColor: { light: '#51cf66', dark: '#51cf66' },
+    });
+
+    await editorPage.waitForObjectsAdded();
+    await editorPage.prepareWaitForObjectsAdded();
+
+    const triangle = await editorPage.addShape({
+      shapeType: 'triangle',
+      translateX: 500,
+      translateY: 95,
+      width: 130,
+      height: 100,
+      rotation: triangleRotationDegrees,
+      fillColor: { light: '#4dabf7', dark: '#4dabf7' },
+    });
+
+    await editorPage.waitForObjectsAdded();
+
+    const rectangleObject = await editorPage.getObjectById<any>(rectangle.id);
+    const ellipseObject = await editorPage.getObjectById<any>(ellipse.id);
+    const triangleObject = await editorPage.getObjectById<any>(triangle.id);
+
+    expect(rectangleObject?.rotation).toBeCloseTo(toRadians(rectangleRotationDegrees), 4);
+    expect(ellipseObject?.rotation).toBeCloseTo(toRadians(ellipseRotationDegrees), 4);
+    expect(triangleObject?.rotation).toBeCloseTo(toRadians(triangleRotationDegrees), 4);
+
+    await expect(editorPage.engine).toHaveScreenshot();
+  });
+
   test('visual: filled shapes with opacity overlapping near origin', async ({ editorPage }) => {
     await editorPage.prepareWaitForObjectsAdded();
 

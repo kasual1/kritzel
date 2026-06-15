@@ -266,4 +266,31 @@ test.describe('Line objects', () => {
 
     await expect(editorPage.engine).toHaveScreenshot();
   });
+
+  test('visual: rotated line stores rotation property', async ({ editorPage }) => {
+    const rotationDegrees = -45;
+    const expectedRadians = rotationDegrees * (Math.PI / 180);
+
+    await editorPage.prepareWaitForObjectsAdded();
+
+    const line = await editorPage.addLine({
+      startX: 120,
+      startY: 120,
+      endX: 420,
+      endY: 220,
+      strokeWidth: 4,
+      stroke: { light: '#f08c00', dark: '#f08c00' },
+      arrows: {
+        end: { enabled: true },
+      },
+      rotation: rotationDegrees,
+    });
+
+    await editorPage.waitForObjectsAdded();
+
+    const lineObject = await editorPage.getObjectById<any>(line.id);
+    expect(lineObject?.rotation).toBeCloseTo(expectedRadians, 4);
+
+    await expect(editorPage.engine).toHaveScreenshot();
+  });
 });
