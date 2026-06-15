@@ -1386,21 +1386,33 @@ export class KritzelEngine {
   /**
    * Generates an SVG string from the currently selected objects.
    * Creates clean, standards-compliant SVG markup by directly serializing object properties.
-   * @param options - Optional export settings (theme, padding).
+   * @param options - Optional export settings (theme, padding, raster-safe mode for canvas export).
    * @returns SVG markup string, or null if no objects are selected.
    */
   @Method()
-  async getSelectedObjectsAsSvgString(options?: { theme?: 'light' | 'dark'; padding?: number }): Promise<string | null> {
+  async getSelectedObjectsAsSvgString(options?: {
+    theme?: 'light' | 'dark';
+    padding?: number;
+    rasterSafeForCanvas?: boolean;
+  }): Promise<string | null> {
     const selectedObjects = await this.getSelectedObjects();
     if (!selectedObjects || selectedObjects.length === 0) {
       return null;
     }
 
     const theme = options?.theme ?? this.core.themeManager.getStoredTheme();
+
+    // Inline image bytes as data URLs so they survive both standalone SVG
+    // files and rasterization to PNG (a `blob:` href is not loaded when an
+    // SVG is drawn into a canvas, which otherwise yields a broken image).
+    const imageDataUrls = await KritzelSvgExportHelper.resolveImageDataUrls(selectedObjects, this.core.assetResolver);
+
     return KritzelSvgExportHelper.generateSvg(selectedObjects, {
       theme,
       padding: options?.padding ?? 0,
       includeXmlDeclaration: true,
+      rasterSafeForCanvas: options?.rasterSafeForCanvas ?? false,
+      imageDataUrls,
     });
   }
 
@@ -1446,6 +1458,9 @@ export class KritzelEngine {
     const svgString = await this.getSelectedObjectsAsSvgString({
       theme: options?.theme,
       padding: options?.padding,
+      // Avoid foreignObject-based text serialization, which taints the
+      // canvas in SVG->PNG conversion paths.
+      rasterSafeForCanvas: true,
     });
 
     if (!svgString) {
