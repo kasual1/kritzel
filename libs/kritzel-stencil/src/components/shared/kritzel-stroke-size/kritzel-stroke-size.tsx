@@ -17,10 +17,12 @@ export class KritzelStrokeSize {
   }
 
   render() {
+    const sizes = this.sizes ?? [];
+
     return (
       <Host>
         <div class="size-grid">
-          {this.sizes.map(size => (
+          {sizes.map(size => (
             <div
               tabIndex={0}
               class={{
