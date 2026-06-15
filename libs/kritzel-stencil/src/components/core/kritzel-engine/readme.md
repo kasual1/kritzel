@@ -563,16 +563,16 @@ Type: `Promise<string>`
 
 PNG data URL string, or null if no objects are selected.
 
-### `getSelectedObjectsAsSvgString(options?: { theme?: "light" | "dark"; padding?: number; }) => Promise<string | null>`
+### `getSelectedObjectsAsSvgString(options?: { theme?: "light" | "dark"; padding?: number; rasterSafeForCanvas?: boolean; }) => Promise<string | null>`
 
 Generates an SVG string from the currently selected objects.
 Creates clean, standards-compliant SVG markup by directly serializing object properties.
 
 #### Parameters
 
-| Name      | Type                                               | Description                                  |
-| --------- | -------------------------------------------------- | -------------------------------------------- |
-| `options` | `{ theme?: "light" \| "dark"; padding?: number; }` | - Optional export settings (theme, padding). |
+| Name      | Type                                                                              | Description                                                                      |
+| --------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `options` | `{ theme?: "light" \| "dark"; padding?: number; rasterSafeForCanvas?: boolean; }` | - Optional export settings (theme, padding, raster-safe mode for canvas export). |
 
 #### Returns
 

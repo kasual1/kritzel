@@ -83,8 +83,13 @@ export class CollaborationRealtimeComponent {
   };
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-      for (const obj of createSeedObjects()) {
-        await this.editor.addObject(obj);
-      }
+    const existing = await this.editor.getAllObjects();
+    if (existing.length > 0) {
+      return;
     }
+
+    for (const obj of createSeedObjects()) {
+      await this.editor.addObject(obj);
+    }
+  }
 }
