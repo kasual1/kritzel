@@ -1,5 +1,6 @@
 import { Component, Host, h, Prop, Method, State, Element } from '@stencil/core';
 import { IKritzelUser } from '../../../interfaces/user.interface';
+import { KritzelTermKey } from '../../../interfaces/localization.interface';
 
 @Component({
   tag: 'kritzel-current-user-dialog',
@@ -10,6 +11,9 @@ export class KritzelCurrentUserDialog {
   @Element() host!: HTMLElement;
 
   @Prop() user?: IKritzelUser;
+
+  /** Resolved localized strings keyed by term key, supplied by the editor. */
+  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
   @State() isDialogOpen: boolean = false;
 
@@ -42,7 +46,7 @@ export class KritzelCurrentUserDialog {
     return (
       <Host>
         <kritzel-dialog
-          dialogTitle="Account"
+          dialogTitle={this.terms['currentUser.dialogTitle'] ?? 'Account'}
           isOpen={this.isDialogOpen}
           onDialogClose={this.closeDialog}
           size="small"

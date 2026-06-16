@@ -7,31 +7,34 @@
 
 ## Properties
 
-| Property                       | Attribute                          | Description                                                                                                                                                                                                                                                                                                                                                                                           | Type                               | Default     |
-| ------------------------------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ----------- |
-| `activeWorkspaceId`            | `active-workspace-id`              | Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.                                                                                                                                                                                                                                                                                                    | `string`                           | `undefined` |
-| `assetStorageConfig`           | --                                 | Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`. | `KritzelAssetStorageConfig`        | `undefined` |
-| `cursorTarget`                 | --                                 | The HTML element to apply cursor styles to. Defaults to `document.body` if not set.                                                                                                                                                                                                                                                                                                                   | `HTMLElement`                      | `undefined` |
-| `debugInfo`                    | --                                 | Debug info display options controlling which debug overlays are visible                                                                                                                                                                                                                                                                                                                               | `KritzelDebugInfo`                 | `undefined` |
-| `editorId`                     | `editor-id`                        | Optional unique identifier for namespacing storage keys across multiple editor instances.                                                                                                                                                                                                                                                                                                             | `string`                           | `undefined` |
-| `globalContextMenuItems`       | --                                 | Context menu items shown when right-clicking the canvas background.                                                                                                                                                                                                                                                                                                                                   | `ContextMenuItem[]`                | `undefined` |
-| `isLoading`                    | `is-loading`                       | External loading state. Combined with internal workspace-loading state to drive the overlay.                                                                                                                                                                                                                                                                                                          | `boolean`                          | `false`     |
-| `isObjectDistanceFadingActive` | `is-object-distance-fading-active` | When true, objects fade based on distance to the viewport center.                                                                                                                                                                                                                                                                                                                                     | `boolean`                          | `false`     |
-| `isPanningEnabled`             | `is-panning-enabled`               | When false, non-modified wheel events do not pan the viewport.                                                                                                                                                                                                                                                                                                                                        | `boolean`                          | `true`      |
-| `isZoomingEnabled`             | `is-zooming-enabled`               | When false, Ctrl+wheel events do not zoom the viewport.                                                                                                                                                                                                                                                                                                                                               | `boolean`                          | `true`      |
-| `lockDrawingScale`             | `lock-drawing-scale`               | When true, objects are drawn at a fixed visual size regardless of zoom level                                                                                                                                                                                                                                                                                                                          | `boolean`                          | `true`      |
-| `objectContextMenuItems`       | --                                 | Context menu items shown when right-clicking a selected object.                                                                                                                                                                                                                                                                                                                                       | `ContextMenuItem[]`                | `undefined` |
-| `scaleMax`                     | `scale-max`                        | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.                                                                                                                                                                                                                                                                                                                    | `number`                           | `1000`      |
-| `scaleMin`                     | `scale-min`                        | Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.                                                                                                                                                                                                                                                                                                                    | `number`                           | `0.0001`    |
-| `syncConfig`                   | --                                 | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).                                                                                                                                                                                                                                                                                                                   | `KritzelSyncConfig`                | `undefined` |
-| `theme`                        | `theme`                            | The current theme to apply to the editor                                                                                                                                                                                                                                                                                                                                                              | `"dark" \| "light" \| string & {}` | `'light'`   |
-| `themes`                       | --                                 | An array of available themes for the editor.                                                                                                                                                                                                                                                                                                                                                          | `KritzelTheme[]`                   | `undefined` |
-| `user`                         | --                                 | The current user for awareness broadcasting (name, id, cursor position).                                                                                                                                                                                                                                                                                                                              | `IKritzelUser`                     | `undefined` |
-| `viewportBoundaryBottom`       | `viewport-boundary-bottom`         | Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.                                                                                                                                                                                                                                                                                             | `number`                           | `Infinity`  |
-| `viewportBoundaryLeft`         | `viewport-boundary-left`           | Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.                                                                                                                                                                                                                                                                                               | `number`                           | `-Infinity` |
-| `viewportBoundaryRight`        | `viewport-boundary-right`          | Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.                                                                                                                                                                                                                                                                                              | `number`                           | `Infinity`  |
-| `viewportBoundaryTop`          | `viewport-boundary-top`            | Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.                                                                                                                                                                                                                                                                                                | `number`                           | `-Infinity` |
-| `workspace`                    | --                                 | The workspace to load and display. Changing this prop switches the active workspace.                                                                                                                                                                                                                                                                                                                  | `KritzelWorkspace`                 | `undefined` |
+| Property                       | Attribute                          | Description                                                                                                                                                                                                                                                                                                                                                                                           | Type                                  | Default     |
+| ------------------------------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | ----------- |
+| `activeWorkspaceId`            | `active-workspace-id`              | Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.                                                                                                                                                                                                                                                                                                    | `string`                              | `undefined` |
+| `assetStorageConfig`           | --                                 | Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`. | `KritzelAssetStorageConfig`           | `undefined` |
+| `cursorTarget`                 | --                                 | The HTML element to apply cursor styles to. Defaults to `document.body` if not set.                                                                                                                                                                                                                                                                                                                   | `HTMLElement`                         | `undefined` |
+| `debugInfo`                    | --                                 | Debug info display options controlling which debug overlays are visible                                                                                                                                                                                                                                                                                                                               | `KritzelDebugInfo`                    | `undefined` |
+| `editorId`                     | `editor-id`                        | Optional unique identifier for namespacing storage keys across multiple editor instances.                                                                                                                                                                                                                                                                                                             | `string`                              | `undefined` |
+| `fallbackLocale`               | `fallback-locale`                  | The locale used to resolve terms missing from the active locale.                                                                                                                                                                                                                                                                                                                                      | `"de" \| "en" \| "fr" \| string & {}` | `'en'`      |
+| `globalContextMenuItems`       | --                                 | Context menu items shown when right-clicking the canvas background.                                                                                                                                                                                                                                                                                                                                   | `ContextMenuItem[]`                   | `undefined` |
+| `isLoading`                    | `is-loading`                       | External loading state. Combined with internal workspace-loading state to drive the overlay.                                                                                                                                                                                                                                                                                                          | `boolean`                             | `false`     |
+| `isObjectDistanceFadingActive` | `is-object-distance-fading-active` | When true, objects fade based on distance to the viewport center.                                                                                                                                                                                                                                                                                                                                     | `boolean`                             | `false`     |
+| `isPanningEnabled`             | `is-panning-enabled`               | When false, non-modified wheel events do not pan the viewport.                                                                                                                                                                                                                                                                                                                                        | `boolean`                             | `true`      |
+| `isZoomingEnabled`             | `is-zooming-enabled`               | When false, Ctrl+wheel events do not zoom the viewport.                                                                                                                                                                                                                                                                                                                                               | `boolean`                             | `true`      |
+| `locale`                       | `locale`                           | The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'.                                                                                                                                                                                                                                                                                                                     | `"de" \| "en" \| "fr" \| string & {}` | `'en'`      |
+| `locales`                      | --                                 | An array of available locale definitions (with optional partial term overrides).                                                                                                                                                                                                                                                                                                                      | `KritzelLocale[]`                     | `undefined` |
+| `lockDrawingScale`             | `lock-drawing-scale`               | When true, objects are drawn at a fixed visual size regardless of zoom level                                                                                                                                                                                                                                                                                                                          | `boolean`                             | `true`      |
+| `objectContextMenuItems`       | --                                 | Context menu items shown when right-clicking a selected object.                                                                                                                                                                                                                                                                                                                                       | `ContextMenuItem[]`                   | `undefined` |
+| `scaleMax`                     | `scale-max`                        | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.                                                                                                                                                                                                                                                                                                                    | `number`                              | `1000`      |
+| `scaleMin`                     | `scale-min`                        | Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.                                                                                                                                                                                                                                                                                                                    | `number`                              | `0.0001`    |
+| `syncConfig`                   | --                                 | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).                                                                                                                                                                                                                                                                                                                   | `KritzelSyncConfig`                   | `undefined` |
+| `theme`                        | `theme`                            | The current theme to apply to the editor                                                                                                                                                                                                                                                                                                                                                              | `"dark" \| "light" \| string & {}`    | `'light'`   |
+| `themes`                       | --                                 | An array of available themes for the editor.                                                                                                                                                                                                                                                                                                                                                          | `KritzelTheme[]`                      | `undefined` |
+| `user`                         | --                                 | The current user for awareness broadcasting (name, id, cursor position).                                                                                                                                                                                                                                                                                                                              | `IKritzelUser`                        | `undefined` |
+| `viewportBoundaryBottom`       | `viewport-boundary-bottom`         | Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.                                                                                                                                                                                                                                                                                             | `number`                              | `Infinity`  |
+| `viewportBoundaryLeft`         | `viewport-boundary-left`           | Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.                                                                                                                                                                                                                                                                                               | `number`                              | `-Infinity` |
+| `viewportBoundaryRight`        | `viewport-boundary-right`          | Right boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.                                                                                                                                                                                                                                                                                              | `number`                              | `Infinity`  |
+| `viewportBoundaryTop`          | `viewport-boundary-top`            | Top boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.                                                                                                                                                                                                                                                                                                | `number`                              | `-Infinity` |
+| `workspace`                    | --                                 | The workspace to load and display. Changing this prop switches the active workspace.                                                                                                                                                                                                                                                                                                                  | `KritzelWorkspace`                    | `undefined` |
 
 
 ## Events
@@ -454,6 +457,26 @@ Type: `Promise<T[]>`
 
 
 
+### `getAvailableLocaleOptions() => Promise<{ code: LocaleCode; label: string; }[]>`
+
+Gets the list of available locales as `{ code, label }` options for a selector.
+
+#### Returns
+
+Type: `Promise<{ code: LocaleCode; label: string; }[]>`
+
+
+
+### `getAvailableLocales() => Promise<LocaleCode[]>`
+
+Gets the list of available locale codes (built-in and registered).
+
+#### Returns
+
+Type: `Promise<LocaleCode[]>`
+
+
+
 ### `getCopiedObjects() => Promise<KritzelBaseObject[]>`
 
 Returns the objects currently stored in the internal clipboard from a prior `copy()` call.
@@ -483,6 +506,16 @@ Gets whether the active workspace is publicly accessible.
 Type: `Promise<boolean>`
 
 True if the workspace is public, false otherwise
+
+### `getLocale() => Promise<LocaleCode>`
+
+Gets the currently active locale code.
+
+#### Returns
+
+Type: `Promise<LocaleCode>`
+
+
 
 ### `getObjectById<T extends KritzelBaseObject>(id: string) => Promise<T | null>`
 
@@ -517,6 +550,17 @@ Returns the total number of objects on the canvas.
 #### Returns
 
 Type: `Promise<number>`
+
+
+
+### `getResolvedTerms() => Promise<Partial<Record<KritzelTermKey, string>>>`
+
+Resolves every known term key for the active locale into a flat map.
+Useful for UI layers that need to localize many strings at once.
+
+#### Returns
+
+Type: `Promise<Partial<Record<keyof KritzelTerms, string>>>`
 
 
 
@@ -776,6 +820,22 @@ Type: `Promise<void>`
 
 
 
+### `registerLocales(locales: KritzelLocale[]) => Promise<void>`
+
+Registers additional locale definitions (with optional partial term overrides).
+
+#### Parameters
+
+| Name      | Type              | Description                           |
+| --------- | ----------------- | ------------------------------------- |
+| `locales` | `KritzelLocale[]` | - The locale definitions to register. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>`
 
 Registers a new drawing tool with the engine.
@@ -933,6 +993,22 @@ Type: `Promise<void>`
 
 
 
+### `setLocale(code: LocaleCode) => Promise<void>`
+
+Sets the active locale (language) and re-renders the UI.
+
+#### Parameters
+
+| Name   | Type                                    | Description                               |
+| ------ | --------------------------------------- | ----------------------------------------- |
+| `code` | `(string & {}) \| "en" \| "de" \| "fr"` | - The locale code to activate, e.g. 'de'. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `setViewport(x: number, y: number, scale: number) => Promise<void>`
 
 Sets the viewport to center on the given world coordinates at the specified scale.
@@ -948,6 +1024,23 @@ Sets the viewport to center on the given world coordinates at the specified scal
 #### Returns
 
 Type: `Promise<void>`
+
+
+
+### `t(key: KritzelTermKey, vars?: KritzelTermVars) => Promise<string>`
+
+Resolves a term key to its translated string for the active locale.
+
+#### Parameters
+
+| Name   | Type                                 | Description                                          |
+| ------ | ------------------------------------ | ---------------------------------------------------- |
+| `key`  | `keyof KritzelTerms`                 | - The term key to resolve.                           |
+| `vars` | `{ [x: string]: string \| number; }` | - Optional values for `{placeholder}` interpolation. |
+
+#### Returns
+
+Type: `Promise<string>`
 
 
 
