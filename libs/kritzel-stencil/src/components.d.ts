@@ -1407,6 +1407,11 @@ export namespace Components {
           * @default true
          */
         "visible": boolean;
+        /**
+          * Current zoom level in percent.
+          * @default 100
+         */
+        "zoomPercent": number;
     }
 }
 export interface KritzelBackToContentCustomEvent<T> extends CustomEvent<T> {
@@ -3332,6 +3337,11 @@ declare namespace LocalJSX {
           * @default true
          */
         "visible"?: boolean;
+        /**
+          * Current zoom level in percent.
+          * @default 100
+         */
+        "zoomPercent"?: number;
     }
 
     interface KritzelActiveUsersAttributes {
@@ -3532,6 +3542,7 @@ declare namespace LocalJSX {
     interface KritzelZoomPanelAttributes {
         "visible": boolean;
         "disabled": boolean;
+        "zoomPercent": number;
     }
 
     interface IntrinsicElements {

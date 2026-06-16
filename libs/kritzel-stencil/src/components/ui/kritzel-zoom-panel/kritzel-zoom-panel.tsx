@@ -12,6 +12,9 @@ export class KritzelZoomPanel {
   /** Whether both zoom buttons are disabled. */
   @Prop() disabled: boolean = false;
 
+  /** Current zoom level in percent. */
+  @Prop() zoomPercent: number = 100;
+
   /** Emitted when the zoom-in button is clicked. */
   @Event() zoomIn!: EventEmitter<void>;
 
@@ -30,6 +33,10 @@ export class KritzelZoomPanel {
     }
   };
 
+  private get normalizedZoomPercent(): number {
+    return Number.isFinite(this.zoomPercent) ? Math.max(1, Math.round(this.zoomPercent)) : 100;
+  }
+
   render() {
     return (
       <Host>
@@ -37,6 +44,7 @@ export class KritzelZoomPanel {
           <button class="zoom-button" type="button" aria-label="Zoom out" disabled={this.disabled} onClick={this.handleZoomOut}>
             <kritzel-icon name="minus"></kritzel-icon>
           </button>
+          <span class="zoom-level" aria-live="polite">{this.normalizedZoomPercent}%</span>
           <button class="zoom-button" type="button" aria-label="Zoom in" disabled={this.disabled} onClick={this.handleZoomIn}>
             <kritzel-icon name="plus"></kritzel-icon>
           </button>

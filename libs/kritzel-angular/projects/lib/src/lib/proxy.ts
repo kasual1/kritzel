@@ -661,14 +661,14 @@ export declare interface KritzelSettings extends Components.KritzelSettings {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelZoomPanel,
-  inputs: ['disabled', 'visible']
+  inputs: ['disabled', 'visible', 'zoomPercent']
 })
 @Component({
   selector: 'kritzel-zoom-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'visible'],
+  inputs: ['disabled', 'visible', 'zoomPercent'],
   outputs: ['zoomIn', 'zoomOut'],
 })
 export class KritzelZoomPanel {
