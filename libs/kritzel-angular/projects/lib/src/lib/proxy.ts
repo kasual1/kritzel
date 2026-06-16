@@ -22,6 +22,7 @@ import { defineCustomElement as defineKritzelNumericInput } from 'kritzel-stenci
 import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelPillTabs } from 'kritzel-stencil/dist/components/kritzel-pill-tabs.js';
 import { defineCustomElement as defineKritzelSettings } from 'kritzel-stencil/dist/components/kritzel-settings.js';
+import { defineCustomElement as defineKritzelZoomPanel } from 'kritzel-stencil/dist/components/kritzel-zoom-panel.js';
 @ProxyCmp({
   defineCustomElementFn: defineKritzelAwarenessCursors,
   inputs: ['core', 'edgeIndicatorPadding', 'showEdgeIndicators']
@@ -655,6 +656,43 @@ export declare interface KritzelSettings extends Components.KritzelSettings {
    * Emitted when settings change
    */
   settingsChange: EventEmitter<KritzelSettingsCustomEvent<IKritzelSettingsKritzelSettingsConfig>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelZoomPanel,
+  inputs: ['disabled', 'visible']
+})
+@Component({
+  selector: 'kritzel-zoom-panel',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['disabled', 'visible'],
+  outputs: ['zoomIn', 'zoomOut'],
+})
+export class KritzelZoomPanel {
+  protected el: HTMLKritzelZoomPanelElement;
+  @Output() zoomIn = new EventEmitter<KritzelZoomPanelCustomEvent<void>>();
+  @Output() zoomOut = new EventEmitter<KritzelZoomPanelCustomEvent<void>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { KritzelZoomPanelCustomEvent } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelZoomPanel extends Components.KritzelZoomPanel {
+  /**
+   * Emitted when the zoom-in button is clicked.
+   */
+  zoomIn: EventEmitter<KritzelZoomPanelCustomEvent<void>>;
+  /**
+   * Emitted when the zoom-out button is clicked.
+   */
+  zoomOut: EventEmitter<KritzelZoomPanelCustomEvent<void>>;
 }
 
 

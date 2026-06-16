@@ -34,11 +34,11 @@ export class KritzelZoomPanel {
     return (
       <Host>
         <div class={{ panel: true, visible: this.visible }}>
-          <button class="zoom-button" type="button" aria-label="Zoom in" disabled={this.disabled} onClick={this.handleZoomIn}>
-            <kritzel-icon name="plus"></kritzel-icon>
-          </button>
           <button class="zoom-button" type="button" aria-label="Zoom out" disabled={this.disabled} onClick={this.handleZoomOut}>
             <kritzel-icon name="minus"></kritzel-icon>
+          </button>
+          <button class="zoom-button" type="button" aria-label="Zoom in" disabled={this.disabled} onClick={this.handleZoomIn}>
+            <kritzel-icon name="plus"></kritzel-icon>
           </button>
         </div>
       </Host>
