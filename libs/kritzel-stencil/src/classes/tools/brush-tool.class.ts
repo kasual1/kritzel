@@ -36,7 +36,7 @@ export class KritzelBrushTool extends KritzelBaseTool {
    * websocket traffic without visible quality loss — `perfect-freehand`
    * already smooths the rendered stroke.
    */
-  static readonly MIN_POINT_DISTANCE_PX = 5;
+  static readonly MIN_POINT_DISTANCE_PX = 3;
 
   /** Tracks the ID of the path currently being drawn */
   private _currentPathId: string | null = null;
