@@ -99,11 +99,12 @@ export function CustomContextMenuSmartConditionalPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="custom-context-menu-smart-conditional"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
         globalContextMenuItems={globalItems}
         objectContextMenuItems={objectItems}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {

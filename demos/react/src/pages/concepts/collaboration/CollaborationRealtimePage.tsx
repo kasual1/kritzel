@@ -35,11 +35,12 @@ export function CollaborationRealtimePage() {
       <KritzelEditor
         ref={editorRef}
         editorId="collaboration-realtime"
-        wheelEnabled={false}
         syncConfig={syncConfig}
         theme="react-theme"
         themes={[customReactTheme]}
         loginConfig={undefined}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {

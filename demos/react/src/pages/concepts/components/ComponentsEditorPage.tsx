@@ -11,7 +11,8 @@ export function ComponentsEditorPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="components-editor"
-        wheelEnabled={false}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
         onIsReady={() => {

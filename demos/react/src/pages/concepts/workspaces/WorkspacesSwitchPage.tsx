@@ -51,11 +51,12 @@ export function WorkspacesSwitchPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="workspaces-switch"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
         syncConfig={syncConfig}
         activeWorkspaceId={activeWorkspaceId}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={(event) => {

@@ -58,7 +58,8 @@ export class KritzelEditor {
   @Prop({ mutable: true }) viewportBoundaryRight: number = Infinity;
   @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
   @Prop({ mutable: true }) viewportBoundaryBottom: number = Infinity;
-  @Prop({ mutable: true }) wheelEnabled: boolean = true;
+  @Prop({ mutable: true }) isPanningEnabled: boolean = true;
+  @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
   @Prop({ mutable: true }) debugInfo: KritzelDebugInfo = {
     showViewportInfo: false,
     showObjectInfo: false,
@@ -1075,7 +1076,8 @@ export class KritzelEditor {
           viewportBoundaryRight={this.viewportBoundaryRight}
           viewportBoundaryTop={this.viewportBoundaryTop}
           viewportBoundaryBottom={this.viewportBoundaryBottom}
-          wheelEnabled={this.wheelEnabled}
+          isPanningEnabled={this.isPanningEnabled}
+          isZoomingEnabled={this.isZoomingEnabled}
           theme={this.theme}
           themes={this.themes}
           debugInfo={this.debugInfo}

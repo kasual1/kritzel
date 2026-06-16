@@ -64,10 +64,11 @@ export function ToolsControlsPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="tools-controls"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
         controls={controls}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {

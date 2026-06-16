@@ -419,11 +419,19 @@ export namespace Components {
         /**
           * @default true
          */
+        "isPanningEnabled": boolean;
+        /**
+          * @default true
+         */
         "isUtilityPanelVisible": boolean;
         /**
           * @default true
          */
         "isWorkspaceManagerVisible": boolean;
+        /**
+          * @default true
+         */
+        "isZoomingEnabled": boolean;
         "loadObjectsFromJson": (json: string) => Promise<number>;
         "loadSharedWorkspace": (token: string) => Promise<void>;
         /**
@@ -494,10 +502,6 @@ export namespace Components {
           * @default -Infinity
          */
         "viewportBoundaryTop": number;
-        /**
-          * @default true
-         */
-        "wheelEnabled": boolean;
         "worldToScreen": (x: number, y: number) => Promise<{ x: number; y: number; }>;
         "zoomIn": (factor?: number, duration?: number) => Promise<void>;
         "zoomOut": (factor?: number, duration?: number) => Promise<void>;
@@ -761,6 +765,16 @@ export namespace Components {
          */
         "isObjectDistanceFadingActive": boolean;
         /**
+          * When false, non-modified wheel events do not pan the viewport.
+          * @default true
+         */
+        "isPanningEnabled": boolean;
+        /**
+          * When false, Ctrl+wheel events do not zoom the viewport.
+          * @default true
+         */
+        "isZoomingEnabled": boolean;
+        /**
           * Loads objects from a workspace JSON string into the current workspace. Unlike importFromJson, this does not create a new workspace - it adds objects to the existing one. Useful for initializing a workspace with pre-existing content after the editor is ready.
           * @param json - A JSON string containing workspace data (from exportAsJson).
           * @returns The number of objects loaded.
@@ -947,11 +961,6 @@ export namespace Components {
           * @default -Infinity
          */
         "viewportBoundaryTop": number;
-        /**
-          * When false, wheel events will not trigger viewport pan/zoom. The event still propagates to parent elements.
-          * @default true
-         */
-        "wheelEnabled": boolean;
         /**
           * The workspace to load and display. Changing this prop switches the active workspace.
          */
@@ -2574,11 +2583,19 @@ declare namespace LocalJSX {
         /**
           * @default true
          */
+        "isPanningEnabled"?: boolean;
+        /**
+          * @default true
+         */
         "isUtilityPanelVisible"?: boolean;
         /**
           * @default true
          */
         "isWorkspaceManagerVisible"?: boolean;
+        /**
+          * @default true
+         */
+        "isZoomingEnabled"?: boolean;
         /**
           * @default true
          */
@@ -2638,10 +2655,6 @@ declare namespace LocalJSX {
           * @default -Infinity
          */
         "viewportBoundaryTop"?: number;
-        /**
-          * @default true
-         */
-        "wheelEnabled"?: boolean;
     }
     interface KritzelEngine {
         /**
@@ -2678,6 +2691,16 @@ declare namespace LocalJSX {
           * @default false
          */
         "isObjectDistanceFadingActive"?: boolean;
+        /**
+          * When false, non-modified wheel events do not pan the viewport.
+          * @default true
+         */
+        "isPanningEnabled"?: boolean;
+        /**
+          * When false, Ctrl+wheel events do not zoom the viewport.
+          * @default true
+         */
+        "isZoomingEnabled"?: boolean;
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
@@ -2790,11 +2813,6 @@ declare namespace LocalJSX {
           * @default -Infinity
          */
         "viewportBoundaryTop"?: number;
-        /**
-          * When false, wheel events will not trigger viewport pan/zoom. The event still propagates to parent elements.
-          * @default true
-         */
-        "wheelEnabled"?: boolean;
         /**
           * The workspace to load and display. Changing this prop switches the active workspace.
          */
@@ -3323,7 +3341,8 @@ declare namespace LocalJSX {
         "viewportBoundaryRight": number;
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
-        "wheelEnabled": boolean;
+        "isPanningEnabled": boolean;
+        "isZoomingEnabled": boolean;
         "theme": ThemeName;
         "isControlsVisible": boolean;
         "isUtilityPanelVisible": boolean;
@@ -3346,7 +3365,8 @@ declare namespace LocalJSX {
         "viewportBoundaryRight": number;
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
-        "wheelEnabled": boolean;
+        "isPanningEnabled": boolean;
+        "isZoomingEnabled": boolean;
         "isLoading": boolean;
     }
     interface KritzelExportAttributes {
