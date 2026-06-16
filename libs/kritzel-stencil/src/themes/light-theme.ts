@@ -311,4 +311,10 @@ export const lightTheme: KritzelTheme = {
     buttonHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
     separatorColor: 'hsl(0, 0%, 0%, 8%)',
   },
+
+  watermark: {
+    background: 'rgba(255, 255, 255, 0.6)',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.12)',
+    color: 'rgba(60, 60, 60, 0.75)',
+  },
 };

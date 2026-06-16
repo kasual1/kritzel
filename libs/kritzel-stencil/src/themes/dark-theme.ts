@@ -305,4 +305,10 @@ export const darkTheme: KritzelTheme = {
     buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
     separatorColor: 'hsl(0, 0%, 100%, 12%)',
   },
+
+  watermark: {
+    background: 'rgba(40, 40, 40, 0.6)',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.35)',
+    color: 'rgba(220, 220, 220, 0.8)',
+  },
 };

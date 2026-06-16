@@ -21,6 +21,7 @@ import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelCursorManager } from '../managers/cursor.manager';
 import { KritzelThemeManager } from '../managers/theme.manager';
 import { KritzelLocalizationManager } from '../managers/localization.manager';
+import { KritzelLicenseManager } from '../managers/license.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { IKritzelUser } from '../../interfaces/user.interface';
 
@@ -58,6 +59,8 @@ export class KritzelCore {
   private readonly _themeManager: KritzelThemeManager;
   /** Manager for localization / translated UI strings */
   private readonly _localizationManager: KritzelLocalizationManager;
+  /** Manager for license validation and watermark gating */
+  private readonly _licenseManager: KritzelLicenseManager;
   /** Per-core registry of drawing tools (one instance per editor). */
   private readonly _toolRegistry: KritzelToolRegistry;
   /** Optional unique identifier for namespacing storage keys across multiple editor instances */
@@ -122,6 +125,14 @@ export class KritzelCore {
   }
 
   /**
+   * Gets the license manager.
+   * @returns The KritzelLicenseManager for validating licenses and gating the watermark
+   */
+  get licenseManager(): KritzelLicenseManager {
+    return this._licenseManager;
+  }
+
+  /**
    * Gets the tool registry scoped to this core instance.
    * @returns The KritzelToolRegistry owned by this core
    */
@@ -179,6 +190,7 @@ export class KritzelCore {
     this._cursorManager = new KritzelCursorManager(this);
     this._themeManager = new KritzelThemeManager(this);
     this._localizationManager = new KritzelLocalizationManager(this);
+    this._licenseManager = new KritzelLicenseManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);
     this._assetResolver = new KritzelAssetResolver();
   }

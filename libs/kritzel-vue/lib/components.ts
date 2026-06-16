@@ -21,6 +21,7 @@ import { defineCustomElement as defineKritzelNumericInput } from '../../kritzel-
 import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelPillTabs } from '../../kritzel-stencil/dist/components/kritzel-pill-tabs.js';
 import { defineCustomElement as defineKritzelSettings } from '../../kritzel-stencil/dist/components/kritzel-settings.js';
+import { defineCustomElement as defineKritzelWatermark } from '../../kritzel-stencil/dist/components/kritzel-watermark.js';
 import { defineCustomElement as defineKritzelZoomPanel } from '../../kritzel-stencil/dist/components/kritzel-zoom-panel.js';
 
 
@@ -91,6 +92,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'objectContextMenuItems',
   'themes',
   'theme',
+  'licenseKey',
   'locale',
   'locales',
   'fallbackLocale',
@@ -157,6 +159,7 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'lockDrawingScale',
   'isObjectDistanceFadingActive',
   'theme',
+  'licenseKey',
   'themes',
   'locale',
   'locales',
@@ -300,6 +303,11 @@ export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PU
   'settingsChange'
 ], [
   'settingsChange'
+]);
+
+
+export const KritzelWatermark: StencilVueComponent<JSX.KritzelWatermark> = /*@__PURE__*/ defineContainer<JSX.KritzelWatermark>('kritzel-watermark', defineKritzelWatermark, [
+  'core'
 ]);
 
 
