@@ -3529,7 +3529,9 @@ export class KritzelEngine {
 
         {this.core.store.state?.activeTool instanceof KritzelEraserTool && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
 
-        {!this.core.licenseManager.isLicensed && <kritzel-watermark core={this.core}></kritzel-watermark>}
+        {!this.core.licenseManager.isLicensed && (
+          <kritzel-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></kritzel-watermark>
+        )}
       </Host>
     );
   }

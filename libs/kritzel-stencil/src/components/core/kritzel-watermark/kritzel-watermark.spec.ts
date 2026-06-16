@@ -29,6 +29,26 @@ describe('KritzelWatermark', () => {
     expect(translate).toHaveBeenCalledWith('watermark.poweredBy');
   });
 
+  it('should prefer the resolved label prop over resolving from core', () => {
+    component.label = 'Propulsé par Kritzel';
+
+    const vnode: any = component.render();
+    const anchor = vnode.$children$[0];
+
+    expect(anchor.$children$[0].$text$).toBe('Propulsé par Kritzel');
+    expect(translate).not.toHaveBeenCalled();
+  });
+
+  it('should reflect late label prop updates so locale changes apply immediately', () => {
+    component.label = 'Powered by Kritzel';
+    let anchor: any = component.render().$children$[0];
+    expect(anchor.$children$[0].$text$).toBe('Powered by Kritzel');
+
+    component.label = 'Mit Kritzel erstellt';
+    anchor = component.render().$children$[0];
+    expect(anchor.$children$[0].$text$).toBe('Mit Kritzel erstellt');
+  });
+
   it('should render a link to the Kritzel website opening in a new tab', () => {
     const vnode: any = component.render();
 

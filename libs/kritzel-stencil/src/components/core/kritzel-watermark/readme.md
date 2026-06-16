@@ -16,9 +16,10 @@ reappear on the next render. The badge links to the Kritzel website.
 
 ## Properties
 
-| Property            | Attribute | Description                                        | Type          | Default     |
-| ------------------- | --------- | -------------------------------------------------- | ------------- | ----------- |
-| `core` _(required)_ | --        | The core instance used to resolve localized terms. | `KritzelCore` | `undefined` |
+| Property            | Attribute | Description                                                                                                                                                                            | Type          | Default     |
+| ------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ----------- |
+| `core` _(required)_ | --        | The core instance used to resolve localized terms.                                                                                                                                     | `KritzelCore` | `undefined` |
+| `label`             | `label`   | Resolved "Powered by Kritzel" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided. | `string`      | `undefined` |
 
 
 ## Shadow Parts

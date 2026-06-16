@@ -666,14 +666,14 @@ export declare interface KritzelSettings extends Components.KritzelSettings {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelWatermark,
-  inputs: ['core']
+  inputs: ['core', 'label']
 })
 @Component({
   selector: 'kritzel-watermark',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [{ name: 'core', required: true }],
+  inputs: [{ name: 'core', required: true }, 'label'],
 })
 export class KritzelWatermark {
   protected el: HTMLKritzelWatermarkElement;
