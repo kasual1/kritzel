@@ -22,6 +22,36 @@ async function waitForPropsPropagation(page: import('@playwright/test').Page) {
   );
 }
 
+async function waitForViewportWheelHandling(page: import('@playwright/test').Page) {
+  await page.waitForTimeout(100);
+}
+
+async function dispatchWheelOnEngine(
+  page: import('@playwright/test').Page,
+  options: { deltaX?: number; deltaY?: number; ctrlKey?: boolean } = {}
+) {
+  await page.evaluate(({ deltaX = 0, deltaY = 0, ctrlKey = false }) => {
+    const engine = document.querySelector('kritzel-engine');
+    if (!engine) {
+      throw new Error('kritzel-engine not found');
+    }
+
+    const rect = engine.getBoundingClientRect();
+    engine.dispatchEvent(
+      new WheelEvent('wheel', {
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+        deltaX,
+        deltaY,
+        ctrlKey,
+        clientX: rect.left + rect.width / 2,
+        clientY: rect.top + rect.height / 2,
+      })
+    );
+  }, options);
+}
+
 test.describe('Viewport', () => {
   test.beforeEach(async ({ editorPage }) => {
     await editorPage.goto();
@@ -102,6 +132,37 @@ test.describe('Viewport', () => {
       // Scale should remain unchanged
       expect(after.scale).toBeCloseTo(before.scale, 1);
     });
+
+    test('should prevent wheel panning when isPanningEnabled is false and allow it again when re-enabled', async ({
+      editorPage,
+      page,
+    }) => {
+      await editorPage.setViewport(0, 0, 1);
+      await waitForViewportWheelHandling(page);
+
+      await editorPage.setProps({ isPanningEnabled: false });
+      await waitForPropsPropagation(page);
+
+      const beforeDisabledWheel = await editorPage.getViewport();
+      await dispatchWheelOnEngine(page, { deltaY: 120 });
+      await waitForViewportWheelHandling(page);
+
+      const afterDisabledWheel = await editorPage.getViewport();
+      expect(afterDisabledWheel.translateX).toBeCloseTo(beforeDisabledWheel.translateX, 5);
+      expect(afterDisabledWheel.translateY).toBeCloseTo(beforeDisabledWheel.translateY, 5);
+      expect(afterDisabledWheel.scale).toBeCloseTo(beforeDisabledWheel.scale, 5);
+
+      await editorPage.setProps({ isPanningEnabled: true });
+      await waitForPropsPropagation(page);
+
+      const beforeEnabledWheel = await editorPage.getViewport();
+      await dispatchWheelOnEngine(page, { deltaY: 120 });
+      await waitForViewportWheelHandling(page);
+
+      const afterEnabledWheel = await editorPage.getViewport();
+      expect(afterEnabledWheel.translateY).not.toBeCloseTo(beforeEnabledWheel.translateY, 1);
+      expect(afterEnabledWheel.scale).toBeCloseTo(beforeEnabledWheel.scale, 5);
+    });
   });
 
   test.describe('zoomTo', () => {
@@ -141,6 +202,36 @@ test.describe('Viewport', () => {
 
       const viewport = await editorPage.getViewport();
       expect(viewport.scale).toBeGreaterThanOrEqual(0.49);
+    });
+
+    test('should prevent ctrl+wheel zooming when isZoomingEnabled is false and allow it again when re-enabled', async ({
+      editorPage,
+      page,
+    }) => {
+      await editorPage.setViewport(0, 0, 1);
+      await waitForViewportWheelHandling(page);
+
+      await editorPage.setProps({ isZoomingEnabled: false });
+      await waitForPropsPropagation(page);
+
+      const beforeDisabledWheel = await editorPage.getViewport();
+      await dispatchWheelOnEngine(page, { deltaY: -120, ctrlKey: true });
+      await waitForViewportWheelHandling(page);
+
+      const afterDisabledWheel = await editorPage.getViewport();
+      expect(afterDisabledWheel.scale).toBeCloseTo(beforeDisabledWheel.scale, 5);
+      expect(afterDisabledWheel.translateX).toBeCloseTo(beforeDisabledWheel.translateX, 5);
+      expect(afterDisabledWheel.translateY).toBeCloseTo(beforeDisabledWheel.translateY, 5);
+
+      await editorPage.setProps({ isZoomingEnabled: true });
+      await waitForPropsPropagation(page);
+
+      const beforeEnabledWheel = await editorPage.getViewport();
+      await dispatchWheelOnEngine(page, { deltaY: -120, ctrlKey: true });
+      await waitForViewportWheelHandling(page);
+
+      const afterEnabledWheel = await editorPage.getViewport();
+      expect(afterEnabledWheel.scale).toBeGreaterThan(beforeEnabledWheel.scale);
     });
   });
 
