@@ -113,6 +113,78 @@ test.describe('Editor', () => {
     await expect(editorPage.engine).toHaveScreenshot({timeout: 1000});
   });
 
+  test('should zoom in via the zoom panel', async ({ editorPage }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    await editorPage.prepareWaitForObjectsAdded();
+
+    await editorPage.addPath({
+      points: [
+        [0, 0],
+        [60, 80],
+        [140, 40],
+        [220, 120],
+        [320, 0],
+      ],
+      translateX: 220,
+      translateY: 180,
+      strokeWidth: 8,
+      fill: { light: '#ff6b35', dark: '#ff6b35' },
+    });
+
+    await editorPage.waitForObjectsAdded();
+
+    const initialViewport = await editorPage.getViewport();
+    const initialZoomPercent = await editorPage.getZoomPercent();
+    expect(initialZoomPercent).toBe(100);
+
+    await editorPage.clickZoomIn();
+
+    const zoomedViewport = await editorPage.getViewport();
+    const zoomedPercent = await editorPage.getZoomPercent();
+    expect(zoomedViewport.scale).toBeGreaterThan(initialViewport.scale);
+    expect(zoomedPercent).toBeGreaterThan(initialZoomPercent);
+
+    await expect(editorPage.engine).toHaveScreenshot('Editor-zoom-panel-zoom-in.png', { timeout: 1000 });
+  });
+
+  test('should zoom out via the zoom panel', async ({ editorPage }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    await editorPage.prepareWaitForObjectsAdded();
+
+    await editorPage.addPath({
+      points: [
+        [0, 0],
+        [60, 80],
+        [140, 40],
+        [220, 120],
+        [320, 0],
+      ],
+      translateX: 220,
+      translateY: 180,
+      strokeWidth: 8,
+      fill: { light: '#ff6b35', dark: '#ff6b35' },
+    });
+
+    await editorPage.waitForObjectsAdded();
+
+    const initialViewport = await editorPage.getViewport();
+    const initialZoomPercent = await editorPage.getZoomPercent();
+    expect(initialZoomPercent).toBe(100);
+
+    await editorPage.clickZoomOut();
+
+    const zoomedViewport = await editorPage.getViewport();
+    const zoomedPercent = await editorPage.getZoomPercent();
+    expect(zoomedViewport.scale).toBeLessThan(initialViewport.scale);
+    expect(zoomedPercent).toBeLessThan(initialZoomPercent);
+
+    await expect(editorPage.engine).toHaveScreenshot('Editor-zoom-panel-zoom-out.png', { timeout: 1000 });
+  });
+
   test('controls fit inside the editor when it spans the full viewport', async ({ editorPage, page }) => {
     await editorPage.goto();
     await editorPage.waitForReady();
