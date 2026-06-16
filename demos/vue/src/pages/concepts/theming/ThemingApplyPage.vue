@@ -42,7 +42,7 @@ async function onReady() {
       editorId="theming-apply"
       :theme="activeName"
       :themes="[customVueTheme, themedDark]"
-      :wheelEnabled="false"
+      :isPanningEnabled="false" :isZoomingEnabled="false"
       :isMoreMenuVisible="true"
       :isWorkspaceManagerVisible="true"
       :style="editorStyle"

@@ -83,7 +83,7 @@ async function onReady() {
     :themes="[customVueTheme]"
     :globalContextMenuItems="globalItems"
     :objectContextMenuItems="objectItems"
-    :wheelEnabled="false"
+    :isPanningEnabled="false" :isZoomingEnabled="false"
     :isMoreMenuVisible="false"
     :isWorkspaceManagerVisible="false"
     :style="editorStyle"

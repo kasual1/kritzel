@@ -485,10 +485,11 @@ export function BlueprintDefectMapperPage() {
           editorId="blueprint-defect-mapper"
           theme="react-theme"
           themes={[customReactTheme]}
+          isPanningEnabled={false}
+          isZoomingEnabled={false}
           isControlsVisible={false}
           isMoreMenuVisible={false}
           isWorkspaceManagerVisible={false}
-          wheelEnabled={false}
           onIsReady={() => {
             void onReady();
           }}

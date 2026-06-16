@@ -11,9 +11,10 @@ export function ComponentsEditorUiPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="components-editor-ui"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isWorkspaceManagerVisible={false}
         isMoreMenuVisible={false}
         onIsReady={() => {

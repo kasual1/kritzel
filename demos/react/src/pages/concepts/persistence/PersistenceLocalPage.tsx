@@ -29,11 +29,12 @@ export function PersistenceLocalPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="persistence-local"
-        wheelEnabled={false}
         syncConfig={syncConfig}
         theme="react-theme"
         themes={[customReactTheme]}
         loginConfig={undefined}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {

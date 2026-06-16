@@ -38,11 +38,12 @@ import { createSeedObjects } from '../../const/seed-objects';
     </div>
     <kritzel-editor
       editorId="workspaces-crud"
-      [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
       [syncConfig]="syncConfig"
       [activeWorkspaceId]="activeWorkspaceId()"
+      [isPanningEnabled]="false"
+      [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady($event)"

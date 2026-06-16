@@ -40,9 +40,10 @@ export function ViewportChangePage() {
       <KritzelEditor
         ref={editorRef}
         editorId="viewport-change"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {

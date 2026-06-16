@@ -370,7 +370,7 @@ async function seedObjects() {
         :syncConfig="syncConfig"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
-        :wheelEnabled="false"
+        :isPanningEnabled="false" :isZoomingEnabled="false"
         :loginConfig="undefined"
         :style="{ display: 'block', width: '100%', height: '100%' }"
         @isReady="onIsReady"

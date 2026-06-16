@@ -29,8 +29,8 @@ import { createSeedObjects } from '../../const/seed-objects';
     <div class="engine-wrap">
       <kritzel-engine
         #engine
-        
-        [wheelEnabled]="false"
+        [isPanningEnabled]="false"
+        [isZoomingEnabled]="false"
         (isEngineReady)="onReady()"
       ></kritzel-engine>
     </div>
