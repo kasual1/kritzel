@@ -1,29 +1,45 @@
 # kritzel-zoom-panel
 
-A dumb zoom control component with dedicated zoom-in and zoom-out buttons. It only emits events and does not contain viewport logic.
 
-## Usage
 
-```html
-<kritzel-zoom-panel
-  visible={true}
-  disabled={false}
-  onZoomIn={() => handleZoomIn()}
-  onZoomOut={() => handleZoomOut()}
-></kritzel-zoom-panel>
+<!-- Auto Generated Below -->
+
+
+## Properties
+
+| Property      | Attribute      | Description                             | Type      | Default |
+| ------------- | -------------- | --------------------------------------- | --------- | ------- |
+| `disabled`    | `disabled`     | Whether both zoom buttons are disabled. | `boolean` | `false` |
+| `visible`     | `visible`      | Whether the zoom panel is visible.      | `boolean` | `true`  |
+| `zoomPercent` | `zoom-percent` | Current zoom level in percent.          | `number`  | `100`   |
+
+
+## Events
+
+| Event     | Description                                  | Type                |
+| --------- | -------------------------------------------- | ------------------- |
+| `zoomIn`  | Emitted when the zoom-in button is clicked.  | `CustomEvent<void>` |
+| `zoomOut` | Emitted when the zoom-out button is clicked. | `CustomEvent<void>` |
+
+
+## Dependencies
+
+### Used by
+
+ - [kritzel-editor](../../core/kritzel-editor)
+
+### Depends on
+
+- [kritzel-icon](../../shared/kritzel-icon)
+
+### Graph
+```mermaid
+graph TD;
+  kritzel-zoom-panel --> kritzel-icon
+  kritzel-editor --> kritzel-zoom-panel
+  style kritzel-zoom-panel fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-## CSS Variables
+----------------------------------------------
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `--kritzel-split-button-width` | `50px` | Width of each zoom button |
-| `--kritzel-split-button-height` | `50px` | Height of each zoom button |
-| `--kritzel-split-button-border` | `1px solid #ebebeb` | Border for zoom buttons |
-| `--kritzel-split-button-border-radius` | `12px` | Border radius for zoom buttons |
-| `--kritzel-split-button-background-color` | `#ffffff` | Background color for zoom buttons |
-| `--kritzel-split-button-color` | `#000000` | Icon color |
-| `--kritzel-split-button-box-shadow` | `0 0 3px rgba(0, 0, 0, 0.08)` | Box shadow for zoom buttons |
-| `--kritzel-split-button-hover-background-color` | `hsl(0, 0%, 0%, 4.3%)` | Hover background color |
-| `--kritzel-split-button-active-background-color` | `hsl(0, 0%, 0%, 8.6%)` | Active background color |
-| `--kritzel-global-pointer-cursor` | `pointer` | Cursor style |
+*Built with [StencilJS](https://stenciljs.com/)*
