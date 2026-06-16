@@ -31,7 +31,15 @@ export class KritzelWatermark {
 
     return (
       <Host>
-        <a class="watermark-link" href={KRITZEL_WEBSITE_URL} target="_blank" rel="noopener noreferrer" part="watermark">
+        <a
+          class="watermark-link"
+          href={KRITZEL_WEBSITE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          part="watermark"
+          onPointerDown={(ev: PointerEvent) => ev.stopPropagation()}
+          onPointerUp={(ev: PointerEvent) => ev.stopPropagation()}
+        >
           {label}
         </a>
       </Host>

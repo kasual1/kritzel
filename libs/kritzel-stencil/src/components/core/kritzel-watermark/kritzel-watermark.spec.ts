@@ -67,4 +67,18 @@ describe('KritzelWatermark', () => {
 
     expect(anchor.$children$[0].$text$).toBe('Propulsé par Kritzel');
   });
+
+  it('should stop pointer events from reaching the engine so the link click is not suppressed', () => {
+    const vnode: any = component.render();
+    const anchor = vnode.$children$[0];
+
+    const pointerDownEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+    const pointerUpEvent = { stopPropagation: jest.fn() } as unknown as PointerEvent;
+
+    anchor.$attrs$.onPointerDown(pointerDownEvent);
+    anchor.$attrs$.onPointerUp(pointerUpEvent);
+
+    expect(pointerDownEvent.stopPropagation).toHaveBeenCalled();
+    expect(pointerUpEvent.stopPropagation).toHaveBeenCalled();
+  });
 });
