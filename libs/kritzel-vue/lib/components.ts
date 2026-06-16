@@ -294,6 +294,7 @@ export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PU
 export const KritzelZoomPanel: StencilVueComponent<JSX.KritzelZoomPanel> = /*@__PURE__*/ defineContainer<JSX.KritzelZoomPanel>('kritzel-zoom-panel', defineKritzelZoomPanel, [
   'visible',
   'disabled',
+  'zoomPercent',
   'zoomIn',
   'zoomOut'
 ], [
