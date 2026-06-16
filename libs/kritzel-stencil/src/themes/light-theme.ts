@@ -317,4 +317,18 @@ export const lightTheme: KritzelTheme = {
     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.12)',
     color: 'rgba(60, 60, 60, 0.75)',
   },
+
+  zoomPanel: {
+    backgroundColor: '#ffffff',
+    border: '1px solid #ebebeb',
+    borderRadius: '12px',
+    boxShadow: '0 0 3px rgba(0, 0, 0, 0.08)',
+    buttonActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
+    buttonBorderRadius: '8px',
+    buttonHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+    buttonSize: '32px',
+    gap: '4px',
+    iconColor: '#000000',
+    padding: '4px',
+  },
 };
