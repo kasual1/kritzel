@@ -58,8 +58,6 @@ export class KritzelEditor {
   @Prop({ mutable: true }) viewportBoundaryRight: number = Infinity;
   @Prop({ mutable: true }) viewportBoundaryTop: number = -Infinity;
   @Prop({ mutable: true }) viewportBoundaryBottom: number = Infinity;
-  @Prop({ mutable: true }) isPanningEnabled: boolean = true;
-  @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
   @Prop({ mutable: true }) debugInfo: KritzelDebugInfo = {
     showViewportInfo: false,
     showObjectInfo: false,
@@ -214,10 +212,13 @@ export class KritzelEditor {
   @Prop() themes?: KritzelTheme[];
   @Prop({ mutable: true }) theme: ThemeName = 'light';
   @Prop() customSvgIcons: Record<string, string> = {};
+  @Prop({ mutable: true }) isPanningEnabled: boolean = true;
+  @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
   @Prop() isControlsVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
+  @Prop() isZoomPanelVisible: boolean = true;
   @Prop() isObjectDistanceFadingActive: boolean = false;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
   @Prop() assetStorageConfig?: KritzelAssetStorageConfig = DEFAULT_ASSET_STORAGE_CONFIG;
@@ -259,6 +260,7 @@ export class KritzelEditor {
   @State() isVirtualKeyboardOpen: boolean = false;
   @State() undoState: KritzelUndoState | null = null;
   @State() isBackToContentButtonVisible: boolean = false;
+  @State() currentZoomPercent: number = 100;
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
   @State() currentIsPublic: boolean = false;
   @State() isEditorVisible: boolean = false;
@@ -743,6 +745,10 @@ export class KritzelEditor {
     this.activeWorkspace = event.detail.activeWorkspace;
     this.workspaces = event.detail.workspaces;
     this.currentIsPublic = await this.engineRef.getIsPublic();
+
+    const viewport = await this.engineRef.getViewport();
+    this.currentZoomPercent = this.getZoomPercentFromScale(viewport.scale);
+
     this.loadShortcuts();
   }
 
@@ -806,7 +812,15 @@ export class KritzelEditor {
 
   handleViewportChange(event: CustomEvent<KritzelViewportState>) {
     event.stopPropagation();
+    this.currentZoomPercent = this.getZoomPercentFromScale(event.detail.scale);
     this.viewportChange.emit(event.detail);
+  }
+
+  private getZoomPercentFromScale(scale: number): number {
+    if (!Number.isFinite(scale) || scale <= 0) {
+      return 100;
+    }
+    return Math.round(scale * 100);
   }
 
   handleAwarenessChange(event: CustomEvent<Map<number, Record<string, any>>>) {
@@ -1110,6 +1124,16 @@ export class KritzelEditor {
           theme={this.theme}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
+
+        <div class="bottom-left-buttons">
+          <kritzel-zoom-panel
+            visible={this.isZoomPanelVisible}
+            disabled={!this.isZoomingEnabled}
+            zoomPercent={this.currentZoomPercent}
+            onZoomIn={() => this.zoomIn()}
+            onZoomOut={() => this.zoomOut()}
+          ></kritzel-zoom-panel>
+        </div>
 
         <div class="top-right-buttons">
           <kritzel-settings

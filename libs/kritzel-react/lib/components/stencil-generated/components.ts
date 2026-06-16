@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelDialogCloseEvent, type IKritzelIsPublicChangedEvent, type IKritzelMasterDetailSelectEvent, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelBaseTool, type KritzelButtonCustomEvent, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelEngineCustomEvent, type KritzelEngineState, type KritzelExportCustomEvent, type KritzelInputCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelLoginDialogCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelPillTabsCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelUndoState, type KritzelViewportState, type KritzelWorkspace, type LineArrowConfig, type LoginEvent, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ThemeName } from "../../../../kritzel-stencil";
+import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelDialogCloseEvent, type IKritzelIsPublicChangedEvent, type IKritzelMasterDetailSelectEvent, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelBaseTool, type KritzelButtonCustomEvent, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelEngineCustomEvent, type KritzelEngineState, type KritzelExportCustomEvent, type KritzelInputCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelLoginDialogCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelPillTabsCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelUndoState, type KritzelViewportState, type KritzelWorkspace, type KritzelZoomPanelCustomEvent, type LineArrowConfig, type LoginEvent, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ThemeName } from "../../../../kritzel-stencil";
 import type { Components } from "../../../../kritzel-stencil/dist/components";
 import { KritzelAwarenessCursors as KritzelAwarenessCursorsElement, defineCustomElement as defineKritzelAwarenessCursors } from "../../../../kritzel-stencil/dist/components/kritzel-awareness-cursors.js";
 import { KritzelBackToContent as KritzelBackToContentElement, defineCustomElement as defineKritzelBackToContent } from "../../../../kritzel-stencil/dist/components/kritzel-back-to-content.js";
@@ -29,6 +29,7 @@ import { KritzelNumericInput as KritzelNumericInputElement, defineCustomElement 
 import { KritzelOpacitySlider as KritzelOpacitySliderElement, defineCustomElement as defineKritzelOpacitySlider } from "../../../../kritzel-stencil/dist/components/kritzel-opacity-slider.js";
 import { KritzelPillTabs as KritzelPillTabsElement, defineCustomElement as defineKritzelPillTabs } from "../../../../kritzel-stencil/dist/components/kritzel-pill-tabs.js";
 import { KritzelSettings as KritzelSettingsElement, defineCustomElement as defineKritzelSettings } from "../../../../kritzel-stencil/dist/components/kritzel-settings.js";
+import { KritzelZoomPanel as KritzelZoomPanelElement, defineCustomElement as defineKritzelZoomPanel } from "../../../../kritzel-stencil/dist/components/kritzel-zoom-panel.js";
 
 export type KritzelAwarenessCursorsEvents = NonNullable<unknown>;
 
@@ -282,4 +283,21 @@ export const KritzelSettings: StencilReactComponent<KritzelSettingsElement, Krit
     react: React,
     events: { onSettingsChange: 'settingsChange' } as KritzelSettingsEvents,
     defineCustomElement: defineKritzelSettings
+});
+
+export type KritzelZoomPanelEvents = {
+    onZoomIn: EventName<KritzelZoomPanelCustomEvent<void>>,
+    onZoomOut: EventName<KritzelZoomPanelCustomEvent<void>>
+};
+
+export const KritzelZoomPanel: StencilReactComponent<KritzelZoomPanelElement, KritzelZoomPanelEvents, Components.KritzelZoomPanel> = /*@__PURE__*/ createComponent<KritzelZoomPanelElement, KritzelZoomPanelEvents, Components.KritzelZoomPanel>({
+    tagName: 'kritzel-zoom-panel',
+    elementClass: KritzelZoomPanelElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onZoomIn: 'zoomIn',
+        onZoomOut: 'zoomOut'
+    } as KritzelZoomPanelEvents,
+    defineCustomElement: defineKritzelZoomPanel
 });

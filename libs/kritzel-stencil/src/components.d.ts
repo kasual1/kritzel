@@ -431,6 +431,10 @@ export namespace Components {
         /**
           * @default true
          */
+        "isZoomPanelVisible": boolean;
+        /**
+          * @default true
+         */
         "isZoomingEnabled": boolean;
         "loadObjectsFromJson": (json: string) => Promise<number>;
         "loadSharedWorkspace": (token: string) => Promise<void>;
@@ -1392,6 +1396,23 @@ export namespace Components {
          */
         "workspaces": KritzelWorkspace[];
     }
+    interface KritzelZoomPanel {
+        /**
+          * Whether both zoom buttons are disabled.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Whether the zoom panel is visible.
+          * @default true
+         */
+        "visible": boolean;
+        /**
+          * Current zoom level in percent.
+          * @default 100
+         */
+        "zoomPercent": number;
+    }
 }
 export interface KritzelBackToContentCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1528,6 +1549,10 @@ export interface KritzelUtilityPanelCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelWorkspaceManagerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelWorkspaceManagerElement;
+}
+export interface KritzelZoomPanelCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelZoomPanelElement;
 }
 declare global {
     interface HTMLKritzelActiveUsersElement extends Components.KritzelActiveUsers, HTMLStencilElement {
@@ -2224,6 +2249,24 @@ declare global {
         prototype: HTMLKritzelWorkspaceManagerElement;
         new (): HTMLKritzelWorkspaceManagerElement;
     };
+    interface HTMLKritzelZoomPanelElementEventMap {
+        "zoomIn": void;
+        "zoomOut": void;
+    }
+    interface HTMLKritzelZoomPanelElement extends Components.KritzelZoomPanel, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelZoomPanelElementEventMap>(type: K, listener: (this: HTMLKritzelZoomPanelElement, ev: KritzelZoomPanelCustomEvent<HTMLKritzelZoomPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelZoomPanelElementEventMap>(type: K, listener: (this: HTMLKritzelZoomPanelElement, ev: KritzelZoomPanelCustomEvent<HTMLKritzelZoomPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelZoomPanelElement: {
+        prototype: HTMLKritzelZoomPanelElement;
+        new (): HTMLKritzelZoomPanelElement;
+    };
     interface HTMLElementTagNameMap {
         "kritzel-active-users": HTMLKritzelActiveUsersElement;
         "kritzel-avatar": HTMLKritzelAvatarElement;
@@ -2268,6 +2311,7 @@ declare global {
         "kritzel-tooltip": HTMLKritzelTooltipElement;
         "kritzel-utility-panel": HTMLKritzelUtilityPanelElement;
         "kritzel-workspace-manager": HTMLKritzelWorkspaceManagerElement;
+        "kritzel-zoom-panel": HTMLKritzelZoomPanelElement;
     }
 }
 declare namespace LocalJSX {
@@ -2592,6 +2636,10 @@ declare namespace LocalJSX {
           * @default true
          */
         "isWorkspaceManagerVisible"?: boolean;
+        /**
+          * @default true
+         */
+        "isZoomPanelVisible"?: boolean;
         /**
           * @default true
          */
@@ -3270,6 +3318,31 @@ declare namespace LocalJSX {
          */
         "workspaces"?: KritzelWorkspace[];
     }
+    interface KritzelZoomPanel {
+        /**
+          * Whether both zoom buttons are disabled.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Emitted when the zoom-in button is clicked.
+         */
+        "onZoomIn"?: (event: KritzelZoomPanelCustomEvent<void>) => void;
+        /**
+          * Emitted when the zoom-out button is clicked.
+         */
+        "onZoomOut"?: (event: KritzelZoomPanelCustomEvent<void>) => void;
+        /**
+          * Whether the zoom panel is visible.
+          * @default true
+         */
+        "visible"?: boolean;
+        /**
+          * Current zoom level in percent.
+          * @default 100
+         */
+        "zoomPercent"?: number;
+    }
 
     interface KritzelActiveUsersAttributes {
         "avatarSize": number;
@@ -3341,13 +3414,14 @@ declare namespace LocalJSX {
         "viewportBoundaryRight": number;
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
+        "theme": ThemeName;
         "isPanningEnabled": boolean;
         "isZoomingEnabled": boolean;
-        "theme": ThemeName;
         "isControlsVisible": boolean;
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;
+        "isZoomPanelVisible": boolean;
         "isObjectDistanceFadingActive": boolean;
         "isLoading": boolean;
         "editorId": string;
@@ -3465,6 +3539,11 @@ declare namespace LocalJSX {
     interface KritzelWorkspaceManagerAttributes {
         "visible": boolean;
     }
+    interface KritzelZoomPanelAttributes {
+        "visible": boolean;
+        "disabled": boolean;
+        "zoomPercent": number;
+    }
 
     interface IntrinsicElements {
         "kritzel-active-users": Omit<KritzelActiveUsers, keyof KritzelActiveUsersAttributes> & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes]?: KritzelActiveUsers[K] } & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes as `attr:${K}`]?: KritzelActiveUsersAttributes[K] } & { [K in keyof KritzelActiveUsers & keyof KritzelActiveUsersAttributes as `prop:${K}`]?: KritzelActiveUsers[K] };
@@ -3510,6 +3589,7 @@ declare namespace LocalJSX {
         "kritzel-tooltip": Omit<KritzelTooltip, keyof KritzelTooltipAttributes> & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes]?: KritzelTooltip[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `attr:${K}`]?: KritzelTooltipAttributes[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `prop:${K}`]?: KritzelTooltip[K] };
         "kritzel-utility-panel": KritzelUtilityPanel;
         "kritzel-workspace-manager": Omit<KritzelWorkspaceManager, keyof KritzelWorkspaceManagerAttributes> & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes]?: KritzelWorkspaceManager[K] } & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes as `attr:${K}`]?: KritzelWorkspaceManagerAttributes[K] } & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes as `prop:${K}`]?: KritzelWorkspaceManager[K] };
+        "kritzel-zoom-panel": Omit<KritzelZoomPanel, keyof KritzelZoomPanelAttributes> & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes]?: KritzelZoomPanel[K] } & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes as `attr:${K}`]?: KritzelZoomPanelAttributes[K] } & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes as `prop:${K}`]?: KritzelZoomPanel[K] };
     }
 }
 export { LocalJSX as JSX };
@@ -3569,6 +3649,7 @@ declare module "@stencil/core" {
             "kritzel-tooltip": LocalJSX.IntrinsicElements["kritzel-tooltip"] & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
             "kritzel-utility-panel": LocalJSX.IntrinsicElements["kritzel-utility-panel"] & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;
             "kritzel-workspace-manager": LocalJSX.IntrinsicElements["kritzel-workspace-manager"] & JSXBase.HTMLAttributes<HTMLKritzelWorkspaceManagerElement>;
+            "kritzel-zoom-panel": LocalJSX.IntrinsicElements["kritzel-zoom-panel"] & JSXBase.HTMLAttributes<HTMLKritzelZoomPanelElement>;
         }
     }
 }
