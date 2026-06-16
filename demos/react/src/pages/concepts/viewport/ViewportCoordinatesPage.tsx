@@ -52,9 +52,10 @@ export function ViewportCoordinatesPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="viewport-coordinates"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {

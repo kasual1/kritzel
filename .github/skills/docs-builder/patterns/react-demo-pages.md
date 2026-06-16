@@ -50,7 +50,8 @@ export function MyDemoPage() {
   return (
     <KritzelEditor
       editorId="my-demo"
-      wheelEnabled={false}
+      isPanningEnabled={false}
+      isZoomingEnabled={false}
       syncConfig={syncConfig}
       theme="react-theme"
       themes={[customReactTheme]}
@@ -78,7 +79,8 @@ Every `<KritzelEditor>` in a React demo page should include:
 | Prop | Purpose |
 |------|---------|
 | `editorId="<unique-id>"` | Prevents state collision across demos |
-| `wheelEnabled={false}` | Prevents scroll-jacking in docs iframes |
+| `isPanningEnabled={false}
+isZoomingEnabled={false}` | Prevents scroll-jacking in docs iframes |
 | `syncConfig={...}` | Explicit sync provider behavior |
 | `loginConfig={undefined}` | Disables login dialog in demos |
 | `isMoreMenuVisible={false}` | Hides more-menu unless required |

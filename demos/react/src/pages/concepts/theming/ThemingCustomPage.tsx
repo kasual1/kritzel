@@ -261,7 +261,8 @@ export function ThemingCustomPage() {
         editorId="theming-custom"
         theme="branded-purple-flat"
         themes={[brandedPurpleFlatTheme]}
-        wheelEnabled={false}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={true}
         isWorkspaceManagerVisible={true}
         onIsReady={() => {

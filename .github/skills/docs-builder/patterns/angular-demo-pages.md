@@ -56,12 +56,13 @@ import { customAngularTheme } from '../../const/custom-angular-theme';
   template: `
     <kritzel-editor
       editorId="<category>-<name>"
-      [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
       [loginConfig]="undefined"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
+      [isPanningEnabled]="false"
+      [isZoomingEnabled]="false"
     ></kritzel-editor>
   `,
   styles: [`
@@ -113,7 +114,8 @@ Every `<kritzel-editor>` in a demo page must include these bindings:
 | Binding | Purpose |
 |---------|---------|
 | `editorId="<unique-id>"` | Unique identifier per demo (prevents state collision) |
-| `[wheelEnabled]="false"` | Prevents scroll-jacking inside iframes |
+| `[isPanningEnabled]="false"
+[isZoomingEnabled]="false"` | Prevents scroll-jacking inside iframes |
 | `[syncConfig]="syncConfig"` | Configures sync providers (use `empty array` as to disable) |
 | `[loginConfig]="undefined"` | Disables the login dialog |
 | `[isMoreMenuVisible]="false"` | Hides the more menu (unless the demo needs it) |

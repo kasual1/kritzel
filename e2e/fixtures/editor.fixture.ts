@@ -37,6 +37,8 @@ export interface WorldPoint {
 export interface EditorProps {
   isControlsVisible?: boolean;
   isUtilityPanelVisible?: boolean;
+  isPanningEnabled?: boolean;
+  isZoomingEnabled?: boolean;
   scaleMax?: number;
   scaleMin?: number;
   lockDrawingScale?: boolean;

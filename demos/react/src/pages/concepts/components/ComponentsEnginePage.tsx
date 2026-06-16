@@ -46,7 +46,8 @@ export function ComponentsEnginePage() {
       <KritzelEngine
         ref={engineRef}
         editorId="components-engine"
-        wheelEnabled={false}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         onIsEngineReady={() => {
           void onReady();
         }}

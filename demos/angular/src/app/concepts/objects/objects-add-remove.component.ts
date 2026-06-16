@@ -34,9 +34,10 @@ import { createSeedObjects } from '../../const/seed-objects';
     </div>
     <kritzel-editor
       editorId="objects-add-remove"
-      [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
+      [isPanningEnabled]="false"
+      [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady($event)"

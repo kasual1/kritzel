@@ -45,11 +45,12 @@ export function CustomContextMenuCanvasQuickActionsPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="custom-context-menu-canvas-quick-actions"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
         globalContextMenuItems={globalItems}
         objectContextMenuItems={[]}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {

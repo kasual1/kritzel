@@ -24,7 +24,8 @@ export function QuickstartPage() {
         editorId="quickstart"
         theme="react-theme"
         themes={[customReactTheme]}
-        wheelEnabled={false}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={onReady}

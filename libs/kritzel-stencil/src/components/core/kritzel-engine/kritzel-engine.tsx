@@ -258,8 +258,11 @@ export class KritzelEngine {
     }
   }
 
-  /** When false, wheel events will not trigger viewport pan/zoom. The event still propagates to parent elements. */
-  @Prop() wheelEnabled: boolean = true;
+  /** When false, non-modified wheel events do not pan the viewport. */
+  @Prop() isPanningEnabled: boolean = true;
+
+  /** When false, Ctrl+wheel events do not zoom the viewport. */
+  @Prop() isZoomingEnabled: boolean = true;
 
   /** External loading state. Combined with internal workspace-loading state to drive the overlay. */
   @Prop() isLoading: boolean = false;
@@ -324,15 +327,20 @@ export class KritzelEngine {
       return;
     }
 
-    if (!this.wheelEnabled) {
-      return;
-    }
-
     if (this.core.store.state.isContextMenuVisible) {
       this.hideContextMenu();
     }
 
-    this.viewport.handleWheel(ev);
+    if (ev.ctrlKey) {
+      if (this.isZoomingEnabled) {
+        this.viewport.handleWheel(ev);
+      }
+    } else {
+      if (this.isPanningEnabled) {
+        this.viewport.handleWheel(ev);
+      }
+    }
+
     this.core.store.state?.activeTool?.handleWheel(ev);
   }
 
