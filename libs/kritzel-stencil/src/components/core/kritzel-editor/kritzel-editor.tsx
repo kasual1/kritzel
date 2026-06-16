@@ -31,6 +31,7 @@ import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, 
 import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelUndoState } from '../../..';
 import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
 import { ThemeName, KritzelTheme } from '../../../interfaces/theme.interface';
+import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from '../../../interfaces/localization.interface';
 import { ThemeHelper } from '../../../helpers/theme.helper';
 import { lightTheme } from '../../../themes/light-theme';
 import { darkTheme } from '../../../themes/dark-theme';
@@ -127,13 +128,13 @@ export class KritzelEditor {
 
   @Prop() globalContextMenuItems: ContextMenuItem[] = [
     {
-      label: 'Paste',
+      label: 'menu.paste',
       icon: 'paste',
       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
       action: menu => this.engineRef.paste(menu.x, menu.y),
     },
     {
-      label: 'Select All',
+      label: 'menu.selectAll',
       icon: 'select-all',
       disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,
       action: () => this.selectAllObjectsInViewport(),
@@ -141,53 +142,53 @@ export class KritzelEditor {
   ];
 
   @Prop() objectContextMenuItems: ContextMenuItem[] = [
-    { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },
-    { label: 'Cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },
+    { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },
+    { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },
     {
-      label: 'Paste',
+      label: 'menu.paste',
       icon: 'paste',
       group: 'clipboard',
       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),
     },
     {
-      label: 'Order',
+      label: 'menu.order',
       icon: 'ordering',
       group: 'other',
       children: [
-        { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },
-        { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },
-        { label: 'Move Up', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },
-        { label: 'Move Down', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },
+        { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },
+        { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },
+        { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },
+        { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },
       ],
     },
     {
-      label: 'Align',
+      label: 'menu.align',
       icon: 'align',
       group: 'other',
       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
       children: [
-        { label: 'Align Left', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },
-        { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },
-        { label: 'Align Right', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },
-        { label: 'Align Top', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },
-        { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },
-        { label: 'Align Bottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },
+        { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },
+        { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },
+        { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },
+        { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },
+        { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },
+        { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },
       ],
     },
     {
-      label: 'Group',
+      label: 'menu.group',
       icon: 'group',
       group: 'other',
       children: [
         {
-          label: 'Group',
+          label: 'menu.group',
           icon: 'group',
           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
           action: () => this.engineRef.group(),
         },
         {
-          label: 'Ungroup',
+          label: 'menu.ungroup',
           icon: 'ungroup',
           disabled: async () => {
             const selectedObjects = await this.engineRef.getSelectedObjects();
@@ -198,19 +199,25 @@ export class KritzelEditor {
       ],
     },
     {
-      label: 'Export',
+      label: 'menu.export',
       icon: 'download',
       group: 'export',
       children: [
-        { label: 'Export as SVG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },
-        { label: 'Export as PNG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },
+        { label: 'menu.exportAsSvg', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },
+        { label: 'menu.exportAsPng', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },
       ],
     },
-    { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
+    { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
   ];
 
   @Prop() themes?: KritzelTheme[];
   @Prop({ mutable: true }) theme: ThemeName = 'light';
+  /** The current locale (language) code applied to the editor, e.g. 'en', 'de', 'fr'. */
+  @Prop({ mutable: true }) locale: LocaleCode = 'en';
+  /** An array of available locale definitions (with optional partial term overrides). */
+  @Prop() locales?: KritzelLocale[];
+  /** The locale used to resolve terms missing from the active locale. */
+  @Prop() fallbackLocale: LocaleCode = 'en';
   @Prop() customSvgIcons: Record<string, string> = {};
   @Prop({ mutable: true }) isPanningEnabled: boolean = true;
   @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
@@ -246,6 +253,7 @@ export class KritzelEditor {
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
   @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
   @Event() themeChange!: EventEmitter<ThemeName>;
+  @Event() localeChange!: EventEmitter<LocaleCode>;
   @Event() viewportChange!: EventEmitter<KritzelViewportState>;
   @Event() logout!: EventEmitter<void>;
   @Event() login!: EventEmitter<LoginEvent>;
@@ -260,6 +268,10 @@ export class KritzelEditor {
   @State() isVirtualKeyboardOpen: boolean = false;
   @State() undoState: KritzelUndoState | null = null;
   @State() isBackToContentButtonVisible: boolean = false;
+  /** Localized strings for editor-owned UI (e.g. the more menu), resolved from the active locale. */
+  @State() resolvedTerms: Partial<Record<KritzelTermKey, string>> = {};
+  /** Available locales as `{ code, label }` options for the settings language selector. */
+  @State() availableLocaleOptions: { code: LocaleCode; label: string }[] = [];
   @State() currentZoomPercent: number = 100;
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
   @State() currentIsPublic: boolean = false;
@@ -337,6 +349,28 @@ export class KritzelEditor {
   @Watch('themes')
   onThemesChange() {
     this.applyTheme();
+  }
+
+  @Watch('locale')
+  onLocaleChange(newValue: LocaleCode) {
+    if (this.engineRef) {
+      this.engineRef.setLocale(newValue);
+      this.engineRef.saveSettings(this.currentSettingsConfig);
+      void this.refreshLocalizedTerms();
+    }
+  }
+
+  /**
+   * Refreshes the editor-owned localized strings (e.g. the more menu and the
+   * strings forwarded to child UI components) from the engine's localization
+   * manager for the active locale.
+   */
+  private async refreshLocalizedTerms(): Promise<void> {
+    if (!this.engineRef) {
+      return;
+    }
+    this.resolvedTerms = await this.engineRef.getResolvedTerms();
+    this.availableLocaleOptions = await this.engineRef.getAvailableLocaleOptions();
   }
 
   @Listen('dblclick', { passive: false })
@@ -746,6 +780,8 @@ export class KritzelEditor {
     this.workspaces = event.detail.workspaces;
     this.currentIsPublic = await this.engineRef.getIsPublic();
 
+    await this.refreshLocalizedTerms();
+
     const viewport = await this.engineRef.getViewport();
     this.currentZoomPercent = this.getZoomPercentFromScale(viewport.scale);
 
@@ -833,6 +869,10 @@ export class KritzelEditor {
     this.scaleMax = event.detail.scaleMax;
     this.lockDrawingScale = event.detail.lockDrawingScale;
     this.theme = event.detail.theme;
+    if (typeof event.detail.locale === 'string' && event.detail.locale !== this.locale) {
+      this.locale = event.detail.locale;
+      this.localeChange.emit(event.detail.locale);
+    }
     this.viewportBoundaryLeft = event.detail.viewportBoundaryLeft ?? -Infinity;
     this.viewportBoundaryRight = event.detail.viewportBoundaryRight ?? Infinity;
     this.viewportBoundaryTop = event.detail.viewportBoundaryTop ?? -Infinity;
@@ -850,7 +890,7 @@ export class KritzelEditor {
     return [
       {
         id: 'share',
-        label: 'Share',
+        label: this.resolvedTerms['menu.share'] ?? 'Share',
         icon: 'share',
         action: () => {
           if (!this.isLoggedIn && this.loginConfig) {
@@ -862,7 +902,7 @@ export class KritzelEditor {
       },
       {
         id: 'export',
-        label: 'Export',
+        label: this.resolvedTerms['menu.export'] ?? 'Export',
         icon: 'upload',
         action: async () => {
           const preview = await this.engineRef.getScreenshot('png');
@@ -871,19 +911,19 @@ export class KritzelEditor {
       },
       {
         id: 'import',
-        label: 'Import',
+        label: this.resolvedTerms['menu.import'] ?? 'Import',
         icon: 'download',
         action: () => this.engineRef.importFromFile(),
       },
       {
         id: 'settings',
-        label: 'Settings',
+        label: this.resolvedTerms['menu.settings'] ?? 'Settings',
         icon: 'settings',
         action: () => this.settingsRef.open(),
       },
       {
         id: 'logout',
-        label: 'Logout',
+        label: this.resolvedTerms['menu.logout'] ?? 'Logout',
         icon: 'log-out',
         color: '#ff3b30',
         isVisible: this.isLoggedIn,
@@ -934,6 +974,51 @@ export class KritzelEditor {
     this.loginDialogRef?.setLoading(provider);
   }
 
+  /**
+   * Sets the active locale (language) and re-renders the UI.
+   * @param code - The locale code to activate, e.g. 'de'.
+   */
+  @Method()
+  async setLocale(code: LocaleCode): Promise<void> {
+    this.locale = code;
+    await this.engineRef?.setLocale(code);
+  }
+
+  /**
+   * Gets the currently active locale code.
+   */
+  @Method()
+  async getLocale(): Promise<LocaleCode> {
+    return this.engineRef ? this.engineRef.getLocale() : this.locale;
+  }
+
+  /**
+   * Gets the list of available locale codes (built-in and registered).
+   */
+  @Method()
+  async getAvailableLocales(): Promise<LocaleCode[]> {
+    return this.engineRef ? this.engineRef.getAvailableLocales() : [];
+  }
+
+  /**
+   * Registers additional locale definitions (with optional partial term overrides).
+   * @param locales - The locale definitions to register.
+   */
+  @Method()
+  async registerLocales(locales: KritzelLocale[]): Promise<void> {
+    await this.engineRef?.registerLocales(locales);
+  }
+
+  /**
+   * Resolves a term key to its translated string for the active locale.
+   * @param key - The term key to resolve.
+   * @param vars - Optional values for `{placeholder}` interpolation.
+   */
+  @Method()
+  async t(key: KritzelTermKey, vars?: KritzelTermVars): Promise<string> {
+    return this.engineRef ? this.engineRef.t(key, vars) : key;
+  }
+
   private getSettingsStorageKey(): string {
     return this.editorId ? `kritzel-settings-${this.editorId}` : 'kritzel-settings';
   }
@@ -954,6 +1039,9 @@ export class KritzelEditor {
         }
         if (typeof parsed.theme === 'string') {
           this.theme = parsed.theme;
+        }
+        if (typeof parsed.locale === 'string') {
+          this.locale = parsed.locale;
         }
         if (typeof parsed.viewportBoundaryLeft === 'number') {
           this.viewportBoundaryLeft = parsed.viewportBoundaryLeft;
@@ -986,6 +1074,7 @@ export class KritzelEditor {
       scaleMax: this.scaleMax,
       lockDrawingScale: this.lockDrawingScale,
       theme: this.theme,
+      locale: this.locale,
       viewportBoundaryLeft: this.viewportBoundaryLeft,
       viewportBoundaryRight: this.viewportBoundaryRight,
       viewportBoundaryTop: this.viewportBoundaryTop,
@@ -1061,11 +1150,12 @@ export class KritzelEditor {
             visible={this.isWorkspaceManagerVisible}
             workspaces={this.workspaces}
             activeWorkspace={this.activeWorkspace}
+            terms={this.resolvedTerms}
             onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
             onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
           ></kritzel-workspace-manager>
 
-          <kritzel-back-to-content visible={this.isBackToContentButtonVisible} onBackToContent={() => this.backToContent()}></kritzel-back-to-content>
+          <kritzel-back-to-content visible={this.isBackToContentButtonVisible} text={this.resolvedTerms['backToContent.label'] ?? 'Back to content'} onBackToContent={() => this.backToContent()}></kritzel-back-to-content>
         </div>
 
         <kritzel-engine
@@ -1094,6 +1184,9 @@ export class KritzelEditor {
           isZoomingEnabled={this.isZoomingEnabled}
           theme={this.theme}
           themes={this.themes}
+          locale={this.locale}
+          locales={this.locales}
+          fallbackLocale={this.fallbackLocale}
           debugInfo={this.debugInfo}
           globalContextMenuItems={this.globalContextMenuItems}
           objectContextMenuItems={this.objectContextMenuItems}
@@ -1122,6 +1215,7 @@ export class KritzelEditor {
           isUtilityPanelVisible={this.isUtilityPanelVisible}
           undoState={this.undoState ?? undefined}
           theme={this.theme}
+          terms={this.resolvedTerms}
           onIsControlsReady={() => (this.isControlsReady = true)}
         ></kritzel-controls>
 
@@ -1130,6 +1224,7 @@ export class KritzelEditor {
             visible={this.isZoomPanelVisible}
             disabled={!this.isZoomingEnabled}
             zoomPercent={this.currentZoomPercent}
+            terms={this.resolvedTerms}
             onZoomIn={() => this.zoomIn()}
             onZoomOut={() => this.zoomOut()}
           ></kritzel-zoom-panel>
@@ -1144,7 +1239,9 @@ export class KritzelEditor {
             }}
             shortcuts={this.shortcuts}
             availableThemes={this.themes && this.themes.length > 0 ? this.themes.map(t => t.name) : ['light', 'dark']}
+            availableLocales={this.availableLocaleOptions}
             settings={this.currentSettingsConfig}
+            terms={this.resolvedTerms}
             onSettingsChange={event => this.handleSettingsChange(event)}
           ></kritzel-settings>
 
@@ -1155,6 +1252,7 @@ export class KritzelEditor {
               }
             }}
             workspaceName={this.activeWorkspace?.name || 'workspace'}
+            terms={this.resolvedTerms}
             onExportPng={() => this.engineRef.exportViewportAsPng()}
             onExportSvg={() => this.engineRef.exportViewportAsSvg()}
             onExportJson={event => this.engineRef.downloadAsJson(event.detail)}
@@ -1162,17 +1260,18 @@ export class KritzelEditor {
 
           <kritzel-active-users users={this.activeUsers}></kritzel-active-users>
 
-          {shouldShowCurrentUser && <kritzel-current-user user={this.user}></kritzel-current-user>}
+          {shouldShowCurrentUser && <kritzel-current-user user={this.user} terms={this.resolvedTerms}></kritzel-current-user>}
 
           {shouldShowLoginButton && (
             <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>
-              Sign in
+              {this.resolvedTerms['login.dialogTitle'] ?? 'Sign in'}
             </kritzel-button>
           )}
 
           <kritzel-more-menu
             items={this.moreMenuItems}
             visible={this.isMoreMenuVisible}
+            terms={this.resolvedTerms}
           ></kritzel-more-menu>
 
           <kritzel-share-dialog
@@ -1183,6 +1282,7 @@ export class KritzelEditor {
             }}
             isPublic={this.currentIsPublic}
             workspaceId={this.activeWorkspace?.id}
+            terms={this.resolvedTerms}
             onToggleIsPublic={this.handleToggleIsPublic}
           ></kritzel-share-dialog>
 
@@ -1194,7 +1294,7 @@ export class KritzelEditor {
                 }
               }}
               providers={this.loginConfig.providers}
-              dialogTitle={this.loginConfig.title}
+              dialogTitle={this.loginConfig.title ?? this.resolvedTerms['login.dialogTitle'] ?? 'Sign in'}
               subtitle={this.loginConfig.subtitle}
               onProviderLogin={this.handleProviderLogin}
             ></kritzel-login-dialog>

@@ -1,5 +1,6 @@
 import { Component, Host, h, Prop, Element } from '@stencil/core';
 import { IKritzelUser } from '../../../interfaces/user.interface';
+import { KritzelTermKey } from '../../../interfaces/localization.interface';
 
 @Component({
   tag: 'kritzel-current-user',
@@ -19,6 +20,9 @@ export class KritzelCurrentUser {
    */
   @Prop() avatarSize: number = 40;
 
+  /** Resolved localized strings keyed by term key, supplied by the editor. */
+  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
+
   private dialogRef: HTMLKritzelCurrentUserDialogElement;
 
   private handleAvatarClick = (event: MouseEvent): void => {
@@ -30,7 +34,7 @@ export class KritzelCurrentUser {
     return (
       <Host>
         <kritzel-avatar user={this.user} size={this.avatarSize} onClick={this.handleAvatarClick}></kritzel-avatar>
-        <kritzel-current-user-dialog ref={el => (this.dialogRef = el)} user={this.user}></kritzel-current-user-dialog>
+        <kritzel-current-user-dialog ref={el => (this.dialogRef = el)} user={this.user} terms={this.terms}></kritzel-current-user-dialog>
       </Host>
     );
   }

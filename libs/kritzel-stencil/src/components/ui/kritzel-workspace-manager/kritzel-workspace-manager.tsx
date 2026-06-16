@@ -1,6 +1,7 @@
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
+import { KritzelTermKey } from '../../../interfaces/localization.interface';
 import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen } from '@stencil/core';
 
 @Component({
@@ -18,6 +19,9 @@ export class KritzelWorkspaceManager {
 
   @Prop({ mutable: true }) activeWorkspace: KritzelWorkspace;
   @Prop() workspaces: KritzelWorkspace[] = [];
+
+  /** Resolved localized strings keyed by term key, supplied by the editor. */
+  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
   @Event() isWorkspaceManagerReady: EventEmitter<void>;
   @Event() workspaceChange: EventEmitter<KritzelWorkspace>;
@@ -146,7 +150,7 @@ export class KritzelWorkspaceManager {
           id: ws.id,
           label: ws.name,
           icon: ws.isPublic ? 'users-round' : undefined,
-          iconTooltip: ws.isPublic ? 'Shared workspace' : undefined,
+          iconTooltip: ws.isPublic ? (this.terms['workspace.sharedTooltip'] ?? 'Shared workspace') : undefined,
           value: ws,
           isEditing: this.editingItemId === ws.id,
           isSelected: this.activeWorkspace?.id === ws.id,
@@ -156,13 +160,13 @@ export class KritzelWorkspaceManager {
           children: [
             {
               id: `${ws.id}-rename`,
-              label: 'Rename',
+              label: this.terms['workspace.rename'] ?? 'Rename',
               value: 'rename',
               action: (_item, parent) => this.edit(parent),
             },
             {
               id: `${ws.id}-delete`,
-              label: 'Delete',
+              label: this.terms['workspace.delete'] ?? 'Delete',
               value: 'delete',
               isDisabled: this.sortedWorkspaces.length <= 1,
               action: (_item, parent) => this.delete(parent),

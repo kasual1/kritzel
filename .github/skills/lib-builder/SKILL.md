@@ -12,6 +12,7 @@ argument-hint: "Describe the feature, bug fix, or change to make in the stencil 
 - Fixing a bug in the core rendering engine or state management
 - Adding or modifying CSS variables / theming
 - Integrating a new sync or asset provider
+- Extending or wiring the localization system (`KritzelLocalizationManager`, `engine.t()`, resolved UI term props)
 
 ## Architecture Overview
 
@@ -70,6 +71,7 @@ Select the relevant pattern based on what you're working on:
 | [handler.md](patterns/handler.md) | Adding or editing an event handler |
 | [object.md](patterns/object.md) | Adding or editing a canvas object type |
 | [component.md](patterns/component.md) | Adding or editing a Stencil web component |
+| [localization.md](patterns/localization.md) | Adding or editing translated UI terms, locale files, or localization-aware component wiring |
 | [theme.md](patterns/theme.md) | Adding CSS variables or modifying theme integration |
 | [helper.md](patterns/helper.md) | Adding or editing a static utility helper |
 | [provider.md](patterns/provider.md) | Adding or editing a sync/asset provider |
