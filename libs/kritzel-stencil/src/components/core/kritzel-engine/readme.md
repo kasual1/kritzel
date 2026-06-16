@@ -553,6 +553,17 @@ Type: `Promise<number>`
 
 
 
+### `getResolvedTerms() => Promise<Partial<Record<KritzelTermKey, string>>>`
+
+Resolves every known term key for the active locale into a flat map.
+Useful for UI layers that need to localize many strings at once.
+
+#### Returns
+
+Type: `Promise<Partial<Record<keyof KritzelTerms, string>>>`
+
+
+
 ### `getScreenshot(format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>`
 
 Captures a screenshot of the current viewport as a data URL.
