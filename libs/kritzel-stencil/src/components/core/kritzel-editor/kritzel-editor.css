@@ -52,6 +52,14 @@ kritzel-controls.keyboard-open {
   gap: 8px;
 }
 
+.bottom-left-buttons {
+  position: absolute;
+  left: var(--kritzel-editor-top-left-buttons-left, 14px);
+  bottom: var(--kritzel-editor-controls-bottom, 14px);
+  display: flex;
+  align-items: flex-end;
+}
+
 .top-right-button {
   display: flex;
   align-items: center;
