@@ -20,6 +20,7 @@
 | `isObjectDistanceFadingActive` | `is-object-distance-fading-active` | When true, objects fade based on distance to the viewport center.                                                                                                                                                                                                                                                                                                                                     | `boolean`                             | `false`     |
 | `isPanningEnabled`             | `is-panning-enabled`               | When false, non-modified wheel events do not pan the viewport.                                                                                                                                                                                                                                                                                                                                        | `boolean`                             | `true`      |
 | `isZoomingEnabled`             | `is-zooming-enabled`               | When false, Ctrl+wheel events do not zoom the viewport.                                                                                                                                                                                                                                                                                                                                               | `boolean`                             | `true`      |
+| `licenseKey`                   | `license-key`                      | License key that, when valid, removes the "Powered by Kritzel" watermark.                                                                                                                                                                                                                                                                                                                             | `string`                              | `undefined` |
 | `locale`                       | `locale`                           | The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'.                                                                                                                                                                                                                                                                                                                     | `"de" \| "en" \| "fr" \| string & {}` | `'en'`      |
 | `locales`                      | --                                 | An array of available locale definitions (with optional partial term overrides).                                                                                                                                                                                                                                                                                                                      | `KritzelLocale[]`                     | `undefined` |
 | `lockDrawingScale`             | `lock-drawing-scale`               | When true, objects are drawn at a fixed visual size regardless of zoom level                                                                                                                                                                                                                                                                                                                          | `boolean`                             | `true`      |
@@ -1190,6 +1191,7 @@ Type: `Promise<void>`
 - [kritzel-context-menu](../../ui/kritzel-context-menu)
 - [kritzel-awareness-cursors](../kritzel-awareness-cursors)
 - [kritzel-cursor-trail](../kritzel-cursor-trail)
+- [kritzel-watermark](../kritzel-watermark)
 
 ### Graph
 ```mermaid
@@ -1198,6 +1200,7 @@ graph TD;
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-awareness-cursors
   kritzel-engine --> kritzel-cursor-trail
+  kritzel-engine --> kritzel-watermark
   kritzel-context-menu --> kritzel-icon
   kritzel-editor --> kritzel-engine
   style kritzel-engine fill:#f9f,stroke:#333,stroke-width:4px

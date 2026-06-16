@@ -48,6 +48,7 @@ export * from './classes/core/workspace.class';
 export * from './classes/managers/anchor.manager';
 export * from './classes/managers/theme.manager';
 export * from './classes/managers/localization.manager';
+export * from './classes/managers/license.manager';
 
 export * from './interfaces/toolbar-control.interface';
 export * from './interfaces/menu-item.interface';

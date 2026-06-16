@@ -466,6 +466,10 @@ export namespace Components {
           * @default true
          */
         "isZoomingEnabled": boolean;
+        /**
+          * License key that, when valid, removes the "Powered by Kritzel" watermark.
+         */
+        "licenseKey"?: string;
         "loadObjectsFromJson": (json: string) => Promise<number>;
         "loadSharedWorkspace": (token: string) => Promise<void>;
         /**
@@ -854,6 +858,10 @@ export namespace Components {
           * @default true
          */
         "isZoomingEnabled": boolean;
+        /**
+          * License key that, when valid, removes the "Powered by Kritzel" watermark.
+         */
+        "licenseKey"?: string;
         /**
           * Loads objects from a workspace JSON string into the current workspace. Unlike importFromJson, this does not create a new workspace - it adds objects to the existing one. Useful for initializing a workspace with pre-existing content after the editor is ready.
           * @param json - A JSON string containing workspace data (from exportAsJson).
@@ -1519,6 +1527,19 @@ export namespace Components {
           * @default null
          */
         "undoState": KritzelUndoState;
+    }
+    /**
+     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine
+     * when the editor is not licensed.
+     * Rendered inside the engine's Shadow DOM and gated by the license manager on
+     * the engine's reactive render path, so removing the node simply causes it to
+     * reappear on the next render. The badge links to the Kritzel website.
+     */
+    interface KritzelWatermark {
+        /**
+          * The core instance used to resolve localized terms.
+         */
+        "core": KritzelCore;
     }
     interface KritzelWorkspaceManager {
         "activeWorkspace": KritzelWorkspace;
@@ -2378,6 +2399,19 @@ declare global {
         prototype: HTMLKritzelUtilityPanelElement;
         new (): HTMLKritzelUtilityPanelElement;
     };
+    /**
+     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine
+     * when the editor is not licensed.
+     * Rendered inside the engine's Shadow DOM and gated by the license manager on
+     * the engine's reactive render path, so removing the node simply causes it to
+     * reappear on the next render. The badge links to the Kritzel website.
+     */
+    interface HTMLKritzelWatermarkElement extends Components.KritzelWatermark, HTMLStencilElement {
+    }
+    var HTMLKritzelWatermarkElement: {
+        prototype: HTMLKritzelWatermarkElement;
+        new (): HTMLKritzelWatermarkElement;
+    };
     interface HTMLKritzelWorkspaceManagerElementEventMap {
         "isWorkspaceManagerReady": void;
         "workspaceChange": KritzelWorkspace;
@@ -2457,6 +2491,7 @@ declare global {
         "kritzel-tool-config": HTMLKritzelToolConfigElement;
         "kritzel-tooltip": HTMLKritzelTooltipElement;
         "kritzel-utility-panel": HTMLKritzelUtilityPanelElement;
+        "kritzel-watermark": HTMLKritzelWatermarkElement;
         "kritzel-workspace-manager": HTMLKritzelWorkspaceManagerElement;
         "kritzel-zoom-panel": HTMLKritzelZoomPanelElement;
     }
@@ -2812,6 +2847,10 @@ declare namespace LocalJSX {
          */
         "isZoomingEnabled"?: boolean;
         /**
+          * License key that, when valid, removes the "Powered by Kritzel" watermark.
+         */
+        "licenseKey"?: string;
+        /**
           * The current locale (language) code applied to the editor, e.g. 'en', 'de', 'fr'.
           * @default 'en'
          */
@@ -2931,6 +2970,10 @@ declare namespace LocalJSX {
           * @default true
          */
         "isZoomingEnabled"?: boolean;
+        /**
+          * License key that, when valid, removes the "Powered by Kritzel" watermark.
+         */
+        "licenseKey"?: string;
         /**
           * The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'.
           * @default 'en'
@@ -3530,6 +3573,19 @@ declare namespace LocalJSX {
          */
         "undoState"?: KritzelUndoState;
     }
+    /**
+     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine
+     * when the editor is not licensed.
+     * Rendered inside the engine's Shadow DOM and gated by the license manager on
+     * the engine's reactive render path, so removing the node simply causes it to
+     * reappear on the next render. The badge links to the Kritzel website.
+     */
+    interface KritzelWatermark {
+        /**
+          * The core instance used to resolve localized terms.
+         */
+        "core": KritzelCore;
+    }
     interface KritzelWorkspaceManager {
         "activeWorkspace"?: KritzelWorkspace;
         "onIsWorkspaceManagerReady"?: (event: KritzelWorkspaceManagerCustomEvent<void>) => void;
@@ -3651,6 +3707,7 @@ declare namespace LocalJSX {
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
         "theme": ThemeName;
+        "licenseKey": string;
         "locale": LocaleCode;
         "fallbackLocale": LocaleCode;
         "isPanningEnabled": boolean;
@@ -3673,6 +3730,7 @@ declare namespace LocalJSX {
         "lockDrawingScale": boolean;
         "isObjectDistanceFadingActive": boolean;
         "theme": ThemeName;
+        "licenseKey": string;
         "locale": LocaleCode;
         "fallbackLocale": LocaleCode;
         "viewportBoundaryLeft": number;
@@ -3828,6 +3886,7 @@ declare namespace LocalJSX {
         "kritzel-tool-config": Omit<KritzelToolConfig, keyof KritzelToolConfigAttributes> & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes]?: KritzelToolConfig[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `attr:${K}`]?: KritzelToolConfigAttributes[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `prop:${K}`]?: KritzelToolConfig[K] };
         "kritzel-tooltip": Omit<KritzelTooltip, keyof KritzelTooltipAttributes> & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes]?: KritzelTooltip[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `attr:${K}`]?: KritzelTooltipAttributes[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `prop:${K}`]?: KritzelTooltip[K] };
         "kritzel-utility-panel": KritzelUtilityPanel;
+        "kritzel-watermark": KritzelWatermark;
         "kritzel-workspace-manager": Omit<KritzelWorkspaceManager, keyof KritzelWorkspaceManagerAttributes> & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes]?: KritzelWorkspaceManager[K] } & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes as `attr:${K}`]?: KritzelWorkspaceManagerAttributes[K] } & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes as `prop:${K}`]?: KritzelWorkspaceManager[K] };
         "kritzel-zoom-panel": Omit<KritzelZoomPanel, keyof KritzelZoomPanelAttributes> & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes]?: KritzelZoomPanel[K] } & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes as `attr:${K}`]?: KritzelZoomPanelAttributes[K] } & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes as `prop:${K}`]?: KritzelZoomPanel[K] };
     }
@@ -3888,6 +3947,14 @@ declare module "@stencil/core" {
             "kritzel-tool-config": LocalJSX.IntrinsicElements["kritzel-tool-config"] & JSXBase.HTMLAttributes<HTMLKritzelToolConfigElement>;
             "kritzel-tooltip": LocalJSX.IntrinsicElements["kritzel-tooltip"] & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
             "kritzel-utility-panel": LocalJSX.IntrinsicElements["kritzel-utility-panel"] & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;
+            /**
+             * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine
+             * when the editor is not licensed.
+             * Rendered inside the engine's Shadow DOM and gated by the license manager on
+             * the engine's reactive render path, so removing the node simply causes it to
+             * reappear on the next render. The badge links to the Kritzel website.
+             */
+            "kritzel-watermark": LocalJSX.IntrinsicElements["kritzel-watermark"] & JSXBase.HTMLAttributes<HTMLKritzelWatermarkElement>;
             "kritzel-workspace-manager": LocalJSX.IntrinsicElements["kritzel-workspace-manager"] & JSXBase.HTMLAttributes<HTMLKritzelWorkspaceManagerElement>;
             "kritzel-zoom-panel": LocalJSX.IntrinsicElements["kritzel-zoom-panel"] & JSXBase.HTMLAttributes<HTMLKritzelZoomPanelElement>;
         }

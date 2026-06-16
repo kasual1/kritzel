@@ -29,6 +29,7 @@ import { KritzelNumericInput as KritzelNumericInputElement, defineCustomElement 
 import { KritzelOpacitySlider as KritzelOpacitySliderElement, defineCustomElement as defineKritzelOpacitySlider } from "../../../../kritzel-stencil/dist/components/kritzel-opacity-slider.js";
 import { KritzelPillTabs as KritzelPillTabsElement, defineCustomElement as defineKritzelPillTabs } from "../../../../kritzel-stencil/dist/components/kritzel-pill-tabs.js";
 import { KritzelSettings as KritzelSettingsElement, defineCustomElement as defineKritzelSettings } from "../../../../kritzel-stencil/dist/components/kritzel-settings.js";
+import { KritzelWatermark as KritzelWatermarkElement, defineCustomElement as defineKritzelWatermark } from "../../../../kritzel-stencil/dist/components/kritzel-watermark.js";
 import { KritzelZoomPanel as KritzelZoomPanelElement, defineCustomElement as defineKritzelZoomPanel } from "../../../../kritzel-stencil/dist/components/kritzel-zoom-panel.js";
 
 export type KritzelAwarenessCursorsEvents = NonNullable<unknown>;
@@ -285,6 +286,17 @@ export const KritzelSettings: StencilReactComponent<KritzelSettingsElement, Krit
     react: React,
     events: { onSettingsChange: 'settingsChange' } as KritzelSettingsEvents,
     defineCustomElement: defineKritzelSettings
+});
+
+export type KritzelWatermarkEvents = NonNullable<unknown>;
+
+export const KritzelWatermark: StencilReactComponent<KritzelWatermarkElement, KritzelWatermarkEvents, Components.KritzelWatermark> = /*@__PURE__*/ createComponent<KritzelWatermarkElement, KritzelWatermarkEvents, Components.KritzelWatermark>({
+    tagName: 'kritzel-watermark',
+    elementClass: KritzelWatermarkElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as KritzelWatermarkEvents,
+    defineCustomElement: defineKritzelWatermark
 });
 
 export type KritzelZoomPanelEvents = {
