@@ -32,6 +32,7 @@
  - [kritzel-split-button](../kritzel-split-button)
  - [kritzel-tool-config](../../ui/kritzel-tool-config)
  - [kritzel-utility-panel](../../ui/kritzel-utility-panel)
+ - [kritzel-zoom-panel](../../ui/kritzel-zoom-panel)
 
 ### Graph
 ```mermaid
@@ -50,6 +51,7 @@ graph TD;
   kritzel-split-button --> kritzel-icon
   kritzel-tool-config --> kritzel-icon
   kritzel-utility-panel --> kritzel-icon
+  kritzel-zoom-panel --> kritzel-icon
   style kritzel-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
