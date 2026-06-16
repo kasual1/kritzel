@@ -1,6 +1,7 @@
 import { Component, Host, h, Prop, State, Element, Event, EventEmitter } from '@stencil/core';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
+import { KritzelTermKey } from '../../../interfaces/localization.interface';
 
 @Component({
   tag: 'kritzel-more-menu',
@@ -36,6 +37,9 @@ export class KritzelMoreMenu {
    * Offset Y for the portal positioning
    */
   @Prop() offsetY: number = 4;
+
+  /** Resolved localized strings keyed by term key, supplied by the editor. */
+  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
   /**
    * Emitted when a menu item is selected
@@ -81,7 +85,7 @@ export class KritzelMoreMenu {
             class="more-menu-button"
             data-testid="more-menu-button"
             onClick={this.toggleMenu}
-            aria-label="More options"
+            aria-label={this.terms['moreMenu.ariaLabel'] ?? 'More options'}
           >
             <kritzel-icon name={this.icon} size={this.iconSize}></kritzel-icon>
           </button>

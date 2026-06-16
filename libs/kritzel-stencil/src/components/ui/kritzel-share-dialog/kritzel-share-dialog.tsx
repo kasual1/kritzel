@@ -1,4 +1,5 @@
 import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop, Watch } from '@stencil/core';
+import { KritzelTermKey } from '../../../interfaces/localization.interface';
 
 /**
  * Share dialog component for managing workspace link sharing.
@@ -22,6 +23,9 @@ export class KritzelShareDialog {
    * The ID of the workspace being shared. Used to build the share URL.
    */
   @Prop() workspaceId: string | undefined = undefined;
+
+  /** Resolved localized strings keyed by term key, supplied by the editor. */
+  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
   @Watch('isPublic')
   onIsPublicChange(newValue: boolean) {
@@ -110,7 +114,7 @@ export class KritzelShareDialog {
     return (
       <Host>
         <kritzel-dialog
-          dialogTitle="Share Workspace"
+          dialogTitle={this.terms['share.dialogTitle'] ?? 'Share Workspace'}
           size="small"
           isOpen={this.isDialogOpen}
           onDialogClose={this.closeDialog}
@@ -121,17 +125,17 @@ export class KritzelShareDialog {
             <div class="share-section">
               <div class="share-row">
                 <div class="share-label-group">
-                  <label class="share-label">Link sharing</label>
+                  <label class="share-label">{this.terms['share.linkSharing.label'] ?? 'Link sharing'}</label>
                   <p class="share-description">
                     {this.internalIsPublic
-                      ? 'Anyone with the link can access this workspace.'
-                      : 'Link sharing is disabled. Only you can access this workspace.'}
+                      ? (this.terms['share.linkSharing.enabledDescription'] ?? 'Anyone with the link can access this workspace.')
+                      : (this.terms['share.linkSharing.disabledDescription'] ?? 'Link sharing is disabled. Only you can access this workspace.')}
                   </p>
                 </div>
                 <kritzel-slide-toggle
                   checked={this.internalIsPublic}
                   onCheckedChange={this.handleToggleChange}
-                  label="Enable link sharing"
+                  label={this.terms['share.linkSharing.toggleLabel'] ?? 'Enable link sharing'}
                 />
               </div>
             </div>
@@ -150,7 +154,7 @@ export class KritzelShareDialog {
                   <button
                     class={{ 'copy-button': true, 'copy-success': this.copySuccess }}
                     onClick={this.handleCopyUrl}
-                    title={this.copySuccess ? 'Copied!' : 'Copy link'}
+                    title={this.copySuccess ? (this.terms['share.copyLink.copied'] ?? 'Copied!') : (this.terms['share.copyLink.title'] ?? 'Copy link')}
                   >
                     <kritzel-icon
                       name={this.copySuccess ? 'check' : 'copy'}

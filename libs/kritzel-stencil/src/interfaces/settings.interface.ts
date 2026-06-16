@@ -1,5 +1,6 @@
 import { KritzelDebugInfo } from './debug-info.interface';
 import { ThemeName } from './theme.interface';
+import { LocaleCode } from './localization.interface';
 
 export interface KritzelSettingsConfig {
   /** Minimum zoom level allowed (0.0001 to 1) */
@@ -10,6 +11,8 @@ export interface KritzelSettingsConfig {
   lockDrawingScale: boolean;
   /** The current theme name */
   theme: ThemeName;
+  /** The current locale (language) code */
+  locale: LocaleCode;
   /** Left boundary of the viewport in world coordinates */
   viewportBoundaryLeft: number;
   /** Right boundary of the viewport in world coordinates */

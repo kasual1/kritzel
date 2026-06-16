@@ -14,6 +14,7 @@ import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
+import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
@@ -53,6 +54,7 @@ export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
+export { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
@@ -225,6 +227,11 @@ export namespace Components {
          */
         "isUtilityPanelVisible": boolean;
         /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
+        /**
           * @default 'light'
          */
         "theme": ThemeName;
@@ -244,6 +251,11 @@ export namespace Components {
          */
         "avatarSize": number;
         /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
+        /**
           * The current user to display
          */
         "user"?: IKritzelUser;
@@ -251,6 +263,11 @@ export namespace Components {
     interface KritzelCurrentUserDialog {
         "close": () => Promise<void>;
         "open": () => Promise<void>;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
         "user"?: IKritzelUser;
     }
     interface KritzelCursorTrail {
@@ -380,11 +397,24 @@ export namespace Components {
         "exportSelectedObjectsAsSvg": () => Promise<void>;
         "exportViewportAsPng": (options?: { includeBackground?: boolean; }) => Promise<void>;
         "exportViewportAsSvg": (options?: { includeBackground?: boolean; }) => Promise<void>;
+        /**
+          * The locale used to resolve terms missing from the active locale.
+          * @default 'en'
+         */
+        "fallbackLocale": LocaleCode;
         "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>;
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
         "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
+        /**
+          * Gets the list of available locale codes (built-in and registered).
+         */
+        "getAvailableLocales": () => Promise<LocaleCode[]>;
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         "getDisplayableShortcuts": () => Promise<Omit<KritzelShortcut, "action" | "condition">[]>;
+        /**
+          * Gets the currently active locale code.
+         */
+        "getLocale": () => Promise<LocaleCode>;
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
         "getObjectsTotalCount": () => Promise<number>;
@@ -393,7 +423,7 @@ export namespace Components {
         "getViewport": () => Promise<KritzelViewportState>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
         /**
-          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Select All',       icon: 'select-all',       disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,       action: () => this.selectAllObjectsInViewport(),     },   ]
+          * @default [     {       label: 'menu.paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.selectAll',       icon: 'select-all',       disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,       action: () => this.selectAllObjectsInViewport(),     },   ]
          */
         "globalContextMenuItems": ContextMenuItem[];
         "group": () => Promise<void>;
@@ -439,6 +469,15 @@ export namespace Components {
         "loadObjectsFromJson": (json: string) => Promise<number>;
         "loadSharedWorkspace": (token: string) => Promise<void>;
         /**
+          * The current locale (language) code applied to the editor, e.g. 'en', 'de', 'fr'.
+          * @default 'en'
+         */
+        "locale": LocaleCode;
+        /**
+          * An array of available locale definitions (with optional partial term overrides).
+         */
+        "locales"?: KritzelLocale[];
+        /**
           * @default true
          */
         "lockDrawingScale": boolean;
@@ -447,7 +486,7 @@ export namespace Components {
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
-          * @default [     { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'Cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'Paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Order',       icon: 'ordering',       group: 'other',       children: [         { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'Move Up', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'Move Down', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'Align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'Align Left', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'Align Right', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'Align Top', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'Align Bottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'Group',       icon: 'group',       group: 'other',       children: [         {           label: 'Group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'Ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'Export',       icon: 'download',       group: 'export',       children: [         { label: 'Export as SVG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'Export as PNG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
+          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'menu.export',       icon: 'download',       group: 'export',       children: [         { label: 'menu.exportAsSvg', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'menu.exportAsPng', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
@@ -456,6 +495,11 @@ export namespace Components {
         "panToObject": (object: KritzelBaseObject) => Promise<void>;
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
+        /**
+          * Registers additional locale definitions (with optional partial term overrides).
+          * @param locales - The locale definitions to register.
+         */
+        "registerLocales": (locales: KritzelLocale[]) => Promise<void>;
         "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>;
         "reinitSync": () => Promise<void>;
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
@@ -473,12 +517,23 @@ export namespace Components {
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
+        /**
+          * Sets the active locale (language) and re-renders the UI.
+          * @param code - The locale code to activate, e.g. 'de'.
+         */
+        "setLocale": (code: LocaleCode) => Promise<void>;
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
           * @default {   providers: [], }
          */
         "syncConfig"?: KritzelSyncConfig;
+        /**
+          * Resolves a term key to its translated string for the active locale.
+          * @param key - The term key to resolve.
+          * @param vars - Optional values for `{placeholder}` interpolation.
+         */
+        "t": (key: KritzelTermKey, vars?: KritzelTermVars) => Promise<string>;
         /**
           * @default 'light'
          */
@@ -661,6 +716,11 @@ export namespace Components {
          */
         "exportViewportAsSvg": (options?: { includeBackground?: boolean; }) => Promise<void>;
         /**
+          * The locale used to resolve terms missing from the active locale.
+          * @default 'en'
+         */
+        "fallbackLocale": LocaleCode;
+        /**
           * Returns all objects that match the given predicate function. Excludes internal selection-related objects (selection groups and selection boxes).
           * @param predicate - A filter function called for each object. Return `true` to include.
           * @returns An array of matching objects.
@@ -676,6 +736,14 @@ export namespace Components {
          */
         "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
         /**
+          * Gets the list of available locales as `{ code, label }` options for a selector.
+         */
+        "getAvailableLocaleOptions": () => Promise<{ code: LocaleCode; label: string; }[]>;
+        /**
+          * Gets the list of available locale codes (built-in and registered).
+         */
+        "getAvailableLocales": () => Promise<LocaleCode[]>;
+        /**
           * Returns the objects currently stored in the internal clipboard from a prior `copy()` call.
          */
         "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
@@ -688,6 +756,10 @@ export namespace Components {
           * @returns True if the workspace is public, false otherwise
          */
         "getIsPublic": () => Promise<boolean>;
+        /**
+          * Gets the currently active locale code.
+         */
+        "getLocale": () => Promise<LocaleCode>;
         /**
           * Retrieves a canvas object by its unique ID.
           * @param id - The object's unique identifier.
@@ -702,6 +774,10 @@ export namespace Components {
           * Returns the total number of objects on the canvas.
          */
         "getObjectsTotalCount": () => Promise<number>;
+        /**
+          * Resolves every known term key for the active locale into a flat map. Useful for UI layers that need to localize many strings at once.
+         */
+        "getResolvedTerms": () => Promise<Partial<Record<KritzelTermKey, string>>>;
         /**
           * Captures a screenshot of the current viewport as a data URL.
           * @param format - The image format: `'png'` (default) or `'svg'`.
@@ -796,6 +872,15 @@ export namespace Components {
          */
         "loadSharedWorkspace": (token: string) => Promise<void>;
         /**
+          * The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'.
+          * @default 'en'
+         */
+        "locale": LocaleCode;
+        /**
+          * An array of available locale definitions (with optional partial term overrides).
+         */
+        "locales"?: KritzelLocale[];
+        /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
          */
@@ -832,6 +917,11 @@ export namespace Components {
           * Redoes the last undone action.
          */
         "redo": () => Promise<void>;
+        /**
+          * Registers additional locale definitions (with optional partial term overrides).
+          * @param locales - The locale definitions to register.
+         */
+        "registerLocales": (locales: KritzelLocale[]) => Promise<void>;
         /**
           * Registers a new drawing tool with the engine.
           * @param toolName - Unique identifier for the tool (e.g., 'brush', 'eraser').
@@ -898,6 +988,11 @@ export namespace Components {
          */
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
         /**
+          * Sets the active locale (language) and re-renders the UI.
+          * @param code - The locale code to activate, e.g. 'de'.
+         */
+        "setLocale": (code: LocaleCode) => Promise<void>;
+        /**
           * Sets the viewport to center on the given world coordinates at the specified scale.
           * @param x - X position in world coordinates to center on.
           * @param y - Y position in world coordinates to center on.
@@ -908,6 +1003,12 @@ export namespace Components {
           * Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).
          */
         "syncConfig"?: KritzelSyncConfig;
+        /**
+          * Resolves a term key to its translated string for the active locale.
+          * @param key - The term key to resolve.
+          * @param vars - Optional values for `{placeholder}` interpolation.
+         */
+        "t": (key: KritzelTermKey, vars?: KritzelTermVars) => Promise<string>;
         /**
           * The current theme to apply to the editor
           * @default 'light'
@@ -998,6 +1099,11 @@ export namespace Components {
     }
     interface KritzelExport {
         "open": (previewUrl?: string) => Promise<void>;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
         /**
           * The name of the current workspace, used as default filename
           * @default 'workspace'
@@ -1172,6 +1278,11 @@ export namespace Components {
          */
         "offsetY": number;
         /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
+        /**
           * Whether the menu button is visible
           * @default false
          */
@@ -1257,6 +1368,11 @@ export namespace Components {
     }
     interface KritzelSettings {
         /**
+          * Available locales as `{ code, label }` options for the language selector.
+          * @default []
+         */
+        "availableLocales": { code: LocaleCode; label: string }[];
+        /**
           * Keyboard shortcuts to display in the settings dialog
           * @default ['light', 'dark']
          */
@@ -1270,6 +1386,11 @@ export namespace Components {
           * @default []
          */
         "shortcuts": Omit<KritzelShortcut, 'action' | 'condition'>[];
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
     }
     interface KritzelShapeFill {
         /**
@@ -1297,6 +1418,11 @@ export namespace Components {
           * Opens the share dialog.
          */
         "open": () => Promise<void>;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
         /**
           * The ID of the workspace being shared. Used to build the share URL.
           * @default undefined
@@ -1359,6 +1485,11 @@ export namespace Components {
           * @default false
          */
         "isExpanded": boolean;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
         "theme": ThemeName;
         "tool": ConfigurableTool;
     }
@@ -1380,12 +1511,22 @@ export namespace Components {
     }
     interface KritzelUtilityPanel {
         /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
+        /**
           * @default null
          */
         "undoState": KritzelUndoState;
     }
     interface KritzelWorkspaceManager {
         "activeWorkspace": KritzelWorkspace;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
         /**
           * Whether the workspace manager is visible
           * @default false
@@ -1402,6 +1543,11 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
         /**
           * Whether the zoom panel is visible.
           * @default true
@@ -1744,6 +1890,7 @@ declare global {
         "objectsUpdated": ObjectsUpdatedEvent;
         "undoStateChange": KritzelUndoState1;
         "themeChange": ThemeName;
+        "localeChange": LocaleCode;
         "viewportChange": KritzelViewportState;
         "logout": void;
         "login": LoginEvent;
@@ -2468,6 +2615,11 @@ declare namespace LocalJSX {
         "isUtilityPanelVisible"?: boolean;
         "onIsControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
         /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        /**
           * @default 'light'
          */
         "theme"?: ThemeName;
@@ -2487,11 +2639,21 @@ declare namespace LocalJSX {
          */
         "avatarSize"?: number;
         /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        /**
           * The current user to display
          */
         "user"?: IKritzelUser;
     }
     interface KritzelCurrentUserDialog {
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
         "user"?: IKritzelUser;
     }
     interface KritzelCursorTrail {
@@ -2604,7 +2766,12 @@ declare namespace LocalJSX {
          */
         "editorId"?: string;
         /**
-          * @default [     {       label: 'Paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Select All',       icon: 'select-all',       disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,       action: () => this.selectAllObjectsInViewport(),     },   ]
+          * The locale used to resolve terms missing from the active locale.
+          * @default 'en'
+         */
+        "fallbackLocale"?: LocaleCode;
+        /**
+          * @default [     {       label: 'menu.paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.selectAll',       icon: 'select-all',       disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,       action: () => this.selectAllObjectsInViewport(),     },   ]
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
@@ -2645,6 +2812,15 @@ declare namespace LocalJSX {
          */
         "isZoomingEnabled"?: boolean;
         /**
+          * The current locale (language) code applied to the editor, e.g. 'en', 'de', 'fr'.
+          * @default 'en'
+         */
+        "locale"?: LocaleCode;
+        /**
+          * An array of available locale definitions (with optional partial term overrides).
+         */
+        "locales"?: KritzelLocale[];
+        /**
           * @default true
          */
         "lockDrawingScale"?: boolean;
@@ -2653,13 +2829,14 @@ declare namespace LocalJSX {
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
-          * @default [     { label: 'Copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'Cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'Paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'Order',       icon: 'ordering',       group: 'other',       children: [         { label: 'Bring to Front', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'Send to Back', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'Move Up', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'Move Down', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'Align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'Align Left', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'Align Center Horizontally', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'Align Right', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'Align Top', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'Align Center Vertically', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'Align Bottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'Group',       icon: 'group',       group: 'other',       children: [         {           label: 'Group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'Ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'Export',       icon: 'download',       group: 'export',       children: [         { label: 'Export as SVG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'Export as PNG', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'Delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
+          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'menu.export',       icon: 'download',       group: 'export',       children: [         { label: 'menu.exportAsSvg', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'menu.exportAsPng', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
         "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
         "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangedEvent>) => void;
         "onIsReady"?: (event: KritzelEditorCustomEvent<EditorIsReadyEvent>) => void;
+        "onLocaleChange"?: (event: KritzelEditorCustomEvent<LocaleCode>) => void;
         "onLogin"?: (event: KritzelEditorCustomEvent<LoginEvent>) => void;
         "onLogout"?: (event: KritzelEditorCustomEvent<void>) => void;
         "onObjectsAdded"?: (event: KritzelEditorCustomEvent<ObjectsAddedEvent>) => void;
@@ -2726,6 +2903,11 @@ declare namespace LocalJSX {
          */
         "editorId"?: string;
         /**
+          * The locale used to resolve terms missing from the active locale.
+          * @default 'en'
+         */
+        "fallbackLocale"?: LocaleCode;
+        /**
           * Context menu items shown when right-clicking the canvas background.
          */
         "globalContextMenuItems"?: ContextMenuItem[];
@@ -2749,6 +2931,15 @@ declare namespace LocalJSX {
           * @default true
          */
         "isZoomingEnabled"?: boolean;
+        /**
+          * The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'.
+          * @default 'en'
+         */
+        "locale"?: LocaleCode;
+        /**
+          * An array of available locale definitions (with optional partial term overrides).
+         */
+        "locales"?: KritzelLocale[];
         /**
           * When true, objects are drawn at a fixed visual size regardless of zoom level
           * @default true
@@ -2870,6 +3061,11 @@ declare namespace LocalJSX {
         "onExportJson"?: (event: KritzelExportCustomEvent<string>) => void;
         "onExportPng"?: (event: KritzelExportCustomEvent<void>) => void;
         "onExportSvg"?: (event: KritzelExportCustomEvent<void>) => void;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
         /**
           * The name of the current workspace, used as default filename
           * @default 'workspace'
@@ -3064,6 +3260,11 @@ declare namespace LocalJSX {
          */
         "onItemSelect"?: (event: KritzelMoreMenuCustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>) => void;
         /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        /**
           * Whether the menu button is visible
           * @default false
          */
@@ -3159,6 +3360,11 @@ declare namespace LocalJSX {
     }
     interface KritzelSettings {
         /**
+          * Available locales as `{ code, label }` options for the language selector.
+          * @default []
+         */
+        "availableLocales"?: { code: LocaleCode; label: string }[];
+        /**
           * Keyboard shortcuts to display in the settings dialog
           * @default ['light', 'dark']
          */
@@ -3175,6 +3381,11 @@ declare namespace LocalJSX {
           * @default []
          */
         "shortcuts"?: Omit<KritzelShortcut, 'action' | 'condition'>[];
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
     }
     interface KritzelShapeFill {
         "onValueChange"?: (event: KritzelShapeFillCustomEvent<ShapeFillType>) => void;
@@ -3203,6 +3414,11 @@ declare namespace LocalJSX {
           * Emitted when the user toggles the public sharing state.
          */
         "onToggleIsPublic"?: (event: KritzelShareDialogCustomEvent<boolean>) => void;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
         /**
           * The ID of the workspace being shared. Used to build the share URL.
           * @default undefined
@@ -3278,6 +3494,11 @@ declare namespace LocalJSX {
         "isExpanded"?: boolean;
         "onDisplayValuesChange"?: (event: KritzelToolConfigCustomEvent<ToolDisplayValues>) => void;
         "onToolChange"?: (event: KritzelToolConfigCustomEvent<ConfigurableTool>) => void;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
         "theme"?: ThemeName;
         "tool"?: ConfigurableTool;
     }
@@ -3300,6 +3521,11 @@ declare namespace LocalJSX {
         "onRedo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
         "onUndo"?: (event: KritzelUtilityPanelCustomEvent<void>) => void;
         /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        /**
           * @default null
          */
         "undoState"?: KritzelUndoState;
@@ -3308,6 +3534,11 @@ declare namespace LocalJSX {
         "activeWorkspace"?: KritzelWorkspace;
         "onIsWorkspaceManagerReady"?: (event: KritzelWorkspaceManagerCustomEvent<void>) => void;
         "onWorkspaceChange"?: (event: KritzelWorkspaceManagerCustomEvent<KritzelWorkspace>) => void;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
         /**
           * Whether the workspace manager is visible
           * @default false
@@ -3332,6 +3563,11 @@ declare namespace LocalJSX {
           * Emitted when the zoom-out button is clicked.
          */
         "onZoomOut"?: (event: KritzelZoomPanelCustomEvent<void>) => void;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
         /**
           * Whether the zoom panel is visible.
           * @default true
@@ -3415,6 +3651,8 @@ declare namespace LocalJSX {
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
         "theme": ThemeName;
+        "locale": LocaleCode;
+        "fallbackLocale": LocaleCode;
         "isPanningEnabled": boolean;
         "isZoomingEnabled": boolean;
         "isControlsVisible": boolean;
@@ -3435,6 +3673,8 @@ declare namespace LocalJSX {
         "lockDrawingScale": boolean;
         "isObjectDistanceFadingActive": boolean;
         "theme": ThemeName;
+        "locale": LocaleCode;
+        "fallbackLocale": LocaleCode;
         "viewportBoundaryLeft": number;
         "viewportBoundaryRight": number;
         "viewportBoundaryTop": number;

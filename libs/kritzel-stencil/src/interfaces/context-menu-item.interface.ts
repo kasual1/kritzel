@@ -1,7 +1,13 @@
 import { KritzelBaseObject } from "../classes/objects/base-object.class";
+import { KritzelTermKey } from "./localization.interface";
 
 export interface ContextMenuItem {
-  label: string;
+  /**
+   * The item label. Always resolved through the active locale: pass a
+   * {@link KritzelTermKey} (e.g. `'menu.copy'`) to display its translation, or
+   * any other string to use it verbatim. Known term keys are autocompleted.
+   */
+  label: KritzelTermKey | (string & NonNullable<unknown>);
   action?: (menu: { x: number; y: number }, objects: KritzelBaseObject[]) => void;
   icon?: string;
   group?: string;
