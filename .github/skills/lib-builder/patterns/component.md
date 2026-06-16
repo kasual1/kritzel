@@ -89,6 +89,8 @@ After adding new CSS variables:
 - UI components receive data via `@Prop()` and emit via `@Event()`
 - Core components (editor, engine) may access `KritzelCore`
 - Keep render methods small; extract complex JSX into private render helpers
+- For localization, prefer `@Prop() terms: Partial<Record<KritzelTermKey, string>> = {}` and keep English fallback text inline at the usage site
+- If a UI component owns long-lived collaborators that render text, keep them synchronized with locale prop updates via `@Watch()`
 
 ## Reactive Prop Bridging (Important)
 
