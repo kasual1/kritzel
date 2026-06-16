@@ -60,6 +60,13 @@ kritzel-controls.keyboard-open {
   align-items: flex-end;
 }
 
+/* Hide the zoom panel on mobile devices */
+@media (max-width: 767px) {
+  .bottom-left-buttons {
+    display: none;
+  }
+}
+
 .top-right-button {
   display: flex;
   align-items: center;
