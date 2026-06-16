@@ -149,6 +149,7 @@ export class EditorPage {
   readonly origin: Locator;
   readonly controls: Locator;
   readonly utilityPanel: Locator;
+  readonly zoomPanel: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -157,6 +158,7 @@ export class EditorPage {
     this.origin = page.locator('kritzel-engine >>> .origin');
     this.controls = page.locator('kritzel-controls');
     this.utilityPanel = page.locator('kritzel-utility-panel');
+    this.zoomPanel = page.locator('kritzel-zoom-panel');
   }
 
   async goto(path = '/e2e/editor') {
@@ -505,6 +507,53 @@ export class EditorPage {
   /** Check whether the redo button is enabled. */
   async isRedoEnabled(): Promise<boolean> {
     return !(await this.page.getByTestId('utility-redo').isDisabled());
+  }
+
+  // --- Zoom Panel ---
+
+  /** Get the zoom level label shown in the zoom panel. */
+  async getZoomLevelText(): Promise<string> {
+    return (await this.zoomPanel.locator('.zoom-level').innerText()).trim();
+  }
+
+  /** Get the numeric zoom level shown in the zoom panel. */
+  async getZoomPercent(): Promise<number> {
+    const zoomLevelText = await this.getZoomLevelText();
+    return Number.parseInt(zoomLevelText, 10);
+  }
+
+  /** Click the zoom-in button and wait until the label updates. */
+  async clickZoomIn() {
+    const previousZoomPercent = await this.getZoomPercent();
+
+    await this.zoomPanel.getByRole('button', { name: 'Zoom in' }).click();
+    await this.page.waitForFunction((oldPercent) => {
+      const panel = document.querySelector('kritzel-zoom-panel');
+      const label = panel?.shadowRoot?.querySelector('.zoom-level')?.textContent?.trim();
+      const nextPercent = label ? Number.parseInt(label, 10) : Number.NaN;
+      return Number.isFinite(nextPercent) && nextPercent > oldPercent;
+    }, previousZoomPercent);
+    await this.page.waitForFunction(() => {
+      const engine = document.querySelector('kritzel-engine') as any;
+      return engine?.core?.store?.state?.isScaling === false;
+    });
+  }
+
+  /** Click the zoom-out button and wait until the label updates. */
+  async clickZoomOut() {
+    const previousZoomPercent = await this.getZoomPercent();
+
+    await this.zoomPanel.getByRole('button', { name: 'Zoom out' }).click();
+    await this.page.waitForFunction((oldPercent) => {
+      const panel = document.querySelector('kritzel-zoom-panel');
+      const label = panel?.shadowRoot?.querySelector('.zoom-level')?.textContent?.trim();
+      const nextPercent = label ? Number.parseInt(label, 10) : Number.NaN;
+      return Number.isFinite(nextPercent) && nextPercent < oldPercent;
+    }, previousZoomPercent);
+    await this.page.waitForFunction(() => {
+      const engine = document.querySelector('kritzel-engine') as any;
+      return engine?.core?.store?.state?.isScaling === false;
+    });
   }
 
   // --- Config Panel ---
