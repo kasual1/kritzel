@@ -36,7 +36,7 @@
     "e2e:angular": "npx playwright test --config=e2e/playwright.config.ts --project=angular",
     "e2e:react": "npx playwright test --config=e2e/playwright.config.ts --project=react",
     "e2e:vue": "npx playwright test --config=e2e/playwright.config.ts --project=vue",
-    "e2e:update-screenshots": "npx playwright test --config=e2e/playwright.config.ts --update-snapshots",
+    "e2e:update-screenshots": "npx playwright test --config=e2e/playwright.config.ts --update-snapshots=all",
     "e2e:report": "npx playwright show-report e2e/playwright-report",
     "docs:start": "cd website && npm run start",
     "docs:build": "cd website && npm run build",
