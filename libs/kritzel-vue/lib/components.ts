@@ -51,7 +51,8 @@ export const KritzelButton: StencilVueComponent<JSX.KritzelButton> = /*@__PURE__
 
 
 export const KritzelCurrentUserDialog: StencilVueComponent<JSX.KritzelCurrentUserDialog> = /*@__PURE__*/ defineContainer<JSX.KritzelCurrentUserDialog>('kritzel-current-user-dialog', defineKritzelCurrentUserDialog, [
-  'user'
+  'user',
+  'terms'
 ]);
 
 
@@ -90,6 +91,9 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'objectContextMenuItems',
   'themes',
   'theme',
+  'locale',
+  'locales',
+  'fallbackLocale',
   'customSvgIcons',
   'isPanningEnabled',
   'isZoomingEnabled',
@@ -114,6 +118,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'objectsUpdated',
   'undoStateChange',
   'themeChange',
+  'localeChange',
   'viewportChange',
   'logout',
   'login',
@@ -128,6 +133,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'objectsUpdated',
   'undoStateChange',
   'themeChange',
+  'localeChange',
   'viewportChange',
   'logout',
   'login',
@@ -152,6 +158,9 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'isObjectDistanceFadingActive',
   'theme',
   'themes',
+  'locale',
+  'locales',
+  'fallbackLocale',
   'viewportBoundaryLeft',
   'viewportBoundaryRight',
   'viewportBoundaryTop',
@@ -194,6 +203,7 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
 
 export const KritzelExport: StencilVueComponent<JSX.KritzelExport> = /*@__PURE__*/ defineContainer<JSX.KritzelExport>('kritzel-export', defineKritzelExport, [
   'workspaceName',
+  'terms',
   'exportPng',
   'exportSvg',
   'exportJson'
@@ -283,7 +293,9 @@ export const KritzelPillTabs: StencilVueComponent<JSX.KritzelPillTabs> = /*@__PU
 
 export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PURE__*/ defineContainer<JSX.KritzelSettings>('kritzel-settings', defineKritzelSettings, [
   'availableThemes',
+  'availableLocales',
   'shortcuts',
+  'terms',
   'settings',
   'settingsChange'
 ], [
@@ -295,6 +307,7 @@ export const KritzelZoomPanel: StencilVueComponent<JSX.KritzelZoomPanel> = /*@__
   'visible',
   'disabled',
   'zoomPercent',
+  'terms',
   'zoomIn',
   'zoomOut'
 ], [

@@ -38,6 +38,7 @@ import { KritzelSvgExportHelper } from '../../../helpers/svg-export.helper';
 import { toPng, toSvg } from 'html-to-image';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 import { KritzelTheme, ThemeName } from '../../../interfaces/theme.interface';
+import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from '../../../interfaces/localization.interface';
 import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelViewportState } from '../../../interfaces/viewport-state.interface';
@@ -219,6 +220,31 @@ export class KritzelEngine {
       this.core.themeManager.registerThemes(newValue);
       this.core.themeManager.applyTheme(this.core.themeManager.currentTheme);
     }
+  }
+
+  /** The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'. */
+  @Prop() locale: LocaleCode = 'en';
+  @Watch('locale')
+  onLocaleChange(newValue: LocaleCode) {
+    this.core.localizationManager.setLocale(newValue);
+  }
+
+  /** An array of available locale definitions (with optional partial term overrides). */
+  @Prop() locales?: KritzelLocale[];
+  @Watch('locales')
+  onLocalesChange(newValue?: KritzelLocale[]) {
+    if (newValue && newValue.length > 0) {
+      this.core.localizationManager.registerLocales(newValue);
+      this.core.localizationManager.setLocale(this.locale);
+    }
+  }
+
+  /** The locale used to resolve terms missing from the active locale. */
+  @Prop() fallbackLocale: LocaleCode = 'en';
+  @Watch('fallbackLocale')
+  onFallbackLocaleChange(newValue: LocaleCode) {
+    this.core.localizationManager.setFallbackLocale(newValue);
+    this.core.rerender();
   }
 
   /** Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to. */
@@ -1891,6 +1917,69 @@ export class KritzelEngine {
     }
   }
 
+  /**
+   * Registers additional locale definitions (with optional partial term overrides).
+   * @param locales - The locale definitions to register.
+   */
+  @Method()
+  async registerLocales(locales: KritzelLocale[]): Promise<void> {
+    this.core.localizationManager.registerLocales(locales);
+    this.core.localizationManager.setLocale(this.core.localizationManager.currentLocale);
+  }
+
+  /**
+   * Sets the active locale (language) and re-renders the UI.
+   * @param code - The locale code to activate, e.g. 'de'.
+   */
+  @Method()
+  async setLocale(code: LocaleCode): Promise<void> {
+    this.locale = code;
+    this.core.localizationManager.setLocale(code);
+  }
+
+  /**
+   * Gets the currently active locale code.
+   */
+  @Method()
+  async getLocale(): Promise<LocaleCode> {
+    return this.core.localizationManager.currentLocale;
+  }
+
+  /**
+   * Gets the list of available locale codes (built-in and registered).
+   */
+  @Method()
+  async getAvailableLocales(): Promise<LocaleCode[]> {
+    return this.core.localizationManager.getAvailableLocales();
+  }
+
+  /**
+   * Gets the list of available locales as `{ code, label }` options for a selector.
+   */
+  @Method()
+  async getAvailableLocaleOptions(): Promise<{ code: LocaleCode; label: string }[]> {
+    return this.core.localizationManager.getAvailableLocaleOptions();
+  }
+
+  /**
+   * Resolves a term key to its translated string for the active locale.
+   * @param key - The term key to resolve.
+   * @param vars - Optional values for `{placeholder}` interpolation.
+   */
+  @Method()
+  async t(key: KritzelTermKey, vars?: KritzelTermVars): Promise<string> {
+    return this.core.localizationManager.translate(key, vars);
+  }
+
+  /**
+   * Resolves every known term key for the active locale into a flat map.
+   * Useful for UI layers that need to localize many strings at once.
+   */
+  @Method()
+  async getResolvedTerms(): Promise<Partial<Record<KritzelTermKey, string>>> {
+    return this.core.localizationManager.getAllTerms();
+  }
+
   core: KritzelCore;
   viewport!: KritzelViewport;
   contextMenuHandler!: KritzelContextMenuHandler;
@@ -1989,8 +2078,17 @@ export class KritzelEngine {
     if (this.themes && this.themes.length > 0) {
       this.core.themeManager.registerThemes(this.themes);
     }
+    
     const editorElement = this.host.closest('kritzel-editor') as HTMLElement;
     this.core.themeManager.injectThemeEarly(editorElement || this.host);
+
+
+    if (this.locales && this.locales.length > 0) {
+      this.core.localizationManager.registerLocales(this.locales);
+    }
+    this.core.localizationManager.setFallbackLocale(this.fallbackLocale);
+    this.core.localizationManager.setLocale(this.locale);
+
     this.core.setUser(this.user);
     this.validateScaleMax(this.scaleMax);
     this.validateScaleMin(this.scaleMin);
@@ -2381,7 +2479,7 @@ export class KritzelEngine {
           {this.core.store.state.isLoading && (
             <div class="workspace-loading-overlay">
               <span class="workspace-loading-spinner"></span>
-              Loading...
+              {this.core.localizationManager.translate('engine.loading')}
             </div>
           )}
         </Host>

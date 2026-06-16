@@ -12,6 +12,7 @@ import { ToolDisplayValues } from '../../../interfaces/tool-config.interface';
 import { KritzelToolConfigHelper } from '../../../helpers/tool-config.helper';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
 import { ThemeName } from '../../../interfaces/theme.interface';
+import { KritzelTermKey } from '../../../interfaces/localization.interface';
 
 type ToolConfig = Record<string, any>;
 
@@ -30,6 +31,8 @@ export class KritzelControls {
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() undoState: KritzelUndoState = null;
   @Prop() theme: ThemeName = 'light';
+  /** Resolved localized strings keyed by term key, supplied by the editor. */
+  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
   @Event() isControlsReady: EventEmitter<void>;
 
@@ -317,6 +320,7 @@ export class KritzelControls {
               left: '12px',
             }}
             undoState={this.undoState}
+            terms={this.terms}
             onUndo={() => this.kritzelEngine?.undo()}
             onRedo={() => this.kritzelEngine?.redo()}
             onDelete={() => this.kritzelEngine?.delete()}
@@ -434,6 +438,7 @@ export class KritzelControls {
                   tool={this.activeControl.tool as any}
                   theme={this.theme}
                   engine={this.kritzelEngine}
+                  terms={this.terms}
                   onToolChange={event => this.handleToolChange?.(event)}
                   onDisplayValuesChange={this.handleDisplayValuesChange}
                   style={{ width: '100%', height: '100%' }}

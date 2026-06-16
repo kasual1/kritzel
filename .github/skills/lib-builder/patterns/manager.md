@@ -15,6 +15,7 @@ Managers handle cross-cutting concerns that span multiple components or tools. T
 | `KritzelThemeManager` | Theme registry, CSS variable application, theme switching |
 | `KritzelCursorManager` | Cursor style changes based on state/tool |
 | `KritzelAnchorManager` | Anchor point management for transforms |
+| `KritzelLocalizationManager` | Locale registration, term resolution, interpolation, and fallback selection |
 
 ## Structure
 
@@ -57,6 +58,7 @@ export class MyManager {
 - May hold private state, but shared state goes through `KritzelStore`
 - Must provide a `destroy()` method for cleanup
 - Should not directly manipulate DOM — delegate to helpers or the engine
+- Localization managers should keep fallback resolution deterministic and expose bulk resolution helpers only when the editor or UI layer needs many terms at once
 
 ## When to Use a Manager vs. Other Patterns
 

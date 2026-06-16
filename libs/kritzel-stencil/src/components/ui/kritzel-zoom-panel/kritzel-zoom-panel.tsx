@@ -1,4 +1,5 @@
 import { Component, Event, EventEmitter, h, Host, Prop } from '@stencil/core';
+import { KritzelTermKey } from '../../../interfaces/localization.interface';
 
 @Component({
   tag: 'kritzel-zoom-panel',
@@ -14,6 +15,9 @@ export class KritzelZoomPanel {
 
   /** Current zoom level in percent. */
   @Prop() zoomPercent: number = 100;
+
+  /** Resolved localized strings keyed by term key, supplied by the editor. */
+  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
   /** Emitted when the zoom-in button is clicked. */
   @Event() zoomIn!: EventEmitter<void>;
@@ -41,11 +45,11 @@ export class KritzelZoomPanel {
     return (
       <Host>
         <div class={{ panel: true, visible: this.visible }}>
-          <button class="zoom-button" type="button" aria-label="Zoom out" disabled={this.disabled} onClick={this.handleZoomOut}>
+          <button class="zoom-button" type="button" aria-label={this.terms['zoom.zoomOut'] ?? 'Zoom out'} disabled={this.disabled} onClick={this.handleZoomOut}>
             <kritzel-icon name="minus"></kritzel-icon>
           </button>
           <span class="zoom-level" aria-live="polite">{this.normalizedZoomPercent}%</span>
-          <button class="zoom-button" type="button" aria-label="Zoom in" disabled={this.disabled} onClick={this.handleZoomIn}>
+          <button class="zoom-button" type="button" aria-label={this.terms['zoom.zoomIn'] ?? 'Zoom in'} disabled={this.disabled} onClick={this.handleZoomIn}>
             <kritzel-icon name="plus"></kritzel-icon>
           </button>
         </div>
