@@ -64,11 +64,12 @@ const syncConfig: KritzelSyncConfig = {
   <KritzelEditor
     ref="editor"
     editorId="my-demo"
-    :isPanningEnabled="false" :isZoomingEnabled="false"
     :syncConfig="syncConfig"
     theme="vue-theme"
     :themes="[customVueTheme]"
     :loginConfig="undefined"
+    :isPanningEnabled="false"
+    :isZoomingEnabled="false"
     :isMoreMenuVisible="false"
     :isWorkspaceManagerVisible="false"
   />
