@@ -307,7 +307,8 @@ export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PU
 
 
 export const KritzelWatermark: StencilVueComponent<JSX.KritzelWatermark> = /*@__PURE__*/ defineContainer<JSX.KritzelWatermark>('kritzel-watermark', defineKritzelWatermark, [
-  'core'
+  'core',
+  'label'
 ]);
 
 

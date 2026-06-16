@@ -1540,6 +1540,10 @@ export namespace Components {
           * The core instance used to resolve localized terms.
          */
         "core": KritzelCore;
+        /**
+          * Resolved "Powered by Kritzel" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
+         */
+        "label"?: string;
     }
     interface KritzelWorkspaceManager {
         "activeWorkspace": KritzelWorkspace;
@@ -3585,6 +3589,10 @@ declare namespace LocalJSX {
           * The core instance used to resolve localized terms.
          */
         "core": KritzelCore;
+        /**
+          * Resolved "Powered by Kritzel" label. Passed in by the engine so the badge re-renders when the active locale changes. Falls back to resolving the term from the core when not provided.
+         */
+        "label"?: string;
     }
     interface KritzelWorkspaceManager {
         "activeWorkspace"?: KritzelWorkspace;
@@ -3834,6 +3842,9 @@ declare namespace LocalJSX {
         "isVisible": boolean;
         "offsetY": number;
     }
+    interface KritzelWatermarkAttributes {
+        "label": string;
+    }
     interface KritzelWorkspaceManagerAttributes {
         "visible": boolean;
     }
@@ -3886,7 +3897,7 @@ declare namespace LocalJSX {
         "kritzel-tool-config": Omit<KritzelToolConfig, keyof KritzelToolConfigAttributes> & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes]?: KritzelToolConfig[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `attr:${K}`]?: KritzelToolConfigAttributes[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `prop:${K}`]?: KritzelToolConfig[K] };
         "kritzel-tooltip": Omit<KritzelTooltip, keyof KritzelTooltipAttributes> & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes]?: KritzelTooltip[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `attr:${K}`]?: KritzelTooltipAttributes[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `prop:${K}`]?: KritzelTooltip[K] };
         "kritzel-utility-panel": KritzelUtilityPanel;
-        "kritzel-watermark": KritzelWatermark;
+        "kritzel-watermark": Omit<KritzelWatermark, keyof KritzelWatermarkAttributes> & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes]?: KritzelWatermark[K] } & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes as `attr:${K}`]?: KritzelWatermarkAttributes[K] } & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes as `prop:${K}`]?: KritzelWatermark[K] };
         "kritzel-workspace-manager": Omit<KritzelWorkspaceManager, keyof KritzelWorkspaceManagerAttributes> & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes]?: KritzelWorkspaceManager[K] } & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes as `attr:${K}`]?: KritzelWorkspaceManagerAttributes[K] } & { [K in keyof KritzelWorkspaceManager & keyof KritzelWorkspaceManagerAttributes as `prop:${K}`]?: KritzelWorkspaceManager[K] };
         "kritzel-zoom-panel": Omit<KritzelZoomPanel, keyof KritzelZoomPanelAttributes> & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes]?: KritzelZoomPanel[K] } & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes as `attr:${K}`]?: KritzelZoomPanelAttributes[K] } & { [K in keyof KritzelZoomPanel & keyof KritzelZoomPanelAttributes as `prop:${K}`]?: KritzelZoomPanel[K] };
     }
