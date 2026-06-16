@@ -431,6 +431,10 @@ export namespace Components {
         /**
           * @default true
          */
+        "isZoomPanelVisible": boolean;
+        /**
+          * @default true
+         */
         "isZoomingEnabled": boolean;
         "loadObjectsFromJson": (json: string) => Promise<number>;
         "loadSharedWorkspace": (token: string) => Promise<void>;
@@ -2595,6 +2599,10 @@ declare namespace LocalJSX {
         /**
           * @default true
          */
+        "isZoomPanelVisible"?: boolean;
+        /**
+          * @default true
+         */
         "isZoomingEnabled"?: boolean;
         /**
           * @default true
@@ -3341,13 +3349,14 @@ declare namespace LocalJSX {
         "viewportBoundaryRight": number;
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
+        "theme": ThemeName;
         "isPanningEnabled": boolean;
         "isZoomingEnabled": boolean;
-        "theme": ThemeName;
         "isControlsVisible": boolean;
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;
+        "isZoomPanelVisible": boolean;
         "isObjectDistanceFadingActive": boolean;
         "isLoading": boolean;
         "editorId": string;

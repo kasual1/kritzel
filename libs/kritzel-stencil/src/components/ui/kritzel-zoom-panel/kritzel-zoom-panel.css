@@ -1,0 +1,49 @@
+:host {
+  display: block;
+  z-index: 1;
+}
+
+.panel {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+}
+
+.panel.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.zoom-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--kritzel-split-button-width, 50px);
+  height: var(--kritzel-split-button-height, 50px);
+  padding: 0;
+  border: var(--kritzel-split-button-border, 1px solid #ebebeb);
+  border-radius: var(--kritzel-split-button-border-radius, 12px);
+  background-color: var(--kritzel-split-button-background-color, #ffffff);
+  color: var(--kritzel-split-button-color, #000000);
+  box-shadow: var(--kritzel-split-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.zoom-button:hover,
+.zoom-button:focus-visible {
+  background-color: var(--kritzel-split-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.zoom-button:active {
+  background-color: var(--kritzel-split-button-active-background-color, hsl(0, 0%, 0%, 8.6%));
+}
+
+.zoom-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
