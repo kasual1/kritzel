@@ -3,6 +3,8 @@ import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionTool } from '../tools/selection-tool.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
+import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
+import { KritzelTermKey } from '../../interfaces/localization.interface';
 
 /**
  * Handles context menu interactions on the Kritzel canvas.
@@ -31,6 +33,30 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     super(core);
     this.globalContextMenuItems = globalContextMenuItems;
     this.objectContextMenuItems = objectContextMenuItems;
+  }
+
+  /**
+   * Resolves the active context menu items for display, translating each item's
+   * `label` through the current locale. When the label is a known
+   * {@link KritzelTermKey} the translation is used; any other string is passed
+   * through unchanged. Runs at menu-open time so the labels reflect the locale
+   * active at that moment.
+   * @returns A new array of items with resolved labels.
+   */
+  private resolveLabels(items: ContextMenuItem[]): ContextMenuItem[] {
+    return items.map(item => ({
+      ...item,
+      label: this._core.localizationManager.translate(item.label as KritzelTermKey),
+      children: item.children ? this.resolveLabels(item.children) : undefined,
+    }));
+  }
+
+  /**
+   * Gets the active context menu items (object or global) with localized labels.
+   */
+  private getResolvedContextMenuItems(): ContextMenuItem[] {
+    const items = this._core.store.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
+    return this.resolveLabels(items);
   }
 
   /**
@@ -84,7 +110,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       this._core.rerender();
     }
 
-    this._core.store.state.contextMenuItems = this._core.store.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
+    this._core.store.state.contextMenuItems = this.getResolvedContextMenuItems();
 
     const clickX: number = event.clientX - this._core.store.offsetX;
     const clickY: number = event.clientY - this._core.store.offsetY;
@@ -156,7 +182,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       }
     }
 
-    this._core.store.state.contextMenuItems = this._core.store.selectionGroup ? this.objectContextMenuItems : this.globalContextMenuItems;
+    this._core.store.state.contextMenuItems = this.getResolvedContextMenuItems();
 
     this._core.store.state.contextMenuWorldX = x;
     this._core.store.state.contextMenuWorldY = y;

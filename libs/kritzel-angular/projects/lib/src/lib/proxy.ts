@@ -112,7 +112,7 @@ export declare interface KritzelButton extends Components.KritzelButton {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelCurrentUserDialog,
-  inputs: ['user'],
+  inputs: ['terms', 'user'],
   methods: ['open', 'close']
 })
 @Component({
@@ -120,7 +120,7 @@ export declare interface KritzelButton extends Components.KritzelButton {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['user'],
+  inputs: ['terms', 'user'],
 })
 export class KritzelCurrentUserDialog {
   protected el: HTMLKritzelCurrentUserDialogElement;
@@ -175,16 +175,16 @@ export declare interface KritzelDialog extends Components.KritzelDialog {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
-  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'controls', 'cursorTarget', 'customSvgIcons', 'debugInfo', 'editorId', 'globalContextMenuItems', 'isControlsVisible', 'isLoading', 'isMoreMenuVisible', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'lockDrawingScale', 'loginConfig', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop'],
-  methods: ['getObjectById', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'loadSharedWorkspace', 'reinitSync', 'registerTool', 'changeActiveTool', 'changeActiveToolByName', 'disable', 'enable', 'copy', 'cut', 'paste', 'delete', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'exportSelectedObjectsAsPng', 'exportSelectedObjectsAsSvg', 'downloadAsJson', 'importFromFile', 'loadObjectsFromJson', 'getObjectsTotalCount', 'getAllObjects', 'findObjects', 'getCopiedObjects', 'getObjectsInViewport', 'hideContextMenu', 'openContextMenu', 'triggerSelectionChange', 'getDisplayableShortcuts', 'openLoginDialog', 'setLoginLoading']
+  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'controls', 'cursorTarget', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isControlsVisible', 'isLoading', 'isMoreMenuVisible', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop'],
+  methods: ['getObjectById', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'loadSharedWorkspace', 'reinitSync', 'registerTool', 'changeActiveTool', 'changeActiveToolByName', 'disable', 'enable', 'copy', 'cut', 'paste', 'delete', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'exportSelectedObjectsAsPng', 'exportSelectedObjectsAsSvg', 'downloadAsJson', 'importFromFile', 'loadObjectsFromJson', 'getObjectsTotalCount', 'getAllObjects', 'findObjects', 'getCopiedObjects', 'getObjectsInViewport', 'hideContextMenu', 'openContextMenu', 'triggerSelectionChange', 'getDisplayableShortcuts', 'openLoginDialog', 'setLoginLoading', 'setLocale', 'getLocale', 'getAvailableLocales', 'registerLocales', 't']
 })
 @Component({
   selector: 'kritzel-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'controls', 'cursorTarget', 'customSvgIcons', 'debugInfo', 'editorId', 'globalContextMenuItems', 'isControlsVisible', 'isLoading', 'isMoreMenuVisible', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'lockDrawingScale', 'loginConfig', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop'],
-  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'themeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange'],
+  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'controls', 'cursorTarget', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isControlsVisible', 'isLoading', 'isMoreMenuVisible', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop'],
+  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
@@ -196,6 +196,7 @@ export class KritzelEditor {
   @Output() objectsUpdated = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsUpdatedEvent>>();
   @Output() undoStateChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelUndoState>>();
   @Output() themeChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorThemeName>>();
+  @Output() localeChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLocaleCode>>();
   @Output() viewportChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelViewportState>>();
   @Output() logout = new EventEmitter<KritzelEditorCustomEvent<void>>();
   @Output() login = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLoginEvent>>();
@@ -217,6 +218,7 @@ import type { ObjectsRemovedEvent as IKritzelEditorObjectsRemovedEvent } from 'k
 import type { ObjectsUpdatedEvent as IKritzelEditorObjectsUpdatedEvent } from 'kritzel-stencil/dist/components';
 import type { KritzelUndoState as IKritzelEditorKritzelUndoState } from 'kritzel-stencil/dist/components';
 import type { ThemeName as IKritzelEditorThemeName } from 'kritzel-stencil/dist/components';
+import type { LocaleCode as IKritzelEditorLocaleCode } from 'kritzel-stencil/dist/components';
 import type { KritzelViewportState as IKritzelEditorKritzelViewportState } from 'kritzel-stencil/dist/components';
 import type { LoginEvent as IKritzelEditorLoginEvent } from 'kritzel-stencil/dist/components';
 import type { IKritzelIsPublicChangedEvent as IKritzelEditorIKritzelIsPublicChangedEvent } from 'kritzel-stencil/dist/components';
@@ -239,6 +241,8 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 
   themeChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorThemeName>>;
 
+  localeChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLocaleCode>>;
+
   viewportChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelViewportState>>;
 
   logout: EventEmitter<KritzelEditorCustomEvent<void>>;
@@ -253,15 +257,15 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEngine,
-  inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'globalContextMenuItems', 'isLoading', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isZoomingEnabled', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspace'],
-  methods: ['triggerSelectionChange', 'registerTool', 'changeActiveTool', 'changeActiveToolByName', 'disable', 'enable', 'delete', 'copy', 'cut', 'paste', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'hideContextMenu', 'openContextMenu', 'getObjectById', 'getAllObjects', 'findObjects', 'getObjectsTotalCount', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'getDisplayableShortcuts', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'getCopiedObjects', 'getObjectsInViewport', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'getSelectedObjectsAsSvgString', 'exportSelectedObjectsAsSvg', 'getSelectedObjectsAsPngDataUrl', 'exportSelectedObjectsAsPng', 'exportAsJson', 'importFromJson', 'loadObjectsFromJson', 'downloadAsJson', 'importFromFile', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'getIsPublic', 'loadSharedWorkspace', 'reinitSync', 'saveSettings', 'loadSettings']
+  inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isLoading', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspace'],
+  methods: ['triggerSelectionChange', 'registerTool', 'changeActiveTool', 'changeActiveToolByName', 'disable', 'enable', 'delete', 'copy', 'cut', 'paste', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'hideContextMenu', 'openContextMenu', 'getObjectById', 'getAllObjects', 'findObjects', 'getObjectsTotalCount', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'getDisplayableShortcuts', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'getCopiedObjects', 'getObjectsInViewport', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'getSelectedObjectsAsSvgString', 'exportSelectedObjectsAsSvg', 'getSelectedObjectsAsPngDataUrl', 'exportSelectedObjectsAsPng', 'exportAsJson', 'importFromJson', 'loadObjectsFromJson', 'downloadAsJson', 'importFromFile', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'getIsPublic', 'loadSharedWorkspace', 'reinitSync', 'saveSettings', 'loadSettings', 'registerLocales', 'setLocale', 'getLocale', 'getAvailableLocales', 'getAvailableLocaleOptions', 't', 'getResolvedTerms']
 })
 @Component({
   selector: 'kritzel-engine',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'globalContextMenuItems', 'isLoading', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isZoomingEnabled', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspace'],
+  inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isLoading', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspace'],
   outputs: ['isEngineReady', 'activeToolChange', 'objectsSelectionChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange'],
 })
 export class KritzelEngine {
@@ -361,7 +365,7 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelExport,
-  inputs: ['workspaceName'],
+  inputs: ['terms', 'workspaceName'],
   methods: ['open']
 })
 @Component({
@@ -369,7 +373,7 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['workspaceName'],
+  inputs: ['terms', 'workspaceName'],
   outputs: ['exportPng', 'exportSvg', 'exportJson'],
 })
 export class KritzelExport {
@@ -627,7 +631,7 @@ export declare interface KritzelPillTabs extends Components.KritzelPillTabs {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelSettings,
-  inputs: ['availableThemes', 'settings', 'shortcuts'],
+  inputs: ['availableLocales', 'availableThemes', 'settings', 'shortcuts', 'terms'],
   methods: ['open']
 })
 @Component({
@@ -635,7 +639,7 @@ export declare interface KritzelPillTabs extends Components.KritzelPillTabs {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['availableThemes', 'settings', 'shortcuts'],
+  inputs: ['availableLocales', 'availableThemes', 'settings', 'shortcuts', 'terms'],
   outputs: ['settingsChange'],
 })
 export class KritzelSettings {
@@ -661,14 +665,14 @@ export declare interface KritzelSettings extends Components.KritzelSettings {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelZoomPanel,
-  inputs: ['disabled', 'visible', 'zoomPercent']
+  inputs: ['disabled', 'terms', 'visible', 'zoomPercent']
 })
 @Component({
   selector: 'kritzel-zoom-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'visible', 'zoomPercent'],
+  inputs: ['disabled', 'terms', 'visible', 'zoomPercent'],
   outputs: ['zoomIn', 'zoomOut'],
 })
 export class KritzelZoomPanel {

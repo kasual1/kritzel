@@ -20,6 +20,7 @@ import { KritzelAppStateMap } from '../structures/app-state-map.structure';
 import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelCursorManager } from '../managers/cursor.manager';
 import { KritzelThemeManager } from '../managers/theme.manager';
+import { KritzelLocalizationManager } from '../managers/localization.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { IKritzelUser } from '../../interfaces/user.interface';
 
@@ -55,6 +56,8 @@ export class KritzelCore {
   private readonly _cursorManager: KritzelCursorManager;
   /** Manager for theme styling */
   private readonly _themeManager: KritzelThemeManager;
+  /** Manager for localization / translated UI strings */
+  private readonly _localizationManager: KritzelLocalizationManager;
   /** Per-core registry of drawing tools (one instance per editor). */
   private readonly _toolRegistry: KritzelToolRegistry;
   /** Optional unique identifier for namespacing storage keys across multiple editor instances */
@@ -108,6 +111,14 @@ export class KritzelCore {
    */
   get themeManager(): KritzelThemeManager {
     return this._themeManager;
+  }
+
+  /**
+   * Gets the localization manager.
+   * @returns The KritzelLocalizationManager for resolving translated UI strings
+   */
+  get localizationManager(): KritzelLocalizationManager {
+    return this._localizationManager;
   }
 
   /**
@@ -167,6 +178,7 @@ export class KritzelCore {
     this._anchorManager = new KritzelAnchorManager(this);
     this._cursorManager = new KritzelCursorManager(this);
     this._themeManager = new KritzelThemeManager(this);
+    this._localizationManager = new KritzelLocalizationManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);
     this._assetResolver = new KritzelAssetResolver();
   }
@@ -206,6 +218,8 @@ export class KritzelCore {
     this._editorId = editorId;
     // Re-create theme manager so it picks up the new storage key
     (this as any)._themeManager = new KritzelThemeManager(this);
+    // Re-create localization manager so it picks up the new storage key
+    (this as any)._localizationManager = new KritzelLocalizationManager(this);
   }
 
   /**

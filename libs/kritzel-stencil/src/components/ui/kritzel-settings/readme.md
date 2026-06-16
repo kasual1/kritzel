@@ -28,11 +28,12 @@ A settings button component that opens a settings dialog when clicked.
 
 ## Properties
 
-| Property          | Attribute | Description                                                                          | Type                                               | Default             |
-| ----------------- | --------- | ------------------------------------------------------------------------------------ | -------------------------------------------------- | ------------------- |
-| `availableThemes` | --        | Keyboard shortcuts to display in the settings dialog                                 | `string[]`                                         | `['light', 'dark']` |
-| `settings`        | --        | Current settings values. Used to initialize and sync the component's internal state. | `KritzelSettingsConfig`                            | `undefined`         |
-| `shortcuts`       | --        |                                                                                      | `Omit<KritzelShortcut, "action" \| "condition">[]` | `[]`                |
+| Property           | Attribute | Description                                                                          | Type                                               | Default             |
+| ------------------ | --------- | ------------------------------------------------------------------------------------ | -------------------------------------------------- | ------------------- |
+| `availableLocales` | --        | Available locales as `{ code, label }` options for the language selector.            | `{ code: LocaleCode; label: string; }[]`           | `[]`                |
+| `availableThemes`  | --        | Keyboard shortcuts to display in the settings dialog                                 | `string[]`                                         | `['light', 'dark']` |
+| `settings`         | --        | Current settings values. Used to initialize and sync the component's internal state. | `KritzelSettingsConfig`                            | `undefined`         |
+| `shortcuts`        | --        |                                                                                      | `Omit<KritzelShortcut, "action" \| "condition">[]` | `[]`                |
 
 
 ## Events

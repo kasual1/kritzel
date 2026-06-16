@@ -47,6 +47,7 @@ export * from './classes/core/workspace.class';
 
 export * from './classes/managers/anchor.manager';
 export * from './classes/managers/theme.manager';
+export * from './classes/managers/localization.manager';
 
 export * from './interfaces/toolbar-control.interface';
 export * from './interfaces/menu-item.interface';
@@ -62,6 +63,7 @@ export * from './interfaces/anchor.interface';
 export * from './interfaces/viewport-state.interface';
 export * from './interfaces/user.interface';
 export * from './interfaces/theme.interface';
+export * from './interfaces/localization.interface';
 export * from './interfaces/shortcut.interface';
 export * from './interfaces/undo-state.interface';
 export * from './interfaces/share.interface';
@@ -77,6 +79,10 @@ export * from './configs/default-asset-storage.config';
 
 export * from './themes/light-theme';
 export * from './themes/dark-theme';
+
+export * from './locales/en-locale';
+export * from './locales/de-locale';
+export * from './locales/fr-locale';
 
 export * from './enums/alignment.enum';
 export * from './enums/shape-type.enum';

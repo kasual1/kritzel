@@ -1,6 +1,7 @@
 import { Component, Host, h, State, Event, EventEmitter, Method, Prop } from '@stencil/core';
 import { DropdownOption } from '../../shared/kritzel-dropdown/kritzel-dropdown';
 import { KritzelPillTab } from '../../shared/kritzel-pill-tabs/kritzel-pill-tabs';
+import { KritzelTermKey } from '../../../interfaces/localization.interface';
 
 type ExportTab = 'viewport' | 'workspace';
 type ViewportExportFormat = 'png' | 'svg';
@@ -16,6 +17,9 @@ export class KritzelExport {
    */
   @Prop() workspaceName: string = 'workspace';
 
+  /** Resolved localized strings keyed by term key, supplied by the editor. */
+  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
+
   @State() isDialogOpen: boolean = false;
   @State() previewUrl: string;
   @State() isLoading: boolean = false;
@@ -27,10 +31,12 @@ export class KritzelExport {
   @Event() exportSvg: EventEmitter<void>;
   @Event() exportJson: EventEmitter<string>;
 
-  private tabs: KritzelPillTab[] = [
-    { id: 'viewport', label: 'Export Viewport' },
-    { id: 'workspace', label: 'Export Workspace' },
-  ];
+  private get tabs(): KritzelPillTab[] {
+    return [
+      { id: 'viewport', label: this.terms['export.tabs.viewport'] ?? 'Export Viewport' },
+      { id: 'workspace', label: this.terms['export.tabs.workspace'] ?? 'Export Workspace' },
+    ];
+  }
 
   private viewportFormatOptions: DropdownOption[] = [
     { value: 'png', label: 'PNG' },
@@ -89,14 +95,14 @@ export class KritzelExport {
           </div>
         )}
         <kritzel-input
-          label="Filename"
+          label={this.terms['export.filename.label'] ?? 'Filename'}
           value={this.exportFilename}
-          placeholder="Enter filename"
+          placeholder={this.terms['export.filename.placeholder'] ?? 'Enter filename'}
           suffix={`.${this.viewportExportFormat}`}
           onValueChange={this.handleFilenameChange}
         ></kritzel-input>
         <div class="format-selection">
-          <label>Format</label>
+          <label>{this.terms['export.format.label'] ?? 'Format'}</label>
           <kritzel-dropdown
             options={this.viewportFormatOptions}
             value={this.viewportExportFormat}
@@ -112,9 +118,9 @@ export class KritzelExport {
     return (
       <div class="export-tab-content">
         <kritzel-input
-          label="Filename"
+          label={this.terms['export.filename.label'] ?? 'Filename'}
           value={this.exportFilename}
-          placeholder="Enter filename"
+          placeholder={this.terms['export.filename.placeholder'] ?? 'Enter filename'}
           suffix=".json"
           onValueChange={this.handleFilenameChange}
         ></kritzel-input>
@@ -127,7 +133,7 @@ export class KritzelExport {
       <Host>
         <kritzel-dialog
           isOpen={this.isDialogOpen}
-          dialogTitle="Export"
+          dialogTitle={this.terms['export.dialogTitle'] ?? 'Export'}
           closable={true}
           contained={true}
           onDialogClose={this.closeDialog}
@@ -143,7 +149,7 @@ export class KritzelExport {
             {this.activeTab === 'workspace' && this.renderWorkspaceExport()}
 
             <button class="export-primary-button" onClick={this.handleExport}>
-              Export
+              {this.terms['export.exportButton'] ?? 'Export'}
             </button>
           </div>
         </kritzel-dialog>
