@@ -108,6 +108,9 @@ describe('KritzelContextMenuHandler', () => {
       removeSelectionGroup: jest.fn(),
       addSelectionGroup: jest.fn(),
       rerender: jest.fn(),
+      localizationManager: {
+        translate: jest.fn((key: string) => key),
+      },
     } as unknown as jest.Mocked<KritzelCore>;
 
     (KritzelSelectionGroup.create as jest.Mock).mockImplementation(() => {
@@ -361,7 +364,10 @@ describe('KritzelContextMenuHandler', () => {
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(mockState.contextMenuItems).toBe(objectContextMenuItems);
+        expect(mockState.contextMenuItems).toEqual([
+          { label: 'Copy', children: undefined },
+          { label: 'Delete', children: undefined },
+        ]);
       });
 
       it('should use global context menu items when no selection group', () => {
@@ -371,7 +377,10 @@ describe('KritzelContextMenuHandler', () => {
 
         contextMenuHandler.handleContextMenu(event);
 
-        expect(mockState.contextMenuItems).toBe(globalContextMenuItems);
+        expect(mockState.contextMenuItems).toEqual([
+          { label: 'Paste', children: undefined },
+          { label: 'Select All', children: undefined },
+        ]);
       });
     });
 

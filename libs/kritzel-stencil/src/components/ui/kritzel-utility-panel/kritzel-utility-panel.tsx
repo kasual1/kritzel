@@ -1,5 +1,6 @@
 import { Component, Host, h, Event, EventEmitter, Prop } from '@stencil/core';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
+import { KritzelTermKey } from '../../../interfaces/localization.interface';
 
 @Component({
   tag: 'kritzel-utility-panel',
@@ -8,6 +9,9 @@ import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 })
 export class KritzelUtilityPanel {
   @Prop() undoState: KritzelUndoState = null;
+
+  /** Resolved localized strings keyed by term key, supplied by the editor. */
+  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
   @Event() undo: EventEmitter<void>;
   @Event() redo: EventEmitter<void>;
@@ -30,16 +34,16 @@ export class KritzelUtilityPanel {
   render() {
     return (
       <Host>
-        <button class="utility-button" data-testid="utility-undo" disabled={!this.undoState?.canUndo} onClick={event => this.handleUndo(event)} aria-label="Undo">
+        <button class="utility-button" data-testid="utility-undo" disabled={!this.undoState?.canUndo} onClick={event => this.handleUndo(event)} aria-label={this.terms['utility.undo'] ?? 'Undo'}>
           <kritzel-icon name="undo"></kritzel-icon>
         </button>
-        <button class="utility-button" data-testid="utility-redo" disabled={!this.undoState?.canRedo} onClick={event => this.handleRedo(event)} aria-label="Redo">
+        <button class="utility-button" data-testid="utility-redo" disabled={!this.undoState?.canRedo} onClick={event => this.handleRedo(event)} aria-label={this.terms['utility.redo'] ?? 'Redo'}>
           <kritzel-icon name="redo"></kritzel-icon>
         </button>
 
         <div class="utility-separator"></div>
 
-        <button class="utility-button" data-testid="utility-delete" onClick={() => this.delete.emit()} aria-label="Delete selected items">
+        <button class="utility-button" data-testid="utility-delete" onClick={() => this.delete.emit()} aria-label={this.terms['utility.delete'] ?? 'Delete selected items'}>
           <kritzel-icon name="delete"></kritzel-icon>
         </button>
       </Host>

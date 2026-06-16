@@ -8,6 +8,7 @@ import { LineArrowConfig } from '../../../interfaces/arrow-head.interface';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
 import { ThemeAwareColor } from '../../../constants/color-palette.constants';
 import { ThemeName } from '../../../interfaces/theme.interface';
+import { KritzelTermKey } from '../../../interfaces/localization.interface';
 
 @Component({
   tag: 'kritzel-tool-config',
@@ -54,6 +55,8 @@ export class KritzelToolConfig {
   @Prop({ mutable: true }) isExpanded: boolean = false;
   @Prop() theme: ThemeName;
   @Prop() engine: HTMLElement;
+  /** Resolved localized strings keyed by term key, supplied by the editor. */
+  @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
   private handleSelectionChangeBound = this.handleSelectionChange.bind(this);
 
@@ -345,7 +348,7 @@ export class KritzelToolConfig {
               <button
                 class="expand-toggle"
                 onClick={this.handleToggleExpand}
-                title={this.isExpanded ? 'Collapse' : 'Expand'}
+                title={this.isExpanded ? (this.terms['toolConfig.collapse'] ?? 'Collapse') : (this.terms['toolConfig.expand'] ?? 'Expand')}
               >
                 <kritzel-icon name={this.isExpanded ? 'chevron-up' : 'chevron-down'}></kritzel-icon>
               </button>
