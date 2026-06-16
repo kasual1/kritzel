@@ -98,9 +98,12 @@ Numbers and booleans need the `:` binding:
 <KritzelEditor
   ref="editor"
   :scaleMin="0.1" :scaleMax="10"
-  :viewportBoundaryLeft="0"    :viewportBoundaryRight="1920"
-  :viewportBoundaryTop="-500"  :viewportBoundaryBottom="1580"
-  :isPanningEnabled="false" :isZoomingEnabled="false"
+  :viewportBoundaryLeft="0"
+  :viewportBoundaryRight="1920"
+  :viewportBoundaryTop="-500"
+  :viewportBoundaryBottom="1580"
+  :isPanningEnabled="false"
+  :isZoomingEnabled="false"
   :lockDrawingScale="true"
 />
 ```

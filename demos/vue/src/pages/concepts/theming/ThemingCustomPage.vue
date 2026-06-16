@@ -268,7 +268,8 @@ async function onReady() {
       editorId="theming-custom"
       theme="branded-purple-flat"
       :themes="[brandedPurpleFlatTheme]"
-      :isPanningEnabled="false" :isZoomingEnabled="false"
+      :isPanningEnabled="false"
+      :isZoomingEnabled="false"
       :isMoreMenuVisible="true"
       :isWorkspaceManagerVisible="true"
       :style="{
