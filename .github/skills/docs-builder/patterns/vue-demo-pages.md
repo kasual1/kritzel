@@ -64,11 +64,12 @@ const syncConfig: KritzelSyncConfig = {
   <KritzelEditor
     ref="editor"
     editorId="my-demo"
-    :wheelEnabled="false"
     :syncConfig="syncConfig"
     theme="vue-theme"
     :themes="[customVueTheme]"
     :loginConfig="undefined"
+    :isPanningEnabled="false"
+    :isZoomingEnabled="false"
     :isMoreMenuVisible="false"
     :isWorkspaceManagerVisible="false"
   />
@@ -92,7 +93,7 @@ Every `<KritzelEditor>` in a Vue demo page should include:
 |------|---------|
 | `ref=\"editor\"` | Template ref name passed to `getEditorRef('editor')` for programmatic access |
 | `editorId="<unique-id>"` | Prevents state collision across demos |
-| `:wheelEnabled="false"` | Prevents scroll-jacking in docs iframes |
+| `:isPanningEnabled="false" :isZoomingEnabled="false"` | Prevents scroll-jacking in docs iframes |
 | `:syncConfig="..."` | Explicit sync provider behavior |
 | `:loginConfig="undefined"` | Disables login dialog in demos |
 | `:isMoreMenuVisible="false"` | Hides more-menu unless required |

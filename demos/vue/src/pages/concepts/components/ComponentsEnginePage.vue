@@ -45,7 +45,7 @@ async function onReady() {
       <button :style="buttonStyle(false)" @click="withEngine((e) => e.undo())">Undo</button>
       <button :style="buttonStyle(false)" @click="withEngine((e) => e.redo())">Redo</button>
     </div>
-    <KritzelEngine ref="engineComponent" editorId="components-engine" :wheelEnabled="false"
+    <KritzelEngine ref="engineComponent" editorId="components-engine" :isPanningEnabled="false" :isZoomingEnabled="false"
       :style="{ flex: 1, minHeight: 0, display: 'block' }" @isEngineReady="onReady" />
   </div>
 </template>

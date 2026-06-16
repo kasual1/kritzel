@@ -535,9 +535,10 @@ export function ObjectExplorerPage() {
             theme="react-theme"
             themes={[customReactTheme]}
             syncConfig={syncConfig}
+            isPanningEnabled={false}
+            isZoomingEnabled={false}
             isMoreMenuVisible={false}
             isWorkspaceManagerVisible={false}
-            wheelEnabled={false}
             onIsReady={() => {
               void onReady();
             }}

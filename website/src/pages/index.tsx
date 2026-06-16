@@ -114,7 +114,8 @@ function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }
         editorId="homepage"
         ref={editorRef}
         syncConfig={{ providers: [IndexedDBSyncProvider] }}
-        wheelEnabled={false}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         cursorTarget={containerEl}
         onIsReady={handleReady}
         isWorkspaceManagerVisible={false}

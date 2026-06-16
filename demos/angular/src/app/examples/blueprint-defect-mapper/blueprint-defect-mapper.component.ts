@@ -43,7 +43,8 @@ interface Defect {
           [isControlsVisible]="false"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
-          [wheelEnabled]="false"
+          [isPanningEnabled]="false"
+          [isZoomingEnabled]="false"
           (isReady)="onReady()"
           (click)="onCanvasClick($event)"
         ></kritzel-editor>

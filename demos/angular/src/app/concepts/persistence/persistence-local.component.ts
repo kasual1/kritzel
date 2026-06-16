@@ -21,11 +21,12 @@ import { createSeedObjects } from '../../const/seed-objects';
     <div class="editor-wrap">
       <kritzel-editor
         editorId="collaboration-local"
-        [wheelEnabled]="false"
         [syncConfig]="syncConfig"
         [theme]="'angular-theme'"
         [themes]="themes"
         [loginConfig]="undefined"
+        [isPanningEnabled]="false"
+        [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"

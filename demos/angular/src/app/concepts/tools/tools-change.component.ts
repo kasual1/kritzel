@@ -23,9 +23,10 @@ type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text';
     </div>
     <kritzel-editor
       editorId="tools-change"
-      [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
+      [isPanningEnabled]="false"
+      [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       [isControlsVisible]="false"

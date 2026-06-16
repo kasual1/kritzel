@@ -104,11 +104,12 @@ export function CustomContextMenuObjectInspectorPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="custom-context-menu-object-inspector"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
         globalContextMenuItems={globalItems}
         objectContextMenuItems={objectItems}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {

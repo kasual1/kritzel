@@ -19,7 +19,8 @@ export function GettingStartedPage() {
         theme="react-theme"
         themes={[customReactTheme]}
         syncConfig={syncConfig}
-        wheelEnabled={false}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
       />
