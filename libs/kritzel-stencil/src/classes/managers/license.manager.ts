@@ -147,6 +147,9 @@ export class KritzelLicenseManager {
    * @returns Whether the key represents a valid license
    */
   private checkKey(key?: string): boolean {
-    return typeof key === 'string' && key.trim().length > 0;
+    if (key === undefined || key === null) {
+      return false;
+    }
+    return key.trim().length > 0;
   }
 }
