@@ -21,6 +21,7 @@ import { defineCustomElement as defineKritzelNumericInput } from '../../kritzel-
 import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelPillTabs } from '../../kritzel-stencil/dist/components/kritzel-pill-tabs.js';
 import { defineCustomElement as defineKritzelSettings } from '../../kritzel-stencil/dist/components/kritzel-settings.js';
+import { defineCustomElement as defineKritzelZoomPanel } from '../../kritzel-stencil/dist/components/kritzel-zoom-panel.js';
 
 
 export const KritzelAwarenessCursors: StencilVueComponent<JSX.KritzelAwarenessCursors> = /*@__PURE__*/ defineContainer<JSX.KritzelAwarenessCursors>('kritzel-awareness-cursors', defineKritzelAwarenessCursors, [
@@ -287,5 +288,16 @@ export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PU
   'settingsChange'
 ], [
   'settingsChange'
+]);
+
+
+export const KritzelZoomPanel: StencilVueComponent<JSX.KritzelZoomPanel> = /*@__PURE__*/ defineContainer<JSX.KritzelZoomPanel>('kritzel-zoom-panel', defineKritzelZoomPanel, [
+  'visible',
+  'disabled',
+  'zoomIn',
+  'zoomOut'
+], [
+  'zoomIn',
+  'zoomOut'
 ]);
 

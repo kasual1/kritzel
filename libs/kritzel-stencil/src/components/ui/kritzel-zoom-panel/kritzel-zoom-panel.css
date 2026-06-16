@@ -21,25 +21,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--kritzel-split-button-width, 50px);
-  height: var(--kritzel-split-button-height, 50px);
+  width: var(--kritzel-zoom-panel-button-size, 28px);
+  height: var(--kritzel-zoom-panel-button-size, 28px);
   padding: 0;
-  border: var(--kritzel-split-button-border, 1px solid #ebebeb);
-  border-radius: var(--kritzel-split-button-border-radius, 12px);
-  background-color: var(--kritzel-split-button-background-color, #ffffff);
-  color: var(--kritzel-split-button-color, #000000);
-  box-shadow: var(--kritzel-split-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  background-color: transparent;
+  color: var(--kritzel-zoom-panel-icon-color, #000000);
+  box-shadow: none;
+  appearance: none;
   cursor: var(--kritzel-global-pointer-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
 }
 
 .zoom-button:hover,
 .zoom-button:focus-visible {
-  background-color: var(--kritzel-split-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  background-color: transparent;
 }
 
 .zoom-button:active {
-  background-color: var(--kritzel-split-button-active-background-color, hsl(0, 0%, 0%, 8.6%));
+  background-color: transparent;
 }
 
 .zoom-button:disabled {
