@@ -109,9 +109,10 @@ export function ObjectsAddRemovePage() {
       <KritzelEditor
         ref={editorRef}
         editorId="objects-add-remove"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {

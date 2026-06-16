@@ -21,7 +21,8 @@ The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It
 | viewportBoundaryRight | number | Right boundary in world coordinates |
 | viewportBoundaryTop | number | Top boundary in world coordinates |
 | viewportBoundaryBottom | number | Bottom boundary in world coordinates |
-| wheelEnabled | boolean | Enable or disable mouse wheel zoom/pan |
+| isPanningEnabled | boolean | Enable or disable viewport panning via regular wheel input |
+| isZoomingEnabled | boolean | Enable or disable viewport zooming via Ctrl+wheel |
 | debugInfo | KritzelDebugInfo | Toggle debug overlay information |
 | user | IKritzelUser | The current authenticated user |
 | activeUsers | IKritzelUser[] | Other users currently in the session |

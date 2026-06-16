@@ -59,7 +59,7 @@ async function onReady() {
         editorId="objects-query"
         theme="vue-theme"
         :themes="[customVueTheme]"
-        :wheelEnabled="false"
+        :isPanningEnabled="false" :isZoomingEnabled="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :style="editorStyle"

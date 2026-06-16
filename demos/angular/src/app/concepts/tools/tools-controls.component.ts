@@ -18,10 +18,11 @@ import { createSeedObjects } from '../../const/seed-objects';
   template: `
     <kritzel-editor
       editorId="tools-controls"
-      [wheelEnabled]="false"
       [theme]="'angular-theme'"
       [themes]="themes"
       [controls]="controls"
+      [isPanningEnabled]="false"
+      [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady()"

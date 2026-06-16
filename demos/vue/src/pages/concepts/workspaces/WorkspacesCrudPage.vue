@@ -120,7 +120,7 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
       editorId="workspaces-crud"
       theme="vue-theme"
       :themes="[customVueTheme]"
-      :wheelEnabled="false"
+      :isPanningEnabled="false" :isZoomingEnabled="false"
       :syncConfig="syncConfig"
       :activeWorkspaceId="activeWorkspaceId"
       :isMoreMenuVisible="false"

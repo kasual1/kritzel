@@ -45,9 +45,10 @@ export function ToolsChangePage() {
       <KritzelEditor
         ref={editorRef}
         editorId="tools-change"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         isControlsVisible={false}

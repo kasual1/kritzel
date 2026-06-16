@@ -55,7 +55,7 @@ async function toggle() {
       editorId="tools-disable"
       theme="vue-theme"
       :themes="[customVueTheme]"
-      :wheelEnabled="false"
+      :isPanningEnabled="false" :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"

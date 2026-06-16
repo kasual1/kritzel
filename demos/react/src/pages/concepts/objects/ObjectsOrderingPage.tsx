@@ -57,9 +57,10 @@ export function ObjectsOrderingPage() {
         <KritzelEditor
           ref={editorRef}
           editorId="objects-ordering"
-          wheelEnabled={false}
           theme="react-theme"
           themes={[customReactTheme]}
+          isPanningEnabled={false}
+          isZoomingEnabled={false}
           isMoreMenuVisible={false}
           isWorkspaceManagerVisible={false}
           onIsReady={() => {

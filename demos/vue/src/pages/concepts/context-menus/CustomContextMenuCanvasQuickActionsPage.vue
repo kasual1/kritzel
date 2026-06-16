@@ -45,7 +45,7 @@ async function onReady() {
       :themes="[customVueTheme]"
       :globalContextMenuItems="globalItems"
       :objectContextMenuItems="[]"
-      :wheelEnabled="false"
+      :isPanningEnabled="false" :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"

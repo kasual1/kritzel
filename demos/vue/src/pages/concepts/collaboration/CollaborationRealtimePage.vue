@@ -50,7 +50,7 @@ async function onReady() {
       :themes="[customVueTheme]"
       :syncConfig="syncConfig"
       :loginConfig="undefined"
-      :wheelEnabled="false"
+      :isPanningEnabled="false" :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"

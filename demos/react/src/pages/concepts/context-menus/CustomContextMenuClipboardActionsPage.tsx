@@ -86,11 +86,12 @@ export function CustomContextMenuClipboardActionsPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="custom-context-menu-clipboard-actions"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
         globalContextMenuItems={globalItems}
         objectContextMenuItems={objectItems}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {
