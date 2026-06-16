@@ -34,7 +34,8 @@ export function ThemingApplyPage() {
         editorId="theming-apply"
         theme={activeName}
         themes={[customReactTheme, themedDark]}
-        wheelEnabled={false}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={true}
         isWorkspaceManagerVisible={true}
         onIsReady={() => {

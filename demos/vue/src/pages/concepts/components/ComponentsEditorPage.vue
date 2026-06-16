@@ -19,7 +19,8 @@ async function onReady() {
       editorId="components-editor"
       theme="vue-theme"
       :themes="[customVueTheme]"
-      :wheelEnabled="false"
+      :isPanningEnabled="false"
+      :isZoomingEnabled="false"
       :style="editorStyle"
       @isReady="onReady"
     />

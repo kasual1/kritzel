@@ -45,11 +45,12 @@ type ColorTool = {
         [theme]="'annotation-theme-dark'"
         [scaleMax]="10"
         [scaleMin]="0.1"
+        [isPanningEnabled]="false"
+        [isZoomingEnabled]="false"
         [isControlsVisible]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         [isUtilityPanelVisible]="false"
-        [wheelEnabled]="false"
         (isReady)="onReady($event)"
       ></kritzel-editor>
 

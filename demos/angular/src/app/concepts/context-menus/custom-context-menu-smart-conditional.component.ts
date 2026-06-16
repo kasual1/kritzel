@@ -10,13 +10,14 @@ import { createSeedObjects } from '../../const/seed-objects';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
-      editorId="custom-context-menu-smart-conditional"
-      [wheelEnabled]="false"
       #editor
+      editorId="custom-context-menu-smart-conditional"
       [theme]="'angular-theme'"
       [themes]="themes"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"
+      [isPanningEnabled]="false"
+      [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onIsReady($event)"

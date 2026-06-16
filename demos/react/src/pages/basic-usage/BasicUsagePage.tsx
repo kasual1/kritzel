@@ -153,11 +153,12 @@ export function BasicUsagePage() {
       <KritzelEditor
         ref={editorRef}
         editorId="basic-usage"
-        wheelEnabled={false}
         syncConfig={syncConfig}
         theme="react-theme"
         themes={[customReactTheme]}
         loginConfig={undefined}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         isControlsVisible={false}

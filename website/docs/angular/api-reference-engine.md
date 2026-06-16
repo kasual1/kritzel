@@ -33,7 +33,8 @@ The `<kritzel-engine>` is the low-level headless canvas primitive. It handles re
 | viewportBoundaryLeft | number | Left pan boundary |
 | viewportBoundaryRight | number | Right pan boundary |
 | viewportBoundaryTop | number | Top pan boundary |
-| wheelEnabled | boolean | Enable or disable mouse wheel zoom/pan |
+| isPanningEnabled | boolean | Enable or disable viewport panning via regular wheel input |
+| isZoomingEnabled | boolean | Enable or disable viewport zooming via Ctrl+wheel |
 | workspace | KritzelWorkspace | The active workspace |
 
 ## Events

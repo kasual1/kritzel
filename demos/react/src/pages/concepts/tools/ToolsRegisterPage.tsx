@@ -104,10 +104,11 @@ export function ToolsRegisterPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="tools-register"
-        wheelEnabled={false}
         theme="react-theme"
         themes={[customReactTheme]}
         controls={controls}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {

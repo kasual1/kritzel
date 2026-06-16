@@ -98,16 +98,19 @@ Numbers and booleans need the `:` binding:
 <KritzelEditor
   ref="editor"
   :scaleMin="0.1" :scaleMax="10"
-  :viewportBoundaryLeft="0"    :viewportBoundaryRight="1920"
-  :viewportBoundaryTop="-500"  :viewportBoundaryBottom="1580"
-  :wheelEnabled="false"
+  :viewportBoundaryLeft="0"
+  :viewportBoundaryRight="1920"
+  :viewportBoundaryTop="-500"
+  :viewportBoundaryBottom="1580"
+  :isPanningEnabled="false"
+  :isZoomingEnabled="false"
   :lockDrawingScale="true"
 />
 ```
 
 - `scaleMin` / `scaleMax` — zoom clamps (engine enforces absolute limits on top).
 - `viewportBoundary*` — pan clamps in world coordinates; default ±Infinity. They are plain props — bind them to `ref()`s for per-state bounds (e.g. clamp camera to the current slide).
-- `:wheelEnabled="false"` — wheel no longer pans/zooms (event still bubbles to the page).
+- `:isPanningEnabled="false" :isZoomingEnabled="false"` — wheel no longer pans/zooms (event still bubbles to the page).
 - `:lockDrawingScale="true"` (default) — brush strokes keep a fixed visual thickness regardless of zoom.
 
 ## Reacting to viewport changes

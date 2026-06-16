@@ -318,7 +318,8 @@ export function ImageAnnotationStudioPage() {
         themes={themes}
         scaleMax={10}
         scaleMin={0.1}
-        wheelEnabled={false}
+        isPanningEnabled={false}
+ssisZoomingEnabled={false}
         isControlsVisible={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}

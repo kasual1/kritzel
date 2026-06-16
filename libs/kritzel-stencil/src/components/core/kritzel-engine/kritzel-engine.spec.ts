@@ -417,6 +417,69 @@ describe('KritzelEngine', () => {
     });
   });
 
+  describe('wheel interaction gating', () => {
+    const createWheelEvent = (overrides: Partial<WheelEvent> = {}): WheelEvent =>
+      ({
+        ctrlKey: false,
+        ...overrides,
+      }) as WheelEvent;
+
+    it('applies viewport wheel handling for Ctrl+wheel when zooming is enabled', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+      engine.isZoomingEnabled = true;
+
+      engine.handleWheel(createWheelEvent({ ctrlKey: true }));
+
+      expect(engine.viewport.handleWheel).toHaveBeenCalledTimes(1);
+      expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
+    });
+
+    it('skips viewport wheel handling for Ctrl+wheel when zooming is disabled and still forwards to the active tool', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+      engine.isZoomingEnabled = false;
+
+      engine.handleWheel(createWheelEvent({ ctrlKey: true }));
+
+      expect(engine.viewport.handleWheel).not.toHaveBeenCalled();
+      expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
+    });
+
+    it('applies viewport wheel handling for regular wheel input when panning is enabled', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+      engine.isPanningEnabled = true;
+
+      engine.handleWheel(createWheelEvent());
+
+      expect(engine.viewport.handleWheel).toHaveBeenCalledTimes(1);
+      expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
+    });
+
+    it('skips viewport wheel handling for regular wheel input when panning is disabled and still forwards to the active tool', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+      engine.isPanningEnabled = false;
+
+      engine.handleWheel(createWheelEvent());
+
+      expect(engine.viewport.handleWheel).not.toHaveBeenCalled();
+      expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns early when the engine is disabled', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+      core.store.isDisabled = true;
+
+      engine.handleWheel(createWheelEvent());
+
+      expect(engine.viewport.handleWheel).not.toHaveBeenCalled();
+      expect(activeTool.handleWheel).not.toHaveBeenCalled();
+    });
+  });
+
   describe('object distance fading', () => {
     const computeFade = (objectScale = 1, viewportScale = 1) =>
       (engine as any).getObjectDistanceFadeMultiplier(objectScale, viewportScale);
