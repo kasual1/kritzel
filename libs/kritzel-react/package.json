@@ -1,6 +1,6 @@
 {
   "name": "kritzel-react",
-  "version": "0.3.16",
+  "version": "0.3.17",
   "homepage": "https://kritzel.io/",
   "description": "Build infinite canvas experiences in minutes.",
   "license": "SEE LICENSE IN LICENSE.md",
@@ -21,7 +21,7 @@
     "@stencil/react-output-target": "^1.2.0"
   },
   "peerDependencies": {
-    "kritzel-stencil": "^0.3.16"
+    "kritzel-stencil": "^0.3.17"
   },
   "repository": {
     "type": "git",
