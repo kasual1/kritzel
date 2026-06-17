@@ -14,10 +14,10 @@ export interface KritzelTheme {
   global?: {
     cursorTrailColor?: string;
     cursorTrailOpacity?: string;
-    fontFamily?: string;
-    borderColor?: string;
     dividerColor?: string;
     focusColor?: string;
+    fontFamily?: string;
+    borderColor?: string;
     focusRingColor?: string;
     iconColor?: string;
     pointerCursor?: string;
@@ -503,5 +503,32 @@ export interface KritzelTheme {
     buttonColor?: string;
     buttonHoverBackgroundColor?: string;
     separatorColor?: string;
+  };
+
+  /** Watermark variables */
+  watermark?: {
+    background?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    color?: string;
+    fontSize?: string;
+    offsetBottom?: string;
+    offsetRight?: string;
+    opacity?: string;
+  };
+
+  /** Zoom panel variables */
+  zoomPanel?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    buttonActiveBackgroundColor?: string;
+    buttonBorderRadius?: string;
+    buttonHoverBackgroundColor?: string;
+    buttonSize?: string;
+    gap?: string;
+    iconColor?: string;
+    padding?: string;
   };
 }

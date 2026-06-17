@@ -1,8 +1,9 @@
 {
   "name": "kritzel-react",
   "version": "0.3.16",
-  "homepage": "https://github.com/kasual1/kritzel#readme",
-  "license": "ISC",
+  "homepage": "https://kritzel.io/",
+  "description": "Build infinite canvas experiences in minutes.",
+  "license": "SEE LICENSE IN LICENSE.md",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",

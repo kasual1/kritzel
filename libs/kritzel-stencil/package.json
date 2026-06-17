@@ -1,7 +1,9 @@
 {
   "name": "kritzel-stencil",
   "version": "0.3.16",
-  "description": "Stencil Component Starter",
+  "homepage": "https://kritzel.io/",
+  "description": "Build infinite canvas experiences in minutes.",
+  "license": "SEE LICENSE IN LICENSE.md",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",
@@ -30,10 +32,6 @@
       "require": "./dist/components/*"
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/kasual1/kritzel.git"
-  },
   "files": [
     "dist/",
     "loader/"
@@ -47,7 +45,6 @@
     "bump": "npm version patch",
     "release": "npm publish"
   },
-  "license": "MIT",
   "dependencies": {
     "@hocuspocus/provider": "^3.4.0",
     "@types/lodash": "^4.17.20",
