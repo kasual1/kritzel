@@ -312,11 +312,11 @@ export class KritzelLicenseManager {
   }
 
   /** Decodes a base64url string to raw bytes. */
-  private base64UrlToBytes(value: string): Uint8Array {
+  private base64UrlToBytes(value: string): Uint8Array<ArrayBuffer> {
     const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
     const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
     const binary = atob(padded);
-    const bytes = new Uint8Array(binary.length);
+    const bytes = new Uint8Array(new ArrayBuffer(binary.length));
     for (let i = 0; i < binary.length; i++) {
       bytes[i] = binary.charCodeAt(i);
     }
@@ -324,7 +324,10 @@ export class KritzelLicenseManager {
   }
 
   /** Encodes a string to its UTF-8 bytes. */
-  private utf8Bytes(value: string): Uint8Array {
-    return new TextEncoder().encode(value);
+  private utf8Bytes(value: string): Uint8Array<ArrayBuffer> {
+    const encoded = new TextEncoder().encode(value);
+    const bytes = new Uint8Array(new ArrayBuffer(encoded.length));
+    bytes.set(encoded);
+    return bytes;
   }
 }
