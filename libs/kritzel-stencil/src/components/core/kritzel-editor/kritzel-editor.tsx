@@ -212,6 +212,8 @@ export class KritzelEditor {
 
   @Prop() themes?: KritzelTheme[];
   @Prop({ mutable: true }) theme: ThemeName = 'light';
+  /** License key that, when valid, removes the "Powered by Kritzel" watermark. */
+  @Prop() licenseKey?: string;
   /** The current locale (language) code applied to the editor, e.g. 'en', 'de', 'fr'. */
   @Prop({ mutable: true }) locale: LocaleCode = 'en';
   /** An array of available locale definitions (with optional partial term overrides). */
@@ -1184,6 +1186,7 @@ export class KritzelEditor {
           isZoomingEnabled={this.isZoomingEnabled}
           theme={this.theme}
           themes={this.themes}
+          licenseKey={this.licenseKey}
           locale={this.locale}
           locales={this.locales}
           fallbackLocale={this.fallbackLocale}

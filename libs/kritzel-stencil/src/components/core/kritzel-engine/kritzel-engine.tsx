@@ -212,6 +212,13 @@ export class KritzelEngine {
     this.core.themeManager.setTheme(newValue);
   }
 
+  /** License key that, when valid, removes the "Powered by Kritzel" watermark. */
+  @Prop() licenseKey?: string;
+  @Watch('licenseKey')
+  onLicenseKeyChange(newValue?: string) {
+    this.core.licenseManager.validate(newValue);
+  }
+
   /** An array of available themes for the editor. */
   @Prop() themes?: KritzelTheme[];
   @Watch('themes')
@@ -2071,6 +2078,7 @@ export class KritzelEngine {
     // Clean up managers
     this.core.cursorManager.cleanup();
     this.core.themeManager.cleanup();
+    this.core.licenseManager.destroy();
   }
 
   componentWillLoad() {
@@ -2088,6 +2096,9 @@ export class KritzelEngine {
     }
     this.core.localizationManager.setFallbackLocale(this.fallbackLocale);
     this.core.localizationManager.setLocale(this.locale);
+
+    this.core.licenseManager.validate(this.licenseKey);
+    this.core.licenseManager.startPeriodicValidation();
 
     this.core.setUser(this.user);
     this.validateScaleMax(this.scaleMax);
@@ -3517,6 +3528,10 @@ export class KritzelEngine {
         {this.core.store.objects?.hasAwareness && <kritzel-awareness-cursors core={this.core}></kritzel-awareness-cursors>}
 
         {this.core.store.state?.activeTool instanceof KritzelEraserTool && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
+
+        {!this.core.licenseManager.isLicensed && (
+          <kritzel-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></kritzel-watermark>
+        )}
       </Host>
     );
   }

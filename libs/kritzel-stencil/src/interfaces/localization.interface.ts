@@ -135,6 +135,9 @@ export interface KritzelTerms {
 
   // Engine
   'engine.loading': string;
+
+  // Watermark
+  'watermark.poweredBy': string;
 }
 
 /**

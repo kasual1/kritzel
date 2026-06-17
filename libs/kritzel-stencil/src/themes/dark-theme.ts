@@ -305,4 +305,24 @@ export const darkTheme: KritzelTheme = {
     buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
     separatorColor: 'hsl(0, 0%, 100%, 12%)',
   },
+
+  watermark: {
+    background: 'rgba(40, 40, 40, 0.6)',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.35)',
+    color: 'rgba(220, 220, 220, 0.8)',
+  },
+
+  zoomPanel: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    borderRadius: '12px',
+    boxShadow: '0 0 3px rgba(0, 0, 0, 0.4)',
+    buttonActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
+    buttonBorderRadius: '8px',
+    buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    buttonSize: '32px',
+    gap: '4px',
+    iconColor: '#e0e0e0',
+    padding: '4px',
+  },
 };

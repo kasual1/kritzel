@@ -52,7 +52,9 @@ const KNOWN_CATEGORIES = [
   'share-dialog',
   'login-dialog',
   'current-user-dialog',
-  'awareness'
+  'awareness',
+  'watermark',
+  'zoom-panel'
 ];
 
 /**
@@ -199,8 +201,13 @@ function generateThemeInterface(groups) {
     lines.push(`  /** ${categoryLabel.charAt(0).toUpperCase() + categoryLabel.slice(1)} variables */`);
     lines.push(`  ${categoryName}?: {`);
 
+    const seenProps = new Set();
     for (const variable of variables) {
       const propName = toCamelCase(variable, category);
+      if (seenProps.has(propName)) {
+        continue;
+      }
+      seenProps.add(propName);
       lines.push(`    ${propName}?: string;`);
     }
 
@@ -249,8 +256,13 @@ function main() {
   for (const category of sortedCategories) {
     const variables = Array.from(groups[category]).sort();
     console.log(`\n[${category}] (${variables.length} variables)`);
+    const seenSummaryProps = new Set();
     for (const variable of variables) {
       const propName = toCamelCase(variable, category);
+      if (seenSummaryProps.has(propName)) {
+        continue;
+      }
+      seenSummaryProps.add(propName);
       console.log(`  ${propName}`);
     }
   }

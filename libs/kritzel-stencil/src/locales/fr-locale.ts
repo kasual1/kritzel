@@ -128,5 +128,8 @@ export const FR_LOCALE: KritzelLocale = {
 
     // Engine
     'engine.loading': 'Chargement...',
+
+    // Watermark
+    'watermark.poweredBy': 'Propulsé par Kritzel',
   },
 };

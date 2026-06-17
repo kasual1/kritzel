@@ -20,7 +20,7 @@ import { createSeedObjects } from '../../const/seed-objects';
     </div>
     <div class="editor-wrap">
       <kritzel-editor
-        editorId="collaboration-local"
+        editorId="persistence-local"
         [syncConfig]="syncConfig"
         [theme]="'angular-theme'"
         [themes]="themes"
