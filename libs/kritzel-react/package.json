@@ -3,7 +3,7 @@
   "version": "0.3.17",
   "homepage": "https://kritzel.io/",
   "description": "Build infinite canvas experiences in minutes.",
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "PolyForm-Noncommercial-1.0.0",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",
