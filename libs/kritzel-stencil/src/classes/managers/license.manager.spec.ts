@@ -1,6 +1,4 @@
 import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
 import { KritzelLicenseManager } from './license.manager';
 import { KritzelCore } from '../core/core.class';
 import { KRITZEL_LICENSE_TOKEN_PREFIX } from '../../constants/license.constants';
@@ -9,13 +7,33 @@ jest.mock('../core/core.class');
 
 /**
  * The manager verifies real Ed25519 signatures against the public key embedded
- * in license.constants. To exercise that path we sign tokens in the test with
- * the matching master private key checked into the repo (scripts/license/keys),
- * mirroring scripts/license/token.js. This keeps the spec a true end-to-end
- * check of the verification path rather than a mock of it.
+ * in license.constants. The master private key is intentionally not committed
+ * (scripts/license/keys is gitignored), so instead of signing with it we mock
+ * the constants module to publish an ephemeral public key generated here and
+ * sign test tokens with its matching private key. This keeps the spec a true
+ * end-to-end exercise of the verification path with no repo secret.
+ *
+ * The keypair is generated inside the jest.mock factory (which is hoisted above
+ * the imports) and the private key PEM is stashed on the mocked module so the
+ * test body can read it back to sign tokens.
  */
-const PRIVATE_KEY_PATH = path.join(__dirname, '..', '..', '..', '..', '..', 'scripts', 'license', 'keys', 'private.pem');
-const privateKey = crypto.createPrivateKey(fs.readFileSync(PRIVATE_KEY_PATH, 'utf-8'));
+jest.mock('../../constants/license.constants', () => {
+  const nodeCrypto = require('crypto');
+  const { publicKey, privateKey } = nodeCrypto.generateKeyPairSync('ed25519');
+  // Extract the raw 32-byte public key from its SPKI DER encoding and publish it
+  // as base64url, matching the format the manager imports.
+  const spki = publicKey.export({ format: 'der', type: 'spki' });
+  const rawPublic = spki.subarray(spki.length - 32).toString('base64url');
+  return {
+    KRITZEL_LICENSE_TOKEN_PREFIX: 'KRTZL1.',
+    KRITZEL_LICENSE_PUBLIC_KEY: rawPublic,
+    // Test-only handle, not part of the real module's surface.
+    __TEST_PRIVATE_KEY_PEM__: privateKey.export({ format: 'pem', type: 'pkcs8' }),
+  };
+});
+
+// Reconstruct the signing key from the PEM the mock factory generated.
+const privateKey = crypto.createPrivateKey((jest.requireMock('../../constants/license.constants') as any).__TEST_PRIVATE_KEY_PEM__);
 
 /** Signs a claims payload into a KRTZL1 token the manager will accept. */
 function signToken(payload: Record<string, unknown>): string {
