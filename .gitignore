@@ -3,6 +3,9 @@ dist/
 .stencil/
 loader/
 
+# License signing keys — the private key must never be committed.
+scripts/license/keys/
+
 # Playwright
 e2e/test-results/
 e2e/playwright-report/
