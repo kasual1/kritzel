@@ -35,7 +35,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require("@site/static/img/code.svg").default,
     description: (
       <>
-        Kritzel integrates seamlessly with any modernJavaScript framework like React, Vue or Angular. Focus on creativity, not compatibility.
+        Kritzel integrates seamlessly with any modern JavaScript framework like React, Vue or Angular. Focus on creativity, not compatibility.
       </>
     ),
   },
