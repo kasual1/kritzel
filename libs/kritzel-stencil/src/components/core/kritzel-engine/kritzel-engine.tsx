@@ -533,7 +533,7 @@ export class KritzelEngine {
       ev.preventDefault();
     }
 
-    this.core.clipboardManager.copy();
+    this.core.clipboardManager.copy(ev);
     this.core.rerender();
   }
 
@@ -551,7 +551,7 @@ export class KritzelEngine {
       ev.preventDefault();
     }
 
-    this.core.clipboardManager.cut();
+    this.core.clipboardManager.cut(ev);
   }
 
   @Listen('paste', { target: 'window', passive: false })
@@ -560,7 +560,7 @@ export class KritzelEngine {
       return;
     }
 
-    if (!this.core.store.state.copiedObjects || this.core.store.activeText || this.core.store.activeShape) {
+    if (this.core.store.activeText || this.core.store.activeShape) {
       return;
     }
 
@@ -568,7 +568,7 @@ export class KritzelEngine {
       ev.preventDefault();
     }
 
-    this.core.clipboardManager.paste();
+    void this.core.clipboardManager.paste(undefined, undefined, ev);
   }
 
   /**

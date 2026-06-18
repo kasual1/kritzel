@@ -435,7 +435,7 @@ describe('KritzelEngine', () => {
       expect(core.clipboardManager.paste).toHaveBeenCalledTimes(1);
     });
 
-    it('ignores paste when there are no copied objects', () => {
+    it('forwards paste even when the local clipboard is empty', () => {
       core.store.state.copiedObjects = undefined;
 
       const event = createCancelableClipboardEvent('paste');
@@ -443,8 +443,8 @@ describe('KritzelEngine', () => {
 
       engine.handlePaste(event);
 
-      expect(preventDefaultSpy).not.toHaveBeenCalled();
-      expect(core.clipboardManager.paste).not.toHaveBeenCalled();
+      expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.paste).toHaveBeenCalledTimes(1);
     });
   });
 

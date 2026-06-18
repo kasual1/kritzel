@@ -4,6 +4,16 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelClassHelper } from '../../helpers/class.helper';
+import { KritzelReviver } from '../core/reviver.class';
+
+const CLIPBOARD_PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
+
+interface KritzelClipboardPayload {
+  version: 1;
+  sourceWorkspaceId?: string;
+  copiedObjectIdMapping: Array<[string, string]>;
+  objects: ReturnType<KritzelBaseObject<any>['serialize']>[];
+}
 
 /**
  * Manages clipboard operations (copy/cut/paste) for a core instance.
@@ -15,10 +25,103 @@ export class KritzelClipboardManager {
     this._core = core;
   }
 
+  private createClipboardPayload(): KritzelClipboardPayload | null {
+    const copiedObjects = this._core.store.state.copiedObjects;
+    if (!copiedObjects || copiedObjects.length === 0) {
+      return null;
+    }
+
+    return this.buildClipboardPayloadFromObjects(copiedObjects, this._core.store.state.copiedObjectIdMapping);
+  }
+
+  private buildClipboardPayloadFromObjects(
+    copiedObjects: KritzelBaseObject<any>[],
+    copiedObjectIdMapping: Map<string, string> | null | undefined,
+  ): KritzelClipboardPayload {
+    return {
+      version: 1,
+      sourceWorkspaceId: this._core.store.state.activeWorkspace?.id,
+      copiedObjectIdMapping: copiedObjectIdMapping ? Array.from(copiedObjectIdMapping.entries()) : [],
+      objects: copiedObjects.map(object => this.serializeClipboardObject(object)),
+    };
+  }
+
+  private serializeClipboardObject(object: KritzelBaseObject<any>): ReturnType<KritzelBaseObject<any>['serialize']> {
+    if (typeof object.serialize === 'function') {
+      return object.serialize();
+    }
+
+    return object as ReturnType<KritzelBaseObject<any>['serialize']>;
+  }
+
+  private serializeClipboardPayload(payload: KritzelClipboardPayload): string {
+    return `${CLIPBOARD_PAYLOAD_PREFIX}${JSON.stringify(payload)}`;
+  }
+
+  private parseClipboardPayload(text: string | null | undefined): KritzelClipboardPayload | null {
+    if (!text || !text.startsWith(CLIPBOARD_PAYLOAD_PREFIX)) {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(text.slice(CLIPBOARD_PAYLOAD_PREFIX.length)) as KritzelClipboardPayload;
+      if (parsed?.version !== 1 || !Array.isArray(parsed.objects)) {
+        return null;
+      }
+
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+
+  private async writeBrowserClipboardPayload(payload: KritzelClipboardPayload, event?: ClipboardEvent): Promise<void> {
+    const serialized = this.serializeClipboardPayload(payload);
+
+    if (event?.clipboardData) {
+      event.clipboardData.setData('text/plain', serialized);
+      return;
+    }
+
+    if (typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(serialized);
+    } catch {
+      // Ignore clipboard permission failures and keep the local clipboard working.
+    }
+  }
+
+  private async readBrowserClipboardPayload(event?: ClipboardEvent): Promise<KritzelClipboardPayload | null> {
+    const eventPayload = this.parseClipboardPayload(event?.clipboardData?.getData('text/plain'));
+    if (eventPayload) {
+      return eventPayload;
+    }
+
+    if (typeof navigator === 'undefined' || !navigator.clipboard?.readText) {
+      return null;
+    }
+
+    try {
+      return this.parseClipboardPayload(await navigator.clipboard.readText());
+    } catch {
+      return null;
+    }
+  }
+
+  private reviveClipboardObjects(payload: KritzelClipboardPayload): KritzelBaseObject<any>[] {
+    const reviver = new KritzelReviver(this._core);
+    return payload.objects
+      .map(object => reviver.revive<KritzelBaseObject<any>>(object))
+      .filter((object): object is KritzelBaseObject<any> => object != null);
+  }
+
   /**
    * Copies currently selected objects into internal clipboard state.
    */
-  copy(): void {
+  copy(event?: ClipboardEvent): void {
     const selectionGroup = this._core.store.selectionGroup;
     if (!selectionGroup) {
       return;
@@ -36,26 +139,32 @@ export class KritzelClipboardManager {
 
     this._core.store.state.copiedObjects = copiedObjects;
     this._core.store.state.copiedObjectIdMapping = idMapping;
+
+    const payload = this.createClipboardPayload();
+    if (payload) {
+      void this.writeBrowserClipboardPayload(payload, event);
+    }
   }
 
   /**
    * Cuts currently selected objects (copy then delete).
    */
-  cut(): void {
+  cut(event?: ClipboardEvent): void {
     const selectionGroup = this._core.store.selectionGroup;
     if (!selectionGroup) {
       return;
     }
 
-    this.copy();
+    this.copy(event);
     this._core.delete();
   }
 
   /**
    * Pastes objects from clipboard with optional explicit world coordinates.
    */
-  paste(x?: number, y?: number): void {
-    const copiedObjects = this._core.store.state.copiedObjects;
+  async paste(x?: number, y?: number, event?: ClipboardEvent): Promise<void> {
+    const browserPayload = await this.readBrowserClipboardPayload(event);
+    const copiedObjects = browserPayload ? this.reviveClipboardObjects(browserPayload) : this._core.store.state.copiedObjects;
     if (!copiedObjects || copiedObjects.length === 0) {
       return;
     }
@@ -65,7 +174,9 @@ export class KritzelClipboardManager {
       return;
     }
 
-    const originalIdMapping = this._core.store.state.copiedObjectIdMapping;
+    const originalIdMapping = browserPayload
+      ? new Map(browserPayload.copiedObjectIdMapping)
+      : this._core.store.state.copiedObjectIdMapping;
 
     const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
 
@@ -209,6 +320,9 @@ export class KritzelClipboardManager {
 
         this._core.store.state.copiedObjects = newCopiedObjects;
         this._core.store.state.copiedObjectIdMapping = newIdMapping;
+
+        const refreshedPayload = this.buildClipboardPayloadFromObjects(newCopiedObjects, newIdMapping);
+        void this.writeBrowserClipboardPayload(refreshedPayload);
       }
     });
 
