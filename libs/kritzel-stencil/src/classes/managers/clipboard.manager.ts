@@ -1,10 +1,13 @@
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
+import { KritzelImage } from '../objects/image.class';
+import { KritzelText } from '../objects/text.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelReviver } from '../core/reviver.class';
+import imageCompression from 'browser-image-compression';
 
 const CLIPBOARD_PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
 
@@ -13,6 +16,17 @@ interface KritzelClipboardPayload {
   sourceWorkspaceId?: string;
   copiedObjectIdMapping: Array<[string, string]>;
   objects: ReturnType<KritzelBaseObject<any>['serialize']>[];
+}
+
+export type PasteIntent =
+  | { type: 'kritzel_objects'; payload: KritzelClipboardPayload | null; isLocalFallback: boolean }
+  | { type: 'image_files'; files: File[] }
+  | { type: 'plain_text'; text: string }
+  | { type: 'unknown' };
+
+interface MaterializedPasteResult {
+  copiedObjects: KritzelBaseObject<any>[];
+  originalIdMapping: Map<string, string> | null | undefined;
 }
 
 /**
@@ -94,28 +108,60 @@ export class KritzelClipboardManager {
     }
   }
 
-  private async readBrowserClipboardPayload(event?: ClipboardEvent): Promise<KritzelClipboardPayload | null> {
-    const eventPayload = this.parseClipboardPayload(event?.clipboardData?.getData('text/plain'));
-    if (eventPayload) {
-      return eventPayload;
-    }
-
-    if (typeof navigator === 'undefined' || !navigator.clipboard?.readText) {
-      return null;
-    }
-
-    try {
-      return this.parseClipboardPayload(await navigator.clipboard.readText());
-    } catch {
-      return null;
-    }
-  }
-
   private reviveClipboardObjects(payload: KritzelClipboardPayload): KritzelBaseObject<any>[] {
     const reviver = new KritzelReviver(this._core);
     return payload.objects
       .map(object => reviver.revive<KritzelBaseObject<any>>(object))
       .filter((object): object is KritzelBaseObject<any> => object != null);
+  }
+
+  /**
+   * Evaluates the clipboard event to determine exactly what the user is trying to paste.
+   * Returns a PasteIntent covering the 3 main cases: Kritzel objects, Images, or Plain text.
+   */
+  private async determinePasteIntent(event?: ClipboardEvent): Promise<PasteIntent> {
+    if (event?.clipboardData) {
+      const data = event.clipboardData;
+
+      // 1. Check for Image Files
+      if (data.files && data.files.length > 0) {
+        const imageFiles = Array.from(data.files).filter(f => f.type.startsWith('image/'));
+        if (imageFiles.length > 0) {
+          return { type: 'image_files', files: imageFiles };
+        }
+      }
+
+      // 2 & 3. Check text/plain (Kritzel payload vs generic plain text)
+      if (data.types.includes('text/plain')) {
+        const text = data.getData('text/plain');
+        const payload = this.parseClipboardPayload(text);
+        
+        if (payload) {
+          return { type: 'kritzel_objects', payload, isLocalFallback: false };
+        } else if (text.trim().length > 0) {
+          return { type: 'plain_text', text };
+        }
+      }
+    } else if (typeof navigator !== 'undefined' && navigator.clipboard?.readText) {
+      // Fallback for programmatic paste (when there is no standard ClipboardEvent)
+      try {
+        const text = await navigator.clipboard.readText();
+        const payload = this.parseClipboardPayload(text);
+        if (payload) {
+          return { type: 'kritzel_objects', payload, isLocalFallback: false };
+        }
+      } catch {
+        // Ignore read errors
+      }
+    }
+
+    // Fallback to purely local copied objects (e.g., if clipboard read is blocked)
+    if (this._core.store.state.copiedObjects && this._core.store.state.copiedObjects.length > 0) {
+      // We don't have a strict payload, but we know it's kritzel objects from local state
+      return { type: 'kritzel_objects', payload: null, isLocalFallback: true };
+    }
+
+    return { type: 'unknown' };
   }
 
   /**
@@ -159,26 +205,95 @@ export class KritzelClipboardManager {
     this._core.delete();
   }
 
+  private async materializeKritzelObjects(intent: Extract<PasteIntent, { type: 'kritzel_objects' }>): Promise<MaterializedPasteResult> {
+    if (intent.isLocalFallback) {
+      return {
+        copiedObjects: this._core.store.state.copiedObjects!,
+        originalIdMapping: this._core.store.state.copiedObjectIdMapping,
+      };
+    } else {
+      return {
+        copiedObjects: this.reviveClipboardObjects(intent.payload!),
+        originalIdMapping: new Map(intent.payload!.copiedObjectIdMapping),
+      };
+    }
+  }
+
+  private async materializeImageFiles(intent: Extract<PasteIntent, { type: 'image_files' }>): Promise<MaterializedPasteResult | null> {
+    try {
+      const preparePromises = intent.files.map(async file => {
+        // Use the default image compression size of 1200
+        const compressed = await imageCompression(file, { maxWidthOrHeight: 1200 });
+        return KritzelImage.fromBlob(this._core, compressed);
+      });
+      
+      return {
+        copiedObjects: await Promise.all(preparePromises),
+        originalIdMapping: new Map(),
+      };
+    } catch (err) {
+      console.error('Failed to import pasted image files:', err);
+      return null;
+    }
+  }
+
+  private async materializePlainText(intent: Extract<PasteIntent, { type: 'plain_text' }>): Promise<MaterializedPasteResult | null> {
+    const textObject = KritzelText.create(this._core);
+
+    const paragraphs = intent.text.split('\n').map(line => {
+      if (line.length === 0) {
+        return { type: 'paragraph' }; // Empty paragraph
+      }
+      return {
+        type: 'paragraph',
+        content: [{ type: 'text', text: line }]
+      };
+    });
+
+    textObject.setContent({
+      type: 'doc',
+      content: paragraphs
+    });
+
+    return {
+      copiedObjects: [textObject],
+      originalIdMapping: new Map()
+    };
+  }
+
   /**
    * Pastes objects from clipboard with optional explicit world coordinates.
    */
   async paste(x?: number, y?: number, event?: ClipboardEvent): Promise<void> {
-    const browserPayload = await this.readBrowserClipboardPayload(event);
-    const copiedObjects = browserPayload ? this.reviveClipboardObjects(browserPayload) : this._core.store.state.copiedObjects;
-    if (!copiedObjects || copiedObjects.length === 0) {
+    const pasteIntent = await this.determinePasteIntent(event);
+
+    let materializedResult: MaterializedPasteResult | null = null;
+
+    if (pasteIntent.type === 'kritzel_objects') {
+      materializedResult = await this.materializeKritzelObjects(pasteIntent);
+    } else if (pasteIntent.type === 'image_files') {
+      materializedResult = await this.materializeImageFiles(pasteIntent);
+    } else if (pasteIntent.type === 'plain_text') {
+      materializedResult = await this.materializePlainText(pasteIntent);
+    }
+
+    if (!materializedResult || !materializedResult.copiedObjects || materializedResult.copiedObjects.length === 0) {
       return;
     }
+
+    const { copiedObjects, originalIdMapping } = materializedResult;
 
     const activeWorkspace = this._core.store.state.activeWorkspace;
     if (!activeWorkspace) {
       return;
     }
 
-    const originalIdMapping = browserPayload
-      ? new Map(browserPayload.copiedObjectIdMapping)
-      : this._core.store.state.copiedObjectIdMapping;
-
+    // Determine if we should center the objects in the viewport.
+    // This happens if the user specifically pasted from a different workspace, 
+    // OR if we're inserting brand new external items (like images or text).
     const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
+    const isNewExternalContent = pasteIntent.type !== 'kritzel_objects';
+    const shouldCenterInViewport = isDifferentWorkspace || isNewExternalContent;
 
     const minX = Math.min(...copiedObjects.map(obj => obj.translateX));
     const minY = Math.min(...copiedObjects.map(obj => obj.translateY));
@@ -189,7 +304,7 @@ export class KritzelClipboardManager {
     if (x !== undefined && y !== undefined) {
       pasteX = x;
       pasteY = y;
-    } else if (isDifferentWorkspace) {
+    } else if (shouldCenterInViewport) {
       pasteX = minX;
       pasteY = minY;
     } else {
@@ -292,7 +407,7 @@ export class KritzelClipboardManager {
       selectionGroup.rotation = copiedObjects[0].rotation;
     }
 
-    if (isDifferentWorkspace) {
+    if (shouldCenterInViewport) {
       if (x !== undefined && y !== undefined) {
         selectionGroup.updatePosition(x, y);
       } else {

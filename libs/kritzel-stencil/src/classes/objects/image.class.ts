@@ -471,6 +471,53 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   }
 
   /**
+   * Creates a fully initialized KritzelImage from a Blob.
+   * Uploads the blob via the asset resolver and sets up dimensions/asset references.
+   *
+   * @param core - The KritzelCore instance providing the asset resolver and state.
+   * @param blob - The image Blob (e.g. from clipboard or file picker).
+   * @param config - Optional configuration to merge into the new image.
+   * @returns A promise resolving to a fully loaded KritzelImage object.
+   */
+  static async fromBlob(core: KritzelCore, blob: Blob, config?: Partial<KritzelImage>): Promise<KritzelImage> {
+    const objectUrl = URL.createObjectURL(blob);
+    try {
+      const dimensions = await new Promise<{ naturalWidth: number; naturalHeight: number }>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve({ naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight });
+        img.onerror = err => reject(err);
+        img.src = objectUrl;
+      });
+
+      const mimeType = blob.type || 'image/png';
+      const asset = await core.assetResolver.put(blob, {
+        mimeType,
+        kind: 'image',
+        width: dimensions.naturalWidth,
+        height: dimensions.naturalHeight,
+      });
+
+      const image = KritzelImage.create(core, config);
+      image.assetId = asset.id;
+      image.mimeType = asset.mimeType;
+
+      const { scaledWidth, scaledHeight } = image.calculateScaledDimensions({
+        width: dimensions.naturalWidth,
+        height: dimensions.naturalHeight,
+      } as HTMLImageElement);
+      
+      image.width = scaledWidth;
+      image.height = scaledHeight;
+      image.resolvedSrc = await core.assetResolver.resolve(asset.id);
+      image.loadState = 'ready';
+      
+      return image;
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+
+  /**
    * Calculates scaled dimensions for an image while respecting maxWidth and maxHeight constraints.
    * Maintains the original aspect ratio by using the smaller of the two scale ratios.
    * @param img - The HTMLImageElement to calculate dimensions for.

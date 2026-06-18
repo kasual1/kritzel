@@ -94,7 +94,7 @@ export class KritzelImageTool extends KritzelBaseTool {
     }
 
     const prepared = files.map(file =>
-      imageCompression(file, { maxWidthOrHeight: this.maxCompressionSize }).then(compressedFile => this.prepareImage(compressedFile))
+      imageCompression(file, { maxWidthOrHeight: this.maxCompressionSize }).then(compressedFile => KritzelImage.fromBlob(this._core, compressedFile))
     );
 
     Promise.allSettled(prepared)
@@ -119,67 +119,6 @@ export class KritzelImageTool extends KritzelBaseTool {
     if (input) {
       input.value = '';
     }
-  }
-
-  /**
-   * Compresses-then-measures an already compressed blob, uploads it
-   * through the asset resolver, and returns a fully configured
-   * `KritzelImage` that has not yet been added to the canvas.
-   *
-   * @param blob - Compressed image bytes to store and render
-   */
-  private async prepareImage(blob: Blob): Promise<KritzelImage> {
-    let tempUrl: string | null = null;
-    try {
-      const mimeType = blob.type || 'image/png';
-      tempUrl = URL.createObjectURL(blob);
-
-      const dimensions = await this.measureImage(tempUrl);
-
-      const asset = await this._core.assetResolver.put(blob, {
-        mimeType,
-        kind: 'image',
-        width: dimensions.naturalWidth,
-        height: dimensions.naturalHeight,
-      });
-
-      const image = KritzelImage.create(this._core);
-      image.assetId = asset.id;
-      image.mimeType = asset.mimeType;
-      const { scaledWidth, scaledHeight } = image.calculateScaledDimensions({
-        width: dimensions.naturalWidth,
-        height: dimensions.naturalHeight,
-      } as HTMLImageElement);
-      image.width = scaledWidth;
-      image.height = scaledHeight;
-      // Seed the resolved URL so the renderer can display the image
-      // without waiting for a resolver round-trip.
-      image.resolvedSrc = await this._core.assetResolver.resolve(asset.id);
-      image.loadState = 'ready';
-      return image;
-    } finally {
-      if (tempUrl) {
-        try {
-          URL.revokeObjectURL(tempUrl);
-        } catch {
-          /* ignore */
-        }
-      }
-    }
-  }
-
-  /**
-   * Measures the natural dimensions of an image from a URL. Used to
-   * provide width/height hints when uploading and to compute the
-   * scaled canvas dimensions.
-   */
-  private measureImage(url: string): Promise<{ naturalWidth: number; naturalHeight: number }> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve({ naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight });
-      img.onerror = err => reject(err);
-      img.src = url;
-    });
   }
 
   /**
