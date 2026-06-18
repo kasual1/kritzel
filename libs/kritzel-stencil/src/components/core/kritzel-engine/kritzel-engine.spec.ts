@@ -131,6 +131,8 @@ describe('KritzelEngine', () => {
       allNonSelectionObjects: [] as any[],
       objectsInViewport: [] as any[],
       selectionGroup: null as any,
+      activeText: null as any,
+      activeShape: null as any,
       objects: {
         remove: jest.fn(),
         clearLocalSelectionBox: jest.fn(),
@@ -364,6 +366,80 @@ describe('KritzelEngine', () => {
       const result = await engine.getCopiedObjects();
 
       expect(result).toBe(copied);
+    });
+  });
+
+  describe('native clipboard events', () => {
+    const createCancelableClipboardEvent = (type: 'copy' | 'cut' | 'paste'): ClipboardEvent =>
+      new Event(type, { cancelable: true }) as ClipboardEvent;
+
+    it('handles copy via native browser event when selection is active', () => {
+      core.store.selectionGroup = { objects: [{}] };
+      core.store.activeText = null;
+      core.store.activeShape = null;
+
+      const event = createCancelableClipboardEvent('copy');
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+      engine.handleCopy(event);
+
+      expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+      expect(core.copy).toHaveBeenCalledTimes(1);
+      expect(core.rerender).toHaveBeenCalledTimes(1);
+    });
+
+    it('ignores copy when a text editor is active', () => {
+      core.store.selectionGroup = { objects: [{}] };
+      core.store.activeText = { isEditing: true };
+
+      const event = createCancelableClipboardEvent('copy');
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+      engine.handleCopy(event);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+      expect(core.copy).not.toHaveBeenCalled();
+      expect(core.rerender).not.toHaveBeenCalled();
+    });
+
+    it('handles cut via native browser event when selection is active', () => {
+      core.store.selectionGroup = { objects: [{}] };
+      core.store.activeText = null;
+      core.store.activeShape = null;
+
+      const event = createCancelableClipboardEvent('cut');
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+      engine.handleCut(event);
+
+      expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+      expect(core.cut).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles paste via native browser event when copied objects are available', () => {
+      core.store.state.copiedObjects = [{ id: 'copied' }];
+      core.store.activeText = null;
+      core.store.activeShape = null;
+
+      const event = createCancelableClipboardEvent('paste');
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+      engine.handlePaste(event);
+
+      expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+      expect(core.paste).toHaveBeenCalledTimes(1);
+    });
+
+    it('ignores paste when there are no copied objects', () => {
+      core.store.state.copiedObjects = undefined;
+
+      const event = createCancelableClipboardEvent('paste');
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+      engine.handlePaste(event);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+      expect(core.paste).not.toHaveBeenCalled();
     });
   });
 
