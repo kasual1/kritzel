@@ -503,7 +503,7 @@ export class KritzelEngine {
 
   @Listen('keydown', { target: 'window' })
   handleKeyDown(ev: KeyboardEvent) {
-    if (this.core.store.isDisabled || !this.shouldHandleKeyboardEvent(ev)) {
+    if (this.core.store.isDisabled || !this.shouldHandleGlobalShortcutEvent(ev)) {
       return;
     }
 
@@ -512,15 +512,67 @@ export class KritzelEngine {
 
   @Listen('keyup', { target: 'window' })
   handleKeyUp(ev: KeyboardEvent) {
-    if (this.core.store.isDisabled || !this.shouldHandleKeyboardEvent(ev)) {
+    if (this.core.store.isDisabled || !this.shouldHandleGlobalShortcutEvent(ev)) {
       return;
     }
 
     this.keyHandler.handleKeyUp(ev);
   }
 
+  @Listen('copy', { target: 'window', passive: false })
+  handleCopy(ev: ClipboardEvent) {
+    if (this.core.store.isDisabled || !this.shouldHandleGlobalShortcutEvent(ev)) {
+      return;
+    }
+
+    if (!this.core.store.selectionGroup || this.core.store.activeText || this.core.store.activeShape) {
+      return;
+    }
+
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
+    this.core.copy();
+    this.core.rerender();
+  }
+
+  @Listen('cut', { target: 'window', passive: false })
+  handleCut(ev: ClipboardEvent) {
+    if (this.core.store.isDisabled || !this.shouldHandleGlobalShortcutEvent(ev)) {
+      return;
+    }
+
+    if (!this.core.store.selectionGroup || this.core.store.activeText || this.core.store.activeShape) {
+      return;
+    }
+
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
+    this.core.cut();
+  }
+
+  @Listen('paste', { target: 'window', passive: false })
+  handlePaste(ev: ClipboardEvent) {
+    if (this.core.store.isDisabled || !this.shouldHandleGlobalShortcutEvent(ev)) {
+      return;
+    }
+
+    if (!this.core.store.state.copiedObjects || this.core.store.activeText || this.core.store.activeShape) {
+      return;
+    }
+
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
+    this.core.paste();
+  }
+
   /**
-   * Determines if the engine should handle a keyboard event.
+    * Determines if the engine should handle a keyboard/clipboard shortcut event.
    * Returns true only if:
    * - The event originates from within the engine component, OR
    * - The event target is not an interactive element that needs keyboard input
@@ -528,7 +580,7 @@ export class KritzelEngine {
    * This prevents conflicts with inputs, textareas, dialogs, or other
    * interactive elements that need their own keyboard handling.
    */
-  private shouldHandleKeyboardEvent(ev: KeyboardEvent): boolean {
+  private shouldHandleGlobalShortcutEvent(ev: KeyboardEvent | ClipboardEvent): boolean {
     const path = ev.composedPath();
 
     // Check if event path includes our host - works reliably with Shadow DOM
