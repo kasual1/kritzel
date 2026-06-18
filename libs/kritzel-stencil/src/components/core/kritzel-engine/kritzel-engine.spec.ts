@@ -80,9 +80,6 @@ describe('KritzelEngine', () => {
     updateObject: jest.fn(),
     removeObject: jest.fn(),
     delete: jest.fn(),
-    copy: jest.fn(),
-    cut: jest.fn(),
-    paste: jest.fn(),
     bringForward: jest.fn(),
     sendBackward: jest.fn(),
     bringToFront: jest.fn(),
@@ -107,6 +104,12 @@ describe('KritzelEngine', () => {
     getWorkspaces: jest.fn().mockReturnValue([]),
     getIsPublic: jest.fn().mockReturnValue(false),
     getObjectsInViewport: jest.fn().mockReturnValue([]),
+    clipboardManager: {
+      copy: jest.fn(),
+      cut: jest.fn(),
+      paste: jest.fn(),
+      getCopiedObjects: jest.fn().mockReturnValue([]),
+    },
     cursorManager: {
       setTargetElement: jest.fn(),
       cleanup: jest.fn(),
@@ -336,36 +339,38 @@ describe('KritzelEngine', () => {
       expect(core.delete).toHaveBeenCalledTimes(1);
     });
 
-    it('copy delegates to core.copy', async () => {
+    it('copy delegates to core.clipboardManager.copy', async () => {
       await engine.copy();
-      expect(core.copy).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.copy).toHaveBeenCalledTimes(1);
     });
 
-    it('cut delegates to core.cut', async () => {
+    it('cut delegates to core.clipboardManager.cut', async () => {
       await engine.cut();
-      expect(core.cut).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.cut).toHaveBeenCalledTimes(1);
     });
 
-    it('paste forwards coordinates to core.paste', async () => {
+    it('paste forwards coordinates to core.clipboardManager.paste', async () => {
       await engine.paste(42, 99);
-      expect(core.paste).toHaveBeenCalledWith(42, 99);
+      expect(core.clipboardManager.paste).toHaveBeenCalledWith(42, 99);
     });
 
     it('getCopiedObjects returns an empty array when nothing has been copied', async () => {
-      core.store.state.copiedObjects = undefined;
+      core.clipboardManager.getCopiedObjects.mockReturnValue([]);
 
       const result = await engine.getCopiedObjects();
 
       expect(result).toEqual([]);
+      expect(core.clipboardManager.getCopiedObjects).toHaveBeenCalledTimes(1);
     });
 
     it('getCopiedObjects returns the previously copied objects', async () => {
       const copied: any[] = [{ id: 'x' }];
-      core.store.state.copiedObjects = copied;
+      core.clipboardManager.getCopiedObjects.mockReturnValue(copied);
 
       const result = await engine.getCopiedObjects();
 
       expect(result).toBe(copied);
+      expect(core.clipboardManager.getCopiedObjects).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -384,7 +389,7 @@ describe('KritzelEngine', () => {
       engine.handleCopy(event);
 
       expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
-      expect(core.copy).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.copy).toHaveBeenCalledTimes(1);
       expect(core.rerender).toHaveBeenCalledTimes(1);
     });
 
@@ -398,7 +403,7 @@ describe('KritzelEngine', () => {
       engine.handleCopy(event);
 
       expect(preventDefaultSpy).not.toHaveBeenCalled();
-      expect(core.copy).not.toHaveBeenCalled();
+      expect(core.clipboardManager.copy).not.toHaveBeenCalled();
       expect(core.rerender).not.toHaveBeenCalled();
     });
 
@@ -413,7 +418,7 @@ describe('KritzelEngine', () => {
       engine.handleCut(event);
 
       expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
-      expect(core.cut).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.cut).toHaveBeenCalledTimes(1);
     });
 
     it('handles paste via native browser event when copied objects are available', () => {
@@ -427,7 +432,7 @@ describe('KritzelEngine', () => {
       engine.handlePaste(event);
 
       expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
-      expect(core.paste).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.paste).toHaveBeenCalledTimes(1);
     });
 
     it('ignores paste when there are no copied objects', () => {
@@ -439,7 +444,7 @@ describe('KritzelEngine', () => {
       engine.handlePaste(event);
 
       expect(preventDefaultSpy).not.toHaveBeenCalled();
-      expect(core.paste).not.toHaveBeenCalled();
+      expect(core.clipboardManager.paste).not.toHaveBeenCalled();
     });
   });
 

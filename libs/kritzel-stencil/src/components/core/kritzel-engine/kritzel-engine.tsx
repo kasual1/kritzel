@@ -533,7 +533,7 @@ export class KritzelEngine {
       ev.preventDefault();
     }
 
-    this.core.copy();
+    this.core.clipboardManager.copy();
     this.core.rerender();
   }
 
@@ -551,7 +551,7 @@ export class KritzelEngine {
       ev.preventDefault();
     }
 
-    this.core.cut();
+    this.core.clipboardManager.cut();
   }
 
   @Listen('paste', { target: 'window', passive: false })
@@ -568,7 +568,7 @@ export class KritzelEngine {
       ev.preventDefault();
     }
 
-    this.core.paste();
+    this.core.clipboardManager.paste();
   }
 
   /**
@@ -706,13 +706,13 @@ export class KritzelEngine {
   /** Copies the currently selected objects to the internal clipboard. */
   @Method()
   async copy() {
-    this.core.copy();
+    this.core.clipboardManager.copy();
   }
 
   /** Cuts the currently selected objects to the internal clipboard (deletes them from the canvas). */
   @Method()
   async cut() {
-    this.core.cut();
+    this.core.clipboardManager.cut();
   }
 
   /**
@@ -722,7 +722,7 @@ export class KritzelEngine {
    */
   @Method()
   async paste(x: number, y: number) {
-    this.core.paste(x, y);
+    this.core.clipboardManager.paste(x, y);
   }
 
   /**
@@ -1343,7 +1343,7 @@ export class KritzelEngine {
   /** Returns the objects currently stored in the internal clipboard from a prior `copy()` call. */
   @Method()
   async getCopiedObjects(): Promise<KritzelBaseObject[]> {
-    return this.core.store.state.copiedObjects || [];
+    return this.core.clipboardManager.getCopiedObjects();
   }
 
   /** Returns all objects currently visible within the viewport bounds. */
