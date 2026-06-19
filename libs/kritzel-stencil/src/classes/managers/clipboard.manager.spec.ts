@@ -176,6 +176,7 @@ describe('KritzelClipboardManager', () => {
         addOrRemove: jest.fn(),
         updatePosition: jest.fn(),
         centerInViewport: jest.fn(),
+        refreshObjectDimensions: jest.fn(),
         isSelected: false,
         rotation: 0,
       } as any;
@@ -196,8 +197,8 @@ describe('KritzelClipboardManager', () => {
       expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(createdSelectionGroup);
       expect(mockCore.engine.viewport.bringIntoViewIfNeeded).toHaveBeenCalledWith(createdSelectionGroup);
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', { name: 'selection' });
-      expect(mockCore.engine.emitObjectsChange).toHaveBeenCalledTimes(1);
-      expect(mockCore.rerender).toHaveBeenCalledTimes(1);
+      expect(mockCore.engine.emitObjectsChange).toHaveBeenCalledTimes(2);
+      expect(mockCore.rerender).toHaveBeenCalledTimes(2);
       expect(mockCore.store.state.isSelecting).toBe(false);
     });
 
@@ -220,6 +221,7 @@ describe('KritzelClipboardManager', () => {
         addOrRemove: jest.fn(),
         updatePosition: jest.fn(),
         centerInViewport: jest.fn(),
+        refreshObjectDimensions: jest.fn(),
         isSelected: false,
         rotation: 0,
       } as any;
@@ -230,6 +232,7 @@ describe('KritzelClipboardManager', () => {
 
       const event = {
         clipboardData: {
+          types: ['text/plain'],
           getData: jest.fn().mockReturnValue('kritzel-clipboard/v1:{"version":1,"copiedObjectIdMapping":[["browser-copy-1","browser-original-1"]],"objects":[{"id":"browser-copy-1"}]}'),
         },
       } as any;
@@ -276,6 +279,7 @@ describe('KritzelClipboardManager', () => {
         addOrRemove: jest.fn(),
         updatePosition: jest.fn(),
         centerInViewport: jest.fn(),
+        refreshObjectDimensions: jest.fn(),
         isSelected: false,
         rotation: 0,
       } as any;

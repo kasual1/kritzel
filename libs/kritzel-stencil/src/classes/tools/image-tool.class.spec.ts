@@ -17,8 +17,6 @@ describe('KritzelImageTool', () => {
   let mockFileInput: any;
   let mockSelectionTool: any;
   let mockImage: any;
-  let originalFileReader: typeof FileReader;
-  let originalImage: typeof Image;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -50,7 +48,7 @@ describe('KritzelImageTool', () => {
       updatePosition: jest.fn(),
     };
 
-    (KritzelImage.create as jest.Mock).mockReturnValue(mockImage);
+    (KritzelImage.fromBlob as jest.Mock).mockResolvedValue(mockImage);
 
     mockCore = {
       store: {
@@ -60,10 +58,6 @@ describe('KritzelImageTool', () => {
       },
       addObject: jest.fn(),
       selectObjects: jest.fn(),
-      assetResolver: {
-        put: jest.fn().mockResolvedValue({ id: 'asset-1', mimeType: 'image/png' }),
-        resolve: jest.fn().mockResolvedValue('blob:resolved-url'),
-      },
       engine: {
         emitObjectsChange: jest.fn(),
         emitObjectsAdded: jest.fn(),
@@ -73,16 +67,11 @@ describe('KritzelImageTool', () => {
       toolRegistry: { getTool: jest.fn().mockReturnValue(mockSelectionTool) },
     } as unknown as jest.Mocked<KritzelCore>;
 
-    originalFileReader = global.FileReader;
-    originalImage = global.Image;
-
     tool = new KritzelImageTool(mockCore);
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
-    global.FileReader = originalFileReader;
-    global.Image = originalImage;
   });
 
   // ============================================
@@ -228,101 +217,30 @@ describe('KritzelImageTool', () => {
   });
 
   // ============================================
-  // uploadAndPlace (integration)
+  // fromBlob integration contract
   // ============================================
 
-  describe('upload and placement', () => {
+  describe('fromBlob integration contract', () => {
     let handleFileSelect: (event: Event) => void;
-    let originalCreateObjectURL: typeof URL.createObjectURL;
-    let originalRevokeObjectURL: typeof URL.revokeObjectURL;
 
     beforeEach(() => {
       const changeCall = mockFileInput.addEventListener.mock.calls.find(
         (call: any[]) => call[0] === 'change',
       );
       handleFileSelect = changeCall[1];
-
-      originalCreateObjectURL = URL.createObjectURL;
-      originalRevokeObjectURL = URL.revokeObjectURL;
-      URL.createObjectURL = jest.fn(() => 'blob:temp-url') as any;
-      URL.revokeObjectURL = jest.fn() as any;
     });
 
-    afterEach(() => {
-      URL.createObjectURL = originalCreateObjectURL;
-      URL.revokeObjectURL = originalRevokeObjectURL;
-    });
-
-    const triggerFullImageFlow = async () => {
+    it('should pass compressed files to KritzelImage.fromBlob with core', async () => {
       const compressedFile = new File(['compressed'], 'compressed.jpg', { type: 'image/png' });
       mockImageCompression.mockResolvedValue(compressedFile);
       const mockFile = new File(['image-data'], 'test.png', { type: 'image/png' });
       const event = { target: { files: [mockFile] } } as unknown as Event;
 
-      let imgOnload: (() => void) | null = null;
-      const mockImg: any = {
-        src: '',
-        naturalWidth: 400,
-        naturalHeight: 300,
-        set onload(fn: () => void) {
-          imgOnload = fn;
-        },
-        set onerror(_fn: (err: unknown) => void) {
-          /* noop */
-        },
-      };
-      global.Image = jest.fn(() => mockImg) as any;
-
       handleFileSelect(event);
-
-      // Allow imageCompression promise to resolve
-      await new Promise(process.nextTick);
-      // Trigger the Image onload so measureImage resolves
-      imgOnload!();
-      // Allow subsequent awaits (measureImage, put, resolve) to flush
-      await new Promise(process.nextTick);
       await new Promise(process.nextTick);
       await new Promise(process.nextTick);
 
-      return { compressedFile, mockImg };
-    };
-
-    it('should create a temporary object URL for the compressed blob', async () => {
-      const { compressedFile } = await triggerFullImageFlow();
-
-      expect(URL.createObjectURL).toHaveBeenCalledWith(compressedFile);
-    });
-
-    it('should upload the blob through the asset resolver with dimensions', async () => {
-      const { compressedFile } = await triggerFullImageFlow();
-
-      expect((mockCore as any).assetResolver.put).toHaveBeenCalledWith(compressedFile, {
-        mimeType: 'image/png',
-        kind: 'image',
-        width: 400,
-        height: 300,
-      });
-    });
-
-    it('should create a KritzelImage with asset metadata and scaled dimensions', async () => {
-      await triggerFullImageFlow();
-
-      expect(KritzelImage.create).toHaveBeenCalledWith(mockCore);
-      expect(mockImage.assetId).toBe('asset-1');
-      expect(mockImage.mimeType).toBe('image/png');
-      expect(mockImage.calculateScaledDimensions).toHaveBeenCalledWith({ width: 400, height: 300 });
-      expect(mockImage.width).toBe(200);
-      expect(mockImage.height).toBe(150);
-      expect(mockImage.zIndex).toBe(5);
-      expect(mockImage.resolvedSrc).toBe('blob:resolved-url');
-      expect(mockImage.loadState).toBe('ready');
-      expect(mockImage.centerInViewport).toHaveBeenCalled();
-    });
-
-    it('should revoke the temporary object URL', async () => {
-      await triggerFullImageFlow();
-
-      expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:temp-url');
+      expect(KritzelImage.fromBlob).toHaveBeenCalledWith(mockCore, compressedFile);
     });
   });
 
@@ -332,8 +250,6 @@ describe('KritzelImageTool', () => {
 
   describe('addImageToStore', () => {
     let handleFileSelect: (event: Event) => void;
-    let originalCreateObjectURL: typeof URL.createObjectURL;
-    let originalRevokeObjectURL: typeof URL.revokeObjectURL;
 
     beforeEach(() => {
       const changeCall = mockFileInput.addEventListener.mock.calls.find(
@@ -341,15 +257,6 @@ describe('KritzelImageTool', () => {
       );
       handleFileSelect = changeCall[1];
 
-      originalCreateObjectURL = URL.createObjectURL;
-      originalRevokeObjectURL = URL.revokeObjectURL;
-      URL.createObjectURL = jest.fn(() => 'blob:temp-url') as any;
-      URL.revokeObjectURL = jest.fn() as any;
-    });
-
-    afterEach(() => {
-      URL.createObjectURL = originalCreateObjectURL;
-      URL.revokeObjectURL = originalRevokeObjectURL;
     });
 
     const triggerFullImageFlow = async () => {
@@ -358,23 +265,8 @@ describe('KritzelImageTool', () => {
       const mockFile = new File(['image-data'], 'test.png', { type: 'image/png' });
       const event = { target: { files: [mockFile] } } as unknown as Event;
 
-      let imgOnload: (() => void) | null = null;
-      const mockImg: any = {
-        src: '',
-        naturalWidth: 200,
-        naturalHeight: 150,
-        set onload(fn: () => void) {
-          imgOnload = fn;
-        },
-        set onerror(_fn: (err: unknown) => void) {
-          /* noop */
-        },
-      };
-      global.Image = jest.fn(() => mockImg) as any;
-
       handleFileSelect(event);
       await new Promise(process.nextTick);
-      imgOnload!();
       await new Promise(process.nextTick);
       await new Promise(process.nextTick);
       await new Promise(process.nextTick);
@@ -430,8 +322,6 @@ describe('KritzelImageTool', () => {
 
   describe('multi-file selection', () => {
     let handleFileSelect: (event: Event) => void;
-    let originalCreateObjectURL: typeof URL.createObjectURL;
-    let originalRevokeObjectURL: typeof URL.revokeObjectURL;
     let createdImages: any[];
 
     beforeEach(() => {
@@ -440,13 +330,8 @@ describe('KritzelImageTool', () => {
       );
       handleFileSelect = changeCall[1];
 
-      originalCreateObjectURL = URL.createObjectURL;
-      originalRevokeObjectURL = URL.revokeObjectURL;
-      URL.createObjectURL = jest.fn(() => 'blob:temp-url') as any;
-      URL.revokeObjectURL = jest.fn() as any;
-
       createdImages = [];
-      (KritzelImage.create as jest.Mock).mockImplementation(() => {
+      (KritzelImage.fromBlob as jest.Mock).mockImplementation(() => {
         const img: any = {
           id: `img-${createdImages.length + 1}`,
           src: '',
@@ -460,13 +345,8 @@ describe('KritzelImageTool', () => {
           updatePosition: jest.fn(),
         };
         createdImages.push(img);
-        return img;
+        return Promise.resolve(img);
       });
-    });
-
-    afterEach(() => {
-      URL.createObjectURL = originalCreateObjectURL;
-      URL.revokeObjectURL = originalRevokeObjectURL;
     });
 
     const flushAsync = async () => {
@@ -484,34 +364,16 @@ describe('KritzelImageTool', () => {
       );
       const event = { target: { files } } as unknown as Event;
 
-      const onloadCallbacks: Array<() => void> = [];
-      global.Image = jest.fn(() => {
-        const mockImg: any = {
-          src: '',
-          naturalWidth: 400,
-          naturalHeight: 300,
-          set onload(fn: () => void) {
-            onloadCallbacks.push(fn);
-          },
-          set onerror(_fn: (err: unknown) => void) {
-            /* noop */
-          },
-        };
-        return mockImg;
-      }) as any;
-
       handleFileSelect(event);
 
-      // Allow compression promises to resolve so measureImage's Image is created
       await flushAsync();
-      onloadCallbacks.forEach(cb => cb());
       await flushAsync();
     };
 
     it('should create one KritzelImage per selected file', async () => {
       await triggerMultiFileFlow(3);
 
-      expect(KritzelImage.create).toHaveBeenCalledTimes(3);
+      expect(KritzelImage.fromBlob).toHaveBeenCalledTimes(3);
       expect(mockCore.addObject).toHaveBeenCalledTimes(3);
     });
 
