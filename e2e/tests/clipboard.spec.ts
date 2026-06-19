@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/editor.fixture';
+import { test, expect, EditorPage } from '../fixtures/editor.fixture';
 
 test.describe('Clipboard', () => {
   test.beforeEach(async ({ editorPage }) => {
@@ -358,6 +358,89 @@ test.describe('Clipboard', () => {
 
       const countAfterPaste = await editorPage.getObjectsTotalCount();
       expect(countAfterPaste).toBeGreaterThan(countBeforePaste);
+    });
+  });
+
+  test.describe('paste from system clipboard', () => {
+    test('should paste an image file from the system clipboard', async ({ editorPage }) => {
+      await editorPage.prepareWaitForObjectsAdded();
+
+      await editorPage.pasteImageFileFromSystemClipboard({
+        width: 200,
+        height: 150,
+        color: '#4a90d9',
+      });
+
+      await editorPage.waitForObjectsAdded();
+      await editorPage.clearSelection();
+
+      const allObjects = await editorPage.getAllObjects<any>();
+      expect(allObjects).toHaveLength(1);
+      expect(allObjects[0].__class__).toBe('KritzelImage');
+
+      await expect(editorPage.engine).toHaveScreenshot();
+    });
+
+    test('should paste text from the system clipboard', async ({ editorPage }) => {
+      await editorPage.prepareWaitForObjectsAdded();
+
+      await editorPage.pasteTextFromSystemClipboard('Hello from the\nsystem clipboard');
+
+      await editorPage.waitForObjectsAdded();
+      await editorPage.clearSelection();
+
+      const allObjects = await editorPage.getAllObjects<any>();
+      expect(allObjects).toHaveLength(1);
+      expect(allObjects[0].__class__).toBe('KritzelText');
+
+      await expect(editorPage.engine).toHaveScreenshot();
+    });
+
+    test('should paste kritzel objects from one tab into a second editor in another tab', async ({ editorPage, context }) => {
+      // Tab 1: create and select objects, then copy them to the system clipboard.
+      const shape1 = await editorPage.addShape({
+        shapeType: 'rectangle',
+        translateX: 100,
+        translateY: 100,
+        width: 160,
+        height: 120,
+        fillColor: { light: '#4a90d9', dark: '#4a90d9' },
+      });
+      const shape2 = await editorPage.addShape({
+        shapeType: 'ellipse',
+        translateX: 300,
+        translateY: 100,
+        width: 160,
+        height: 120,
+        fillColor: { light: '#d94a4a', dark: '#d94a4a' },
+      });
+
+      await editorPage.selectObjects([shape1, shape2]);
+      const payload = await editorPage.copyToSystemClipboard();
+      expect(payload.length).toBeGreaterThan(0);
+
+      // Tab 2: open a second tab running its own editor instance.
+      const secondTab = await context.newPage();
+      const secondEditor = new EditorPage(secondTab);
+      await secondEditor.goto();
+      await secondEditor.waitForReady();
+
+      expect(await secondEditor.getObjectsTotalCount()).toBe(0);
+
+      await secondEditor.prepareWaitForObjectsAdded();
+      await secondEditor.pasteKritzelPayloadFromSystemClipboard(payload);
+      await secondEditor.waitForObjectsAdded();
+      await secondEditor.clearSelection();
+
+      expect(await secondEditor.getObjectsTotalCount()).toBe(2);
+
+      const pastedIds = (await secondEditor.getAllObjects<any>()).map(o => o.id);
+      expect(pastedIds).not.toContain(shape1.id);
+      expect(pastedIds).not.toContain(shape2.id);
+
+      await expect(secondEditor.engine).toHaveScreenshot();
+
+      await secondTab.close();
     });
   });
 
