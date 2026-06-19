@@ -142,16 +142,61 @@ export class KritzelClipboardManager {
           return { type: 'plain_text', text };
         }
       }
-    } else if (typeof navigator !== 'undefined' && navigator.clipboard?.readText) {
+    } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
       // Fallback for programmatic paste (when there is no standard ClipboardEvent)
-      try {
-        const text = await navigator.clipboard.readText();
-        const payload = this.parseClipboardPayload(text);
-        if (payload) {
-          return { type: 'kritzel_objects', payload, isLocalFallback: false };
+      // Try rich clipboard first (images/files + text), then fall back to readText.
+      if (navigator.clipboard.read) {
+        try {
+          const clipboardItems = await navigator.clipboard.read();
+          const imageFiles: File[] = [];
+          let plainText: string | null = null;
+
+          for (let i = 0; i < clipboardItems.length; i++) {
+            const item = clipboardItems[i];
+
+            for (const type of item.types) {
+              if (type.startsWith('image/')) {
+                const blob = await item.getType(type);
+                const extension = type.split('/')[1] || 'png';
+                imageFiles.push(new File([blob], `pasted-image-${i}.${extension}`, { type }));
+              } else if (type === 'text/plain' && plainText == null) {
+                const textBlob = await item.getType('text/plain');
+                plainText = await textBlob.text();
+              }
+            }
+          }
+
+          if (imageFiles.length > 0) {
+            return { type: 'image_files', files: imageFiles };
+          }
+
+          if (plainText && plainText.trim().length > 0) {
+            const payload = this.parseClipboardPayload(plainText);
+            if (payload) {
+              return { type: 'kritzel_objects', payload, isLocalFallback: false };
+            }
+
+            return { type: 'plain_text', text: plainText };
+          }
+        } catch {
+          // Ignore read errors and keep trying text-only fallbacks.
         }
-      } catch {
-        // Ignore read errors
+      }
+
+      if (navigator.clipboard.readText) {
+        try {
+          const text = await navigator.clipboard.readText();
+          const payload = this.parseClipboardPayload(text);
+          if (payload) {
+            return { type: 'kritzel_objects', payload, isLocalFallback: false };
+          }
+
+          if (text.trim().length > 0) {
+            return { type: 'plain_text', text };
+          }
+        } catch {
+          // Ignore read errors
+        }
       }
     }
 
@@ -287,6 +332,15 @@ export class KritzelClipboardManager {
     }
 
     await this.insertMaterializedObjects(materializedResult.copiedObjects, materializedResult.originalIdMapping, pasteIntent, x, y);
+  }
+
+  /**
+   * Returns whether there is pasteable clipboard content available.
+   * Checks local copied objects, structured payloads, plain text and image files.
+   */
+  async canPaste(event?: ClipboardEvent): Promise<boolean> {
+    const intent = await this.determinePasteIntent(event);
+    return intent.type !== 'unknown';
   }
 
   private async insertMaterializedObjects(
