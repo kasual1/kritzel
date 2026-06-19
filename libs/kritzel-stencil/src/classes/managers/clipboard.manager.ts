@@ -281,8 +281,16 @@ export class KritzelClipboardManager {
       return;
     }
 
-    const { copiedObjects, originalIdMapping } = materializedResult;
+    await this.insertMaterializedObjects(materializedResult.copiedObjects, materializedResult.originalIdMapping, pasteIntent, x, y);
+  }
 
+  private async insertMaterializedObjects(
+    copiedObjects: KritzelBaseObject<any>[],
+    originalIdMapping: Map<string, string> | null | undefined,
+    pasteIntent: PasteIntent,
+    x?: number,
+    y?: number
+  ): Promise<void> {
     const activeWorkspace = this._core.store.state.activeWorkspace;
     if (!activeWorkspace) {
       return;
@@ -421,25 +429,41 @@ export class KritzelClipboardManager {
 
     this._core.store.state.isSelecting = false;
 
-    requestAnimationFrame(() => {
-      const newSelectionGroup = this._core.store.selectionGroup;
-      if (newSelectionGroup) {
-        const newIdMapping = new Map<string, string>();
-        const newCopiedObjects = newSelectionGroup.objects
-          .sort((a, b) => a.zIndex - b.zIndex)
-          .map(obj => {
-            const copiedObj = obj.copy() as KritzelBaseObject<any>;
-            newIdMapping.set(copiedObj.id, obj.id);
-            return copiedObj;
-          });
-
-        this._core.store.state.copiedObjects = newCopiedObjects;
-        this._core.store.state.copiedObjectIdMapping = newIdMapping;
-
-        const refreshedPayload = this.buildClipboardPayloadFromObjects(newCopiedObjects, newIdMapping);
-        void this.writeBrowserClipboardPayload(refreshedPayload);
-      }
+    // Use a double requestAnimationFrame to ensure the browser has fully rendered the DOM,
+    // and objects like KritzelText have executed their own internal size-adjustment rAF calls.
+    await new Promise<void>(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
     });
+
+    // Re-evaluate bounding box dimensions now that any DOM nodes (like ProseMirror text editors)
+    // have mounted and calculated their actual bounds.
+    selectionGroup.refreshObjectDimensions();
+    
+    // We should update it if the centerInViewport or width adjustments changed it significantly
+    if (shouldCenterInViewport) {
+      selectionGroup.centerInViewport();
+    }
+    
+    this._core.engine.emitObjectsChange();
+    this._core.rerender();
+
+    const newSelectionGroup = this._core.store.selectionGroup;
+    if (newSelectionGroup) {
+      const newIdMapping = new Map<string, string>();
+      const newCopiedObjects = newSelectionGroup.objects
+        .sort((a, b) => a.zIndex - b.zIndex)
+        .map(obj => {
+          const copiedObj = obj.copy() as KritzelBaseObject<any>;
+          newIdMapping.set(copiedObj.id, obj.id);
+          return copiedObj;
+        });
+
+      this._core.store.state.copiedObjects = newCopiedObjects;
+      this._core.store.state.copiedObjectIdMapping = newIdMapping;
+
+      const refreshedPayload = this.buildClipboardPayloadFromObjects(newCopiedObjects, newIdMapping);
+      void this.writeBrowserClipboardPayload(refreshedPayload);
+    }
 
     this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
 
