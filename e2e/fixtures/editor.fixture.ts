@@ -712,6 +712,86 @@ export class EditorPage {
     return this.callMethod<T[]>('getCopiedObjects');
   }
 
+  // --- System clipboard simulation ---
+
+  /**
+   * Simulate copying the current selection to the OS clipboard.
+   * Dispatches a synthetic `copy` ClipboardEvent and returns the serialized
+   * Kritzel payload that the engine wrote into the event's clipboardData.
+   * The returned string can be handed to another tab/editor to simulate a
+   * cross-tab paste via the system clipboard.
+   */
+  async copyToSystemClipboard(): Promise<string> {
+    return this.page.evaluate(() => {
+      const dataTransfer = new DataTransfer();
+      window.dispatchEvent(
+        new ClipboardEvent('copy', { clipboardData: dataTransfer, bubbles: true, cancelable: true })
+      );
+      return dataTransfer.getData('text/plain');
+    });
+  }
+
+  /**
+   * Simulate pasting an image file from the OS clipboard by dispatching a
+   * synthetic `paste` ClipboardEvent whose clipboardData carries a File.
+   * A deterministic solid-color PNG is drawn on a canvas so screenshots are stable.
+   */
+  async pasteImageFileFromSystemClipboard(options?: { width?: number; height?: number; color?: string }) {
+    return this.page.evaluate(
+      async ({ width, height, color }) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Failed to get 2D canvas context');
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, width, height);
+
+        const blob: Blob | null = await new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/png'));
+        if (!blob) throw new Error('Failed to create image blob');
+
+        const file = new File([blob], 'pasted-image.png', { type: 'image/png' });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+
+        window.dispatchEvent(
+          new ClipboardEvent('paste', { clipboardData: dataTransfer, bubbles: true, cancelable: true })
+        );
+      },
+      { width: options?.width ?? 200, height: options?.height ?? 150, color: options?.color ?? '#4a90d9' }
+    );
+  }
+
+  /**
+   * Simulate pasting plain text from the OS clipboard by dispatching a
+   * synthetic `paste` ClipboardEvent whose clipboardData carries text/plain.
+   */
+  async pasteTextFromSystemClipboard(text: string) {
+    return this.page.evaluate(value => {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.setData('text/plain', value);
+      window.dispatchEvent(
+        new ClipboardEvent('paste', { clipboardData: dataTransfer, bubbles: true, cancelable: true })
+      );
+    }, text);
+  }
+
+  /**
+   * Simulate pasting a previously copied Kritzel payload from the OS clipboard
+   * by dispatching a synthetic `paste` ClipboardEvent whose clipboardData
+   * carries the serialized payload as text/plain. Use together with
+   * copyToSystemClipboard() to simulate a cross-tab object transfer.
+   */
+  async pasteKritzelPayloadFromSystemClipboard(payload: string) {
+    return this.page.evaluate(value => {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.setData('text/plain', value);
+      window.dispatchEvent(
+        new ClipboardEvent('paste', { clipboardData: dataTransfer, bubbles: true, cancelable: true })
+      );
+    }, payload);
+  }
+
   // --- Ordering ---
 
   /** Move selected object forward one z-level. */
