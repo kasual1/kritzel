@@ -16,7 +16,6 @@ export function CustomContextMenuSmartConditionalPage() {
         label: "Paste",
         icon: "paste",
         group: "clipboard",
-        disabled: async () => ((await editorRef.current?.getCopiedObjects()) ?? []).length === 0,
         action: async (menu) => {
           await editorRef.current?.paste(menu.x, menu.y);
         },
@@ -48,7 +47,6 @@ export function CustomContextMenuSmartConditionalPage() {
         label: "Paste",
         icon: "paste",
         group: "clipboard",
-        disabled: async () => ((await editorRef.current?.getCopiedObjects()) ?? []).length === 0,
         action: async (menu) => {
           await editorRef.current?.paste(menu.x, menu.y);
         },

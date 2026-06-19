@@ -11,9 +11,6 @@ import { SnapCandidate } from "./anchor.interface";
 export interface KritzelEngineState {
   activeWorkspace: KritzelWorkspace | null | undefined;
   activeTool: KritzelBaseTool | null;
-  copiedObjects?: KritzelBaseObject<any>[] | null;
-  /** Maps copied object IDs to their original source object IDs (for anchor remapping during paste) */
-  copiedObjectIdMapping?: Map<string, string> | null;
   objects: KritzelObjectMap<KritzelBaseObject<Element>> | null;
   snapCandidate?: SnapCandidate | null;
   resizeHandleType: KritzelHandleType | undefined;

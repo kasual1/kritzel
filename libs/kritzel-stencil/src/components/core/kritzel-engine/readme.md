@@ -478,16 +478,6 @@ Type: `Promise<LocaleCode[]>`
 
 
 
-### `getCopiedObjects() => Promise<KritzelBaseObject[]>`
-
-Returns the objects currently stored in the internal clipboard from a prior `copy()` call.
-
-#### Returns
-
-Type: `Promise<KritzelBaseObject<HTMLElement | SVGElement>[]>`
-
-
-
 ### `getDisplayableShortcuts() => Promise<Omit<KritzelShortcut, "action" | "condition">[]>`
 
 Returns all registered keyboard shortcuts (without action/condition) for display in a help UI.

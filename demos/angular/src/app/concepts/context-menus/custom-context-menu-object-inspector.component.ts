@@ -50,7 +50,6 @@ export class CustomContextMenuObjectInspectorComponent {
       },
       icon: 'paste',
       group: 'clipboard',
-      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
     },
     {
       label: 'Select All',
@@ -78,7 +77,6 @@ export class CustomContextMenuObjectInspectorComponent {
       },
       icon: 'paste',
       group: 'clipboard',
-      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
     },
     {
       label: 'Parent',

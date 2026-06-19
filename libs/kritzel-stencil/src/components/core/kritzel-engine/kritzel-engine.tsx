@@ -1340,18 +1340,6 @@ export class KritzelEngine {
     return this.viewport.worldToScreen(x, y);
   }
 
-  /** Returns the objects currently stored in the internal clipboard from a prior `copy()` call. */
-  @Method()
-  async getCopiedObjects(): Promise<KritzelBaseObject[]> {
-    return this.core.clipboardManager.getCopiedObjects();
-  }
-
-  /** Returns whether there is any pasteable content in clipboard sources. */
-  @Method()
-  async canPaste(): Promise<boolean> {
-    return this.core.clipboardManager.canPaste();
-  }
-
   /** Returns all objects currently visible within the viewport bounds. */
   @Method()
   async getObjectsInViewport(): Promise<KritzelBaseObject[]> {
@@ -2457,7 +2445,6 @@ export class KritzelEngine {
     }
 
     this.core.store.state.skipContextMenu = false;
-    this.core.store.state.copiedObjects = undefined;
     if (activeTool) {
       this.activeToolChange.emit(activeTool);
     }

@@ -707,11 +707,6 @@ export class EditorPage {
     return this.callMethod('delete');
   }
 
-  /** Get the clipboard contents. */
-  async getCopiedObjects<T = unknown>(): Promise<T[]> {
-    return this.callMethod<T[]>('getCopiedObjects');
-  }
-
   // --- System clipboard simulation ---
 
   /**

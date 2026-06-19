@@ -163,8 +163,6 @@ describe('KritzelCore', () => {
         isLineHandleSelected: false,
         isLineHandleDragging: false,
         lineHandleType: null,
-        copiedObjects: null,
-        copiedObjectIdMapping: null,
         activeTool: null,
         pointers: new Map(),
       },

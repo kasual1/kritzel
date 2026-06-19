@@ -77,7 +77,6 @@ describe('KritzelEditor', () => {
       getObjectsTotalCount: jest.fn().mockResolvedValue(0),
       getAllObjects: jest.fn().mockResolvedValue([]),
       findObjects: jest.fn().mockResolvedValue([]),
-      getCopiedObjects: jest.fn().mockResolvedValue([]),
       getObjectsInViewport: jest.fn().mockResolvedValue([]),
       hideContextMenu: jest.fn().mockResolvedValue(undefined),
       triggerSelectionChange: jest.fn().mockResolvedValue(undefined),

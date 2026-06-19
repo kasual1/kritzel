@@ -31,8 +31,6 @@ describe('KritzelClipboardManager', () => {
           update: jest.fn(),
         },
         state: {
-          copiedObjects: null,
-          copiedObjectIdMapping: null,
           activeWorkspace: { id: 'workspace-1' },
           scale: 1,
           isSelecting: true,
@@ -68,47 +66,55 @@ describe('KritzelClipboardManager', () => {
   });
 
   describe('copy', () => {
-    it('copies selected objects sorted by zIndex and stores id mapping', () => {
-      const copiedA = { id: 'copy-a' };
-      const copiedB = { id: 'copy-b' };
-      const objA = { id: 'a', zIndex: 5, copy: jest.fn().mockReturnValue(copiedA) } as any;
-      const objB = { id: 'b', zIndex: 1, copy: jest.fn().mockReturnValue(copiedB) } as any;
+    const PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
 
-      mockCore.store.selectionGroup = { objects: [objA, objB] };
-
-      manager.copy();
-
-      expect(objB.copy).toHaveBeenCalledTimes(1);
-      expect(objA.copy).toHaveBeenCalledTimes(1);
-      expect(mockCore.store.state.copiedObjects).toEqual([copiedB, copiedA]);
-      expect(mockCore.store.state.copiedObjectIdMapping).toBeInstanceOf(Map);
-      expect(mockCore.store.state.copiedObjectIdMapping.get('copy-b')).toBe('b');
-      expect(mockCore.store.state.copiedObjectIdMapping.get('copy-a')).toBe('a');
-    });
-
-    it('writes a browser clipboard payload when the DOM event is available', () => {
-      const copiedObject = {
-        id: 'copy-a',
-        serialize: jest.fn().mockReturnValue({ id: 'copy-a', __class__: 'KritzelShape' }),
-      } as any;
-      const obj = { id: 'a', zIndex: 1, copy: jest.fn().mockReturnValue(copiedObject) } as any;
+    it('writes a kritzel clipboard payload to the DOM clipboard event, sorted by zIndex', () => {
+      const objA = { id: 'a', zIndex: 5, serialize: jest.fn().mockReturnValue({ id: 'a', __class__: 'KritzelShape' }) } as any;
+      const objB = { id: 'b', zIndex: 1, serialize: jest.fn().mockReturnValue({ id: 'b', __class__: 'KritzelShape' }) } as any;
       const setData = jest.fn();
 
-      mockCore.store.selectionGroup = { objects: [obj] };
+      mockCore.store.selectionGroup = { objects: [objA, objB] };
 
       manager.copy({ clipboardData: { setData } } as any);
 
       expect(setData).toHaveBeenCalledTimes(1);
-      expect(setData).toHaveBeenCalledWith('text/plain', expect.stringContaining('kritzel-clipboard/v1:'));
+      const [, serialized] = setData.mock.calls[0];
+      expect(serialized).toContain(PAYLOAD_PREFIX);
+
+      const payload = JSON.parse(serialized.slice(PAYLOAD_PREFIX.length));
+      // Sorted by zIndex ascending: b before a
+      expect(payload.objects.map((o: any) => o.id)).toEqual(['b', 'a']);
+      expect(payload.sourceWorkspaceId).toBe('workspace-1');
+    });
+
+    it('embeds group children under __children__', () => {
+      const child = { id: 'child', zIndex: 0, serialize: jest.fn().mockReturnValue({ id: 'child', __class__: 'KritzelShape' }) } as any;
+      const group = {
+        id: 'group',
+        zIndex: 1,
+        children: [child],
+        serialize: jest.fn().mockReturnValue({ id: 'group', __class__: 'KritzelGroup' }),
+      } as any;
+      const setData = jest.fn();
+
+      mockCore.store.selectionGroup = { objects: [group] };
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: any, name: string) => name === 'KritzelGroup' && obj.id === 'group');
+
+      manager.copy({ clipboardData: { setData } } as any);
+
+      const [, serialized] = setData.mock.calls[0];
+      const payload = JSON.parse(serialized.slice(PAYLOAD_PREFIX.length));
+      expect(payload.objects[0].__children__).toHaveLength(1);
+      expect(payload.objects[0].__children__[0].id).toBe('child');
     });
 
     it('is a no-op when there is no selection', () => {
+      const setData = jest.fn();
       mockCore.store.selectionGroup = null;
 
-      manager.copy();
+      manager.copy({ clipboardData: { setData } } as any);
 
-      expect(mockCore.store.state.copiedObjects).toBeNull();
-      expect(mockCore.store.state.copiedObjectIdMapping).toBeNull();
+      expect(setData).not.toHaveBeenCalled();
     });
   });
 
@@ -119,26 +125,62 @@ describe('KritzelClipboardManager', () => {
       manager.cut();
 
       expect(mockCore.delete).not.toHaveBeenCalled();
-      expect(mockCore.store.state.copiedObjects).toBeNull();
     });
 
     it('copies then deletes selected objects', () => {
-      const copied = { id: 'copy-1' };
-      const obj = { id: 'obj-1', zIndex: 2, copy: jest.fn().mockReturnValue(copied) } as any;
+      const setData = jest.fn();
+      const obj = { id: 'obj-1', zIndex: 2, serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'KritzelShape' }) } as any;
       mockCore.store.selectionGroup = { objects: [obj] };
 
-      manager.cut();
+      manager.cut({ clipboardData: { setData } } as any);
 
-      expect(obj.copy).toHaveBeenCalledTimes(1);
+      expect(setData).toHaveBeenCalledTimes(1);
       expect(mockCore.delete).toHaveBeenCalledTimes(1);
-      expect(mockCore.store.state.copiedObjects).toEqual([copied]);
     });
   });
 
   describe('paste', () => {
-    it('is a no-op when clipboard is empty', async () => {
-      mockCore.store.state.copiedObjects = null;
+    const PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
 
+    const makeRevived = (overrides: Record<string, any> = {}): any => ({
+      id: 'revived-1',
+      zIndex: 1,
+      workspaceId: 'workspace-1',
+      translateX: 100,
+      translateY: 200,
+      rotation: 0,
+      isMounted: true,
+      generateId: jest.fn().mockReturnValue('fresh-1'),
+      updatePosition: jest.fn(),
+      ...overrides,
+    });
+
+    const makeSelectionGroup = (): any => ({
+      addOrRemove: jest.fn(),
+      updatePosition: jest.fn(),
+      centerInViewport: jest.fn(),
+      refreshObjectDimensions: jest.fn(),
+      isSelected: false,
+      rotation: 0,
+    });
+
+    const makeKritzelEvent = (payloadObjects: any[]): any => ({
+      clipboardData: {
+        types: ['text/plain'],
+        files: [],
+        getData: jest.fn().mockReturnValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: payloadObjects })}`),
+      },
+    });
+
+    beforeEach(() => {
+      jest.spyOn(globalThis as any, 'requestAnimationFrame').mockImplementation((cb: any) => {
+        cb(0);
+        return 0;
+      });
+      Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true });
+    });
+
+    it('is a no-op when there is no pasteable content', async () => {
       await manager.paste();
 
       expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
@@ -147,301 +189,85 @@ describe('KritzelClipboardManager', () => {
     });
 
     it('is a no-op when there is no active workspace', async () => {
-      mockCore.store.state.copiedObjects = [{ id: 'copy', translateX: 0, translateY: 0 }];
       mockCore.store.state.activeWorkspace = null;
+      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(makeRevived());
 
-      await manager.paste();
+      await manager.paste(undefined, undefined, makeKritzelEvent([{ id: 'x', __class__: 'KritzelShape' }]));
 
       expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
       expect(mockCore.addObject).not.toHaveBeenCalled();
       expect(mockCore.engine.emitObjectsChange).not.toHaveBeenCalled();
     });
 
-    it('pastes copied objects and finalizes selection flow', async () => {
-      const copiedObject = {
-        id: 'copy-1',
-        zIndex: 1,
-        workspaceId: 'workspace-1',
-        translateX: 100,
-        translateY: 200,
-        rotation: 0,
-        updatePosition: jest.fn(),
-        copy: jest.fn().mockReturnValue({ id: 'copy-next' }),
-      } as any;
+    it('revives, regenerates ids and inserts objects from a DOM clipboard payload', async () => {
+      const revived = makeRevived();
+      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revived);
 
-      mockCore.store.state.copiedObjects = [copiedObject];
-      mockCore.store.state.copiedObjectIdMapping = new Map([['copy-1', 'original-1']]);
+      const selectionGroup = makeSelectionGroup();
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
 
-      const createdSelectionGroup = {
-        addOrRemove: jest.fn(),
-        updatePosition: jest.fn(),
-        centerInViewport: jest.fn(),
-        refreshObjectDimensions: jest.fn(),
-        isSelected: false,
-        rotation: 0,
-      } as any;
+      await manager.paste(undefined, undefined, makeKritzelEvent([{ id: 'x', __class__: 'KritzelShape' }]));
 
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(createdSelectionGroup);
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
-
-      await manager.paste();
-
-      expect(mockCore.removeSelectionGroup).toHaveBeenCalledTimes(1);
-      expect(mockCore.removeSelectionBox).toHaveBeenCalledTimes(1);
-      expect(mockCore.store.objects.transaction).toHaveBeenCalledTimes(1);
-      expect(copiedObject.updatePosition).toHaveBeenCalledWith(125, 225);
-      expect(mockCore.addObject).toHaveBeenCalledWith(copiedObject);
-      expect(createdSelectionGroup.addOrRemove).toHaveBeenCalledWith(copiedObject);
-      expect(mockCore.engine.emitObjectsAdded).toHaveBeenCalledWith([copiedObject]);
+      // Fresh id assigned, original detached
+      expect(revived.generateId).toHaveBeenCalledTimes(1);
+      expect(revived.id).toBe('fresh-1');
+      expect(revived.isMounted).toBe(false);
+      // Same-workspace paste offsets by 25 / scale
+      expect(revived.updatePosition).toHaveBeenCalledWith(125, 225);
+      expect(mockCore.addObject).toHaveBeenCalledWith(revived);
+      expect(selectionGroup.addOrRemove).toHaveBeenCalledWith(revived);
+      expect(mockCore.engine.emitObjectsAdded).toHaveBeenCalledWith([revived]);
       expect(mockCore.anchorManager.rebuildIndex).toHaveBeenCalledTimes(1);
-      expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(createdSelectionGroup);
-      expect(mockCore.engine.viewport.bringIntoViewIfNeeded).toHaveBeenCalledWith(createdSelectionGroup);
+      expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(selectionGroup);
       expect(mockCore.store.setState).toHaveBeenCalledWith('activeTool', { name: 'selection' });
       expect(mockCore.engine.emitObjectsChange).toHaveBeenCalledTimes(2);
       expect(mockCore.rerender).toHaveBeenCalledTimes(2);
       expect(mockCore.store.state.isSelecting).toBe(false);
     });
 
-    it('prefers a browser clipboard payload over the local clipboard state', async () => {
-      const browserObject = {
-        id: 'browser-copy-1',
-        zIndex: 1,
-        workspaceId: 'workspace-1',
-        translateX: 50,
-        translateY: 60,
-        rotation: 0,
-        updatePosition: jest.fn(),
-        copy: jest.fn().mockReturnValue({ id: 'browser-copy-next' }),
-      } as any;
+    it('reads the async Clipboard API when no DOM event is provided', async () => {
+      const revived = makeRevived();
+      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revived);
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
-      mockCore.store.state.copiedObjects = [{ id: 'local-copy-1', translateX: 10, translateY: 20 }] as any;
-      mockCore.store.state.copiedObjectIdMapping = new Map([['local-copy-1', 'local-original-1']]);
-
-      const createdSelectionGroup = {
-        addOrRemove: jest.fn(),
-        updatePosition: jest.fn(),
-        centerInViewport: jest.fn(),
-        refreshObjectDimensions: jest.fn(),
-        isSelected: false,
-        rotation: 0,
-      } as any;
-
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(createdSelectionGroup);
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(browserObject);
-
-      const event = {
-        clipboardData: {
-          types: ['text/plain'],
-          getData: jest.fn().mockReturnValue('kritzel-clipboard/v1:{"version":1,"copiedObjectIdMapping":[["browser-copy-1","browser-original-1"]],"objects":[{"id":"browser-copy-1"}]}'),
-        },
-      } as any;
-
-      await manager.paste(undefined, undefined, event);
-
-      expect(browserObject.updatePosition).toHaveBeenCalledWith(75, 85);
-      expect(mockCore.addObject).toHaveBeenCalledWith(browserObject);
-      expect(createdSelectionGroup.addOrRemove).toHaveBeenCalledWith(browserObject);
-    });
-
-    it('keeps an explicit paste position for external clipboard content', async () => {
-      const browserObject = {
-        id: 'browser-copy-1',
-        zIndex: 1,
-        workspaceId: 'workspace-2',
-        translateX: 50,
-        translateY: 60,
-        rotation: 0,
-        updatePosition: jest.fn(),
-        copy: jest.fn().mockReturnValue({ id: 'browser-copy-next' }),
-      } as any;
-
-      mockCore.store.state.copiedObjects = [{ id: 'local-copy-1', translateX: 10, translateY: 20 }] as any;
-      mockCore.store.state.copiedObjectIdMapping = new Map([['local-copy-1', 'local-original-1']]);
-
-      const createdSelectionGroup = {
-        addOrRemove: jest.fn(),
-        updatePosition: jest.fn(),
-        centerInViewport: jest.fn(),
-        refreshObjectDimensions: jest.fn(),
-        isSelected: false,
-        rotation: 0,
-      } as any;
-
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(createdSelectionGroup);
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(browserObject);
-
-      const event = {
-        clipboardData: {
-          types: ['text/plain'],
-          getData: jest.fn().mockReturnValue('kritzel-clipboard/v1:{"version":1,"copiedObjectIdMapping":[["browser-copy-1","browser-original-1"]],"objects":[{"id":"browser-copy-1"}]}'),
-        },
-      } as any;
-
-      await manager.paste(300, 400, event);
-
-      expect(browserObject.updatePosition).toHaveBeenCalledTimes(1);
-      expect(browserObject.updatePosition).toHaveBeenCalledWith(300, 400);
-      expect(createdSelectionGroup.centerInViewport).not.toHaveBeenCalled();
-    });
-
-    it('refreshes the browser clipboard after paste so the next paste uses the new selection', async () => {
-      const refreshedCopiedObject = {
-        id: 'browser-copy-next',
-        serialize: jest.fn().mockReturnValue({ id: 'browser-copy-next', __class__: 'KritzelShape' }),
-      } as any;
-
-      const firstBrowserObject = {
-        id: 'browser-copy-1',
-        zIndex: 1,
-        workspaceId: 'workspace-1',
-        translateX: 50,
-        translateY: 60,
-        rotation: 0,
-        updatePosition: jest.fn(),
-        copy: jest.fn().mockReturnValue(refreshedCopiedObject),
-      } as any;
-
-      const secondBrowserObject = {
-        id: 'browser-copy-next',
-        zIndex: 1,
-        workspaceId: 'workspace-1',
-        translateX: 75,
-        translateY: 85,
-        rotation: 0,
-        updatePosition: jest.fn(),
-        copy: jest.fn().mockReturnValue({
-          id: 'browser-copy-next-next',
-          serialize: jest.fn().mockReturnValue({ id: 'browser-copy-next-next', __class__: 'KritzelShape' }),
-        }),
-      } as any;
-
-      const createdSelectionGroup = {
-        addOrRemove: jest.fn(),
-        updatePosition: jest.fn(),
-        centerInViewport: jest.fn(),
-        refreshObjectDimensions: jest.fn(),
-        isSelected: false,
-        rotation: 0,
-      } as any;
-
-      const clipboard = {
-        readText: jest
-          .fn()
-          .mockResolvedValueOnce('kritzel-clipboard/v1:{"version":1,"copiedObjectIdMapping":[["browser-copy-1","browser-original-1"]],"objects":[{"id":"browser-copy-1"}]}')
-          .mockResolvedValueOnce('kritzel-clipboard/v1:{"version":1,"copiedObjectIdMapping":[["browser-copy-next","browser-copy-1"]],"objects":[{"id":"browser-copy-next"}]}'),
-        writeText: jest.fn(),
-      };
-
-      Object.defineProperty(navigator, 'clipboard', {
-        value: clipboard,
-        configurable: true,
-      });
-
-      jest.spyOn(globalThis as any, 'requestAnimationFrame').mockImplementation((callback: any) => {
-        callback(0);
-        return 0;
-      });
-
-      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(createdSelectionGroup);
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
-      jest.spyOn(KritzelReviver.prototype, 'revive').mockImplementation((obj: any) => {
-        if (obj.id === 'browser-copy-next') {
-          return secondBrowserObject;
-        }
-
-        return firstBrowserObject;
-      });
-
-      mockCore.store.state.copiedObjects = [{ id: 'local-copy-1', translateX: 10, translateY: 20 }] as any;
-      mockCore.store.state.copiedObjectIdMapping = new Map([['local-copy-1', 'local-original-1']]);
-
-      await manager.paste();
-      await manager.paste();
-
-      expect(firstBrowserObject.updatePosition).toHaveBeenCalledWith(75, 85);
-      expect(secondBrowserObject.updatePosition).toHaveBeenCalledWith(100, 110);
-      expect(mockCore.addObject).toHaveBeenCalledWith(firstBrowserObject);
-      expect(mockCore.addObject).toHaveBeenCalledWith(secondBrowserObject);
-    });
-  });
-
-  describe('clipboard state helpers', () => {
-    it('getCopiedObjects returns an empty array when state is empty', () => {
-      mockCore.store.state.copiedObjects = null;
-
-      expect(manager.getCopiedObjects()).toEqual([]);
-    });
-
-    it('clear resets clipboard state', () => {
-      mockCore.store.state.copiedObjects = [{ id: 'copy-1' }];
-      mockCore.store.state.copiedObjectIdMapping = new Map([['copy-1', 'obj-1']]);
-
-      manager.clear();
-
-      expect(mockCore.store.state.copiedObjects).toBeNull();
-      expect(mockCore.store.state.copiedObjectIdMapping).toBeNull();
-    });
-
-    it('destroy clears clipboard state', () => {
-      mockCore.store.state.copiedObjects = [{ id: 'copy-1' }];
-      mockCore.store.state.copiedObjectIdMapping = new Map([['copy-1', 'obj-1']]);
-
-      manager.destroy();
-
-      expect(mockCore.store.state.copiedObjects).toBeNull();
-      expect(mockCore.store.state.copiedObjectIdMapping).toBeNull();
-    });
-  });
-
-  describe('canPaste', () => {
-    it('returns true when local copied objects are available', async () => {
-      mockCore.store.state.copiedObjects = [{ id: 'copy-1' }];
-
-      await expect(manager.canPaste()).resolves.toBe(true);
-    });
-
-    it('returns true when browser clipboard has plain text', async () => {
       Object.defineProperty(navigator, 'clipboard', {
         value: {
           read: jest.fn().mockResolvedValue([]),
-          readText: jest.fn().mockResolvedValue('hello from clipboard'),
+          readText: jest.fn().mockResolvedValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`),
         },
         configurable: true,
       });
 
-      await expect(manager.canPaste()).resolves.toBe(true);
+      await manager.paste();
+
+      expect(navigator.clipboard.readText).toHaveBeenCalledTimes(1);
+      expect(mockCore.addObject).toHaveBeenCalledWith(revived);
     });
 
-    it('returns true when browser clipboard has image data', async () => {
-      const imageBlob = new Blob(['img'], { type: 'image/png' });
-      const clipboardItem = {
-        types: ['image/png'],
-        getType: jest.fn().mockResolvedValue(imageBlob),
-      };
+    it('keeps an explicit paste position', async () => {
+      const revived = makeRevived();
+      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revived);
+      const selectionGroup = makeSelectionGroup();
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
 
-      Object.defineProperty(navigator, 'clipboard', {
-        value: {
-          read: jest.fn().mockResolvedValue([clipboardItem]),
-          readText: jest.fn().mockResolvedValue(''),
-        },
-        configurable: true,
-      });
+      await manager.paste(300, 400, makeKritzelEvent([{ id: 'x', __class__: 'KritzelShape' }]));
 
-      await expect(manager.canPaste()).resolves.toBe(true);
+      expect(revived.updatePosition).toHaveBeenCalledWith(300, 400);
+      expect(selectionGroup.centerInViewport).not.toHaveBeenCalled();
     });
 
-    it('returns false when no clipboard source has pasteable content', async () => {
-      Object.defineProperty(navigator, 'clipboard', {
-        value: {
-          read: jest.fn().mockResolvedValue([]),
-          readText: jest.fn().mockResolvedValue('   '),
-        },
-        configurable: true,
-      });
+    it('cascades successive same-content pastes', async () => {
+      (KritzelSelectionGroup.create as jest.Mock).mockImplementation(() => makeSelectionGroup());
 
-      await expect(manager.canPaste()).resolves.toBe(false);
+      const first = makeRevived();
+      const second = makeRevived();
+      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValueOnce(first).mockReturnValueOnce(second);
+
+      await manager.paste(undefined, undefined, makeKritzelEvent([{ id: 'x', __class__: 'KritzelShape' }]));
+      await manager.paste(undefined, undefined, makeKritzelEvent([{ id: 'x', __class__: 'KritzelShape' }]));
+
+      expect(first.updatePosition).toHaveBeenCalledWith(125, 225);
+      expect(second.updatePosition).toHaveBeenCalledWith(150, 250);
     });
   });
 });

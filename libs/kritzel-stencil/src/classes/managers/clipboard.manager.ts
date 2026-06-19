@@ -11,61 +11,56 @@ import imageCompression from 'browser-image-compression';
 
 const CLIPBOARD_PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
 
+interface SerializedClipboardObject {
+  [key: string]: any;
+  __class__?: string;
+  __children__?: SerializedClipboardObject[];
+}
+
 interface KritzelClipboardPayload {
   version: 1;
   sourceWorkspaceId?: string;
-  copiedObjectIdMapping: Array<[string, string]>;
-  objects: ReturnType<KritzelBaseObject<any>['serialize']>[];
+  objects: SerializedClipboardObject[];
 }
 
 export type PasteIntent =
-  | { type: 'kritzel_objects'; payload: KritzelClipboardPayload | null; isLocalFallback: boolean }
+  | { type: 'kritzel_objects'; payload: KritzelClipboardPayload }
   | { type: 'image_files'; files: File[] }
   | { type: 'plain_text'; text: string }
   | { type: 'unknown' };
 
-interface MaterializedPasteResult {
-  copiedObjects: KritzelBaseObject<any>[];
-  originalIdMapping: Map<string, string> | null | undefined;
-}
-
 /**
  * Manages clipboard operations (copy/cut/paste) for a core instance.
+ *
+ * The system clipboard is the single source of truth: copy serializes the current
+ * selection into a Kritzel payload, paste reads + revives it. No copied objects are
+ * cached on the engine state.
  */
 export class KritzelClipboardManager {
   private readonly _core: KritzelCore;
+
+  /**
+   * In-memory cascade offset (world units) applied to successive pastes of the same
+   * clipboard content so they don't stack exactly on top of each other. Reset on copy/cut.
+   */
+  private _pasteOffset = 0;
 
   constructor(core: KritzelCore) {
     this._core = core;
   }
 
-  private createClipboardPayload(): KritzelClipboardPayload | null {
-    const copiedObjects = this._core.store.state.copiedObjects;
-    if (!copiedObjects || copiedObjects.length === 0) {
-      return null;
+  /**
+   * Serializes an object for the clipboard payload. Groups additionally embed their
+   * (recursively serialized) children under `__children__` so the payload is self-contained.
+   */
+  private serializeForClipboard(object: KritzelBaseObject<any>): SerializedClipboardObject {
+    const serialized = (typeof object.serialize === 'function' ? object.serialize() : object) as SerializedClipboardObject;
+
+    if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+      serialized.__children__ = object.children.map(child => this.serializeForClipboard(child));
     }
 
-    return this.buildClipboardPayloadFromObjects(copiedObjects, this._core.store.state.copiedObjectIdMapping);
-  }
-
-  private buildClipboardPayloadFromObjects(
-    copiedObjects: KritzelBaseObject<any>[],
-    copiedObjectIdMapping: Map<string, string> | null | undefined,
-  ): KritzelClipboardPayload {
-    return {
-      version: 1,
-      sourceWorkspaceId: this._core.store.state.activeWorkspace?.id,
-      copiedObjectIdMapping: copiedObjectIdMapping ? Array.from(copiedObjectIdMapping.entries()) : [],
-      objects: copiedObjects.map(object => this.serializeClipboardObject(object)),
-    };
-  }
-
-  private serializeClipboardObject(object: KritzelBaseObject<any>): ReturnType<KritzelBaseObject<any>['serialize']> {
-    if (typeof object.serialize === 'function') {
-      return object.serialize();
-    }
-
-    return object as ReturnType<KritzelBaseObject<any>['serialize']>;
+    return serialized;
   }
 
   private serializeClipboardPayload(payload: KritzelClipboardPayload): string {
@@ -108,11 +103,72 @@ export class KritzelClipboardManager {
     }
   }
 
-  private reviveClipboardObjects(payload: KritzelClipboardPayload): KritzelBaseObject<any>[] {
+  /**
+   * Revives a single serialized clipboard object (and its embedded group children).
+   * IDs are NOT regenerated here; see regenerateIdsAndRemapAnchors.
+   */
+  private reviveClipboardObject(serialized: SerializedClipboardObject): KritzelBaseObject<any> | null {
     const reviver = new KritzelReviver(this._core);
-    return payload.objects
-      .map(object => reviver.revive<KritzelBaseObject<any>>(object))
-      .filter((object): object is KritzelBaseObject<any> => object != null);
+    const { __children__, ...objectData } = serialized;
+    const revived = reviver.revive<KritzelBaseObject<any>>(objectData);
+
+    if (!revived) {
+      return null;
+    }
+
+    if (__children__ && KritzelClassHelper.isInstanceOf<KritzelGroup>(revived, 'KritzelGroup')) {
+      const children = __children__
+        .map(child => this.reviveClipboardObject(child))
+        .filter((child): child is KritzelBaseObject<any> => child != null);
+
+      revived._pendingChildren = children;
+      revived.childIds = children.map(child => child.id);
+    }
+
+    return revived;
+  }
+
+  /**
+   * Assigns fresh unique IDs to every revived object (including nested group children),
+   * keeping group.childIds in sync and remapping line anchors that reference copied
+   * siblings to their new IDs. Anchors pointing at objects outside the pasted set are
+   * left untouched so they stay connected to the existing object.
+   */
+  private regenerateIdsAndRemapAnchors(topLevel: KritzelBaseObject<any>[]): void {
+    const all: KritzelBaseObject<any>[] = [];
+
+    const collect = (objects: KritzelBaseObject<any>[]): void => {
+      for (const object of objects) {
+        all.push(object);
+        if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+          collect(object._pendingChildren);
+        }
+      }
+    };
+    collect(topLevel);
+
+    const idMap = new Map<string, string>();
+    for (const object of all) {
+      const newId = object.generateId();
+      idMap.set(object.id, newId);
+      object.id = newId;
+      object.isMounted = false;
+    }
+
+    for (const object of all) {
+      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+        object.childIds = object.childIds.map(id => idMap.get(id) ?? id);
+      }
+
+      if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
+        if (object.startAnchor && idMap.has(object.startAnchor.objectId)) {
+          object.startAnchor = { objectId: idMap.get(object.startAnchor.objectId)! };
+        }
+        if (object.endAnchor && idMap.has(object.endAnchor.objectId)) {
+          object.endAnchor = { objectId: idMap.get(object.endAnchor.objectId)! };
+        }
+      }
+    }
   }
 
   /**
@@ -135,75 +191,66 @@ export class KritzelClipboardManager {
       if (data.types.includes('text/plain')) {
         const text = data.getData('text/plain');
         const payload = this.parseClipboardPayload(text);
-        
+
         if (payload) {
-          return { type: 'kritzel_objects', payload, isLocalFallback: false };
+          return { type: 'kritzel_objects', payload };
         } else if (text.trim().length > 0) {
           return { type: 'plain_text', text };
         }
       }
-    } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      // Fallback for programmatic paste (when there is no standard ClipboardEvent)
-      // Try rich clipboard first (images/files + text), then fall back to readText.
-      if (navigator.clipboard.read) {
-        try {
-          const clipboardItems = await navigator.clipboard.read();
-          const imageFiles: File[] = [];
-          let plainText: string | null = null;
 
-          for (let i = 0; i < clipboardItems.length; i++) {
-            const item = clipboardItems[i];
+      return { type: 'unknown' };
+    }
 
-            for (const type of item.types) {
-              if (type.startsWith('image/')) {
-                const blob = await item.getType(type);
-                const extension = type.split('/')[1] || 'png';
-                imageFiles.push(new File([blob], `pasted-image-${i}.${extension}`, { type }));
-              } else if (type === 'text/plain' && plainText == null) {
-                const textBlob = await item.getType('text/plain');
-                plainText = await textBlob.text();
-              }
-            }
+    // No DOM ClipboardEvent (programmatic / context-menu paste): read the async Clipboard API.
+    return this.determinePasteIntentFromNavigator();
+  }
+
+  /**
+   * Reads the systemwide clipboard via the async Clipboard API when no ClipboardEvent
+   * is available (e.g. context-menu paste or the public paste(x, y) method).
+   */
+  private async determinePasteIntentFromNavigator(): Promise<PasteIntent> {
+    if (typeof navigator === 'undefined' || !navigator.clipboard) {
+      return { type: 'unknown' };
+    }
+
+    // 1. Image files via clipboard.read()
+    if (navigator.clipboard.read) {
+      try {
+        const items = await navigator.clipboard.read();
+        const imageFiles: File[] = [];
+
+        for (const item of items) {
+          const imageType = item.types.find(type => type.startsWith('image/'));
+          if (imageType) {
+            const blob = await item.getType(imageType);
+            imageFiles.push(new File([blob], 'pasted-image', { type: imageType }));
           }
-
-          if (imageFiles.length > 0) {
-            return { type: 'image_files', files: imageFiles };
-          }
-
-          if (plainText && plainText.trim().length > 0) {
-            const payload = this.parseClipboardPayload(plainText);
-            if (payload) {
-              return { type: 'kritzel_objects', payload, isLocalFallback: false };
-            }
-
-            return { type: 'plain_text', text: plainText };
-          }
-        } catch {
-          // Ignore read errors and keep trying text-only fallbacks.
         }
-      }
 
-      if (navigator.clipboard.readText) {
-        try {
-          const text = await navigator.clipboard.readText();
-          const payload = this.parseClipboardPayload(text);
-          if (payload) {
-            return { type: 'kritzel_objects', payload, isLocalFallback: false };
-          }
-
-          if (text.trim().length > 0) {
-            return { type: 'plain_text', text };
-          }
-        } catch {
-          // Ignore read errors
+        if (imageFiles.length > 0) {
+          return { type: 'image_files', files: imageFiles };
         }
+      } catch {
+        // Fall through to text-based reads.
       }
     }
 
-    // Fallback to purely local copied objects (e.g., if clipboard read is blocked)
-    if (this._core.store.state.copiedObjects && this._core.store.state.copiedObjects.length > 0) {
-      // We don't have a strict payload, but we know it's kritzel objects from local state
-      return { type: 'kritzel_objects', payload: null, isLocalFallback: true };
+    // 2 & 3. Kritzel payload / plain text via clipboard.readText()
+    if (navigator.clipboard.readText) {
+      try {
+        const text = await navigator.clipboard.readText();
+        const payload = this.parseClipboardPayload(text);
+
+        if (payload) {
+          return { type: 'kritzel_objects', payload };
+        } else if (text && text.trim().length > 0) {
+          return { type: 'plain_text', text };
+        }
+      } catch {
+        // Permission denied / unreadable content.
+      }
     }
 
     return { type: 'unknown' };
@@ -218,23 +265,18 @@ export class KritzelClipboardManager {
       return;
     }
 
-    const idMapping = new Map<string, string>();
-    const copiedObjects = selectionGroup.objects
-      .sort((a, b) => a.zIndex - b.zIndex)
-      .map(obj => {
-        const copiedObj = obj.copy() as KritzelBaseObject<any>;
-        // Map: newId -> originalId
-        idMapping.set(copiedObj.id, obj.id);
-        return copiedObj;
-      });
+    const payload: KritzelClipboardPayload = {
+      version: 1,
+      sourceWorkspaceId: this._core.store.state.activeWorkspace?.id,
+      objects: selectionGroup.objects
+        .sort((a, b) => a.zIndex - b.zIndex)
+        .map(obj => this.serializeForClipboard(obj)),
+    };
 
-    this._core.store.state.copiedObjects = copiedObjects;
-    this._core.store.state.copiedObjectIdMapping = idMapping;
+    // A fresh copy resets the cascade so the first paste lands at the default offset.
+    this._pasteOffset = 0;
 
-    const payload = this.createClipboardPayload();
-    if (payload) {
-      void this.writeBrowserClipboardPayload(payload, event);
-    }
+    void this.writeBrowserClipboardPayload(payload, event);
   }
 
   /**
@@ -250,21 +292,17 @@ export class KritzelClipboardManager {
     this._core.delete();
   }
 
-  private async materializeKritzelObjects(intent: Extract<PasteIntent, { type: 'kritzel_objects' }>): Promise<MaterializedPasteResult> {
-    if (intent.isLocalFallback) {
-      return {
-        copiedObjects: this._core.store.state.copiedObjects!,
-        originalIdMapping: this._core.store.state.copiedObjectIdMapping,
-      };
-    } else {
-      return {
-        copiedObjects: this.reviveClipboardObjects(intent.payload!),
-        originalIdMapping: new Map(intent.payload!.copiedObjectIdMapping),
-      };
-    }
+  private materializeKritzelObjects(intent: Extract<PasteIntent, { type: 'kritzel_objects' }>): KritzelBaseObject<any>[] {
+    const objects = intent.payload.objects
+      .map(object => this.reviveClipboardObject(object))
+      .filter((object): object is KritzelBaseObject<any> => object != null);
+
+    this.regenerateIdsAndRemapAnchors(objects);
+
+    return objects;
   }
 
-  private async materializeImageFiles(intent: Extract<PasteIntent, { type: 'image_files' }>): Promise<MaterializedPasteResult | null> {
+  private async materializeImageFiles(intent: Extract<PasteIntent, { type: 'image_files' }>): Promise<KritzelBaseObject<any>[] | null> {
     try {
       const scale = this._core.store.state.scale;
       const offset = 25 / scale;
@@ -276,18 +314,15 @@ export class KritzelClipboardManager {
           translateY: index * offset,
         });
       });
-      
-      return {
-        copiedObjects: await Promise.all(preparePromises),
-        originalIdMapping: new Map(),
-      };
+
+      return await Promise.all(preparePromises);
     } catch (err) {
       console.error('Failed to import pasted image files:', err);
       return null;
     }
   }
 
-  private async materializePlainText(intent: Extract<PasteIntent, { type: 'plain_text' }>): Promise<MaterializedPasteResult | null> {
+  private async materializePlainText(intent: Extract<PasteIntent, { type: 'plain_text' }>): Promise<KritzelBaseObject<any>[] | null> {
     const textObject = KritzelText.create(this._core);
 
     const paragraphs = intent.text.split('\n').map(line => {
@@ -305,10 +340,7 @@ export class KritzelClipboardManager {
       content: paragraphs
     });
 
-    return {
-      copiedObjects: [textObject],
-      originalIdMapping: new Map()
-    };
+    return [textObject];
   }
 
   /**
@@ -317,35 +349,25 @@ export class KritzelClipboardManager {
   async paste(x?: number, y?: number, event?: ClipboardEvent): Promise<void> {
     const pasteIntent = await this.determinePasteIntent(event);
 
-    let materializedResult: MaterializedPasteResult | null = null;
+    let objects: KritzelBaseObject<any>[] | null = null;
 
     if (pasteIntent.type === 'kritzel_objects') {
-      materializedResult = await this.materializeKritzelObjects(pasteIntent);
+      objects = this.materializeKritzelObjects(pasteIntent);
     } else if (pasteIntent.type === 'image_files') {
-      materializedResult = await this.materializeImageFiles(pasteIntent);
+      objects = await this.materializeImageFiles(pasteIntent);
     } else if (pasteIntent.type === 'plain_text') {
-      materializedResult = await this.materializePlainText(pasteIntent);
+      objects = await this.materializePlainText(pasteIntent);
     }
 
-    if (!materializedResult || !materializedResult.copiedObjects || materializedResult.copiedObjects.length === 0) {
+    if (!objects || objects.length === 0) {
       return;
     }
 
-    await this.insertMaterializedObjects(materializedResult.copiedObjects, materializedResult.originalIdMapping, pasteIntent, x, y);
-  }
-
-  /**
-   * Returns whether there is pasteable clipboard content available.
-   * Checks local copied objects, structured payloads, plain text and image files.
-   */
-  async canPaste(event?: ClipboardEvent): Promise<boolean> {
-    const intent = await this.determinePasteIntent(event);
-    return intent.type !== 'unknown';
+    await this.insertMaterializedObjects(objects, pasteIntent, x, y);
   }
 
   private async insertMaterializedObjects(
     copiedObjects: KritzelBaseObject<any>[],
-    originalIdMapping: Map<string, string> | null | undefined,
     pasteIntent: PasteIntent,
     x?: number,
     y?: number
@@ -369,6 +391,8 @@ export class KritzelClipboardManager {
     let pasteX: number;
     let pasteY: number;
 
+    const step = 25 / this._core.store.state.scale;
+
     if (x !== undefined && y !== undefined) {
       pasteX = x;
       pasteY = y;
@@ -376,8 +400,10 @@ export class KritzelClipboardManager {
       pasteX = minX;
       pasteY = minY;
     } else {
-      pasteX = minX + 25 / this._core.store.state.scale;
-      pasteY = minY + 25 / this._core.store.state.scale;
+      pasteX = minX + step + this._pasteOffset;
+      pasteY = minY + step + this._pasteOffset;
+      // Advance the cascade so the next same-content paste is offset further.
+      this._pasteOffset += step;
     }
 
     const offsetX = pasteX - minX;
@@ -387,13 +413,6 @@ export class KritzelClipboardManager {
     this._core.removeSelectionBox();
 
     const selectionGroup = KritzelSelectionGroup.create(this._core);
-
-    const originalToNewIdMap = new Map<string, string>();
-    if (originalIdMapping) {
-      originalIdMapping.forEach((originalId, copiedId) => {
-        originalToNewIdMap.set(originalId, copiedId);
-      });
-    }
 
     const baseZIndex = this._core.store.currentZIndex;
 
@@ -445,26 +464,6 @@ export class KritzelClipboardManager {
       });
 
       this._core.engine.emitObjectsAdded(newlyAddedObjects);
-
-      copiedObjects.forEach(obj => {
-        if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) {
-          let updated = false;
-
-          if (obj.startAnchor && originalToNewIdMap.has(obj.startAnchor.objectId)) {
-            obj.startAnchor = { objectId: originalToNewIdMap.get(obj.startAnchor.objectId)! };
-            updated = true;
-          }
-
-          if (obj.endAnchor && originalToNewIdMap.has(obj.endAnchor.objectId)) {
-            obj.endAnchor = { objectId: originalToNewIdMap.get(obj.endAnchor.objectId)! };
-            updated = true;
-          }
-
-          if (updated) {
-            this._core.store.objects.update(obj);
-          }
-        }
-      });
     });
 
     this._core.anchorManager.rebuildIndex();
@@ -503,46 +502,9 @@ export class KritzelClipboardManager {
     this._core.engine.emitObjectsChange();
     this._core.rerender();
 
-    const newSelectionGroup = this._core.store.selectionGroup;
-    if (newSelectionGroup) {
-      const newIdMapping = new Map<string, string>();
-      const newCopiedObjects = newSelectionGroup.objects
-        .sort((a, b) => a.zIndex - b.zIndex)
-        .map(obj => {
-          const copiedObj = obj.copy() as KritzelBaseObject<any>;
-          newIdMapping.set(copiedObj.id, obj.id);
-          return copiedObj;
-        });
-
-      this._core.store.state.copiedObjects = newCopiedObjects;
-      this._core.store.state.copiedObjectIdMapping = newIdMapping;
-
-      const refreshedPayload = this.buildClipboardPayloadFromObjects(newCopiedObjects, newIdMapping);
-      void this.writeBrowserClipboardPayload(refreshedPayload);
-    }
-
     this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
 
     this._core.engine.emitObjectsChange();
     this._core.rerender();
-  }
-
-  /**
-   * Returns copied objects currently in clipboard state.
-   */
-  getCopiedObjects(): KritzelBaseObject<any>[] {
-    return this._core.store.state.copiedObjects || [];
-  }
-
-  /**
-   * Clears clipboard state.
-   */
-  clear(): void {
-    this._core.store.state.copiedObjects = null;
-    this._core.store.state.copiedObjectIdMapping = null;
-  }
-
-  destroy(): void {
-    this.clear();
   }
 }
