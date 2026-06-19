@@ -1346,6 +1346,12 @@ export class KritzelEngine {
     return this.core.clipboardManager.getCopiedObjects();
   }
 
+  /** Returns whether there is any pasteable content in clipboard sources. */
+  @Method()
+  async canPaste(): Promise<boolean> {
+    return this.core.clipboardManager.canPaste();
+  }
+
   /** Returns all objects currently visible within the viewport bounds. */
   @Method()
   async getObjectsInViewport(): Promise<KritzelBaseObject[]> {

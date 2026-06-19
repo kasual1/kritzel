@@ -130,7 +130,7 @@ export class KritzelEditor {
     {
       label: 'menu.paste',
       icon: 'paste',
-      disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
+      disabled: async () => !(await this.engineRef.canPaste()),
       action: menu => this.engineRef.paste(menu.x, menu.y),
     },
     {
@@ -148,7 +148,7 @@ export class KritzelEditor {
       label: 'menu.paste',
       icon: 'paste',
       group: 'clipboard',
-      disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
+      disabled: async () => !(await this.engineRef.canPaste()),
       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),
     },
     {

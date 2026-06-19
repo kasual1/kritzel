@@ -352,4 +352,54 @@ describe('KritzelClipboardManager', () => {
       expect(mockCore.store.state.copiedObjectIdMapping).toBeNull();
     });
   });
+
+  describe('canPaste', () => {
+    it('returns true when local copied objects are available', async () => {
+      mockCore.store.state.copiedObjects = [{ id: 'copy-1' }];
+
+      await expect(manager.canPaste()).resolves.toBe(true);
+    });
+
+    it('returns true when browser clipboard has plain text', async () => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          read: jest.fn().mockResolvedValue([]),
+          readText: jest.fn().mockResolvedValue('hello from clipboard'),
+        },
+        configurable: true,
+      });
+
+      await expect(manager.canPaste()).resolves.toBe(true);
+    });
+
+    it('returns true when browser clipboard has image data', async () => {
+      const imageBlob = new Blob(['img'], { type: 'image/png' });
+      const clipboardItem = {
+        types: ['image/png'],
+        getType: jest.fn().mockResolvedValue(imageBlob),
+      };
+
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          read: jest.fn().mockResolvedValue([clipboardItem]),
+          readText: jest.fn().mockResolvedValue(''),
+        },
+        configurable: true,
+      });
+
+      await expect(manager.canPaste()).resolves.toBe(true);
+    });
+
+    it('returns false when no clipboard source has pasteable content', async () => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          read: jest.fn().mockResolvedValue([]),
+          readText: jest.fn().mockResolvedValue('   '),
+        },
+        configurable: true,
+      });
+
+      await expect(manager.canPaste()).resolves.toBe(false);
+    });
+  });
 });
