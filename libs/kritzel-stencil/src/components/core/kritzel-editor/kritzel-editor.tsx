@@ -130,13 +130,11 @@ export class KritzelEditor {
     {
       label: 'menu.paste',
       icon: 'paste',
-      disabled: async () => !(await this.engineRef.canPaste()),
       action: menu => this.engineRef.paste(menu.x, menu.y),
     },
     {
       label: 'menu.selectAll',
       icon: 'select-all',
-      disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,
       action: () => this.selectAllObjectsInViewport(),
     },
   ];
@@ -148,7 +146,6 @@ export class KritzelEditor {
       label: 'menu.paste',
       icon: 'paste',
       group: 'clipboard',
-      disabled: async () => !(await this.engineRef.canPaste()),
       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),
     },
     {
@@ -166,7 +163,6 @@ export class KritzelEditor {
       label: 'menu.align',
       icon: 'align',
       group: 'other',
-      disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
       children: [
         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },
         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },
@@ -184,16 +180,11 @@ export class KritzelEditor {
         {
           label: 'menu.group',
           icon: 'group',
-          disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
           action: () => this.engineRef.group(),
         },
         {
           label: 'menu.ungroup',
           icon: 'ungroup',
-          disabled: async () => {
-            const selectedObjects = await this.engineRef.getSelectedObjects();
-            return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');
-          },
           action: () => this.engineRef.ungroup(),
         },
       ],
@@ -681,11 +672,6 @@ export class KritzelEditor {
   @Method()
   async findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean): Promise<T[]> {
     return this.engineRef.findObjects(predicate);
-  }
-
-  @Method()
-  async getCopiedObjects(): Promise<KritzelBaseObject[]> {
-    return this.engineRef.getCopiedObjects();
   }
 
   @Method()

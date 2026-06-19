@@ -108,7 +108,6 @@ describe('KritzelEngine', () => {
       copy: jest.fn(),
       cut: jest.fn(),
       paste: jest.fn(),
-      getCopiedObjects: jest.fn().mockReturnValue([]),
     },
     cursorManager: {
       setTargetElement: jest.fn(),
@@ -168,7 +167,6 @@ describe('KritzelEngine', () => {
         activeTool: null as any,
         activeWorkspace: null as KritzelWorkspace | null,
         workspaces: [] as KritzelWorkspace[],
-        copiedObjects: undefined as any,
       },
       setState: jest.fn(),
       setSelectionBox: jest.fn(),
@@ -353,25 +351,6 @@ describe('KritzelEngine', () => {
       await engine.paste(42, 99);
       expect(core.clipboardManager.paste).toHaveBeenCalledWith(42, 99);
     });
-
-    it('getCopiedObjects returns an empty array when nothing has been copied', async () => {
-      core.clipboardManager.getCopiedObjects.mockReturnValue([]);
-
-      const result = await engine.getCopiedObjects();
-
-      expect(result).toEqual([]);
-      expect(core.clipboardManager.getCopiedObjects).toHaveBeenCalledTimes(1);
-    });
-
-    it('getCopiedObjects returns the previously copied objects', async () => {
-      const copied: any[] = [{ id: 'x' }];
-      core.clipboardManager.getCopiedObjects.mockReturnValue(copied);
-
-      const result = await engine.getCopiedObjects();
-
-      expect(result).toBe(copied);
-      expect(core.clipboardManager.getCopiedObjects).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe('native clipboard events', () => {
@@ -421,8 +400,7 @@ describe('KritzelEngine', () => {
       expect(core.clipboardManager.cut).toHaveBeenCalledTimes(1);
     });
 
-    it('handles paste via native browser event when copied objects are available', () => {
-      core.store.state.copiedObjects = [{ id: 'copied' }];
+    it('handles paste via native browser event', () => {
       core.store.activeText = null;
       core.store.activeShape = null;
 
@@ -435,9 +413,7 @@ describe('KritzelEngine', () => {
       expect(core.clipboardManager.paste).toHaveBeenCalledTimes(1);
     });
 
-    it('forwards paste even when the local clipboard is empty', () => {
-      core.store.state.copiedObjects = undefined;
-
+    it('forwards paste to the clipboard manager', () => {
       const event = createCancelableClipboardEvent('paste');
       const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
@@ -1038,13 +1014,11 @@ describe('KritzelEngine', () => {
 
     it('resets transient flags and rerenders', () => {
       core.store.state.skipContextMenu = true;
-      core.store.state.copiedObjects = [{ id: 'x' }];
 
       const eraserTool = new MockKritzelEraserTool();
       invokeHandler(eraserTool);
 
       expect(core.store.state.skipContextMenu).toBe(false);
-      expect(core.store.state.copiedObjects).toBeUndefined();
       expect(core.rerender).toHaveBeenCalledTimes(1);
     });
 

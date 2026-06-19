@@ -46,7 +46,6 @@
 | `findObjects` | `<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject) => boolean): Promise<T[]>` |
 | `getObjectsTotalCount` | `(): Promise<number>` |
 | `getObjectsInViewport` | `(): Promise<KritzelBaseObject[]>` |
-| `getCopiedObjects` | `(): Promise<KritzelBaseObject[]>` |
 
 ### Selection
 

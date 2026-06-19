@@ -50,7 +50,7 @@ The existing `EditorPage` class needs the following new helper methods:
 | `copy()` | Copy selected objects |
 | `paste(x, y)` | Paste at coordinates |
 | `deleteSelected()` | Delete selected objects |
-| `getCopiedObjects()` | Get the clipboard contents |
+| `copyToSystemClipboard()` | Dispatch a copy event and return the serialized clipboard payload |
 
 ### Ordering
 | Method | Description |
@@ -249,7 +249,7 @@ describe('Clipboard')
 
   describe('copy and paste')
     ✅ should copy a selected object
-    ✅ getCopiedObjects should return copied objects after copy
+    ✅ copy should serialize the selection to the system clipboard
     ✅ should paste copied object at specified coordinates
     ✅ pasted object should have a new id (not the same as original)
     ✅ pasted object should appear at the paste coordinates

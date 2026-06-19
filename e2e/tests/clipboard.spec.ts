@@ -1,5 +1,15 @@
 import { test, expect, EditorPage } from '../fixtures/editor.fixture';
 
+const CLIPBOARD_PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
+
+/** Parse the serialized Kritzel clipboard payload into its object list. */
+function parseClipboardObjects(serialized: string): any[] {
+  if (!serialized || !serialized.startsWith(CLIPBOARD_PAYLOAD_PREFIX)) {
+    return [];
+  }
+  return JSON.parse(serialized.slice(CLIPBOARD_PAYLOAD_PREFIX.length)).objects ?? [];
+}
+
 test.describe('Clipboard', () => {
   test.beforeEach(async ({ editorPage }) => {
     await editorPage.goto();
@@ -18,15 +28,13 @@ test.describe('Clipboard', () => {
       });
 
       await editorPage.selectObjects([shape]);
-      await editorPage.copy();
 
-      const copied = await editorPage.getCopiedObjects<any>();
+      const copied = parseClipboardObjects(await editorPage.copyToSystemClipboard());
       expect(copied).toHaveLength(1);
-      expect(copied[0].id).not.toBe(shape.id);
       expect(copied[0].shapeType).toBe('rectangle');
     });
 
-    test('getCopiedObjects should return copied objects after copy', async ({ editorPage }) => {
+    test('copy should serialize the selection to the system clipboard', async ({ editorPage }) => {
       const shape1 = await editorPage.addShape({
         shapeType: 'rectangle',
         translateX: 0,
@@ -43,14 +51,12 @@ test.describe('Clipboard', () => {
       });
 
       await editorPage.selectObjects([shape1, shape2]);
-      await editorPage.copy();
 
-      const copied = await editorPage.getCopiedObjects<any>();
+      const copied = parseClipboardObjects(await editorPage.copyToSystemClipboard());
       expect(copied).toHaveLength(2);
-      const copiedIds = copied.map((o: any) => o.id);
-      // Copied objects get new IDs, so none should match the originals
-      expect(copiedIds).not.toContain(shape1.id);
-      expect(copiedIds).not.toContain(shape2.id);
+      const copiedTypes = copied.map((o: any) => o.shapeType);
+      expect(copiedTypes).toContain('rectangle');
+      expect(copiedTypes).toContain('ellipse');
     });
 
     test('should paste copied object at specified coordinates', async ({ editorPage }) => {
@@ -127,13 +133,15 @@ test.describe('Clipboard', () => {
       await editorPage.selectObjects([shape]);
       await editorPage.cut();
 
-      const copied = await editorPage.getCopiedObjects<any>();
-      expect(copied).toHaveLength(1);
-      expect(copied[0].id).not.toBe(shape.id);
-      expect(copied[0].shapeType).toBe('rectangle');
-
       const allObjects = await editorPage.getAllObjects();
       expect(allObjects).toHaveLength(0);
+
+      // The cut object can be pasted back from the clipboard with a new id.
+      await editorPage.paste(400, 400);
+      const pasted = await editorPage.getAllObjects<any>();
+      expect(pasted).toHaveLength(1);
+      expect(pasted[0].id).not.toBe(shape.id);
+      expect(pasted[0].shapeType).toBe('rectangle');
     });
 
     test('should cut multiple selected objects', async ({ editorPage }) => {
@@ -160,14 +168,14 @@ test.describe('Clipboard', () => {
       await editorPage.selectObjects([shape1, shape2]);
       await editorPage.cut();
 
-      const copied = await editorPage.getCopiedObjects<any>();
-      expect(copied).toHaveLength(2);
-      const copiedIds = copied.map((o: any) => o.id);
-      expect(copiedIds).not.toContain(shape1.id);
-      expect(copiedIds).not.toContain(shape2.id);
+      // Two objects were cut, the text object remains.
+      const remaining = await editorPage.getAllObjects();
+      expect(remaining).toHaveLength(1);
 
-      const allObjects = await editorPage.getAllObjects();
-      expect(allObjects).toHaveLength(1);
+      // The two cut objects can be pasted back from the clipboard.
+      await editorPage.paste(400, 200);
+      await editorPage.clearSelection();
+      expect(await editorPage.getAllObjects()).toHaveLength(3);
     });
 
     test('should do nothing when there is no selection', async ({ editorPage }) => {
@@ -182,8 +190,8 @@ test.describe('Clipboard', () => {
       await editorPage.clearSelection();
       await editorPage.cut();
 
-      const copied = await editorPage.getCopiedObjects<any>();
-      expect(copied ?? []).toHaveLength(0);
+      // Nothing was written to the system clipboard.
+      expect(await editorPage.copyToSystemClipboard()).toBe('');
 
       const allObjects = await editorPage.getAllObjects();
       expect(allObjects).toHaveLength(1);
