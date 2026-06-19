@@ -361,6 +361,7 @@ export class KritzelClipboardManager {
     const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
     const isNewExternalContent = pasteIntent.type !== 'kritzel_objects';
     const shouldCenterInViewport = isDifferentWorkspace || isNewExternalContent;
+    const hasExplicitPastePosition = x !== undefined && y !== undefined;
 
     const minX = Math.min(...copiedObjects.map(obj => obj.translateX));
     const minY = Math.min(...copiedObjects.map(obj => obj.translateY));
@@ -474,12 +475,8 @@ export class KritzelClipboardManager {
       selectionGroup.rotation = copiedObjects[0].rotation;
     }
 
-    if (shouldCenterInViewport) {
-      if (x !== undefined && y !== undefined) {
-        selectionGroup.updatePosition(x, y);
-      } else {
-        selectionGroup.centerInViewport();
-      }
+    if (shouldCenterInViewport && !hasExplicitPastePosition) {
+      selectionGroup.centerInViewport();
     }
 
     this._core.addSelectionGroup(selectionGroup);
@@ -499,7 +496,7 @@ export class KritzelClipboardManager {
     selectionGroup.refreshObjectDimensions();
     
     // We should update it if the centerInViewport or width adjustments changed it significantly
-    if (shouldCenterInViewport) {
+    if (shouldCenterInViewport && !hasExplicitPastePosition) {
       selectionGroup.centerInViewport();
     }
     

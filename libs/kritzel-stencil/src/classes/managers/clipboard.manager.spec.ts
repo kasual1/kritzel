@@ -244,6 +244,48 @@ describe('KritzelClipboardManager', () => {
       expect(createdSelectionGroup.addOrRemove).toHaveBeenCalledWith(browserObject);
     });
 
+    it('keeps an explicit paste position for external clipboard content', async () => {
+      const browserObject = {
+        id: 'browser-copy-1',
+        zIndex: 1,
+        workspaceId: 'workspace-2',
+        translateX: 50,
+        translateY: 60,
+        rotation: 0,
+        updatePosition: jest.fn(),
+        copy: jest.fn().mockReturnValue({ id: 'browser-copy-next' }),
+      } as any;
+
+      mockCore.store.state.copiedObjects = [{ id: 'local-copy-1', translateX: 10, translateY: 20 }] as any;
+      mockCore.store.state.copiedObjectIdMapping = new Map([['local-copy-1', 'local-original-1']]);
+
+      const createdSelectionGroup = {
+        addOrRemove: jest.fn(),
+        updatePosition: jest.fn(),
+        centerInViewport: jest.fn(),
+        refreshObjectDimensions: jest.fn(),
+        isSelected: false,
+        rotation: 0,
+      } as any;
+
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(createdSelectionGroup);
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
+      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(browserObject);
+
+      const event = {
+        clipboardData: {
+          types: ['text/plain'],
+          getData: jest.fn().mockReturnValue('kritzel-clipboard/v1:{"version":1,"copiedObjectIdMapping":[["browser-copy-1","browser-original-1"]],"objects":[{"id":"browser-copy-1"}]}'),
+        },
+      } as any;
+
+      await manager.paste(300, 400, event);
+
+      expect(browserObject.updatePosition).toHaveBeenCalledTimes(1);
+      expect(browserObject.updatePosition).toHaveBeenCalledWith(300, 400);
+      expect(createdSelectionGroup.centerInViewport).not.toHaveBeenCalled();
+    });
+
     it('refreshes the browser clipboard after paste so the next paste uses the new selection', async () => {
       const refreshedCopiedObject = {
         id: 'browser-copy-next',
