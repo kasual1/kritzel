@@ -221,10 +221,15 @@ export class KritzelClipboardManager {
 
   private async materializeImageFiles(intent: Extract<PasteIntent, { type: 'image_files' }>): Promise<MaterializedPasteResult | null> {
     try {
-      const preparePromises = intent.files.map(async file => {
+      const scale = this._core.store.state.scale;
+      const offset = 25 / scale;
+      const preparePromises = intent.files.map(async (file, index) => {
         // Use the default image compression size of 1200
         const compressed = await imageCompression(file, { maxWidthOrHeight: 1200 });
-        return KritzelImage.fromBlob(this._core, compressed);
+        return KritzelImage.fromBlob(this._core, compressed, {
+          translateX: index * offset,
+          translateY: index * offset,
+        });
       });
       
       return {
