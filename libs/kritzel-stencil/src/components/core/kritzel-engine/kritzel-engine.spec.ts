@@ -410,7 +410,7 @@ describe('KritzelEngine', () => {
       engine.handlePaste(event);
 
       expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
-      expect(core.clipboardManager.paste).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.paste).toHaveBeenCalledWith(undefined, undefined, event);
     });
 
     it('forwards paste to the clipboard manager', () => {
@@ -420,7 +420,7 @@ describe('KritzelEngine', () => {
       engine.handlePaste(event);
 
       expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
-      expect(core.clipboardManager.paste).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.paste).toHaveBeenCalledWith(undefined, undefined, event);
     });
   });
 

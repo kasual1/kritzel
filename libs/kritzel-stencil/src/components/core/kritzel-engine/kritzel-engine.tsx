@@ -568,7 +568,7 @@ export class KritzelEngine {
       ev.preventDefault();
     }
 
-    void this.core.clipboardManager.paste(undefined, undefined);
+    void this.core.clipboardManager.paste(undefined, undefined, ev);
   }
 
   /**

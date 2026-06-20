@@ -187,18 +187,57 @@ export class KritzelClipboardManager {
    * Evaluates the clipboard event to determine exactly what the user is trying to paste.
    * Returns a PasteIntent covering the 3 main cases: Kritzel objects, Images, or Plain text.
    */
-  private async determinePasteIntent(): Promise<PasteIntent> {
-    const { clipboard } = navigator;
+  private async determinePasteIntent(event?: ClipboardEvent): Promise<PasteIntent> {
+    if (event?.clipboardData) {
+      const data = event.clipboardData;
+      const imageFiles = Array.from(data.files ?? []).filter(file => file.type.startsWith('image/'));
 
-    const items = await clipboard.read();
-    const { imageFiles, text } = await this.processClipboardItems(items);
+      if (imageFiles.length > 0) {
+        return { type: 'image_files', files: imageFiles };
+      }
 
-    if (imageFiles.length > 0) {
-      return { type: 'image_files', files: imageFiles };
+      if (data.types.includes('text/plain')) {
+        const textIntent = this.determineTextPasteIntent(data.getData('text/plain'));
+        if (textIntent) return textIntent;
+      }
+
+      return { type: 'unknown' };
     }
 
-    if (text !== null) {
-      const textIntent = this.determineTextPasteIntent(text);
+    if (typeof navigator === 'undefined' || !navigator.clipboard) {
+      return { type: 'unknown' };
+    }
+
+    const { clipboard } = navigator;
+
+    const permissionState = await this._core.permissionManager.checkPermission('clipboard-read');
+    if (permissionState !== 'granted') {
+      const requestedState = await this._core.permissionManager.requestPermission('clipboard-read');
+      if (requestedState !== 'granted') {
+        return { type: 'unknown' };
+      }
+    }
+
+    if (clipboard.read) {
+      try {
+        const items = await clipboard.read();
+        const { imageFiles, text } = await this.processClipboardItems(items);
+
+        if (imageFiles.length > 0) {
+          return { type: 'image_files', files: imageFiles };
+        }
+
+        if (text !== null) {
+          const textIntent = this.determineTextPasteIntent(text);
+          if (textIntent) return textIntent;
+        }
+      } catch {
+        // Fall back to readText below when read() is denied or unavailable at runtime.
+      }
+    }
+
+    if (clipboard.readText) {
+      const textIntent = this.determineTextPasteIntent(await clipboard.readText());
       if (textIntent) return textIntent;
     }
 
@@ -319,8 +358,8 @@ export class KritzelClipboardManager {
   /**
    * Pastes objects from clipboard with optional explicit world coordinates.
    */
-  async paste(x?: number, y?: number): Promise<void> {
-    const pasteIntent = await this.determinePasteIntent();
+  async paste(x?: number, y?: number, event?: ClipboardEvent): Promise<void> {
+    const pasteIntent = await this.determinePasteIntent(event);
 
     let objects: KritzelBaseObject<any>[] | null = null;
 
