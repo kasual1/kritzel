@@ -84,6 +84,20 @@ export class KritzelClipboardManager {
     }
   }
 
+  private determineTextPasteIntent(text: string | null | undefined): PasteIntent | null {
+    const payload = this.parseClipboardPayload(text);
+
+    if (payload) {
+      return { type: 'kritzel_objects', payload };
+    }
+
+    if (text && text.trim().length > 0) {
+      return { type: 'plain_text', text };
+    }
+
+    return null;
+  }
+
   private async writeBrowserClipboardPayload(payload: KritzelClipboardPayload, event?: ClipboardEvent): Promise<void> {
     const serialized = this.serializeClipboardPayload(payload);
 
@@ -189,35 +203,21 @@ export class KritzelClipboardManager {
 
       // 2 & 3. Check text/plain (Kritzel payload vs generic plain text)
       if (data.types.includes('text/plain')) {
-        const text = data.getData('text/plain');
-        const payload = this.parseClipboardPayload(text);
-
-        if (payload) {
-          return { type: 'kritzel_objects', payload };
-        } else if (text.trim().length > 0) {
-          return { type: 'plain_text', text };
+        const textIntent = this.determineTextPasteIntent(data.getData('text/plain'));
+        if (textIntent) {
+          return textIntent;
         }
       }
 
       return { type: 'unknown' };
     }
 
-    // No DOM ClipboardEvent (programmatic / context-menu paste): read the async Clipboard API.
-    return this.determinePasteIntentFromNavigator();
-  }
-
-  /**
-   * Reads the systemwide clipboard via the async Clipboard API when no ClipboardEvent
-   * is available (e.g. context-menu paste or the public paste(x, y) method).
-   *
-   * Uses a single clipboard.read() call to avoid triggering the permission prompt twice
-   * (once for images, once for text).
-   */
-  private async determinePasteIntentFromNavigator(): Promise<PasteIntent> {
     if (typeof navigator === 'undefined' || !navigator.clipboard) {
       return { type: 'unknown' };
     }
 
+    // No DOM ClipboardEvent (programmatic / context-menu paste): read the async Clipboard API.
+    // Prefer a single read() call so browsers only need to grant clipboard access once.
     if (navigator.clipboard.read) {
       try {
         const items = await navigator.clipboard.read();
@@ -240,15 +240,11 @@ export class KritzelClipboardManager {
         }
 
         if (text !== null) {
-          const payload = this.parseClipboardPayload(text);
-          if (payload) {
-            return { type: 'kritzel_objects', payload };
-          } else if (text.trim().length > 0) {
-            return { type: 'plain_text', text };
+          const textIntent = this.determineTextPasteIntent(text);
+          if (textIntent) {
+            return textIntent;
           }
         }
-
-        return { type: 'unknown' };
       } catch {
         // Permission denied or clipboard.read() not supported — fall through to readText().
       }
@@ -257,13 +253,9 @@ export class KritzelClipboardManager {
     // Fallback for browsers that support readText() but not read().
     if (navigator.clipboard.readText) {
       try {
-        const text = await navigator.clipboard.readText();
-        const payload = this.parseClipboardPayload(text);
-
-        if (payload) {
-          return { type: 'kritzel_objects', payload };
-        } else if (text && text.trim().length > 0) {
-          return { type: 'plain_text', text };
+        const textIntent = this.determineTextPasteIntent(await navigator.clipboard.readText());
+        if (textIntent) {
+          return textIntent;
         }
       } catch {
         // Permission denied / unreadable content.
