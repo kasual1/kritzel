@@ -209,35 +209,52 @@ export class KritzelClipboardManager {
   /**
    * Reads the systemwide clipboard via the async Clipboard API when no ClipboardEvent
    * is available (e.g. context-menu paste or the public paste(x, y) method).
+   *
+   * Uses a single clipboard.read() call to avoid triggering the permission prompt twice
+   * (once for images, once for text).
    */
   private async determinePasteIntentFromNavigator(): Promise<PasteIntent> {
     if (typeof navigator === 'undefined' || !navigator.clipboard) {
       return { type: 'unknown' };
     }
 
-    // 1. Image files via clipboard.read()
     if (navigator.clipboard.read) {
       try {
         const items = await navigator.clipboard.read();
         const imageFiles: File[] = [];
+        let text: string | null = null;
 
         for (const item of items) {
           const imageType = item.types.find(type => type.startsWith('image/'));
           if (imageType) {
             const blob = await item.getType(imageType);
             imageFiles.push(new File([blob], 'pasted-image', { type: imageType }));
+          } else if (text === null && item.types.includes('text/plain')) {
+            const blob = await item.getType('text/plain');
+            text = await blob.text();
           }
         }
 
         if (imageFiles.length > 0) {
           return { type: 'image_files', files: imageFiles };
         }
+
+        if (text !== null) {
+          const payload = this.parseClipboardPayload(text);
+          if (payload) {
+            return { type: 'kritzel_objects', payload };
+          } else if (text.trim().length > 0) {
+            return { type: 'plain_text', text };
+          }
+        }
+
+        return { type: 'unknown' };
       } catch {
-        // Fall through to text-based reads.
+        // Permission denied or clipboard.read() not supported — fall through to readText().
       }
     }
 
-    // 2 & 3. Kritzel payload / plain text via clipboard.readText()
+    // Fallback for browsers that support readText() but not read().
     if (navigator.clipboard.readText) {
       try {
         const text = await navigator.clipboard.readText();
