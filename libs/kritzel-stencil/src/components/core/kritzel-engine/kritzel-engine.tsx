@@ -568,7 +568,7 @@ export class KritzelEngine {
       ev.preventDefault();
     }
 
-    void this.core.clipboardManager.paste(undefined, undefined, ev);
+    void this.core.clipboardManager.paste(undefined, undefined);
   }
 
   /**
@@ -722,6 +722,13 @@ export class KritzelEngine {
    */
   @Method()
   async paste(x: number, y: number) {
+    const hasPermission = await this.core.permissionManager.requestPermission('clipboard-read');
+    
+    if (hasPermission !== 'granted') {
+      window.alert('Clipboard read permission is required to paste content. Please grant permission and try again.');
+      return;
+    }
+
     this.core.clipboardManager.paste(x, y);
   }
 
