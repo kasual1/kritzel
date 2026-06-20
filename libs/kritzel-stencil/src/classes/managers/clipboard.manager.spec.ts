@@ -2,6 +2,13 @@ import { KritzelClipboardManager } from './clipboard.manager';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelReviver } from '../core/reviver.class';
+import { KritzelImage } from '../objects/image.class';
+import imageCompression from 'browser-image-compression';
+
+jest.mock('browser-image-compression', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
 
 jest.mock('../objects/selection-group.class', () => ({
   KritzelSelectionGroup: {
@@ -275,6 +282,29 @@ describe('KritzelClipboardManager', () => {
       expect(mockCore.permissionManager.checkPermission).toHaveBeenCalledWith('clipboard-read');
       expect(mockCore.permissionManager.requestPermission).toHaveBeenCalledWith('clipboard-read');
       expect(mockCore.addObject).toHaveBeenCalledWith(revived);
+    });
+
+    it('pastes image files from a native clipboard event', async () => {
+      const imageFile = new File(['image'], 'pasted.png', { type: 'image/png' });
+      const compressedFile = new File(['compressed'], 'pasted-compressed.png', { type: 'image/png' });
+      const imageObject = makeRevived();
+
+      (imageCompression as unknown as jest.Mock).mockResolvedValue(compressedFile);
+      jest.spyOn(KritzelImage, 'fromBlob').mockResolvedValue(imageObject);
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+
+      await manager.paste(undefined, undefined, {
+        clipboardData: {
+          files: [imageFile],
+          types: [],
+          getData: jest.fn(),
+        },
+      } as any);
+
+      expect(imageCompression).toHaveBeenCalledWith(imageFile, { maxWidthOrHeight: 1200 });
+      expect(KritzelImage.fromBlob).toHaveBeenCalledWith(mockCore, compressedFile, { translateX: 0, translateY: 0 });
+      expect(mockCore.permissionManager.checkPermission).not.toHaveBeenCalled();
+      expect(mockCore.addObject).toHaveBeenCalledWith(imageObject);
     });
 
     it('keeps an explicit paste position', async () => {
