@@ -131,9 +131,7 @@ export class KritzelClipboardManager {
     }
 
     if (__children__ && KritzelClassHelper.isInstanceOf<KritzelGroup>(revived, 'KritzelGroup')) {
-      const children = __children__
-        .map(child => this.reviveClipboardObject(child))
-        .filter((child): child is KritzelBaseObject<any> => child != null);
+      const children = __children__.map(child => this.reviveClipboardObject(child)).filter((child): child is KritzelBaseObject<any> => child != null);
 
       revived._pendingChildren = children;
       revived.childIds = children.map(child => child.id);
@@ -189,80 +187,50 @@ export class KritzelClipboardManager {
    * Evaluates the clipboard event to determine exactly what the user is trying to paste.
    * Returns a PasteIntent covering the 3 main cases: Kritzel objects, Images, or Plain text.
    */
-  private async determinePasteIntent(event?: ClipboardEvent): Promise<PasteIntent> {
-    if (event?.clipboardData) {
-      const data = event.clipboardData;
+  private async determinePasteIntent(): Promise<PasteIntent> {
+    const { clipboard } = navigator;
 
-      // 1. Check for Image Files
-      if (data.files && data.files.length > 0) {
-        const imageFiles = Array.from(data.files).filter(f => f.type.startsWith('image/'));
-        if (imageFiles.length > 0) {
-          return { type: 'image_files', files: imageFiles };
-        }
-      }
+    const items = await clipboard.read();
+    const { imageFiles, text } = await this.processClipboardItems(items);
 
-      // 2 & 3. Check text/plain (Kritzel payload vs generic plain text)
-      if (data.types.includes('text/plain')) {
-        const textIntent = this.determineTextPasteIntent(data.getData('text/plain'));
-        if (textIntent) {
-          return textIntent;
-        }
-      }
-
-      return { type: 'unknown' };
+    if (imageFiles.length > 0) {
+      return { type: 'image_files', files: imageFiles };
     }
 
-    if (typeof navigator === 'undefined' || !navigator.clipboard) {
-      return { type: 'unknown' };
-    }
-
-    // No DOM ClipboardEvent (programmatic / context-menu paste): read the async Clipboard API.
-    // Prefer a single read() call so browsers only need to grant clipboard access once.
-    if (navigator.clipboard.read) {
-      try {
-        const items = await navigator.clipboard.read();
-        const imageFiles: File[] = [];
-        let text: string | null = null;
-
-        for (const item of items) {
-          const imageType = item.types.find(type => type.startsWith('image/'));
-          if (imageType) {
-            const blob = await item.getType(imageType);
-            imageFiles.push(new File([blob], 'pasted-image', { type: imageType }));
-          } else if (text === null && item.types.includes('text/plain')) {
-            const blob = await item.getType('text/plain');
-            text = await blob.text();
-          }
-        }
-
-        if (imageFiles.length > 0) {
-          return { type: 'image_files', files: imageFiles };
-        }
-
-        if (text !== null) {
-          const textIntent = this.determineTextPasteIntent(text);
-          if (textIntent) {
-            return textIntent;
-          }
-        }
-      } catch {
-        // Permission denied or clipboard.read() not supported — fall through to readText().
-      }
-    }
-
-    // Fallback for browsers that support readText() but not read().
-    if (navigator.clipboard.readText) {
-      try {
-        const textIntent = this.determineTextPasteIntent(await navigator.clipboard.readText());
-        if (textIntent) {
-          return textIntent;
-        }
-      } catch {
-        // Permission denied / unreadable content.
-      }
+    if (text !== null) {
+      const textIntent = this.determineTextPasteIntent(text);
+      if (textIntent) return textIntent;
     }
 
     return { type: 'unknown' };
+  }
+
+  /**
+   * Helper to parse clipboard items in parallel
+   */
+  private async processClipboardItems(items: ClipboardItems): Promise<{ imageFiles: File[]; text: string | null }> {
+    const imageFiles: File[] = [];
+    let text: string | null = null;
+
+    // Process items concurrently
+    await Promise.all(
+      items.map(async item => {
+        const imageType = item.types.find(type => type.startsWith('image/'));
+
+        if (imageType) {
+          const blob = await item.getType(imageType);
+          imageFiles.push(new File([blob], 'pasted-image', { type: imageType }));
+          return;
+        }
+
+        if (text === null && item.types.includes('text/plain')) {
+          const blob = await item.getType('text/plain');
+          text = await blob.text();
+        }
+      }),
+    );
+
+    return { imageFiles, text };
   }
 
   /**
@@ -277,9 +245,7 @@ export class KritzelClipboardManager {
     const payload: KritzelClipboardPayload = {
       version: 1,
       sourceWorkspaceId: this._core.store.state.activeWorkspace?.id,
-      objects: selectionGroup.objects
-        .sort((a, b) => a.zIndex - b.zIndex)
-        .map(obj => this.serializeForClipboard(obj)),
+      objects: selectionGroup.objects.sort((a, b) => a.zIndex - b.zIndex).map(obj => this.serializeForClipboard(obj)),
     };
 
     // A fresh copy resets the cascade so the first paste lands at the default offset.
@@ -302,9 +268,7 @@ export class KritzelClipboardManager {
   }
 
   private materializeKritzelObjects(intent: Extract<PasteIntent, { type: 'kritzel_objects' }>): KritzelBaseObject<any>[] {
-    const objects = intent.payload.objects
-      .map(object => this.reviveClipboardObject(object))
-      .filter((object): object is KritzelBaseObject<any> => object != null);
+    const objects = intent.payload.objects.map(object => this.reviveClipboardObject(object)).filter((object): object is KritzelBaseObject<any> => object != null);
 
     this.regenerateIdsAndRemapAnchors(objects);
 
@@ -340,13 +304,13 @@ export class KritzelClipboardManager {
       }
       return {
         type: 'paragraph',
-        content: [{ type: 'text', text: line }]
+        content: [{ type: 'text', text: line }],
       };
     });
 
     textObject.setContent({
       type: 'doc',
-      content: paragraphs
+      content: paragraphs,
     });
 
     return [textObject];
@@ -355,8 +319,8 @@ export class KritzelClipboardManager {
   /**
    * Pastes objects from clipboard with optional explicit world coordinates.
    */
-  async paste(x?: number, y?: number, event?: ClipboardEvent): Promise<void> {
-    const pasteIntent = await this.determinePasteIntent(event);
+  async paste(x?: number, y?: number): Promise<void> {
+    const pasteIntent = await this.determinePasteIntent();
 
     let objects: KritzelBaseObject<any>[] | null = null;
 
@@ -375,19 +339,14 @@ export class KritzelClipboardManager {
     await this.insertMaterializedObjects(objects, pasteIntent, x, y);
   }
 
-  private async insertMaterializedObjects(
-    copiedObjects: KritzelBaseObject<any>[],
-    pasteIntent: PasteIntent,
-    x?: number,
-    y?: number
-  ): Promise<void> {
+  private async insertMaterializedObjects(copiedObjects: KritzelBaseObject<any>[], pasteIntent: PasteIntent, x?: number, y?: number): Promise<void> {
     const activeWorkspace = this._core.store.state.activeWorkspace;
     if (!activeWorkspace) {
       return;
     }
 
     // Determine if we should center the objects in the viewport.
-    // This happens if the user specifically pasted from a different workspace, 
+    // This happens if the user specifically pasted from a different workspace,
     // OR if we're inserting brand new external items (like images or text).
     const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace.id);
     const isNewExternalContent = pasteIntent.type !== 'kritzel_objects';
@@ -502,12 +461,12 @@ export class KritzelClipboardManager {
     // Re-evaluate bounding box dimensions now that any DOM nodes (like ProseMirror text editors)
     // have mounted and calculated their actual bounds.
     selectionGroup.refreshObjectDimensions();
-    
+
     // We should update it if the centerInViewport or width adjustments changed it significantly
     if (shouldCenterInViewport && !hasExplicitPastePosition) {
       selectionGroup.centerInViewport();
     }
-    
+
     this._core.engine.emitObjectsChange();
     this._core.rerender();
 

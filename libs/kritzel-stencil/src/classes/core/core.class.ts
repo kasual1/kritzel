@@ -22,6 +22,7 @@ import { KritzelCursorManager } from '../managers/cursor.manager';
 import { KritzelThemeManager } from '../managers/theme.manager';
 import { KritzelLocalizationManager } from '../managers/localization.manager';
 import { KritzelLicenseManager } from '../managers/license.manager';
+import { KritzelBrowserPermissionManager } from '../managers/browser-permission.manager';
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { IKritzelUser } from '../../interfaces/user.interface';
@@ -62,6 +63,8 @@ export class KritzelCore {
   private readonly _localizationManager: KritzelLocalizationManager;
   /** Manager for license validation and watermark gating */
   private readonly _licenseManager: KritzelLicenseManager;
+  /** Manager for browser permission checks and permission prompts */
+  private readonly _permissionManager: KritzelBrowserPermissionManager;
   /** Manager for clipboard copy/cut/paste orchestration */
   private readonly _clipboardManager: KritzelClipboardManager;
   /** Per-core registry of drawing tools (one instance per editor). */
@@ -136,6 +139,14 @@ export class KritzelCore {
   }
 
   /**
+   * Gets the browser permission manager.
+   * @returns The KritzelBrowserPermissionManager for browser permission checks and requests
+   */
+  get permissionManager(): KritzelBrowserPermissionManager {
+    return this._permissionManager;
+  }
+
+  /**
    * Gets the tool registry scoped to this core instance.
    * @returns The KritzelToolRegistry owned by this core
    */
@@ -202,6 +213,7 @@ export class KritzelCore {
     this._themeManager = new KritzelThemeManager(this);
     this._localizationManager = new KritzelLocalizationManager(this);
     this._licenseManager = new KritzelLicenseManager(this);
+    this._permissionManager = new KritzelBrowserPermissionManager(this);
     this._clipboardManager = new KritzelClipboardManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);
     this._assetResolver = new KritzelAssetResolver();

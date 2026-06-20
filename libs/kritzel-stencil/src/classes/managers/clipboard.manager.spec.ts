@@ -56,6 +56,10 @@ describe('KritzelClipboardManager', () => {
       toolRegistry: {
         getTool: jest.fn().mockReturnValue({ name: 'selection' }),
       },
+      permissionManager: {
+        checkPermission: jest.fn().mockResolvedValue('granted'),
+        requestPermission: jest.fn().mockResolvedValue('granted'),
+      },
     };
 
     manager = new KritzelClipboardManager(mockCore);
@@ -164,14 +168,6 @@ describe('KritzelClipboardManager', () => {
       rotation: 0,
     });
 
-    const makeKritzelEvent = (payloadObjects: any[]): any => ({
-      clipboardData: {
-        types: ['text/plain'],
-        files: [],
-        getData: jest.fn().mockReturnValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: payloadObjects })}`),
-      },
-    });
-
     beforeEach(() => {
       jest.spyOn(globalThis as any, 'requestAnimationFrame').mockImplementation((cb: any) => {
         cb(0);
@@ -179,6 +175,16 @@ describe('KritzelClipboardManager', () => {
       });
       Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true });
     });
+
+    const setClipboardText = (text: string): void => {
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          read: jest.fn().mockResolvedValue([]),
+          readText: jest.fn().mockResolvedValue(text),
+        },
+        configurable: true,
+      });
+    };
 
     it('is a no-op when there is no pasteable content', async () => {
       await manager.paste();
@@ -192,7 +198,7 @@ describe('KritzelClipboardManager', () => {
       mockCore.store.state.activeWorkspace = null;
       jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(makeRevived());
 
-      await manager.paste(undefined, undefined, makeKritzelEvent([{ id: 'x', __class__: 'KritzelShape' }]));
+      await manager.paste(undefined, undefined);
 
       expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
       expect(mockCore.addObject).not.toHaveBeenCalled();
@@ -206,7 +212,9 @@ describe('KritzelClipboardManager', () => {
       const selectionGroup = makeSelectionGroup();
       (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
 
-      await manager.paste(undefined, undefined, makeKritzelEvent([{ id: 'x', __class__: 'KritzelShape' }]));
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`);
+
+      await manager.paste(undefined, undefined);
 
       // Fresh id assigned, original detached
       expect(revived.generateId).toHaveBeenCalledTimes(1);
@@ -240,7 +248,32 @@ describe('KritzelClipboardManager', () => {
 
       await manager.paste();
 
+      expect(mockCore.permissionManager.checkPermission).toHaveBeenCalledWith('clipboard-read');
+      expect(mockCore.permissionManager.requestPermission).not.toHaveBeenCalled();
       expect(navigator.clipboard.readText).toHaveBeenCalledTimes(1);
+      expect(mockCore.addObject).toHaveBeenCalledWith(revived);
+    });
+
+    it('requests clipboard-read permission when the current state is not yet granted', async () => {
+      const revived = makeRevived();
+      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revived);
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+
+      mockCore.permissionManager.checkPermission.mockResolvedValueOnce('prompt');
+      mockCore.permissionManager.requestPermission.mockResolvedValueOnce('granted');
+
+      Object.defineProperty(navigator, 'clipboard', {
+        value: {
+          read: jest.fn().mockResolvedValue([]),
+          readText: jest.fn().mockResolvedValue(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`),
+        },
+        configurable: true,
+      });
+
+      await manager.paste();
+
+      expect(mockCore.permissionManager.checkPermission).toHaveBeenCalledWith('clipboard-read');
+      expect(mockCore.permissionManager.requestPermission).toHaveBeenCalledWith('clipboard-read');
       expect(mockCore.addObject).toHaveBeenCalledWith(revived);
     });
 
@@ -250,7 +283,9 @@ describe('KritzelClipboardManager', () => {
       const selectionGroup = makeSelectionGroup();
       (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
 
-      await manager.paste(300, 400, makeKritzelEvent([{ id: 'x', __class__: 'KritzelShape' }]));
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`);
+
+      await manager.paste(300, 400);
 
       expect(revived.updatePosition).toHaveBeenCalledWith(300, 400);
       expect(selectionGroup.centerInViewport).not.toHaveBeenCalled();
@@ -263,8 +298,10 @@ describe('KritzelClipboardManager', () => {
       const second = makeRevived();
       jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValueOnce(first).mockReturnValueOnce(second);
 
-      await manager.paste(undefined, undefined, makeKritzelEvent([{ id: 'x', __class__: 'KritzelShape' }]));
-      await manager.paste(undefined, undefined, makeKritzelEvent([{ id: 'x', __class__: 'KritzelShape' }]));
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'x', __class__: 'KritzelShape' }] })}`);
+
+      await manager.paste(undefined, undefined);
+      await manager.paste(undefined, undefined);
 
       expect(first.updatePosition).toHaveBeenCalledWith(125, 225);
       expect(second.updatePosition).toHaveBeenCalledWith(150, 250);
