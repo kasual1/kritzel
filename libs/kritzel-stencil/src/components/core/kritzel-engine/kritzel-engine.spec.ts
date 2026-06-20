@@ -109,6 +109,9 @@ describe('KritzelEngine', () => {
       cut: jest.fn(),
       paste: jest.fn(),
     },
+    permissionManager: {
+      requestPermission: jest.fn().mockResolvedValue('granted'),
+    },
     cursorManager: {
       setTargetElement: jest.fn(),
       cleanup: jest.fn(),
@@ -349,7 +352,21 @@ describe('KritzelEngine', () => {
 
     it('paste forwards coordinates to core.clipboardManager.paste', async () => {
       await engine.paste(42, 99);
+      expect(core.permissionManager.requestPermission).toHaveBeenCalledWith('clipboard-read');
       expect(core.clipboardManager.paste).toHaveBeenCalledWith(42, 99);
+    });
+
+    it('paste shows alert and aborts when clipboard permission is denied', async () => {
+      (core.permissionManager.requestPermission as jest.Mock).mockResolvedValueOnce('denied');
+      const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => undefined);
+
+      await engine.paste(42, 99);
+
+      expect(core.permissionManager.requestPermission).toHaveBeenCalledWith('clipboard-read');
+      expect(core.clipboardManager.paste).not.toHaveBeenCalled();
+      expect(alertSpy).toHaveBeenCalledTimes(1);
+
+      alertSpy.mockRestore();
     });
   });
 
