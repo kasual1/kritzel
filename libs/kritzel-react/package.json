@@ -1,6 +1,6 @@
 {
   "name": "kritzel-react",
-  "version": "0.3.18",
+  "version": "0.3.19",
   "homepage": "https://kritzel.io/",
   "description": "Build infinite canvas experiences in minutes.",
   "license": "PolyForm-Noncommercial-1.0.0",
@@ -21,7 +21,7 @@
     "@stencil/react-output-target": "^1.2.0"
   },
   "peerDependencies": {
-    "kritzel-stencil": "^0.3.18"
+    "kritzel-stencil": "^0.3.19"
   },
   "repository": {
     "type": "git",
