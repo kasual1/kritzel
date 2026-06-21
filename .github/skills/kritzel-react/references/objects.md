@@ -172,13 +172,12 @@ await editor.alignObjects(KritzelAlignment.CenterHorizontal); // needs ≥ 2 sel
 
 Groups expose their children via `childIds: string[]`; resolve children with `getObjectById`.
 
-## Clipboard & delete (internal clipboard, world coordinates)
+## Clipboard & delete (system clipboard, world coordinates)
 
 ```tsx
-await editor.copy();                   // copies selection
+await editor.copy();                   // serializes selection to the system clipboard
 await editor.cut();
 await editor.paste(x, y);              // world coordinates
-const copied = await editor.getCopiedObjects();
 await editor.delete();                 // deletes selection
 ```
 

@@ -45,6 +45,7 @@ import { KritzelViewportState } from '../../../interfaces/viewport-state.interfa
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInViewportChangeEvent } from '../../../interfaces/object-change-event.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
+import { KritzelNotification } from '../../../interfaces/notification.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -346,6 +347,9 @@ export class KritzelEngine {
   /** Emitted when the awareness state changes (remote user cursors, presence). */
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
 
+  /** Emitted when notifications change. */
+  @Event() notificationsChange!: EventEmitter<KritzelNotification>;
+
   @State() forceUpdate: number = 0;
 
   /** Manually triggers the `objectsSelectionChange` event. */
@@ -503,7 +507,7 @@ export class KritzelEngine {
 
   @Listen('keydown', { target: 'window' })
   handleKeyDown(ev: KeyboardEvent) {
-    if (this.core.store.isDisabled || !this.shouldHandleKeyboardEvent(ev)) {
+    if (this.core.store.isDisabled || !this.shouldHandleGlobalShortcutEvent(ev)) {
       return;
     }
 
@@ -512,15 +516,67 @@ export class KritzelEngine {
 
   @Listen('keyup', { target: 'window' })
   handleKeyUp(ev: KeyboardEvent) {
-    if (this.core.store.isDisabled || !this.shouldHandleKeyboardEvent(ev)) {
+    if (this.core.store.isDisabled || !this.shouldHandleGlobalShortcutEvent(ev)) {
       return;
     }
 
     this.keyHandler.handleKeyUp(ev);
   }
 
+  @Listen('copy', { target: 'window', passive: false })
+  handleCopy(ev: ClipboardEvent) {
+    if (this.core.store.isDisabled || !this.shouldHandleGlobalShortcutEvent(ev)) {
+      return;
+    }
+
+    if (!this.core.store.selectionGroup || this.core.store.activeText || this.core.store.activeShape) {
+      return;
+    }
+
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
+    this.core.clipboardManager.copy(ev);
+    this.core.rerender();
+  }
+
+  @Listen('cut', { target: 'window', passive: false })
+  handleCut(ev: ClipboardEvent) {
+    if (this.core.store.isDisabled || !this.shouldHandleGlobalShortcutEvent(ev)) {
+      return;
+    }
+
+    if (!this.core.store.selectionGroup || this.core.store.activeText || this.core.store.activeShape) {
+      return;
+    }
+
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
+    this.core.clipboardManager.cut(ev);
+  }
+
+  @Listen('paste', { target: 'window', passive: false })
+  handlePaste(ev: ClipboardEvent) {
+    if (this.core.store.isDisabled || !this.shouldHandleGlobalShortcutEvent(ev)) {
+      return;
+    }
+
+    if (this.core.store.activeText || this.core.store.activeShape) {
+      return;
+    }
+
+    if (ev.cancelable) {
+      ev.preventDefault();
+    }
+
+    void this.core.clipboardManager.paste(undefined, undefined, ev);
+  }
+
   /**
-   * Determines if the engine should handle a keyboard event.
+    * Determines if the engine should handle a keyboard/clipboard shortcut event.
    * Returns true only if:
    * - The event originates from within the engine component, OR
    * - The event target is not an interactive element that needs keyboard input
@@ -528,7 +584,7 @@ export class KritzelEngine {
    * This prevents conflicts with inputs, textareas, dialogs, or other
    * interactive elements that need their own keyboard handling.
    */
-  private shouldHandleKeyboardEvent(ev: KeyboardEvent): boolean {
+  private shouldHandleGlobalShortcutEvent(ev: KeyboardEvent | ClipboardEvent): boolean {
     const path = ev.composedPath();
 
     // Check if event path includes our host - works reliably with Shadow DOM
@@ -654,13 +710,13 @@ export class KritzelEngine {
   /** Copies the currently selected objects to the internal clipboard. */
   @Method()
   async copy() {
-    this.core.copy();
+    this.core.clipboardManager.copy();
   }
 
   /** Cuts the currently selected objects to the internal clipboard (deletes them from the canvas). */
   @Method()
   async cut() {
-    this.core.cut();
+    this.core.clipboardManager.cut();
   }
 
   /**
@@ -670,7 +726,19 @@ export class KritzelEngine {
    */
   @Method()
   async paste(x: number, y: number) {
-    this.core.paste(x, y);
+    const hasPermission = await this.core.permissionManager.requestPermission('clipboard-read');
+    
+    if (hasPermission !== 'granted') {
+      this.notificationsChange.emit({
+        type: 'error',
+        message: 'Clipboard read permission is required to paste content. Please grant permission and try again.',
+        id: ObjectHelper.generateUUID(),
+      } as KritzelNotification);
+
+      return;
+    }
+
+    this.core.clipboardManager.paste(x, y);
   }
 
   /**
@@ -1286,12 +1354,6 @@ export class KritzelEngine {
   @Method()
   async worldToScreen(x: number, y: number): Promise<{ x: number; y: number }> {
     return this.viewport.worldToScreen(x, y);
-  }
-
-  /** Returns the objects currently stored in the internal clipboard from a prior `copy()` call. */
-  @Method()
-  async getCopiedObjects(): Promise<KritzelBaseObject[]> {
-    return this.core.store.state.copiedObjects || [];
   }
 
   /** Returns all objects currently visible within the viewport bounds. */
@@ -2399,7 +2461,6 @@ export class KritzelEngine {
     }
 
     this.core.store.state.skipContextMenu = false;
-    this.core.store.state.copiedObjects = undefined;
     if (activeTool) {
       this.activeToolChange.emit(activeTool);
     }

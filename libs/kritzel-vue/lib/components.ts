@@ -17,6 +17,7 @@ import { defineCustomElement as defineKritzelInput } from '../../kritzel-stencil
 import { defineCustomElement as defineKritzelLineEndings } from '../../kritzel-stencil/dist/components/kritzel-line-endings.js';
 import { defineCustomElement as defineKritzelLoginDialog } from '../../kritzel-stencil/dist/components/kritzel-login-dialog.js';
 import { defineCustomElement as defineKritzelMasterDetail } from '../../kritzel-stencil/dist/components/kritzel-master-detail.js';
+import { defineCustomElement as defineKritzelNotificationCard } from '../../kritzel-stencil/dist/components/kritzel-notification-card.js';
 import { defineCustomElement as defineKritzelNumericInput } from '../../kritzel-stencil/dist/components/kritzel-numeric-input.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelPillTabs } from '../../kritzel-stencil/dist/components/kritzel-pill-tabs.js';
@@ -185,7 +186,8 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'undoStateChange',
   'objectsInViewportChange',
   'viewportChange',
-  'awarenessChange'
+  'awarenessChange',
+  'notificationsChange'
 ], [
   'isEngineReady',
   'activeToolChange',
@@ -200,7 +202,8 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'undoStateChange',
   'objectsInViewportChange',
   'viewportChange',
-  'awarenessChange'
+  'awarenessChange',
+  'notificationsChange'
 ]);
 
 
@@ -257,6 +260,18 @@ export const KritzelMasterDetail: StencilVueComponent<JSX.KritzelMasterDetail> =
   'itemSelect'
 ], [
   'itemSelect'
+]);
+
+
+export const KritzelNotificationCard: StencilVueComponent<JSX.KritzelNotificationCard> = /*@__PURE__*/ defineContainer<JSX.KritzelNotificationCard>('kritzel-notification-card', defineKritzelNotificationCard, [
+  'notification',
+  'showTimestamp',
+  'locale',
+  'dismiss',
+  'hoverChange'
+], [
+  'dismiss',
+  'hoverChange'
 ]);
 
 

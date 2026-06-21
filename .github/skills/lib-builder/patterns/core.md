@@ -122,3 +122,9 @@ this._core.editorId       // storage key namespace
 - Methods that affect viewport should emit: `this.engine.emitObjectsInViewportChange()`
 - Always call `this.rerender()` after state mutations that should reflect in UI
 - Use `this.getStorageKey(base)` for namespaced localStorage keys
+
+## Unit Testing Guidance
+
+- When behavior is extracted into a manager, keep core tests focused on delegation (method forwarding, argument passthrough)
+- Do not duplicate manager behavior assertions in core specs; verify those in manager-specific tests
+- Mock only stable/public collaborators from core (`store`, `engine`, `toolRegistry`, managers), not private implementation details

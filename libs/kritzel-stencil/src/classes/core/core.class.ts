@@ -22,6 +22,8 @@ import { KritzelCursorManager } from '../managers/cursor.manager';
 import { KritzelThemeManager } from '../managers/theme.manager';
 import { KritzelLocalizationManager } from '../managers/localization.manager';
 import { KritzelLicenseManager } from '../managers/license.manager';
+import { KritzelBrowserPermissionManager } from '../managers/browser-permission.manager';
+import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { IKritzelUser } from '../../interfaces/user.interface';
 
@@ -61,6 +63,10 @@ export class KritzelCore {
   private readonly _localizationManager: KritzelLocalizationManager;
   /** Manager for license validation and watermark gating */
   private readonly _licenseManager: KritzelLicenseManager;
+  /** Manager for browser permission checks and permission prompts */
+  private readonly _permissionManager: KritzelBrowserPermissionManager;
+  /** Manager for clipboard copy/cut/paste orchestration */
+  private readonly _clipboardManager: KritzelClipboardManager;
   /** Per-core registry of drawing tools (one instance per editor). */
   private readonly _toolRegistry: KritzelToolRegistry;
   /** Optional unique identifier for namespacing storage keys across multiple editor instances */
@@ -133,11 +139,27 @@ export class KritzelCore {
   }
 
   /**
+   * Gets the browser permission manager.
+   * @returns The KritzelBrowserPermissionManager for browser permission checks and requests
+   */
+  get permissionManager(): KritzelBrowserPermissionManager {
+    return this._permissionManager;
+  }
+
+  /**
    * Gets the tool registry scoped to this core instance.
    * @returns The KritzelToolRegistry owned by this core
    */
   get toolRegistry(): KritzelToolRegistry {
     return this._toolRegistry;
+  }
+
+  /**
+   * Gets the clipboard manager scoped to this core instance.
+   * @returns The KritzelClipboardManager owned by this core
+   */
+  get clipboardManager(): KritzelClipboardManager {
+    return this._clipboardManager;
   }
 
   /**
@@ -191,6 +213,8 @@ export class KritzelCore {
     this._themeManager = new KritzelThemeManager(this);
     this._localizationManager = new KritzelLocalizationManager(this);
     this._licenseManager = new KritzelLicenseManager(this);
+    this._permissionManager = new KritzelBrowserPermissionManager(this);
+    this._clipboardManager = new KritzelClipboardManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);
     this._assetResolver = new KritzelAssetResolver();
   }
@@ -749,259 +773,6 @@ export class KritzelCore {
       this.engine.emitObjectsInViewportChange();
       this.rerender();
     }
-  }
-
-  /**
-   * Copies the currently selected objects to the clipboard.
-   * Creates deep copies of objects and tracks ID mappings for anchor remapping.
-   */
-  copy() {
-    const selectionGroup = this._store.selectionGroup;
-    if (selectionGroup) {
-      // Copy each object and store them in an array, also track the ID mapping
-      const idMapping = new Map<string, string>();
-      const copiedObjects = selectionGroup.objects
-        .sort((a, b) => a.zIndex - b.zIndex)
-        .map(obj => {
-          const copiedObj = obj.copy() as KritzelBaseObject<any>;
-          // Map: newId -> originalId
-          idMapping.set(copiedObj.id, obj.id);
-          return copiedObj;
-        });
-
-      this._store.state.copiedObjects = copiedObjects;
-      this._store.state.copiedObjectIdMapping = idMapping;
-    }
-  }
-
-  /**
-   * Cuts the currently selected objects (copy then delete).
-   * Objects are copied to clipboard and then removed from the canvas.
-   */
-  cut(): void {
-    const selectionGroup = this._store.selectionGroup;
-    if (!selectionGroup) {
-      return;
-    }
-
-    // Copy first, then delete
-    this.copy();
-    this.delete();
-  }
-
-  /**
-   * Pastes objects from the clipboard to the canvas.
-   * Handles positioning (explicit, offset, or centered for cross-workspace paste),
-   * workspace assignment, z-index ordering, group children, and anchor remapping.
-   * Creates a selection group containing the pasted objects.
-   * @param x - Optional explicit X position for paste
-   * @param y - Optional explicit Y position for paste
-   */
-  paste(x?: number, y?: number) {
-    const copiedObjects = this._store.state.copiedObjects;
-    if (!copiedObjects || copiedObjects.length === 0) {
-      return;
-    }
-
-    const activeWorkspace = this._store.state.activeWorkspace;
-    const originalIdMapping = this._store.state.copiedObjectIdMapping;
-
-    // Check if we're pasting from a different workspace
-    const isDifferentWorkspace = copiedObjects.some(obj => obj.workspaceId !== activeWorkspace!.id);
-
-    // Calculate the bounding box of all copied objects
-    const minX = Math.min(...copiedObjects.map(obj => obj.translateX));
-    const minY = Math.min(...copiedObjects.map(obj => obj.translateY));
-
-    // Determine the paste position
-    let pasteX: number;
-    let pasteY: number;
-
-    if (x !== undefined && y !== undefined) {
-      // Explicit position provided (e.g., right-click paste)
-      pasteX = x;
-      pasteY = y;
-    } else if (isDifferentWorkspace) {
-      // Pasting to different workspace without explicit position
-      // Keep original position; will be centered by centerInViewport() later
-      pasteX = minX;
-      pasteY = minY;
-    } else {
-      // Same workspace paste: offset by 25 pixels from original position
-      pasteX = minX + 25 / this._store.state.scale;
-      pasteY = minY + 25 / this._store.state.scale;
-    }
-
-    // Calculate the offset to apply to all objects
-    const offsetX = pasteX - minX;
-    const offsetY = pasteY - minY;
-
-    this.removeSelectionGroup();
-    this.removeSelectionBox();
-
-    // Create a new selection group for the pasted objects
-    const selectionGroup = KritzelSelectionGroup.create(this);
-
-    // Build a reverse mapping: originalId -> newCopiedObjectId
-    // This is used to remap anchor references from original IDs to the copied object IDs
-    const originalToNewIdMap = new Map<string, string>();
-    if (originalIdMapping) {
-      originalIdMapping.forEach((originalId, copiedId) => {
-        originalToNewIdMap.set(originalId, copiedId);
-      });
-    }
-
-    // Precompute zIndex once to avoid O(N * total_objects) repeated scans
-    const baseZIndex = this._store.currentZIndex;
-
-    // Batch all inserts and updates in a single Y.js transaction to avoid
-    // N separate observer callbacks and N rerenders (fires only once at commit)
-    this._store.objects.transaction(() => {
-      // Recursively flush a group's pending children (and any nested groups'
-      // pending children) into the store. Without recursion, nested groups
-      // would have their grandchildren stranded in `_pendingChildren` and they
-      // would never appear on the canvas, even though the parent group's
-      // bounding box looks correct.
-      const flushPendingChildren = (group: KritzelGroup, parentZIndex: number): void => {
-        if (group._pendingChildren.length === 0) {
-          return;
-        }
-
-        const pendingChildren = group._pendingChildren;
-        group._pendingChildren = [];
-
-        pendingChildren.forEach((child, childIndex) => {
-          if (child.workspaceId !== activeWorkspace!.id) {
-            child.workspaceId = activeWorkspace!.id;
-          }
-
-          child.updatePosition(child.translateX + offsetX, child.translateY + offsetY);
-          child.zIndex = parentZIndex + childIndex + 1;
-
-          // Recurse before adding so grandchildren are inserted as well
-          if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
-            flushPendingChildren(child, child.zIndex);
-          }
-
-          this.addObject(child);
-        });
-
-        group.finalize();
-      };
-
-      const newlyAddedObjects: KritzelBaseObject<any>[] = [];
-
-      // First add all copied objects to the objectsMap with updated positions
-      copiedObjects.forEach((obj, i) => {
-        // Update workspace if pasting to a different workspace
-        if (obj.workspaceId !== activeWorkspace!.id) {
-          obj.workspaceId = activeWorkspace!.id;
-        }
-
-        // Update position
-        obj.updatePosition(obj.translateX + offsetX, obj.translateY + offsetY);
-
-        // Update z-index
-        obj.zIndex = baseZIndex + i;
-
-        // Handle KritzelGroup: also add pending children (and grandchildren) with offset
-        if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
-          flushPendingChildren(obj, obj.zIndex);
-        }
-
-        // Add to objectsMap
-        this.addObject(obj);
-        newlyAddedObjects.push(obj);
-
-        // Add to selection group
-        selectionGroup.addOrRemove(obj);
-      });
-
-      this.engine.emitObjectsAdded(newlyAddedObjects);
-
-      // Update line anchors to point to the newly pasted objects
-      // Only remap if the anchor target was also part of the copied selection
-      copiedObjects.forEach(obj => {
-        if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) {
-          let updated = false;
-
-          if (obj.startAnchor && originalToNewIdMap.has(obj.startAnchor.objectId)) {
-            obj.startAnchor = { objectId: originalToNewIdMap.get(obj.startAnchor.objectId)! };
-            updated = true;
-          }
-
-          if (obj.endAnchor && originalToNewIdMap.has(obj.endAnchor.objectId)) {
-            obj.endAnchor = { objectId: originalToNewIdMap.get(obj.endAnchor.objectId)! };
-            updated = true;
-          }
-
-          // If anchors were updated, rebuild the anchor index and persist the change
-          if (updated) {
-            this._store.objects.update(obj);
-          }
-        }
-      });
-    });
-
-    // Rebuild anchor index after all anchor updates
-    this._anchorManager.rebuildIndex();
-
-    // Mark selection group as selected
-    selectionGroup.isSelected = true;
-
-    // Set rotation for single object
-    if (copiedObjects.length === 1) {
-      selectionGroup.rotation = copiedObjects[0].rotation;
-    }
-
-    // For cross-workspace paste, set the selection group's position before inserting
-    // it into the store. This mirrors the existing pattern where objects have
-    // updatePosition called before addObject, so the correct position is captured
-    // in the single initial insert with no separate Yjs update (and no extra undo step).
-    if (isDifferentWorkspace) {
-      if (x !== undefined && y !== undefined) {
-        // Explicit cursor position provided (e.g. right-click paste)
-        selectionGroup.updatePosition(x, y);
-      } else {
-        // Ctrl+V paste: center objects in the current viewport
-        selectionGroup.centerInViewport();
-      }
-    }
-
-    // Add the selection group (inserts with the already-adjusted position)
-    this.addSelectionGroup(selectionGroup);
-
-    // Bring pasted objects into view with a smooth animation if they are not
-    // fully visible. These only mutate in-memory viewport state (scale, translateX/Y)
-    // and do not produce any Yjs writes, so they have no impact on the undo history.
-    this.engine.viewport.bringIntoViewIfNeeded(selectionGroup);
-
-    this._store.state.isSelecting = false;
-
-    // Defer creating copies for future pastes to next frame to avoid
-    // doubling the object creation cost in the current paste frame
-    requestAnimationFrame(() => {
-      const newSelectionGroup = this._store.selectionGroup;
-      if (newSelectionGroup) {
-        const newIdMapping = new Map<string, string>();
-        const newCopiedObjects = newSelectionGroup.objects
-          .sort((a, b) => a.zIndex - b.zIndex)
-          .map(obj => {
-            const copiedObj = obj.copy() as KritzelBaseObject<any>;
-            newIdMapping.set(copiedObj.id, obj.id);
-            return copiedObj;
-          });
-
-        this._store.state.copiedObjects = newCopiedObjects;
-        this._store.state.copiedObjectIdMapping = newIdMapping;
-      }
-    });
-
-    this._store.setState('activeTool', this._toolRegistry.getTool('selection'));
-
-    this.engine.emitObjectsChange();
-
-    this.rerender();
   }
 
   /**

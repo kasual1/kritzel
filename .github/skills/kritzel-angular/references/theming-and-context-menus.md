@@ -63,7 +63,6 @@ import { ContextMenuItem } from 'kritzel-angular';
 readonly globalItems: ContextMenuItem[] = [
   {
     label: 'Paste', icon: 'paste', group: 'clipboard',
-    disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
     action: menu => this.editor.paste(menu.x, menu.y),   // menu.x / menu.y = world coords of the click
   },
   { label: 'Select All', icon: 'select-all', action: () => this.editor.selectAllObjectsInViewport() },

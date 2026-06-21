@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelDialogCloseEvent, type IKritzelIsPublicChangedEvent, type IKritzelMasterDetailSelectEvent, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelBaseTool, type KritzelButtonCustomEvent, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelEngineCustomEvent, type KritzelEngineState, type KritzelExportCustomEvent, type KritzelInputCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelLoginDialogCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelPillTabsCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelUndoState, type KritzelViewportState, type KritzelWorkspace, type KritzelZoomPanelCustomEvent, type LineArrowConfig, type LocaleCode, type LoginEvent, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ThemeName } from "../../../../kritzel-stencil";
+import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelDialogCloseEvent, type IKritzelIsPublicChangedEvent, type IKritzelMasterDetailSelectEvent, type KritzelBackToContentCustomEvent, type KritzelBaseObject, type KritzelBaseTool, type KritzelButtonCustomEvent, type KritzelDialogCustomEvent, type KritzelEditorCustomEvent, type KritzelEngineCustomEvent, type KritzelEngineState, type KritzelExportCustomEvent, type KritzelInputCustomEvent, type KritzelLineEndingsCustomEvent, type KritzelLoginDialogCustomEvent, type KritzelMasterDetailCustomEvent, type KritzelNotification, type KritzelNotificationCardCustomEvent, type KritzelNumericInputCustomEvent, type KritzelOpacitySliderCustomEvent, type KritzelPillTabsCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelUndoState, type KritzelViewportState, type KritzelWorkspace, type KritzelZoomPanelCustomEvent, type LineArrowConfig, type LocaleCode, type LoginEvent, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ThemeName } from "../../../../kritzel-stencil";
 import type { Components } from "../../../../kritzel-stencil/dist/components";
 import { KritzelAwarenessCursors as KritzelAwarenessCursorsElement, defineCustomElement as defineKritzelAwarenessCursors } from "../../../../kritzel-stencil/dist/components/kritzel-awareness-cursors.js";
 import { KritzelBackToContent as KritzelBackToContentElement, defineCustomElement as defineKritzelBackToContent } from "../../../../kritzel-stencil/dist/components/kritzel-back-to-content.js";
@@ -25,6 +25,7 @@ import { KritzelInput as KritzelInputElement, defineCustomElement as defineKritz
 import { KritzelLineEndings as KritzelLineEndingsElement, defineCustomElement as defineKritzelLineEndings } from "../../../../kritzel-stencil/dist/components/kritzel-line-endings.js";
 import { KritzelLoginDialog as KritzelLoginDialogElement, defineCustomElement as defineKritzelLoginDialog } from "../../../../kritzel-stencil/dist/components/kritzel-login-dialog.js";
 import { KritzelMasterDetail as KritzelMasterDetailElement, defineCustomElement as defineKritzelMasterDetail } from "../../../../kritzel-stencil/dist/components/kritzel-master-detail.js";
+import { KritzelNotificationCard as KritzelNotificationCardElement, defineCustomElement as defineKritzelNotificationCard } from "../../../../kritzel-stencil/dist/components/kritzel-notification-card.js";
 import { KritzelNumericInput as KritzelNumericInputElement, defineCustomElement as defineKritzelNumericInput } from "../../../../kritzel-stencil/dist/components/kritzel-numeric-input.js";
 import { KritzelOpacitySlider as KritzelOpacitySliderElement, defineCustomElement as defineKritzelOpacitySlider } from "../../../../kritzel-stencil/dist/components/kritzel-opacity-slider.js";
 import { KritzelPillTabs as KritzelPillTabsElement, defineCustomElement as defineKritzelPillTabs } from "../../../../kritzel-stencil/dist/components/kritzel-pill-tabs.js";
@@ -148,7 +149,8 @@ export type KritzelEngineEvents = {
     onUndoStateChange: EventName<KritzelEngineCustomEvent<KritzelUndoState>>,
     onObjectsInViewportChange: EventName<KritzelEngineCustomEvent<ObjectsInViewportChangeEvent>>,
     onViewportChange: EventName<KritzelEngineCustomEvent<KritzelViewportState>>,
-    onAwarenessChange: EventName<KritzelEngineCustomEvent<Map<number, Record<string, any>>>>
+    onAwarenessChange: EventName<KritzelEngineCustomEvent<Map<number, Record<string, any>>>>,
+    onNotificationsChange: EventName<KritzelEngineCustomEvent<KritzelNotification>>
 };
 
 export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelEngineEvents, Components.KritzelEngine> = /*@__PURE__*/ createComponent<KritzelEngineElement, KritzelEngineEvents, Components.KritzelEngine>({
@@ -170,7 +172,8 @@ export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelE
         onUndoStateChange: 'undoStateChange',
         onObjectsInViewportChange: 'objectsInViewportChange',
         onViewportChange: 'viewportChange',
-        onAwarenessChange: 'awarenessChange'
+        onAwarenessChange: 'awarenessChange',
+        onNotificationsChange: 'notificationsChange'
     } as KritzelEngineEvents,
     defineCustomElement: defineKritzelEngine
 });
@@ -242,6 +245,23 @@ export const KritzelMasterDetail: StencilReactComponent<KritzelMasterDetailEleme
     react: React,
     events: { onItemSelect: 'itemSelect' } as KritzelMasterDetailEvents,
     defineCustomElement: defineKritzelMasterDetail
+});
+
+export type KritzelNotificationCardEvents = {
+    onDismiss: EventName<KritzelNotificationCardCustomEvent<void>>,
+    onHoverChange: EventName<KritzelNotificationCardCustomEvent<boolean>>
+};
+
+export const KritzelNotificationCard: StencilReactComponent<KritzelNotificationCardElement, KritzelNotificationCardEvents, Components.KritzelNotificationCard> = /*@__PURE__*/ createComponent<KritzelNotificationCardElement, KritzelNotificationCardEvents, Components.KritzelNotificationCard>({
+    tagName: 'kritzel-notification-card',
+    elementClass: KritzelNotificationCardElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onDismiss: 'dismiss',
+        onHoverChange: 'hoverChange'
+    } as KritzelNotificationCardEvents,
+    defineCustomElement: defineKritzelNotificationCard
 });
 
 export type KritzelNumericInputEvents = { onValueChange: EventName<KritzelNumericInputCustomEvent<number | undefined>> };

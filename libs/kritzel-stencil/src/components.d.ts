@@ -29,13 +29,9 @@ import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
-import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
+import { KritzelNotification } from "./interfaces/notification.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
-import { KritzelImage } from "./classes/objects/image.class";
-import { KritzelText } from "./classes/objects/text.class";
-import { KritzelGroup } from "./classes/objects/group.class";
-import { KritzelLine } from "./classes/objects/line.class";
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
@@ -71,6 +67,7 @@ export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
 export { Element, Event } from "@stencil/core";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
+export { KritzelNotification } from "./interfaces/notification.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelImage } from "./classes/objects/image.class";
 export { KritzelText } from "./classes/objects/text.class";
@@ -409,7 +406,6 @@ export namespace Components {
           * Gets the list of available locale codes (built-in and registered).
          */
         "getAvailableLocales": () => Promise<LocaleCode[]>;
-        "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         "getDisplayableShortcuts": () => Promise<Omit<KritzelShortcut, "action" | "condition">[]>;
         /**
           * Gets the currently active locale code.
@@ -423,7 +419,7 @@ export namespace Components {
         "getViewport": () => Promise<KritzelViewportState>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
         /**
-          * @default [     {       label: 'menu.paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.selectAll',       icon: 'select-all',       disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,       action: () => this.selectAllObjectsInViewport(),     },   ]
+          * @default [     {       label: 'menu.paste',       icon: 'paste',       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.selectAll',       icon: 'select-all',       action: () => this.selectAllObjectsInViewport(),     },   ]
          */
         "globalContextMenuItems": ContextMenuItem[];
         "group": () => Promise<void>;
@@ -490,7 +486,7 @@ export namespace Components {
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
-          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'menu.export',       icon: 'download',       group: 'export',       children: [         { label: 'menu.exportAsSvg', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'menu.exportAsPng', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
+          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       children: [         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'menu.export',       icon: 'download',       group: 'export',       children: [         { label: 'menu.exportAsSvg', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'menu.exportAsPng', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
@@ -543,6 +539,11 @@ export namespace Components {
          */
         "theme": ThemeName;
         "themes"?: KritzelTheme[];
+        /**
+          * Triggers a UI notification programmatically.
+          * @param notification - Notification payload. `id` and `timestamp` are optional.
+         */
+        "triggerNotification": (notification: Omit<KritzelNotification, "id"> & Partial<Pick<KritzelNotification, "id" | "timestamp">>) => Promise<void>;
         "triggerSelectionChange": () => Promise<void>;
         "undo": () => Promise<void>;
         "ungroup": () => Promise<void>;
@@ -747,10 +748,6 @@ export namespace Components {
           * Gets the list of available locale codes (built-in and registered).
          */
         "getAvailableLocales": () => Promise<LocaleCode[]>;
-        /**
-          * Returns the objects currently stored in the internal clipboard from a prior `copy()` call.
-         */
-        "getCopiedObjects": () => Promise<KritzelBaseObject[]>;
         /**
           * Returns all registered keyboard shortcuts (without action/condition) for display in a help UI.
          */
@@ -1296,6 +1293,21 @@ export namespace Components {
          */
         "visible": boolean;
     }
+    interface KritzelNotificationCard {
+        /**
+          * Locale used for formatting the timestamp.
+         */
+        "locale"?: string;
+        /**
+          * Notification data rendered by this card.
+         */
+        "notification"?: KritzelNotification;
+        /**
+          * Whether a formatted timestamp should be displayed when available.
+          * @default true
+         */
+        "showTimestamp": boolean;
+    }
     interface KritzelNumericInput {
         /**
           * Label text displayed above the input
@@ -1665,6 +1677,10 @@ export interface KritzelMoreMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelMoreMenuElement;
 }
+export interface KritzelNotificationCardCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelNotificationCardElement;
+}
 export interface KritzelNumericInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelNumericInputElement;
@@ -1951,6 +1967,7 @@ declare global {
         "objectsInViewportChange": ObjectsInViewportChangeEvent;
         "viewportChange": KritzelViewportState;
         "awarenessChange": Map<number, Record<string, any>>;
+        "notificationsChange": KritzelNotification;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2164,6 +2181,24 @@ declare global {
     var HTMLKritzelMoreMenuElement: {
         prototype: HTMLKritzelMoreMenuElement;
         new (): HTMLKritzelMoreMenuElement;
+    };
+    interface HTMLKritzelNotificationCardElementEventMap {
+        "dismiss": void;
+        "hoverChange": boolean;
+    }
+    interface HTMLKritzelNotificationCardElement extends Components.KritzelNotificationCard, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelNotificationCardElementEventMap>(type: K, listener: (this: HTMLKritzelNotificationCardElement, ev: KritzelNotificationCardCustomEvent<HTMLKritzelNotificationCardElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelNotificationCardElementEventMap>(type: K, listener: (this: HTMLKritzelNotificationCardElement, ev: KritzelNotificationCardCustomEvent<HTMLKritzelNotificationCardElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelNotificationCardElement: {
+        prototype: HTMLKritzelNotificationCardElement;
+        new (): HTMLKritzelNotificationCardElement;
     };
     interface HTMLKritzelNumericInputElementEventMap {
         "valueChange": number | undefined;
@@ -2482,6 +2517,7 @@ declare global {
         "kritzel-menu": HTMLKritzelMenuElement;
         "kritzel-menu-item": HTMLKritzelMenuItemElement;
         "kritzel-more-menu": HTMLKritzelMoreMenuElement;
+        "kritzel-notification-card": HTMLKritzelNotificationCardElement;
         "kritzel-numeric-input": HTMLKritzelNumericInputElement;
         "kritzel-opacity-slider": HTMLKritzelOpacitySliderElement;
         "kritzel-pill-tabs": HTMLKritzelPillTabsElement;
@@ -2810,7 +2846,7 @@ declare namespace LocalJSX {
          */
         "fallbackLocale"?: LocaleCode;
         /**
-          * @default [     {       label: 'menu.paste',       icon: 'paste',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.selectAll',       icon: 'select-all',       disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,       action: () => this.selectAllObjectsInViewport(),     },   ]
+          * @default [     {       label: 'menu.paste',       icon: 'paste',       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.selectAll',       icon: 'select-all',       action: () => this.selectAllObjectsInViewport(),     },   ]
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
@@ -2872,7 +2908,7 @@ declare namespace LocalJSX {
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
-          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,       children: [         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           disabled: async () => {             const selectedObjects = await this.engineRef.getSelectedObjects();             return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');           },           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'menu.export',       icon: 'download',       group: 'export',       children: [         { label: 'menu.exportAsSvg', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'menu.exportAsPng', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
+          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       children: [         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'menu.export',       icon: 'download',       group: 'export',       children: [         { label: 'menu.exportAsSvg', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'menu.exportAsPng', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
@@ -3016,6 +3052,10 @@ declare namespace LocalJSX {
           * Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.
          */
         "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
+        /**
+          * Emitted when notifications change.
+         */
+        "onNotificationsChange"?: (event: KritzelEngineCustomEvent<KritzelNotification>) => void;
         /**
           * Emitted when one or more objects are added to the canvas.
          */
@@ -3316,6 +3356,29 @@ declare namespace LocalJSX {
           * @default false
          */
         "visible"?: boolean;
+    }
+    interface KritzelNotificationCard {
+        /**
+          * Locale used for formatting the timestamp.
+         */
+        "locale"?: string;
+        /**
+          * Notification data rendered by this card.
+         */
+        "notification"?: KritzelNotification;
+        /**
+          * Emitted when the notification should be dismissed manually.
+         */
+        "onDismiss"?: (event: KritzelNotificationCardCustomEvent<void>) => void;
+        /**
+          * Emitted when pointer hover state changes.
+         */
+        "onHoverChange"?: (event: KritzelNotificationCardCustomEvent<boolean>) => void;
+        /**
+          * Whether a formatted timestamp should be displayed when available.
+          * @default true
+         */
+        "showTimestamp"?: boolean;
     }
     interface KritzelNumericInput {
         /**
@@ -3790,6 +3853,10 @@ declare namespace LocalJSX {
         "iconSize": number;
         "offsetY": number;
     }
+    interface KritzelNotificationCardAttributes {
+        "showTimestamp": boolean;
+        "locale": string;
+    }
     interface KritzelNumericInputAttributes {
         "value": number;
         "min": number;
@@ -3884,6 +3951,7 @@ declare namespace LocalJSX {
         "kritzel-menu": KritzelMenu;
         "kritzel-menu-item": KritzelMenuItem;
         "kritzel-more-menu": Omit<KritzelMoreMenu, keyof KritzelMoreMenuAttributes> & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes]?: KritzelMoreMenu[K] } & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes as `attr:${K}`]?: KritzelMoreMenuAttributes[K] } & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes as `prop:${K}`]?: KritzelMoreMenu[K] };
+        "kritzel-notification-card": Omit<KritzelNotificationCard, keyof KritzelNotificationCardAttributes> & { [K in keyof KritzelNotificationCard & keyof KritzelNotificationCardAttributes]?: KritzelNotificationCard[K] } & { [K in keyof KritzelNotificationCard & keyof KritzelNotificationCardAttributes as `attr:${K}`]?: KritzelNotificationCardAttributes[K] } & { [K in keyof KritzelNotificationCard & keyof KritzelNotificationCardAttributes as `prop:${K}`]?: KritzelNotificationCard[K] };
         "kritzel-numeric-input": Omit<KritzelNumericInput, keyof KritzelNumericInputAttributes> & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes]?: KritzelNumericInput[K] } & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes as `attr:${K}`]?: KritzelNumericInputAttributes[K] } & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes as `prop:${K}`]?: KritzelNumericInput[K] };
         "kritzel-opacity-slider": Omit<KritzelOpacitySlider, keyof KritzelOpacitySliderAttributes> & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes]?: KritzelOpacitySlider[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `attr:${K}`]?: KritzelOpacitySliderAttributes[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `prop:${K}`]?: KritzelOpacitySlider[K] };
         "kritzel-pill-tabs": Omit<KritzelPillTabs, keyof KritzelPillTabsAttributes> & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes]?: KritzelPillTabs[K] } & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes as `attr:${K}`]?: KritzelPillTabsAttributes[K] } & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes as `prop:${K}`]?: KritzelPillTabs[K] };
@@ -3940,6 +4008,7 @@ declare module "@stencil/core" {
             "kritzel-menu": LocalJSX.IntrinsicElements["kritzel-menu"] & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
             "kritzel-menu-item": LocalJSX.IntrinsicElements["kritzel-menu-item"] & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
             "kritzel-more-menu": LocalJSX.IntrinsicElements["kritzel-more-menu"] & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
+            "kritzel-notification-card": LocalJSX.IntrinsicElements["kritzel-notification-card"] & JSXBase.HTMLAttributes<HTMLKritzelNotificationCardElement>;
             "kritzel-numeric-input": LocalJSX.IntrinsicElements["kritzel-numeric-input"] & JSXBase.HTMLAttributes<HTMLKritzelNumericInputElement>;
             "kritzel-opacity-slider": LocalJSX.IntrinsicElements["kritzel-opacity-slider"] & JSXBase.HTMLAttributes<HTMLKritzelOpacitySliderElement>;
             "kritzel-pill-tabs": LocalJSX.IntrinsicElements["kritzel-pill-tabs"] & JSXBase.HTMLAttributes<HTMLKritzelPillTabsElement>;

@@ -77,7 +77,6 @@ describe('KritzelEditor', () => {
       getObjectsTotalCount: jest.fn().mockResolvedValue(0),
       getAllObjects: jest.fn().mockResolvedValue([]),
       findObjects: jest.fn().mockResolvedValue([]),
-      getCopiedObjects: jest.fn().mockResolvedValue([]),
       getObjectsInViewport: jest.fn().mockResolvedValue([]),
       hideContextMenu: jest.fn().mockResolvedValue(undefined),
       triggerSelectionChange: jest.fn().mockResolvedValue(undefined),
@@ -199,6 +198,60 @@ describe('KritzelEditor', () => {
       const objects = [{ id: 'obj-1' }] as unknown as KritzelBaseObject[];
       await component.centerObjects(objects, false);
       expect(mockEngine.centerObjects).toHaveBeenCalledWith(objects, false);
+    });
+  });
+
+  describe('Notification Methods', () => {
+    afterEach(() => {
+      component.disconnectedCallback();
+    });
+
+    it('should trigger notification with provided type', async () => {
+      await component.triggerNotification({
+        type: 'warning',
+        message: 'Heads up',
+      });
+
+      expect(component.activeNotification).toEqual(
+        expect.objectContaining({
+          type: 'warning',
+          message: 'Heads up',
+        }),
+      );
+      expect(component.activeNotification?.id).toBeTruthy();
+      expect(component.activeNotification?.timestamp).toBeInstanceOf(Date);
+    });
+
+    it('should preserve provided id and timestamp when triggering notification', async () => {
+      const timestamp = new Date('2026-01-01T00:00:00.000Z');
+
+      await component.triggerNotification({
+        id: 'custom-id',
+        type: 'error',
+        message: 'Something failed',
+        timestamp,
+      });
+
+      expect(component.activeNotification).toEqual({
+        id: 'custom-id',
+        type: 'error',
+        message: 'Something failed',
+        timestamp,
+      });
+    });
+
+    it('should trigger notification of type info', async () => {
+      await component.triggerNotification({
+        type: 'info',
+        message: 'Everything is up to date.',
+      });
+
+      expect(component.activeNotification).toEqual(
+        expect.objectContaining({
+          type: 'info',
+          message: 'Everything is up to date.',
+        }),
+      );
     });
   });
 

@@ -73,14 +73,6 @@ Returns all objects currently visible within the viewport bounds.
 getObjectsInViewport: Promise<KritzelBaseObject[]>
 ```
 
-### getCopiedObjects
-
-Returns objects currently in the internal clipboard from a prior `copy` call.
-
-```ts
-getCopiedObjects: Promise<KritzelBaseObject[]>
-```
-
 ---
 
 ## Selection

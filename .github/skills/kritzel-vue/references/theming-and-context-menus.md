@@ -68,7 +68,6 @@ const editor = getEditorRef('editor')   // argument = template-ref NAME
 const globalItems: ContextMenuItem[] = [
   {
     label: 'Paste', icon: 'paste', group: 'clipboard',
-    disabled: async () => ((await editor.value?.getCopiedObjects()) ?? []).length === 0,
     action: async menu => { await editor.value?.paste(menu.x, menu.y) },  // menu.x/y = world coords
   },
   {

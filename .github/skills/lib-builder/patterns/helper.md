@@ -52,3 +52,9 @@ Create a helper when:
 Keep logic inline when:
 - It's a one-liner specific to one call site
 - It depends on instance state
+
+## Unit Testing Guidance
+
+- Keep helper tests deterministic and environment-agnostic; avoid hidden coupling to browser-only APIs
+- For browser payload helpers (clipboard, events), use structural mocks rather than concrete DOM constructor behavior
+- Validate priority/order rules explicitly when helper output drives strategy selection

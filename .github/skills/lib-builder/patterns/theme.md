@@ -49,6 +49,16 @@ myComponent: {
 },
 ```
 
+### Step 4: Update related unit tests
+
+If any tests assert generated theme metadata or flattened variable totals (for example in `helpers/theme.helper.spec.ts`), update those expectations to reflect the new CSS variables.
+
+Then run repository tests from root:
+
+```bash
+npm run test
+```
+
 ## Naming Convention
 
 ```
