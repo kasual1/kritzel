@@ -357,12 +357,35 @@ describe('KritzelEngine', () => {
       expect(core.clipboardManager.paste).toHaveBeenCalledWith(42, 99);
     });
 
+    it('paste does not emit a notification when clipboard permission is granted', async () => {
+      await engine.paste(42, 99);
+
+      expect(core.permissionManager.requestPermission).toHaveBeenCalledWith('clipboard-read');
+      expect(core.clipboardManager.paste).toHaveBeenCalledWith(42, 99);
+      expect((engine as any).notificationsChange.emit).not.toHaveBeenCalled();
+    });
+
     it('paste emits notification and aborts when clipboard permission is denied', async () => {
       (core.permissionManager.requestPermission as jest.Mock).mockResolvedValueOnce('denied');
 
       await engine.paste(42, 99);
 
       expect(core.permissionManager.requestPermission).toHaveBeenCalledWith('clipboard-read');
+      expect(core.clipboardManager.paste).not.toHaveBeenCalled();
+      expect((engine as any).notificationsChange.emit).toHaveBeenCalledTimes(1);
+      expect((engine as any).notificationsChange.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'error',
+          message: 'Clipboard read permission is required to paste content. Please grant permission and try again.',
+        }),
+      );
+    });
+
+    it('paste emits notification for any non-granted permission state', async () => {
+      (core.permissionManager.requestPermission as jest.Mock).mockResolvedValueOnce('prompt');
+
+      await engine.paste(42, 99);
+
       expect(core.clipboardManager.paste).not.toHaveBeenCalled();
       expect((engine as any).notificationsChange.emit).toHaveBeenCalledTimes(1);
       expect((engine as any).notificationsChange.emit).toHaveBeenCalledWith(
