@@ -39,6 +39,7 @@ const KNOWN_CATEGORIES = [
   'pill-tabs',
   'shape-fill',
   'settings',
+  'notification-card',
   'dialog',
   'export',
   'master-detail',

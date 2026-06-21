@@ -44,6 +44,10 @@ Provide reliable, maintainable Jest tests for core library logic while staying r
 - Only assert call ordering when sequencing is behaviorally significant.
 - Otherwise prefer assertions on state changes and emitted events.
 
+9. **Keep theming tests aligned with CSS variable changes**
+- When adding/removing/renaming `--kritzel-*` variables, regenerate `interfaces/theme.interface.ts` and update `themes/light-theme.ts` and `themes/dark-theme.ts` first.
+- Then adjust related tests that assert flattened variable totals or generated theme keys (for example `helpers/theme.helper.spec.ts`).
+
 ## Refactor-Resilient Test Checklist
 
 - Update tests that reference moved logic (core -> manager/tool/etc.)

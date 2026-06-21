@@ -204,6 +204,12 @@ export interface KritzelTheme {
     controlsTransform?: string;
     controlsTransition?: string;
     controlsTransitionDuration?: string;
+    notificationAnimationDuration?: string;
+    notificationAnimationEasing?: string;
+    notificationDismissAnimationDuration?: string;
+    notificationDismissAnimationEasing?: string;
+    topCenterNotificationTop?: string;
+    topCenterNotificationZIndex?: string;
     topLeftButtonsLeft?: string;
     topLeftButtonsTop?: string;
     topRightButtonsRight?: string;
@@ -328,6 +334,44 @@ export interface KritzelTheme {
     buttonWidth?: string;
     innerBorderRadius?: string;
     padding?: string;
+  };
+
+  /** Notification card variables */
+  notificationCard?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    color?: string;
+    dismissButtonActiveBackgroundColor?: string;
+    dismissButtonBackgroundColor?: string;
+    dismissButtonBorderRadius?: string;
+    dismissButtonColor?: string;
+    dismissButtonHoverBackgroundColor?: string;
+    dismissButtonSize?: string;
+    errorPillBackgroundColor?: string;
+    errorPillColor?: string;
+    headerGap?: string;
+    headerMarginBottom?: string;
+    headerRightGap?: string;
+    infoPillBackgroundColor?: string;
+    infoPillColor?: string;
+    maxWidth?: string;
+    messageColor?: string;
+    messageFontSize?: string;
+    messageLineHeight?: string;
+    padding?: string;
+    pillBackgroundColor?: string;
+    pillBorderRadius?: string;
+    pillColor?: string;
+    pillFontSize?: string;
+    pillFontWeight?: string;
+    pillHeight?: string;
+    pillPadding?: string;
+    timestampColor?: string;
+    timestampFontSize?: string;
+    warningPillBackgroundColor?: string;
+    warningPillColor?: string;
   };
 
   /** Numeric input variables */
