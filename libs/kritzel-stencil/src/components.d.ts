@@ -32,6 +32,7 @@ import { KritzelAlignment } from "./enums/alignment.enum";
 import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
+import { KritzelNotification } from "./interfaces/notification.interface";
 import { KritzelImage } from "./classes/objects/image.class";
 import { KritzelText } from "./classes/objects/text.class";
 import { KritzelGroup } from "./classes/objects/group.class";
@@ -72,6 +73,7 @@ export { KritzelAlignment } from "./enums/alignment.enum";
 export { Element, Event } from "@stencil/core";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
+export { KritzelNotification } from "./interfaces/notification.interface";
 export { KritzelImage } from "./classes/objects/image.class";
 export { KritzelText } from "./classes/objects/text.class";
 export { KritzelGroup } from "./classes/objects/group.class";
@@ -1291,6 +1293,21 @@ export namespace Components {
          */
         "visible": boolean;
     }
+    interface KritzelNotificationCard {
+        /**
+          * Locale used for formatting the timestamp.
+         */
+        "locale"?: string;
+        /**
+          * Notification data rendered by this card.
+         */
+        "notification"?: KritzelNotification;
+        /**
+          * Whether a formatted timestamp should be displayed when available.
+          * @default true
+         */
+        "showTimestamp": boolean;
+    }
     interface KritzelNumericInput {
         /**
           * Label text displayed above the input
@@ -1660,6 +1677,10 @@ export interface KritzelMoreMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelMoreMenuElement;
 }
+export interface KritzelNotificationCardCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelNotificationCardElement;
+}
 export interface KritzelNumericInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelNumericInputElement;
@@ -1946,6 +1967,7 @@ declare global {
         "objectsInViewportChange": ObjectsInViewportChangeEvent;
         "viewportChange": KritzelViewportState;
         "awarenessChange": Map<number, Record<string, any>>;
+        "notificationsChange": KritzelNotification;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2159,6 +2181,24 @@ declare global {
     var HTMLKritzelMoreMenuElement: {
         prototype: HTMLKritzelMoreMenuElement;
         new (): HTMLKritzelMoreMenuElement;
+    };
+    interface HTMLKritzelNotificationCardElementEventMap {
+        "dismiss": void;
+        "hoverChange": boolean;
+    }
+    interface HTMLKritzelNotificationCardElement extends Components.KritzelNotificationCard, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelNotificationCardElementEventMap>(type: K, listener: (this: HTMLKritzelNotificationCardElement, ev: KritzelNotificationCardCustomEvent<HTMLKritzelNotificationCardElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelNotificationCardElementEventMap>(type: K, listener: (this: HTMLKritzelNotificationCardElement, ev: KritzelNotificationCardCustomEvent<HTMLKritzelNotificationCardElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelNotificationCardElement: {
+        prototype: HTMLKritzelNotificationCardElement;
+        new (): HTMLKritzelNotificationCardElement;
     };
     interface HTMLKritzelNumericInputElementEventMap {
         "valueChange": number | undefined;
@@ -2477,6 +2517,7 @@ declare global {
         "kritzel-menu": HTMLKritzelMenuElement;
         "kritzel-menu-item": HTMLKritzelMenuItemElement;
         "kritzel-more-menu": HTMLKritzelMoreMenuElement;
+        "kritzel-notification-card": HTMLKritzelNotificationCardElement;
         "kritzel-numeric-input": HTMLKritzelNumericInputElement;
         "kritzel-opacity-slider": HTMLKritzelOpacitySliderElement;
         "kritzel-pill-tabs": HTMLKritzelPillTabsElement;
@@ -3012,6 +3053,10 @@ declare namespace LocalJSX {
          */
         "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
         /**
+          * Emitted when notifications change.
+         */
+        "onNotificationsChange"?: (event: KritzelEngineCustomEvent<KritzelNotification>) => void;
+        /**
           * Emitted when one or more objects are added to the canvas.
          */
         "onObjectsAdded"?: (event: KritzelEngineCustomEvent<ObjectsAddedEvent>) => void;
@@ -3311,6 +3356,29 @@ declare namespace LocalJSX {
           * @default false
          */
         "visible"?: boolean;
+    }
+    interface KritzelNotificationCard {
+        /**
+          * Locale used for formatting the timestamp.
+         */
+        "locale"?: string;
+        /**
+          * Notification data rendered by this card.
+         */
+        "notification"?: KritzelNotification;
+        /**
+          * Emitted when the notification should be dismissed manually.
+         */
+        "onDismiss"?: (event: KritzelNotificationCardCustomEvent<void>) => void;
+        /**
+          * Emitted when pointer hover state changes.
+         */
+        "onHoverChange"?: (event: KritzelNotificationCardCustomEvent<boolean>) => void;
+        /**
+          * Whether a formatted timestamp should be displayed when available.
+          * @default true
+         */
+        "showTimestamp"?: boolean;
     }
     interface KritzelNumericInput {
         /**
@@ -3785,6 +3853,10 @@ declare namespace LocalJSX {
         "iconSize": number;
         "offsetY": number;
     }
+    interface KritzelNotificationCardAttributes {
+        "showTimestamp": boolean;
+        "locale": string;
+    }
     interface KritzelNumericInputAttributes {
         "value": number;
         "min": number;
@@ -3879,6 +3951,7 @@ declare namespace LocalJSX {
         "kritzel-menu": KritzelMenu;
         "kritzel-menu-item": KritzelMenuItem;
         "kritzel-more-menu": Omit<KritzelMoreMenu, keyof KritzelMoreMenuAttributes> & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes]?: KritzelMoreMenu[K] } & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes as `attr:${K}`]?: KritzelMoreMenuAttributes[K] } & { [K in keyof KritzelMoreMenu & keyof KritzelMoreMenuAttributes as `prop:${K}`]?: KritzelMoreMenu[K] };
+        "kritzel-notification-card": Omit<KritzelNotificationCard, keyof KritzelNotificationCardAttributes> & { [K in keyof KritzelNotificationCard & keyof KritzelNotificationCardAttributes]?: KritzelNotificationCard[K] } & { [K in keyof KritzelNotificationCard & keyof KritzelNotificationCardAttributes as `attr:${K}`]?: KritzelNotificationCardAttributes[K] } & { [K in keyof KritzelNotificationCard & keyof KritzelNotificationCardAttributes as `prop:${K}`]?: KritzelNotificationCard[K] };
         "kritzel-numeric-input": Omit<KritzelNumericInput, keyof KritzelNumericInputAttributes> & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes]?: KritzelNumericInput[K] } & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes as `attr:${K}`]?: KritzelNumericInputAttributes[K] } & { [K in keyof KritzelNumericInput & keyof KritzelNumericInputAttributes as `prop:${K}`]?: KritzelNumericInput[K] };
         "kritzel-opacity-slider": Omit<KritzelOpacitySlider, keyof KritzelOpacitySliderAttributes> & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes]?: KritzelOpacitySlider[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `attr:${K}`]?: KritzelOpacitySliderAttributes[K] } & { [K in keyof KritzelOpacitySlider & keyof KritzelOpacitySliderAttributes as `prop:${K}`]?: KritzelOpacitySlider[K] };
         "kritzel-pill-tabs": Omit<KritzelPillTabs, keyof KritzelPillTabsAttributes> & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes]?: KritzelPillTabs[K] } & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes as `attr:${K}`]?: KritzelPillTabsAttributes[K] } & { [K in keyof KritzelPillTabs & keyof KritzelPillTabsAttributes as `prop:${K}`]?: KritzelPillTabs[K] };
@@ -3935,6 +4008,7 @@ declare module "@stencil/core" {
             "kritzel-menu": LocalJSX.IntrinsicElements["kritzel-menu"] & JSXBase.HTMLAttributes<HTMLKritzelMenuElement>;
             "kritzel-menu-item": LocalJSX.IntrinsicElements["kritzel-menu-item"] & JSXBase.HTMLAttributes<HTMLKritzelMenuItemElement>;
             "kritzel-more-menu": LocalJSX.IntrinsicElements["kritzel-more-menu"] & JSXBase.HTMLAttributes<HTMLKritzelMoreMenuElement>;
+            "kritzel-notification-card": LocalJSX.IntrinsicElements["kritzel-notification-card"] & JSXBase.HTMLAttributes<HTMLKritzelNotificationCardElement>;
             "kritzel-numeric-input": LocalJSX.IntrinsicElements["kritzel-numeric-input"] & JSXBase.HTMLAttributes<HTMLKritzelNumericInputElement>;
             "kritzel-opacity-slider": LocalJSX.IntrinsicElements["kritzel-opacity-slider"] & JSXBase.HTMLAttributes<HTMLKritzelOpacitySliderElement>;
             "kritzel-pill-tabs": LocalJSX.IntrinsicElements["kritzel-pill-tabs"] & JSXBase.HTMLAttributes<HTMLKritzelPillTabsElement>;

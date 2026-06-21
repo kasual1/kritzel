@@ -14,6 +14,7 @@ export const DIRECTIVES = [
   d.KritzelLineEndings,
   d.KritzelLoginDialog,
   d.KritzelMasterDetail,
+  d.KritzelNotificationCard,
   d.KritzelNumericInput,
   d.KritzelOpacitySlider,
   d.KritzelPillTabs,

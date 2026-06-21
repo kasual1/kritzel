@@ -45,6 +45,7 @@ import { KritzelViewportState } from '../../../interfaces/viewport-state.interfa
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInViewportChangeEvent } from '../../../interfaces/object-change-event.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
+import { KritzelNotification } from '../../../interfaces/notification.interface';
 
 @Component({
   tag: 'kritzel-engine',
@@ -345,6 +346,9 @@ export class KritzelEngine {
 
   /** Emitted when the awareness state changes (remote user cursors, presence). */
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
+
+  /** Emitted when notifications change. */
+  @Event() notificationsChange!: EventEmitter<KritzelNotification>;
 
   @State() forceUpdate: number = 0;
 
@@ -725,7 +729,12 @@ export class KritzelEngine {
     const hasPermission = await this.core.permissionManager.requestPermission('clipboard-read');
     
     if (hasPermission !== 'granted') {
-      window.alert('Clipboard read permission is required to paste content. Please grant permission and try again.');
+      this.notificationsChange.emit({
+        type: 'error',
+        message: 'Clipboard read permission is required to paste content. Please grant permission and try again.',
+        id: ObjectHelper.generateUUID(),
+      } as KritzelNotification);
+
       return;
     }
 

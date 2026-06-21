@@ -44,6 +44,7 @@ import { IKritzelUser } from '../../../interfaces/user.interface';
 import { IKritzelIsPublicChangedEvent } from '../../../interfaces/share.interface';
 import { KritzelLoginConfig as KritzelLoginConfig } from '../../../interfaces/login-config.interface';
 import { LoginEvent } from '../../../events/login.event';
+import { KritzelNotification } from '../../../interfaces/notification.interface';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -269,6 +270,14 @@ export class KritzelEditor {
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
   @State() currentIsPublic: boolean = false;
   @State() isEditorVisible: boolean = false;
+  @State() activeNotification?: KritzelNotification;
+  @State() isNotificationDismissing: boolean = false;
+
+  private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
+  private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
+  private readonly notificationDisplayDurationMs = 5000;
+  private readonly notificationDismissAnimationDurationMs = 180;
+  private isNotificationHovered: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -728,6 +737,11 @@ export class KritzelEditor {
     this.setOsSpecificCssVariables();
   }
 
+  disconnectedCallback() {
+    this.clearNotificationDismissTimer();
+    this.clearNotificationDismissAnimationTimer();
+  }
+
   async checkIsReady() {
     await customElements.whenDefined('kritzel-editor');
     await customElements.whenDefined('kritzel-workspace-manager');
@@ -851,6 +865,67 @@ export class KritzelEditor {
     event.stopPropagation();
     this.awarenessChange.emit(event.detail);
   }
+
+  handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
+    event.stopPropagation();
+    this.clearNotificationDismissAnimationTimer();
+    this.isNotificationDismissing = false;
+    this.isNotificationHovered = false;
+    this.activeNotification = event.detail;
+    this.scheduleNotificationDismiss();
+  }
+
+  handleNotificationHoverChange(event: CustomEvent<boolean>) {
+    event.stopPropagation();
+    this.isNotificationHovered = event.detail;
+
+    if (this.isNotificationHovered) {
+      this.clearNotificationDismissTimer();
+      return;
+    }
+
+    if (this.activeNotification && !this.isNotificationDismissing) {
+      this.scheduleNotificationDismiss();
+    }
+  }
+
+  private scheduleNotificationDismiss(): void {
+    this.clearNotificationDismissTimer();
+    this.notificationDismissTimeout = setTimeout(() => {
+      this.dismissNotification();
+    }, this.notificationDisplayDurationMs);
+  }
+
+  private clearNotificationDismissTimer(): void {
+    if (this.notificationDismissTimeout) {
+      clearTimeout(this.notificationDismissTimeout);
+      this.notificationDismissTimeout = undefined;
+    }
+  }
+
+  private clearNotificationDismissAnimationTimer(): void {
+    if (this.notificationDismissAnimationTimeout) {
+      clearTimeout(this.notificationDismissAnimationTimeout);
+      this.notificationDismissAnimationTimeout = undefined;
+    }
+  }
+
+  private dismissNotification = (): void => {
+    this.clearNotificationDismissTimer();
+    this.isNotificationHovered = false;
+
+    if (!this.activeNotification || this.isNotificationDismissing) {
+      return;
+    }
+
+    this.isNotificationDismissing = true;
+    this.clearNotificationDismissAnimationTimer();
+    this.notificationDismissAnimationTimeout = setTimeout(() => {
+      this.activeNotification = undefined;
+      this.isNotificationDismissing = false;
+      this.notificationDismissAnimationTimeout = undefined;
+    }, this.notificationDismissAnimationDurationMs);
+  };
 
   handleSettingsChange(event: CustomEvent<KritzelSettingsConfig>) {
     this.scaleMin = event.detail.scaleMin;
@@ -1146,6 +1221,14 @@ export class KritzelEditor {
           <kritzel-back-to-content visible={this.isBackToContentButtonVisible} text={this.resolvedTerms['backToContent.label'] ?? 'Back to content'} onBackToContent={() => this.backToContent()}></kritzel-back-to-content>
         </div>
 
+        {this.activeNotification && (
+          <div class="top-center-notification-layer" role="presentation">
+            <div class={{ 'top-center-notification-container': true, 'is-dismissing': this.isNotificationDismissing }} role="presentation">
+              <kritzel-notification-card notification={this.activeNotification} locale={this.locale} onDismiss={this.dismissNotification} onHoverChange={event => this.handleNotificationHoverChange(event)}></kritzel-notification-card>
+            </div>
+          </div>
+        )}
+
         <kritzel-engine
           ref={el => {
             if (el) {
@@ -1190,6 +1273,7 @@ export class KritzelEditor {
           onObjectsInViewportChange={event => this.handleObjectsInViewportChange(event)}
           onViewportChange={event => this.handleViewportChange(event)}
           onAwarenessChange={event => this.handleAwarenessChange(event)}
+          onNotificationsChange={event => this.handleNotificationsChange(event)}
         ></kritzel-engine>
 
         <kritzel-controls
