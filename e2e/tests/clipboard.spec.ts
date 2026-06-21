@@ -11,9 +11,12 @@ function parseClipboardObjects(serialized: string): any[] {
 }
 
 test.describe('Clipboard', () => {
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeEach(async ({ editorPage }) => {
     await editorPage.goto();
     await editorPage.waitForReady();
+    await editorPage.clearSystemClipboard();
   });
 
   test.describe('copy and paste', () => {
@@ -139,9 +142,10 @@ test.describe('Clipboard', () => {
       // The cut object can be pasted back from the clipboard with a new id.
       await editorPage.paste(400, 400);
       const pasted = await editorPage.getAllObjects<any>();
-      expect(pasted).toHaveLength(1);
+      expect(pasted).toHaveLength(2);
       expect(pasted[0].id).not.toBe(shape.id);
       expect(pasted[0].shapeType).toBe('rectangle');
+      expect(pasted[1].__class__).toBe('KritzelSelectionGroup');
     });
 
     test('should cut multiple selected objects', async ({ editorPage }) => {

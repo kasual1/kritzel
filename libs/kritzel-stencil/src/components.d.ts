@@ -29,14 +29,9 @@ import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
-import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
-import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelNotification } from "./interfaces/notification.interface";
-import { KritzelImage } from "./classes/objects/image.class";
-import { KritzelText } from "./classes/objects/text.class";
-import { KritzelGroup } from "./classes/objects/group.class";
-import { KritzelLine } from "./classes/objects/line.class";
+import { KritzelEngineState } from "./interfaces/engine-state.interface";
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
@@ -72,8 +67,8 @@ export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
 export { Element, Event } from "@stencil/core";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
-export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelNotification } from "./interfaces/notification.interface";
+export { KritzelEngineState } from "./interfaces/engine-state.interface";
 export { KritzelImage } from "./classes/objects/image.class";
 export { KritzelText } from "./classes/objects/text.class";
 export { KritzelGroup } from "./classes/objects/group.class";
@@ -544,6 +539,11 @@ export namespace Components {
          */
         "theme": ThemeName;
         "themes"?: KritzelTheme[];
+        /**
+          * Triggers a UI notification programmatically.
+          * @param notification - Notification payload. `id` and `timestamp` are optional.
+         */
+        "triggerNotification": (notification: Omit<KritzelNotification, "id"> & Partial<Pick<KritzelNotification, "id" | "timestamp">>) => Promise<void>;
         "triggerSelectionChange": () => Promise<void>;
         "undo": () => Promise<void>;
         "ungroup": () => Promise<void>;

@@ -697,9 +697,16 @@ export class EditorPage {
     return this.callMethod('cut');
   }
 
-  /** Paste at world coordinates. */
-  async paste(x: number, y: number) {
-    return this.callMethod('paste', x, y);
+  /**
+   * Paste at world coordinates and wait briefly for selection/object state to settle.
+   * @param settleTimeoutMs - Additional settle delay in milliseconds (default: 50).
+   */
+  async paste(x: number, y: number, settleTimeoutMs = 500) {
+    const result = await this.callMethod('paste', x, y);
+    if (settleTimeoutMs > 0) {
+      await this.page.waitForTimeout(settleTimeoutMs);
+    }
+    return result;
   }
 
   /** Delete selected objects. */
@@ -723,6 +730,14 @@ export class EditorPage {
         new ClipboardEvent('copy', { clipboardData: dataTransfer, bubbles: true, cancelable: true })
       );
       return dataTransfer.getData('text/plain');
+    });
+  }
+
+  /** Clear the browser system clipboard text payload. */
+  async clearSystemClipboard() {
+    await this.page.evaluate(async () => {
+      if (!navigator.clipboard?.writeText) return;
+      await navigator.clipboard.writeText('');
     });
   }
 

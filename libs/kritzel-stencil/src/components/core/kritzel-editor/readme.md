@@ -911,6 +911,22 @@ Type: `Promise<string>`
 
 
 
+### `triggerNotification(notification: Omit<KritzelNotification, "id"> & Partial<Pick<KritzelNotification, "id" | "timestamp">>) => Promise<void>`
+
+Triggers a UI notification programmatically.
+
+#### Parameters
+
+| Name           | Type                                                                                        | Description                                                |
+| -------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `notification` | `Omit<KritzelNotification, "id"> & Partial<Pick<KritzelNotification, "id" \| "timestamp">>` | - Notification payload. `id` and `timestamp` are optional. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `triggerSelectionChange() => Promise<void>`
 
 
