@@ -45,6 +45,7 @@ import { IKritzelIsPublicChangedEvent } from '../../../interfaces/share.interfac
 import { KritzelLoginConfig as KritzelLoginConfig } from '../../../interfaces/login-config.interface';
 import { LoginEvent } from '../../../events/login.event';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
+import { ObjectHelper } from '../../../helpers/object.helper';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -706,6 +707,25 @@ export class KritzelEditor {
   @Method()
   async getDisplayableShortcuts(): Promise<Omit<KritzelShortcut, 'action' | 'condition'>[]> {
     return this.engineRef.getDisplayableShortcuts();
+  }
+
+  /**
+   * Triggers a UI notification programmatically.
+   * @param notification - Notification payload. `id` and `timestamp` are optional.
+   */
+  @Method()
+  async triggerNotification(notification: Omit<KritzelNotification, 'id'> & Partial<Pick<KritzelNotification, 'id' | 'timestamp'>>): Promise<void> {
+    const normalizedNotification: KritzelNotification = {
+      ...notification,
+      id: notification.id ?? ObjectHelper.generateUUID(),
+      timestamp: notification.timestamp ?? new Date(),
+    };
+
+    this.clearNotificationDismissAnimationTimer();
+    this.isNotificationDismissing = false;
+    this.isNotificationHovered = false;
+    this.activeNotification = normalizedNotification;
+    this.scheduleNotificationDismiss();
   }
 
   engineRef!: HTMLKritzelEngineElement;
