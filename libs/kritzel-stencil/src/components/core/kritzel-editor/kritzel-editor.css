@@ -44,6 +44,59 @@ kritzel-controls.keyboard-open {
   gap: 8px;
 }
 
+.top-center-notification-layer {
+  position: absolute;
+  top: var(--kritzel-editor-top-center-notification-top, 14px);
+  left: 0;
+  right: 0;
+  z-index: var(--kritzel-editor-top-center-notification-z-index, 10001);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.top-center-notification-container {
+  width: min(90vw, 420px);
+  pointer-events: auto;
+  animation: kritzel-notification-slide-in var(--kritzel-editor-notification-animation-duration, 220ms)
+    var(--kritzel-editor-notification-animation-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.top-center-notification-container.is-dismissing {
+  animation: kritzel-notification-fade-out var(--kritzel-editor-notification-dismiss-animation-duration, 180ms)
+    var(--kritzel-editor-notification-dismiss-animation-easing, ease-in) forwards;
+}
+
+@keyframes kritzel-notification-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes kritzel-notification-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .top-center-notification-container {
+    animation: none;
+  }
+}
+
 .top-right-buttons {
   position: absolute;
   top: var(--kritzel-editor-top-right-buttons-top, 14px);

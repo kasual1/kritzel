@@ -14,7 +14,6 @@ const globalItems: ContextMenuItem[] = [
     label: 'Paste',
     icon: 'paste',
     group: 'clipboard',
-    disabled: async () => ((await editor.value?.getCopiedObjects()) ?? []).length === 0,
     action: async (menu) => {
       await editor.value?.paste(menu.x, menu.y)
     },
@@ -42,7 +41,6 @@ const objectItems: ContextMenuItem[] = [
     label: 'Paste',
     icon: 'paste',
     group: 'clipboard',
-    disabled: async () => ((await editor.value?.getCopiedObjects()) ?? []).length === 0,
     action: async (menu) => {
       await editor.value?.paste(menu.x, menu.y)
     },

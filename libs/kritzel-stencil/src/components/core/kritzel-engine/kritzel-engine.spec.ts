@@ -80,9 +80,6 @@ describe('KritzelEngine', () => {
     updateObject: jest.fn(),
     removeObject: jest.fn(),
     delete: jest.fn(),
-    copy: jest.fn(),
-    cut: jest.fn(),
-    paste: jest.fn(),
     bringForward: jest.fn(),
     sendBackward: jest.fn(),
     bringToFront: jest.fn(),
@@ -107,6 +104,14 @@ describe('KritzelEngine', () => {
     getWorkspaces: jest.fn().mockReturnValue([]),
     getIsPublic: jest.fn().mockReturnValue(false),
     getObjectsInViewport: jest.fn().mockReturnValue([]),
+    clipboardManager: {
+      copy: jest.fn(),
+      cut: jest.fn(),
+      paste: jest.fn(),
+    },
+    permissionManager: {
+      requestPermission: jest.fn().mockResolvedValue('granted'),
+    },
     cursorManager: {
       setTargetElement: jest.fn(),
       cleanup: jest.fn(),
@@ -131,6 +136,8 @@ describe('KritzelEngine', () => {
       allNonSelectionObjects: [] as any[],
       objectsInViewport: [] as any[],
       selectionGroup: null as any,
+      activeText: null as any,
+      activeShape: null as any,
       objects: {
         remove: jest.fn(),
         clearLocalSelectionBox: jest.fn(),
@@ -163,7 +170,6 @@ describe('KritzelEngine', () => {
         activeTool: null as any,
         activeWorkspace: null as KritzelWorkspace | null,
         workspaces: [] as KritzelWorkspace[],
-        copiedObjects: undefined as any,
       },
       setState: jest.fn(),
       setSelectionBox: jest.fn(),
@@ -197,6 +203,7 @@ describe('KritzelEngine', () => {
       'objectsInViewportChange',
       'viewportChange',
       'awarenessChange',
+      'notificationsChange',
     ];
     for (const field of emitterFields) {
       (engine as any)[field] = { emit: jest.fn() };
@@ -334,36 +341,130 @@ describe('KritzelEngine', () => {
       expect(core.delete).toHaveBeenCalledTimes(1);
     });
 
-    it('copy delegates to core.copy', async () => {
+    it('copy delegates to core.clipboardManager.copy', async () => {
       await engine.copy();
-      expect(core.copy).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.copy).toHaveBeenCalledTimes(1);
     });
 
-    it('cut delegates to core.cut', async () => {
+    it('cut delegates to core.clipboardManager.cut', async () => {
       await engine.cut();
-      expect(core.cut).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.cut).toHaveBeenCalledTimes(1);
     });
 
-    it('paste forwards coordinates to core.paste', async () => {
+    it('paste forwards coordinates to core.clipboardManager.paste', async () => {
       await engine.paste(42, 99);
-      expect(core.paste).toHaveBeenCalledWith(42, 99);
+      expect(core.permissionManager.requestPermission).toHaveBeenCalledWith('clipboard-read');
+      expect(core.clipboardManager.paste).toHaveBeenCalledWith(42, 99);
     });
 
-    it('getCopiedObjects returns an empty array when nothing has been copied', async () => {
-      core.store.state.copiedObjects = undefined;
+    it('paste does not emit a notification when clipboard permission is granted', async () => {
+      await engine.paste(42, 99);
 
-      const result = await engine.getCopiedObjects();
-
-      expect(result).toEqual([]);
+      expect(core.permissionManager.requestPermission).toHaveBeenCalledWith('clipboard-read');
+      expect(core.clipboardManager.paste).toHaveBeenCalledWith(42, 99);
+      expect((engine as any).notificationsChange.emit).not.toHaveBeenCalled();
     });
 
-    it('getCopiedObjects returns the previously copied objects', async () => {
-      const copied: any[] = [{ id: 'x' }];
-      core.store.state.copiedObjects = copied;
+    it('paste emits notification and aborts when clipboard permission is denied', async () => {
+      (core.permissionManager.requestPermission as jest.Mock).mockResolvedValueOnce('denied');
 
-      const result = await engine.getCopiedObjects();
+      await engine.paste(42, 99);
 
-      expect(result).toBe(copied);
+      expect(core.permissionManager.requestPermission).toHaveBeenCalledWith('clipboard-read');
+      expect(core.clipboardManager.paste).not.toHaveBeenCalled();
+      expect((engine as any).notificationsChange.emit).toHaveBeenCalledTimes(1);
+      expect((engine as any).notificationsChange.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'error',
+          message: 'Clipboard read permission is required to paste content. Please grant permission and try again.',
+        }),
+      );
+    });
+
+    it('paste emits notification for any non-granted permission state', async () => {
+      (core.permissionManager.requestPermission as jest.Mock).mockResolvedValueOnce('prompt');
+
+      await engine.paste(42, 99);
+
+      expect(core.clipboardManager.paste).not.toHaveBeenCalled();
+      expect((engine as any).notificationsChange.emit).toHaveBeenCalledTimes(1);
+      expect((engine as any).notificationsChange.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'error',
+          message: 'Clipboard read permission is required to paste content. Please grant permission and try again.',
+        }),
+      );
+    });
+  });
+
+  describe('native clipboard events', () => {
+    const createCancelableClipboardEvent = (type: 'copy' | 'cut' | 'paste'): ClipboardEvent =>
+      new Event(type, { cancelable: true }) as ClipboardEvent;
+
+    it('handles copy via native browser event when selection is active', () => {
+      core.store.selectionGroup = { objects: [{}] };
+      core.store.activeText = null;
+      core.store.activeShape = null;
+
+      const event = createCancelableClipboardEvent('copy');
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+      engine.handleCopy(event);
+
+      expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.copy).toHaveBeenCalledTimes(1);
+      expect(core.rerender).toHaveBeenCalledTimes(1);
+    });
+
+    it('ignores copy when a text editor is active', () => {
+      core.store.selectionGroup = { objects: [{}] };
+      core.store.activeText = { isEditing: true };
+
+      const event = createCancelableClipboardEvent('copy');
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+      engine.handleCopy(event);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+      expect(core.clipboardManager.copy).not.toHaveBeenCalled();
+      expect(core.rerender).not.toHaveBeenCalled();
+    });
+
+    it('handles cut via native browser event when selection is active', () => {
+      core.store.selectionGroup = { objects: [{}] };
+      core.store.activeText = null;
+      core.store.activeShape = null;
+
+      const event = createCancelableClipboardEvent('cut');
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+      engine.handleCut(event);
+
+      expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.cut).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles paste via native browser event', () => {
+      core.store.activeText = null;
+      core.store.activeShape = null;
+
+      const event = createCancelableClipboardEvent('paste');
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+      engine.handlePaste(event);
+
+      expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.paste).toHaveBeenCalledWith(undefined, undefined, event);
+    });
+
+    it('forwards paste to the clipboard manager', () => {
+      const event = createCancelableClipboardEvent('paste');
+      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+      engine.handlePaste(event);
+
+      expect(preventDefaultSpy).toHaveBeenCalledTimes(1);
+      expect(core.clipboardManager.paste).toHaveBeenCalledWith(undefined, undefined, event);
     });
   });
 
@@ -957,13 +1058,11 @@ describe('KritzelEngine', () => {
 
     it('resets transient flags and rerenders', () => {
       core.store.state.skipContextMenu = true;
-      core.store.state.copiedObjects = [{ id: 'x' }];
 
       const eraserTool = new MockKritzelEraserTool();
       invokeHandler(eraserTool);
 
       expect(core.store.state.skipContextMenu).toBe(false);
-      expect(core.store.state.copiedObjects).toBeUndefined();
       expect(core.rerender).toHaveBeenCalledTimes(1);
     });
 

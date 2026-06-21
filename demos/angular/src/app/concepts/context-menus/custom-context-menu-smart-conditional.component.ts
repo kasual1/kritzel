@@ -47,7 +47,6 @@ export class CustomContextMenuSmartConditionalComponent {
       },
       icon: 'paste',
       group: 'clipboard',
-      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
     },
     {
       label: 'Select All',
@@ -76,7 +75,6 @@ export class CustomContextMenuSmartConditionalComponent {
       },
       icon: 'paste',
       group: 'clipboard',
-      disabled: async () => (await this.editor.getCopiedObjects()).length === 0,
     },
     {
       label: 'Export as PNG',

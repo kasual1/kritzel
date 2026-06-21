@@ -7,7 +7,7 @@ const NUDGE_AMOUNT = 10;
 
 /**
  * Handles keyboard events and manages keyboard shortcuts for the Kritzel canvas.
- * Provides functionality for tool switching, clipboard operations, object manipulation,
+ * Provides functionality for tool switching, object manipulation,
  * undo/redo, and navigation via keyboard input.
  */
 export class KritzelKeyHandler extends KritzelBaseHandler {
@@ -54,28 +54,6 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     { key: '7', ctrl: true, label: 'Tool 7', category: 'Tool Selection', action: () => this.switchToolByIndex(6) },
     { key: '8', ctrl: true, label: 'Tool 8', category: 'Tool Selection', action: () => this.switchToolByIndex(7) },
     { key: '9', ctrl: true, label: 'Tool 9', category: 'Tool Selection', action: () => this.switchToolByIndex(8) },
-
-    // Clipboard
-    {
-      key: 'c',
-      ctrl: true,
-      label: 'Copy',
-      category: 'Clipboard',
-      condition: c => !!c.store.selectionGroup,
-      action: c => {
-        c.copy();
-        c.rerender();
-      },
-    },
-    { key: 'x', ctrl: true, label: 'Cut', category: 'Clipboard', condition: c => !!c.store.selectionGroup, action: c => c.cut() },
-    {
-      key: 'v',
-      ctrl: true,
-      label: 'Paste',
-      category: 'Clipboard',
-      condition: c => !!c.store.state.copiedObjects && !c.store.activeText && !c.store.activeShape,
-      action: c => c.paste(),
-    },
 
     // Object layering
     { key: '+', ctrl: true, label: 'Bring Forward', category: 'Object Layering', condition: c => !!c.store.selectionGroup, action: c => c.bringForward() },

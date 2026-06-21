@@ -60,6 +60,13 @@ export class MyManager {
 - Should not directly manipulate DOM — delegate to helpers or the engine
 - Localization managers should keep fallback resolution deterministic and expose bulk resolution helpers only when the editor or UI layer needs many terms at once
 
+## Unit Testing Guidance
+
+- Mock manager dependencies via their public core-facing APIs (e.g., `core.toolRegistry`, `core.store.setState`, `core.engine.emit...`)
+- Provide behavior-complete object doubles for manager pipelines (methods + fields that manager logic invokes)
+- For strategy/registry managers, test: registration order, `canHandle` routing, first-match execution, fallback behavior
+- Keep manager specs independent from core internals; core specs should validate delegation to the manager
+
 ## When to Use a Manager vs. Other Patterns
 
 | Use a Manager when... | Use something else when... |

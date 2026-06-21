@@ -44,6 +44,8 @@ import { IKritzelUser } from '../../../interfaces/user.interface';
 import { IKritzelIsPublicChangedEvent } from '../../../interfaces/share.interface';
 import { KritzelLoginConfig as KritzelLoginConfig } from '../../../interfaces/login-config.interface';
 import { LoginEvent } from '../../../events/login.event';
+import { KritzelNotification } from '../../../interfaces/notification.interface';
+import { ObjectHelper } from '../../../helpers/object.helper';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -130,13 +132,11 @@ export class KritzelEditor {
     {
       label: 'menu.paste',
       icon: 'paste',
-      disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
       action: menu => this.engineRef.paste(menu.x, menu.y),
     },
     {
       label: 'menu.selectAll',
       icon: 'select-all',
-      disabled: async () => (await this.engineRef.getObjectsInViewport()).length === 0,
       action: () => this.selectAllObjectsInViewport(),
     },
   ];
@@ -148,7 +148,6 @@ export class KritzelEditor {
       label: 'menu.paste',
       icon: 'paste',
       group: 'clipboard',
-      disabled: async () => (await this.engineRef.getCopiedObjects()).length === 0,
       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),
     },
     {
@@ -166,7 +165,6 @@ export class KritzelEditor {
       label: 'menu.align',
       icon: 'align',
       group: 'other',
-      disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
       children: [
         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },
         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },
@@ -184,16 +182,11 @@ export class KritzelEditor {
         {
           label: 'menu.group',
           icon: 'group',
-          disabled: async () => (await this.engineRef.getSelectedObjects()).length < 2,
           action: () => this.engineRef.group(),
         },
         {
           label: 'menu.ungroup',
           icon: 'ungroup',
-          disabled: async () => {
-            const selectedObjects = await this.engineRef.getSelectedObjects();
-            return !selectedObjects.some(obj => obj.__class__ === 'KritzelGroup');
-          },
           action: () => this.engineRef.ungroup(),
         },
       ],
@@ -278,6 +271,14 @@ export class KritzelEditor {
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
   @State() currentIsPublic: boolean = false;
   @State() isEditorVisible: boolean = false;
+  @State() activeNotification?: KritzelNotification;
+  @State() isNotificationDismissing: boolean = false;
+
+  private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
+  private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
+  private readonly notificationDisplayDurationMs = 5000;
+  private readonly notificationDismissAnimationDurationMs = 180;
+  private isNotificationHovered: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -684,11 +685,6 @@ export class KritzelEditor {
   }
 
   @Method()
-  async getCopiedObjects(): Promise<KritzelBaseObject[]> {
-    return this.engineRef.getCopiedObjects();
-  }
-
-  @Method()
   async getObjectsInViewport(): Promise<KritzelBaseObject[]> {
     return this.engineRef.getObjectsInViewport();
   }
@@ -711,6 +707,25 @@ export class KritzelEditor {
   @Method()
   async getDisplayableShortcuts(): Promise<Omit<KritzelShortcut, 'action' | 'condition'>[]> {
     return this.engineRef.getDisplayableShortcuts();
+  }
+
+  /**
+   * Triggers a UI notification programmatically.
+   * @param notification - Notification payload. `id` and `timestamp` are optional.
+   */
+  @Method()
+  async triggerNotification(notification: Omit<KritzelNotification, 'id'> & Partial<Pick<KritzelNotification, 'id' | 'timestamp'>>): Promise<void> {
+    const normalizedNotification: KritzelNotification = {
+      ...notification,
+      id: notification.id ?? ObjectHelper.generateUUID(),
+      timestamp: notification.timestamp ?? new Date(),
+    };
+
+    this.clearNotificationDismissAnimationTimer();
+    this.isNotificationDismissing = false;
+    this.isNotificationHovered = false;
+    this.activeNotification = normalizedNotification;
+    this.scheduleNotificationDismiss();
   }
 
   engineRef!: HTMLKritzelEngineElement;
@@ -740,6 +755,11 @@ export class KritzelEditor {
     this.registerCustomSvgIcons();
     this.listenForMobileKeyboard();
     this.setOsSpecificCssVariables();
+  }
+
+  disconnectedCallback() {
+    this.clearNotificationDismissTimer();
+    this.clearNotificationDismissAnimationTimer();
   }
 
   async checkIsReady() {
@@ -865,6 +885,67 @@ export class KritzelEditor {
     event.stopPropagation();
     this.awarenessChange.emit(event.detail);
   }
+
+  handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
+    event.stopPropagation();
+    this.clearNotificationDismissAnimationTimer();
+    this.isNotificationDismissing = false;
+    this.isNotificationHovered = false;
+    this.activeNotification = event.detail;
+    this.scheduleNotificationDismiss();
+  }
+
+  handleNotificationHoverChange(event: CustomEvent<boolean>) {
+    event.stopPropagation();
+    this.isNotificationHovered = event.detail;
+
+    if (this.isNotificationHovered) {
+      this.clearNotificationDismissTimer();
+      return;
+    }
+
+    if (this.activeNotification && !this.isNotificationDismissing) {
+      this.scheduleNotificationDismiss();
+    }
+  }
+
+  private scheduleNotificationDismiss(): void {
+    this.clearNotificationDismissTimer();
+    this.notificationDismissTimeout = setTimeout(() => {
+      this.dismissNotification();
+    }, this.notificationDisplayDurationMs);
+  }
+
+  private clearNotificationDismissTimer(): void {
+    if (this.notificationDismissTimeout) {
+      clearTimeout(this.notificationDismissTimeout);
+      this.notificationDismissTimeout = undefined;
+    }
+  }
+
+  private clearNotificationDismissAnimationTimer(): void {
+    if (this.notificationDismissAnimationTimeout) {
+      clearTimeout(this.notificationDismissAnimationTimeout);
+      this.notificationDismissAnimationTimeout = undefined;
+    }
+  }
+
+  private dismissNotification = (): void => {
+    this.clearNotificationDismissTimer();
+    this.isNotificationHovered = false;
+
+    if (!this.activeNotification || this.isNotificationDismissing) {
+      return;
+    }
+
+    this.isNotificationDismissing = true;
+    this.clearNotificationDismissAnimationTimer();
+    this.notificationDismissAnimationTimeout = setTimeout(() => {
+      this.activeNotification = undefined;
+      this.isNotificationDismissing = false;
+      this.notificationDismissAnimationTimeout = undefined;
+    }, this.notificationDismissAnimationDurationMs);
+  };
 
   handleSettingsChange(event: CustomEvent<KritzelSettingsConfig>) {
     this.scaleMin = event.detail.scaleMin;
@@ -1160,6 +1241,14 @@ export class KritzelEditor {
           <kritzel-back-to-content visible={this.isBackToContentButtonVisible} text={this.resolvedTerms['backToContent.label'] ?? 'Back to content'} onBackToContent={() => this.backToContent()}></kritzel-back-to-content>
         </div>
 
+        {this.activeNotification && (
+          <div class="top-center-notification-layer" role="presentation">
+            <div class={{ 'top-center-notification-container': true, 'is-dismissing': this.isNotificationDismissing }} role="presentation">
+              <kritzel-notification-card notification={this.activeNotification} locale={this.locale} onDismiss={this.dismissNotification} onHoverChange={event => this.handleNotificationHoverChange(event)}></kritzel-notification-card>
+            </div>
+          </div>
+        )}
+
         <kritzel-engine
           ref={el => {
             if (el) {
@@ -1204,6 +1293,7 @@ export class KritzelEditor {
           onObjectsInViewportChange={event => this.handleObjectsInViewportChange(event)}
           onViewportChange={event => this.handleViewportChange(event)}
           onAwarenessChange={event => this.handleAwarenessChange(event)}
+          onNotificationsChange={event => this.handleNotificationsChange(event)}
         ></kritzel-engine>
 
         <kritzel-controls

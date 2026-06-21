@@ -1,9 +1,22 @@
-import { test, expect } from '../fixtures/editor.fixture';
+import { test, expect, EditorPage } from '../fixtures/editor.fixture';
+
+const CLIPBOARD_PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
+
+/** Parse the serialized Kritzel clipboard payload into its object list. */
+function parseClipboardObjects(serialized: string): any[] {
+  if (!serialized || !serialized.startsWith(CLIPBOARD_PAYLOAD_PREFIX)) {
+    return [];
+  }
+  return JSON.parse(serialized.slice(CLIPBOARD_PAYLOAD_PREFIX.length)).objects ?? [];
+}
 
 test.describe('Clipboard', () => {
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeEach(async ({ editorPage }) => {
     await editorPage.goto();
     await editorPage.waitForReady();
+    await editorPage.clearSystemClipboard();
   });
 
   test.describe('copy and paste', () => {
@@ -18,15 +31,13 @@ test.describe('Clipboard', () => {
       });
 
       await editorPage.selectObjects([shape]);
-      await editorPage.copy();
 
-      const copied = await editorPage.getCopiedObjects<any>();
+      const copied = parseClipboardObjects(await editorPage.copyToSystemClipboard());
       expect(copied).toHaveLength(1);
-      expect(copied[0].id).not.toBe(shape.id);
       expect(copied[0].shapeType).toBe('rectangle');
     });
 
-    test('getCopiedObjects should return copied objects after copy', async ({ editorPage }) => {
+    test('copy should serialize the selection to the system clipboard', async ({ editorPage }) => {
       const shape1 = await editorPage.addShape({
         shapeType: 'rectangle',
         translateX: 0,
@@ -43,14 +54,12 @@ test.describe('Clipboard', () => {
       });
 
       await editorPage.selectObjects([shape1, shape2]);
-      await editorPage.copy();
 
-      const copied = await editorPage.getCopiedObjects<any>();
+      const copied = parseClipboardObjects(await editorPage.copyToSystemClipboard());
       expect(copied).toHaveLength(2);
-      const copiedIds = copied.map((o: any) => o.id);
-      // Copied objects get new IDs, so none should match the originals
-      expect(copiedIds).not.toContain(shape1.id);
-      expect(copiedIds).not.toContain(shape2.id);
+      const copiedTypes = copied.map((o: any) => o.shapeType);
+      expect(copiedTypes).toContain('rectangle');
+      expect(copiedTypes).toContain('ellipse');
     });
 
     test('should paste copied object at specified coordinates', async ({ editorPage }) => {
@@ -127,13 +136,16 @@ test.describe('Clipboard', () => {
       await editorPage.selectObjects([shape]);
       await editorPage.cut();
 
-      const copied = await editorPage.getCopiedObjects<any>();
-      expect(copied).toHaveLength(1);
-      expect(copied[0].id).not.toBe(shape.id);
-      expect(copied[0].shapeType).toBe('rectangle');
-
       const allObjects = await editorPage.getAllObjects();
       expect(allObjects).toHaveLength(0);
+
+      // The cut object can be pasted back from the clipboard with a new id.
+      await editorPage.paste(400, 400);
+      const pasted = await editorPage.getAllObjects<any>();
+      expect(pasted).toHaveLength(2);
+      expect(pasted[0].id).not.toBe(shape.id);
+      expect(pasted[0].shapeType).toBe('rectangle');
+      expect(pasted[1].__class__).toBe('KritzelSelectionGroup');
     });
 
     test('should cut multiple selected objects', async ({ editorPage }) => {
@@ -160,14 +172,14 @@ test.describe('Clipboard', () => {
       await editorPage.selectObjects([shape1, shape2]);
       await editorPage.cut();
 
-      const copied = await editorPage.getCopiedObjects<any>();
-      expect(copied).toHaveLength(2);
-      const copiedIds = copied.map((o: any) => o.id);
-      expect(copiedIds).not.toContain(shape1.id);
-      expect(copiedIds).not.toContain(shape2.id);
+      // Two objects were cut, the text object remains.
+      const remaining = await editorPage.getAllObjects();
+      expect(remaining).toHaveLength(1);
 
-      const allObjects = await editorPage.getAllObjects();
-      expect(allObjects).toHaveLength(1);
+      // The two cut objects can be pasted back from the clipboard.
+      await editorPage.paste(400, 200);
+      await editorPage.clearSelection();
+      expect(await editorPage.getAllObjects()).toHaveLength(3);
     });
 
     test('should do nothing when there is no selection', async ({ editorPage }) => {
@@ -182,8 +194,8 @@ test.describe('Clipboard', () => {
       await editorPage.clearSelection();
       await editorPage.cut();
 
-      const copied = await editorPage.getCopiedObjects<any>();
-      expect(copied ?? []).toHaveLength(0);
+      // Nothing was written to the system clipboard.
+      expect(await editorPage.copyToSystemClipboard()).toBe('');
 
       const allObjects = await editorPage.getAllObjects();
       expect(allObjects).toHaveLength(1);
@@ -358,6 +370,103 @@ test.describe('Clipboard', () => {
 
       const countAfterPaste = await editorPage.getObjectsTotalCount();
       expect(countAfterPaste).toBeGreaterThan(countBeforePaste);
+    });
+  });
+
+  test.describe('paste from system clipboard', () => {
+    test('should paste an image file from the system clipboard', async ({ editorPage }) => {
+      await editorPage.prepareWaitForObjectsAdded();
+
+      await editorPage.pasteImageFileFromSystemClipboard({
+        width: 200,
+        height: 150,
+        color: '#4a90d9',
+      });
+
+      await editorPage.waitForObjectsAdded();
+      await editorPage.clearSelection();
+
+      const allObjects = await editorPage.getAllObjects<any>();
+      expect(allObjects).toHaveLength(1);
+      expect(allObjects[0].__class__).toBe('KritzelImage');
+
+      await expect(editorPage.engine).toHaveScreenshot();
+    });
+
+    test('should paste text from the system clipboard', async ({ editorPage }) => {
+      await editorPage.prepareWaitForObjectsAdded();
+
+      await editorPage.pasteTextFromSystemClipboard('Hello from the\nsystem clipboard');
+
+      await editorPage.waitForObjectsAdded();
+      await editorPage.clearSelection();
+
+      const allObjects = await editorPage.getAllObjects<any>();
+      expect(allObjects).toHaveLength(1);
+      expect(allObjects[0].__class__).toBe('KritzelText');
+
+      await expect(editorPage.engine).toHaveScreenshot();
+    });
+
+    test('should paste kritzel objects from one tab into a second editor in another tab', async ({ editorPage, context }) => {
+      // Tab 1: create and select objects, then copy them to the system clipboard.
+      const shape1 = await editorPage.addShape({
+        shapeType: 'rectangle',
+        translateX: 100,
+        translateY: 100,
+        width: 160,
+        height: 120,
+        fillColor: { light: '#4a90d9', dark: '#4a90d9' },
+      });
+      const shape2 = await editorPage.addShape({
+        shapeType: 'ellipse',
+        translateX: 300,
+        translateY: 100,
+        width: 160,
+        height: 120,
+        fillColor: { light: '#d94a4a', dark: '#d94a4a' },
+      });
+
+      await editorPage.selectObjects([shape1, shape2]);
+      const payload = await editorPage.copyToSystemClipboard();
+      expect(payload.length).toBeGreaterThan(0);
+
+      // Tab 2: open a second tab running its own editor instance.
+      const secondTab = await context.newPage();
+      const secondEditor = new EditorPage(secondTab);
+      await secondEditor.goto();
+      await secondEditor.waitForReady();
+
+      expect(await secondEditor.getObjectsTotalCount()).toBe(0);
+
+      await secondEditor.prepareWaitForObjectsAdded();
+      await secondEditor.pasteKritzelPayloadFromSystemClipboard(payload);
+      await secondEditor.waitForObjectsAdded();
+      await secondEditor.clearSelection();
+
+      expect(await secondEditor.getObjectsTotalCount()).toBe(2);
+
+      const pastedIds = (await secondEditor.getAllObjects<any>()).map(o => o.id);
+      expect(pastedIds).not.toContain(shape1.id);
+      expect(pastedIds).not.toContain(shape2.id);
+
+      await expect(secondEditor.engine).toHaveScreenshot();
+
+      await secondTab.close();
+    });
+  });
+
+  test.describe('clipboard permissions', () => {
+    test('should show notification card when clipboard read permission is blocked', async ({ editorPage }) => {
+      await editorPage.blockClipboardReadPermission();
+      await editorPage.paste(400, 400);
+
+      const notificationCard = editorPage.page.locator('kritzel-notification-card');
+      await expect(notificationCard).toBeVisible();
+      await expect(notificationCard.locator('.type-pill')).toHaveText('Error');
+      await expect(notificationCard.locator('.message')).toContainText(
+        'Clipboard read permission is required to paste content.'
+      );
     });
   });
 

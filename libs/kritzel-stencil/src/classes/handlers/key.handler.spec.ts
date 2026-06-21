@@ -10,7 +10,6 @@ describe('KritzelKeyHandler', () => {
   let mockActiveText: unknown | null;
   let mockState: {
     isCtrlKeyPressed: boolean;
-    copiedObjects: unknown[] | null;
   };
 
   beforeEach(() => {
@@ -23,7 +22,6 @@ describe('KritzelKeyHandler', () => {
     mockActiveText = null;
     mockState = {
       isCtrlKeyPressed: false,
-      copiedObjects: null,
     };
 
     mockCore = {
@@ -46,9 +44,6 @@ describe('KritzelKeyHandler', () => {
       delete: jest.fn(),
       undo: jest.fn(),
       redo: jest.fn(),
-      copy: jest.fn(),
-      cut: jest.fn(),
-      paste: jest.fn(),
       rerender: jest.fn(),
       bringForward: jest.fn(),
       sendBackward: jest.fn(),
@@ -205,60 +200,6 @@ describe('KritzelKeyHandler', () => {
       });
     });
 
-    describe('Clipboard shortcuts', () => {
-      it('should call copy and rerender when Ctrl+C is pressed with selection', () => {
-        mockSelectionGroup = { objects: [] };
-        const event = new KeyboardEvent('keydown', { key: 'c', ctrlKey: true });
-        const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
-
-        keyHandler.handleKeyDown(event);
-
-        expect(preventDefaultSpy).toHaveBeenCalled();
-        expect(mockCore.copy).toHaveBeenCalled();
-        expect(mockCore.rerender).toHaveBeenCalled();
-      });
-
-      it('should not call copy when Ctrl+C is pressed without selection', () => {
-        mockSelectionGroup = null;
-        const event = new KeyboardEvent('keydown', { key: 'c', ctrlKey: true });
-
-        keyHandler.handleKeyDown(event);
-
-        expect(mockCore.copy).not.toHaveBeenCalled();
-      });
-
-      it('should call paste when Ctrl+V is pressed with copied objects and no active text', () => {
-        mockState.copiedObjects = [{}];
-        mockActiveText = null;
-        const event = new KeyboardEvent('keydown', { key: 'v', ctrlKey: true });
-        const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
-
-        keyHandler.handleKeyDown(event);
-
-        expect(preventDefaultSpy).toHaveBeenCalled();
-        expect(mockCore.paste).toHaveBeenCalled();
-      });
-
-      it('should not call paste when Ctrl+V is pressed without copied objects', () => {
-        mockState.copiedObjects = null;
-        const event = new KeyboardEvent('keydown', { key: 'v', ctrlKey: true });
-
-        keyHandler.handleKeyDown(event);
-
-        expect(mockCore.paste).not.toHaveBeenCalled();
-      });
-
-      it('should not call paste when Ctrl+V is pressed with active text', () => {
-        mockState.copiedObjects = [{}];
-        mockActiveText = {};
-        const event = new KeyboardEvent('keydown', { key: 'v', ctrlKey: true });
-
-        keyHandler.handleKeyDown(event);
-
-        expect(mockCore.paste).not.toHaveBeenCalled();
-      });
-    });
-
     describe('Object layering shortcuts', () => {
       it('should call bringForward when Ctrl++ is pressed with selection', () => {
         mockSelectionGroup = { objects: [] };
@@ -394,16 +335,6 @@ describe('KritzelKeyHandler', () => {
         expect(mockCore.delete).not.toHaveBeenCalled();
       });
 
-      it('should not execute Copy shortcut when a text object is being edited', () => {
-        mockActiveText = { isEditing: true };
-        mockSelectionGroup = { objects: [] };
-        const event = new KeyboardEvent('keydown', { key: 'c', ctrlKey: true });
-
-        keyHandler.handleKeyDown(event);
-
-        expect(mockCore.copy).not.toHaveBeenCalled();
-      });
-
       it('should not execute arrow key movement when a text object is being edited', () => {
         mockActiveText = { isEditing: true };
         mockSelectionGroup = { objects: [] };
@@ -468,8 +399,6 @@ describe('KritzelKeyHandler', () => {
         expect(mockCore.undo).not.toHaveBeenCalled();
         expect(mockCore.redo).not.toHaveBeenCalled();
         expect(mockCore.delete).not.toHaveBeenCalled();
-        expect(mockCore.copy).not.toHaveBeenCalled();
-        expect(mockCore.paste).not.toHaveBeenCalled();
       });
     });
   });
