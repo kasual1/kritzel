@@ -203,6 +203,7 @@ describe('KritzelEngine', () => {
       'objectsInViewportChange',
       'viewportChange',
       'awarenessChange',
+      'notificationsChange',
     ];
     for (const field of emitterFields) {
       (engine as any)[field] = { emit: jest.fn() };
@@ -356,17 +357,20 @@ describe('KritzelEngine', () => {
       expect(core.clipboardManager.paste).toHaveBeenCalledWith(42, 99);
     });
 
-    it('paste shows alert and aborts when clipboard permission is denied', async () => {
+    it('paste emits notification and aborts when clipboard permission is denied', async () => {
       (core.permissionManager.requestPermission as jest.Mock).mockResolvedValueOnce('denied');
-      const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => undefined);
 
       await engine.paste(42, 99);
 
       expect(core.permissionManager.requestPermission).toHaveBeenCalledWith('clipboard-read');
       expect(core.clipboardManager.paste).not.toHaveBeenCalled();
-      expect(alertSpy).toHaveBeenCalledTimes(1);
-
-      alertSpy.mockRestore();
+      expect((engine as any).notificationsChange.emit).toHaveBeenCalledTimes(1);
+      expect((engine as any).notificationsChange.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'error',
+          message: 'Clipboard read permission is required to paste content. Please grant permission and try again.',
+        }),
+      );
     });
   });
 

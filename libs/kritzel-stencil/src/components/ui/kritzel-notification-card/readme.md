@@ -65,9 +65,10 @@ const notification = {
 
 ## Events
 
-| Event     | Description                                                 | Type                |
-| --------- | ----------------------------------------------------------- | ------------------- |
-| `dismiss` | Emitted when the notification should be dismissed manually. | `CustomEvent<void>` |
+| Event         | Description                                                 | Type                   |
+| ------------- | ----------------------------------------------------------- | ---------------------- |
+| `dismiss`     | Emitted when the notification should be dismissed manually. | `CustomEvent<void>`    |
+| `hoverChange` | Emitted when pointer hover state changes.                   | `CustomEvent<boolean>` |
 
 
 ## Dependencies
