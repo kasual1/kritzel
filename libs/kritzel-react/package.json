@@ -2,7 +2,7 @@
   "name": "kritzel-react",
   "version": "0.3.20",
   "homepage": "https://kritzel.io/",
-  "description": "Build infinite canvas experiences in minutes.",
+  "description": "Kritzel helps you build infinite canvas experiences with React.",
   "keywords": [
     "infinite canvas",
     "collaboration",
