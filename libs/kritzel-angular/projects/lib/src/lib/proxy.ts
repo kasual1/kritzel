@@ -18,6 +18,7 @@ import { defineCustomElement as defineKritzelInput } from 'kritzel-stencil/dist/
 import { defineCustomElement as defineKritzelLineEndings } from 'kritzel-stencil/dist/components/kritzel-line-endings.js';
 import { defineCustomElement as defineKritzelLoginDialog } from 'kritzel-stencil/dist/components/kritzel-login-dialog.js';
 import { defineCustomElement as defineKritzelMasterDetail } from 'kritzel-stencil/dist/components/kritzel-master-detail.js';
+import { defineCustomElement as defineKritzelNotificationCard } from 'kritzel-stencil/dist/components/kritzel-notification-card.js';
 import { defineCustomElement as defineKritzelNumericInput } from 'kritzel-stencil/dist/components/kritzel-numeric-input.js';
 import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelPillTabs } from 'kritzel-stencil/dist/components/kritzel-pill-tabs.js';
@@ -267,7 +268,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isLoading', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspace'],
-  outputs: ['isEngineReady', 'activeToolChange', 'objectsSelectionChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange'],
+  outputs: ['isEngineReady', 'activeToolChange', 'objectsSelectionChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange'],
 })
 export class KritzelEngine {
   protected el: HTMLKritzelEngineElement;
@@ -285,6 +286,7 @@ export class KritzelEngine {
   @Output() objectsInViewportChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineObjectsInViewportChangeEvent>>();
   @Output() viewportChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelViewportState>>();
   @Output() awarenessChange = new EventEmitter<KritzelEngineCustomEvent<Map<number, Record<string, any>>>>();
+  @Output() notificationsChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelNotification>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -303,6 +305,7 @@ import type { ObjectsUpdatedEvent as IKritzelEngineObjectsUpdatedEvent } from 'k
 import type { KritzelUndoState as IKritzelEngineKritzelUndoState } from 'kritzel-stencil/dist/components';
 import type { ObjectsInViewportChangeEvent as IKritzelEngineObjectsInViewportChangeEvent } from 'kritzel-stencil/dist/components';
 import type { KritzelViewportState as IKritzelEngineKritzelViewportState } from 'kritzel-stencil/dist/components';
+import type { KritzelNotification as IKritzelEngineKritzelNotification } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelEngine extends Components.KritzelEngine {
   /**
@@ -361,6 +364,10 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
    * Emitted when the awareness state changes (remote user cursors, presence).
    */
   awarenessChange: EventEmitter<KritzelEngineCustomEvent<Map<number, Record<string, any>>>>;
+  /**
+   * Emitted when notifications change.
+   */
+  notificationsChange: EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelNotification>>;
 }
 
 
@@ -533,6 +540,43 @@ export declare interface KritzelMasterDetail extends Components.KritzelMasterDet
    * Emitted when an item is selected
    */
   itemSelect: EventEmitter<KritzelMasterDetailCustomEvent<IKritzelMasterDetailIKritzelMasterDetailSelectEvent>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelNotificationCard,
+  inputs: ['locale', 'notification', 'showTimestamp']
+})
+@Component({
+  selector: 'kritzel-notification-card',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['locale', 'notification', 'showTimestamp'],
+  outputs: ['dismiss', 'hoverChange'],
+})
+export class KritzelNotificationCard {
+  protected el: HTMLKritzelNotificationCardElement;
+  @Output() dismiss = new EventEmitter<KritzelNotificationCardCustomEvent<void>>();
+  @Output() hoverChange = new EventEmitter<KritzelNotificationCardCustomEvent<boolean>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { KritzelNotificationCardCustomEvent } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelNotificationCard extends Components.KritzelNotificationCard {
+  /**
+   * Emitted when the notification should be dismissed manually.
+   */
+  dismiss: EventEmitter<KritzelNotificationCardCustomEvent<void>>;
+  /**
+   * Emitted when pointer hover state changes.
+   */
+  hoverChange: EventEmitter<KritzelNotificationCardCustomEvent<boolean>>;
 }
 
 

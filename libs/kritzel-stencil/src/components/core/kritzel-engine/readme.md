@@ -47,6 +47,7 @@
 | `awarenessChange`         | Emitted when the awareness state changes (remote user cursors, presence).                           | `CustomEvent<Map<number, Record<string, any>>>`               |
 | `isEngineReady`           | Emitted when the engine has fully initialized and is ready for interaction.                         | `CustomEvent<KritzelEngineState>`                             |
 | `longpress`               | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.               | `CustomEvent<PointerEvent>`                                   |
+| `notificationsChange`     | Emitted when notifications change.                                                                  | `CustomEvent<KritzelNotification>`                            |
 | `objectsAdded`            | Emitted when one or more objects are added to the canvas.                                           | `CustomEvent<ObjectsAddedEvent>`                              |
 | `objectsChange`           | Emitted when objects on the canvas are added, removed, or modified.                                 | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
 | `objectsInViewportChange` | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).  | `CustomEvent<KritzelBaseObject<Element>[]>`                   |

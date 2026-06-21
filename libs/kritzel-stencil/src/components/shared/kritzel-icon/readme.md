@@ -27,6 +27,7 @@
  - [kritzel-master-detail](../kritzel-master-detail)
  - [kritzel-menu-item](../kritzel-menu-item)
  - [kritzel-more-menu](../../ui/kritzel-more-menu)
+ - [kritzel-notification-card](../../ui/kritzel-notification-card)
  - [kritzel-pill-tabs](../kritzel-pill-tabs)
  - [kritzel-share-dialog](../../ui/kritzel-share-dialog)
  - [kritzel-split-button](../kritzel-split-button)
@@ -46,6 +47,7 @@ graph TD;
   kritzel-master-detail --> kritzel-icon
   kritzel-menu-item --> kritzel-icon
   kritzel-more-menu --> kritzel-icon
+  kritzel-notification-card --> kritzel-icon
   kritzel-pill-tabs --> kritzel-icon
   kritzel-share-dialog --> kritzel-icon
   kritzel-split-button --> kritzel-icon
