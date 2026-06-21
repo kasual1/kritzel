@@ -456,6 +456,20 @@ test.describe('Clipboard', () => {
     });
   });
 
+  test.describe('clipboard permissions', () => {
+    test('should show notification card when clipboard read permission is blocked', async ({ editorPage }) => {
+      await editorPage.blockClipboardReadPermission();
+      await editorPage.paste(400, 400);
+
+      const notificationCard = editorPage.page.locator('kritzel-notification-card');
+      await expect(notificationCard).toBeVisible();
+      await expect(notificationCard.locator('.type-pill')).toHaveText('Error');
+      await expect(notificationCard.locator('.message')).toContainText(
+        'Clipboard read permission is required to paste content.'
+      );
+    });
+  });
+
   test.describe('visual regression', () => {
     test('canvas after pasting a copied shape', async ({ editorPage }) => {
       await editorPage.prepareWaitForObjectsAdded();
