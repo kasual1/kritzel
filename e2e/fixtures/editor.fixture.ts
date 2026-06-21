@@ -131,6 +131,15 @@ export interface KritzelImageConfig {
   scale?: number;
 }
 
+export type KritzelNotificationType = 'info' | 'warning' | 'error';
+
+export interface KritzelNotificationConfig {
+  type: KritzelNotificationType;
+  message: string;
+  id?: string;
+  timestampIso?: string;
+}
+
 /**
  * Page object for the kritzel-editor web component.
  * Provides helpers to interact with the editor across all framework demos.
@@ -714,6 +723,21 @@ export class EditorPage {
     return this.callMethod('delete');
   }
 
+  /** Trigger a UI notification through the editor public API. */
+  async triggerNotification(notification: KritzelNotificationConfig) {
+    return this.page.evaluate(({ type, message, id, timestampIso }) => {
+      const editor = document.querySelector('kritzel-editor') as any;
+      if (!editor) throw new Error('kritzel-editor not found');
+
+      return editor.triggerNotification({
+        type,
+        message,
+        id,
+        timestamp: timestampIso ? new Date(timestampIso) : undefined,
+      });
+    }, notification);
+  }
+
   // --- System clipboard simulation ---
 
   /**
@@ -738,6 +762,18 @@ export class EditorPage {
     await this.page.evaluate(async () => {
       if (!navigator.clipboard?.writeText) return;
       await navigator.clipboard.writeText('');
+    });
+  }
+
+  /** Simulate blocked browser clipboard-read permission for the current page. */
+  async blockClipboardReadPermission() {
+    await this.page.evaluate(() => {
+      const engine = document.querySelector('kritzel-engine') as any;
+      if (!engine?.core?.permissionManager) {
+        throw new Error('kritzel-engine permission manager is not available');
+      }
+
+      engine.core.permissionManager.registerRequestPermissionHandler('clipboard-read', async () => 'denied');
     });
   }
 
