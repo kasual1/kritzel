@@ -17,6 +17,7 @@ import { KritzelLine } from '../objects/line.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelText } from '../objects/text.class';
 import { KritzelImage } from '../objects/image.class';
+import { KritzelCustomElement } from '../objects/custom-element.class';
 import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-config.interface';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
@@ -386,8 +387,16 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           this._core.rerender();
         }
 
-        if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1 && selectedObject.objects[0].isInteractive) {
-          return;
+        if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1) {
+          const firstObj = selectedObject.objects[0];
+          if (KritzelClassHelper.isInstanceOf<KritzelCustomElement>(firstObj, 'KritzelCustomElement')) {
+            // Custom elements default to selectable (allowEmbeddedInteraction=false).
+            // Only skip handlers if explicitly configured to allow embedded interaction.
+            if (firstObj.allowEmbeddedInteraction) return;
+          } else if (firstObj.isInteractive) {
+            // Preserve existing behavior for text/shape edit mode
+            return;
+          }
         }
       }
 

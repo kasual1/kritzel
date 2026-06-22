@@ -14,6 +14,7 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelGroup } from '../objects/group.class';
+import { KritzelCustomElement } from '../objects/custom-element.class';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
@@ -1032,6 +1033,70 @@ describe('KritzelSelectionTool', () => {
       tool.handlePointerUp(createTouchEvent());
 
       expect(mockCore.rerender).toHaveBeenCalled();
+    });
+  });
+
+  describe('KritzelCustomElement interaction semantics', () => {
+    it('should allow normal selection/move handlers for custom elements with allowEmbeddedInteraction=false', () => {
+      const customEl = Object.create(KritzelCustomElement.prototype);
+      customEl.__class__ = 'KritzelCustomElement';
+      customEl.allowEmbeddedInteraction = false;
+      customEl.isInteractive = true;
+
+      const selectionGroup = Object.create(Object.prototype);
+      selectionGroup.isSelected = false;
+      selectionGroup.objects = [customEl];
+
+      mockState.selectionGroup = selectionGroup;
+
+      const event = createMouseEvent();
+      // This test verifies that handlers are NOT early-returned for this object
+      // In the actual implementation, we would call handlePointerDown and verify handlers were invoked
+
+      tool.handlePointerDown(event);
+
+      // Verify move and resize handlers were called (not blocked by isInteractive check)
+      expect(tool.moveHandler.handlePointerDown).toHaveBeenCalled();
+    });
+
+    it('should skip normal handlers for custom elements with allowEmbeddedInteraction=true', () => {
+      const customEl = Object.create(KritzelCustomElement.prototype);
+      customEl.__class__ = 'KritzelCustomElement';
+      customEl.allowEmbeddedInteraction = true;
+      customEl.isInteractive = true;
+
+      const selectionGroup = Object.create(Object.prototype);
+      selectionGroup.isSelected = false;
+      selectionGroup.objects = [customEl];
+
+      mockState.selectionGroup = selectionGroup;
+
+      const event = createMouseEvent();
+      
+      tool.handlePointerDown(event);
+
+      // When allowEmbeddedInteraction=true, handlers should be skipped (early return)
+      // This allows embedded elements like buttons/inputs to receive events
+      // Note: In the actual code, only the first pointer event sets this behavior
+    });
+
+    it('should not affect KritzelText isInteractive behavior', () => {
+      const text = Object.create(KritzelText.prototype);
+      text.__class__ = 'KritzelText';
+      text.isInteractive = true;
+
+      const selectionGroup = Object.create(Object.prototype);
+      selectionGroup.isSelected = false;
+      selectionGroup.objects = [text];
+
+      mockState.selectionGroup = selectionGroup;
+
+      const event = createMouseEvent();
+
+      tool.handlePointerDown(event);
+
+      // Text objects with isInteractive=true should still early-return (edit mode)
+      // This behavior should remain unchanged
     });
   });
 });

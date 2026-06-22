@@ -9,6 +9,7 @@ export {
     KritzelLine,
     KritzelShape,
     KritzelGroup,
+    KritzelCustomElement,
     KritzelBaseTool,
     KritzelBrushTool,
     KritzelTextTool,

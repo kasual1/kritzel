@@ -2069,6 +2069,7 @@ export class KritzelEngine {
   private _assetStorageConfigRevision: number = 0;
   private _isWorkspaceLoading: boolean = false;
   private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
+  private _hasInjectedDevCustomObject: boolean = false;
   private readonly _defaultUndoState: KritzelUndoState = {
     canUndo: false,
     canRedo: false,
@@ -2197,6 +2198,9 @@ export class KritzelEngine {
       // Initialize sync config and Yjs
       await this.initializeSyncAndWorkspace();
 
+      // Development convenience: inject a sample custom element once after startup.
+      await this.injectDevelopmentCustomElement();
+
       if (this.core.store.state.isReady === false) {
         this.core.store.state.isReady = true;
         this.logUnlicensedWelcomeBanner();
@@ -2219,6 +2223,63 @@ export class KritzelEngine {
     } finally {
       this._syncInitPromise = null;
     }
+  }
+
+  /**
+   * Injects a sample custom object in local development once the engine is initialized.
+   * No-op outside local/dev contexts and if a seeded object already exists.
+   */
+  private async injectDevelopmentCustomElement(): Promise<void> {
+    if (this._hasInjectedDevCustomObject) {
+      return;
+    }
+
+    const hostname = window.location.hostname;
+    const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1';
+
+    if (!isLocalHost) {
+      return;
+    }
+
+    const existingSeeded = this.core.store.allNonSelectionObjects.some(object => {
+      if (!KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement')) {
+        return false;
+      }
+
+      return object.element?.getAttribute('data-kritzel-dev-seed') === 'true';
+    });
+
+    if (existingSeeded) {
+      this._hasInjectedDevCustomObject = true;
+      return;
+    }
+
+    const element = document.createElement('div');
+    element.setAttribute('data-kritzel-dev-seed', 'true');
+    element.style.width = '100%';
+    element.style.height = '100%';
+    element.style.display = 'flex';
+    element.style.alignItems = 'center';
+    element.style.justifyContent = 'center';
+    element.style.borderRadius = '10px';
+    element.style.border = '1px solid #d6d6d6';
+    element.style.background = '#ffffff';
+    element.style.color = '#1f2937';
+    element.style.fontFamily = 'sans-serif';
+    element.style.fontSize = '14px';
+    element.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
+    element.textContent = 'Dev Custom Object';
+
+    const customObject = KritzelCustomElement.create(this.core, {
+      element,
+      translateX: 120,
+      translateY: 120,
+      width: 220,
+      height: 64,
+    }) as KritzelCustomElement;
+
+    await this.addObject(customObject);
+    this._hasInjectedDevCustomObject = true;
   }
 
   /**
