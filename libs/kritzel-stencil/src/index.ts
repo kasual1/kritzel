@@ -20,6 +20,7 @@ export * from './classes/objects/image.class';
 export * from './classes/objects/line.class';
 export * from './classes/objects/group.class';
 export * from './classes/objects/shape.class';
+export * from './classes/objects/custom-element.class';
 
 export * from './classes/tools/base-tool.class';
 export * from './classes/tools/brush-tool.class';

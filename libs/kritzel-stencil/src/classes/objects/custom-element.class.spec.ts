@@ -296,4 +296,138 @@ describe('KritzelCustomElement', () => {
       expect(copy.element.textContent).toBe('hello');
     });
   });
+
+  describe('serialization', () => {
+    it('should serialize element as HTML string', () => {
+      const el = document.createElement('div');
+      el.textContent = 'Hello';
+      const obj = KritzelCustomElement.create(mockCore, { element: el, width: 100, height: 50 }) as KritzelCustomElement;
+
+      const serialized = obj.serialize();
+
+      expect(serialized.htmlString).toContain('Hello');
+      expect(typeof serialized.htmlString).toBe('string');
+    });
+
+    it('should serialize with dimension snapshot', () => {
+      const el = document.createElement('div');
+      const obj = KritzelCustomElement.create(mockCore, { element: el, width: 150, height: 75 }) as KritzelCustomElement;
+
+      const serialized = obj.serialize();
+
+      expect(serialized.serializedWidth).toBe(150);
+      expect(serialized.serializedHeight).toBe(75);
+    });
+
+    it('should exclude _core and _elementRef from serialized output', () => {
+      const el = document.createElement('div');
+      const obj = KritzelCustomElement.create(mockCore, { element: el }) as KritzelCustomElement;
+
+      const serialized = obj.serialize();
+
+      expect(serialized).not.toHaveProperty('_core');
+      expect(serialized).not.toHaveProperty('_elementRef');
+    });
+
+    it('should handle empty element', () => {
+      const obj = new KritzelCustomElement();
+      obj._core = mockCore;
+
+      const serialized = obj.serialize();
+
+      expect(serialized.htmlString).toBe('');
+    });
+
+    it('should deserialize and reconstruct element from htmlString', () => {
+      const el = document.createElement('button');
+      el.id = 'test-button';
+      el.textContent = 'Click Me';
+      const obj = KritzelCustomElement.create(mockCore, { element: el }) as KritzelCustomElement;
+
+      const serialized = obj.serialize();
+      const restored = new KritzelCustomElement();
+      restored._core = mockCore;
+      restored.deserialize(serialized);
+
+      expect(restored.element).toBeDefined();
+      expect(restored.element.textContent).toBe('Click Me');
+    });
+
+    it('should create placeholder on deserialize if htmlString is missing', () => {
+      const obj = new KritzelCustomElement();
+      obj._core = mockCore;
+
+      obj.deserialize({});
+
+      expect(obj.element).toBeDefined();
+      expect(obj.element.textContent).toContain('[Custom Element]');
+    });
+
+    it('should create placeholder on deserialize if htmlString is invalid', () => {
+      const obj = new KritzelCustomElement();
+      obj._core = mockCore;
+
+      // Test with empty htmlString fallback - temp.firstElementChild will be null
+      obj.deserialize({ htmlString: '' });
+
+      expect(obj.element).toBeDefined();
+      expect(obj.element.textContent).toContain('[Custom Element]');
+    });
+
+    it('should survive serialization roundtrip with complex HTML', () => {
+      const el = document.createElement('div');
+      el.innerHTML = '<p><strong>Bold</strong> and <em>italic</em></p>';
+      const obj = KritzelCustomElement.create(mockCore, { element: el }) as KritzelCustomElement;
+
+      const serialized = obj.serialize();
+      const restored = new KritzelCustomElement();
+      restored._core = mockCore;
+      restored.deserialize(serialized);
+
+      expect(restored.element.textContent).toContain('Bold');
+      expect(restored.element.textContent).toContain('italic');
+    });
+  });
+
+  describe('interaction semantics', () => {
+    it('should have allowEmbeddedInteraction flag with default false', () => {
+      const obj = new KritzelCustomElement();
+
+      expect(obj.allowEmbeddedInteraction).toBe(false);
+    });
+
+    it('should allow setting allowEmbeddedInteraction to true', () => {
+      const obj = new KritzelCustomElement();
+      obj.allowEmbeddedInteraction = true;
+
+      expect(obj.allowEmbeddedInteraction).toBe(true);
+    });
+
+    it('should have isInteractive property with default true', () => {
+      const obj = new KritzelCustomElement();
+
+      expect(obj.isInteractive).toBe(true);
+    });
+
+    it('should preserve isInteractive and allowEmbeddedInteraction through serialization', () => {
+      const obj = new KritzelCustomElement();
+      obj.allowEmbeddedInteraction = true;
+      obj.isInteractive = false;
+
+      const serialized = obj.serialize();
+
+      expect(serialized.allowEmbeddedInteraction).toBe(true);
+      expect(serialized.isInteractive).toBe(false);
+    });
+
+    it('should restore allowEmbeddedInteraction on deserialize', () => {
+      const obj = new KritzelCustomElement();
+      obj._core = mockCore;
+
+      obj.deserialize({ allowEmbeddedInteraction: true, isInteractive: false });
+
+      expect(obj.allowEmbeddedInteraction).toBe(true);
+      expect(obj.isInteractive).toBe(false);
+    });
+  });
 });

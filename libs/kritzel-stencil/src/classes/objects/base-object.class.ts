@@ -420,19 +420,13 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   /**
    * Serializes the object to a plain JavaScript object for persistence.
    * Excludes internal references (_core, _elementRef) and computed properties.
-   * DOM elements are cloned if present.
+   * Subclasses should override to handle domain-specific serialization (e.g., HTML elements).
    * @returns A serializable object containing all persistent properties
    */
   serialize() {
     const { _core, _elementRef, element, totalWidth, totalHeight, ...remainingProps } = this as any;
-
-    const clonedProps = structuredClone(remainingProps);
-
-    if (element && typeof element === 'object' && 'nodeType' in element && element.nodeType === 1) {
-      clonedProps.element = element.cloneNode(true) as HTMLElement;
-    }
-
-    return clonedProps;
+    // No longer clone raw elements—let subclasses handle serializable payloads
+    return structuredClone(remainingProps);
   }
 
   /**

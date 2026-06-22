@@ -17,6 +17,14 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   isInteractive: boolean = true;
 
   /**
+   * When false (default), the custom element participates normally in canvas selection/movement.
+   * When true, embedded pointer events may be consumed by the element's internal handlers
+   * (e.g., buttons, inputs), potentially bypassing canvas selection.
+   * Even when true, the element remains selectable via handles or background clicks.
+   */
+  allowEmbeddedInteraction: boolean = false;
+
+  /**
    * Creates a new KritzelCustomElement instance.
    * @param config - Optional configuration object for the custom element.
    * @param config.element - The HTML element to wrap.
@@ -68,7 +76,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     object.id = object.generateId();
     object.workspaceId = core.store.state.activeWorkspace!.id;
     object.userId = core.user?.id;
-
+    object.zIndex = core.store.currentZIndex;
 
     return object;
   }
@@ -138,6 +146,64 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     copiedObject.isMounted = false;
     copiedObject.element = this.element.cloneNode(true) as HTMLElement;
     return copiedObject;
+  }
+
+  /**
+   * Serializes the custom element to a plain JavaScript object for persistence.
+   * Stores HTML as a string (safe for JSON/Yjs) and captures dimension metadata.
+   * @returns A serializable object with htmlString and dimension snapshots
+   */
+  override serialize() {
+    const { _core, _elementRef, element, totalWidth, totalHeight, ...props } = this as any;
+    const cloned = structuredClone(props);
+    // Store HTML as string, safe for JSON roundtrip and Yjs persistence
+    cloned.htmlString = element ? element.outerHTML : '';
+    // Capture dimension snapshot at serialization time
+    cloned.serializedWidth = this.width;
+    cloned.serializedHeight = this.height;
+    return cloned;
+  }
+
+  /**
+   * Deserializes the custom element from a plain object.
+   * Reconstructs the element from stored HTML string with fallback to placeholder.
+   * @template T - The expected return type
+   * @param object - The serialized object data to restore from
+   * @returns This instance cast to type T
+   */
+  override deserialize<T>(object: any): T {
+    super.deserialize(object);
+    // Reconstruct element from stored HTML, or create placeholder
+    if (object.htmlString) {
+      try {
+        const temp = document.createElement('div');
+        temp.innerHTML = object.htmlString;
+        this.element = (temp.firstElementChild as HTMLElement) || this.createPlaceholder();
+      } catch {
+        this.element = this.createPlaceholder();
+      }
+    } else {
+      this.element = this.createPlaceholder();
+    }
+    return this as unknown as T;
+  }
+
+  /**
+   * Creates a placeholder element when HTML deserialization fails.
+   * Used as fallback to ensure element is always defined.
+   * @returns A div element with placeholder styling
+   */
+  private createPlaceholder(): HTMLElement {
+    const el = document.createElement('div');
+    el.textContent = '[Custom Element]';
+    el.style.border = '1px dashed #ccc';
+    el.style.display = 'flex';
+    el.style.alignItems = 'center';
+    el.style.justifyContent = 'center';
+    el.style.backgroundColor = '#f9f9f9';
+    el.style.color = '#999';
+    el.style.fontSize = '12px';
+    return el;
   }
 
 }
