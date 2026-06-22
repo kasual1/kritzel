@@ -2,6 +2,17 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 
+export interface KritzelCustomElementConfig {
+  element?: HTMLElement;
+  elementFactory?: () => HTMLElement;
+  translateX?: number;
+  translateY?: number;
+  rotation?: number;
+  scale?: number;
+  height?: number;
+  width?: number;
+}
+
 /**
  * Represents a custom HTML element that can be placed and manipulated on the Kritzel canvas.
  * Extends KritzelBaseObject to inherit common object functionality like positioning,
@@ -11,7 +22,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   override __class__: string = 'KritzelCustomElement';
 
   /** The HTML element to be rendered on the canvas. */
-  element: HTMLElement;
+  element!: HTMLElement;
 
   /** Whether the element responds to user interactions. Defaults to true. */
   isInteractive: boolean = true;
@@ -28,13 +39,14 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * Creates a new KritzelCustomElement instance.
    * @param config - Optional configuration object for the custom element.
    * @param config.element - The HTML element to wrap.
+   * @param config.elementFactory - Optional local-only factory used to create the HTML element.
    * @param config.translateX - Initial X position offset. Defaults to 0.
    * @param config.translateY - Initial Y position offset. Defaults to 0.
    * @param config.scale - Initial scale factor. Defaults to 1.
    * @param config.height - Initial height in pixels. Defaults to 0.
    * @param config.width - Initial width in pixels. Defaults to 0.
    */
-  constructor(config?: { element: HTMLElement; translateX?: number; translateY?: number; rotation?: number; scale?: number, height?: number; width?: number }) {
+  constructor(config?: KritzelCustomElementConfig) {
     super();
 
     if (config) {
@@ -42,7 +54,11 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       this.translateY = config.translateY || 0;
       this.rotation = KritzelMathHelper.degreesToRadians(config.rotation ?? 0);
       this.scale = config.scale || 1;
-      this.element = config.element;
+      try {
+        this.element = config.element ?? config.elementFactory?.() ?? this.createPlaceholder();
+      } catch {
+        this.element = this.createPlaceholder();
+      }
       this.height = config.height || 0;
       this.width = config.width || 0;
     }
@@ -54,6 +70,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @param core - The KritzelCore instance for state management and ID generation.
    * @param config - Optional configuration object for the custom element.
    * @param config.element - The HTML element to wrap.
+   * @param config.elementFactory - Optional local-only factory used to create the HTML element.
    * @param config.translateX - Initial X position offset.
    * @param config.translateY - Initial Y position offset.
    * @param config.scale - Initial scale factor.
@@ -61,15 +78,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @param config.width - Initial width in pixels.
    * @returns A new KritzelBaseObject instance bound to the core.
    */
-  static override create(core: KritzelCore, config?: {
-    element: HTMLElement;
-    translateX?: number;
-    translateY?: number;
-    rotation?: number;
-    scale?: number;
-    height?: number;
-    width?: number;
-  }): KritzelBaseObject<Element> {
+  static override create(core: KritzelCore, config?: KritzelCustomElementConfig): KritzelBaseObject<Element> {
     const object = new KritzelCustomElement(config);
 
     object._core = core;
@@ -103,6 +112,24 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     // Clear existing content and append the element
     this.elementRef.innerHTML = '';
     this.elementRef.appendChild(this.element);
+  }
+
+  /**
+   * Creates a placeholder element when HTML deserialization fails.
+   * Used as fallback to ensure element is always defined.
+   * @returns A div element with placeholder styling
+   */
+  private createPlaceholder(): HTMLElement {
+    const el = document.createElement('div');
+    el.textContent = '[Custom Element]';
+    el.style.border = '1px dashed #ccc';
+    el.style.display = 'flex';
+    el.style.alignItems = 'center';
+    el.style.justifyContent = 'center';
+    el.style.backgroundColor = '#f9f9f9';
+    el.style.color = '#999';
+    el.style.fontSize = '12px';
+    return el;
   }
 
   /**
@@ -186,24 +213,6 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       this.element = this.createPlaceholder();
     }
     return this as unknown as T;
-  }
-
-  /**
-   * Creates a placeholder element when HTML deserialization fails.
-   * Used as fallback to ensure element is always defined.
-   * @returns A div element with placeholder styling
-   */
-  private createPlaceholder(): HTMLElement {
-    const el = document.createElement('div');
-    el.textContent = '[Custom Element]';
-    el.style.border = '1px dashed #ccc';
-    el.style.display = 'flex';
-    el.style.alignItems = 'center';
-    el.style.justifyContent = 'center';
-    el.style.backgroundColor = '#f9f9f9';
-    el.style.color = '#999';
-    el.style.fontSize = '12px';
-    return el;
   }
 
 }

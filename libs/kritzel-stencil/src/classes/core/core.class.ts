@@ -217,7 +217,7 @@ export class KritzelCore {
     this._clipboardManager = new KritzelClipboardManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);
     this._assetResolver = new KritzelAssetResolver();
-    this._assetResolver.setShowInfo(this._store.state.debugInfo.showAssetResolverInfo);
+    this._assetResolver.setShowInfo(this._store.state.debugInfo?.showAssetResolverInfo ?? false);
   }
 
   /**
