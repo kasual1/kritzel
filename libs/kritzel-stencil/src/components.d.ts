@@ -383,7 +383,7 @@ export namespace Components {
         "customSvgIcons": Record<string, string>;
         "cut": () => Promise<void>;
         /**
-          * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,   }
+          * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,     showAssetResolverInfo: false,   }
          */
         "debugInfo": KritzelDebugInfo;
         "delete": () => Promise<void>;
@@ -530,7 +530,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default {   providers: [], }
+          * @default {   providers: [IndexedDBSyncProvider], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -2838,7 +2838,7 @@ declare namespace LocalJSX {
          */
         "customSvgIcons"?: Record<string, string>;
         /**
-          * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,   }
+          * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,     showAssetResolverInfo: false,   }
          */
         "debugInfo"?: KritzelDebugInfo;
         /**
@@ -2939,7 +2939,7 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         /**
-          * @default {   providers: [], }
+          * @default {   providers: [IndexedDBSyncProvider], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**

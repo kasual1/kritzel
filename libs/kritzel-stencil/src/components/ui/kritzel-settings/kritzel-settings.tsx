@@ -20,6 +20,7 @@ const DEFAULT_DEBUG_INFO: KritzelDebugInfo = {
   showObjectInfo: false,
   showSyncProviderInfo: true,
   showMigrationInfo: true,
+  showAssetResolverInfo: false,
 };
 
 const SETTINGS_CATEGORY_IDS = ['general', 'viewport', 'shortcuts', 'developer', 'about'] as const;

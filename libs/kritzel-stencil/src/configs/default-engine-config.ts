@@ -38,8 +38,9 @@ export const DEFAULT_ENGINE_CONFIG: KritzelEngineState = {
   debugInfo: {
     showObjectInfo: false,
     showViewportInfo: false,
-    showSyncProviderInfo: true,
-    showMigrationInfo: true
+    showSyncProviderInfo: false,
+    showAssetResolverInfo: false,
+    showMigrationInfo: false,
   },
   host: null,
   pointerX: 0,

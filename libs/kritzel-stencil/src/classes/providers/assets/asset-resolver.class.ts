@@ -81,9 +81,14 @@ export class KritzelAssetResolver {
   private _pending = new Map<string, PendingUpload>();
   private _flushTimer: ReturnType<typeof setTimeout> | null = null;
   private _destroyed = false;
-  private _quiet = false;
+  private _quiet = true;
   /** Dedupes concurrent resolves of the same id. */
   private _resolvePromises = new Map<string, Promise<string>>();
+
+  /** Enables or disables resolver diagnostic logging. */
+  setShowInfo(show: boolean): void {
+    this._quiet = !show;
+  }
 
   /**
    * Whether any remote provider is configured. Used by the engine to
@@ -112,7 +117,6 @@ export class KritzelAssetResolver {
     // concurrent callers awaiting `ensureReady()` are unblocked together.
     this.getReadyPromise();
 
-    this._quiet = config?.quiet ?? false;
     const providers = this.instantiateProviders(config?.providers ?? []);
 
     // Ensure a local provider always exists so uploads can be optimistic
@@ -148,11 +152,13 @@ export class KritzelAssetResolver {
       try {
         await provider.init();
       } catch (err) {
-        console.warn(
-          `[KritzelAssetResolver] Remote provider "${provider.name}" failed to initialize. ` +
-            `Assets will be served from the local provider until the remote becomes available.`,
-          err,
-        );
+        if (this.canLogInfo()) {
+          console.warn(
+            `[Kritzel] Asset resolver remote provider "${provider.name}" failed to initialize. ` +
+              `Assets will be served from the local provider until the remote becomes available.`,
+            err,
+          );
+        }
       }
     }
 
@@ -167,7 +173,7 @@ export class KritzelAssetResolver {
       this._rejectReady = null;
     }
 
-    if (!this._quiet) {
+    if (this.canLogInfo()) {
       this.logProviderConfiguration();
     }
 
@@ -178,8 +184,8 @@ export class KritzelAssetResolver {
 
   /** Tears down the resolver and all providers. */
   destroy(): void {
-    if (!this._quiet) {
-      console.info('Asset resolver destroyed');
+    if (this.canLogInfo()) {
+      console.info('[Kritzel] Asset resolver destroyed');
     }
     this._destroyed = true;
     if (this._flushTimer) {
@@ -384,7 +390,7 @@ export class KritzelAssetResolver {
 
   private logProviderConfiguration(): void {
     const lines: string[] = [
-      `Asset resolver initialized with ${this._providers.length} provider(s):`,
+      `[Kritzel] Asset resolver initialized with ${this._providers.length} provider(s):`,
     ];
     for (const provider of this._providers) {
       const role = provider === this._local ? 'local (primary write target)' : provider.type;
@@ -448,8 +454,8 @@ export class KritzelAssetResolver {
       }
     }
 
-    if (!this._quiet && recoveredCount > 0) {
-      console.info(`Asset resolver: recovered ${recoveredCount} pending upload(s)`);
+    if (this.canLogInfo() && recoveredCount > 0) {
+      console.info(`[Kritzel] Asset resolver recovered ${recoveredCount} pending upload(s)`);
     }
   }
 
@@ -506,8 +512,8 @@ export class KritzelAssetResolver {
         });
         this._pending.delete(key);
         await this.clearPendingRemote(job.id, job.providerName);
-        if (!this._quiet) {
-          console.info(`Asset resolver: uploaded ${job.id} to ${provider.name}`);
+        if (this.canLogInfo()) {
+          console.info(`[Kritzel] Asset resolver uploaded ${job.id} to ${provider.name}`);
         }
       } catch (err) {
         job.attempts += 1;
@@ -517,11 +523,13 @@ export class KritzelAssetResolver {
         );
         job.nextAttemptAt = Date.now() + delay;
         nextRetryIn = Math.min(nextRetryIn, delay);
-        console.warn(
-          `[KritzelAssetResolver] Upload to ${provider.name} failed for ${job.id} (attempt ${job.attempts}). ` +
-            `Retrying in ${Math.round(delay / 1000)}s.`,
-          err,
-        );
+        if (this.canLogInfo()) {
+          console.warn(
+            `[Kritzel] Asset resolver upload to ${provider.name} failed for ${job.id} (attempt ${job.attempts}). ` +
+              `Retrying in ${Math.round(delay / 1000)}s.`,
+            err,
+          );
+        }
       }
     }
 
@@ -581,5 +589,9 @@ export class KritzelAssetResolver {
   private async dataUrlToBlob(dataUrl: string): Promise<Blob> {
     const res = await fetch(dataUrl);
     return res.blob();
+  }
+
+  private canLogInfo(): boolean {
+    return !this._quiet;
   }
 }

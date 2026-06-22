@@ -38,7 +38,6 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
   readonly name = 'IndexedDBAssetProvider';
 
   private _dbName: string;
-  private _quiet: boolean;
   private _db: IDBDatabase | null = null;
   /** In-memory cache of id -> object URL to avoid re-creating blob URLs. */
   private _urlCache = new Map<string, string>();
@@ -47,7 +46,6 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
 
   constructor(options?: IndexedDBAssetProviderOptions) {
     this._dbName = options?.dbName ?? DEFAULT_DB_NAME;
-    this._quiet = options?.quiet ?? false;
   }
 
   /**
@@ -63,9 +61,6 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
     this._db = await this.openDatabase();
     // Warm up the known-ids cache so canResolve can answer synchronously.
     await this.loadKnownIds();
-    if (!this._quiet) {
-      console.info(`IndexedDBAssetProvider initialized: ${this._dbName}`);
-    }
   }
 
   destroy(): void {
@@ -81,9 +76,6 @@ export class IndexedDBAssetProvider implements IAssetStorageProvider {
     if (this._db) {
       this._db.close();
       this._db = null;
-    }
-    if (!this._quiet) {
-      console.info(`IndexedDBAssetProvider destroyed: ${this._dbName}`);
     }
   }
 

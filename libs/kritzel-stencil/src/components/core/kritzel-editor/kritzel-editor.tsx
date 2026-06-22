@@ -66,6 +66,7 @@ export class KritzelEditor {
     showObjectInfo: false,
     showSyncProviderInfo: true,
     showMigrationInfo: true,
+    showAssetResolverInfo: false,
   };
   @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
