@@ -2068,6 +2068,7 @@ export class KritzelEngine {
   private _syncConfigRevision: number = 0;
   private _assetStorageConfigRevision: number = 0;
   private _isWorkspaceLoading: boolean = false;
+  private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
   private readonly _defaultUndoState: KritzelUndoState = {
     canUndo: false,
     canRedo: false,
@@ -2080,6 +2081,7 @@ export class KritzelEngine {
   private readonly _objectDistanceFadeCloseStartScale = 2;
   private readonly _objectDistanceFadeCloseMaxScale = 4;
   private readonly _objectDistanceFadeCloseMinOpacity = 0;
+
 
   private syncLoadingState(): void {
     this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
@@ -2197,6 +2199,7 @@ export class KritzelEngine {
 
       if (this.core.store.state.isReady === false) {
         this.core.store.state.isReady = true;
+        this.logUnlicensedWelcomeBanner();
         this.isEngineReady.emit(this.core.store.state);
       }
     }, 50);
@@ -2242,6 +2245,17 @@ export class KritzelEngine {
     }
 
     this._isAssetStorageInitialized = true;
+  }
+
+  private logUnlicensedWelcomeBanner(): void {
+    if (this.core.licenseManager.isLicensed || this._hasLoggedUnlicensedWelcomeBanner) {
+      return;
+    }
+
+    this._hasLoggedUnlicensedWelcomeBanner = true;
+
+    console.info('%c👋 Welcome to Kritzel', 'color: #007AFF; font-weight: 700;');
+    console.info(`This version of Kritzel is not licensed. Get a license at: https://kritzel.io`);
   }
 
   private async doInitializeSyncAndWorkspace() {
