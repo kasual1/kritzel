@@ -321,7 +321,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     const finalConfig = config ?? DEFAULT_SYNC_CONFIG;
 
     // Instantiate providers from configuration
-    const quiet = !core.store?.state?.debugInfo?.showSyncProviderInfo;
+    const showSyncProviderInfo = !!core.store?.state?.debugInfo?.showSyncProviderInfo;
+    const quiet = !showSyncProviderInfo;
     for (const providerConfig of finalConfig.providers) {
       let provider: ISyncProvider;
 
@@ -335,6 +336,11 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       }
 
       this._providers.push(provider);
+    }
+
+    if (showSyncProviderInfo) {
+      const providerList = this._providers.map(p => `${p.constructor.name} (${p.type})`).join(', ');
+      console.info(`[Kritzel] Workspace sync providers initialized for ${docName}: ${providerList || 'none'}`);
     }
 
     // captureTimeout is effectively infinite — undo-step boundaries are
@@ -383,16 +389,25 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     // Await local providers for immediate data availability
     const localResults = await Promise.allSettled(localProviders.map(p => p.connect()));
+    if (showSyncProviderInfo) {
+      const connectedLocalCount = localResults.filter(result => result.status === 'fulfilled').length;
+      console.info(`[Kritzel] Workspace local providers connected: ${connectedLocalCount}/${localProviders.length}`);
+    }
     localResults.forEach((result, i) => {
-      if (result.status === 'rejected') {
+      if (showSyncProviderInfo && result.status === 'rejected') {
         console.error(`[Kritzel] Sync provider "${localProviders[i]?.constructor.name}" failed to connect:`, result.reason);
       }
     });
 
     // Connect network providers in the background (remote data arrives via Yjs observers)
+    if (showSyncProviderInfo && networkProviders.length > 0) {
+      console.info(`[Kritzel] Workspace network providers connecting in background: ${networkProviders.length}`);
+    }
     for (const provider of networkProviders) {
       provider.connect().catch(err => {
-        console.error(`[Kritzel] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
+        if (showSyncProviderInfo) {
+          console.error(`[Kritzel] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
+        }
       });
     }
     this._isReady = true;
