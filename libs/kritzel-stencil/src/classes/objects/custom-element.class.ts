@@ -4,7 +4,6 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
 
 export interface KritzelCustomElementConfig {
   element?: HTMLElement;
-  elementFactory?: () => HTMLElement;
   translateX?: number;
   translateY?: number;
   rotation?: number;
@@ -39,7 +38,6 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * Creates a new KritzelCustomElement instance.
    * @param config - Optional configuration object for the custom element.
    * @param config.element - The HTML element to wrap.
-   * @param config.elementFactory - Optional local-only factory used to create the HTML element.
    * @param config.translateX - Initial X position offset. Defaults to 0.
    * @param config.translateY - Initial Y position offset. Defaults to 0.
    * @param config.scale - Initial scale factor. Defaults to 1.
@@ -54,11 +52,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       this.translateY = config.translateY || 0;
       this.rotation = KritzelMathHelper.degreesToRadians(config.rotation ?? 0);
       this.scale = config.scale || 1;
-      try {
-        this.element = config.element ?? config.elementFactory?.() ?? this.createPlaceholder();
-      } catch {
-        this.element = this.createPlaceholder();
-      }
+      this.element = config.element ?? this.createPlaceholder();
       this.height = config.height || 0;
       this.width = config.width || 0;
     }
@@ -70,7 +64,6 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @param core - The KritzelCore instance for state management and ID generation.
    * @param config - Optional configuration object for the custom element.
    * @param config.element - The HTML element to wrap.
-   * @param config.elementFactory - Optional local-only factory used to create the HTML element.
    * @param config.translateX - Initial X position offset.
    * @param config.translateY - Initial Y position offset.
    * @param config.scale - Initial scale factor.
