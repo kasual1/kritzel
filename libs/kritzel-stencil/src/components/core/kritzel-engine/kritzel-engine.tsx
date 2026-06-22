@@ -289,6 +289,7 @@ export class KritzelEngine {
   onDebugInfoChange(newValue: KritzelDebugInfo) {
     if (newValue) {
       this.core.store.state.debugInfo = newValue;
+      this.core.assetResolver.setShowInfo(newValue.showAssetResolverInfo);
     }
   }
 

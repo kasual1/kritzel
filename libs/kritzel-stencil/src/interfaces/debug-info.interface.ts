@@ -3,4 +3,5 @@ export interface KritzelDebugInfo {
   showObjectInfo: boolean;
   showSyncProviderInfo: boolean;
   showMigrationInfo: boolean;
+  showAssetResolverInfo: boolean;
 }
