@@ -94,6 +94,32 @@ describe('KritzelCustomElement', () => {
 
       expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
     });
+
+    it('should use elementFactory when element is not provided', () => {
+      const factoryElement = createMockElement();
+      const elementFactory = jest.fn(() => factoryElement);
+
+      const obj = new KritzelCustomElement({
+        elementFactory,
+      });
+
+      expect(elementFactory).toHaveBeenCalledTimes(1);
+      expect(obj.element).toBe(factoryElement);
+    });
+
+    it('should fall back to a placeholder when elementFactory throws', () => {
+      const elementFactory = jest.fn(() => {
+        throw new Error('factory failed');
+      });
+
+      const obj = new KritzelCustomElement({
+        elementFactory,
+      });
+
+      expect(elementFactory).toHaveBeenCalledTimes(1);
+      expect(obj.element).toBeDefined();
+      expect(obj.element.textContent).toContain('[Custom Element]');
+    });
   });
 
   describe('create', () => {
@@ -130,6 +156,36 @@ describe('KritzelCustomElement', () => {
       expect(obj.scale).toBe(3);
       expect(obj.width).toBe(200);
       expect(obj.height).toBe(300);
+    });
+
+    it('should resolve elementFactory through create()', () => {
+      const factoryElement = createMockElement();
+      const elementFactory = jest.fn(() => factoryElement);
+
+      const obj = KritzelCustomElement.create(mockCore, {
+        elementFactory,
+        width: 180,
+        height: 60,
+      }) as KritzelCustomElement;
+
+      expect(elementFactory).toHaveBeenCalledTimes(1);
+      expect(obj.element).toBe(factoryElement);
+      expect(obj.width).toBe(180);
+      expect(obj.height).toBe(60);
+    });
+
+    it('should prefer an explicit element over elementFactory', () => {
+      const explicitElement = createMockElement();
+      const factoryElement = createMockElement();
+      const elementFactory = jest.fn(() => factoryElement);
+
+      const obj = KritzelCustomElement.create(mockCore, {
+        element: explicitElement,
+        elementFactory,
+      }) as KritzelCustomElement;
+
+      expect(elementFactory).not.toHaveBeenCalled();
+      expect(obj.element).toBe(explicitElement);
     });
 
     it('should convert create rotation from degrees to radians', () => {
