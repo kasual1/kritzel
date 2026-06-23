@@ -13,6 +13,7 @@ import { BlueprintDefectMapperComponent } from './examples/blueprint-defect-mapp
 import { SlideshowPresentationComponent } from './examples/slideshow-presentation/slideshow-presentation.component';
 import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-gallery/infinite-canvas-gallery.component';
 import { ImageAnnotationStudioComponent } from './examples/image-annotation-studio/image-annotation-studio.component';
+import { TodoListComponent } from './examples/todo-list/todo-list.component';
 import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
 import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
 import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
@@ -124,6 +125,10 @@ export const routes: Routes = [
       {
         path: 'image-annotation-studio',
         component: ImageAnnotationStudioComponent,
+      },
+      {
+        path: 'todo-list',
+        component: TodoListComponent,
       },
       {
         path: 'collaboration-1',
