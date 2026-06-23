@@ -13,6 +13,27 @@ interface TodoItem {
   isCompleted: boolean;
 }
 
+export interface TodoListState {
+  todos: TodoItem[];
+  nextId: number;
+}
+
+const DEFAULT_TODO_STATE: TodoListState = {
+  nextId: 4,
+  todos: [
+    { id: 1, title: 'Review project docs', isCompleted: true },
+    { id: 2, title: 'Build a standalone component', isCompleted: false },
+    { id: 3, title: 'Verify route integration', isCompleted: false },
+  ],
+};
+
+export function createTodoListInitialState(): TodoListState {
+  return {
+    nextId: DEFAULT_TODO_STATE.nextId,
+    todos: DEFAULT_TODO_STATE.todos.map((todo) => ({ ...todo })),
+  };
+}
+
 @Component({
   selector: 'app-todo-list',
   imports: [ReactiveFormsModule],
@@ -245,13 +266,11 @@ interface TodoItem {
   ],
 })
 export class TodoListComponent {
-  private nextId = 4;
+  private nextId = DEFAULT_TODO_STATE.nextId;
 
-  readonly todos = signal<TodoItem[]>([
-    { id: 1, title: 'Review project docs', isCompleted: true },
-    { id: 2, title: 'Build a standalone component', isCompleted: false },
-    { id: 3, title: 'Verify route integration', isCompleted: false },
-  ]);
+  readonly todos = signal<TodoItem[]>(
+    DEFAULT_TODO_STATE.todos.map((todo) => ({ ...todo })),
+  );
 
   readonly newTodoControl = new FormControl('', {
     nonNullable: true,
@@ -270,6 +289,28 @@ export class TodoListComponent {
     () => this.todos().filter((todo) => todo.isCompleted).length,
   );
   readonly openCount = computed(() => this.totalCount() - this.doneCount());
+
+  initializeFromState(state?: TodoListState): void {
+    if (!state) {
+      return;
+    }
+
+    const todos = (state.todos ?? []).map((todo) => ({ ...todo }));
+    this.todos.set(todos);
+
+    const maxId = todos.reduce((max, todo) => Math.max(max, todo.id), 0);
+    this.nextId = Math.max(state.nextId ?? maxId + 1, maxId + 1);
+
+    this.cancelEdit();
+    this.newTodoControl.setValue('');
+  }
+
+  exportState(): TodoListState {
+    return {
+      nextId: this.nextId,
+      todos: this.todos().map((todo) => ({ ...todo })),
+    };
+  }
 
   addTodo(event: Event): void {
     event.preventDefault();

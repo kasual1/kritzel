@@ -51,9 +51,12 @@ export * from './classes/managers/theme.manager';
 export * from './classes/managers/localization.manager';
 export * from './classes/managers/license.manager';
 
+export * from './classes/registries/custom-element-renderer.registry';
+
 export * from './interfaces/toolbar-control.interface';
 export * from './interfaces/menu-item.interface';
 export * from './interfaces/object-change-event.interface';
+export * from './interfaces/custom-element-renderer.interface';
 export * from './interfaces/sync-provider.interface';
 export * from './interfaces/sync-config.interface';
 export * from './interfaces/asset.interface';

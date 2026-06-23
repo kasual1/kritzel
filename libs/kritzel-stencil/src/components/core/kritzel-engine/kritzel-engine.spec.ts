@@ -142,6 +142,7 @@ describe('KritzelEngine', () => {
         remove: jest.fn(),
         clearLocalSelectionBox: jest.fn(),
         clearCursorPosition: jest.fn(),
+        findById: jest.fn().mockReturnValue(null),
         destroy: jest.fn(),
         transaction: jest.fn().mockImplementation((cb: () => void) => cb()),
         undoState: { canUndo: false, canRedo: false, undoStackSize: 0, redoStackSize: 0 },
@@ -394,6 +395,68 @@ describe('KritzelEngine', () => {
           message: 'Clipboard read permission is required to paste content. Please grant permission and try again.',
         }),
       );
+    });
+  });
+
+  describe('embedded custom element interaction', () => {
+    it('bypasses engine pointer handling for custom elements with allowEmbeddedInteraction=true', () => {
+      const objectElement = document.createElement('div');
+      objectElement.id = 'custom-1';
+      objectElement.classList.add('object');
+
+      const customElementObject = { allowEmbeddedInteraction: true } as any;
+      (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
+        return obj === customElementObject && className === 'KritzelCustomElement';
+      });
+
+      const activeTool = { handlePointerDown: jest.fn() };
+      core.store.state.activeTool = activeTool;
+
+      const setPointerCapture = jest.fn();
+      (engine.host as any).setPointerCapture = setPointerCapture;
+
+      const event = {
+        pointerId: 7,
+        composedPath: jest.fn().mockReturnValue([document.createElement('button'), objectElement]),
+      } as unknown as PointerEvent;
+
+      engine.handlePointerDown(event);
+
+      expect(setPointerCapture).not.toHaveBeenCalled();
+      expect(core.store.state.pointers.has(7)).toBe(false);
+      expect((engine.viewport as any).handlePointerDown).not.toHaveBeenCalled();
+      expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
+    });
+
+    it('keeps default pointer handling for non-interactive objects', () => {
+      const objectElement = document.createElement('div');
+      objectElement.id = 'shape-1';
+      objectElement.classList.add('object');
+
+      const nonInteractiveObject = { allowEmbeddedInteraction: false } as any;
+      (core.store.objects.findById as jest.Mock).mockReturnValue(nonInteractiveObject);
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
+        return obj === nonInteractiveObject && className === 'KritzelCustomElement';
+      });
+
+      const activeTool = { handlePointerDown: jest.fn() };
+      core.store.state.activeTool = activeTool;
+
+      const setPointerCapture = jest.fn();
+      (engine.host as any).setPointerCapture = setPointerCapture;
+
+      const event = {
+        pointerId: 8,
+        composedPath: jest.fn().mockReturnValue([document.createElement('div'), objectElement]),
+      } as unknown as PointerEvent;
+
+      engine.handlePointerDown(event);
+
+      expect(setPointerCapture).toHaveBeenCalledWith(8);
+      expect(core.store.state.pointers.has(8)).toBe(true);
+      expect((engine.viewport as any).handlePointerDown).toHaveBeenCalledWith(event);
+      expect(activeTool.handlePointerDown).toHaveBeenCalledWith(event);
     });
   });
 
