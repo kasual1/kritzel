@@ -96,6 +96,7 @@ describe('KritzelEngine', () => {
     resetActiveText: jest.fn(),
     resetActiveShape: jest.fn(),
     rerender: jest.fn(),
+    getObjectFromPointerEvent: jest.fn().mockReturnValue(null),
     beforeWorkspaceChange: jest.fn(),
     initializeWorkspace: jest.fn().mockResolvedValue(undefined),
     createWorkspace: jest.fn().mockResolvedValue(undefined),
@@ -662,6 +663,133 @@ describe('KritzelEngine', () => {
 
       expect(engine.viewport.handleWheel).not.toHaveBeenCalled();
       expect(activeTool.handleWheel).not.toHaveBeenCalled();
+    });
+
+    it('keeps wheel handling in hovered custom element while it can still scroll down', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+
+      const scrollHost = document.createElement('div');
+      Object.defineProperty(scrollHost, 'scrollHeight', { value: 300, configurable: true });
+      Object.defineProperty(scrollHost, 'clientHeight', { value: 100, configurable: true });
+      scrollHost.scrollTop = 50;
+
+      const objectElement = document.createElement('div');
+      objectElement.appendChild(scrollHost);
+
+      const hoveredCustomElement = {
+        __class__: 'KritzelCustomElement',
+        elementRef: objectElement,
+      } as any;
+
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+
+      engine.handleWheel(createWheelEvent({ deltaY: 10 }));
+
+      expect(engine.viewport.handleWheel).not.toHaveBeenCalled();
+      expect(activeTool.handleWheel).not.toHaveBeenCalled();
+    });
+
+    it('hands wheel back to canvas when hovered custom element reached bottom', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+      engine.isPanningEnabled = true;
+
+      const scrollHost = document.createElement('div');
+      Object.defineProperty(scrollHost, 'scrollHeight', { value: 300, configurable: true });
+      Object.defineProperty(scrollHost, 'clientHeight', { value: 100, configurable: true });
+      scrollHost.scrollTop = 200;
+
+      const objectElement = document.createElement('div');
+      objectElement.appendChild(scrollHost);
+
+      const hoveredCustomElement = {
+        __class__: 'KritzelCustomElement',
+        elementRef: objectElement,
+      } as any;
+
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+
+      engine.handleWheel(createWheelEvent({ deltaY: 10 }));
+
+      expect(engine.viewport.handleWheel).toHaveBeenCalledTimes(1);
+      expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
+    });
+
+    it('uses the elmeentRef firstChild when present to decide wheel handoff', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+
+      const scrollHost = document.createElement('div');
+      Object.defineProperty(scrollHost, 'scrollHeight', { value: 240, configurable: true });
+      Object.defineProperty(scrollHost, 'clientHeight', { value: 100, configurable: true });
+      scrollHost.scrollTop = 10;
+
+      const typoRefContainer = document.createElement('div');
+      typoRefContainer.appendChild(scrollHost);
+
+      const hoveredCustomElement = {
+        __class__: 'KritzelCustomElement',
+        elmeentRef: typoRefContainer,
+      } as any;
+
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+
+      engine.handleWheel(createWheelEvent({ deltaY: -5 }));
+
+      expect(engine.viewport.handleWheel).not.toHaveBeenCalled();
+      expect(activeTool.handleWheel).not.toHaveBeenCalled();
+    });
+
+    it('keeps wheel handling in hovered custom element while it can still scroll right', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+
+      const scrollHost = document.createElement('div');
+      Object.defineProperty(scrollHost, 'scrollWidth', { value: 300, configurable: true });
+      Object.defineProperty(scrollHost, 'clientWidth', { value: 100, configurable: true });
+      scrollHost.scrollLeft = 40;
+
+      const objectElement = document.createElement('div');
+      objectElement.appendChild(scrollHost);
+
+      const hoveredCustomElement = {
+        __class__: 'KritzelCustomElement',
+        elementRef: objectElement,
+      } as any;
+
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+
+      engine.handleWheel(createWheelEvent({ deltaX: 12, deltaY: 0 }));
+
+      expect(engine.viewport.handleWheel).not.toHaveBeenCalled();
+      expect(activeTool.handleWheel).not.toHaveBeenCalled();
+    });
+
+    it('hands wheel back to canvas when hovered custom element reached horizontal end', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+      engine.isPanningEnabled = true;
+
+      const scrollHost = document.createElement('div');
+      Object.defineProperty(scrollHost, 'scrollWidth', { value: 300, configurable: true });
+      Object.defineProperty(scrollHost, 'clientWidth', { value: 100, configurable: true });
+      scrollHost.scrollLeft = 200;
+
+      const objectElement = document.createElement('div');
+      objectElement.appendChild(scrollHost);
+
+      const hoveredCustomElement = {
+        __class__: 'KritzelCustomElement',
+        elementRef: objectElement,
+      } as any;
+
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+
+      engine.handleWheel(createWheelEvent({ deltaX: 12, deltaY: 0 }));
+
+      expect(engine.viewport.handleWheel).toHaveBeenCalledTimes(1);
+      expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
     });
   });
 
