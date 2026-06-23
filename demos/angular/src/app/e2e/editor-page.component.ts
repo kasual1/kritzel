@@ -57,11 +57,13 @@ export class EditorPageComponent implements OnDestroy {
   constructor() {
     KritzelCustomElementRendererRegistry.register(TODO_RENDERER_KEY, {
       onMount: ({ object, container, data }: TodoRendererContext) => {
+        console.log('mounting');
         if (!container) {
           return;
         }
 
         let componentRef = this.mountedTodoComponents.get(object.id);
+        const isFirstMount = !componentRef;
 
         if (!componentRef) {
           componentRef = createComponent(TodoListComponent, {
@@ -71,13 +73,17 @@ export class EditorPageComponent implements OnDestroy {
           this.mountedTodoComponents.set(object.id, componentRef);
         }
 
-        componentRef.instance.initializeFromState(data as TodoListState | undefined);
+        if (isFirstMount) {
+          componentRef.instance.initializeFromState(data as TodoListState | undefined);
+        }
         componentRef.changeDetectorRef.detectChanges();
 
         container.innerHTML = '';
         container.appendChild(componentRef.location.nativeElement);
       },
       onUnmount: ({ object, container }: TodoRendererContext) => {
+        console.log('unmounting');
+
         const componentRef = this.mountedTodoComponents.get(object.id);
         if (!componentRef) {
           return undefined;

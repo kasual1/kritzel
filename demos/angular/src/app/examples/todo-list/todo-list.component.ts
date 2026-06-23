@@ -40,103 +40,102 @@ export function createTodoListInitialState(): TodoListState {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.ShadowDom,
   template: `
-    <main class="todo-page">
-      <section class="todo-card">
-        <header class="todo-header">
-          <h1>Todo List</h1>
-          <p>Simple Angular CRUD with signals</p>
-        </header>
+    <section class="todo-card">
+      <header class="todo-header">
+        <h1>Todo List</h1>
+        <p>Simple Angular CRUD with signals</p>
+      </header>
 
-        <form class="create-form" (submit)="addTodo($event)">
-          <label for="newTodo" class="sr-only">New todo</label>
-          <input
-            id="newTodo"
-            type="text"
-            [formControl]="newTodoControl"
-            placeholder="Add a new task"
-          />
-          <button type="submit" [disabled]="newTodoControl.invalid">Add</button>
-        </form>
+      <form class="create-form" (submit)="addTodo($event)">
+        <label for="newTodo" class="sr-only">New todo</label>
+        <input
+          id="newTodo"
+          type="text"
+          [formControl]="newTodoControl"
+          placeholder="Add a new task"
+        />
+        <button type="submit" [disabled]="newTodoControl.invalid">Add</button>
+      </form>
 
-        <section class="stats" aria-live="polite">
-          <span>Total: {{ totalCount() }}</span>
-          <span>Open: {{ openCount() }}</span>
-          <span>Done: {{ doneCount() }}</span>
-        </section>
-
-        @if (todos().length === 0) {
-          <p class="empty">No todos yet. Add your first task above.</p>
-        } @else {
-          <ul class="todo-list">
-            @for (todo of todos(); track todo.id) {
-              <li
-                class="todo-item"
-                [class.completed]="todo.isCompleted"
-                [class.editing]="editingId() === todo.id"
-              >
-                @if (editingId() === todo.id) {
-                  <form class="edit-form" (submit)="saveEdit(todo.id, $event)">
-                    <label [for]="'edit-' + todo.id" class="sr-only">Edit todo</label>
-                    <input
-                      [id]="'edit-' + todo.id"
-                      type="text"
-                      [formControl]="editControl"
-                    />
-                    <div class="actions">
-                      <button type="submit" [disabled]="editControl.invalid">
-                        Save
-                      </button>
-                      <button type="button" (click)="cancelEdit()">Cancel</button>
-                    </div>
-                  </form>
-                } @else {
-                  <div class="view-row">
-                    <label class="checkbox-row">
-                      <input
-                        type="checkbox"
-                        [checked]="todo.isCompleted"
-                        (change)="toggleTodo(todo.id)"
-                      />
-                      <span>{{ todo.title }}</span>
-                    </label>
-                    <div class="actions">
-                      <button type="button" (click)="startEdit(todo)">Edit</button>
-                      <button type="button" (click)="deleteTodo(todo.id)">Delete</button>
-                    </div>
-                  </div>
-                }
-              </li>
-            }
-          </ul>
-        }
+      <section class="stats" aria-live="polite">
+        <span>Total: {{ totalCount() }}</span>
+        <span>Open: {{ openCount() }}</span>
+        <span>Done: {{ doneCount() }}</span>
       </section>
-    </main>
+
+      @if (todos().length === 0) {
+        <p class="empty">No todos yet. Add your first task above.</p>
+      } @else {
+        <ul class="todo-list">
+          @for (todo of todos(); track todo.id) {
+            <li
+              class="todo-item"
+              [class.completed]="todo.isCompleted"
+              [class.editing]="editingId() === todo.id"
+            >
+              @if (editingId() === todo.id) {
+                <form class="edit-form" (submit)="saveEdit(todo.id, $event)">
+                  <label [for]="'edit-' + todo.id" class="sr-only">Edit todo</label>
+                  <input
+                    [id]="'edit-' + todo.id"
+                    type="text"
+                    [formControl]="editControl"
+                  />
+                  <div class="actions">
+                    <button type="submit" [disabled]="editControl.invalid">
+                      Save
+                    </button>
+                    <button type="button" (click)="cancelEdit()">Cancel</button>
+                  </div>
+                </form>
+              } @else {
+                <div class="view-row">
+                  <label class="checkbox-row">
+                    <input
+                      type="checkbox"
+                      [checked]="todo.isCompleted"
+                      (change)="toggleTodo(todo.id)"
+                    />
+                    <span>{{ todo.title }}</span>
+                  </label>
+                  <div class="actions">
+                    <button type="button" (click)="startEdit(todo)">Edit</button>
+                    <button type="button" (click)="deleteTodo(todo.id)">Delete</button>
+                  </div>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
   `,
   styles: [
     `
       :host {
         display: block;
-        min-height: 100%;
-      }
-
-      .todo-page {
-        min-height: 100%;
-        display: grid;
-        place-items: center;
-        padding: 24px;
-        background:
-          radial-gradient(circle at 10% 10%, #fff2dd, transparent 42%),
-          radial-gradient(circle at 90% 90%, #dff6ff, transparent 45%),
-          #f5f7fb;
-      }
-
-      .todo-card {
-        width: min(720px, 100%);
+        width: 100%;
+        height: 100%;
+        min-width: 0;
+        min-height: 0;
+        box-sizing: border-box;
         border: 1px solid #d5dbe8;
         border-radius: 16px;
         padding: 20px;
         background: #ffffff;
-        box-shadow: 0 12px 36px rgba(22, 30, 56, 0.08);
+        overflow: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      .todo-card {
+        width: 100%;
+        min-height: 100%;
+        margin: 0;
       }
 
       .todo-header h1 {
@@ -253,7 +252,7 @@ export function createTodoListInitialState(): TodoListState {
       }
 
       @media (max-width: 640px) {
-        .todo-page {
+        :host {
           padding: 14px;
         }
 
