@@ -372,11 +372,7 @@ export class KritzelEngine {
     const hoveredObject = this.core.getObjectFromPointerEvent(ev as unknown as PointerEvent);
 
     if (hoveredObject && ObjectHelper.isClass<KritzelCustomElement>(hoveredObject, 'KritzelCustomElement')) {
-      // Keep wheel handling inside embedded scroll containers until they hit
-      // their boundary, then let the canvas handle panning/zooming again.
-      if (this.shouldCaptureWheelForCustomElement(hoveredObject, ev)) {
-        return;
-      }
+      return;
     }
 
     if (ev.ctrlKey) {
@@ -390,46 +386,6 @@ export class KritzelEngine {
     }
 
     this.core.store.state?.activeTool?.handleWheel(ev);
-  }
-
-  private shouldCaptureWheelForCustomElement(hoveredObject: KritzelCustomElement, ev: WheelEvent): boolean {
-    const elementRef = (hoveredObject as any).elmeentRef ?? hoveredObject.elementRef;
-    const scrollCandidate = elementRef?.firstChild;
-    if (!(scrollCandidate instanceof HTMLElement)) {
-      return false;
-    }
-
-    const maxScrollTop = scrollCandidate.scrollHeight - scrollCandidate.clientHeight;
-    const maxScrollLeft = scrollCandidate.scrollWidth - scrollCandidate.clientWidth;
-
-    const scrollingDown = ev.deltaY > 0;
-    const scrollingUp = ev.deltaY < 0;
-    const scrollingRight = ev.deltaX > 0;
-    const scrollingLeft = ev.deltaX < 0;
-
-    const canScrollVertically = maxScrollTop > 0;
-    if (canScrollVertically) {
-      if (scrollingDown && scrollCandidate.scrollTop < maxScrollTop) {
-        return true;
-      }
-
-      if (scrollingUp && scrollCandidate.scrollTop > 0) {
-        return true;
-      }
-    }
-
-    const canScrollHorizontally = maxScrollLeft > 0;
-    if (canScrollHorizontally) {
-      if (scrollingRight && scrollCandidate.scrollLeft < maxScrollLeft) {
-        return true;
-      }
-
-      if (scrollingLeft && scrollCandidate.scrollLeft > 0) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   @Listen('pointerdown', { passive: false })
