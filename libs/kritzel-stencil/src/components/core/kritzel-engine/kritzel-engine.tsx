@@ -388,6 +388,12 @@ export class KritzelEngine {
       return;
     }
 
+    // Let interactive embedded custom elements handle their own pointer/click lifecycle.
+    // This avoids host-level pointer capture from swallowing framework component interactions.
+    if (this.isEmbeddedCustomElementInteraction(ev)) {
+      return;
+    }
+
     if (KritzelDevicesHelper.isTouchDevice()) {
       KritzelEventHelper.onLongPress(ev, (event: PointerEvent) => this.longpress.emit(event));
     }
@@ -407,6 +413,11 @@ export class KritzelEngine {
   @Listen('pointermove', { passive: false })
   handlePointerMove(ev: PointerEvent) {
     if (this.core.store.isDisabled) {
+      return;
+    }
+
+    // Ignore drag/move sequences when their pointerdown was intentionally bypassed.
+    if (ev.buttons > 0 && !this.core.store.state.pointers.has(ev.pointerId)) {
       return;
     }
 
@@ -472,6 +483,24 @@ export class KritzelEngine {
 
     this.viewport.handlePointerUp(ev);
     this.core.store.state?.activeTool?.handlePointerUp(ev);
+  }
+
+  private isEmbeddedCustomElementInteraction(event: PointerEvent): boolean {
+    const path = event.composedPath() as EventTarget[];
+    const objectElement = path.find((entry): entry is HTMLElement => {
+      return entry instanceof HTMLElement && entry.classList.contains('object');
+    });
+
+    if (!objectElement?.id) {
+      return false;
+    }
+
+    const object = this.core.store.objects.findById(objectElement.id);
+    if (!object || !KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement')) {
+      return false;
+    }
+
+    return object.allowEmbeddedInteraction === true;
   }
 
   @Listen('pointerleave')
@@ -2069,7 +2098,7 @@ export class KritzelEngine {
   private _assetStorageConfigRevision: number = 0;
   private _isWorkspaceLoading: boolean = false;
   private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
-  private _hasInjectedDevCustomObject: boolean = false;
+  private _previousVisibleCustomElements: Set<string> = new Set();
   private readonly _defaultUndoState: KritzelUndoState = {
     canUndo: false,
     canRedo: false,
@@ -2129,6 +2158,15 @@ export class KritzelEngine {
 
   disconnectedCallback() {
     this.throttledPointerMoveMulti.cancel();
+
+    // Unmount all remaining custom elements
+    if (this.core.store.allObjects) {
+      this.core.store.allObjects.forEach(object => {
+        if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelCustomElement')) {
+          (object as any).unmount();
+        }
+      });
+    }
 
     // Clear cursor position in awareness before destroying
     this.core.store.objects?.clearCursorPosition();
@@ -2583,6 +2621,27 @@ export class KritzelEngine {
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
     const visibleObjects = this.core.store.objectsInViewport;
+
+    // Track visible custom elements and unmount culled ones
+    const currentVisibleCustomElements = new Set<string>();
+    visibleObjects.forEach(object => {
+      if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelCustomElement')) {
+        currentVisibleCustomElements.add(object.id);
+      }
+    });
+    
+    // Unmount custom elements that left the viewport
+    this._previousVisibleCustomElements.forEach(id => {
+      if (!currentVisibleCustomElements.has(id)) {
+        const object = this.core.store.objects.findById(id);
+        if (object && KritzelClassHelper.isInstanceOf<any>(object, 'KritzelCustomElement')) {
+          (object as any).unmount();
+        }
+      }
+    });
+    
+    // Update tracking set for next render
+    this._previousVisibleCustomElements = currentVisibleCustomElements;
 
     this.core.cursorManager.applyCursor();
 

@@ -1,9 +1,13 @@
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelMathHelper } from '../../helpers/math.helper';
+import { KritzelCustomElementRendererRegistry } from '../registries/custom-element-renderer.registry';
 
 export interface KritzelCustomElementConfig {
   element?: HTMLElement;
+  rendererKey?: string;
+  rendererData?: unknown;
+  allowEmbeddedInteraction?: boolean;
   translateX?: number;
   translateY?: number;
   rotation?: number;
@@ -22,6 +26,19 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
 
   /** The HTML element to be rendered on the canvas. */
   element!: HTMLElement;
+
+  /**
+   * Optional identifier for a registered renderer (e.g., 'angular-component', 'react-default').
+   * When set, mount() resolves the renderer from a global registry and delegates lifecycle.
+   * If null, falls back to DOM element mounting.
+   */
+  rendererKey: string | null = null;
+
+  /**
+   * Custom data payload for the renderer (e.g., Angular component inputs, React props, Vue data).
+   * Only meaningful when rendererKey is set. Captured on unmount and restored on rehydrate.
+   */
+  rendererData?: unknown;
 
   /** Whether the element responds to user interactions. Defaults to true. */
   isInteractive: boolean = true;
@@ -43,6 +60,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @param config.scale - Initial scale factor. Defaults to 1.
    * @param config.height - Initial height in pixels. Defaults to 0.
    * @param config.width - Initial width in pixels. Defaults to 0.
+   * @param config.allowEmbeddedInteraction - Whether the embedded DOM should receive pointer interaction.
    */
   constructor(config?: KritzelCustomElementConfig) {
     super();
@@ -55,6 +73,9 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       this.element = config.element ?? this.createPlaceholder();
       this.height = config.height || 0;
       this.width = config.width || 0;
+      this.rendererKey = config.rendererKey ?? null;
+      this.rendererData = config.rendererData;
+      this.allowEmbeddedInteraction = config.allowEmbeddedInteraction ?? false;
     }
   }
 
@@ -69,6 +90,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @param config.scale - Initial scale factor.
    * @param config.height - Initial height in pixels.
    * @param config.width - Initial width in pixels.
+   * @param config.allowEmbeddedInteraction - Whether the embedded DOM should receive pointer interaction.
    * @returns A new KritzelBaseObject instance bound to the core.
    */
   static override create(core: KritzelCore, config?: KritzelCustomElementConfig): KritzelBaseObject<Element> {
@@ -85,7 +107,8 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
 
   /**
    * Mounts the custom element to a container element in the DOM.
-   * Clears any existing content in the container and appends this element.
+   * If a renderer is registered for this.rendererKey, delegates to the renderer.
+   * Otherwise, uses the standard DOM element mounting fallback.
    * Skips mounting if already mounted to the same container with content attached.
    * @param element - The container HTML element to mount this custom element into.
    */
@@ -101,10 +124,55 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
 
     this.elementRef = element;
     this.isMounted = true;
-    
-    // Clear existing content and append the element
+
+    // Try renderer-based approach if a key is set
+    if (this.rendererKey) {
+      const renderer = KritzelCustomElementRendererRegistry.get(this.rendererKey);
+      if (renderer) {
+        element.innerHTML = ''; // Clear container
+        renderer.onMount({
+          object: this,
+          container: element,
+          data: this.rendererData,
+        });
+        return;
+      }
+    }
+
+    // Fallback to standard DOM mounting
     this.elementRef.innerHTML = '';
     this.elementRef.appendChild(this.element);
+  }
+
+  /**
+   * Unmounts the custom element and performs cleanup.
+   * If a renderer is registered, delegates to renderer.onUnmount and captures returned state.
+   * Otherwise, simply removes from DOM.
+   * Called when object is deleted, viewport culled, or editor is unloading.
+   */
+  unmount(): void {
+    if (!this.isMounted || !this.elementRef) {
+      return;
+    }
+
+    // Try renderer-based unmount if renderer is registered
+    if (this.rendererKey) {
+      const renderer = KritzelCustomElementRendererRegistry.get(this.rendererKey);
+      if (renderer) {
+        // Capture any updated data returned by renderer
+        const updatedData = renderer.onUnmount({
+          object: this,
+          container: this.elementRef,
+          data: this.rendererData,
+        });
+        if (updatedData !== undefined) {
+          this.rendererData = updatedData;
+        }
+      }
+    }
+
+    this.isMounted = false;
+    this.elementRef = null as any;
   }
 
   /**
@@ -176,7 +244,10 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   override serialize() {
     const { _core, _elementRef, element, totalWidth, totalHeight, ...props } = this as any;
     const cloned = structuredClone(props);
-    // Store HTML as string, safe for JSON roundtrip and Yjs persistence
+    // Include rendererKey and rendererData for lifecycle-driven rendering
+    cloned.rendererKey = this.rendererKey;
+    cloned.rendererData = this.rendererData;
+    // Store HTML as string for fallback/compatibility when renderer is unavailable
     cloned.htmlString = element ? element.outerHTML : '';
     // Capture dimension snapshot at serialization time
     cloned.serializedWidth = this.width;
@@ -193,6 +264,9 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    */
   override deserialize<T>(object: any): T {
     super.deserialize(object);
+    // Restore renderer metadata
+    this.rendererKey = object.rendererKey ?? null;
+    this.rendererData = object.rendererData;
     // Reconstruct element from stored HTML, or create placeholder
     if (object.htmlString) {
       try {
@@ -207,5 +281,4 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     }
     return this as unknown as T;
   }
-
 }

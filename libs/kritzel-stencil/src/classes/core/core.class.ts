@@ -636,6 +636,11 @@ export class KritzelCore {
       });
     }
 
+    // Unmount custom elements before removal
+    if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelCustomElement')) {
+      (object as any).unmount();
+    }
+
     // Handle anchor cleanup
     if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
       // If removing a line, clean up its anchor index entries
