@@ -2,6 +2,7 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelCustomElementRendererRegistry } from '../registries/custom-element-renderer.registry';
+import { KritzelHTMLHelper } from '../../helpers/html.helper';
 
 export interface KritzelCustomElementConfig {
   element?: HTMLElement;
@@ -117,9 +118,16 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       return;
     }
 
-    // If already mounted to the same element and content is still attached, skip
-    if (this.isMounted && this.elementRef === element && this.element.parentElement === element) {
-      return;
+    if (this.isMounted && this.elementRef === element) {
+      // Renderer-based mounts should not be re-invoked on every engine rerender.
+      if (this.rendererKey) {
+        return;
+      }
+
+      // For direct DOM fallback, remount only if content was detached.
+      if (this.element.parentElement === element) {
+        return;
+      }
     }
 
     this.elementRef = element;
@@ -173,6 +181,15 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
 
     this.isMounted = false;
     this.elementRef = null as any;
+  }
+
+  /**
+   * Returns whether the rendered content contains a scrollable element.
+   * Traverses light DOM, open shadow roots, and slotted content so nested
+   * framework components are detected as well.
+   */
+  isElementScrollable(): boolean {
+    return !!KritzelHTMLHelper.findScrollableElement(this.element);
   }
 
   /**
