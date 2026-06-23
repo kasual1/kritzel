@@ -14,4 +14,8 @@ export class ObjectHelper {
     }
     return Object?.keys(obj).length === 0 && obj?.constructor === Object;
   }
+
+  static isClass<T>(object: unknown, className: string): object is T {
+    return !!object && (object as { __class__?: string }).__class__ === className;
+  }
 }

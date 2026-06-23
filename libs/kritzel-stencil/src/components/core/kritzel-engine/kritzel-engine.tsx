@@ -369,6 +369,11 @@ export class KritzelEngine {
       this.hideContextMenu();
     }
 
+    const hoveredObject = this.core.getObjectFromPointerEvent(ev as unknown as PointerEvent);
+    if (hoveredObject && ObjectHelper.isClass<KritzelCustomElement>(hoveredObject, 'KritzelCustomElement')) {
+      return;  // Let embedded custom elements handle their own wheel events  
+    }
+
     if (ev.ctrlKey) {
       if (this.isZoomingEnabled) {
         this.viewport.handleWheel(ev);
@@ -606,7 +611,7 @@ export class KritzelEngine {
   }
 
   /**
-    * Determines if the engine should handle a keyboard/clipboard shortcut event.
+   * Determines if the engine should handle a keyboard/clipboard shortcut event.
    * Returns true only if:
    * - The event originates from within the engine component, OR
    * - The event target is not an interactive element that needs keyboard input
@@ -757,7 +762,7 @@ export class KritzelEngine {
   @Method()
   async paste(x: number, y: number) {
     const hasPermission = await this.core.permissionManager.requestPermission('clipboard-read');
-    
+
     if (hasPermission !== 'granted') {
       this.notificationsChange.emit({
         type: 'error',
@@ -1300,8 +1305,6 @@ export class KritzelEngine {
     return this.viewport.centerFitObjects(objects, animate);
   }
 
-  
-
   /**
    * Sets the viewport to center on the given world coordinates at the specified scale.
    * @param x - X position in world coordinates to center on.
@@ -1523,11 +1526,7 @@ export class KritzelEngine {
    * @returns SVG markup string, or null if no objects are selected.
    */
   @Method()
-  async getSelectedObjectsAsSvgString(options?: {
-    theme?: 'light' | 'dark';
-    padding?: number;
-    rasterSafeForCanvas?: boolean;
-  }): Promise<string | null> {
+  async getSelectedObjectsAsSvgString(options?: { theme?: 'light' | 'dark'; padding?: number; rasterSafeForCanvas?: boolean }): Promise<string | null> {
     const selectedObjects = await this.getSelectedObjects();
     if (!selectedObjects || selectedObjects.length === 0) {
       return null;
@@ -2112,15 +2111,11 @@ export class KritzelEngine {
   private readonly _objectDistanceFadeCloseMaxScale = 4;
   private readonly _objectDistanceFadeCloseMinOpacity = 0;
 
-
   private syncLoadingState(): void {
     this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
   }
 
-  private applyToolConfig(
-    tool: KritzelBaseTool,
-    toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
-  ): void {
+  private applyToolConfig(tool: KritzelBaseTool, toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): void {
     Object.entries(toolConfig).forEach(([key, value]) => {
       (tool as unknown as Record<string, unknown>)[key] = value;
     });
@@ -2190,10 +2185,9 @@ export class KritzelEngine {
     if (this.themes && this.themes.length > 0) {
       this.core.themeManager.registerThemes(this.themes);
     }
-    
+
     const editorElement = this.host.closest('kritzel-editor') as HTMLElement;
     this.core.themeManager.injectThemeEarly(editorElement || this.host);
-
 
     if (this.locales && this.locales.length > 0) {
       this.core.localizationManager.registerLocales(this.locales);
@@ -2539,7 +2533,6 @@ export class KritzelEngine {
   }
 
   private getFarDistanceFadeMultiplier(normalizedScale: number): number {
-
     if (normalizedScale >= this._objectDistanceFadeNearScale) {
       return 1;
     }
@@ -2548,9 +2541,7 @@ export class KritzelEngine {
       return this._objectDistanceFadeMinOpacity;
     }
 
-    const progress =
-      (this._objectDistanceFadeNearScale - normalizedScale) /
-      (this._objectDistanceFadeNearScale - this._objectDistanceFadeFarScale);
+    const progress = (this._objectDistanceFadeNearScale - normalizedScale) / (this._objectDistanceFadeNearScale - this._objectDistanceFadeFarScale);
     const smooth = progress * progress * (3 - 2 * progress);
 
     return 1 - smooth * (1 - this._objectDistanceFadeMinOpacity);
@@ -2565,9 +2556,7 @@ export class KritzelEngine {
       return this._objectDistanceFadeCloseMinOpacity;
     }
 
-    const progress =
-      (normalizedScale - this._objectDistanceFadeCloseStartScale) /
-      (this._objectDistanceFadeCloseMaxScale - this._objectDistanceFadeCloseStartScale);
+    const progress = (normalizedScale - this._objectDistanceFadeCloseStartScale) / (this._objectDistanceFadeCloseMaxScale - this._objectDistanceFadeCloseStartScale);
     const smooth = progress * progress * (3 - 2 * progress);
 
     return 1 - smooth * (1 - this._objectDistanceFadeCloseMinOpacity);
@@ -2580,20 +2569,12 @@ export class KritzelEngine {
     );
   }
 
-  private getObjectEffectiveOpacity(
-    object: KritzelBaseObject<any>,
-    viewportScale: number,
-  ): { multiplied: number; overridden: string } {
+  private getObjectEffectiveOpacity(object: KritzelBaseObject<any>, viewportScale: number): { multiplied: number; overridden: string } {
     const safeObjectOpacity = Number.isFinite(object.opacity) ? object.opacity : 1;
-    const distanceFadeMultiplier = this.shouldApplyDistanceFade(object)
-      ? this.getObjectDistanceFadeMultiplier(object.scale!, viewportScale)
-      : 1;
+    const distanceFadeMultiplier = this.shouldApplyDistanceFade(object) ? this.getObjectDistanceFadeMultiplier(object.scale!, viewportScale) : 1;
 
-    const multiplied =
-      (object.markedForRemoval ? 0.5 : 1) * safeObjectOpacity * distanceFadeMultiplier;
-    const overridden = (
-      (object.markedForRemoval ? 0.5 : safeObjectOpacity) * distanceFadeMultiplier
-    ).toString();
+    const multiplied = (object.markedForRemoval ? 0.5 : 1) * safeObjectOpacity * distanceFadeMultiplier;
+    const overridden = ((object.markedForRemoval ? 0.5 : safeObjectOpacity) * distanceFadeMultiplier).toString();
 
     return { multiplied, overridden };
   }
@@ -2629,7 +2610,7 @@ export class KritzelEngine {
         currentVisibleCustomElements.add(object.id);
       }
     });
-    
+
     // Unmount custom elements that left the viewport
     this._previousVisibleCustomElements.forEach(id => {
       if (!currentVisibleCustomElements.has(id)) {
@@ -2639,7 +2620,7 @@ export class KritzelEngine {
         }
       }
     });
-    
+
     // Update tracking set for next render
     this._previousVisibleCustomElements = currentVisibleCustomElements;
 
@@ -2702,8 +2683,7 @@ export class KritzelEngine {
           }}
         >
           {visibleObjects?.map(object => {
-            const { multiplied: effectiveOpacity, overridden: effectiveOpacityString } =
-              this.getObjectEffectiveOpacity(object, viewportScale);
+            const { multiplied: effectiveOpacity, overridden: effectiveOpacityString } = this.getObjectEffectiveOpacity(object, viewportScale);
 
             return (
               <div
@@ -2790,7 +2770,11 @@ export class KritzelEngine {
                             orient="auto"
                             markerUnits="userSpaceOnUse"
                           >
-                            <path d={object.getArrowPath(object.arrows?.end?.style)} fill={KritzelColorHelper.applyOpacity(object.getArrowFill('end'), effectiveOpacity)} transform={`scale(${object.getArrowSize('end') / 10})`} />
+                            <path
+                              d={object.getArrowPath(object.arrows?.end?.style)}
+                              fill={KritzelColorHelper.applyOpacity(object.getArrowFill('end'), effectiveOpacity)}
+                              transform={`scale(${object.getArrowSize('end') / 10})`}
+                            />
                           </marker>
                         )}
                       </defs>
@@ -2857,10 +2841,7 @@ export class KritzelEngine {
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: effectiveOpacityString,
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                      backgroundColor: KritzelColorHelper.resolveThemeColor(
-                        { light: '#e5e7eb', dark: '#2a2a2a' },
-                        currentTheme,
-                      ),
+                      backgroundColor: KritzelColorHelper.resolveThemeColor({ light: '#e5e7eb', dark: '#2a2a2a' }, currentTheme),
                       borderColor:
                         object.loadState === 'error'
                           ? KritzelColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme)
@@ -2982,70 +2963,71 @@ export class KritzelEngine {
                   </div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') && (() => {
-                  const fillResolved = KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme);
-                  const strokeResolved = KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme);
-                  const isFilled = !!fillResolved && fillResolved !== 'transparent';
-                  const strokeMatchesFill = isFilled && strokeResolved === fillResolved;
+                {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') &&
+                  (() => {
+                    const fillResolved = KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme);
+                    const strokeResolved = KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme);
+                    const isFilled = !!fillResolved && fillResolved !== 'transparent';
+                    const strokeMatchesFill = isFilled && strokeResolved === fillResolved;
 
-                  return (
-                  <div
-                    ref={el => el && object.mount(el)}
-                    onPointerDown={e => object.handlePointerDown(e)}
-                    onPointerMove={e => object.handlePointerMove(e)}
-                    onPointerUp={e => object.handlePointerUp(e)}
-                    style={{
-                      position: 'absolute',
-                      left: '0',
-                      top: '0',
-                      width: object.totalWidth + 'px',
-                      height: object.totalHeight + 'px',
-                      transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
-                      transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      pointerEvents: object.markedForRemoval ? 'none' : 'auto',
-                      overflow: 'visible',
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{
-                        position: 'absolute',
-                        top: '0',
-                        left: '0',
-                        width: '100%',
-                        height: '100%',
-                        overflow: 'visible',
-                        pointerEvents: 'none',
-                      }}
-                      viewBox={object.viewBox}
-                      preserveAspectRatio="none"
-                    >
-                      <path
-                        d={object.getSvgPath()}
-                        fill={KritzelColorHelper.applyOpacity(object.fillColor, effectiveOpacity, currentTheme)}
-                        stroke={strokeMatchesFill ? 'none' : KritzelColorHelper.applyOpacity(object.strokeColor, effectiveOpacity, currentTheme)}
-                        stroke-width={strokeMatchesFill ? 0 : object.strokeWidth}
-                      />
-                    </svg>
-                    <div
-                      ref={el => el && object.mountTextEditor(el)}
-                      style={{
-                        position: 'absolute',
-                        top: '0',
-                        left: '0',
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        textAlign: 'center',
-                        overflow: 'hidden',
-                        pointerEvents: object.isEditing ? 'auto' : 'none',
-                      }}
-                    ></div>
-                  </div>
-                  );
-                })()}
+                    return (
+                      <div
+                        ref={el => el && object.mount(el)}
+                        onPointerDown={e => object.handlePointerDown(e)}
+                        onPointerMove={e => object.handlePointerMove(e)}
+                        onPointerUp={e => object.handlePointerUp(e)}
+                        style={{
+                          position: 'absolute',
+                          left: '0',
+                          top: '0',
+                          width: object.totalWidth + 'px',
+                          height: object.totalHeight + 'px',
+                          transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
+                          transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
+                          pointerEvents: object.markedForRemoval ? 'none' : 'auto',
+                          overflow: 'visible',
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            width: '100%',
+                            height: '100%',
+                            overflow: 'visible',
+                            pointerEvents: 'none',
+                          }}
+                          viewBox={object.viewBox}
+                          preserveAspectRatio="none"
+                        >
+                          <path
+                            d={object.getSvgPath()}
+                            fill={KritzelColorHelper.applyOpacity(object.fillColor, effectiveOpacity, currentTheme)}
+                            stroke={strokeMatchesFill ? 'none' : KritzelColorHelper.applyOpacity(object.strokeColor, effectiveOpacity, currentTheme)}
+                            stroke-width={strokeMatchesFill ? 0 : object.strokeWidth}
+                          />
+                        </svg>
+                        <div
+                          ref={el => el && object.mountTextEditor(el)}
+                          style={{
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            overflow: 'hidden',
+                            pointerEvents: object.isEditing ? 'auto' : 'none',
+                          }}
+                        ></div>
+                      </div>
+                    );
+                  })()}
 
                 {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
                   <div
@@ -3066,7 +3048,7 @@ export class KritzelEngine {
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>scale: {object.scale}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>rotationDegrees: {object.rotationDegrees}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
-                    
+
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>assetId: {object.assetId}</div>
@@ -3082,14 +3064,18 @@ export class KritzelEngine {
                     const localClientId = this.core.store.objects?.localClientId;
 
                     const awarenessStates = this.core.store.objects?.awareness?.getStates();
-                    const isRemoteSelection = isSelectionGroup && (
+                    const isRemoteSelection =
+                      isSelectionGroup &&
                       // Different user
-                      (object.userId != null && this.core.user?.id != null && object.userId !== this.core.user.id) ||
-                      // Same user but different client that is still actively connected (e.g. same account on another device)
-                      (object.userId != null && this.core.user?.id != null && object.userId === this.core.user.id &&
-                        object.clientId != null && localClientId != null && object.clientId !== localClientId &&
-                        awarenessStates?.has(object.clientId) === true)
-                    );
+                      ((object.userId != null && this.core.user?.id != null && object.userId !== this.core.user.id) ||
+                        // Same user but different client that is still actively connected (e.g. same account on another device)
+                        (object.userId != null &&
+                          this.core.user?.id != null &&
+                          object.userId === this.core.user.id &&
+                          object.clientId != null &&
+                          localClientId != null &&
+                          object.clientId !== localClientId &&
+                          awarenessStates?.has(object.clientId) === true));
 
                     let remoteUserColor: string | undefined;
                     if (isRemoteSelection) {
@@ -3110,11 +3096,10 @@ export class KritzelEngine {
                       }
                     }
 
-                    const selectionBorderColor = remoteUserColor
-                      ?? (KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--kritzel-selection-border-color, #007AFF)');
+                    const selectionBorderColor =
+                      remoteUserColor ?? (KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--kritzel-selection-border-color, #007AFF)');
 
-                    const selectionHandleStrokeColor = remoteUserColor
-                      ?? 'var(--kritzel-selection-handle-stroke-color, #007AFF)';
+                    const selectionHandleStrokeColor = remoteUserColor ?? 'var(--kritzel-selection-handle-stroke-color, #007AFF)';
 
                     return (
                       <svg
@@ -3135,12 +3120,13 @@ export class KritzelEngine {
                         {this.core.displaySelectionGroupUI(object) && (
                           <g class="selection-group-ui" style={{ pointerEvents: 'none' }}>
                             {(() => {
-                              const remoteLineObject = isRemoteSelection &&
+                              const remoteLineObject =
+                                isRemoteSelection &&
                                 KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') &&
                                 object.objects.length === 1 &&
                                 KritzelClassHelper.isInstanceOf<KritzelLine>(object.objects[0], 'KritzelLine')
-                                ? (object.objects[0] as KritzelLine)
-                                : null;
+                                  ? (object.objects[0] as KritzelLine)
+                                  : null;
 
                               if (remoteLineObject) {
                                 return (
@@ -3665,9 +3651,7 @@ export class KritzelEngine {
 
         {this.core.store.state?.activeTool instanceof KritzelEraserTool && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
 
-        {!this.core.licenseManager.isLicensed && (
-          <kritzel-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></kritzel-watermark>
-        )}
+        {!this.core.licenseManager.isLicensed && <kritzel-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></kritzel-watermark>}
       </Host>
     );
   }
