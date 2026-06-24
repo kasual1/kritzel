@@ -120,7 +120,6 @@ export class EditorPageComponent implements OnDestroy {
       translateY: -180,
       width: 600,
       height: 380,
-      allowEmbeddedInteraction: true,
     });
 
     await this.editor.addObject(customElement);

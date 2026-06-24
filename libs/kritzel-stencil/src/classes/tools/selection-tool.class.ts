@@ -390,9 +390,9 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1) {
           const firstObj = selectedObject.objects[0];
           if (KritzelClassHelper.isInstanceOf<KritzelCustomElement>(firstObj, 'KritzelCustomElement')) {
-            // Custom elements default to selectable (allowEmbeddedInteraction=false).
-            // Only skip handlers if explicitly configured to allow embedded interaction.
-            if (firstObj.allowEmbeddedInteraction) return;
+            // Selected single custom elements hand pointer interaction to their
+            // embedded DOM content. Unselected custom elements remain selectable.
+            if (firstObj.isSelected && this._core.store.selectionGroup?.objects.length === 1) return;
           } else if (firstObj.isInteractive) {
             // Preserve existing behavior for text/shape edit mode
             return;
