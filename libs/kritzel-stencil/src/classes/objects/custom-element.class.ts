@@ -8,7 +8,6 @@ export interface KritzelCustomElementConfig {
   element?: HTMLElement;
   rendererKey?: string;
   rendererData?: unknown;
-  allowEmbeddedInteraction?: boolean;
   translateX?: number;
   translateY?: number;
   rotation?: number;
@@ -41,16 +40,10 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    */
   rendererData?: unknown;
 
-  /** Whether the element responds to user interactions. Defaults to true. */
-  isInteractive: boolean = true;
-
   /**
-   * When false (default), the custom element participates normally in canvas selection/movement.
-   * When true, embedded pointer events may be consumed by the element's internal handlers
-   * (e.g., buttons, inputs), potentially bypassing canvas selection.
-   * Even when true, the element remains selectable via handles or background clicks.
+   * Whether the element responds to user interactions. Defaults to true.
    */
-  allowEmbeddedInteraction: boolean = false;
+  override isInteractive: boolean = false;
 
   /**
    * Creates a new KritzelCustomElement instance.
@@ -61,7 +54,6 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @param config.scale - Initial scale factor. Defaults to 1.
    * @param config.height - Initial height in pixels. Defaults to 0.
    * @param config.width - Initial width in pixels. Defaults to 0.
-   * @param config.allowEmbeddedInteraction - Whether the embedded DOM should receive pointer interaction.
    */
   constructor(config?: KritzelCustomElementConfig) {
     super();
@@ -76,7 +68,6 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       this.width = config.width || 0;
       this.rendererKey = config.rendererKey ?? null;
       this.rendererData = config.rendererData;
-      this.allowEmbeddedInteraction = config.allowEmbeddedInteraction ?? false;
     }
   }
 
@@ -91,7 +82,6 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @param config.scale - Initial scale factor.
    * @param config.height - Initial height in pixels.
    * @param config.width - Initial width in pixels.
-   * @param config.allowEmbeddedInteraction - Whether the embedded DOM should receive pointer interaction.
    * @returns A new KritzelBaseObject instance bound to the core.
    */
   static override create(core: KritzelCore, config?: KritzelCustomElementConfig): KritzelBaseObject<Element> {
@@ -280,7 +270,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @returns This instance cast to type T
    */
   override deserialize<T>(object: any): T {
-    super.deserialize(object);
+     super.deserialize(object);
     // Restore renderer metadata
     this.rendererKey = object.rendererKey ?? null;
     this.rendererData = object.rendererData;

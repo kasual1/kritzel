@@ -400,13 +400,14 @@ describe('KritzelEngine', () => {
   });
 
   describe('embedded custom element interaction', () => {
-    it('bypasses engine pointer handling for custom elements with allowEmbeddedInteraction=true', () => {
+    it('bypasses engine pointer handling for selected single custom elements', () => {
       const objectElement = document.createElement('div');
       objectElement.id = 'custom-1';
       objectElement.classList.add('object');
 
-      const customElementObject = { allowEmbeddedInteraction: true } as any;
+      const customElementObject = { id: 'custom-1' } as any;
       (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
+      core.store.selectionGroup = { objects: [customElementObject] };
       (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
         return obj === customElementObject && className === 'KritzelCustomElement';
       });
@@ -430,15 +431,17 @@ describe('KritzelEngine', () => {
       expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
     });
 
-    it('keeps default pointer handling for non-interactive objects', () => {
+    it('keeps default pointer handling for custom elements that are not selected', () => {
       const objectElement = document.createElement('div');
-      objectElement.id = 'shape-1';
+      objectElement.id = 'custom-2';
       objectElement.classList.add('object');
 
-      const nonInteractiveObject = { allowEmbeddedInteraction: false } as any;
-      (core.store.objects.findById as jest.Mock).mockReturnValue(nonInteractiveObject);
+      const nonSelectedCustomElement = { id: 'custom-2' } as any;
+      const differentSelectedCustomElement = { id: 'custom-1' } as any;
+      (core.store.objects.findById as jest.Mock).mockReturnValue(nonSelectedCustomElement);
+      core.store.selectionGroup = { objects: [differentSelectedCustomElement] };
       (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return obj === nonInteractiveObject && className === 'KritzelCustomElement';
+        return (obj === nonSelectedCustomElement || obj === differentSelectedCustomElement) && className === 'KritzelCustomElement';
       });
 
       const activeTool = { handlePointerDown: jest.fn() };
@@ -690,7 +693,7 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
 
-    it('hands wheel back to canvas when hovered custom element reached bottom', () => {
+    it('keeps wheel handling inside hovered custom element even at bottom edge', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
       engine.isPanningEnabled = true;
@@ -712,8 +715,8 @@ describe('KritzelEngine', () => {
 
       engine.handleWheel(createWheelEvent({ deltaY: 10 }));
 
-      expect(engine.viewport.handleWheel).toHaveBeenCalledTimes(1);
-      expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
+      expect(engine.viewport.handleWheel).not.toHaveBeenCalled();
+      expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
 
     it('uses the elmeentRef firstChild when present to decide wheel handoff', () => {
@@ -766,7 +769,7 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
 
-    it('hands wheel back to canvas when hovered custom element reached horizontal end', () => {
+    it('keeps wheel handling inside hovered custom element at horizontal edge', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
       engine.isPanningEnabled = true;
@@ -788,8 +791,8 @@ describe('KritzelEngine', () => {
 
       engine.handleWheel(createWheelEvent({ deltaX: 12, deltaY: 0 }));
 
-      expect(engine.viewport.handleWheel).toHaveBeenCalledTimes(1);
-      expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
+      expect(engine.viewport.handleWheel).not.toHaveBeenCalled();
+      expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
   });
 

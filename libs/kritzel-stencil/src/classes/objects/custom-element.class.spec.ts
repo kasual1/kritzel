@@ -50,7 +50,7 @@ describe('KritzelCustomElement', () => {
       const obj = new KritzelCustomElement();
 
       expect(obj.__class__).toBe('KritzelCustomElement');
-      expect(obj.isInteractive).toBe(true);
+      expect(obj.isInteractive).toBe(false);
       expect(obj.element).toBeUndefined();
     });
 
@@ -390,44 +390,30 @@ describe('KritzelCustomElement', () => {
   });
 
   describe('interaction semantics', () => {
-    it('should have allowEmbeddedInteraction flag with default false', () => {
+    it('should have isInteractive property defaulting to false', () => {
       const obj = new KritzelCustomElement();
 
-      expect(obj.allowEmbeddedInteraction).toBe(false);
+      expect(obj.isInteractive).toBe(false);
     });
 
-    it('should allow setting allowEmbeddedInteraction to true', () => {
+    it('should preserve isInteractive through serialization', () => {
       const obj = new KritzelCustomElement();
-      obj.allowEmbeddedInteraction = true;
-
-      expect(obj.allowEmbeddedInteraction).toBe(true);
-    });
-
-    it('should have isInteractive property with default true', () => {
-      const obj = new KritzelCustomElement();
-
-      expect(obj.isInteractive).toBe(true);
-    });
-
-    it('should preserve isInteractive and allowEmbeddedInteraction through serialization', () => {
-      const obj = new KritzelCustomElement();
-      obj.allowEmbeddedInteraction = true;
-      obj.isInteractive = false;
+      obj.isInteractive = true;
 
       const serialized = obj.serialize();
 
-      expect(serialized.allowEmbeddedInteraction).toBe(true);
-      expect(serialized.isInteractive).toBe(false);
+      expect(serialized).not.toHaveProperty('allowEmbeddedInteraction');
+      expect(serialized.isInteractive).toBe(true);
     });
 
-    it('should restore allowEmbeddedInteraction on deserialize', () => {
+    it('should ignore legacy allowEmbeddedInteraction on deserialize', () => {
       const obj = new KritzelCustomElement();
       obj._core = mockCore;
 
       obj.deserialize({ allowEmbeddedInteraction: true, isInteractive: false });
 
-      expect(obj.allowEmbeddedInteraction).toBe(true);
       expect(obj.isInteractive).toBe(false);
+      expect((obj as any).allowEmbeddedInteraction).toBeUndefined();
     });
   });
 });

@@ -539,28 +539,5 @@ describe('KritzelReviver', () => {
       expect(revived).toBe(mockCustomElementDeserializable.instance);
     });
 
-    it('should revive custom element preserving allowEmbeddedInteraction flag', () => {
-      const mockCustomElementDeserializable = createMockDeserializable('KritzelCustomElement');
-
-      (KritzelCustomElement.create as jest.Mock).mockReturnValue({
-        deserialize: mockCustomElementDeserializable.deserialize,
-      });
-
-      const serialized = {
-        __class__: 'KritzelCustomElement',
-        htmlString: '<button>Click</button>',
-        allowEmbeddedInteraction: true,
-        width: 100,
-        height: 50,
-      };
-
-      reviver.revive<KritzelCustomElement>(serialized);
-
-      expect(mockCustomElementDeserializable.deserialize).toHaveBeenCalledWith(
-        expect.objectContaining({
-          allowEmbeddedInteraction: true,
-        })
-      );
-    });
   });
 });

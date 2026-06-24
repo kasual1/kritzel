@@ -394,8 +394,8 @@ export class KritzelEngine {
       return;
     }
 
-    // Let interactive embedded custom elements handle their own pointer/click lifecycle.
-    // This avoids host-level pointer capture from swallowing framework component interactions.
+    // Embedded custom-element interaction is enabled only when exactly one
+    // custom element is selected. Unselected objects stay fully selectable.
     if (this.isEmbeddedCustomElementInteraction(ev)) {
       return;
     }
@@ -506,7 +506,13 @@ export class KritzelEngine {
       return false;
     }
 
-    return object.allowEmbeddedInteraction === true;
+    const selectionGroup = this.core.store.selectionGroup;
+    if (!selectionGroup || selectionGroup.objects.length !== 1) {
+      return false;
+    }
+
+    const selectedObject = selectionGroup.objects[0];
+    return selectedObject.id === object.id && KritzelClassHelper.isInstanceOf<KritzelCustomElement>(selectedObject, 'KritzelCustomElement');
   }
 
   @Listen('pointerleave')
