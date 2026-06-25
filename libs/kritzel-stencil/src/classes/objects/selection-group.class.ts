@@ -177,6 +177,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     for (const object of objects) {
       if (!this._objectIds.includes(object.id)) {
         this._objectIds.push(object.id);
+        object.isSelected = true;
         changed = true;
       }
     }
@@ -205,8 +206,10 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const index = this._objectIds.findIndex(id => id === object.id);
     if (index === -1) {
       this._objectIds.push(object.id);
+      object.isSelected = true;
     } else {
       this._objectIds.splice(index, 1);
+      object.isSelected = false;
     }
     this._cachedObjects = null; // Invalidate cache
 

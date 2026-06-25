@@ -1118,27 +1118,38 @@ describe('KritzelCore', () => {
       expect(core.displaySelectionGroupUI(line)).toBe(false);
     });
 
-    it('should return true when selection group has multiple objects', () => {
-      const obj = { isSelected: true } as any;
-      mockStore.selectionGroup = { objects: [{}, {}] };
-
-      expect(core.displaySelectionGroupUI(obj)).toBe(true);
-    });
-
-    it('should return false when single selected object is a KritzelLine', () => {
-      const obj = { isSelected: true } as any;
-      const line = Object.create(KritzelLine.prototype);
-      mockStore.selectionGroup = { objects: [line] };
+    it('should render group UI only on the local selection group when multiple objects are selected', () => {
+      const obj = { id: 'obj-1', isSelected: true } as any;
+      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      localGroup.id = 'sg-1';
+      localGroup.isSelected = true;
+      Object.defineProperty(localGroup, 'objects', { value: [{}, {}], writable: true });
+      mockStore.selectionGroup = localGroup;
 
       expect(core.displaySelectionGroupUI(obj)).toBe(false);
+      expect(core.displaySelectionGroupUI(localGroup)).toBe(true);
     });
 
-    it('should return true when single selected object is not a KritzelLine', () => {
-      const obj = { isSelected: true } as any;
-      const rect = { id: 'rect-1' };
-      mockStore.selectionGroup = { objects: [rect] };
+    it('should return false when local selection group contains a single KritzelLine', () => {
+      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      localGroup.id = 'sg-1';
+      localGroup.isSelected = true;
+      const line = Object.create(KritzelLine.prototype);
+      Object.defineProperty(localGroup, 'objects', { value: [line], writable: true });
+      mockStore.selectionGroup = localGroup;
 
-      expect(core.displaySelectionGroupUI(obj)).toBe(true);
+      expect(core.displaySelectionGroupUI(localGroup)).toBe(false);
+    });
+
+    it('should return true when local selection group contains a single non-line object', () => {
+      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      localGroup.id = 'sg-1';
+      localGroup.isSelected = true;
+      const rect = { id: 'rect-1' };
+      Object.defineProperty(localGroup, 'objects', { value: [rect], writable: true });
+      mockStore.selectionGroup = localGroup;
+
+      expect(core.displaySelectionGroupUI(localGroup)).toBe(true);
     });
 
     it('should return true for a remote selection group regardless of content', () => {
