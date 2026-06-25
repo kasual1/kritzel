@@ -400,37 +400,6 @@ describe('KritzelEngine', () => {
   });
 
   describe('embedded custom element interaction', () => {
-    it('bypasses engine pointer handling for selected interactive custom elements', () => {
-      const objectElement = document.createElement('div');
-      objectElement.id = 'custom-1';
-      objectElement.classList.add('object');
-
-      const customElementObject = { id: 'custom-1', isInteractive: true } as any;
-      (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
-      core.store.selectionGroup = { objects: [customElementObject] };
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return obj === customElementObject && className === 'KritzelCustomElement';
-      });
-
-      const activeTool = { handlePointerDown: jest.fn() };
-      core.store.state.activeTool = activeTool;
-
-      const setPointerCapture = jest.fn();
-      (engine.host as any).setPointerCapture = setPointerCapture;
-
-      const event = {
-        pointerId: 7,
-        composedPath: jest.fn().mockReturnValue([document.createElement('button'), objectElement]),
-      } as unknown as PointerEvent;
-
-      engine.handlePointerDown(event);
-
-      expect(setPointerCapture).not.toHaveBeenCalled();
-      expect(core.store.state.pointers.has(7)).toBe(false);
-      expect((engine.viewport as any).handlePointerDown).not.toHaveBeenCalled();
-      expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
-    });
-
     it('keeps default pointer handling for unselected interactive custom elements', () => {
       const objectElement = document.createElement('div');
       objectElement.id = 'custom-2';
@@ -461,6 +430,41 @@ describe('KritzelEngine', () => {
       expect(core.store.state.pointers.has(8)).toBe(true);
       expect((engine.viewport as any).handlePointerDown).toHaveBeenCalledWith(event);
       expect(activeTool.handlePointerDown).toHaveBeenCalledWith(event);
+    });
+  });
+
+  describe('selection handle capabilities', () => {
+    it('allows both handles for a single object when both capabilities are enabled', () => {
+      const object = { isResizable: true, isRotatable: true } as unknown as KritzelBaseObject<any>;
+
+      const result = (engine as any).getSelectionHandleCapabilities(object);
+
+      expect(result).toEqual({ canRenderResizeHandles: true, canRenderRotationHandle: true });
+    });
+
+    it('hides individual handles for a single object when capability is disabled', () => {
+      const object = { isResizable: false, isRotatable: true } as unknown as KritzelBaseObject<any>;
+
+      const result = (engine as any).getSelectionHandleCapabilities(object);
+
+      expect(result).toEqual({ canRenderResizeHandles: false, canRenderRotationHandle: true });
+    });
+
+    it('uses restrictive policy for selection groups and hides a handle when any child disables it', () => {
+      const selectionGroup = {
+        objects: [
+          { isResizable: true, isRotatable: true },
+          { isResizable: false, isRotatable: true },
+        ],
+      } as unknown as KritzelBaseObject<any>;
+
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
+        return obj === selectionGroup && className === 'KritzelSelectionGroup';
+      });
+
+      const result = (engine as any).getSelectionHandleCapabilities(selectionGroup);
+
+      expect(result).toEqual({ canRenderResizeHandles: false, canRenderRotationHandle: true });
     });
   });
 

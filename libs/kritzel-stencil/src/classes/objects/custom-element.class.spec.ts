@@ -221,18 +221,15 @@ describe('KritzelCustomElement', () => {
       const container = document.createElement('div');
       const input = document.createElement('input');
       innerElement.appendChild(input);
-      document.body.appendChild(container);
+      const blurSpy = jest.spyOn(input, 'blur');
+      jest.spyOn(obj as any, 'getDeepActiveElement').mockReturnValue(input);
 
       obj.setIsInteractive(true);
       obj.mount(container);
-      input.focus();
-      expect(document.activeElement).toBe(input);
 
       obj.setIsInteractive(false);
 
-      expect(document.activeElement).not.toBe(input);
-
-      document.body.removeChild(container);
+      expect(blurSpy).toHaveBeenCalledTimes(1);
     });
   });
 
