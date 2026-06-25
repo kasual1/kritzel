@@ -62,7 +62,6 @@ describe('KritzelImage', () => {
       expect(defaultImage.maxWidth).toBe(300);
       expect(defaultImage.maxHeight).toBe(300);
       expect(defaultImage.maxCompressionSize).toBe(1200);
-      expect(defaultImage.isDebugInfoVisible).toBe(true);
     });
 
     it('should create an image with provided config values', () => {

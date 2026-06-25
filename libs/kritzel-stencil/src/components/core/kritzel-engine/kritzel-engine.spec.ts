@@ -400,12 +400,12 @@ describe('KritzelEngine', () => {
   });
 
   describe('embedded custom element interaction', () => {
-    it('bypasses engine pointer handling for selected single custom elements', () => {
+    it('bypasses engine pointer handling for selected interactive custom elements', () => {
       const objectElement = document.createElement('div');
       objectElement.id = 'custom-1';
       objectElement.classList.add('object');
 
-      const customElementObject = { id: 'custom-1' } as any;
+      const customElementObject = { id: 'custom-1', isInteractive: true } as any;
       (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
       core.store.selectionGroup = { objects: [customElementObject] };
       (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
@@ -431,13 +431,13 @@ describe('KritzelEngine', () => {
       expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
     });
 
-    it('keeps default pointer handling for custom elements that are not selected', () => {
+    it('keeps default pointer handling for unselected interactive custom elements', () => {
       const objectElement = document.createElement('div');
       objectElement.id = 'custom-2';
       objectElement.classList.add('object');
 
-      const nonSelectedCustomElement = { id: 'custom-2' } as any;
-      const differentSelectedCustomElement = { id: 'custom-1' } as any;
+      const nonSelectedCustomElement = { id: 'custom-2', isInteractive: true } as any;
+      const differentSelectedCustomElement = { id: 'custom-1', isInteractive: true } as any;
       (core.store.objects.findById as jest.Mock).mockReturnValue(nonSelectedCustomElement);
       core.store.selectionGroup = { objects: [differentSelectedCustomElement] };
       (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {

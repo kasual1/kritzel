@@ -46,6 +46,7 @@ import { KritzelLoginConfig as KritzelLoginConfig } from '../../../interfaces/lo
 import { LoginEvent } from '../../../events/login.event';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
 import { ObjectHelper } from '../../../helpers/object.helper';
+import { KritzelCustomElement } from '../../../classes/objects/custom-element.class';
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -280,6 +281,7 @@ export class KritzelEditor {
   private readonly notificationDisplayDurationMs = 5000;
   private readonly notificationDismissAnimationDurationMs = 180;
   private isNotificationHovered: boolean = false;
+  private hasInjectedReadyDemoCustomElement: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -392,6 +394,86 @@ export class KritzelEditor {
   @Method()
   async addObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     return this.engineRef.addObject(object);
+  }
+
+  /**
+   * Creates and adds an interactive custom element containing an input and button.
+   * Clicking the button shows an alert with the current input value.
+   */
+  @Method()
+  async addInputAlertCustomElement(options?: {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    placeholder?: string;
+    buttonLabel?: string;
+    messagePrefix?: string;
+    initialValue?: string;
+  }): Promise<KritzelCustomElement | null> {
+    const x = options?.x ?? 100;
+    const y = options?.y ?? 100;
+    const width = options?.width ?? 320;
+    const height = options?.height ?? 56;
+    const placeholder = options?.placeholder ?? 'Enter a value';
+    const buttonLabel = options?.buttonLabel ?? 'Show alert';
+    const messagePrefix = options?.messagePrefix ?? 'Input value: ';
+    const initialValue = options?.initialValue ?? '';
+
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.alignItems = 'center';
+    container.style.gap = '8px';
+    container.style.width = '100%';
+    container.style.height = '100%';
+    container.style.padding = '8px';
+    container.style.boxSizing = 'border-box';
+    container.style.background = '#ffffff';
+    container.style.border = '1px solid #d1d5db';
+    container.style.borderRadius = '8px';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = placeholder;
+    input.value = initialValue;
+    input.style.flex = '1';
+    input.style.minWidth = '0';
+    input.style.height = '100%';
+    input.style.padding = '0 10px';
+    input.style.border = '1px solid #d1d5db';
+    input.style.borderRadius = '6px';
+    input.style.fontSize = '14px';
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = buttonLabel;
+    button.style.height = '100%';
+    button.style.padding = '0 12px';
+    button.style.border = '1px solid #2563eb';
+    button.style.borderRadius = '6px';
+    button.style.background = '#2563eb';
+    button.style.color = '#ffffff';
+    button.style.fontSize = '14px';
+    button.style.cursor = 'pointer';
+
+    button.addEventListener('click', () => {
+      if (typeof globalThis.alert === 'function') {
+        globalThis.alert(`${messagePrefix}${input.value}`);
+      }
+    });
+
+    container.append(input, button);
+
+    const customElement = new KritzelCustomElement({
+      element: container,
+      translateX: x,
+      translateY: y,
+      width,
+      height,
+    });
+
+    customElement.isInteractive = true;
+    return this.engineRef.addObject<KritzelCustomElement>(customElement);
   }
 
   @Method()
@@ -774,6 +856,11 @@ export class KritzelEditor {
     }
 
     this.isEditorVisible = true;
+
+    if (!this.hasInjectedReadyDemoCustomElement) {
+      await this.addInputAlertCustomElement();
+      this.hasInjectedReadyDemoCustomElement = true;
+    }
 
     const { id, name, isPublic, createdAt, updatedAt } = this.activeWorkspace;
 

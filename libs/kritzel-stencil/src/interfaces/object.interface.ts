@@ -31,7 +31,6 @@ export interface KritzelObject<T = Element> {
   isMounted: boolean;
   isEditable: boolean;
   isInteractive: boolean;
-  isDebugInfoVisible: boolean;
 
   set elementRef(element: T);
   get elementRef(): T;

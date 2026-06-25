@@ -48,8 +48,6 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 
   maxCompressionSize: number = 1200;
 
-  override isDebugInfoVisible: boolean = true;
-
   // --- Transient (not persisted to Yjs) ---
 
   /**

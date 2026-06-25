@@ -26,6 +26,7 @@ import { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, O
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
 import { LoginEvent } from "./events/login.event";
 import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
+import { KritzelCustomElement } from "./classes/objects/custom-element.class";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
@@ -67,6 +68,7 @@ export { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, O
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
 export { LoginEvent } from "./events/login.event";
 export { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
+export { KritzelCustomElement } from "./classes/objects/custom-element.class";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
@@ -351,6 +353,10 @@ export namespace Components {
           * Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID.
          */
         "activeWorkspaceId"?: string;
+        /**
+          * Creates and adds an interactive custom element containing an input and button. Clicking the button shows an alert with the current input value.
+         */
+        "addInputAlertCustomElement": (options?: { x?: number; y?: number; width?: number; height?: number; placeholder?: string; buttonLabel?: string; messagePrefix?: string; initialValue?: string; }) => Promise<KritzelCustomElement | null>;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "addObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
