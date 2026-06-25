@@ -394,8 +394,8 @@ export class KritzelEngine {
       return;
     }
 
-    // Embedded custom-element interaction is enabled only for directly selected
-    // interactive custom elements. Unselected objects stay fully selectable.
+    // Interactive custom-element content should receive native pointer events
+    // whenever the object is marked interactive.
     if (this.isEmbeddedCustomElementInteraction(ev)) {
       return;
     }
@@ -510,7 +510,13 @@ export class KritzelEngine {
       return false;
     }
 
-    return this.core.store.selectionGroup?.objects.includes(object) === true;
+    if (!object.element) {
+      return false;
+    }
+
+    // Only bypass canvas tool handling when the pointer event came from inside
+    // the custom element's rendered HTML subtree.
+    return path.some((entry): boolean => entry instanceof Node && object.element.contains(entry));
   }
 
   @Listen('pointerleave')

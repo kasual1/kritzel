@@ -201,20 +201,20 @@ describe('KritzelCustomElement', () => {
       expect(container.contains(innerElement)).toBe(true);
     });
 
-    it('should disable embedded pointer interaction until the object is selected', () => {
+    it('should enable embedded pointer interaction only when isInteractive is true', () => {
       const container = document.createElement('div');
 
-      obj.isSelected = false;
+      obj.isInteractive = false;
       obj.mount(container);
 
       expect(innerElement.style.pointerEvents).toBe('none');
       expect(innerElement.style.cursor).toBe('default');
 
-      obj.isSelected = true;
+      obj.isInteractive = true;
       obj.mount(container);
 
       expect(innerElement.style.pointerEvents).toBe('auto');
-      expect(innerElement.style.cursor).toBe('default');
+      expect(innerElement.style.cursor).toBe('auto');
     });
   });
 

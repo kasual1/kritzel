@@ -104,8 +104,8 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     }
 
     if (this.element) {
-      this.element.style.pointerEvents = this.isSelected ? 'auto' : 'none';
-      this.element.style.cursor = 'default';
+      this.element.style.pointerEvents = this.isInteractive ? 'auto' : 'none';
+      this.element.style.cursor = this.isInteractive ? 'auto' : 'default';
     }
 
     if (this.isMounted && this.elementRef === element) {
