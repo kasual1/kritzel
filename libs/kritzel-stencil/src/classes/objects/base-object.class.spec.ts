@@ -71,6 +71,8 @@ describe('KritzelBaseObject', () => {
       expect(obj.isMounted).toBe(false);
       expect(obj.isEditable).toBe(false);
       expect(obj.isInteractive).toBe(false);
+      expect(obj.isResizable).toBe(true);
+      expect(obj.isRotatable).toBe(true);
       expect(obj.markedForRemoval).toBe(false);
       expect(obj.resizing).toBe(false);
     });

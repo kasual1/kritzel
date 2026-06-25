@@ -316,7 +316,11 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @returns This instance cast to type T
    */
   override deserialize<T>(object: any): T {
-     super.deserialize(object);
+    super.deserialize(object);
+
+    // Legacy compatibility: this deprecated field should not persist on revived objects.
+    delete (this as any).allowEmbeddedInteraction;
+
     // Restore renderer metadata
     this.rendererKey = object.rendererKey ?? null;
     this.rendererData = object.rendererData;

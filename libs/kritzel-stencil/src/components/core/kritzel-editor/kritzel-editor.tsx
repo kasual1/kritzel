@@ -793,7 +793,7 @@ export class KritzelEditor {
       theme: this.theme
     });
 
-    await this.addInitialCustomElementAtCenter(false);
+    await this.addInitialCustomElementAtCenter(true);
 
   }
 
@@ -849,6 +849,9 @@ export class KritzelEditor {
         width: 280,
         height: 56,
       });
+
+      customObject.isResizable = false;
+      customObject.isRotatable = false;
 
 
       const addedObject = await this.engineRef.addObject(customObject);

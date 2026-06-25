@@ -2590,6 +2590,15 @@ export class KritzelEngine {
     return { multiplied, overridden };
   }
 
+  private getSelectionHandleCapabilities(object: KritzelBaseObject<any>): { canRenderResizeHandles: boolean; canRenderRotationHandle: boolean } {
+    const selectedObjects = KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') ? object.objects : [object];
+
+    return {
+      canRenderResizeHandles: selectedObjects.every(selectedObject => selectedObject.isResizable !== false),
+      canRenderRotationHandle: selectedObjects.every(selectedObject => selectedObject.isRotatable !== false),
+    };
+  }
+
   render() {
     if (!this.viewport) {
       return (
@@ -3147,6 +3156,8 @@ export class KritzelEngine {
                       remoteUserColor ?? (KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--kritzel-selection-border-color, #007AFF)');
 
                     const selectionHandleStrokeColor = remoteUserColor ?? 'var(--kritzel-selection-handle-stroke-color, #007AFF)';
+                    const handleScale = object.scale ?? 1;
+                    const { canRenderResizeHandles, canRenderRotationHandle } = this.getSelectionHandleCapabilities(object);
 
                     return (
                       <svg
@@ -3244,138 +3255,146 @@ export class KritzelEngine {
 
                             {!this.isSelecting && !isRemoteSelection && (
                               <g class="selection-group-handles" style={{ pointerEvents: 'auto' }}>
-                                <rect
-                                  class="resize-handle top-left"
-                                  x={`${(-(baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
-                                  y={`${(-(baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
-                                  width={`${((baseHandleSize - 1) * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  height={`${((baseHandleSize - 1) * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  style={{
-                                    fill: 'var(--kritzel-selection-handle-color, #ffffff)',
-                                    stroke: selectionHandleStrokeColor,
-                                    strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
-                                    paintOrder: 'fill',
-                                  }}
-                                />
-                                <rect
-                                  class="resize-handle-overlay top-left"
-                                  x={`${(-baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                                  y={`${(-baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                                  width={`${(baseHandleTouchSize * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  height={`${(baseHandleTouchSize * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  style={{
-                                    fill: 'transparent',
-                                    paintOrder: 'fill',
-                                  }}
-                                />
+                                {canRenderResizeHandles && (
+                                  <g>
+                                    <rect
+                                      class="resize-handle top-left"
+                                      x={`${(-(baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
+                                      y={`${(-(baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
+                                      width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      style={{
+                                        fill: 'var(--kritzel-selection-handle-color, #ffffff)',
+                                        stroke: selectionHandleStrokeColor,
+                                        strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
+                                        paintOrder: 'fill',
+                                      }}
+                                    />
+                                    <rect
+                                      class="resize-handle-overlay top-left"
+                                      x={`${(-baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
+                                      y={`${(-baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
+                                      width={`${(baseHandleTouchSize * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      height={`${(baseHandleTouchSize * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      style={{
+                                        fill: 'transparent',
+                                        paintOrder: 'fill',
+                                      }}
+                                    />
 
-                                <rect
-                                  class="resize-handle top-right"
-                                  x={`${object.totalWidth - ((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
-                                  y={`${(-(baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
-                                  width={`${((baseHandleSize - 1) * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  height={`${((baseHandleSize - 1) * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  style={{
-                                    fill: 'var(--kritzel-selection-handle-color, #ffffff)',
-                                    stroke: selectionHandleStrokeColor,
-                                    strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
-                                    paintOrder: 'fill',
-                                  }}
-                                />
-                                <rect
-                                  class="resize-handle-overlay top-right"
-                                  x={`${object.totalWidth - (baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                                  y={`${(-baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                                  width={`${(baseHandleTouchSize * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  height={`${(baseHandleTouchSize * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  style={{
-                                    fill: 'transparent',
-                                    paintOrder: 'fill',
-                                  }}
-                                />
+                                    <rect
+                                      class="resize-handle top-right"
+                                      x={`${object.totalWidth - ((baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
+                                      y={`${(-(baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
+                                      width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      style={{
+                                        fill: 'var(--kritzel-selection-handle-color, #ffffff)',
+                                        stroke: selectionHandleStrokeColor,
+                                        strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
+                                        paintOrder: 'fill',
+                                      }}
+                                    />
+                                    <rect
+                                      class="resize-handle-overlay top-right"
+                                      x={`${object.totalWidth - (baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
+                                      y={`${(-baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
+                                      width={`${(baseHandleTouchSize * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      height={`${(baseHandleTouchSize * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      style={{
+                                        fill: 'transparent',
+                                        paintOrder: 'fill',
+                                      }}
+                                    />
 
-                                <rect
-                                  class="resize-handle bottom-left"
-                                  x={`${(-(baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
-                                  y={`${object.totalHeight - ((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
-                                  width={`${((baseHandleSize - 1) * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  height={`${((baseHandleSize - 1) * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  style={{
-                                    fill: 'var(--kritzel-selection-handle-color, #ffffff)',
-                                    stroke: selectionHandleStrokeColor,
-                                    strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
-                                    paintOrder: 'fill',
-                                  }}
-                                />
-                                <rect
-                                  class="resize-handle-overlay bottom-left"
-                                  x={`${(-baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                                  y={`${object.totalHeight - (baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                                  width={`${(baseHandleTouchSize * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  height={`${(baseHandleTouchSize * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  style={{
-                                    fill: 'transparent',
-                                    paintOrder: 'fill',
-                                  }}
-                                />
+                                    <rect
+                                      class="resize-handle bottom-left"
+                                      x={`${(-(baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
+                                      y={`${object.totalHeight - ((baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
+                                      width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      style={{
+                                        fill: 'var(--kritzel-selection-handle-color, #ffffff)',
+                                        stroke: selectionHandleStrokeColor,
+                                        strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
+                                        paintOrder: 'fill',
+                                      }}
+                                    />
+                                    <rect
+                                      class="resize-handle-overlay bottom-left"
+                                      x={`${(-baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
+                                      y={`${object.totalHeight - (baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
+                                      width={`${(baseHandleTouchSize * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      height={`${(baseHandleTouchSize * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      style={{
+                                        fill: 'transparent',
+                                        paintOrder: 'fill',
+                                      }}
+                                    />
 
-                                <rect
-                                  class="resize-handle bottom-right"
-                                  x={`${object.totalWidth - ((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
-                                  y={`${object.totalHeight - ((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
-                                  width={`${((baseHandleSize - 1) * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  height={`${((baseHandleSize - 1) * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  style={{
-                                    fill: 'var(--kritzel-selection-handle-color, #ffffff)',
-                                    stroke: selectionHandleStrokeColor,
-                                    strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
-                                    paintOrder: 'fill',
-                                  }}
-                                />
-                                <rect
-                                  class="resize-handle-overlay bottom-right"
-                                  x={`${object.totalWidth - (baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                                  y={`${object.totalHeight - (baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                                  width={`${(baseHandleTouchSize * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  height={`${(baseHandleTouchSize * 2 * object.scale) / this.core.store.state?.scale}`}
-                                  style={{
-                                    fill: 'transparent',
-                                    paintOrder: 'fill',
-                                  }}
-                                />
+                                    <rect
+                                      class="resize-handle bottom-right"
+                                      x={`${object.totalWidth - ((baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
+                                      y={`${object.totalHeight - ((baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
+                                      width={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      height={`${((baseHandleSize - 1) * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      style={{
+                                        fill: 'var(--kritzel-selection-handle-color, #ffffff)',
+                                        stroke: selectionHandleStrokeColor,
+                                        strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
+                                        paintOrder: 'fill',
+                                      }}
+                                    />
+                                    <rect
+                                      class="resize-handle-overlay bottom-right"
+                                      x={`${object.totalWidth - (baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
+                                      y={`${object.totalHeight - (baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
+                                      width={`${(baseHandleTouchSize * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      height={`${(baseHandleTouchSize * 2 * handleScale) / this.core.store.state?.scale}`}
+                                      style={{
+                                        fill: 'transparent',
+                                        paintOrder: 'fill',
+                                      }}
+                                    />
+                                  </g>
+                                )}
 
-                                <line
-                                  x1={object.totalWidth / 2}
-                                  y1="0"
-                                  x2={object.totalWidth / 2}
-                                  y2={-((15 * object.scale) / this.core.store.state?.scale)}
-                                  style={{
-                                    stroke: selectionBorderColor,
-                                    strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${object.scale} / ${this.core.store.state?.scale})`,
-                                  }}
-                                />
-                                <circle
-                                  class="rotation-handle"
-                                  cx={object.totalWidth / 2}
-                                  cy={-((15 * object.scale) / this.core.store.state?.scale)}
-                                  r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
-                                  style={{
-                                    fill: 'var(--kritzel-selection-handle-color, #ffffff)',
-                                    stroke: selectionHandleStrokeColor,
-                                    strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
-                                    paintOrder: 'fill',
-                                  }}
-                                />
-                                <circle
-                                  class="rotation-handle-overlay"
-                                  cx={object.totalWidth / 2}
-                                  cy={-((15 * object.scale) / this.core.store.state?.scale)}
-                                  r={`${(baseHandleTouchSize * object.scale) / this.core.store.state?.scale}`}
-                                  style={{
-                                    fill: 'transparent',
-                                    paintOrder: 'fill',
-                                  }}
-                                />
+                                {canRenderRotationHandle && (
+                                  <g>
+                                    <line
+                                      x1={object.totalWidth / 2}
+                                      y1="0"
+                                      x2={object.totalWidth / 2}
+                                      y2={-((15 * handleScale) / this.core.store.state?.scale)}
+                                      style={{
+                                        stroke: selectionBorderColor,
+                                        strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${handleScale} / ${this.core.store.state?.scale})`,
+                                      }}
+                                    />
+                                    <circle
+                                      class="rotation-handle"
+                                      cx={object.totalWidth / 2}
+                                      cy={-((15 * handleScale) / this.core.store.state?.scale)}
+                                      r={`${((baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
+                                      style={{
+                                        fill: 'var(--kritzel-selection-handle-color, #ffffff)',
+                                        stroke: selectionHandleStrokeColor,
+                                        strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
+                                        paintOrder: 'fill',
+                                      }}
+                                    />
+                                    <circle
+                                      class="rotation-handle-overlay"
+                                      cx={object.totalWidth / 2}
+                                      cy={-((15 * handleScale) / this.core.store.state?.scale)}
+                                      r={`${(baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
+                                      style={{
+                                        fill: 'transparent',
+                                        paintOrder: 'fill',
+                                      }}
+                                    />
+                                  </g>
+                                )}
                               </g>
                             )}
                           </g>
