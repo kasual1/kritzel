@@ -466,8 +466,11 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
    */
   private clearSelectionPreview(): void {
     // Only clear previously tracked selected objects - O(k) instead of O(n)
+    const selectedGroupIds = new Set(this._core.store.selectionGroup?.objectIds ?? []);
     for (const obj of this._previouslySelectedObjects) {
-      obj.isSelected = false;
+      if (!selectedGroupIds.has(obj.id)) {
+        obj.isSelected = false;
+      }
     }
     this._previouslySelectedObjects.clear();
   }
@@ -488,8 +491,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     // Resolve child objects to their parent groups
     const parentGroup = KritzelGroup.findParentGroup(this._core, object.id);
     const objectToSelect = parentGroup || object;
-
-    objectToSelect.isSelected = false;
 
     const existingGroup = this._core.store.selectionGroup;
     if (shiftKey && existingGroup) {
@@ -540,7 +541,6 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       const parentGroup = childToParentMap.get(obj.id);
       const toSelect = parentGroup || obj;
       resolvedObjects.set(toSelect.id, toSelect);
-      obj.isSelected = false;
     }
 
     const unrolledObjects = Array.from(resolvedObjects.values());
@@ -550,11 +550,15 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     if (shiftKey && existingGroup) {
       existingGroup.addObjects(filteredObjects);
       this.removeDescendantsOfSelectedGroups(existingGroup);
+      this._previouslySelectedObjects.clear();
       this._core.rerender();
     } else {
       // Create selection group and set all IDs at once (no per-item refresh)
       const selectionGroup = KritzelSelectionGroup.create(this._core);
       selectionGroup.objectIds = filteredObjects.map(o => o.id);
+      filteredObjects.forEach(obj => {
+        obj.isSelected = true;
+      });
 
       // Only refresh dimensions and capture snapshots ONCE at the end - O(n) instead of O(n²)
       if (selectionGroup.length === 1) {
@@ -565,6 +569,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       selectionGroup.isSelected = true;
 
       this._core.addSelectionGroup(selectionGroup);
+      this._previouslySelectedObjects.clear();
       this._core.rerender();
     }
   }

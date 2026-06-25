@@ -711,6 +711,8 @@ export class KritzelCore {
   removeSelectionGroup(): void {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
+      selectionGroup.deselectAllChildren?.();
+
       for (const object of selectionGroup.objects ?? []) {
         if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelCustomElement')) {
           const customElementObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
@@ -1091,6 +1093,13 @@ export class KritzelCore {
     );
     this._store.setSelectionBox(null);
     this._store.setSelectionGroup(null);
+
+    for (const object of this._store.allNonSelectionObjects) {
+      if (object.isSelected) {
+        object.isSelected = false;
+      }
+    }
+
     this._store.state.isSelecting = false;
     this._store.state.isResizeHandleSelected = false;
     this._store.state.isRotationHandleSelected = false;
@@ -1282,6 +1291,12 @@ export class KritzelCore {
     if (!selectionGroup) {
       // During selection phase (no group yet), hide UI for KritzelLine objects
       return !(object instanceof KritzelLine);
+    }
+
+    // Once a local selection group exists, only the selection-group object
+    // should render group UI (children remain selected but don't render handles).
+    if (!(object instanceof KritzelSelectionGroup) || object.id !== selectionGroup.id) {
+      return false;
     }
 
     // Show UI if selection contains more than one object
