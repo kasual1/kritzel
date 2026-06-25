@@ -849,7 +849,6 @@ export class KritzelEditor {
         width: 280,
         height: 56,
       });
-      customObject.isInteractive = true;
 
       const addedObject = await this.engineRef.addObject(customObject);
       if (addedObject) {

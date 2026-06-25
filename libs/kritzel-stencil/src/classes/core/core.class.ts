@@ -687,6 +687,13 @@ export class KritzelCore {
   addSelectionGroup(selectionGroup: KritzelSelectionGroup): void {
     this.removeSelectionGroup();
     this.removeSelectionBox();
+
+    for (const object of selectionGroup.objects ?? []) {
+      if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelCustomElement')) {
+        object.isInteractive = true;
+      }
+    }
+
     this._store.objects.insert(selectionGroup);
     this._store.setSelectionGroup(selectionGroup);
     this._kritzelEngine.triggerSelectionChange();
@@ -699,6 +706,12 @@ export class KritzelCore {
   removeSelectionGroup(): void {
     const selectionGroup = this._store.selectionGroup;
     if (selectionGroup) {
+      for (const object of selectionGroup.objects ?? []) {
+        if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelCustomElement')) {
+          object.isInteractive = false;
+        }
+      }
+
       this._store.objects.remove(object => object.id === selectionGroup.id);
       this._store.setSelectionGroup(null);
       this._kritzelEngine.triggerSelectionChange();
