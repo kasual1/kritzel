@@ -702,6 +702,29 @@ describe('KritzelCore', () => {
       expect(mockStore.setSelectionGroup).toHaveBeenCalledWith(newGroup);
       expect(mockEngine.triggerSelectionChange).toHaveBeenCalled();
     });
+
+    it('should enable isInteractive for selected custom elements', () => {
+      const customElementObject = {
+        id: 'custom-1',
+        __class__: 'KritzelCustomElement',
+        isInteractive: false,
+      } as unknown as KritzelBaseObject<any>;
+      const regularObject = {
+        id: 'shape-1',
+        __class__: 'KritzelShape',
+        isInteractive: false,
+      } as unknown as KritzelBaseObject<any>;
+
+      const newGroup = {
+        id: 'new-sg',
+        objects: [customElementObject, regularObject],
+      } as unknown as KritzelSelectionGroup;
+
+      core.addSelectionGroup(newGroup);
+
+      expect(customElementObject.isInteractive).toBe(true);
+      expect(regularObject.isInteractive).toBe(false);
+    });
   });
 
   describe('removeSelectionGroup', () => {
@@ -722,6 +745,30 @@ describe('KritzelCore', () => {
       core.removeSelectionGroup();
 
       expect(mockObjectsMap.remove).not.toHaveBeenCalled();
+    });
+
+    it('should disable isInteractive for deselected custom elements', () => {
+      const customElementObject = {
+        id: 'custom-1',
+        __class__: 'KritzelCustomElement',
+        isInteractive: true,
+      } as unknown as KritzelBaseObject<any>;
+      const regularObject = {
+        id: 'shape-1',
+        __class__: 'KritzelShape',
+        isInteractive: true,
+      } as unknown as KritzelBaseObject<any>;
+
+      const sg = {
+        id: 'sg-1',
+        objects: [customElementObject, regularObject],
+      } as unknown as KritzelSelectionGroup;
+      mockStore.selectionGroup = sg;
+
+      core.removeSelectionGroup();
+
+      expect(customElementObject.isInteractive).toBe(false);
+      expect(regularObject.isInteractive).toBe(true);
     });
   });
 
