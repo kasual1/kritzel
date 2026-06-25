@@ -690,7 +690,12 @@ export class KritzelCore {
 
     for (const object of selectionGroup.objects ?? []) {
       if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelCustomElement')) {
-        object.isInteractive = true;
+        const customElementObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
+        if (typeof customElementObject.setIsInteractive === 'function') {
+          customElementObject.setIsInteractive(true);
+        } else {
+          customElementObject.isInteractive = true;
+        }
       }
     }
 
@@ -708,7 +713,12 @@ export class KritzelCore {
     if (selectionGroup) {
       for (const object of selectionGroup.objects ?? []) {
         if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelCustomElement')) {
-          object.isInteractive = false;
+          const customElementObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
+          if (typeof customElementObject.setIsInteractive === 'function') {
+            customElementObject.setIsInteractive(false);
+          } else {
+            customElementObject.isInteractive = false;
+          }
         }
       }
 

@@ -107,6 +107,11 @@ export class EditorPageComponent implements OnDestroy {
       return;
     }
 
+    const objectCount = await this.editor.getObjectsTotalCount();
+    if (objectCount > 0) {
+      return;
+    }
+
     this.hasAddedInitialCustomElement = true;
 
     const placeholder = document.createElement('div');
@@ -121,6 +126,9 @@ export class EditorPageComponent implements OnDestroy {
       width: 600,
       height: 380,
     });
+
+    customElement.isResizable = false;
+    customElement.isRotatable = false;
 
     await this.editor.addObject(customElement);
   }
