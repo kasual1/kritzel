@@ -371,7 +371,9 @@ export class KritzelEngine {
 
     const hoveredObject = this.core.getObjectFromPointerEvent(ev as unknown as PointerEvent);
 
-    if (hoveredObject && ObjectHelper.isClass<KritzelCustomElement>(hoveredObject, 'KritzelCustomElement')) {
+    // Keep normal wheel events inside custom elements, but allow Ctrl+wheel
+    // so viewport scaling (including pinch-style wheel gestures) still works.
+    if (hoveredObject && ObjectHelper.isClass<KritzelCustomElement>(hoveredObject, 'KritzelCustomElement') && !ev.ctrlKey) {
       return;
     }
 
