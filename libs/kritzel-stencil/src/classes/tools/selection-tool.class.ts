@@ -560,6 +560,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       return null;
     }
 
+    const currentSelectionGroup = this._core.store.selectionGroup;
+    if (currentSelectionGroup?.objects.some(selectedObject => selectedObject.id === object.id)) {
+      return currentSelectionGroup;
+    }
+
     if (object instanceof KritzelSelectionGroup) {
       return object;
     } else {

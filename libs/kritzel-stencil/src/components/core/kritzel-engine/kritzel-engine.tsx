@@ -514,9 +514,31 @@ export class KritzelEngine {
       return false;
     }
 
-    // Only bypass canvas tool handling when the pointer event came from inside
-    // the custom element's rendered HTML subtree.
-    return path.some((entry): boolean => entry instanceof Node && object.element.contains(entry));
+    // Only bypass canvas tool handling when the pointer event came from an
+    // actually interactive descendant inside the custom element subtree.
+    return this.isNativeInteractiveEmbeddedTarget(path, object.element);
+  }
+
+  private isNativeInteractiveEmbeddedTarget(path: EventTarget[], customElementRoot: HTMLElement): boolean {
+    const interactiveSelector = 'input, button, textarea, select, a[href], [contenteditable="true"], [contenteditable=""]';
+
+    for (const entry of path) {
+      if (!(entry instanceof HTMLElement)) {
+        continue;
+      }
+
+      const interactiveEntry = entry as HTMLElement;
+
+      if (!customElementRoot.contains(interactiveEntry as Node)) {
+        continue;
+      }
+
+      if (interactiveEntry.matches(interactiveSelector)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @Listen('pointerleave')

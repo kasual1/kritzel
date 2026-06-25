@@ -838,6 +838,30 @@ describe('KritzelSelectionTool', () => {
       expect(tool.moveHandler.handlePointerDown).toHaveBeenCalled();
       expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
     });
+
+    it('should keep current selection group when clicking an already selected custom element', () => {
+      const customEl = Object.create(KritzelCustomElement.prototype);
+      customEl.__class__ = 'KritzelCustomElement';
+      customEl.id = 'custom-1';
+      customEl.hitTest = jest.fn().mockReturnValue(true);
+
+      const objectElement = document.createElement('div');
+      objectElement.id = 'custom-1';
+      objectElement.classList.add('object');
+
+      setSelectionGroupObjects([customEl]);
+      mockCore.findObjectById.mockReturnValue(customEl);
+
+      const event = createMouseEvent({
+        composedPath: jest.fn().mockReturnValue([document.createElement('span'), objectElement]),
+      });
+
+      tool.handlePointerDown(event);
+
+      expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
+      expect(tool.moveHandler.handlePointerDown).toHaveBeenCalledWith(event);
+      expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalledWith(event);
+    });
   });
 
   // ============================================
