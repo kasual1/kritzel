@@ -394,8 +394,8 @@ export class KritzelEngine {
       return;
     }
 
-    // Embedded custom-element interaction is enabled only when exactly one
-    // custom element is selected. Unselected objects stay fully selectable.
+    // Embedded custom-element interaction is enabled only for directly selected
+    // interactive custom elements. Unselected objects stay fully selectable.
     if (this.isEmbeddedCustomElementInteraction(ev)) {
       return;
     }
@@ -506,13 +506,11 @@ export class KritzelEngine {
       return false;
     }
 
-    const selectionGroup = this.core.store.selectionGroup;
-    if (!selectionGroup || selectionGroup.objects.length !== 1) {
+    if (object.isInteractive !== true) {
       return false;
     }
 
-    const selectedObject = selectionGroup.objects[0];
-    return selectedObject.id === object.id && KritzelClassHelper.isInstanceOf<KritzelCustomElement>(selectedObject, 'KritzelCustomElement');
+    return this.core.store.selectionGroup?.objects.includes(object) === true;
   }
 
   @Listen('pointerleave')
@@ -3036,7 +3034,7 @@ export class KritzelEngine {
                     );
                   })()}
 
-                {this.core.store.state.debugInfo.showObjectInfo && object.isDebugInfoVisible && (
+                {this.core.store.state.debugInfo.showObjectInfo && (
                   <div
                     style={{
                       pointerEvents: 'none',
@@ -3055,6 +3053,7 @@ export class KritzelEngine {
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>scale: {object.scale}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>rotationDegrees: {object.rotationDegrees}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
+                    <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isSelected: {object.isSelected ? 'true' : 'false'}</div>
 
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <div>

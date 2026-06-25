@@ -47,7 +47,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   isMounted: boolean = false;
   isEditable: boolean = false;
   isInteractive: boolean = false;
-  isDebugInfoVisible: boolean = false;
 
   /**
    * Gets the total width of the object including padding.

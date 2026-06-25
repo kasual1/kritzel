@@ -200,6 +200,22 @@ describe('KritzelCustomElement', () => {
 
       expect(container.contains(innerElement)).toBe(true);
     });
+
+    it('should disable embedded pointer interaction until the object is selected', () => {
+      const container = document.createElement('div');
+
+      obj.isSelected = false;
+      obj.mount(container);
+
+      expect(innerElement.style.pointerEvents).toBe('none');
+      expect(innerElement.style.cursor).toBe('default');
+
+      obj.isSelected = true;
+      obj.mount(container);
+
+      expect(innerElement.style.pointerEvents).toBe('auto');
+      expect(innerElement.style.cursor).toBe('default');
+    });
   });
 
   describe('resize', () => {

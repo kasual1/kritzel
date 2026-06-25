@@ -108,6 +108,11 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       return;
     }
 
+    if (this.element) {
+      this.element.style.pointerEvents = this.isSelected ? 'auto' : 'none';
+      this.element.style.cursor = 'default';
+    }
+
     if (this.isMounted && this.elementRef === element) {
       // Renderer-based mounts should not be re-invoked on every engine rerender.
       if (this.rendererKey) {
