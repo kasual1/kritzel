@@ -216,6 +216,24 @@ describe('KritzelCustomElement', () => {
       expect(innerElement.style.pointerEvents).toBe('auto');
       expect(innerElement.style.cursor).toBe('auto');
     });
+
+    it('should blur focused descendants when interactivity is disabled', () => {
+      const container = document.createElement('div');
+      const input = document.createElement('input');
+      innerElement.appendChild(input);
+      document.body.appendChild(container);
+
+      obj.setIsInteractive(true);
+      obj.mount(container);
+      input.focus();
+      expect(document.activeElement).toBe(input);
+
+      obj.setIsInteractive(false);
+
+      expect(document.activeElement).not.toBe(input);
+
+      document.body.removeChild(container);
+    });
   });
 
   describe('resize', () => {

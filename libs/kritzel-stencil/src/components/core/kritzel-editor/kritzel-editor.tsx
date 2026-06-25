@@ -793,12 +793,12 @@ export class KritzelEditor {
       theme: this.theme
     });
 
-    await this.addInitialCustomElementAtCenter();
+    await this.addInitialCustomElementAtCenter(false);
 
   }
 
-  private async addInitialCustomElementAtCenter(): Promise<void> {
-    if (this.hasAddedInitialCustomElement) {
+  private async addInitialCustomElementAtCenter(shouldAdd: boolean): Promise<void> {
+    if (!shouldAdd || this.hasAddedInitialCustomElement) {
       return;
     }
 
@@ -849,6 +849,7 @@ export class KritzelEditor {
         width: 280,
         height: 56,
       });
+
 
       const addedObject = await this.engineRef.addObject(customObject);
       if (addedObject) {

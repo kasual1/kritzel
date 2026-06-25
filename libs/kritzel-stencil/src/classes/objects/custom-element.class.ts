@@ -103,10 +103,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       return;
     }
 
-    if (this.element) {
-      this.element.style.pointerEvents = this.isInteractive ? 'auto' : 'none';
-      this.element.style.cursor = this.isInteractive ? 'auto' : 'default';
-    }
+    this.applyInteractiveState();
 
     if (this.isMounted && this.elementRef === element) {
       // Renderer-based mounts should not be re-invoked on every engine rerender.
@@ -140,6 +137,55 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     // Fallback to standard DOM mounting
     this.elementRef.innerHTML = '';
     this.elementRef.appendChild(this.element);
+  }
+
+  /**
+   * Updates interactivity state for embedded HTML content.
+   * When disabling interactivity, any focused descendant is blurred so
+   * keyboard input is released immediately.
+   */
+  setIsInteractive(isInteractive: boolean): void {
+    const hasChanged = this.isInteractive !== isInteractive;
+    this.isInteractive = isInteractive;
+    this.applyInteractiveState();
+
+    if (hasChanged && !isInteractive) {
+      this.blurFocusedDescendant();
+    }
+  }
+
+  private applyInteractiveState(): void {
+    if (!this.element) {
+      return;
+    }
+
+    this.element.style.pointerEvents = this.isInteractive ? 'auto' : 'none';
+    this.element.style.cursor = this.isInteractive ? 'auto' : 'default';
+  }
+
+  private blurFocusedDescendant(): void {
+    if (!this.element) {
+      return;
+    }
+
+    const activeElement = this.getDeepActiveElement();
+    if (activeElement && this.element.contains(activeElement)) {
+      activeElement.blur();
+    }
+  }
+
+  private getDeepActiveElement(root: Document | ShadowRoot = document): HTMLElement | null {
+    const activeElement = root.activeElement;
+    if (!(activeElement instanceof HTMLElement)) {
+      return null;
+    }
+
+    if (activeElement.shadowRoot) {
+      const nested = this.getDeepActiveElement(activeElement.shadowRoot);
+      return nested ?? activeElement;
+    }
+
+    return activeElement;
   }
 
   /**

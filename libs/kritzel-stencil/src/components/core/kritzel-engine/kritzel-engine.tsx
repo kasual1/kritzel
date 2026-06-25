@@ -2613,12 +2613,29 @@ export class KritzelEngine {
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
     const visibleObjects = this.core.store.objectsInViewport;
+    
     const getObjectWrapperPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
       if (this.core.store.state.isScaling) {
         return 'none';
       }
 
       if (KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup')) {
+        return 'none';
+      }
+
+      return 'auto';
+    };
+
+    const getSelectionGroupOverlayPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
+      if (object.markedForRemoval) {
+        return 'none';
+      }
+
+      if (!KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup')) {
+        return 'auto';
+      }
+
+      if (object.objects.length === 1 && KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object.objects[0], 'KritzelCustomElement')) {
         return 'none';
       }
 
@@ -2924,7 +2941,7 @@ export class KritzelEngine {
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
-                      pointerEvents: 'none',
+                      pointerEvents: getSelectionGroupOverlayPointerEvents(object),
                     }}
                   ></div>
                 )}
