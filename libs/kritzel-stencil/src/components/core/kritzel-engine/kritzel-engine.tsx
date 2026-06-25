@@ -506,32 +506,46 @@ export class KritzelEngine {
       return false;
     }
 
+    const isSelected = !!this.core.store.selectionGroup?.objects?.some(selectedObject => selectedObject.id === object.id);
+    if (!isSelected) {
+      return false;
+    }
+
     if (object.isInteractive !== true) {
       return false;
     }
 
-    if (!object.element) {
+    const potentialRoots: HTMLElement[] = [];
+    if (object.element instanceof HTMLElement) {
+      potentialRoots.push(object.element);
+    }
+    if (object.elementRef instanceof HTMLElement) {
+      potentialRoots.push(object.elementRef);
+    }
+
+    if (potentialRoots.length === 0) {
       return false;
     }
 
     // Only bypass canvas tool handling when the pointer event came from an
     // actually interactive descendant inside the custom element subtree.
-    return this.isNativeInteractiveEmbeddedTarget(path, object.element);
+    return potentialRoots.some(root => this.isNativeInteractiveEmbeddedTarget(path, root));
   }
 
   private isNativeInteractiveEmbeddedTarget(path: EventTarget[], customElementRoot: HTMLElement): boolean {
     const interactiveSelector = 'input, button, textarea, select, a[href], [contenteditable="true"], [contenteditable=""]';
+    const rootIndex = path.findIndex(entry => entry === customElementRoot);
 
-    for (const entry of path) {
+    if (rootIndex === -1) {
+      return false;
+    }
+
+    for (const entry of path.slice(0, rootIndex)) {
       if (!(entry instanceof HTMLElement)) {
         continue;
       }
 
       const interactiveEntry = entry as HTMLElement;
-
-      if (!customElementRoot.contains(interactiveEntry as Node)) {
-        continue;
-      }
 
       if (interactiveEntry.matches(interactiveSelector)) {
         return true;

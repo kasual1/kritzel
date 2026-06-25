@@ -1,5 +1,6 @@
 import { KritzelCustomElement } from './custom-element.class';
 import { KritzelCore } from '../core/core.class';
+import { KritzelCustomElementRendererRegistry } from '../registries/custom-element-renderer.registry';
 
 describe('KritzelCustomElement', () => {
   let mockCore: jest.Mocked<KritzelCore>;
@@ -208,7 +209,7 @@ describe('KritzelCustomElement', () => {
       obj.mount(container);
 
       expect(innerElement.style.pointerEvents).toBe('none');
-      expect(innerElement.style.cursor).toBe('default');
+      expect(innerElement.style.cursor).toBe('');
 
       obj.isInteractive = true;
       obj.mount(container);
@@ -230,6 +231,80 @@ describe('KritzelCustomElement', () => {
       obj.setIsInteractive(false);
 
       expect(blurSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should blur focused descendants inside shadow DOM when interactivity is disabled', () => {
+      const rendererKey = 'test-renderer-shadow-blur';
+      const shadowHost = document.createElement('div');
+      const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+      const input = document.createElement('input');
+      shadowRoot.appendChild(input);
+
+      KritzelCustomElementRendererRegistry.register(rendererKey, {
+        onMount: ({ container }) => {
+          if (!container) {
+            return;
+          }
+          container.innerHTML = '';
+          container.appendChild(shadowHost);
+        },
+        onUnmount: () => undefined,
+      });
+
+      const rendererObj = KritzelCustomElement.create(mockCore, {
+        element: createMockElement(),
+        rendererKey,
+      }) as KritzelCustomElement;
+
+      const container = document.createElement('div');
+      rendererObj.mount(container);
+
+      const blurSpy = jest.spyOn(input, 'blur');
+      jest.spyOn(rendererObj as any, 'getDeepActiveElement').mockReturnValue(input);
+
+      rendererObj.setIsInteractive(true);
+      rendererObj.setIsInteractive(false);
+
+      expect(blurSpy).toHaveBeenCalledTimes(1);
+
+      KritzelCustomElementRendererRegistry.unregister(rendererKey);
+    });
+
+    it('should keep renderer container selectable while disabling mounted interactive content', () => {
+      const rendererKey = 'test-renderer-selectable-container';
+      const mountedHost = document.createElement('div');
+      mountedHost.innerHTML = '<button type="button">Click</button>';
+
+      KritzelCustomElementRendererRegistry.register(rendererKey, {
+        onMount: ({ container }) => {
+          if (!container) {
+            return;
+          }
+          container.innerHTML = '';
+          container.appendChild(mountedHost);
+        },
+        onUnmount: () => undefined,
+      });
+
+      const rendererObj = KritzelCustomElement.create(mockCore, {
+        element: createMockElement(),
+        rendererKey,
+      }) as KritzelCustomElement;
+
+      const container = document.createElement('div');
+
+      rendererObj.setIsInteractive(false);
+      rendererObj.mount(container);
+
+      expect(container.style.pointerEvents).toBe('auto');
+      expect(mountedHost.style.pointerEvents).toBe('none');
+
+      rendererObj.setIsInteractive(true);
+
+      expect(container.style.pointerEvents).toBe('auto');
+      expect(mountedHost.style.pointerEvents).toBe('auto');
+
+      KritzelCustomElementRendererRegistry.unregister(rendererKey);
     });
   });
 

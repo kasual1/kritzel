@@ -130,6 +130,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
           container: element,
           data: this.rendererData,
         });
+        this.applyInteractiveState();
         return;
       }
     }
@@ -137,6 +138,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     // Fallback to standard DOM mounting
     this.elementRef.innerHTML = '';
     this.elementRef.appendChild(this.element);
+    this.applyInteractiveState();
   }
 
   /**
@@ -155,23 +157,67 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }
 
   private applyInteractiveState(): void {
-    if (!this.element) {
-      return;
+    const pointerEvents = this.isInteractive ? 'auto' : 'none';
+    const contentCursor = this.isInteractive ? 'auto' : '';
+
+    if (this.element) {
+      this.element.style.pointerEvents = pointerEvents;
+      this.element.style.cursor = contentCursor;
     }
 
-    this.element.style.pointerEvents = this.isInteractive ? 'auto' : 'none';
-    this.element.style.cursor = this.isInteractive ? 'auto' : 'default';
+    if (this.elementRef instanceof HTMLElement) {
+      // Keep the mount container clickable so unselected custom elements can still be selected.
+      this.elementRef.style.pointerEvents = 'auto';
+      this.elementRef.style.cursor = '';
+
+      Array.from(this.elementRef.children).forEach(child => {
+        if (child instanceof HTMLElement) {
+          child.style.pointerEvents = pointerEvents;
+          child.style.cursor = contentCursor;
+        }
+      });
+    }
   }
 
   private blurFocusedDescendant(): void {
-    if (!this.element) {
+    if (!this.element && !(this.elementRef instanceof HTMLElement)) {
       return;
     }
 
     const activeElement = this.getDeepActiveElement();
-    if (activeElement && this.element.contains(activeElement)) {
+    const isInsideElement = !!this.element && this.isNodeInsideHost(activeElement, this.element);
+    const isInsideMountedContainer = this.elementRef instanceof HTMLElement && this.isNodeInsideHost(activeElement, this.elementRef);
+    if (activeElement && (isInsideElement || isInsideMountedContainer)) {
       activeElement.blur();
     }
+  }
+
+  private isNodeInsideHost(node: Node | null, host: HTMLElement): boolean {
+    if (!node) {
+      return false;
+    }
+
+    let current: Node | null = node;
+    while (current) {
+      if (current === host) {
+        return true;
+      }
+
+      if (current.parentNode) {
+        current = current.parentNode;
+        continue;
+      }
+
+      const root = current.getRootNode();
+      if (root instanceof ShadowRoot) {
+        current = root.host;
+        continue;
+      }
+
+      break;
+    }
+
+    return false;
   }
 
   private getDeepActiveElement(root: Document | ShadowRoot = document): HTMLElement | null {
