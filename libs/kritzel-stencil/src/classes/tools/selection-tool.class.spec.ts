@@ -817,6 +817,22 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.removeSelectionGroup).toHaveBeenCalled();
     });
 
+    it('should resolve object id when the .object element is the pointer target', () => {
+      const objectElement = document.createElement('div');
+      objectElement.id = 'custom-1';
+      objectElement.classList.add('object');
+
+      mockCore.findObjectById.mockReturnValue(undefined);
+
+      const event = createMouseEvent({
+        composedPath: jest.fn().mockReturnValue([objectElement]),
+      });
+
+      tool.handlePointerDown(event);
+
+      expect(mockCore.findObjectById).toHaveBeenCalledWith('custom-1');
+    });
+
     it('should not remove selection group when handles are selected', () => {
       setSelectionGroupObjects([createMockPath()]);
       mockState.host.shadowRoot.elementsFromPoint.mockReturnValue([

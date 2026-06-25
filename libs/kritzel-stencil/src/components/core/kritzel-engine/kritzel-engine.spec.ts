@@ -415,6 +415,7 @@ describe('KritzelEngine', () => {
       } as any;
 
       (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
+      core.store.selectionGroup = { objects: [customElementObject] };
       (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
         return obj === customElementObject && className === 'KritzelCustomElement';
       });
@@ -510,6 +511,91 @@ describe('KritzelEngine', () => {
 
       expect(setPointerCapture).not.toHaveBeenCalled();
       expect(core.store.state.pointers.has(11)).toBe(false);
+      expect((engine.viewport as any).handlePointerDown).not.toHaveBeenCalled();
+      expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
+    });
+
+    it('bypasses canvas pointer handling for renderer-mounted interactive descendants', () => {
+      const objectElement = document.createElement('div');
+      objectElement.id = 'custom-3';
+      objectElement.classList.add('object');
+
+      const rendererContainer = document.createElement('div');
+      const input = document.createElement('input');
+      rendererContainer.appendChild(input);
+
+      const customElementObject = {
+        id: 'custom-3',
+        isInteractive: true,
+        element: document.createElement('div'),
+        elementRef: rendererContainer,
+      } as any;
+
+      (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
+      core.store.selectionGroup = { objects: [customElementObject] };
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
+        return obj === customElementObject && className === 'KritzelCustomElement';
+      });
+
+      const activeTool = { handlePointerDown: jest.fn() };
+      core.store.state.activeTool = activeTool;
+
+      const setPointerCapture = jest.fn();
+      (engine.host as any).setPointerCapture = setPointerCapture;
+
+      const event = {
+        pointerId: 13,
+        composedPath: jest.fn().mockReturnValue([input, rendererContainer, objectElement]),
+      } as unknown as PointerEvent;
+
+      engine.handlePointerDown(event);
+
+      expect(setPointerCapture).not.toHaveBeenCalled();
+      expect(core.store.state.pointers.has(13)).toBe(false);
+      expect((engine.viewport as any).handlePointerDown).not.toHaveBeenCalled();
+      expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
+    });
+
+    it('bypasses canvas pointer handling for interactive descendants inside shadow DOM', () => {
+      const objectElement = document.createElement('div');
+      objectElement.id = 'custom-4';
+      objectElement.classList.add('object');
+
+      const rendererContainer = document.createElement('div');
+      const shadowHost = document.createElement('app-shadow-host');
+      const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+      const input = document.createElement('input');
+      shadowRoot.appendChild(input);
+      rendererContainer.appendChild(shadowHost);
+
+      const customElementObject = {
+        id: 'custom-4',
+        isInteractive: true,
+        element: document.createElement('div'),
+        elementRef: rendererContainer,
+      } as any;
+
+      (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
+      core.store.selectionGroup = { objects: [customElementObject] };
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
+        return obj === customElementObject && className === 'KritzelCustomElement';
+      });
+
+      const activeTool = { handlePointerDown: jest.fn() };
+      core.store.state.activeTool = activeTool;
+
+      const setPointerCapture = jest.fn();
+      (engine.host as any).setPointerCapture = setPointerCapture;
+
+      const event = {
+        pointerId: 14,
+        composedPath: jest.fn().mockReturnValue([input, shadowRoot, shadowHost, rendererContainer, objectElement]),
+      } as unknown as PointerEvent;
+
+      engine.handlePointerDown(event);
+
+      expect(setPointerCapture).not.toHaveBeenCalled();
+      expect(core.store.state.pointers.has(14)).toBe(false);
       expect((engine.viewport as any).handlePointerDown).not.toHaveBeenCalled();
       expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
     });

@@ -547,7 +547,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
    * @returns A KritzelSelectionGroup containing the object, or null if no object at that location
    */
   private getSelectedObject(event: PointerEvent): KritzelSelectionGroup | null {
-    const path = event.composedPath().slice(1) as HTMLElement[];
+    const path = event.composedPath() as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = objectElement?.id ? this._core.findObjectById(objectElement.id) : null;
 
