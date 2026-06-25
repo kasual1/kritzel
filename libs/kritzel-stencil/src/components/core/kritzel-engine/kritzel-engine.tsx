@@ -2613,6 +2613,17 @@ export class KritzelEngine {
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
     const visibleObjects = this.core.store.objectsInViewport;
+    const getObjectWrapperPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
+      if (this.core.store.state.isScaling) {
+        return 'none';
+      }
+
+      if (KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup')) {
+        return 'none';
+      }
+
+      return 'auto';
+    };
 
     // Track visible custom elements and unmount culled ones
     const currentVisibleCustomElements = new Set<string>();
@@ -2706,7 +2717,7 @@ export class KritzelEngine {
                   transformOrigin: 'top left',
                   position: 'absolute',
                   zIndex: object.zIndex.toString(),
-                  pointerEvents: this.core.store.state.isScaling ? 'none' : 'auto',
+                  pointerEvents: getObjectWrapperPointerEvents(object),
                 }}
               >
                 {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
@@ -2913,7 +2924,7 @@ export class KritzelEngine {
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
                       opacity: object.markedForRemoval ? '0.5' : object.opacity.toString(),
-                      pointerEvents: object.markedForRemoval ? 'none' : 'auto',
+                      pointerEvents: 'none',
                     }}
                   ></div>
                 )}
