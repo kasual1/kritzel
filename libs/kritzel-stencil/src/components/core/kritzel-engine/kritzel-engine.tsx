@@ -3055,6 +3055,13 @@ export class KritzelEngine {
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isSelected: {object.isSelected ? 'true' : 'false'}</div>
 
+                    {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
+                      <div>
+                        <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isInteractive: {object.isInteractive ? 'true' : 'false'}</div>
+                      </div>
+                    )}
+
+
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>assetId: {object.assetId}</div>

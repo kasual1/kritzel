@@ -41,11 +41,6 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   rendererData?: unknown;
 
   /**
-   * Whether the element responds to user interactions. Defaults to true.
-   */
-  override isInteractive: boolean = false;
-
-  /**
    * Creates a new KritzelCustomElement instance.
    * @param config - Optional configuration object for the custom element.
    * @param config.element - The HTML element to wrap.
