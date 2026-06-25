@@ -400,6 +400,33 @@ describe('KritzelEngine', () => {
   });
 
   describe('embedded custom element interaction', () => {
+    const setupInteractiveCustomElementEvent = (target: HTMLElement) => {
+      const objectElement = document.createElement('div');
+      objectElement.id = 'custom-1';
+      objectElement.classList.add('object');
+
+      const embeddedRoot = document.createElement('div');
+      embeddedRoot.appendChild(target);
+
+      const customElementObject = {
+        id: 'custom-1',
+        isInteractive: true,
+        element: embeddedRoot,
+      } as any;
+
+      (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
+        return obj === customElementObject && className === 'KritzelCustomElement';
+      });
+
+      const event = {
+        pointerId: 11,
+        composedPath: jest.fn().mockReturnValue([target, embeddedRoot, objectElement]),
+      } as unknown as PointerEvent;
+
+      return { event, customElementObject };
+    };
+
     it('keeps default pointer handling for unselected interactive custom elements', () => {
       const objectElement = document.createElement('div');
       objectElement.id = 'custom-2';
@@ -430,6 +457,61 @@ describe('KritzelEngine', () => {
       expect(core.store.state.pointers.has(8)).toBe(true);
       expect((engine.viewport as any).handlePointerDown).toHaveBeenCalledWith(event);
       expect(activeTool.handlePointerDown).toHaveBeenCalledWith(event);
+    });
+
+    it('bypasses canvas pointer handling for native interactive descendants', () => {
+      const input = document.createElement('input');
+      const { event } = setupInteractiveCustomElementEvent(input);
+
+      const activeTool = { handlePointerDown: jest.fn() };
+      core.store.state.activeTool = activeTool;
+
+      const setPointerCapture = jest.fn();
+      (engine.host as any).setPointerCapture = setPointerCapture;
+
+      engine.handlePointerDown(event);
+
+      expect(setPointerCapture).not.toHaveBeenCalled();
+      expect(core.store.state.pointers.has(11)).toBe(false);
+      expect((engine.viewport as any).handlePointerDown).not.toHaveBeenCalled();
+      expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
+    });
+
+    it('keeps default pointer handling for non-interactive descendants', () => {
+      const container = document.createElement('div');
+      const { event } = setupInteractiveCustomElementEvent(container);
+
+      const activeTool = { handlePointerDown: jest.fn() };
+      core.store.state.activeTool = activeTool;
+
+      const setPointerCapture = jest.fn();
+      (engine.host as any).setPointerCapture = setPointerCapture;
+
+      engine.handlePointerDown(event);
+
+      expect(setPointerCapture).toHaveBeenCalledWith(11);
+      expect(core.store.state.pointers.has(11)).toBe(true);
+      expect((engine.viewport as any).handlePointerDown).toHaveBeenCalledWith(event);
+      expect(activeTool.handlePointerDown).toHaveBeenCalledWith(event);
+    });
+
+    it('bypasses canvas pointer handling for contenteditable descendants', () => {
+      const editable = document.createElement('div');
+      editable.setAttribute('contenteditable', 'true');
+      const { event } = setupInteractiveCustomElementEvent(editable);
+
+      const activeTool = { handlePointerDown: jest.fn() };
+      core.store.state.activeTool = activeTool;
+
+      const setPointerCapture = jest.fn();
+      (engine.host as any).setPointerCapture = setPointerCapture;
+
+      engine.handlePointerDown(event);
+
+      expect(setPointerCapture).not.toHaveBeenCalled();
+      expect(core.store.state.pointers.has(11)).toBe(false);
+      expect((engine.viewport as any).handlePointerDown).not.toHaveBeenCalled();
+      expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
     });
   });
 
