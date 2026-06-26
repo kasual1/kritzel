@@ -13,7 +13,6 @@ import { BlueprintDefectMapperComponent } from './examples/blueprint-defect-mapp
 import { SlideshowPresentationComponent } from './examples/slideshow-presentation/slideshow-presentation.component';
 import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-gallery/infinite-canvas-gallery.component';
 import { ImageAnnotationStudioComponent } from './examples/image-annotation-studio/image-annotation-studio.component';
-import { TodoListComponent } from './examples/todo-list/todo-list.component';
 import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
 import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
 import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
@@ -37,7 +36,7 @@ import { WorkspacesSwitchComponent } from './concepts/workspaces/workspaces-swit
 import { WorkspacesCrudComponent } from './concepts/workspaces/workspaces-crud.component';
 import { ObjectsOrderingComponent } from './concepts/objects/objects-ordering.component';
 import { BasicUsageComponent } from './basic-usage/basic-usage.component';
-import { EditorPageCustomElementComponent } from './e2e/editor-page-custom-element.component';
+import { EditorPageCustomElementComponent } from './concepts/custom-elements/editor-page-custom-element.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -47,7 +46,6 @@ export const routes: Routes = [
       { path: 'editor', component: EditorPageComponent },
       { path: 'multi-editor', component: MultiEditorPageComponent },
       { path: 'wrapped-editor', component: WrappedEditorPageComponent },
-      { path: 'editor-custom-element', component: EditorPageCustomElementComponent },
     ],
   },
   {
@@ -86,6 +84,7 @@ export const routes: Routes = [
       { path: 'tools-register', component: ToolsRegisterComponent },
       { path: 'workspaces-switch', component: WorkspacesSwitchComponent },
       { path: 'workspaces-crud', component: WorkspacesCrudComponent },
+      { path: 'custom-elements', component: EditorPageCustomElementComponent },
       {
         path: 'context-menus-canvas-quick-actions',
         component: CustomContextMenuCanvasQuickActionsComponent,
@@ -127,10 +126,6 @@ export const routes: Routes = [
       {
         path: 'image-annotation-studio',
         component: ImageAnnotationStudioComponent,
-      },
-      {
-        path: 'todo-list',
-        component: TodoListComponent,
       },
       {
         path: 'collaboration-1',
