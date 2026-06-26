@@ -473,7 +473,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this.rotationHandler.handlePointerDown(event);
       this.resizeHandler.handlePointerDown(event);
       this.moveHandler.handlePointerDown(event);
-      this.selectionHandler.handlePointerDown(event);
+      
+      // Only process selection handler if we are not scaling (2 pointers)
+      if (this._core.store.state.pointers.size === 1) {
+        this.selectionHandler.handlePointerDown(event);
+      }
 
       this._core.rerender();
     }
@@ -586,7 +590,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       const group = KritzelSelectionGroup.create(this._core);
       group.translateX = 0;
       group.translateY = 0;
-      group.addOrRemove(object);
+      group.objectIds = [object.id];
       return group;
     }
   }
