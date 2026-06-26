@@ -874,6 +874,31 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
 
+    it('passes wheel handling through when a hovered custom element is not scrollable', () => {
+      const activeTool = { handleWheel: jest.fn() } as any;
+      core.store.state.activeTool = activeTool;
+
+      const objectElement = document.createElement('div');
+
+      const hoveredCustomElement = {
+        __class__: 'KritzelCustomElement',
+        isSelected: true,
+        elementRef: objectElement,
+      } as any;
+
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+
+      engine.handleWheel(
+        createWheelEvent({
+          deltaY: 10,
+          composedPath: () => [objectElement],
+        }),
+      );
+
+      expect(engine.viewport.handleWheel).toHaveBeenCalledTimes(1);
+      expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
+    });
+
     it('allows Ctrl+wheel viewport handling while hovering a custom element', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
