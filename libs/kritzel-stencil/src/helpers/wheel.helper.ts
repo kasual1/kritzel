@@ -30,6 +30,11 @@ export class KritzelWheelHelper {
       potentialRoots.push(customElement.elementRef);
     }
 
+    const legacyElementRef = (customElement as KritzelCustomElement & { elmeentRef?: HTMLElement }).elmeentRef;
+    if (legacyElementRef instanceof HTMLElement) {
+      potentialRoots.push(legacyElementRef);
+    }
+
     for (const root of potentialRoots) {
       const rootIndex = path.findIndex(entry => entry === root);
       if (rootIndex === -1) {
@@ -44,6 +49,19 @@ export class KritzelWheelHelper {
         if (this.isScrollableElement(entry)) {
           return entry;
         }
+      }
+    }
+
+    // Fallback for synthetic/custom wheel events where composedPath is absent
+    // or does not include the custom-element subtree.
+    for (const root of potentialRoots) {
+      if (this.isScrollableElement(root)) {
+        return root;
+      }
+
+      const firstChild = root.firstElementChild;
+      if (firstChild instanceof HTMLElement && this.isScrollableElement(firstChild)) {
+        return firstChild;
       }
     }
 
