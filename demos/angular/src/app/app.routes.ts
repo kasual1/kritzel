@@ -37,6 +37,7 @@ import { WorkspacesSwitchComponent } from './concepts/workspaces/workspaces-swit
 import { WorkspacesCrudComponent } from './concepts/workspaces/workspaces-crud.component';
 import { ObjectsOrderingComponent } from './concepts/objects/objects-ordering.component';
 import { BasicUsageComponent } from './basic-usage/basic-usage.component';
+import { EditorPageCustomElementComponent } from './e2e/editor-page-custom-element.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -46,6 +47,7 @@ export const routes: Routes = [
       { path: 'editor', component: EditorPageComponent },
       { path: 'multi-editor', component: MultiEditorPageComponent },
       { path: 'wrapped-editor', component: WrappedEditorPageComponent },
+      { path: 'editor-custom-element', component: EditorPageCustomElementComponent },
     ],
   },
   {
