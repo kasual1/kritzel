@@ -13,6 +13,7 @@ import CustomContextMenuClipboardActionsPage from './pages/concepts/context-menu
 import CustomContextMenuSmartConditionalPage from './pages/concepts/context-menus/CustomContextMenuSmartConditionalPage.vue'
 import CustomContextMenuObjectInspectorPage from './pages/concepts/context-menus/CustomContextMenuObjectInspectorPage.vue'
 import CustomElementsPage from './pages/concepts/custom-elements/CustomElementsPage.vue'
+import CustomElementsHtmlPage from './pages/concepts/custom-elements/CustomElementsHtmlPage.vue'
 import ObjectsAddRemovePage from './pages/concepts/objects/ObjectsAddRemovePage.vue'
 import ObjectsQueryPage from './pages/concepts/objects/ObjectsQueryPage.vue'
 import ObjectsSelectionPage from './pages/concepts/objects/ObjectsSelectionPage.vue'
@@ -80,6 +81,10 @@ export const router = createRouter({
         {
           path: 'custom-elements',
           component: CustomElementsPage,
+        },
+        {
+          path: 'custom-elements-html',
+          component: CustomElementsHtmlPage,
         },
         { path: 'objects-add-remove', component: ObjectsAddRemovePage },
         { path: 'objects-query', component: ObjectsQueryPage },
