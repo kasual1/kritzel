@@ -793,7 +793,7 @@ export class KritzelEditor {
       theme: this.theme
     });
 
-    await this.addInitialCustomElementAtCenter(false);
+    await this.addInitialCustomElementAtCenter(true);
 
   }
 
@@ -841,6 +841,14 @@ export class KritzelEditor {
       button.style.backgroundColor = '#f3f4f6';
       button.style.cursor = 'pointer';
 
+      button.addEventListener('click', () => {
+        const inputValue = input.value.trim();
+        if (inputValue) {
+          window.alert('Input value submitted: ' + inputValue);
+          input.value = '';
+        }
+      });
+
       element.appendChild(input);
       element.appendChild(button);
 
@@ -852,6 +860,7 @@ export class KritzelEditor {
 
       customObject.isResizable = false;
       customObject.isRotatable = false;
+      customObject.isInteractive = true;
 
 
       const addedObject = await this.engineRef.addObject(customObject);

@@ -933,6 +933,20 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.removeSelectionGroup).toHaveBeenCalled();
     });
 
+    it('should treat stale scaling with one pointer as normal touch interaction', () => {
+      mockState.isScaling = true;
+      mockState.pointers.set(1, {});
+      setSelectionGroupObjects([createMockPath()]);
+      mockCore.findObjectById.mockReturnValue(undefined);
+
+      tool.handlePointerDown(createTouchEvent());
+
+      expect(mockState.isScaling).toBe(false);
+      expect(mockCore.removeSelectionGroup).toHaveBeenCalled();
+      expect(tool.moveHandler.handlePointerDown).toHaveBeenCalled();
+      expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalled();
+    });
+
     it('should not run selection logic when multiple pointers active', () => {
       mockState.pointers.set(1, {});
       mockState.pointers.set(2, {});

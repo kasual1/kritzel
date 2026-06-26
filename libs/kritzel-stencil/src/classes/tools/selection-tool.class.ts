@@ -411,6 +411,16 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isScaling === true) {
+        const activePointerCount = this._core.store.state.pointers.size;
+
+        // During a real pinch (two active pointers), keep touch handling suspended.
+        // If only one pointer is active, scaling is stale (debounce window after pinch),
+        // so resume normal touch selection behavior immediately.
+        if (activePointerCount === 1) {
+          this._core.store.state.isScaling = false;
+          this._savedSelectionGroupForPinch = null;
+        }
+
         // A second finger has arrived to start a pinch-zoom gesture. If we
         // cleared a selection group on the first finger-down, restore it now
         // so the user's selection is preserved while zooming.
@@ -419,7 +429,12 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           this._savedSelectionGroupForPinch = null;
           this._core.rerender();
         }
-        return;
+
+        if (this._core.store.state.isScaling === true) {
+          return;
+        }
+
+        // Continue with normal touch handling when scaling was stale.
       }
 
       if (this._core.store.state.pointers.size === 1) {

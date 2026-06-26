@@ -685,7 +685,7 @@ export class KritzelCore {
    * @param selectionGroup - The selection group to add
    */
   addSelectionGroup(selectionGroup: KritzelSelectionGroup): void {
-    this.removeSelectionGroup();
+    this.removeLocalSelectionGroups();
     this.removeSelectionBox();
 
     for (const object of selectionGroup.objects ?? []) {
@@ -705,27 +705,77 @@ export class KritzelCore {
   }
 
   /**
+   * Returns whether the provided selection group belongs to the local user context.
+   * Local groups are either explicitly owned by the current user or have no user ID.
+   */
+  private isLocalSelectionGroup(selectionGroup: KritzelSelectionGroup): boolean {
+    const localUserId = this._user?.id;
+    return localUserId == null || selectionGroup.userId === localUserId || selectionGroup.userId == null;
+  }
+
+  /**
+   * Applies deselection teardown side effects to a selection group before removal.
+   */
+  private teardownSelectionGroup(selectionGroup: KritzelSelectionGroup): void {
+    selectionGroup.deselectAllChildren?.();
+
+    for (const object of selectionGroup.objects ?? []) {
+      if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelCustomElement')) {
+        const customElementObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
+        if (typeof customElementObject.setIsInteractive === 'function') {
+          customElementObject.setIsInteractive(false);
+        } else {
+          customElementObject.isInteractive = false;
+        }
+      }
+    }
+  }
+
+  /**
+   * Removes all local selection groups from the store, including orphaned groups
+   * that are no longer referenced by store.selectionGroup.
+   * @returns True when at least one local selection group was removed
+   */
+  private removeLocalSelectionGroups(): boolean {
+    const allSelectionGroupsInStore = this._store.objects
+      .allObjects()
+      .filter((object): object is KritzelSelectionGroup => {
+        return object instanceof KritzelSelectionGroup || KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup');
+      });
+
+    const allLocalSelectionGroups = allSelectionGroupsInStore.filter(selectionGroup => this.isLocalSelectionGroup(selectionGroup));
+
+    const currentSelectionGroup = this._store.selectionGroup;
+    if (
+      currentSelectionGroup &&
+      this.isLocalSelectionGroup(currentSelectionGroup) &&
+      !allLocalSelectionGroups.some(group => group.id === currentSelectionGroup.id)
+    ) {
+      allLocalSelectionGroups.push(currentSelectionGroup);
+    }
+
+    if (allLocalSelectionGroups.length === 0) {
+      return false;
+    }
+
+    for (const selectionGroup of allLocalSelectionGroups) {
+      this.teardownSelectionGroup(selectionGroup);
+    }
+
+    const localSelectionGroupIds = new Set(allLocalSelectionGroups.map(group => group.id));
+
+    this._store.objects.remove(object => localSelectionGroupIds.has(object.id));
+    this._store.setSelectionGroup(null);
+    return true;
+  }
+
+  /**
    * Removes the current selection group from the canvas.
    * Clears the cached reference and triggers the selection change event.
    */
   removeSelectionGroup(): void {
-    const selectionGroup = this._store.selectionGroup;
-    if (selectionGroup) {
-      selectionGroup.deselectAllChildren?.();
-
-      for (const object of selectionGroup.objects ?? []) {
-        if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelCustomElement')) {
-          const customElementObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
-          if (typeof customElementObject.setIsInteractive === 'function') {
-            customElementObject.setIsInteractive(false);
-          } else {
-            customElementObject.isInteractive = false;
-          }
-        }
-      }
-
-      this._store.objects.remove(object => object.id === selectionGroup.id);
-      this._store.setSelectionGroup(null);
+    const removedAnySelectionGroup = this.removeLocalSelectionGroups();
+    if (removedAnySelectionGroup) {
       this._kritzelEngine.triggerSelectionChange();
     }
   }
