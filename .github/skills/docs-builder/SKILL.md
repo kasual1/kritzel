@@ -56,6 +56,7 @@ Detailed conventions for each documentation category live in the `patterns/` sub
 - [`patterns/react-demo-pages.md`](patterns/react-demo-pages.md) — How to create React demo pages that back `<LiveDemo>` embeds
 - [`patterns/vue-demo-pages.md`](patterns/vue-demo-pages.md) — How to create Vue demo pages that back `<LiveDemo>` embeds
 - [`patterns/framework-porting.md`](patterns/framework-porting.md) — How to port Angular source docs to React and Vue consistently
+- [`patterns/custom-elements.md`](patterns/custom-elements.md) — How to document and demo `KritzelCustomElement` lifecycle, renderer state persistence, wheel behavior, and Vue-specific embedding constraints
 
 ## Cross-Framework LiveDemo Reliability Rules
 
@@ -84,6 +85,10 @@ Apply these rules whenever docs include `<LiveDemo>` (especially during Angular 
 - Vue demos must resolve the editor/engine via the `getEditorRef` / `getEngineRef` composables from `kritzel-vue` (a Vue template ref points at the component instance, not the native element).
 - Angular and React resolve the native `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement` directly (Angular `viewChild`/`ElementRef`, React `useRef`) — no composable needed.
 - See `patterns/vue-demo-pages.md` ("Editor / Engine Ref Access") for the required Vue usage.
+
+7. For custom-element documentation, apply lifecycle and framework constraints.
+- Load `patterns/custom-elements.md` whenever docs or demos cover `KritzelCustomElement`, `rendererKey`, or `rendererData`.
+- In Vue-facing custom-element docs, explicitly call out style/encapsulation caveats and prefer Vue custom-element based renderer strategies over ad-hoc SFC mounting.
 
 ## Workflow
 
