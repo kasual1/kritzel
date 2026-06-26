@@ -15,6 +15,10 @@ Primary touchpoints:
 
 A Kritzel custom-element object is a persisted canvas object whose visual content is mounted into an engine-managed container.
 
+Supported hosting modes:
+- Pure HTML hosting: object mounts its `element` directly (no renderer required).
+- Registry-driven hosting: object uses `rendererKey` to resolve a registered renderer that can mount framework-specific components/content (Angular, React, Vue, or other runtimes).
+
 Flow:
 1. Object stores `rendererKey` + optional `rendererData`
 2. Engine resolves renderer via `KritzelCustomElementRendererRegistry`

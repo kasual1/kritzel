@@ -132,6 +132,16 @@ Rules:
 - `repoFiles` paths must match the real file location and current folder layout.
 - If files are moved (for example from `examples/` to `basic-usage/`), update docs immediately.
 
+## Custom-Element Demos (Renderer Lifecycle)
+
+When a React demo embeds custom UI through `KritzelCustomElement` renderers:
+
+1. Register/unregister renderer symmetrically in `useEffect`.
+2. Keep mounted runtime state in a stable map keyed by object id.
+3. Return latest serializable state from `onUnmount` so `rendererData` persists.
+4. Tear down listeners/roots on unmount to avoid leaks between demo reloads.
+5. If docs compare framework behavior, note that Vue may require custom-element based encapsulation for reliable styles while React commonly mounts directly with retained styling.
+
 ## Local Preview Reliability
 
 For docs preview during local development:
