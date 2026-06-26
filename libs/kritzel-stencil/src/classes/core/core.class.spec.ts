@@ -725,6 +725,36 @@ describe('KritzelCore', () => {
       expect(customElementObject.isInteractive).toBe(true);
       expect(regularObject.isInteractive).toBe(false);
     });
+
+    it('should remove orphaned local selection groups before adding a new one', () => {
+      const orphanChild = {
+        id: 'orphan-child',
+        __class__: 'KritzelShape',
+        isSelected: true,
+      } as unknown as KritzelBaseObject<any>;
+
+      const orphanGroup = {
+        id: 'orphan-sg',
+        __class__: 'KritzelSelectionGroup',
+        userId: undefined,
+        objects: [orphanChild],
+        deselectAllChildren: jest.fn(() => {
+          orphanChild.isSelected = false;
+        }),
+      } as unknown as KritzelSelectionGroup;
+
+      mockObjectsMap.allObjects.mockReturnValue([orphanGroup]);
+
+      const newGroup = { id: 'new-sg', objects: [] } as unknown as KritzelSelectionGroup;
+
+      core.addSelectionGroup(newGroup);
+
+      expect(orphanGroup.deselectAllChildren).toHaveBeenCalled();
+      expect(orphanChild.isSelected).toBe(false);
+      expect(mockObjectsMap.remove).toHaveBeenCalled();
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(newGroup);
+      expect(mockStore.setSelectionGroup).toHaveBeenCalledWith(newGroup);
+    });
   });
 
   describe('removeSelectionGroup', () => {
@@ -769,6 +799,53 @@ describe('KritzelCore', () => {
 
       expect(customElementObject.isInteractive).toBe(false);
       expect(regularObject.isInteractive).toBe(true);
+    });
+
+    it('should remove orphaned local selection groups that are not in store.selectionGroup', () => {
+      const selectedChild = {
+        id: 'obj-1',
+        __class__: 'KritzelShape',
+        isSelected: true,
+      } as unknown as KritzelBaseObject<any>;
+
+      const referencedGroup = {
+        id: 'sg-1',
+        __class__: 'KritzelSelectionGroup',
+        userId: undefined,
+        objects: [selectedChild],
+        deselectAllChildren: jest.fn(() => {
+          selectedChild.isSelected = false;
+        }),
+      } as unknown as KritzelSelectionGroup;
+
+      const orphanChild = {
+        id: 'obj-2',
+        __class__: 'KritzelShape',
+        isSelected: true,
+      } as unknown as KritzelBaseObject<any>;
+
+      const orphanGroup = {
+        id: 'sg-2',
+        __class__: 'KritzelSelectionGroup',
+        userId: undefined,
+        objects: [orphanChild],
+        deselectAllChildren: jest.fn(() => {
+          orphanChild.isSelected = false;
+        }),
+      } as unknown as KritzelSelectionGroup;
+
+      mockStore.selectionGroup = referencedGroup;
+      mockObjectsMap.allObjects.mockReturnValue([referencedGroup, orphanGroup]);
+
+      core.removeSelectionGroup();
+
+      expect(referencedGroup.deselectAllChildren).toHaveBeenCalled();
+      expect(orphanGroup.deselectAllChildren).toHaveBeenCalled();
+      expect(selectedChild.isSelected).toBe(false);
+      expect(orphanChild.isSelected).toBe(false);
+      expect(mockObjectsMap.remove).toHaveBeenCalled();
+      expect(mockStore.setSelectionGroup).toHaveBeenCalledWith(null);
+      expect(mockEngine.triggerSelectionChange).toHaveBeenCalled();
     });
   });
 
