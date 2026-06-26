@@ -127,7 +127,6 @@ export class EditorPageComponent implements OnDestroy {
       height: 380,
     });
 
-    customElement.isResizable = false;
     customElement.isRotatable = false;
 
     await this.editor.addObject(customElement);

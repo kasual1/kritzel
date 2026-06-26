@@ -43,6 +43,7 @@ import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelViewportState } from '../../../interfaces/viewport-state.interface';
 import { ObjectHelper } from '../../../helpers/object.helper';
+import { KritzelWheelHelper } from '../../../helpers/wheel.helper';
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInViewportChangeEvent } from '../../../interfaces/object-change-event.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
@@ -371,9 +372,11 @@ export class KritzelEngine {
 
     const hoveredObject = this.core.getObjectFromPointerEvent(ev as unknown as PointerEvent);
 
-    // Keep normal wheel events inside custom elements, but allow Ctrl+wheel
-    // so viewport scaling (including pinch-style wheel gestures) still works.
-    if (hoveredObject && ObjectHelper.isClass<KritzelCustomElement>(hoveredObject, 'KritzelCustomElement') && !ev.ctrlKey) {
+    if (
+      hoveredObject &&
+      ObjectHelper.isClass<KritzelCustomElement>(hoveredObject, 'KritzelCustomElement') &&
+      KritzelWheelHelper.shouldKeepWheelInCustomElement(ev, hoveredObject)
+    ) {
       return;
     }
 
