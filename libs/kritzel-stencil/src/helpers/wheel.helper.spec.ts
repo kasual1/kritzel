@@ -26,7 +26,7 @@ describe('KritzelWheelHelper', () => {
     expect(result).toBe(false);
   });
 
-  it('returns true when no scroll container is found', () => {
+  it('returns false when no scroll container is found', () => {
     const root = document.createElement('div');
     const customElement = { isSelected: true, elementRef: root } as any;
 
@@ -38,7 +38,22 @@ describe('KritzelWheelHelper', () => {
       customElement,
     );
 
-    expect(result).toBe(true);
+    expect(result).toBe(false);
+  });
+
+  it('returns false when the custom element has no scrollable content', () => {
+    const root = document.createElement('div');
+    const customElement = { isSelected: true, elementRef: root } as any;
+
+    const result = KritzelWheelHelper.shouldKeepWheelInCustomElement(
+      createWheelEvent({
+        deltaY: 10,
+        composedPath: () => [document.createElement('div'), root],
+      }),
+      customElement,
+    );
+
+    expect(result).toBe(false);
   });
 
   it('keeps wheel inside while vertical scroll can continue downward', () => {

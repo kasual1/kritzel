@@ -10,10 +10,10 @@ export class KritzelWheelHelper {
     const path = typeof ev.composedPath === 'function' ? (ev.composedPath() as EventTarget[]) : [];
     const scrollContainer = this.getScrollableContainerFromEventPath(path, customElement);
 
-    // No scroll container found inside the custom element: preserve legacy
-    // behavior and keep non-modified wheel input inside the element.
+    // No scroll container found inside the custom element: let the wheel
+    // event pass through so the viewport can continue handling it.
     if (!scrollContainer) {
-      return true;
+      return false;
     }
 
     return this.canElementConsumeWheel(scrollContainer, ev.deltaX, ev.deltaY);
