@@ -37,6 +37,7 @@ import { WorkspacesCrudComponent } from './concepts/workspaces/workspaces-crud.c
 import { ObjectsOrderingComponent } from './concepts/objects/objects-ordering.component';
 import { BasicUsageComponent } from './basic-usage/basic-usage.component';
 import { EditorPageCustomElementComponent } from './concepts/custom-elements/editor-page-custom-element.component';
+import { EditorPageCustomElementHtmlComponent } from './concepts/custom-elements/editor-page-custom-element-html.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -85,6 +86,10 @@ export const routes: Routes = [
       { path: 'workspaces-switch', component: WorkspacesSwitchComponent },
       { path: 'workspaces-crud', component: WorkspacesCrudComponent },
       { path: 'custom-elements', component: EditorPageCustomElementComponent },
+      {
+        path: 'custom-elements-html',
+        component: EditorPageCustomElementHtmlComponent,
+      },
       {
         path: 'context-menus-canvas-quick-actions',
         component: CustomContextMenuCanvasQuickActionsComponent,
