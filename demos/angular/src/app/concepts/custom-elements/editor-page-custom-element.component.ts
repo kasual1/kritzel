@@ -16,13 +16,9 @@ import {
   KritzelCustomElementRendererRegistry,
   KritzelEditor,
 } from 'kritzel-angular';
-import { angularThemeLight } from '../const/angular-theme-light';
-import { angularThemeDark } from '../const/angular-theme-dark';
-import {
-  TodoListComponent,
-  TodoListState,
-  createTodoListInitialState,
-} from '../examples/todo-list/todo-list.component';
+import { angularThemeLight } from '../../const/angular-theme-light';
+import { angularThemeDark } from '../../const/angular-theme-dark';
+import { createTodoListInitialState, TodoListComponent, TodoListState } from './todo-list.component';
 
 const TODO_RENDERER_KEY = 'angular-todo-list';
 
