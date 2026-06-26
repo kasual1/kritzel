@@ -1,6 +1,7 @@
 export * from './components';
 export * from './composables';
 export * from './plugin';
+export * from './vue-custom-element-renderer';
 
 export {
     KritzelBaseObject,
