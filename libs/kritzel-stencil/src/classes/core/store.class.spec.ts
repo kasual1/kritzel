@@ -6,6 +6,7 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
+import { KritzelCustomElement } from '../objects/custom-element.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 
 type TestState = Omit<KritzelEngineState, 'objects'> & { objects: NonNullable<KritzelEngineState['objects']> };
@@ -609,6 +610,38 @@ describe('KritzelStore', () => {
       mockState.objects.insert(shape);
 
       expect(store.activeShape).toBeNull();
+    });
+  });
+
+  describe('activeInteractiveCustomElement', () => {
+    it('should return null when no selected custom element has focused input-like content', () => {
+      const customElement = new KritzelCustomElement();
+      customElement.isSelected = true;
+      customElement.isInteractive = true;
+      jest.spyOn(customElement, 'hasFocusedInputElement').mockReturnValue(false);
+      mockState.objects.insert(customElement);
+
+      expect(store.activeInteractiveCustomElement).toBeNull();
+    });
+
+    it('should return the selected custom element with focused input-like content', () => {
+      const customElement = new KritzelCustomElement();
+      customElement.isSelected = true;
+      customElement.isInteractive = true;
+      jest.spyOn(customElement, 'hasFocusedInputElement').mockReturnValue(true);
+      mockState.objects.insert(customElement);
+
+      expect(store.activeInteractiveCustomElement).toBe(customElement);
+    });
+
+    it('should ignore custom elements that are not selected even when input-like content is focused', () => {
+      const customElement = new KritzelCustomElement();
+      customElement.isSelected = false;
+      customElement.isInteractive = true;
+      jest.spyOn(customElement, 'hasFocusedInputElement').mockReturnValue(true);
+      mockState.objects.insert(customElement);
+
+      expect(store.activeInteractiveCustomElement).toBeNull();
     });
   });
 
