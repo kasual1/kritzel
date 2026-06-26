@@ -218,12 +218,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.state.isSelecting = true;
 
-    this._core.store.objects.remove(
-      o => o instanceof KritzelSelectionBox || (!isAdditive && o instanceof KritzelSelectionGroup && (o.userId == null || o.userId === this._core.user?.id)),
-    );
-    this._core.store.setSelectionBox(null);
+    this._core.removeSelectionBox();
     if (!isAdditive) {
-      this._core.store.setSelectionGroup(null);
+      this._core.removeSelectionGroup();
     }
     this._core.store.objects.insert(selectionBox);
     this._core.store.setSelectionBox(selectionBox);
@@ -261,12 +258,9 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
 
     this._core.store.state.isSelecting = true;
 
-    this._core.store.objects.remove(
-      o => o instanceof KritzelSelectionBox || (!isAdditive && o instanceof KritzelSelectionGroup && (o.userId == null || o.userId === this._core.user?.id)),
-    );
-    this._core.store.setSelectionBox(null);
+    this._core.removeSelectionBox();
     if (!isAdditive) {
-      this._core.store.setSelectionGroup(null);
+      this._core.removeSelectionGroup();
     }
     this._core.store.objects.insert(selectionBox);
     this._core.store.setSelectionBox(selectionBox);

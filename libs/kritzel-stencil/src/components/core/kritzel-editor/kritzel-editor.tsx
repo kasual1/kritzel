@@ -793,7 +793,7 @@ export class KritzelEditor {
       theme: this.theme
     });
 
-    await this.addInitialCustomElementAtCenter(true);
+    await this.addInitialCustomElementAtCenter(false);
 
   }
 

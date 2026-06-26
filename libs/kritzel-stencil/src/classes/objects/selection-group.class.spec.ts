@@ -181,6 +181,17 @@ describe('KritzelSelectionGroup', () => {
       expect(objects).toHaveLength(1);
       expect(objects).toContain(obj1);
     });
+
+    it('should not mutate child selection state when accessing objects', () => {
+      const obj = createMockObject({ id: 'obj-1', isSelected: false });
+      selectionGroup.objectIds = ['obj-1'];
+      selectionGroup.isSelected = true;
+
+      const objects = selectionGroup.objects;
+
+      expect(objects).toHaveLength(1);
+      expect(obj.isSelected).toBe(false);
+    });
   });
 
   describe('length getter', () => {
@@ -671,6 +682,33 @@ describe('KritzelSelectionGroup', () => {
       expect(selectionGroup.unchangedObjectSnapshots).toBeInstanceOf(Map);
       expect(selectionGroup.unchangedObjectSnapshots.has('obj-1')).toBe(true);
       expect(selectionGroup.unchangedObjectSnapshots.get('obj-1')?.translateX).toBe(10);
+    });
+
+    it('should restore isSelected for selection group and apply it to children', () => {
+      const child = createMockObject({ id: 'obj-1', isSelected: false });
+
+      selectionGroup.deserialize({
+        id: 'sg-1',
+        objectIds: ['obj-1'],
+        isSelected: true,
+      });
+
+      expect(selectionGroup.isSelected).toBe(true);
+      expect(selectionGroup.objectIds).toEqual(['obj-1']);
+      expect(child.isSelected).toBe(true);
+    });
+
+    it('should keep children unselected when deserialized selection group is not selected', () => {
+      const child = createMockObject({ id: 'obj-1', isSelected: true });
+
+      selectionGroup.deserialize({
+        id: 'sg-1',
+        objectIds: ['obj-1'],
+        isSelected: false,
+      });
+
+      expect(selectionGroup.isSelected).toBe(false);
+      expect(child.isSelected).toBe(false);
     });
   });
 
