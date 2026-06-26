@@ -391,6 +391,26 @@ describe('KritzelCustomElement', () => {
       expect(copy.isMounted).toBe(false);
     });
 
+    it('should reset transient interaction state on copied object', () => {
+      const innerElement = createMockElement();
+      const obj = KritzelCustomElement.create(mockCore, { element: innerElement }) as KritzelCustomElement;
+      obj.isSelected = true;
+      obj.isHovered = true;
+      obj.isInteractive = true;
+      obj.resizing = true;
+      obj.markedForRemoval = true;
+      obj.isVisible = false;
+
+      const copy = obj.copy();
+
+      expect(copy.isSelected).toBe(false);
+      expect(copy.isHovered).toBe(false);
+      expect(copy.isInteractive).toBe(false);
+      expect(copy.resizing).toBe(false);
+      expect(copy.markedForRemoval).toBe(false);
+      expect(copy.isVisible).toBe(true);
+    });
+
     it('should clone the HTML element', () => {
       const innerElement = createMockElement();
       innerElement.textContent = 'hello';
@@ -502,14 +522,14 @@ describe('KritzelCustomElement', () => {
       expect(obj.isInteractive).toBe(false);
     });
 
-    it('should preserve isInteractive through serialization', () => {
+    it('should not persist isInteractive through serialization', () => {
       const obj = new KritzelCustomElement();
       obj.isInteractive = true;
 
       const serialized = obj.serialize();
 
       expect(serialized).not.toHaveProperty('allowEmbeddedInteraction');
-      expect(serialized.isInteractive).toBe(true);
+      expect(serialized).not.toHaveProperty('isInteractive');
     });
 
     it('should ignore legacy allowEmbeddedInteraction on deserialize', () => {

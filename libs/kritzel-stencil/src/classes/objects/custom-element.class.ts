@@ -331,6 +331,12 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     Object.assign(copiedObject, this);
     copiedObject.id = this.generateId();
     copiedObject.isMounted = false;
+    copiedObject.isSelected = false;
+    copiedObject.isHovered = false;
+    copiedObject.isInteractive = false;
+    copiedObject.resizing = false;
+    copiedObject.markedForRemoval = false;
+    copiedObject.isVisible = true;
     copiedObject.element = this.element.cloneNode(true) as HTMLElement;
     return copiedObject;
   }
@@ -341,7 +347,21 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @returns A serializable object with htmlString and dimension snapshots
    */
   override serialize() {
-    const { _core, _elementRef, element, totalWidth, totalHeight, ...props } = this as any;
+    const {
+      _core,
+      _elementRef,
+      element,
+      totalWidth,
+      totalHeight,
+      isSelected,
+      isHovered,
+      isMounted,
+      isInteractive,
+      resizing,
+      markedForRemoval,
+      isVisible,
+      ...props
+    } = this as any;
     const cloned = structuredClone(props);
     // Include rendererKey and rendererData for lifecycle-driven rendering
     cloned.rendererKey = this.rendererKey;

@@ -127,6 +127,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     return this._cachedObjects;
   }
 
+  private syncChildSelectionState(children: KritzelBaseObject<any>[]): void {
+    const shouldBeSelected = this.isSelected === true;
+    for (const child of children) {
+      child.isSelected = shouldBeSelected;
+    }
+  }
+
   /**
    * Gets the number of objects in the selection group.
    * @returns The count of selected objects
@@ -370,6 +377,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     // First, deserialize all base properties using parent's deserialize
     super.deserialize(object);
 
+    // Selection groups intentionally persist their selected state.
+    this.isSelected = object.isSelected === true;
+
     // Restore objectIds through setter
     if (object.objectIds) {
       this.objectIds = object.objectIds;
@@ -379,6 +389,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     if (object.unchangedObjectSnapshots) {
       this.unchangedObjectSnapshots = new Map(Object.entries(object.unchangedObjectSnapshots));
     }
+
+    this.syncChildSelectionState(this.objects);
 
     return this as unknown as T;
   }

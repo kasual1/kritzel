@@ -165,6 +165,8 @@ describe('KritzelSelectionHandler', () => {
         emitObjectsUpdated: jest.fn(),
       },
       addSelectionGroup: jest.fn(),
+      removeSelectionGroup: jest.fn(),
+      removeSelectionBox: jest.fn(),
       rerender: jest.fn(),
       getObjectsFromPointerEvent: jest.fn().mockReturnValue([]),
     } as unknown as jest.Mocked<KritzelCore>;
@@ -341,9 +343,8 @@ describe('KritzelSelectionHandler', () => {
 
         selectionHandler.handlePointerDown(event);
 
-        expect(mockState.objects.remove).toHaveBeenCalled();
-        expect(mockCore.store.setSelectionBox).toHaveBeenCalledWith(null);
-        expect(mockCore.store.setSelectionGroup).toHaveBeenCalledWith(null);
+        expect(mockCore.removeSelectionBox).toHaveBeenCalled();
+        expect(mockCore.removeSelectionGroup).toHaveBeenCalled();
       });
     });
 
