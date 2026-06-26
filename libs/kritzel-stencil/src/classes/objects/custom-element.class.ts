@@ -192,6 +192,35 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     }
   }
 
+  /**
+   * Returns true when a text-input-like element inside this custom element
+   * currently owns focus.
+   */
+  hasFocusedInputElement(): boolean {
+    if (!this.isInteractive) {
+      return false;
+    }
+
+    const activeElement = this.getDeepActiveElement();
+    if (!activeElement || !this.isInputLikeElement(activeElement)) {
+      return false;
+    }
+
+    const isInsideElement = !!this.element && this.isNodeInsideHost(activeElement, this.element);
+    const isInsideMountedContainer = this.elementRef instanceof HTMLElement && this.isNodeInsideHost(activeElement, this.elementRef);
+
+    return isInsideElement || isInsideMountedContainer;
+  }
+
+  private isInputLikeElement(element: HTMLElement): boolean {
+    return (
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement ||
+      element instanceof HTMLSelectElement ||
+      element.isContentEditable
+    );
+  }
+
   private isNodeInsideHost(node: Node | null, host: HTMLElement): boolean {
     if (!node) {
       return false;
