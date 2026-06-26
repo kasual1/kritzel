@@ -575,7 +575,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       const group = KritzelSelectionGroup.create(this._core);
       group.translateX = 0;
       group.translateY = 0;
-      group.addOrRemove(object);
+      group.objectIds = [object.id];
       return group;
     }
   }
