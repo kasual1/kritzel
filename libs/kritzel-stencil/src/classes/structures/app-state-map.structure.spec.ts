@@ -91,7 +91,16 @@ const setTestLocalStorage = (storage: unknown): void => {
 };
 
 type MockCore = jest.Mocked<Pick<KritzelCore, 'rerender' | 'editorId' | 'getStorageKey'>> & {
-  store: { state: { workspaces: unknown[]; debugInfo: { showSyncProviderInfo: boolean; showMigrationInfo: boolean } } };
+  store: {
+    state: {
+      workspaces: unknown[];
+      debugInfo: {
+        showSyncProviderInfo: boolean;
+        showMigrationInfo: boolean;
+        showAssetResolverInfo: boolean;
+      };
+    };
+  };
 };
 
 const createMockCore = (overrides: Partial<MockCore> = {}): MockCore => {
@@ -103,7 +112,7 @@ const createMockCore = (overrides: Partial<MockCore> = {}): MockCore => {
     store: {
       state: {
         workspaces: [],
-        debugInfo: { showSyncProviderInfo: false, showMigrationInfo: false },
+        debugInfo: { showSyncProviderInfo: false, showMigrationInfo: false, showAssetResolverInfo: false },
       },
     },
     editorId: undefined,

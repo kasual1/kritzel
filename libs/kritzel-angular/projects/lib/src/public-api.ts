@@ -10,6 +10,8 @@ export {
     KritzelLine,
     KritzelShape,
     KritzelGroup,
+    KritzelCustomElement,
+    KritzelCustomElementRendererRegistry,
     KritzelBaseTool,
     KritzelBrushTool,
     KritzelTextTool,
@@ -41,6 +43,8 @@ export {
 export type {
     HTMLKritzelEditorElement,
     HTMLKritzelEngineElement,
+    KritzelCustomElementRenderer,
+    KritzelCustomElementRenderContext,
     KritzelToolbarControl,
     KritzelBrushToolConfig,
     KritzelLineToolConfig,

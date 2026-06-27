@@ -17,6 +17,7 @@ import { KritzelLine } from '../objects/line.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelText } from '../objects/text.class';
 import { KritzelImage } from '../objects/image.class';
+import { KritzelCustomElement } from '../objects/custom-element.class';
 import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-config.interface';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
@@ -386,8 +387,16 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           this._core.rerender();
         }
 
-        if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1 && selectedObject.objects[0].isInteractive) {
-          return;
+        if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1) {
+          const firstObj = selectedObject.objects[0];
+          if (KritzelClassHelper.isInstanceOf<KritzelCustomElement>(firstObj, 'KritzelCustomElement')) {
+            // Selected single custom elements hand pointer interaction to their
+            // embedded DOM content. Unselected custom elements remain selectable.
+            if (firstObj.isSelected && this._core.store.selectionGroup?.objects.length === 1) return;
+          } else if (firstObj.isInteractive) {
+            // Preserve existing behavior for text/shape edit mode
+            return;
+          }
         }
       }
 
@@ -402,6 +411,16 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isScaling === true) {
+        const activePointerCount = this._core.store.state.pointers.size;
+
+        // During a real pinch (two active pointers), keep touch handling suspended.
+        // If only one pointer is active, scaling is stale (debounce window after pinch),
+        // so resume normal touch selection behavior immediately.
+        if (activePointerCount === 1) {
+          this._core.store.state.isScaling = false;
+          this._savedSelectionGroupForPinch = null;
+        }
+
         // A second finger has arrived to start a pinch-zoom gesture. If we
         // cleared a selection group on the first finger-down, restore it now
         // so the user's selection is preserved while zooming.
@@ -410,7 +429,12 @@ export class KritzelSelectionTool extends KritzelBaseTool {
           this._savedSelectionGroupForPinch = null;
           this._core.rerender();
         }
-        return;
+
+        if (this._core.store.state.isScaling === true) {
+          return;
+        }
+
+        // Continue with normal touch handling when scaling was stale.
       }
 
       if (this._core.store.state.pointers.size === 1) {
@@ -449,7 +473,11 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this.rotationHandler.handlePointerDown(event);
       this.resizeHandler.handlePointerDown(event);
       this.moveHandler.handlePointerDown(event);
-      this.selectionHandler.handlePointerDown(event);
+      
+      // Only process selection handler if we are not scaling (2 pointers)
+      if (this._core.store.state.pointers.size === 1) {
+        this.selectionHandler.handlePointerDown(event);
+      }
 
       this._core.rerender();
     }
@@ -538,7 +566,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
    * @returns A KritzelSelectionGroup containing the object, or null if no object at that location
    */
   private getSelectedObject(event: PointerEvent): KritzelSelectionGroup | null {
-    const path = event.composedPath().slice(1) as HTMLElement[];
+    const path = event.composedPath() as HTMLElement[];
     const objectElement = path.find(element => element.classList && element.classList.contains('object'));
     const object = objectElement?.id ? this._core.findObjectById(objectElement.id) : null;
 
@@ -551,13 +579,18 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       return null;
     }
 
+    const currentSelectionGroup = this._core.store.selectionGroup;
+    if (currentSelectionGroup?.objects.some(selectedObject => selectedObject.id === object.id)) {
+      return currentSelectionGroup;
+    }
+
     if (object instanceof KritzelSelectionGroup) {
       return object;
     } else {
       const group = KritzelSelectionGroup.create(this._core);
       group.translateX = 0;
       group.translateY = 0;
-      group.addOrRemove(object);
+      group.objectIds = [object.id];
       return group;
     }
   }

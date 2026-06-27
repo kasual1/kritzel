@@ -1,5 +1,6 @@
 import { KritzelCustomElement } from './custom-element.class';
 import { KritzelCore } from '../core/core.class';
+import { KritzelCustomElementRendererRegistry } from '../registries/custom-element-renderer.registry';
 
 describe('KritzelCustomElement', () => {
   let mockCore: jest.Mocked<KritzelCore>;
@@ -50,7 +51,7 @@ describe('KritzelCustomElement', () => {
       const obj = new KritzelCustomElement();
 
       expect(obj.__class__).toBe('KritzelCustomElement');
-      expect(obj.isInteractive).toBe(true);
+      expect(obj.isInteractive).toBe(false);
       expect(obj.element).toBeUndefined();
     });
 
@@ -200,6 +201,111 @@ describe('KritzelCustomElement', () => {
 
       expect(container.contains(innerElement)).toBe(true);
     });
+
+    it('should enable embedded pointer interaction only when isInteractive is true', () => {
+      const container = document.createElement('div');
+
+      obj.isInteractive = false;
+      obj.mount(container);
+
+      expect(innerElement.style.pointerEvents).toBe('none');
+      expect(innerElement.style.cursor).toBe('');
+
+      obj.isInteractive = true;
+      obj.mount(container);
+
+      expect(innerElement.style.pointerEvents).toBe('auto');
+      expect(innerElement.style.cursor).toBe('auto');
+    });
+
+    it('should blur focused descendants when interactivity is disabled', () => {
+      const container = document.createElement('div');
+      const input = document.createElement('input');
+      innerElement.appendChild(input);
+      const blurSpy = jest.spyOn(input, 'blur');
+      jest.spyOn(obj as any, 'getDeepActiveElement').mockReturnValue(input);
+
+      obj.setIsInteractive(true);
+      obj.mount(container);
+
+      obj.setIsInteractive(false);
+
+      expect(blurSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should blur focused descendants inside shadow DOM when interactivity is disabled', () => {
+      const rendererKey = 'test-renderer-shadow-blur';
+      const shadowHost = document.createElement('div');
+      const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
+      const input = document.createElement('input');
+      shadowRoot.appendChild(input);
+
+      KritzelCustomElementRendererRegistry.register(rendererKey, {
+        onMount: ({ container }) => {
+          if (!container) {
+            return;
+          }
+          container.innerHTML = '';
+          container.appendChild(shadowHost);
+        },
+        onUnmount: () => undefined,
+      });
+
+      const rendererObj = KritzelCustomElement.create(mockCore, {
+        element: createMockElement(),
+        rendererKey,
+      }) as KritzelCustomElement;
+
+      const container = document.createElement('div');
+      rendererObj.mount(container);
+
+      const blurSpy = jest.spyOn(input, 'blur');
+      jest.spyOn(rendererObj as any, 'getDeepActiveElement').mockReturnValue(input);
+
+      rendererObj.setIsInteractive(true);
+      rendererObj.setIsInteractive(false);
+
+      expect(blurSpy).toHaveBeenCalledTimes(1);
+
+      KritzelCustomElementRendererRegistry.unregister(rendererKey);
+    });
+
+    it('should keep renderer container selectable while disabling mounted interactive content', () => {
+      const rendererKey = 'test-renderer-selectable-container';
+      const mountedHost = document.createElement('div');
+      mountedHost.innerHTML = '<button type="button">Click</button>';
+
+      KritzelCustomElementRendererRegistry.register(rendererKey, {
+        onMount: ({ container }) => {
+          if (!container) {
+            return;
+          }
+          container.innerHTML = '';
+          container.appendChild(mountedHost);
+        },
+        onUnmount: () => undefined,
+      });
+
+      const rendererObj = KritzelCustomElement.create(mockCore, {
+        element: createMockElement(),
+        rendererKey,
+      }) as KritzelCustomElement;
+
+      const container = document.createElement('div');
+
+      rendererObj.setIsInteractive(false);
+      rendererObj.mount(container);
+
+      expect(container.style.pointerEvents).toBe('auto');
+      expect(mountedHost.style.pointerEvents).toBe('none');
+
+      rendererObj.setIsInteractive(true);
+
+      expect(container.style.pointerEvents).toBe('auto');
+      expect(mountedHost.style.pointerEvents).toBe('auto');
+
+      KritzelCustomElementRendererRegistry.unregister(rendererKey);
+    });
   });
 
   describe('resize', () => {
@@ -285,6 +391,26 @@ describe('KritzelCustomElement', () => {
       expect(copy.isMounted).toBe(false);
     });
 
+    it('should reset transient interaction state on copied object', () => {
+      const innerElement = createMockElement();
+      const obj = KritzelCustomElement.create(mockCore, { element: innerElement }) as KritzelCustomElement;
+      obj.isSelected = true;
+      obj.isHovered = true;
+      obj.isInteractive = true;
+      obj.resizing = true;
+      obj.markedForRemoval = true;
+      obj.isVisible = false;
+
+      const copy = obj.copy();
+
+      expect(copy.isSelected).toBe(false);
+      expect(copy.isHovered).toBe(false);
+      expect(copy.isInteractive).toBe(false);
+      expect(copy.resizing).toBe(false);
+      expect(copy.markedForRemoval).toBe(false);
+      expect(copy.isVisible).toBe(true);
+    });
+
     it('should clone the HTML element', () => {
       const innerElement = createMockElement();
       innerElement.textContent = 'hello';
@@ -294,6 +420,126 @@ describe('KritzelCustomElement', () => {
 
       expect(copy.element).not.toBe(obj.element);
       expect(copy.element.textContent).toBe('hello');
+    });
+  });
+
+  describe('serialization', () => {
+    it('should serialize element as HTML string', () => {
+      const el = document.createElement('div');
+      el.textContent = 'Hello';
+      const obj = KritzelCustomElement.create(mockCore, { element: el, width: 100, height: 50 }) as KritzelCustomElement;
+
+      const serialized = obj.serialize();
+
+      expect(serialized.htmlString).toContain('Hello');
+      expect(typeof serialized.htmlString).toBe('string');
+    });
+
+    it('should serialize with dimension snapshot', () => {
+      const el = document.createElement('div');
+      const obj = KritzelCustomElement.create(mockCore, { element: el, width: 150, height: 75 }) as KritzelCustomElement;
+
+      const serialized = obj.serialize();
+
+      expect(serialized.serializedWidth).toBe(150);
+      expect(serialized.serializedHeight).toBe(75);
+    });
+
+    it('should exclude _core and _elementRef from serialized output', () => {
+      const el = document.createElement('div');
+      const obj = KritzelCustomElement.create(mockCore, { element: el }) as KritzelCustomElement;
+
+      const serialized = obj.serialize();
+
+      expect(serialized).not.toHaveProperty('_core');
+      expect(serialized).not.toHaveProperty('_elementRef');
+    });
+
+    it('should handle empty element', () => {
+      const obj = new KritzelCustomElement();
+      obj._core = mockCore;
+
+      const serialized = obj.serialize();
+
+      expect(serialized.htmlString).toBe('');
+    });
+
+    it('should deserialize and reconstruct element from htmlString', () => {
+      const el = document.createElement('button');
+      el.id = 'test-button';
+      el.textContent = 'Click Me';
+      const obj = KritzelCustomElement.create(mockCore, { element: el }) as KritzelCustomElement;
+
+      const serialized = obj.serialize();
+      const restored = new KritzelCustomElement();
+      restored._core = mockCore;
+      restored.deserialize(serialized);
+
+      expect(restored.element).toBeDefined();
+      expect(restored.element.textContent).toBe('Click Me');
+    });
+
+    it('should create placeholder on deserialize if htmlString is missing', () => {
+      const obj = new KritzelCustomElement();
+      obj._core = mockCore;
+
+      obj.deserialize({});
+
+      expect(obj.element).toBeDefined();
+      expect(obj.element.textContent).toContain('[Custom Element]');
+    });
+
+    it('should create placeholder on deserialize if htmlString is invalid', () => {
+      const obj = new KritzelCustomElement();
+      obj._core = mockCore;
+
+      // Test with empty htmlString fallback - temp.firstElementChild will be null
+      obj.deserialize({ htmlString: '' });
+
+      expect(obj.element).toBeDefined();
+      expect(obj.element.textContent).toContain('[Custom Element]');
+    });
+
+    it('should survive serialization roundtrip with complex HTML', () => {
+      const el = document.createElement('div');
+      el.innerHTML = '<p><strong>Bold</strong> and <em>italic</em></p>';
+      const obj = KritzelCustomElement.create(mockCore, { element: el }) as KritzelCustomElement;
+
+      const serialized = obj.serialize();
+      const restored = new KritzelCustomElement();
+      restored._core = mockCore;
+      restored.deserialize(serialized);
+
+      expect(restored.element.textContent).toContain('Bold');
+      expect(restored.element.textContent).toContain('italic');
+    });
+  });
+
+  describe('interaction semantics', () => {
+    it('should have isInteractive property defaulting to false', () => {
+      const obj = new KritzelCustomElement();
+
+      expect(obj.isInteractive).toBe(false);
+    });
+
+    it('should not persist isInteractive through serialization', () => {
+      const obj = new KritzelCustomElement();
+      obj.isInteractive = true;
+
+      const serialized = obj.serialize();
+
+      expect(serialized).not.toHaveProperty('allowEmbeddedInteraction');
+      expect(serialized).not.toHaveProperty('isInteractive');
+    });
+
+    it('should ignore legacy allowEmbeddedInteraction on deserialize', () => {
+      const obj = new KritzelCustomElement();
+      obj._core = mockCore;
+
+      obj.deserialize({ allowEmbeddedInteraction: true, isInteractive: false });
+
+      expect(obj.isInteractive).toBe(false);
+      expect((obj as any).allowEmbeddedInteraction).toBeUndefined();
     });
   });
 });

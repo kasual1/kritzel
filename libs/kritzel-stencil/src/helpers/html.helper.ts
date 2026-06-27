@@ -4,6 +4,71 @@ export class KritzelHTMLHelper {
    return parseFloat(value) || 0;
  }
 
+  static isScrollableElement(element: Element): element is HTMLElement {
+    if (!(element instanceof HTMLElement)) {
+      return false;
+    }
+
+    const style = window.getComputedStyle(element);
+    const overflowX = style.overflowX;
+    const overflowY = style.overflowY;
+    const overflow = style.overflow;
+    const canScrollX = (overflowX === 'auto' || overflowX === 'scroll' || overflowX === 'overlay') && element.scrollWidth > element.clientWidth;
+    const canScrollY = (overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay') && element.scrollHeight > element.clientHeight;
+    const canScroll = overflow === 'auto' || overflow === 'scroll' || overflow === 'overlay';
+
+    return canScrollX || canScrollY || (canScroll && (element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight));
+  }
+
+  static findScrollableElement(root: Element | null | undefined): HTMLElement | null {
+    if (!root) {
+      return null;
+    }
+
+    const visited = new Set<Element>();
+
+    const walk = (element: Element): HTMLElement | null => {
+      if (visited.has(element)) {
+        return null;
+      }
+
+      visited.add(element);
+
+      if (this.isScrollableElement(element)) {
+        return element;
+      }
+
+      if (element.shadowRoot) {
+        for (const child of Array.from(element.shadowRoot.children)) {
+          const scrollable = walk(child);
+          if (scrollable) {
+            return scrollable;
+          }
+        }
+      }
+
+      if (element.tagName === 'SLOT') {
+        for (const assignedElement of (element as HTMLSlotElement).assignedElements({ flatten: true })) {
+          const scrollable = walk(assignedElement);
+          if (scrollable) {
+            return scrollable;
+          }
+        }
+      }
+
+      for (const child of Array.from(element.children)) {
+        const scrollable = walk(child);
+        if (scrollable) {
+          return scrollable;
+        }
+      }
+
+      return null;
+    };
+
+    return walk(root);
+  }
+
  static getScrollableParent(element: HTMLElement): HTMLElement | Window {
     if (!element) {
       return window;

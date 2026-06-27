@@ -13,6 +13,8 @@ import { CustomContextMenuCanvasQuickActionsPage } from "./pages/concepts/contex
 import { CustomContextMenuClipboardActionsPage } from "./pages/concepts/context-menus/CustomContextMenuClipboardActionsPage";
 import { CustomContextMenuSmartConditionalPage } from "./pages/concepts/context-menus/CustomContextMenuSmartConditionalPage";
 import { CustomContextMenuObjectInspectorPage } from "./pages/concepts/context-menus/CustomContextMenuObjectInspectorPage";
+import { CustomElementsPage } from "./pages/concepts/custom-elements/CustomElementsPage";
+import { CustomElementsHtmlPage } from "./pages/concepts/custom-elements/CustomElementsHtmlPage";
 import { ObjectsAddRemovePage } from "./pages/concepts/objects/ObjectsAddRemovePage";
 import { ObjectsQueryPage } from "./pages/concepts/objects/ObjectsQueryPage";
 import { ObjectsSelectionPage } from "./pages/concepts/objects/ObjectsSelectionPage";
@@ -55,6 +57,8 @@ function App() {
         <Route path="/concepts/context-menus-clipboard-actions" element={<CustomContextMenuClipboardActionsPage />} />
         <Route path="/concepts/context-menus-smart-conditional" element={<CustomContextMenuSmartConditionalPage />} />
         <Route path="/concepts/context-menus-object-inspector" element={<CustomContextMenuObjectInspectorPage />} />
+        <Route path="/concepts/custom-elements" element={<CustomElementsPage />} />
+        <Route path="/concepts/custom-elements-html" element={<CustomElementsHtmlPage />} />
         <Route path="/concepts/objects-add-remove" element={<ObjectsAddRemovePage />} />
         <Route path="/concepts/objects-query" element={<ObjectsQueryPage />} />
         <Route path="/concepts/objects-selection" element={<ObjectsSelectionPage />} />

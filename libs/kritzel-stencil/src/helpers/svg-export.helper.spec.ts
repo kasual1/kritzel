@@ -5,6 +5,7 @@ import { KritzelShape } from '../classes/objects/shape.class';
 import { KritzelText } from '../classes/objects/text.class';
 import { KritzelImage } from '../classes/objects/image.class';
 import { KritzelGroup } from '../classes/objects/group.class';
+import { KritzelCustomElement } from '../classes/objects/custom-element.class';
 import { ShapeType } from '../enums/shape-type.enum';
 
 // Mock ProseMirror modules for KritzelText
@@ -635,6 +636,80 @@ describe('KritzelSvgExportHelper', () => {
 
       expect(result).not.toContain('<script>');
       expect(result).toContain('&lt;script&gt;');
+    });
+  });
+
+  describe('KritzelCustomElement SVG export', () => {
+    it('should export custom element as foreignObject in SVG mode', () => {
+      const el = document.createElement('div');
+      el.textContent = 'Custom Content';
+      const obj = new KritzelCustomElement({
+        element: el,
+        translateX: 0,
+        translateY: 0,
+      });
+      obj.width = 200;
+      obj.height = 100;
+
+      const svg = KritzelSvgExportHelper.objectToSvgElement(obj, 'light', undefined, false);
+
+      expect(svg).toContain('foreignObject');
+      expect(svg).toContain('Custom Content');
+      expect(svg).toContain('width=\"200\"');
+      expect(svg).toContain('height=\"100\"');
+    });
+
+    it('should export custom element as placeholder rect in raster-safe mode', () => {
+      const el = document.createElement('div');
+      el.textContent = 'Custom';
+      const obj = new KritzelCustomElement({
+        element: el,
+        translateX: 0,
+        translateY: 0,
+      });
+      obj.width = 150;
+      obj.height = 80;
+
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const svg = KritzelSvgExportHelper.objectToSvgElement(obj, 'light', undefined, true);
+
+      expect(svg).toContain('<rect');
+      expect(svg).toContain('[Custom Element]');
+      expect(svg).not.toContain('foreignObject');
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Custom elements do not serialize well'));
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should handle empty custom element', () => {
+      const obj = new KritzelCustomElement({
+        element: document.createElement('div'),
+        translateX: 0,
+        translateY: 0,
+      });
+      obj.width = 100;
+      obj.height = 100;
+
+      const svg = KritzelSvgExportHelper.objectToSvgElement(obj, 'light', undefined, false);
+
+      expect(svg).toContain('foreignObject');
+    });
+
+    it('should apply opacity to custom element SVG', () => {
+      const el = document.createElement('div');
+      el.textContent = 'Transparent';
+      const obj = new KritzelCustomElement({
+        element: el,
+        translateX: 0,
+        translateY: 0,
+      });
+      obj.width = 100;
+      obj.height = 100;
+      obj.opacity = 0.5;
+
+      const svg = KritzelSvgExportHelper.objectToSvgElement(obj, 'light', undefined, false);
+
+      expect(svg).toContain('opacity=\"0.5\"');
     });
   });
 });

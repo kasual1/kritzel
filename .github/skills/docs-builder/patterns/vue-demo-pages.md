@@ -174,6 +174,26 @@ Rules:
 - `repoFiles` paths must match the real file location and current folder layout.
 - If files are moved (for example from `examples/` to `basic-usage/`), update docs immediately.
 
+## Custom-Element Demos (Vue-Specific)
+
+When a Vue demo embeds interactive framework UI inside `KritzelCustomElement`:
+
+1. Document renderer lifecycle clearly.
+- Register renderer before creating objects.
+- Unregister renderer and teardown mounted runtime artifacts on component unmount.
+- Persist UI state via `rendererData` by returning latest state from renderer unmount.
+
+2. Prefer encapsulated Vue rendering when styles matter.
+- Mounting a plain Vue SFC into engine-managed containers can produce styling inconsistencies.
+- Prefer Vue custom-element based rendering (for example `defineCustomElement` via wrapper helper APIs such as `registerVueCustomElementRenderer`) for reliable style encapsulation.
+
+3. Keep refs and editor access Vue-correct.
+- Continue to resolve editor/engine elements with `getEditorRef` / `getEngineRef`.
+- Do not assume Vue template refs on wrapper components are native editor elements.
+
+4. Keep route and docs parity for custom-element variants.
+- If both component-based and pure-HTML custom-element demos exist, give each its own route and reference the correct file in `repoFiles`.
+
 ## Local Preview Reliability
 
 For docs preview during local development:

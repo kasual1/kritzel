@@ -47,7 +47,8 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   isMounted: boolean = false;
   isEditable: boolean = false;
   isInteractive: boolean = false;
-  isDebugInfoVisible: boolean = false;
+  isResizable: boolean = true;
+  isRotatable: boolean = true;
 
   /**
    * Gets the total width of the object including padding.
@@ -414,25 +415,39 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     Object.assign(copiedObject, this);
     copiedObject.id = this.generateId();
     copiedObject.isMounted = false;
+    copiedObject.isSelected = false;
+    copiedObject.isHovered = false;
+    copiedObject.isInteractive = false;
+    copiedObject.resizing = false;
+    copiedObject.markedForRemoval = false;
+    copiedObject.isVisible = true;
     return copiedObject;
   }
 
   /**
    * Serializes the object to a plain JavaScript object for persistence.
    * Excludes internal references (_core, _elementRef) and computed properties.
-   * DOM elements are cloned if present.
+   * Subclasses should override to handle domain-specific serialization (e.g., HTML elements).
    * @returns A serializable object containing all persistent properties
    */
   serialize() {
-    const { _core, _elementRef, element, totalWidth, totalHeight, ...remainingProps } = this as any;
-
-    const clonedProps = structuredClone(remainingProps);
-
-    if (element && typeof element === 'object' && 'nodeType' in element && element.nodeType === 1) {
-      clonedProps.element = element.cloneNode(true) as HTMLElement;
-    }
-
-    return clonedProps;
+    const {
+      _core,
+      _elementRef,
+      element,
+      totalWidth,
+      totalHeight,
+      isSelected,
+      isHovered,
+      isMounted,
+      isInteractive,
+      resizing,
+      markedForRemoval,
+      isVisible,
+      ...remainingProps
+    } = this as any;
+    // No longer clone raw elements—let subclasses handle serializable payloads
+    return structuredClone(remainingProps);
   }
 
   /**
@@ -444,6 +459,14 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
    */
   deserialize<T>(object: any): T {
     Object.assign(this, object);
+    // Selection/interactivity state is transient UI state and must not survive revival.
+    this.isSelected = false;
+    this.isHovered = false;
+    this.isMounted = false;
+    this.isInteractive = false;
+    this.resizing = false;
+    this.markedForRemoval = false;
+    this.isVisible = true;
     return this as unknown as T;
   }
 

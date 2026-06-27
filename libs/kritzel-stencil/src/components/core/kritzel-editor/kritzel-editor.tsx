@@ -66,6 +66,7 @@ export class KritzelEditor {
     showObjectInfo: false,
     showSyncProviderInfo: true,
     showMigrationInfo: true,
+    showAssetResolverInfo: false,
   };
   @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
@@ -790,6 +791,7 @@ export class KritzelEditor {
       loginConfig: this.loginConfig,
       theme: this.theme
     });
+
   }
 
   async onEngineReady(event: CustomEvent<KritzelEngineState>) {
