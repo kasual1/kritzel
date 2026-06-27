@@ -20,6 +20,7 @@ export * from './classes/objects/image.class';
 export * from './classes/objects/line.class';
 export * from './classes/objects/group.class';
 export * from './classes/objects/shape.class';
+export * from './classes/objects/custom-element.class';
 
 export * from './classes/tools/base-tool.class';
 export * from './classes/tools/brush-tool.class';
@@ -50,9 +51,12 @@ export * from './classes/managers/theme.manager';
 export * from './classes/managers/localization.manager';
 export * from './classes/managers/license.manager';
 
+export * from './classes/registries/custom-element-renderer.registry';
+
 export * from './interfaces/toolbar-control.interface';
 export * from './interfaces/menu-item.interface';
 export * from './interfaces/object-change-event.interface';
+export * from './interfaces/custom-element-renderer.interface';
 export * from './interfaces/sync-provider.interface';
 export * from './interfaces/sync-config.interface';
 export * from './interfaces/asset.interface';

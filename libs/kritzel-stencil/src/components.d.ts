@@ -383,7 +383,7 @@ export namespace Components {
         "customSvgIcons": Record<string, string>;
         "cut": () => Promise<void>;
         /**
-          * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,   }
+          * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,     showAssetResolverInfo: false,   }
          */
         "debugInfo": KritzelDebugInfo;
         "delete": () => Promise<void>;
@@ -2838,7 +2838,7 @@ declare namespace LocalJSX {
          */
         "customSvgIcons"?: Record<string, string>;
         /**
-          * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,   }
+          * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,     showAssetResolverInfo: false,   }
          */
         "debugInfo"?: KritzelDebugInfo;
         /**

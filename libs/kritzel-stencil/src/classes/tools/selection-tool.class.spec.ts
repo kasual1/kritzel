@@ -14,6 +14,7 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelGroup } from '../objects/group.class';
+import { KritzelCustomElement } from '../objects/custom-element.class';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
@@ -816,6 +817,22 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.removeSelectionGroup).toHaveBeenCalled();
     });
 
+    it('should resolve object id when the .object element is the pointer target', () => {
+      const objectElement = document.createElement('div');
+      objectElement.id = 'custom-1';
+      objectElement.classList.add('object');
+
+      mockCore.findObjectById.mockReturnValue(undefined);
+
+      const event = createMouseEvent({
+        composedPath: jest.fn().mockReturnValue([objectElement]),
+      });
+
+      tool.handlePointerDown(event);
+
+      expect(mockCore.findObjectById).toHaveBeenCalledWith('custom-1');
+    });
+
     it('should not remove selection group when handles are selected', () => {
       setSelectionGroupObjects([createMockPath()]);
       mockState.host.shadowRoot.elementsFromPoint.mockReturnValue([
@@ -836,6 +853,30 @@ describe('KritzelSelectionTool', () => {
       // Handlers are still called, but no selection/deselection logic runs
       expect(tool.moveHandler.handlePointerDown).toHaveBeenCalled();
       expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
+    });
+
+    it('should keep current selection group when clicking an already selected custom element', () => {
+      const customEl = Object.create(KritzelCustomElement.prototype);
+      customEl.__class__ = 'KritzelCustomElement';
+      customEl.id = 'custom-1';
+      customEl.hitTest = jest.fn().mockReturnValue(true);
+
+      const objectElement = document.createElement('div');
+      objectElement.id = 'custom-1';
+      objectElement.classList.add('object');
+
+      setSelectionGroupObjects([customEl]);
+      mockCore.findObjectById.mockReturnValue(customEl);
+
+      const event = createMouseEvent({
+        composedPath: jest.fn().mockReturnValue([document.createElement('span'), objectElement]),
+      });
+
+      tool.handlePointerDown(event);
+
+      expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
+      expect(tool.moveHandler.handlePointerDown).toHaveBeenCalledWith(event);
+      expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalledWith(event);
     });
   });
 
@@ -890,6 +931,20 @@ describe('KritzelSelectionTool', () => {
       tool.handlePointerDown(createTouchEvent());
 
       expect(mockCore.removeSelectionGroup).toHaveBeenCalled();
+    });
+
+    it('should treat stale scaling with one pointer as normal touch interaction', () => {
+      mockState.isScaling = true;
+      mockState.pointers.set(1, {});
+      setSelectionGroupObjects([createMockPath()]);
+      mockCore.findObjectById.mockReturnValue(undefined);
+
+      tool.handlePointerDown(createTouchEvent());
+
+      expect(mockState.isScaling).toBe(false);
+      expect(mockCore.removeSelectionGroup).toHaveBeenCalled();
+      expect(tool.moveHandler.handlePointerDown).toHaveBeenCalled();
+      expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalled();
     });
 
     it('should not run selection logic when multiple pointers active', () => {
@@ -1032,6 +1087,101 @@ describe('KritzelSelectionTool', () => {
       tool.handlePointerUp(createTouchEvent());
 
       expect(mockCore.rerender).toHaveBeenCalled();
+    });
+  });
+
+  describe('KritzelCustomElement interaction semantics', () => {
+    it('should allow normal selection/move handlers for unselected custom elements', () => {
+      const customEl = Object.create(KritzelCustomElement.prototype);
+      customEl.__class__ = 'KritzelCustomElement';
+      customEl.id = 'custom-1';
+      customEl.isSelected = false;
+      customEl.isInteractive = false;
+      (tool as any).getSelectedObject = jest.fn().mockReturnValue({
+        id: 'sg-1',
+        isSelected: false,
+        objects: [customEl],
+      });
+      mockCore.store.selectionGroup = null;
+
+      const event = createMouseEvent();
+
+      tool.handlePointerDown(event);
+
+      expect(tool.moveHandler.handlePointerDown).toHaveBeenCalled();
+      expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalled();
+    });
+
+    it('should skip normal handlers for selected single custom elements', () => {
+      const customEl = Object.create(KritzelCustomElement.prototype);
+      customEl.__class__ = 'KritzelCustomElement';
+      customEl.id = 'custom-1';
+      customEl.isSelected = true;
+      customEl.isInteractive = false;
+      (tool as any).getSelectedObject = jest.fn().mockReturnValue({
+        id: 'sg-1',
+        isSelected: false,
+        objects: [customEl],
+      });
+      mockCore.store.selectionGroup = {
+        id: 'sg-1',
+        objects: [customEl],
+      } as any;
+
+      const event = createMouseEvent();
+      
+      tool.handlePointerDown(event);
+
+      expect(tool.lineHandleHandler.handlePointerDown).not.toHaveBeenCalled();
+      expect(tool.moveHandler.handlePointerDown).not.toHaveBeenCalled();
+      expect(tool.selectionHandler.handlePointerDown).not.toHaveBeenCalled();
+      expect(tool.resizeHandler.handlePointerDown).not.toHaveBeenCalled();
+      expect(tool.rotationHandler.handlePointerDown).not.toHaveBeenCalled();
+    });
+
+    it('should keep handlers active for custom elements during multi-selection', () => {
+      const customEl = Object.create(KritzelCustomElement.prototype);
+      customEl.__class__ = 'KritzelCustomElement';
+      customEl.id = 'custom-1';
+      customEl.isSelected = true;
+      customEl.isInteractive = false;
+
+      const other = createMockPath({ id: 'path-2', isSelected: true });
+      (tool as any).getSelectedObject = jest.fn().mockReturnValue({
+        id: 'sg-1',
+        isSelected: false,
+        objects: [customEl],
+      });
+      mockCore.store.selectionGroup = {
+        id: 'sg-1',
+        objects: [customEl, other],
+      } as any;
+
+      const event = createMouseEvent();
+
+      tool.handlePointerDown(event);
+
+      expect(tool.moveHandler.handlePointerDown).toHaveBeenCalled();
+      expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalled();
+    });
+
+    it('should not affect KritzelText isInteractive behavior', () => {
+      const text = Object.create(KritzelText.prototype);
+      text.__class__ = 'KritzelText';
+      text.isInteractive = true;
+
+      const selectionGroup = Object.create(Object.prototype);
+      selectionGroup.isSelected = false;
+      selectionGroup.objects = [text];
+
+      mockState.selectionGroup = selectionGroup;
+
+      const event = createMouseEvent();
+
+      tool.handlePointerDown(event);
+
+      // Text objects with isInteractive=true should still early-return (edit mode)
+      // This behavior should remain unchanged
     });
   });
 });

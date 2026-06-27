@@ -131,6 +131,25 @@ export interface KritzelImageConfig {
   scale?: number;
 }
 
+export interface KritzelCustomElementConfig {
+  html?: string;
+  translateX?: number;
+  translateY?: number;
+  rotation?: number;
+  width?: number;
+  height?: number;
+  backgroundColor?: ThemeAwareColor;
+  borderColor?: ThemeAwareColor;
+  borderWidth?: number;
+  padding?: number;
+  scale?: number;
+  isInteractive?: boolean;
+  testId?: string;
+  contentText?: string;
+  scrollableY?: boolean;
+  scrollContentHeight?: number;
+}
+
 export type KritzelNotificationType = 'info' | 'warning' | 'error';
 
 export interface KritzelNotificationConfig {
@@ -336,6 +355,64 @@ export class EditorPage {
       }
       const image = await k.KritzelImage.fromUrl(cfg.src, cfg);
       return el.addObject(image);
+    }, config);
+  }
+
+  /** Create a KritzelCustomElement and add it to the editor. */
+  async addCustomElement(config: KritzelCustomElementConfig) {
+    return this.page.evaluate((cfg) => {
+      const k = (window as any).__kritzel__;
+      if (!k) throw new Error('Kritzel classes not loaded. Call loadKritzelClasses() first.');
+      const el = document.querySelector('kritzel-editor') as any;
+      if (!el?.engineRef?.core?.store?.state?.activeWorkspace) {
+        throw new Error('kritzel-editor is not ready yet (no active workspace). Call waitForReady() first.');
+      }
+
+      const contentRoot = document.createElement('div');
+      contentRoot.style.width = '100%';
+      contentRoot.style.height = '100%';
+      contentRoot.style.boxSizing = 'border-box';
+      contentRoot.style.background = '#f5f5f5';
+      contentRoot.style.color = '#111111';
+      contentRoot.style.fontFamily = 'Arial, sans-serif';
+      contentRoot.style.padding = '8px';
+
+      if (cfg.testId) {
+        contentRoot.setAttribute('data-testid', cfg.testId);
+      }
+
+      if (cfg.html) {
+        contentRoot.innerHTML = cfg.html;
+      } else if (cfg.scrollableY) {
+        contentRoot.style.overflowY = 'auto';
+        const tallContent = document.createElement('div');
+        tallContent.style.height = `${cfg.scrollContentHeight ?? 800}px`;
+        tallContent.style.background = 'linear-gradient(#dbeafe, #bfdbfe)';
+        tallContent.textContent = cfg.contentText ?? 'Scrollable custom content';
+        contentRoot.appendChild(tallContent);
+      } else {
+        contentRoot.textContent = cfg.contentText ?? 'Custom element content';
+      }
+
+      const customElement = new k.KritzelCustomElement({
+        element: contentRoot,
+        translateX: cfg.translateX,
+        translateY: cfg.translateY,
+        rotation: cfg.rotation,
+        width: cfg.width,
+        height: cfg.height,
+        backgroundColor: cfg.backgroundColor,
+        borderColor: cfg.borderColor,
+        borderWidth: cfg.borderWidth,
+        padding: cfg.padding,
+        scale: cfg.scale,
+      });
+
+      if (typeof cfg.isInteractive === 'boolean') {
+        customElement.isInteractive = cfg.isInteractive;
+      }
+
+      return el.addObject(customElement);
     }, config);
   }
 

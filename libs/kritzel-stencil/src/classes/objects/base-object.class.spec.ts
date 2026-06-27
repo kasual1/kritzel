@@ -71,7 +71,8 @@ describe('KritzelBaseObject', () => {
       expect(obj.isMounted).toBe(false);
       expect(obj.isEditable).toBe(false);
       expect(obj.isInteractive).toBe(false);
-      expect(obj.isDebugInfoVisible).toBe(false);
+      expect(obj.isResizable).toBe(true);
+      expect(obj.isRotatable).toBe(true);
       expect(obj.markedForRemoval).toBe(false);
       expect(obj.resizing).toBe(false);
     });
@@ -531,6 +532,24 @@ describe('KritzelBaseObject', () => {
       expect(copied.isMounted).toBe(false);
     });
 
+    it('should reset transient interaction state on copied object', () => {
+      baseObject.isSelected = true;
+      baseObject.isHovered = true;
+      baseObject.isInteractive = true;
+      baseObject.resizing = true;
+      baseObject.markedForRemoval = true;
+      baseObject.isVisible = false;
+
+      const copied = baseObject.copy();
+
+      expect(copied.isSelected).toBe(false);
+      expect(copied.isHovered).toBe(false);
+      expect(copied.isInteractive).toBe(false);
+      expect(copied.resizing).toBe(false);
+      expect(copied.markedForRemoval).toBe(false);
+      expect(copied.isVisible).toBe(true);
+    });
+
     it('should preserve other properties', () => {
       baseObject.width = 300;
       baseObject.height = 150;
@@ -579,6 +598,26 @@ describe('KritzelBaseObject', () => {
       expect(serialized.totalWidth).toBeUndefined();
       expect(serialized.totalHeight).toBeUndefined();
     });
+
+    it('should not serialize transient selection and interaction state', () => {
+      baseObject.isSelected = true;
+      baseObject.isHovered = true;
+      baseObject.isMounted = true;
+      baseObject.isInteractive = true;
+      baseObject.resizing = true;
+      baseObject.markedForRemoval = true;
+      baseObject.isVisible = false;
+
+      const serialized = baseObject.serialize();
+
+      expect(serialized.isSelected).toBeUndefined();
+      expect(serialized.isHovered).toBeUndefined();
+      expect(serialized.isMounted).toBeUndefined();
+      expect(serialized.isInteractive).toBeUndefined();
+      expect(serialized.resizing).toBeUndefined();
+      expect(serialized.markedForRemoval).toBeUndefined();
+      expect(serialized.isVisible).toBeUndefined();
+    });
   });
 
   describe('deserialize', () => {
@@ -607,6 +646,26 @@ describe('KritzelBaseObject', () => {
     it('should return the object itself', () => {
       const result = baseObject.deserialize({ width: 100 });
       expect(result).toBe(baseObject);
+    });
+
+    it('should reset transient interaction state after deserialization', () => {
+      baseObject.deserialize({
+        isSelected: true,
+        isHovered: true,
+        isMounted: true,
+        isInteractive: true,
+        resizing: true,
+        markedForRemoval: true,
+        isVisible: false,
+      });
+
+      expect(baseObject.isSelected).toBe(false);
+      expect(baseObject.isHovered).toBe(false);
+      expect(baseObject.isMounted).toBe(false);
+      expect(baseObject.isInteractive).toBe(false);
+      expect(baseObject.resizing).toBe(false);
+      expect(baseObject.markedForRemoval).toBe(false);
+      expect(baseObject.isVisible).toBe(true);
     });
   });
 

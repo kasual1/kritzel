@@ -702,6 +702,59 @@ describe('KritzelCore', () => {
       expect(mockStore.setSelectionGroup).toHaveBeenCalledWith(newGroup);
       expect(mockEngine.triggerSelectionChange).toHaveBeenCalled();
     });
+
+    it('should enable isInteractive for selected custom elements', () => {
+      const customElementObject = {
+        id: 'custom-1',
+        __class__: 'KritzelCustomElement',
+        isInteractive: false,
+      } as unknown as KritzelBaseObject<any>;
+      const regularObject = {
+        id: 'shape-1',
+        __class__: 'KritzelShape',
+        isInteractive: false,
+      } as unknown as KritzelBaseObject<any>;
+
+      const newGroup = {
+        id: 'new-sg',
+        objects: [customElementObject, regularObject],
+      } as unknown as KritzelSelectionGroup;
+
+      core.addSelectionGroup(newGroup);
+
+      expect(customElementObject.isInteractive).toBe(true);
+      expect(regularObject.isInteractive).toBe(false);
+    });
+
+    it('should remove orphaned local selection groups before adding a new one', () => {
+      const orphanChild = {
+        id: 'orphan-child',
+        __class__: 'KritzelShape',
+        isSelected: true,
+      } as unknown as KritzelBaseObject<any>;
+
+      const orphanGroup = {
+        id: 'orphan-sg',
+        __class__: 'KritzelSelectionGroup',
+        userId: undefined,
+        objects: [orphanChild],
+        deselectAllChildren: jest.fn(() => {
+          orphanChild.isSelected = false;
+        }),
+      } as unknown as KritzelSelectionGroup;
+
+      mockObjectsMap.allObjects.mockReturnValue([orphanGroup]);
+
+      const newGroup = { id: 'new-sg', objects: [] } as unknown as KritzelSelectionGroup;
+
+      core.addSelectionGroup(newGroup);
+
+      expect(orphanGroup.deselectAllChildren).toHaveBeenCalled();
+      expect(orphanChild.isSelected).toBe(false);
+      expect(mockObjectsMap.remove).toHaveBeenCalled();
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(newGroup);
+      expect(mockStore.setSelectionGroup).toHaveBeenCalledWith(newGroup);
+    });
   });
 
   describe('removeSelectionGroup', () => {
@@ -722,6 +775,77 @@ describe('KritzelCore', () => {
       core.removeSelectionGroup();
 
       expect(mockObjectsMap.remove).not.toHaveBeenCalled();
+    });
+
+    it('should disable isInteractive for deselected custom elements', () => {
+      const customElementObject = {
+        id: 'custom-1',
+        __class__: 'KritzelCustomElement',
+        isInteractive: true,
+      } as unknown as KritzelBaseObject<any>;
+      const regularObject = {
+        id: 'shape-1',
+        __class__: 'KritzelShape',
+        isInteractive: true,
+      } as unknown as KritzelBaseObject<any>;
+
+      const sg = {
+        id: 'sg-1',
+        objects: [customElementObject, regularObject],
+      } as unknown as KritzelSelectionGroup;
+      mockStore.selectionGroup = sg;
+
+      core.removeSelectionGroup();
+
+      expect(customElementObject.isInteractive).toBe(false);
+      expect(regularObject.isInteractive).toBe(true);
+    });
+
+    it('should remove orphaned local selection groups that are not in store.selectionGroup', () => {
+      const selectedChild = {
+        id: 'obj-1',
+        __class__: 'KritzelShape',
+        isSelected: true,
+      } as unknown as KritzelBaseObject<any>;
+
+      const referencedGroup = {
+        id: 'sg-1',
+        __class__: 'KritzelSelectionGroup',
+        userId: undefined,
+        objects: [selectedChild],
+        deselectAllChildren: jest.fn(() => {
+          selectedChild.isSelected = false;
+        }),
+      } as unknown as KritzelSelectionGroup;
+
+      const orphanChild = {
+        id: 'obj-2',
+        __class__: 'KritzelShape',
+        isSelected: true,
+      } as unknown as KritzelBaseObject<any>;
+
+      const orphanGroup = {
+        id: 'sg-2',
+        __class__: 'KritzelSelectionGroup',
+        userId: undefined,
+        objects: [orphanChild],
+        deselectAllChildren: jest.fn(() => {
+          orphanChild.isSelected = false;
+        }),
+      } as unknown as KritzelSelectionGroup;
+
+      mockStore.selectionGroup = referencedGroup;
+      mockObjectsMap.allObjects.mockReturnValue([referencedGroup, orphanGroup]);
+
+      core.removeSelectionGroup();
+
+      expect(referencedGroup.deselectAllChildren).toHaveBeenCalled();
+      expect(orphanGroup.deselectAllChildren).toHaveBeenCalled();
+      expect(selectedChild.isSelected).toBe(false);
+      expect(orphanChild.isSelected).toBe(false);
+      expect(mockObjectsMap.remove).toHaveBeenCalled();
+      expect(mockStore.setSelectionGroup).toHaveBeenCalledWith(null);
+      expect(mockEngine.triggerSelectionChange).toHaveBeenCalled();
     });
   });
 
@@ -1071,27 +1195,38 @@ describe('KritzelCore', () => {
       expect(core.displaySelectionGroupUI(line)).toBe(false);
     });
 
-    it('should return true when selection group has multiple objects', () => {
-      const obj = { isSelected: true } as any;
-      mockStore.selectionGroup = { objects: [{}, {}] };
-
-      expect(core.displaySelectionGroupUI(obj)).toBe(true);
-    });
-
-    it('should return false when single selected object is a KritzelLine', () => {
-      const obj = { isSelected: true } as any;
-      const line = Object.create(KritzelLine.prototype);
-      mockStore.selectionGroup = { objects: [line] };
+    it('should render group UI only on the local selection group when multiple objects are selected', () => {
+      const obj = { id: 'obj-1', isSelected: true } as any;
+      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      localGroup.id = 'sg-1';
+      localGroup.isSelected = true;
+      Object.defineProperty(localGroup, 'objects', { value: [{}, {}], writable: true });
+      mockStore.selectionGroup = localGroup;
 
       expect(core.displaySelectionGroupUI(obj)).toBe(false);
+      expect(core.displaySelectionGroupUI(localGroup)).toBe(true);
     });
 
-    it('should return true when single selected object is not a KritzelLine', () => {
-      const obj = { isSelected: true } as any;
-      const rect = { id: 'rect-1' };
-      mockStore.selectionGroup = { objects: [rect] };
+    it('should return false when local selection group contains a single KritzelLine', () => {
+      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      localGroup.id = 'sg-1';
+      localGroup.isSelected = true;
+      const line = Object.create(KritzelLine.prototype);
+      Object.defineProperty(localGroup, 'objects', { value: [line], writable: true });
+      mockStore.selectionGroup = localGroup;
 
-      expect(core.displaySelectionGroupUI(obj)).toBe(true);
+      expect(core.displaySelectionGroupUI(localGroup)).toBe(false);
+    });
+
+    it('should return true when local selection group contains a single non-line object', () => {
+      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      localGroup.id = 'sg-1';
+      localGroup.isSelected = true;
+      const rect = { id: 'rect-1' };
+      Object.defineProperty(localGroup, 'objects', { value: [rect], writable: true });
+      mockStore.selectionGroup = localGroup;
+
+      expect(core.displaySelectionGroupUI(localGroup)).toBe(true);
     });
 
     it('should return true for a remote selection group regardless of content', () => {

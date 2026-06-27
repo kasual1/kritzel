@@ -40,6 +40,14 @@ Always treat this as cross-framework behavior, not framework-specific behavior:
 
 If the bug appears in one wrapper demo, validate the core fix in Stencil and avoid wrapper-only workarounds.
 
+## Custom-Element Runtime Note
+
+For custom-element object renderers, wrapper abstractions may legitimately handle framework-specific runtime behavior (for example style encapsulation and mount strategy), but they must not change the core lifecycle contract:
+- Register renderer before object mount paths execute
+- Keep mount/unmount cleanup symmetric
+- Persist latest normalized state on unmount when renderer state is user-editable
+- Preserve wheel pass-through semantics so non-scrollable custom content does not block viewport navigation
+
 ## Review Checklist
 
 - No stale snapshots of reactive props in long-lived runtime instances

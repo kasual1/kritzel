@@ -495,4 +495,49 @@ describe('KritzelReviver', () => {
       });
     });
   });
+
+  describe('KritzelCustomElement revival with HTML payload', () => {
+    it('should revive custom element from serialized object', () => {
+      const mockCustomElementDeserializable = createMockDeserializable('KritzelCustomElement');
+
+      (KritzelCustomElement.create as jest.Mock).mockReturnValue({
+        deserialize: mockCustomElementDeserializable.deserialize,
+      });
+
+      const serialized = {
+        __class__: 'KritzelCustomElement',
+        htmlString: '<div id="test">Custom Content</div>',
+        width: 200,
+        height: 100,
+        translateX: 10,
+        translateY: 20,
+      };
+
+      const revived = reviver.revive<KritzelCustomElement>(serialized);
+
+      expect(KritzelCustomElement.create).toHaveBeenCalledWith(mockCore);
+      expect(revived).toBe(mockCustomElementDeserializable.instance);
+    });
+
+    it('should revive custom element with empty htmlString fallback', () => {
+      const mockCustomElementDeserializable = createMockDeserializable('KritzelCustomElement');
+
+      (KritzelCustomElement.create as jest.Mock).mockReturnValue({
+        deserialize: mockCustomElementDeserializable.deserialize,
+      });
+
+      const serialized = {
+        __class__: 'KritzelCustomElement',
+        htmlString: '',
+        width: 100,
+        height: 100,
+      };
+
+      const revived = reviver.revive<KritzelCustomElement>(serialized);
+
+      expect(KritzelCustomElement.create).toHaveBeenCalledWith(mockCore);
+      expect(revived).toBe(mockCustomElementDeserializable.instance);
+    });
+
+  });
 });
