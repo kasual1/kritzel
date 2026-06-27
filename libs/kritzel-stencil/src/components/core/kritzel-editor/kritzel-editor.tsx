@@ -28,7 +28,7 @@ import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
-import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelCustomElement, KritzelUndoState } from '../../..';
+import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelUndoState } from '../../..';
 import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
 import { ThemeName, KritzelTheme } from '../../../interfaces/theme.interface';
 import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from '../../../interfaces/localization.interface';
@@ -280,7 +280,6 @@ export class KritzelEditor {
   private readonly notificationDisplayDurationMs = 5000;
   private readonly notificationDismissAnimationDurationMs = 180;
   private isNotificationHovered: boolean = false;
-  private hasAddedInitialCustomElement: boolean = false;
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
