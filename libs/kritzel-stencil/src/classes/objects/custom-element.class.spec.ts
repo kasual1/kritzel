@@ -317,6 +317,24 @@ describe('KritzelCustomElement', () => {
       expect(obj.hasFocusedInputElement()).toBe(true);
     });
 
+    it('should detect focused input-like descendants inside the mounted container first child host', () => {
+      const container = document.createElement('div');
+      const mountedHost = document.createElement('section');
+      const input = document.createElement('input');
+
+      mountedHost.appendChild(input);
+      container.appendChild(mountedHost);
+
+      obj.element = document.createElement('div');
+      (obj as any)._elementRef = container;
+      obj.isMounted = true;
+      obj.setIsInteractive(true);
+
+      jest.spyOn(obj as any, 'getDeepActiveElement').mockReturnValue(input);
+
+      expect(obj.hasFocusedInputElement()).toBe(true);
+    });
+
     it('should ignore focused non-input descendants', () => {
       const button = document.createElement('button');
       innerElement.appendChild(button);
