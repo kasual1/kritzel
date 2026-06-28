@@ -5,6 +5,8 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
+import { KritzelCustomElement } from '../objects/custom-element.class';
+import { KritzelClassHelper } from '../../helpers/class.helper';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../objects/base-object.class';
@@ -251,6 +253,17 @@ export class KritzelStore {
   get activeShape(): KritzelShape | null {
     const activeShapes = this.objects.filter(o => o instanceof KritzelShape && (o as KritzelShape).isEditing);
     return activeShapes.length > 0 ? (activeShapes[0] as KritzelShape) : null;
+  }
+
+  /**
+   * Gets the currently selected custom element whose focused descendant is an input-like element.
+   * @returns The interactive custom element with focused input-like content, or null if none matches
+   */
+  get activeInteractiveCustomElement(): KritzelCustomElement | null {
+    const interactiveCustomElement = this.selectedObjects.find(
+      object => KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && object.hasFocusedInputElement(),
+    );
+    return (interactiveCustomElement as KritzelCustomElement) ?? null;
   }
 
   /**
