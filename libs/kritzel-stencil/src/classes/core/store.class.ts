@@ -6,6 +6,7 @@ import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelCustomElement } from '../objects/custom-element.class';
+import { KritzelClassHelper } from '../../helpers/class.helper';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../objects/base-object.class';
@@ -260,7 +261,7 @@ export class KritzelStore {
    */
   get activeInteractiveCustomElement(): KritzelCustomElement | null {
     const interactiveCustomElement = this.selectedObjects.find(
-      object => object instanceof KritzelCustomElement && (object as KritzelCustomElement).hasFocusedInputElement(),
+      object => KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && object.hasFocusedInputElement(),
     );
     return (interactiveCustomElement as KritzelCustomElement) ?? null;
   }

@@ -201,22 +201,114 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
       return false;
     }
 
+    const focusHosts = this.getFocusHosts();
+
+    // Primary path: locate the focused input-like element by walking from each host through
+    // `:focus` (piercing open shadow roots). This works in real browsers even when the engine
+    // and editor are nested web components, because it never relies on the document-level
+    // active element resolving to a descendant of the host.
+    if (focusHosts.some(host => this.hasFocusedInputDescendant(host))) {
+      return true;
+    }
+
+    // Fallback path: resolve the deep active element and confirm it is input-like and inside a
+    // host. Covers contenteditable content inside nested shadow roots (which `querySelector`
+    // cannot reach) and test environments that mock the active element without real focus.
     const activeElement = this.getDeepActiveElement();
-    if (!activeElement || !this.isInputLikeElement(activeElement)) {
+    if (activeElement && this.isInputLikeElement(activeElement) && focusHosts.some(host => this.isNodeInsideHost(activeElement, host))) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private getFocusHosts(): HTMLElement[] {
+    const hosts: HTMLElement[] = [];
+
+    if (this.element) {
+      hosts.push(this.element);
+    }
+
+    if (this.elementRef instanceof HTMLElement) {
+      hosts.push(this.elementRef);
+      const firstChild = this.elementRef.firstElementChild;
+      if (firstChild instanceof HTMLElement) {
+        hosts.push(firstChild);
+      }
+    }
+
+    return hosts;
+  }
+
+  /**
+   * Returns true when the given host (or, via the flat tree, one of its shadow descendants)
+   * currently contains a focused input-like element.
+   */
+  private hasFocusedInputDescendant(host: HTMLElement): boolean {
+    if (this.isInputLikeElement(host) && this.matchesFocus(host)) {
+      return true;
+    }
+
+    // `:focus-within` crosses shadow boundaries for the host, so it is a cheap guard that tells
+    // us whether focus lives anywhere inside this host before doing the deeper traversal.
+    if (typeof host.matches === 'function') {
+      try {
+        if (!host.matches(':focus-within')) {
+          return false;
+        }
+      } catch {
+        // Selector unsupported in this environment; fall through to the traversal below.
+      }
+    }
+
+    return this.findFocusedInputLikeElement(host) !== null;
+  }
+
+  /**
+   * Walks the `:focus` chain from a tree scope, descending into open shadow roots, and returns
+   * the focused element when it is input-like.
+   */
+  private findFocusedInputLikeElement(root: HTMLElement | ShadowRoot): HTMLElement | null {
+    let focused: Element | null = null;
+    try {
+      focused = root.querySelector(':focus');
+    } catch {
+      focused = null;
+    }
+
+    if (!(focused instanceof HTMLElement)) {
+      return null;
+    }
+
+    if (this.isInputLikeElement(focused)) {
+      return focused;
+    }
+
+    if (focused.shadowRoot) {
+      return this.findFocusedInputLikeElement(focused.shadowRoot);
+    }
+
+    return null;
+  }
+
+  private matchesFocus(element: HTMLElement): boolean {
+    if (typeof element.matches !== 'function') {
       return false;
     }
 
-    const isInsideElement = !!this.element && this.isNodeInsideHost(activeElement, this.element);
-    const isInsideMountedContainer = this.elementRef instanceof HTMLElement && this.isNodeInsideHost(activeElement, this.elementRef);
-
-    return isInsideElement || isInsideMountedContainer;
+    try {
+      return element.matches(':focus');
+    } catch {
+      return false;
+    }
   }
 
   private isInputLikeElement(element: HTMLElement): boolean {
+    const tag = element.tagName;
     return (
-      element instanceof HTMLInputElement ||
-      element instanceof HTMLTextAreaElement ||
-      element instanceof HTMLSelectElement ||
+      tag === 'INPUT' ||
+      tag === 'TEXTAREA' ||
+      tag === 'SELECT' ||
       element.isContentEditable
     );
   }
