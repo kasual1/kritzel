@@ -306,6 +306,54 @@ describe('KritzelCustomElement', () => {
 
       KritzelCustomElementRendererRegistry.unregister(rendererKey);
     });
+
+    it('should detect focused input-like descendants when interactive', () => {
+      const input = document.createElement('input');
+      innerElement.appendChild(input);
+      jest.spyOn(obj as any, 'getDeepActiveElement').mockReturnValue(input);
+
+      obj.setIsInteractive(true);
+
+      expect(obj.hasFocusedInputElement()).toBe(true);
+    });
+
+    it('should detect focused input-like descendants inside the mounted container first child host', () => {
+      const container = document.createElement('div');
+      const mountedHost = document.createElement('section');
+      const input = document.createElement('input');
+
+      mountedHost.appendChild(input);
+      container.appendChild(mountedHost);
+
+      obj.element = document.createElement('div');
+      (obj as any)._elementRef = container;
+      obj.isMounted = true;
+      obj.setIsInteractive(true);
+
+      jest.spyOn(obj as any, 'getDeepActiveElement').mockReturnValue(input);
+
+      expect(obj.hasFocusedInputElement()).toBe(true);
+    });
+
+    it('should ignore focused non-input descendants', () => {
+      const button = document.createElement('button');
+      innerElement.appendChild(button);
+      jest.spyOn(obj as any, 'getDeepActiveElement').mockReturnValue(button);
+
+      obj.setIsInteractive(true);
+
+      expect(obj.hasFocusedInputElement()).toBe(false);
+    });
+
+    it('should ignore focused input-like descendants when interactivity is disabled', () => {
+      const input = document.createElement('input');
+      innerElement.appendChild(input);
+      jest.spyOn(obj as any, 'getDeepActiveElement').mockReturnValue(input);
+
+      obj.setIsInteractive(false);
+
+      expect(obj.hasFocusedInputElement()).toBe(false);
+    });
   });
 
   describe('resize', () => {

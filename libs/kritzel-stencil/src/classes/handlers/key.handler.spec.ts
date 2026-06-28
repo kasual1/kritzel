@@ -8,6 +8,7 @@ describe('KritzelKeyHandler', () => {
   let mockTool: jest.Mocked<KritzelBaseTool>;
   let mockSelectionGroup: { objects: unknown[] } | null;
   let mockActiveText: unknown | null;
+  let mockActiveInteractiveCustomElement: unknown | null;
   let mockState: {
     isCtrlKeyPressed: boolean;
   };
@@ -20,6 +21,7 @@ describe('KritzelKeyHandler', () => {
 
     mockSelectionGroup = null;
     mockActiveText = null;
+    mockActiveInteractiveCustomElement = null;
     mockState = {
       isCtrlKeyPressed: false,
     };
@@ -34,6 +36,9 @@ describe('KritzelKeyHandler', () => {
         },
         get activeText() {
           return mockActiveText;
+        },
+        get activeInteractiveCustomElement() {
+          return mockActiveInteractiveCustomElement;
         },
         get activeShape() {
           return null;
@@ -378,6 +383,42 @@ describe('KritzelKeyHandler', () => {
         expect(preventDefaultSpy).toHaveBeenCalled();
         expect(handleEscape).toHaveBeenCalled();
         expect(mockCore.clearSelection).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('Interactive custom element selection', () => {
+      it('should not execute Select All shortcut when focused input-like content exists in a selected custom element', () => {
+        mockActiveInteractiveCustomElement = { __class__: 'KritzelCustomElement', isInteractive: true };
+        const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
+        const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+        keyHandler.handleKeyDown(event);
+
+        expect(preventDefaultSpy).not.toHaveBeenCalled();
+        expect(mockCore.selectAllObjectsInViewport).not.toHaveBeenCalled();
+      });
+
+      it('should still execute Escape shortcut when focused input-like content exists in a selected custom element', () => {
+        mockSelectionGroup = { objects: [] };
+        mockActiveInteractiveCustomElement = { __class__: 'KritzelCustomElement', isInteractive: true };
+        const event = new KeyboardEvent('keydown', { key: 'Escape' });
+        const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+        keyHandler.handleKeyDown(event);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(mockCore.clearSelection).toHaveBeenCalled();
+      });
+
+      it('should execute shortcuts when no selected custom element has focused input-like content', () => {
+        mockActiveInteractiveCustomElement = null;
+        const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
+        const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+        keyHandler.handleKeyDown(event);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(mockCore.selectAllObjectsInViewport).toHaveBeenCalled();
       });
     });
 
