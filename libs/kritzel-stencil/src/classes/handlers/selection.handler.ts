@@ -486,6 +486,12 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     const parentGroup = KritzelGroup.findParentGroup(this._core, object.id);
     const objectToSelect = parentGroup || object;
 
+    // When the click resolves to a parent group, clear the child's own flag so
+    // it does not linger as selected and re-select the group on the next interaction.
+    if (parentGroup) {
+      object.isSelected = false;
+    }
+
     const existingGroup = this._core.store.selectionGroup;
     if (shiftKey && existingGroup) {
       existingGroup.addOrRemove(objectToSelect);
@@ -533,8 +539,15 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
     const resolvedObjects = new Map<string, KritzelBaseObject<any>>();
     for (const obj of selectedObjects) {
       const parentGroup = childToParentMap.get(obj.id);
-      const toSelect = parentGroup || obj;
-      resolvedObjects.set(toSelect.id, toSelect);
+      if (parentGroup) {
+        // The child was selected (e.g. via marquee preview) but selection is
+        // represented by its parent group. Clear the child's flag so it does
+        // not linger as selected and re-select the group on the next interaction.
+        obj.isSelected = false;
+        resolvedObjects.set(parentGroup.id, parentGroup);
+      } else {
+        resolvedObjects.set(obj.id, obj);
+      }
     }
 
     const unrolledObjects = Array.from(resolvedObjects.values());

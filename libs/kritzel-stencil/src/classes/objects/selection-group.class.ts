@@ -252,11 +252,28 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   /**
    * Sets the isSelected flag to false for all objects in the selection group.
    * Used when clearing or changing the selection state.
+   *
+   * For KritzelGroup members, also clears the isSelected flag on all nested
+   * descendants. A descendant can retain a lingering isSelected from the marquee
+   * preview before it was resolved to its parent group during selection, which
+   * would otherwise leave that object selected after the group is deselected and
+   * cause the whole group to be re-selected on the next interaction.
    */
   deselectAllChildren() {
     const children = this.objects;
+    const descendantIds = new Set<string>();
     for (const obj of children) {
       obj.isSelected = false;
+      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
+        KritzelGroup.collectDescendantIds(obj as KritzelGroup, descendantIds);
+      }
+    }
+
+    if (descendantIds.size > 0) {
+      const descendants = this._core.store.objects.filter(o => descendantIds.has(o.id));
+      for (const descendant of descendants) {
+        descendant.isSelected = false;
+      }
     }
   }
 
