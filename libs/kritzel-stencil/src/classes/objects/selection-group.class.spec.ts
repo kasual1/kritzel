@@ -1,6 +1,7 @@
 import { KritzelSelectionGroup } from './selection-group.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
+import { KritzelGroup } from './group.class';
 
 describe('KritzelSelectionGroup', () => {
   let selectionGroup: KritzelSelectionGroup;
@@ -266,6 +267,23 @@ describe('KritzelSelectionGroup', () => {
 
       expect(obj1.isSelected).toBe(false);
       expect(obj2.isSelected).toBe(false);
+    });
+
+    it('should set isSelected to false for descendants of selected KritzelGroup children', () => {
+      const groupedChild = createMockObject({ id: 'grouped-child-1', isSelected: true });
+      const parentGroup = new KritzelGroup();
+      parentGroup._core = mockCore;
+      parentGroup.id = 'group-1';
+      parentGroup.childIds = [groupedChild.id];
+      parentGroup.isSelected = true;
+      mockObjectsStore.push(parentGroup as unknown as KritzelBaseObject<HTMLElement>);
+
+      selectionGroup.objectIds = [parentGroup.id];
+
+      selectionGroup.deselectAllChildren();
+
+      expect(parentGroup.isSelected).toBe(false);
+      expect(groupedChild.isSelected).toBe(false);
     });
   });
 
