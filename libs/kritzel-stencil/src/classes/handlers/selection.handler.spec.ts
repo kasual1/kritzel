@@ -859,6 +859,82 @@ describe('KritzelSelectionHandler', () => {
   });
 
   describe('selection group creation', () => {
+    it('should clear child isSelected when drag selection resolves child to parent group', () => {
+      const childObject = {
+        id: 'child-1',
+        __class__: 'KritzelPath',
+        isSelected: true,
+        rotation: 0,
+      } as unknown as KritzelBaseObject;
+
+      const parentGroup = {
+        id: 'group-1',
+        __class__: 'KritzelGroup',
+        childIds: ['child-1'],
+        isSelected: false,
+      } as unknown as KritzelBaseObject;
+
+      mockState.objects.filter.mockReturnValue([parentGroup]);
+      mockSelectedObjects = [childObject];
+
+      mockSelectionGroup = null;
+      const downEvent = createPointerEvent('pointerdown', {
+        pointerType: 'mouse',
+        clientX: 100,
+        clientY: 100,
+      });
+      selectionHandler.handlePointerDown(downEvent);
+
+      const moveEvent = createPointerEvent('pointermove', {
+        pointerType: 'mouse',
+        clientX: 200,
+        clientY: 200,
+      });
+      selectionHandler.handlePointerMove(moveEvent);
+
+      const upEvent = createPointerEvent('pointerup', {
+        pointerType: 'mouse',
+      });
+      selectionHandler.handlePointerUp(upEvent);
+
+      expect(childObject.isSelected).toBe(false);
+    });
+
+    it('should clear child isSelected when click selection resolves child to parent group', () => {
+      const childObject = {
+        id: 'child-1',
+        __class__: 'KritzelPath',
+        isSelected: true,
+        rotation: 0,
+        hitTest: jest.fn().mockReturnValue(true),
+      } as unknown as KritzelBaseObject;
+
+      const parentGroup = {
+        id: 'group-1',
+        __class__: 'KritzelGroup',
+        childIds: ['child-1'],
+        isSelected: false,
+      } as unknown as KritzelBaseObject;
+
+      mockState.objects.filter.mockReturnValue([parentGroup]);
+      (mockCore.getObjectsFromPointerEvent as jest.Mock).mockReturnValue([childObject]);
+
+      mockSelectionGroup = null;
+      const downEvent = createPointerEvent('pointerdown', {
+        pointerType: 'mouse',
+        clientX: 100,
+        clientY: 100,
+      });
+      selectionHandler.handlePointerDown(downEvent);
+
+      const upEvent = createPointerEvent('pointerup', {
+        pointerType: 'mouse',
+      });
+      selectionHandler.handlePointerUp(upEvent);
+
+      expect(childObject.isSelected).toBe(false);
+    });
+
     it('should set rotation from single selected object', () => {
       const mockObject = {
         id: 'obj-1',
