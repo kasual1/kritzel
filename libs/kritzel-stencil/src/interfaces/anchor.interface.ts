@@ -29,9 +29,9 @@ export interface SnapTarget {
 }
 
 /**
- * Represents the current snap candidate state during dragging.
+ * Shared visualization payload for snap preview and active snap states.
  */
-export interface SnapCandidate {
+export interface SnapIndicatorCandidate {
   /** The ID of the object being snapped to */
   objectId: string;
   /** Which endpoint of the line is being snapped */
@@ -65,6 +65,16 @@ export interface SnapCandidate {
   /** The t parameter on the curve where the edge intersection occurs (0-1) */
   t?: number;
 }
+
+/**
+ * Represents the current snap candidate state during dragging.
+ */
+export interface SnapCandidate extends SnapIndicatorCandidate {}
+
+/**
+ * Represents a preview candidate shown before active snapping is engaged.
+ */
+export interface SnapPreviewCandidate extends SnapIndicatorCandidate {}
 
 /**
  * Visualization data for rendering anchor indicator lines.

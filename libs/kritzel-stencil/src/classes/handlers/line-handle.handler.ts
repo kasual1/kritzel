@@ -59,6 +59,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     this.hasMoved = false;
     this.currentSnapTarget = null;
     this._core.anchorManager.clearSnapCandidate();
+    this._core.anchorManager.clearSnapPreviewCandidate();
   }
 
   /**
@@ -182,17 +183,23 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       // Get other endpoint's anchor to prevent anchoring both to same object
       const otherAnchorId = line.endAnchor?.objectId;
 
+      const previewTarget = this._core.anchorManager.findSnapPreviewTarget(worldX, worldY, line.id, otherAnchorId);
+
       // Check for snap target
-      const snapTarget = this._core.anchorManager.findSnapTarget(worldX, worldY, line.id, otherAnchorId);
+      const snapTarget = this._core.anchorManager.findSnapTarget(worldX, worldY, line.id, otherAnchorId, event.pointerType);
       this.currentSnapTarget = snapTarget;
+
+      const otherEndpointWorld = this.lineLocalToWorld(line, this.initialEndX, this.initialEndY);
+
+      let controlWorld = undefined;
+      if (line.controlX !== undefined && line.controlY !== undefined) {
+        controlWorld = this.lineLocalToWorld(line, line.controlX, line.controlY);
+      }
 
       if (snapTarget) {
         // Snap to target center - convert world coords to local
         const localCoords = this.worldToLineLocal(line, snapTarget.centerX, snapTarget.centerY);
         this.updateLineEndpoint(line, localCoords.x, localCoords.y, this.initialEndX, this.initialEndY);
-
-        // Get the other endpoint's world position for edge intersection calculation
-        const otherEndpointWorld = this.lineLocalToWorld(line, this.initialEndX, this.initialEndY);
 
         // Calculate edge intersection point using AnchorManager to support curves
         const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === snapTarget.objectId);
@@ -209,31 +216,16 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
           }
         }
 
-        // Calculate control point in world coordinates if it exists
-        let controlWorld = undefined;
-        if (line.controlX !== undefined && line.controlY !== undefined) {
-          controlWorld = this.lineLocalToWorld(line, line.controlX, line.controlY);
-        }
-
         // Update snap indicator
-        this._core.anchorManager.setSnapCandidate({
-          objectId: snapTarget.objectId,
-          endpoint: 'start',
-          centerX: snapTarget.centerX,
-          centerY: snapTarget.centerY,
-          lineEndpointX: otherEndpointWorld.x,
-          lineEndpointY: otherEndpointWorld.y,
-          controlX: controlWorld?.x,
-          controlY: controlWorld?.y,
-          t,
-          edgeX,
-          edgeY,
-          lineStroke: KritzelColorHelper.resolveThemeColor(line.stroke),
-          lineStrokeWidth: line.strokeWidth / line.scale,
-          arrowOffset: line.hasStartArrow ? line.getArrowSize('start') / line.scale : undefined,
-          arrowStyle: line.hasStartArrow ? line.arrows?.start?.style : undefined,
-          arrowFill: line.hasStartArrow ? line.getArrowFill('start') : undefined,
-        });
+        this._core.anchorManager.setSnapPreviewCandidate(null);
+        this._core.anchorManager.setSnapCandidate(this.createIndicatorCandidate(line, 'start', snapTarget, otherEndpointWorld, controlWorld, { edgeX, edgeY, t }));
+      } else if (previewTarget) {
+        const newStartX = this.initialStartX + localDx;
+        const newStartY = this.initialStartY + localDy;
+        this.updateLineEndpoint(line, newStartX, newStartY, this.initialEndX, this.initialEndY);
+
+        this._core.anchorManager.clearSnapCandidate();
+        this._core.anchorManager.setSnapPreviewCandidate(this.createIndicatorCandidate(line, 'start', previewTarget, otherEndpointWorld, controlWorld));
       } else {
         // No snap - use regular position
         const newStartX = this.initialStartX + localDx;
@@ -242,6 +234,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
 
         // Clear snap indicator
         this._core.anchorManager.clearSnapCandidate();
+        this._core.anchorManager.clearSnapPreviewCandidate();
       }
     } else if (handleType === 'end') {
       // Calculate world position directly from mouse position for snap detection
@@ -251,17 +244,23 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       // Get other endpoint's anchor to prevent anchoring both to same object
       const otherAnchorId = line.startAnchor?.objectId;
 
+      const previewTarget = this._core.anchorManager.findSnapPreviewTarget(worldX, worldY, line.id, otherAnchorId);
+
       // Check for snap target
-      const snapTarget = this._core.anchorManager.findSnapTarget(worldX, worldY, line.id, otherAnchorId);
+      const snapTarget = this._core.anchorManager.findSnapTarget(worldX, worldY, line.id, otherAnchorId, event.pointerType);
       this.currentSnapTarget = snapTarget;
+
+      const otherEndpointWorld = this.lineLocalToWorld(line, this.initialStartX, this.initialStartY);
+
+      let controlWorld = undefined;
+      if (line.controlX !== undefined && line.controlY !== undefined) {
+        controlWorld = this.lineLocalToWorld(line, line.controlX, line.controlY);
+      }
 
       if (snapTarget) {
         // Snap to target center - convert world coords to local
         const localCoords = this.worldToLineLocal(line, snapTarget.centerX, snapTarget.centerY);
         this.updateLineEndpoint(line, this.initialStartX, this.initialStartY, localCoords.x, localCoords.y);
-
-        // Get the other endpoint's world position for edge intersection calculation
-        const otherEndpointWorld = this.lineLocalToWorld(line, this.initialStartX, this.initialStartY);
 
         // Calculate edge intersection point using AnchorManager to support curves
         const targetObject = this._core.store.allNonSelectionObjects.find(obj => obj.id === snapTarget.objectId);
@@ -278,31 +277,16 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
           }
         }
 
-        // Calculate control point in world coordinates if it exists
-        let controlWorld = undefined;
-        if (line.controlX !== undefined && line.controlY !== undefined) {
-          controlWorld = this.lineLocalToWorld(line, line.controlX, line.controlY);
-        }
-
         // Update snap indicator
-        this._core.anchorManager.setSnapCandidate({
-          objectId: snapTarget.objectId,
-          endpoint: 'end',
-          centerX: snapTarget.centerX,
-          centerY: snapTarget.centerY,
-          lineEndpointX: otherEndpointWorld.x,
-          lineEndpointY: otherEndpointWorld.y,
-          controlX: controlWorld?.x,
-          controlY: controlWorld?.y,
-          t,
-          edgeX,
-          edgeY,
-          lineStroke: KritzelColorHelper.resolveThemeColor(line.stroke),
-          lineStrokeWidth: line.strokeWidth / line.scale,
-          arrowOffset: line.hasEndArrow ? line.getArrowSize('end') / line.scale : undefined,
-          arrowStyle: line.hasEndArrow ? line.arrows?.end?.style : undefined,
-          arrowFill: line.hasEndArrow ? line.getArrowFill('end') : undefined,
-        });
+        this._core.anchorManager.setSnapPreviewCandidate(null);
+        this._core.anchorManager.setSnapCandidate(this.createIndicatorCandidate(line, 'end', snapTarget, otherEndpointWorld, controlWorld, { edgeX, edgeY, t }));
+      } else if (previewTarget) {
+        const newEndX = this.initialEndX + localDx;
+        const newEndY = this.initialEndY + localDy;
+        this.updateLineEndpoint(line, this.initialStartX, this.initialStartY, newEndX, newEndY);
+
+        this._core.anchorManager.clearSnapCandidate();
+        this._core.anchorManager.setSnapPreviewCandidate(this.createIndicatorCandidate(line, 'end', previewTarget, otherEndpointWorld, controlWorld));
       } else {
         // No snap - use regular position
         const newEndX = this.initialEndX + localDx;
@@ -311,8 +295,11 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
 
         // Clear snap indicator
         this._core.anchorManager.clearSnapCandidate();
+        this._core.anchorManager.clearSnapPreviewCandidate();
       }
     } else if (handleType === 'center') {
+      this._core.anchorManager.clearSnapPreviewCandidate();
+      this._core.anchorManager.clearSnapCandidate();
       const startControlX = this.initialControlX ?? (this.initialStartX + this.initialEndX) / 2;
       const startControlY = this.initialControlY ?? (this.initialStartY + this.initialEndY) / 2;
       const newControlX = startControlX + localDx * 2;
@@ -549,5 +536,36 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     }
 
     return null;
+  }
+
+  private createIndicatorCandidate(
+    line: KritzelLine,
+    endpoint: 'start' | 'end',
+    target: SnapTarget,
+    otherEndpointWorld: { x: number; y: number },
+    controlWorld?: { x: number; y: number },
+    clipInfo?: { edgeX?: number; edgeY?: number; t?: number }
+  ) {
+    return {
+      objectId: target.objectId,
+      endpoint,
+      centerX: target.centerX,
+      centerY: target.centerY,
+      lineEndpointX: otherEndpointWorld.x,
+      lineEndpointY: otherEndpointWorld.y,
+      controlX: controlWorld?.x,
+      controlY: controlWorld?.y,
+      t: clipInfo?.t,
+      edgeX: clipInfo?.edgeX,
+      edgeY: clipInfo?.edgeY,
+      lineStroke: KritzelColorHelper.resolveThemeColor(line.stroke),
+      lineStrokeWidth: line.strokeWidth / line.scale,
+      arrowOffset:
+        endpoint === 'start'
+          ? (line.hasStartArrow ? line.getArrowSize('start') / line.scale : undefined)
+          : (line.hasEndArrow ? line.getArrowSize('end') / line.scale : undefined),
+      arrowStyle: endpoint === 'start' ? line.arrows?.start?.style : line.arrows?.end?.style,
+      arrowFill: endpoint === 'start' ? line.getArrowFill('start') : line.getArrowFill('end'),
+    };
   }
 }
