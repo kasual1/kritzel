@@ -256,7 +256,10 @@ export class KritzelAnchorManager {
   // ============================================
 
   /**
-   * Finds the nearest object that can be snapped to within the snap threshold.
+   * Finds an object that can be snapped to when the cursor is sufficiently close to its center.
+   * Snap is only triggered when the cursor is inside the object's bounds AND within 1/5 of the
+   * shorter side from the center, so snapping activates only as the user approaches the center
+   * and releases quickly as they move away.
    * Returns null if no suitable snap target is found.
    *
    * @param worldX - X coordinate in world space
@@ -296,7 +299,17 @@ export class KritzelAnchorManager {
       const points = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
 
       if (KritzelGeometryHelper.isPointInPolygon({ x: worldX, y: worldY }, points)) {
-        // If inside, check if this object is "above" the current best target
+        // Only snap when the cursor is near the object's center (within 1/5 of the shorter side)
+        const snapRadius = Math.min(object.width, object.height) / 5;
+        const dx = worldX - object.centerX;
+        const dy = worldY - object.centerY;
+        const distanceToCenter = Math.sqrt(dx * dx + dy * dy);
+
+        if (distanceToCenter > snapRadius) {
+          continue;
+        }
+
+        // If inside and close enough to center, check if this object is "above" the current best target
         if (object.zIndex > highestZIndex) {
           highestZIndex = object.zIndex;
           bestTarget = {

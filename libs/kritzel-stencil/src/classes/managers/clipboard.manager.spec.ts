@@ -240,6 +240,53 @@ describe('KritzelClipboardManager', () => {
       expect(mockCore.store.state.isSelecting).toBe(false);
     });
 
+    it('drops anchors to external objects when pasting a line-only clipboard payload', async () => {
+      const revivedLine = makeRevived({
+        __class__: 'KritzelLine',
+        id: 'line-1',
+        startAnchor: { objectId: 'external-shape' },
+        endAnchor: { objectId: 'external-shape-2' },
+        generateId: jest.fn().mockReturnValue('fresh-line-1'),
+      });
+
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: any, name: string) => obj?.__class__ === name);
+      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revivedLine);
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+
+      setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'line-1', __class__: 'KritzelLine' }] })}`);
+
+      await manager.paste(undefined, undefined);
+
+      expect(revivedLine.startAnchor).toBeUndefined();
+      expect(revivedLine.endAnchor).toBeUndefined();
+    });
+
+    it('remaps anchors between copied lines when pasting a line-only clipboard payload', async () => {
+      const firstLine = makeRevived({
+        __class__: 'KritzelLine',
+        id: 'line-1',
+        endAnchor: { objectId: 'line-2' },
+        generateId: jest.fn().mockReturnValue('fresh-line-1'),
+      });
+      const secondLine = makeRevived({
+        __class__: 'KritzelLine',
+        id: 'line-2',
+        generateId: jest.fn().mockReturnValue('fresh-line-2'),
+      });
+
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: any, name: string) => obj?.__class__ === name);
+      jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValueOnce(firstLine).mockReturnValueOnce(secondLine);
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+
+      setClipboardText(
+        `${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects: [{ id: 'line-1', __class__: 'KritzelLine' }, { id: 'line-2', __class__: 'KritzelLine' }] })}`,
+      );
+
+      await manager.paste(undefined, undefined);
+
+      expect(firstLine.endAnchor).toEqual({ objectId: 'fresh-line-2' });
+    });
+
     it('reads the async Clipboard API when no DOM event is provided', async () => {
       const revived = makeRevived();
       jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revived);
