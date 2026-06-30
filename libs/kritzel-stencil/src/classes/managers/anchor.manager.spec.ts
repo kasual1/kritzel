@@ -5,7 +5,7 @@ import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelClassHelper } from '../../helpers/class.helper';
-import { SnapCandidate } from '../../interfaces/anchor.interface';
+import { SnapCandidate, SnapPreviewCandidate } from '../../interfaces/anchor.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 
 jest.mock('../core/core.class');
@@ -126,6 +126,7 @@ describe('KritzelAnchorManager', () => {
       objects: mockObjectsMap,
       scale: 1,
       snapCandidate: null,
+      snapPreviewCandidate: null,
       isDragging: false,
     };
 
@@ -654,6 +655,37 @@ describe('KritzelAnchorManager', () => {
 
       expect(result).toBeNull();
     });
+
+    it('should allow a larger snap radius for touch input', () => {
+      const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
+      mockCore.store.allNonSelectionObjects = [obj];
+
+      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+
+      expect(manager.findSnapTarget(111, 125, 'line-1', undefined, 'mouse')).toBeNull();
+      expect(manager.findSnapTarget(111, 125, 'line-1', undefined, 'touch')).toEqual({
+        objectId: 'obj-1',
+        centerX: obj.centerX,
+        centerY: obj.centerY,
+      });
+    });
+  });
+
+  describe('findSnapPreviewTarget', () => {
+    it('should return the target as soon as the pointer enters an anchorable object', () => {
+      const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
+      mockCore.store.allNonSelectionObjects = [obj];
+
+      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+
+      const result = manager.findSnapPreviewTarget(101, 101, 'line-1');
+
+      expect(result).toEqual({
+        objectId: 'obj-1',
+        centerX: obj.centerX,
+        centerY: obj.centerY,
+      });
+    });
   });
 
   // ============================================
@@ -726,6 +758,43 @@ describe('KritzelAnchorManager', () => {
       manager.clearSnapCandidate();
 
       expect(mockState.snapCandidate).toBeNull();
+      expect(mockCore.rerender).toHaveBeenCalled();
+    });
+  });
+
+  describe('setSnapPreviewCandidate', () => {
+    it('should set the preview candidate on the store state', () => {
+      const candidate: SnapPreviewCandidate = {
+        objectId: 'obj-1',
+        endpoint: 'start',
+        centerX: 125,
+        centerY: 125,
+        lineEndpointX: 0,
+        lineEndpointY: 0,
+      };
+
+      manager.setSnapPreviewCandidate(candidate);
+
+      expect(mockState.snapPreviewCandidate).toBe(candidate);
+      expect(mockCore.rerender).toHaveBeenCalled();
+    });
+  });
+
+  describe('getSnapPreviewCandidate', () => {
+    it('should return null when no snap preview candidate is set', () => {
+      mockState.snapPreviewCandidate = null;
+
+      expect(manager.getSnapPreviewCandidate()).toBeNull();
+    });
+  });
+
+  describe('clearSnapPreviewCandidate', () => {
+    it('should clear the preview candidate and trigger rerender', () => {
+      mockState.snapPreviewCandidate = { objectId: 'obj-1' };
+
+      manager.clearSnapPreviewCandidate();
+
+      expect(mockState.snapPreviewCandidate).toBeNull();
       expect(mockCore.rerender).toHaveBeenCalled();
     });
   });
@@ -894,6 +963,26 @@ describe('KritzelAnchorManager', () => {
       expect(result?.snapLinePath).toBeDefined();
       expect(result?.snapLinePath).toContain('M');
       expect(result?.snapLinePath).toContain('Q');
+    });
+  });
+
+  describe('getSnapPreviewRenderData', () => {
+    it('should return render data for a preview candidate', () => {
+      const candidate: SnapPreviewCandidate = {
+        objectId: 'obj-1',
+        endpoint: 'end',
+        centerX: 125,
+        centerY: 125,
+        lineEndpointX: 0,
+        lineEndpointY: 0,
+      };
+      mockState.snapPreviewCandidate = candidate;
+
+      const result = manager.getSnapPreviewRenderData();
+
+      expect(result).not.toBeNull();
+      expect(result?.centerX).toBe(125);
+      expect(result?.centerY).toBe(125);
     });
   });
 

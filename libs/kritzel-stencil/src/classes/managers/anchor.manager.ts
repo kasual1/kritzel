@@ -1,4 +1,14 @@
-import { AnchorIndexEntry, AnchorLinesRenderData, AnchorVisualization, LineAnchor, SnapCandidate, SnapIndicatorRenderData, SnapTarget } from '../../interfaces/anchor.interface';
+import {
+  AnchorIndexEntry,
+  AnchorLinesRenderData,
+  AnchorVisualization,
+  LineAnchor,
+  SnapCandidate,
+  SnapIndicatorCandidate,
+  SnapIndicatorRenderData,
+  SnapPreviewCandidate,
+  SnapTarget,
+} from '../../interfaces/anchor.interface';
 import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
@@ -276,12 +286,44 @@ export class KritzelAnchorManager {
    * @param worldY - Y coordinate in world space
    * @param excludeLineId - ID of the line being edited (to exclude from snap targets)
    * @param otherEndpointAnchorId - ID of object anchored to the other endpoint (to prevent same-object anchoring)
+   * @param pointerType - The pointer type driving the drag interaction.
    */
   findSnapTarget(
     worldX: number,
     worldY: number,
     excludeLineId: string,
+    otherEndpointAnchorId?: string,
+    pointerType: string = 'mouse'
+  ): SnapTarget | null {
+    return this.findBestSnapTarget(worldX, worldY, excludeLineId, otherEndpointAnchorId, object => {
+      const snapRadius = this.getSnapRadius(object, pointerType);
+      const dx = worldX - object.centerX;
+      const dy = worldY - object.centerY;
+      const distanceToCenter = Math.sqrt(dx * dx + dy * dy);
+
+      return distanceToCenter <= snapRadius;
+    });
+  }
+
+  /**
+   * Finds the topmost anchorable object currently containing the dragged endpoint.
+   * Used to drive preview UI before an actual snap engages.
+   */
+  findSnapPreviewTarget(
+    worldX: number,
+    worldY: number,
+    excludeLineId: string,
     otherEndpointAnchorId?: string
+  ): SnapTarget | null {
+    return this.findBestSnapTarget(worldX, worldY, excludeLineId, otherEndpointAnchorId, () => true);
+  }
+
+  private findBestSnapTarget(
+    worldX: number,
+    worldY: number,
+    excludeLineId: string,
+    otherEndpointAnchorId: string | undefined,
+    predicate: (object: KritzelBaseObject<Element>) => boolean
   ): SnapTarget | null {
     let bestTarget: SnapTarget | null = null;
     let highestZIndex = -Infinity;
@@ -308,30 +350,34 @@ export class KritzelAnchorManager {
       const polygon = object.rotatedPolygon;
       const points = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft];
 
-      if (KritzelGeometryHelper.isPointInPolygon({ x: worldX, y: worldY }, points)) {
-        // Only snap when the cursor is near the object's center (within 1/5 of the shorter side)
-        const snapRadius = Math.min(object.width, object.height) / 5;
-        const dx = worldX - object.centerX;
-        const dy = worldY - object.centerY;
-        const distanceToCenter = Math.sqrt(dx * dx + dy * dy);
+      if (!KritzelGeometryHelper.isPointInPolygon({ x: worldX, y: worldY }, points)) {
+        continue;
+      }
 
-        if (distanceToCenter > snapRadius) {
-          continue;
-        }
+      if (!predicate(object)) {
+        continue;
+      }
 
-        // If inside and close enough to center, check if this object is "above" the current best target
-        if (object.zIndex > highestZIndex) {
-          highestZIndex = object.zIndex;
-          bestTarget = {
-            objectId: object.id,
-            centerX: object.centerX,
-            centerY: object.centerY,
-          };
-        }
+      if (object.zIndex > highestZIndex) {
+        highestZIndex = object.zIndex;
+        bestTarget = {
+          objectId: object.id,
+          centerX: object.centerX,
+          centerY: object.centerY,
+        };
       }
     }
 
     return bestTarget;
+  }
+
+  private getSnapRadius(object: KritzelBaseObject<Element>, pointerType: string): number {
+    const baseRadius = Math.min(object.width, object.height) / 5;
+    if (pointerType === 'touch' || pointerType === 'pen') {
+      return Math.max(baseRadius * 1.75, 24 / this.getSafeScale(this._core.store.state.scale));
+    }
+
+    return baseRadius;
   }
 
   /**
@@ -346,6 +392,18 @@ export class KritzelAnchorManager {
   }
 
   /**
+   * Sets the current snap preview candidate for early visual feedback during line dragging.
+   * Preview state must remain separate from active snap state so line clipping and anchor
+   * commit semantics only react to actual snaps.
+   *
+   * @param candidate - The preview candidate object, or null to clear.
+   */
+  setSnapPreviewCandidate(candidate: SnapPreviewCandidate | null): void {
+    this._core.store.state.snapPreviewCandidate = candidate;
+    this._core.rerender();
+  }
+
+  /**
    * Gets the current snap candidate from the store state.
    * 
    * @returns The current SnapCandidate object if one exists, null otherwise.
@@ -355,11 +413,28 @@ export class KritzelAnchorManager {
   }
 
   /**
+   * Gets the current snap preview candidate from the store state.
+   *
+   * @returns The current preview candidate if one exists, null otherwise.
+   */
+  getSnapPreviewCandidate(): SnapPreviewCandidate | null {
+    return this._core.store.state.snapPreviewCandidate ?? null;
+  }
+
+  /**
    * Clears the snap candidate from the store state and triggers a rerender.
    * Should be called when snapping is cancelled or completed.
    */
   clearSnapCandidate(): void {
     this._core.store.state.snapCandidate = null;
+    this._core.rerender();
+  }
+
+  /**
+   * Clears the snap preview candidate from the store state and triggers a rerender.
+   */
+  clearSnapPreviewCandidate(): void {
+    this._core.store.state.snapPreviewCandidate = null;
     this._core.rerender();
   }
 
@@ -425,37 +500,49 @@ export class KritzelAnchorManager {
    *          or null if there's no active snap candidate.
    */
   getSnapIndicatorRenderData(): SnapIndicatorRenderData | null {
-    const snapCandidate = this.getSnapCandidate();
-    if (!snapCandidate) return null;
+    return this.getIndicatorRenderDataForCandidate(this.getSnapCandidate());
+  }
 
-    if (!this.areFiniteNumbers(snapCandidate.centerX, snapCandidate.centerY, snapCandidate.lineEndpointX, snapCandidate.lineEndpointY)) {
+  /**
+   * Gets render data for snap preview visualization.
+   *
+   * @returns SnapIndicatorRenderData for the active preview candidate, or null if none exists.
+   */
+  getSnapPreviewRenderData(): SnapIndicatorRenderData | null {
+    return this.getIndicatorRenderDataForCandidate(this.getSnapPreviewCandidate());
+  }
+
+  private getIndicatorRenderDataForCandidate(candidate: SnapIndicatorCandidate | null): SnapIndicatorRenderData | null {
+    if (!candidate) return null;
+
+    if (!this.areFiniteNumbers(candidate.centerX, candidate.centerY, candidate.lineEndpointX, candidate.lineEndpointY)) {
       return null;
     }
 
     const scale = this.getSafeScale(this._core.store.state.scale);
     const indicatorRadius = 8 / scale;
     const indicatorStrokeWidth = `${2 / scale}`;
-    const lineStrokeWidthNum = this.areFiniteNumbers(snapCandidate.lineStrokeWidth) && (snapCandidate.lineStrokeWidth as number) > 0
-      ? (snapCandidate.lineStrokeWidth as number)
+    const lineStrokeWidthNum = this.areFiniteNumbers(candidate.lineStrokeWidth) && (candidate.lineStrokeWidth as number) > 0
+      ? (candidate.lineStrokeWidth as number)
       : (4 / scale);
     const lineStrokeWidth = `${lineStrokeWidthNum}`;
     const dashLength = Math.max(lineStrokeWidthNum * 2, 4 / scale);
     const dashArray = `${dashLength} ${dashLength}`;
-    const lineStroke = snapCandidate.lineStroke || '#000000';
+    const lineStroke = candidate.lineStroke || '#000000';
 
-    let edgeX = this.areFiniteNumbers(snapCandidate.edgeX) ? snapCandidate.edgeX : undefined;
-    let edgeY = this.areFiniteNumbers(snapCandidate.edgeY) ? snapCandidate.edgeY : undefined;
+    let edgeX = this.areFiniteNumbers(candidate.edgeX) ? candidate.edgeX : undefined;
+    let edgeY = this.areFiniteNumbers(candidate.edgeY) ? candidate.edgeY : undefined;
     let solidLineEndX = edgeX;
     let solidLineEndY = edgeY;
     let arrowPoints: string | undefined;
 
-    const arrowOffset = this.areFiniteNumbers(snapCandidate.arrowOffset) && (snapCandidate.arrowOffset as number) > 0
-      ? (snapCandidate.arrowOffset as number)
+    const arrowOffset = this.areFiniteNumbers(candidate.arrowOffset) && (candidate.arrowOffset as number) > 0
+      ? (candidate.arrowOffset as number)
       : undefined;
 
     if (arrowOffset !== undefined && edgeX !== undefined && edgeY !== undefined) {
-      const dx = snapCandidate.lineEndpointX - edgeX;
-      const dy = snapCandidate.lineEndpointY - edgeY;
+      const dx = candidate.lineEndpointX - edgeX;
+      const dy = candidate.lineEndpointY - edgeY;
       const length = Math.sqrt(dx * dx + dy * dy);
 
       if (length > arrowOffset) {
@@ -465,8 +552,8 @@ export class KritzelAnchorManager {
 
       // Calculate arrow head points
       // Direction from line endpoint to edge (arrow direction)
-      const arrowDx = edgeX - snapCandidate.lineEndpointX;
-      const arrowDy = edgeY - snapCandidate.lineEndpointY;
+      const arrowDx = edgeX - candidate.lineEndpointX;
+      const arrowDy = edgeY - candidate.lineEndpointY;
       const arrowLengthTotal = Math.sqrt(arrowDx * arrowDx + arrowDy * arrowDy);
 
       if (arrowLengthTotal > 0) {
@@ -506,20 +593,20 @@ export class KritzelAnchorManager {
 
     const snapLinePath = (() => {
       if (
-        snapCandidate.controlX !== undefined &&
-        snapCandidate.controlY !== undefined &&
-        snapCandidate.t !== undefined &&
-        this.areFiniteNumbers(snapCandidate.controlX, snapCandidate.controlY, snapCandidate.t)
+        candidate.controlX !== undefined &&
+        candidate.controlY !== undefined &&
+        candidate.t !== undefined &&
+        this.areFiniteNumbers(candidate.controlX, candidate.controlY, candidate.t)
       ) {
-        const startT = snapCandidate.endpoint === 'start' ? 1 - snapCandidate.t : snapCandidate.t;
+        const startT = candidate.endpoint === 'start' ? 1 - candidate.t : candidate.t;
 
         // Ensure meaningful range
         if (startT >= 1) return undefined;
 
         const segment = this.extractQuadraticSegment(
-          { x: snapCandidate.lineEndpointX, y: snapCandidate.lineEndpointY },
-          { x: snapCandidate.controlX, y: snapCandidate.controlY },
-          { x: snapCandidate.centerX, y: snapCandidate.centerY },
+          { x: candidate.lineEndpointX, y: candidate.lineEndpointY },
+          { x: candidate.controlX, y: candidate.controlY },
+          { x: candidate.centerX, y: candidate.centerY },
           startT,
           1
         );
@@ -539,15 +626,15 @@ export class KritzelAnchorManager {
       lineStrokeWidth,
       dashArray,
       lineStroke,
-      centerX: snapCandidate.centerX,
-      centerY: snapCandidate.centerY,
-      lineEndpointX: snapCandidate.lineEndpointX,
-      lineEndpointY: snapCandidate.lineEndpointY,
+      centerX: candidate.centerX,
+      centerY: candidate.centerY,
+      lineEndpointX: candidate.lineEndpointX,
+      lineEndpointY: candidate.lineEndpointY,
       edgeX,
       edgeY,
       arrowOffset,
-      arrowStyle: snapCandidate.arrowStyle,
-      arrowFill: snapCandidate.arrowFill,
+      arrowStyle: candidate.arrowStyle,
+      arrowFill: candidate.arrowFill,
       solidLineEndX,
       solidLineEndY,
       arrowPoints,
