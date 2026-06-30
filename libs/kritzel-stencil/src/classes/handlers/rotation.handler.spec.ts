@@ -468,6 +468,36 @@ describe('KritzelRotationHandler', () => {
 
         expect(mockSelectionGroup!.rotate).toHaveBeenCalled();
       });
+
+      it('should keep using the pivot captured at pointer down even if the bounding box grows mid-rotation', () => {
+        // Center at pointer down is (50, 50) from translate (0,0) and size 100.
+        const downEvent = createPointerEvent('pointerdown', {
+          pointerType: 'mouse',
+          clientX: 100,
+          clientY: 0,
+        });
+        rotationHandler.handlePointerDown(downEvent);
+
+        // Simulate the bounding box growing while rotating (e.g. a line anchored to an
+        // object outside the selection). The pivot must remain the captured center.
+        mockSelectionGroup!.translateX = 1000;
+        mockSelectionGroup!.translateY = 1000;
+        mockSelectionGroup!.width = 5000;
+        mockSelectionGroup!.height = 5000;
+
+        const moveEvent = createPointerEvent('pointermove', {
+          pointerType: 'mouse',
+          clientX: 150,
+          clientY: 50,
+        });
+        rotationHandler.handlePointerMove(moveEvent);
+
+        // Expected angle uses the fixed pivot (50, 50), not the grown box center.
+        const initialRotation = Math.atan2(50 - 0, 50 - 100);
+        const currentRotation = Math.atan2(50 - 50, 50 - 150);
+        const appliedRotation = (mockSelectionGroup!.rotate as jest.Mock).mock.calls[0][0];
+        expect(appliedRotation).toBeCloseTo(currentRotation - initialRotation);
+      });
     });
 
     describe('touch events', () => {
