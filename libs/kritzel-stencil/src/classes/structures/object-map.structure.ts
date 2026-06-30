@@ -520,6 +520,13 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     // Delete objects from local map
     objectsToDelete.forEach(objectId => {
+      const existingObject = this._idMap.get(objectId);
+      if (existingObject instanceof KritzelSelectionGroup) {
+        // Remote deletion of a selection group must also clear the transient
+        // selection flags it had applied to its children locally.
+        existingObject.deselectAllChildren?.();
+      }
+
       this.quadtree.remove(o => o.id === objectId);
       this._idMap.delete(objectId);
     });
