@@ -126,6 +126,7 @@ describe('KritzelAnchorManager', () => {
       objects: mockObjectsMap,
       scale: 1,
       snapCandidate: null,
+      isDragging: false,
     };
 
     mockCore = {
@@ -458,6 +459,102 @@ describe('KritzelAnchorManager', () => {
 
       // Should not throw
       manager.updateAnchorsForObject('obj-1');
+    });
+
+    it('should refresh selection group dimensions locally while dragging when external anchored lines are selected', () => {
+      const line = createMockLine({ id: 'line-1' });
+      const targetObject = createMockObject({ id: 'obj-1', translateX: 100, translateY: 100 });
+      const selectionGroup = {
+        hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(true),
+        refreshObjectDimensions: jest.fn(),
+      };
+
+      mockCore.store.selectionGroup = selectionGroup;
+      mockState.isDragging = true;
+
+      mockObjectsMap.filter.mockImplementation((fn: (o: any) => boolean) => {
+        if (fn(line)) return [line];
+        if (fn(targetObject)) return [targetObject];
+        return [];
+      });
+
+      manager.setAnchor('line-1', 'start', 'obj-1');
+      jest.clearAllMocks();
+
+      mockObjectsMap.filter.mockImplementation((fn: (o: any) => boolean) => {
+        if (fn(line)) return [line];
+        if (fn(targetObject)) return [targetObject];
+        return [];
+      });
+
+      manager.updateAnchorsForObject('obj-1');
+
+      expect(selectionGroup.hasExternalAnchoredLineConnections).toHaveBeenCalled();
+      expect(selectionGroup.refreshObjectDimensions).toHaveBeenCalledWith(undefined, true);
+    });
+
+    it('should not refresh selection group dimensions when not dragging', () => {
+      const line = createMockLine({ id: 'line-1' });
+      const targetObject = createMockObject({ id: 'obj-1', translateX: 100, translateY: 100 });
+      const selectionGroup = {
+        hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(true),
+        refreshObjectDimensions: jest.fn(),
+      };
+
+      mockCore.store.selectionGroup = selectionGroup;
+      mockState.isDragging = false;
+
+      mockObjectsMap.filter.mockImplementation((fn: (o: any) => boolean) => {
+        if (fn(line)) return [line];
+        if (fn(targetObject)) return [targetObject];
+        return [];
+      });
+
+      manager.setAnchor('line-1', 'start', 'obj-1');
+      jest.clearAllMocks();
+
+      mockObjectsMap.filter.mockImplementation((fn: (o: any) => boolean) => {
+        if (fn(line)) return [line];
+        if (fn(targetObject)) return [targetObject];
+        return [];
+      });
+
+      manager.updateAnchorsForObject('obj-1');
+
+      expect(selectionGroup.hasExternalAnchoredLineConnections).not.toHaveBeenCalled();
+      expect(selectionGroup.refreshObjectDimensions).not.toHaveBeenCalled();
+    });
+
+    it('should not refresh selection group dimensions when no external anchored lines are selected', () => {
+      const line = createMockLine({ id: 'line-1' });
+      const targetObject = createMockObject({ id: 'obj-1', translateX: 100, translateY: 100 });
+      const selectionGroup = {
+        hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
+        refreshObjectDimensions: jest.fn(),
+      };
+
+      mockCore.store.selectionGroup = selectionGroup;
+      mockState.isDragging = true;
+
+      mockObjectsMap.filter.mockImplementation((fn: (o: any) => boolean) => {
+        if (fn(line)) return [line];
+        if (fn(targetObject)) return [targetObject];
+        return [];
+      });
+
+      manager.setAnchor('line-1', 'start', 'obj-1');
+      jest.clearAllMocks();
+
+      mockObjectsMap.filter.mockImplementation((fn: (o: any) => boolean) => {
+        if (fn(line)) return [line];
+        if (fn(targetObject)) return [targetObject];
+        return [];
+      });
+
+      manager.updateAnchorsForObject('obj-1');
+
+      expect(selectionGroup.hasExternalAnchoredLineConnections).toHaveBeenCalled();
+      expect(selectionGroup.refreshObjectDimensions).not.toHaveBeenCalled();
     });
   });
 

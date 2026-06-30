@@ -5,6 +5,7 @@ import { KritzelGroup } from './group.class';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 import { KritzelMathHelper } from '../../helpers/math.helper';
+import { KritzelLine } from './line.class';
 
 /**
  * Represents a snapshot of an object's transform state at a specific point in time.
@@ -77,6 +78,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   private _lastChildPersistTime: number = 0;
   /** Minimum interval (ms) between child Yjs persists during drag */
   private static readonly CHILD_PERSIST_THROTTLE_MS = 100;
+  /** Ignore tiny floating-point diffs when comparing refreshed bounds */
+  private static readonly DIMENSION_EPSILON = 0.001;
 
   /**
    * Gets the array of object IDs contained in this selection group.
@@ -496,6 +499,36 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   }
 
   /**
+   * Returns true when the selection contains a line anchored to an object
+   * that is not part of this selection group.
+   */
+  hasExternalAnchoredLineConnections(cachedObjects?: KritzelBaseObject<any>[]): boolean {
+    const children = cachedObjects ?? this.objects;
+    if (children.length === 0) {
+      return false;
+    }
+
+    const selectedIds = new Set(children.map(child => child.id));
+
+    for (const child of children) {
+      if (!KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
+        continue;
+      }
+
+      const line = child as KritzelLine;
+      if (line.startAnchor && !selectedIds.has(line.startAnchor.objectId)) {
+        return true;
+      }
+
+      if (line.endAnchor && !selectedIds.has(line.endAnchor.objectId)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Resizes the selection group and scales all contained objects proportionally.
    * Uses snapshot values to avoid compounding errors during continuous drag operations.
    * Handles rotation by transforming coordinates into and out of the group's local space.
@@ -674,7 +707,18 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
    * @param cachedObjects Optional pre-fetched objects array to avoid redundant getter calls
    * @param skipPersist If true, only updates local state without persisting to Yjs (used during undo/redo)
    */
-  refreshObjectDimensions(cachedObjects?: KritzelBaseObject<any>[], skipPersist: boolean = false) {
+  refreshObjectDimensions(cachedObjects?: KritzelBaseObject<any>[], skipPersist: boolean = false): boolean {
+    const previous = {
+      minX: this.minX,
+      minY: this.minY,
+      maxX: this.maxX,
+      maxY: this.maxY,
+      width: this.width,
+      height: this.height,
+      translateX: this.translateX,
+      translateY: this.translateY,
+    };
+
     const children = cachedObjects ?? this.objects;
     if (children.length === 1) {
       const obj = children[0];
@@ -736,9 +780,21 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.translateY = cy - (this.height / this.scale + 2 * this.padding) / 2;
     }
 
-    if (!skipPersist) {
+    const hasChanged =
+      Math.abs(this.minX - previous.minX) > KritzelSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.minY - previous.minY) > KritzelSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.maxX - previous.maxX) > KritzelSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.maxY - previous.maxY) > KritzelSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.width - previous.width) > KritzelSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.height - previous.height) > KritzelSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.translateX - previous.translateX) > KritzelSelectionGroup.DIMENSION_EPSILON ||
+      Math.abs(this.translateY - previous.translateY) > KritzelSelectionGroup.DIMENSION_EPSILON;
+
+    if (!skipPersist && hasChanged) {
       this._core.store.objects.update(this);
     }
+
+    return hasChanged;
   }
 
   /**
