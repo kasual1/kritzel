@@ -3202,10 +3202,12 @@ export class KritzelEngine {
                     const selectionHandleStrokeColor = remoteUserColor ?? 'var(--kritzel-selection-handle-stroke-color, #007AFF)';
                     const lineObject = object as KritzelLine;
                     const activeSnapCandidate = this.core.store.state.snapCandidate;
+                    const previewSnapCandidate = this.core.store.state.snapPreviewCandidate;
                     const isStartHandleSnapped = lineObject.startAnchor != null;
                     const isEndHandleSnapped = lineObject.endAnchor != null;
-                    const isStartHandleSnapPreview = activeSnapCandidate?.endpoint === 'start';
-                    const isEndHandleSnapPreview = activeSnapCandidate?.endpoint === 'end';
+                    const highlightedSnapCandidate = activeSnapCandidate ?? previewSnapCandidate;
+                    const isStartHandleSnapPreview = highlightedSnapCandidate?.endpoint === 'start';
+                    const isEndHandleSnapPreview = highlightedSnapCandidate?.endpoint === 'end';
                     const isStartHandleHighlighted = isStartHandleSnapped || isStartHandleSnapPreview;
                     const isEndHandleHighlighted = isEndHandleSnapped || isEndHandleSnapPreview;
                     const selectionOverlayZIndex = this.core.displaySelectionLineUI(object) ? '10000' : (object.zIndex + 1).toString();
@@ -3570,8 +3572,10 @@ export class KritzelEngine {
 
           {/* Snap indicator for line anchoring */}
           {(() => {
-            const data = this.core.anchorManager.getSnapIndicatorRenderData();
+            const data = this.core.anchorManager.getSnapIndicatorRenderData() ?? this.core.anchorManager.getSnapPreviewRenderData();
             if (!data) return null;
+
+            const isActiveSnap = this.core.anchorManager.getSnapIndicatorRenderData() != null;
 
             return (
               <svg
@@ -3596,7 +3600,7 @@ export class KritzelEngine {
                       d={data.snapLinePath}
                       fill="none"
                       style={{
-                        stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                        stroke: isActiveSnap ? 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))' : 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.12))',
                         strokeWidth: data.lineStrokeWidth,
                         strokeDasharray: data.dashArray,
                         strokeLinecap: 'round',
@@ -3611,7 +3615,7 @@ export class KritzelEngine {
                         x2={data.centerX}
                         y2={data.centerY}
                         style={{
-                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          stroke: isActiveSnap ? 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))' : 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.12))',
                           strokeWidth: data.lineStrokeWidth,
                           strokeDasharray: data.dashArray,
                           strokeLinecap: 'round',
@@ -3625,7 +3629,8 @@ export class KritzelEngine {
                     cy={data.centerY}
                     r={data.indicatorRadius}
                     style={{
-                      fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                      fill: isActiveSnap ? 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))' : 'rgba(59, 130, 246, 0.18)',
+                      stroke: isActiveSnap ? 'var(--kritzel-snap-indicator-stroke, #007bff)' : 'rgba(59, 130, 246, 0.5)',
                       strokeWidth: data.indicatorStrokeWidth,
                     }}
                   />

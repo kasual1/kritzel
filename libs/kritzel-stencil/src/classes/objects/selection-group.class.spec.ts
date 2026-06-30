@@ -9,12 +9,14 @@ describe('KritzelSelectionGroup', () => {
   let mockObjectsUpdate: jest.Mock;
   let mockObjectsTransaction: jest.Mock;
   let mockAnchorManagerUpdate: jest.Mock;
+  let mockAnchorManagerGetLines: jest.Mock;
   let mockObjectsStore: KritzelBaseObject<HTMLElement>[];
 
   beforeEach(() => {
     mockObjectsUpdate = jest.fn();
     mockObjectsTransaction = jest.fn((callback: () => void) => callback());
     mockAnchorManagerUpdate = jest.fn();
+    mockAnchorManagerGetLines = jest.fn().mockReturnValue([]);
     mockObjectsStore = [];
 
     // Create a custom array-like object that has both array behavior and custom methods
@@ -55,6 +57,7 @@ describe('KritzelSelectionGroup', () => {
       },
       anchorManager: {
         updateAnchorsForObject: mockAnchorManagerUpdate,
+        getLinesAnchoredTo: mockAnchorManagerGetLines,
       },
     } as unknown as jest.Mocked<KritzelCore>;
 
@@ -526,6 +529,62 @@ describe('KritzelSelectionGroup', () => {
 
       expect(obj.rotate).toHaveBeenCalled();
     });
+
+    it('should re-sync anchored lines and refresh dimensions when a selected line is anchored to an external object', () => {
+      selectionGroup.translateX = 0;
+      selectionGroup.translateY = 0;
+      selectionGroup.width = 100;
+      selectionGroup.height = 100;
+      selectionGroup.scale = 1;
+      selectionGroup.padding = 0;
+      selectionGroup.rotation = 0;
+      selectionGroup.snapshotRotation = 0;
+
+      const obj = createMockObject({ id: 'obj-1', translateX: 0, translateY: 0, width: 50, height: 50 });
+      obj.rotate = jest.fn();
+
+      const line = createMockObject({ id: 'line-1', translateX: 0, translateY: 0, width: 50, height: 50 });
+      line.__class__ = 'KritzelLine';
+      (line as unknown as { endAnchor: { objectId: string } }).endAnchor = { objectId: 'external-1' };
+      line.rotate = jest.fn();
+
+      selectionGroup.objectIds = ['obj-1', 'line-1'];
+      selectionGroup.captureUnchangedSnapshots();
+
+      mockAnchorManagerGetLines.mockImplementation((id: string) =>
+        id === 'external-1' ? [{ lineId: 'line-1', endpoint: 'end' }] : [],
+      );
+
+      const refreshSpy = jest.spyOn(selectionGroup, 'refreshObjectDimensions');
+
+      selectionGroup.rotate(Math.PI / 2);
+
+      expect(mockAnchorManagerUpdate).toHaveBeenCalledWith('external-1');
+      expect(refreshSpy).toHaveBeenCalled();
+    });
+
+    it('should not refresh dimensions during rotation when there are no anchored lines', () => {
+      selectionGroup.translateX = 0;
+      selectionGroup.translateY = 0;
+      selectionGroup.width = 100;
+      selectionGroup.height = 100;
+      selectionGroup.scale = 1;
+      selectionGroup.padding = 0;
+      selectionGroup.rotation = 0;
+      selectionGroup.snapshotRotation = 0;
+
+      const obj = createMockObject({ id: 'obj-1', translateX: 0, translateY: 0, width: 50, height: 50 });
+      obj.rotate = jest.fn();
+
+      selectionGroup.objectIds = ['obj-1'];
+      selectionGroup.captureUnchangedSnapshots();
+
+      const refreshSpy = jest.spyOn(selectionGroup, 'refreshObjectDimensions');
+
+      selectionGroup.rotate(Math.PI / 2);
+
+      expect(refreshSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('resize', () => {
@@ -756,6 +815,35 @@ describe('KritzelSelectionGroup', () => {
       selectionGroup.refreshObjectDimensions();
 
       expect(mockObjectsUpdate).toHaveBeenCalledWith(selectionGroup);
+    });
+  });
+
+  describe('hasExternalAnchoredLineConnections', () => {
+    it('should return true when a selected line has an anchor to an unselected object', () => {
+      const line = createMockObject({
+        id: 'line-1',
+        __class__: 'KritzelLine',
+      } as any) as any;
+      line.startAnchor = { objectId: 'external-obj' };
+      line.endAnchor = undefined;
+
+      selectionGroup.objectIds = ['line-1'];
+
+      expect(selectionGroup.hasExternalAnchoredLineConnections()).toBe(true);
+    });
+
+    it('should return false when line anchors only reference selected objects', () => {
+      const line = createMockObject({
+        id: 'line-1',
+        __class__: 'KritzelLine',
+      } as any) as any;
+      line.startAnchor = { objectId: 'shape-1' };
+      line.endAnchor = undefined;
+
+      createMockObject({ id: 'shape-1' });
+      selectionGroup.objectIds = ['line-1', 'shape-1'];
+
+      expect(selectionGroup.hasExternalAnchoredLineConnections()).toBe(false);
     });
   });
 
