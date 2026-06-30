@@ -13,6 +13,8 @@ describe('KritzelMoveHandler', () => {
     objects: unknown[];
     move: jest.Mock;
     update: jest.Mock;
+    persistChildren?: jest.Mock;
+    refreshObjectDimensions?: jest.Mock;
   } | null;
   let mockState: {
     isDragging: boolean;
@@ -322,6 +324,8 @@ describe('KritzelMoveHandler', () => {
           objects: [],
           move: jest.fn(),
           update: jest.fn(),
+          persistChildren: jest.fn(),
+          refreshObjectDimensions: jest.fn(),
         };
       });
 
@@ -463,6 +467,8 @@ describe('KritzelMoveHandler', () => {
           objects: [],
           move: jest.fn(),
           update: jest.fn(),
+          persistChildren: jest.fn(),
+          refreshObjectDimensions: jest.fn(),
         };
       });
 
@@ -560,6 +566,8 @@ describe('KritzelMoveHandler', () => {
           objects: [],
           move: jest.fn(),
           update: jest.fn(),
+          persistChildren: jest.fn(),
+          refreshObjectDimensions: jest.fn(),
         };
       });
 
@@ -636,6 +644,8 @@ describe('KritzelMoveHandler', () => {
         });
         moveHandler.handlePointerUp(upEvent);
 
+        expect(mockSelectionGroup!.persistChildren).toHaveBeenCalled();
+        expect(mockSelectionGroup!.refreshObjectDimensions).toHaveBeenCalledWith(undefined, false);
         expect(mockSelectionGroup!.update).toHaveBeenCalled();
         expect(mockCore.engine.emitObjectsChange).toHaveBeenCalled();
         expect(mockState.hasObjectsChanged).toBe(true);
@@ -668,6 +678,8 @@ describe('KritzelMoveHandler', () => {
           objects: [],
           move: jest.fn(),
           update: jest.fn(),
+          persistChildren: jest.fn(),
+          refreshObjectDimensions: jest.fn(),
         };
       });
 
@@ -711,6 +723,8 @@ describe('KritzelMoveHandler', () => {
         });
         moveHandler.handlePointerUp(upEvent);
 
+        expect(mockSelectionGroup!.persistChildren).toHaveBeenCalled();
+        expect(mockSelectionGroup!.refreshObjectDimensions).toHaveBeenCalledWith(undefined, false);
         expect(mockSelectionGroup!.update).toHaveBeenCalled();
         expect(mockCore.engine.emitObjectsChange).toHaveBeenCalled();
         expect(mockState.hasObjectsChanged).toBe(true);
