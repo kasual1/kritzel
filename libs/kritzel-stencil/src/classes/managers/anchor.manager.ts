@@ -188,6 +188,16 @@ export class KritzelAnchorManager {
 
       this.snapEndpointToObject(line, entry.endpoint, objectId);
     }
+
+    const selectionGroup = this._core.store.selectionGroup;
+    if (!selectionGroup || !this._core.store.state.isDragging) {
+      return;
+    }
+
+    if (selectionGroup.hasExternalAnchoredLineConnections()) {
+      // Keep the local drag overlay aligned with reshaped anchored lines without spamming Yjs.
+      selectionGroup.refreshObjectDimensions(undefined, true);
+    }
   }
 
   /**

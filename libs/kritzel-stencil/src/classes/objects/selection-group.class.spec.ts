@@ -759,6 +759,35 @@ describe('KritzelSelectionGroup', () => {
     });
   });
 
+  describe('hasExternalAnchoredLineConnections', () => {
+    it('should return true when a selected line has an anchor to an unselected object', () => {
+      const line = createMockObject({
+        id: 'line-1',
+        __class__: 'KritzelLine',
+      } as any) as any;
+      line.startAnchor = { objectId: 'external-obj' };
+      line.endAnchor = undefined;
+
+      selectionGroup.objectIds = ['line-1'];
+
+      expect(selectionGroup.hasExternalAnchoredLineConnections()).toBe(true);
+    });
+
+    it('should return false when line anchors only reference selected objects', () => {
+      const line = createMockObject({
+        id: 'line-1',
+        __class__: 'KritzelLine',
+      } as any) as any;
+      line.startAnchor = { objectId: 'shape-1' };
+      line.endAnchor = undefined;
+
+      createMockObject({ id: 'shape-1' });
+      selectionGroup.objectIds = ['line-1', 'shape-1'];
+
+      expect(selectionGroup.hasExternalAnchoredLineConnections()).toBe(false);
+    });
+  });
+
   describe('hitTest', () => {
     it('should return true when point is inside bounding box', () => {
       selectionGroup.translateX = 0;
