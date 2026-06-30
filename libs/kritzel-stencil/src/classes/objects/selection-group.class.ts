@@ -643,8 +643,13 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override rotate(value: number): void {
     this.rotation = value;
 
-    const centerX = this.translateX + this.totalWidth / 2 / this.scale;
-    const centerY = this.translateY + this.totalHeight / 2 / this.scale;
+    // Use the snapshot center as the rotation pivot rather than the live center.
+    // refreshObjectDimensions() below can grow the box when an anchored line is pinned
+    // to an external object; keeping the pivot fixed prevents the children from drifting.
+    const snapshotTotalWidth = this.snapshotWidth + this.padding * 2;
+    const snapshotTotalHeight = this.snapshotHeight + this.padding * 2;
+    const centerX = this.snapshotTranslateX + snapshotTotalWidth / 2 / this.scale;
+    const centerY = this.snapshotTranslateY + snapshotTotalHeight / 2 / this.scale;
 
     const angle = value - this.snapshotRotation;
     const cos = Math.cos(angle);
@@ -672,6 +677,32 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
         child.translateY = centerY + rotatedY - child.totalHeight / 2 / child.scale;
 
         child.rotate(childCount === 1 ? value : unchangedSnapshot.rotation + angle);
+      }
+
+      // Re-sync any anchored lines so their stored geometry follows the rotated objects
+      // (including lines anchored to an object outside this selection), then grow the
+      // selection box to enclose the reshaped lines. Rotation sets state.isRotating
+      // rather than state.isDragging, so the refresh must be triggered explicitly here.
+      const anchorTargetIds = new Set<string>();
+      for (const child of children) {
+        anchorTargetIds.add(child.id);
+        if (KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
+          const line = child as KritzelLine;
+          if (line.startAnchor) anchorTargetIds.add(line.startAnchor.objectId);
+          if (line.endAnchor) anchorTargetIds.add(line.endAnchor.objectId);
+        }
+      }
+
+      let hasAnchoredLines = false;
+      for (const targetId of anchorTargetIds) {
+        if (this._core.anchorManager.getLinesAnchoredTo(targetId).length > 0) {
+          hasAnchoredLines = true;
+          this._core.anchorManager.updateAnchorsForObject(targetId);
+        }
+      }
+
+      if (hasAnchoredLines) {
+        this.refreshObjectDimensions(children);
       }
     });
   }
@@ -805,7 +836,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
    */
   private getOffsetXToCenterFromSnapshot(snapshot: UnchangedObjectSnapshot): number {
     const objCenterX = snapshot.translateX + snapshot.totalWidth / snapshot.scale / 2;
-    const groupCenterX = this.translateX + this.totalWidth / this.scale / 2;
+    const groupCenterX = this.snapshotTranslateX + (this.snapshotWidth + this.padding * 2) / this.scale / 2;
     return objCenterX - groupCenterX;
   }
 
@@ -817,7 +848,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
    */
   private getOffsetYToCenterFromSnapshot(snapshot: UnchangedObjectSnapshot): number {
     const objCenterY = snapshot.translateY + snapshot.totalHeight / snapshot.scale / 2;
-    const groupCenterY = this.translateY + this.totalHeight / this.scale / 2;
+    const groupCenterY = this.snapshotTranslateY + (this.snapshotHeight + this.padding * 2) / this.scale / 2;
     return objCenterY - groupCenterY;
   }
 

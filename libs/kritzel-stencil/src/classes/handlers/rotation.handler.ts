@@ -17,6 +17,12 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   /** The rotation value of the selection group before the current rotation operation began. */
   initialSelectionGroupRotation: number = 0;
 
+  /** The X coordinate of the rotation pivot (group center) captured when rotation starts, in world space. */
+  initialCenterX: number = 0;
+
+  /** The Y coordinate of the rotation pivot (group center) captured when rotation starts, in world space. */
+  initialCenterY: number = 0;
+
   /**
    * Creates an instance of KritzelRotationHandler.
    * @param core - The KritzelCore instance that provides access to the store, engine, and other core functionalities.
@@ -32,6 +38,8 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
   private reset() {
     this.initialRotation = 0;
     this.rotation = 0;
+    this.initialCenterX = 0;
+    this.initialCenterY = 0;
   }
 
   /**
@@ -55,6 +63,11 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           const objectScale = selectionGroup.scale || 1;
           const centerX = selectionGroup.translateX + selectionGroup.width / 2 / objectScale;
           const centerY = selectionGroup.translateY + selectionGroup.height / 2 / objectScale;
+
+          // Capture the pivot once so it stays fixed even if the bounding box grows
+          // mid-rotation (e.g. a line anchored to an object outside the selection).
+          this.initialCenterX = centerX;
+          this.initialCenterY = centerY;
 
           const cursorX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
           const cursorY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
@@ -87,6 +100,11 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
           const centerX = selectionGroup.translateX + selectionGroup.width / 2 / objectScale;
           const centerY = selectionGroup.translateY + selectionGroup.height / 2 / objectScale;
 
+          // Capture the pivot once so it stays fixed even if the bounding box grows
+          // mid-rotation (e.g. a line anchored to an object outside the selection).
+          this.initialCenterX = centerX;
+          this.initialCenterY = centerY;
+
           const cursorX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
           const cursorY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
 
@@ -116,9 +134,8 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
         const clientX = event.clientX - this._core.store.offsetX;
         const clientY = event.clientY - this._core.store.offsetY;
 
-        const objectScale = selectionGroup.scale || 1;
-        const groupCenterX = selectionGroup.translateX + selectionGroup.width / 2 / objectScale;
-        const groupCenterY = selectionGroup.translateY + selectionGroup.height / 2 / objectScale;
+        const groupCenterX = this.initialCenterX;
+        const groupCenterY = this.initialCenterY;
 
         const cursorX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
         const cursorY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
@@ -144,9 +161,8 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
         const clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);
         const clientY = Math.round(firstTouch.clientY - this._core.store.offsetY);
 
-        const objectScale = selectionGroup.scale || 1;
-        const groupCenterX = selectionGroup.translateX + selectionGroup.width / 2 / objectScale;
-        const groupCenterY = selectionGroup.translateY + selectionGroup.height / 2 / objectScale;
+        const groupCenterX = this.initialCenterX;
+        const groupCenterY = this.initialCenterY;
 
         const cursorX = (clientX - this._core.store.state.translateX) / this._core.store.state.scale;
         const cursorY = (clientY - this._core.store.state.translateY) / this._core.store.state.scale;
