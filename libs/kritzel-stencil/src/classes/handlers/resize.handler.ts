@@ -45,6 +45,28 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
   }
 
   /**
+   * Rebase pointer and size baselines to the latest live selection bounds.
+   * This prevents drift when anchored lines to external objects expand/shrink
+   * the selection box while a resize gesture is in progress.
+   */
+  private rebaseResizeBaseline(
+    selectionGroup: { width: number; height: number; translateX: number; translateY: number },
+    clientX: number,
+    clientY: number
+  ): void {
+    this.initialMouseX = clientX;
+    this.initialMouseY = clientY;
+    this.initialSize.width = selectionGroup.width;
+    this.initialSize.height = selectionGroup.height;
+    this.initialSize.x = selectionGroup.translateX;
+    this.initialSize.y = selectionGroup.translateY;
+  }
+
+  private shouldRebaseResizeBaseline(selectionGroup: { hasExternalAnchoredLineConnections?: () => boolean }): boolean {
+    return selectionGroup.hasExternalAnchoredLineConnections?.() === true;
+  }
+
+  /**
    * Handles the pointer down event to initiate a resize operation.
    * Captures the initial mouse position and selection group dimensions when
    * the user clicks/touches a resize handle. Supports both mouse and touch/pen inputs.
@@ -193,6 +215,10 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this.newSize.y = newCenterY - this.newSize.height / objectScale / 2;
 
         selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+
+        if (this.shouldRebaseResizeBaseline(selectionGroup)) {
+          this.rebaseResizeBaseline(selectionGroup, clientX, clientY);
+        }
       }
     }
 
@@ -276,6 +302,10 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
         this.newSize.y = newCenterY - this.newSize.height / objectScale / 2;
 
         selectionGroup.resize(this.newSize.x, this.newSize.y, this.newSize.width, this.newSize.height);
+
+        if (this.shouldRebaseResizeBaseline(selectionGroup)) {
+          this.rebaseResizeBaseline(selectionGroup, clientX, clientY);
+        }
       }
     }
   }
