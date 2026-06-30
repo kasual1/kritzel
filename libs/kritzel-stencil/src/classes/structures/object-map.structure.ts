@@ -976,6 +976,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   undo(): void {
     if (this._undoManager && this._undoManager.canUndo()) {
       this._undoManager.undo();
+      this._core?.anchorManager.rebuildIndex();
       this._core?.engine.emitObjectsChange();
     }
   }
@@ -987,6 +988,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   redo(): void {
     if (this._undoManager && this._undoManager.canRedo()) {
       this._undoManager.redo();
+      this._core?.anchorManager.rebuildIndex();
       this._core?.engine.emitObjectsChange();
     }
   }
