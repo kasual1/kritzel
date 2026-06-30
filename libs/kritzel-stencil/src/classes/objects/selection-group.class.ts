@@ -137,6 +137,20 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     }
   }
 
+  private shouldSyncChildSelectionState(): boolean {
+    const localClientId = this._core.store.objects?.localClientId ?? null;
+    if (localClientId != null && this.clientId != null) {
+      return this.clientId === localClientId;
+    }
+
+    const localUserId = this._core.user?.id ?? null;
+    if (localUserId != null && this.userId != null) {
+      return this.userId === localUserId;
+    }
+
+    return this.userId == null;
+  }
+
   /**
    * Gets the number of objects in the selection group.
    * @returns The count of selected objects
@@ -410,7 +424,9 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       this.unchangedObjectSnapshots = new Map(Object.entries(object.unchangedObjectSnapshots));
     }
 
-    this.syncChildSelectionState(this.objects);
+    if (this.shouldSyncChildSelectionState()) {
+      this.syncChildSelectionState(this.objects);
+    }
 
     return this as unknown as T;
   }
