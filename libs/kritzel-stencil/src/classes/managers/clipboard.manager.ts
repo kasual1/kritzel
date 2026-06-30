@@ -148,6 +148,7 @@ export class KritzelClipboardManager {
    */
   private regenerateIdsAndRemapAnchors(topLevel: KritzelBaseObject<any>[]): void {
     const all: KritzelBaseObject<any>[] = [];
+    const hasOnlyTopLevelLines = topLevel.length > 0 && topLevel.every(object => KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine'));
 
     const collect = (objects: KritzelBaseObject<any>[]): void => {
       for (const object of objects) {
@@ -175,9 +176,13 @@ export class KritzelClipboardManager {
       if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
         if (object.startAnchor && idMap.has(object.startAnchor.objectId)) {
           object.startAnchor = { objectId: idMap.get(object.startAnchor.objectId)! };
+        } else if (hasOnlyTopLevelLines) {
+          object.startAnchor = undefined;
         }
         if (object.endAnchor && idMap.has(object.endAnchor.objectId)) {
           object.endAnchor = { objectId: idMap.get(object.endAnchor.objectId)! };
+        } else if (hasOnlyTopLevelLines) {
+          object.endAnchor = undefined;
         }
       }
     }

@@ -2663,7 +2663,7 @@ export class KritzelEngine {
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
     const visibleObjects = this.core.store.objectsInViewport;
-    
+
     const getObjectWrapperPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
       if (this.core.store.state.isScaling) {
         return 'none';
@@ -2783,7 +2783,11 @@ export class KritzelEngine {
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
                   position: 'absolute',
-                  zIndex: object.zIndex.toString(),
+                  // The object wrapper establishes its own stacking context (transform + z-index),
+                  // so the selection-line handles inside it cannot escape above the snap/anchor
+                  // layers (z-index 9999/9998) rendered later at the origin level. Lift the
+                  // selected line's wrapper above those layers so its handles always paint on top.
+                  zIndex: this.core.displaySelectionLineUI(object) ? '10001' : object.zIndex.toString(),
                   pointerEvents: getObjectWrapperPointerEvents(object),
                 }}
               >
@@ -3145,7 +3149,6 @@ export class KritzelEngine {
                       </div>
                     )}
 
-
                     {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>assetId: {object.assetId}</div>
@@ -3197,6 +3200,15 @@ export class KritzelEngine {
                       remoteUserColor ?? (KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--kritzel-selection-border-color, #007AFF)');
 
                     const selectionHandleStrokeColor = remoteUserColor ?? 'var(--kritzel-selection-handle-stroke-color, #007AFF)';
+                    const lineObject = object as KritzelLine;
+                    const activeSnapCandidate = this.core.store.state.snapCandidate;
+                    const isStartHandleSnapped = lineObject.startAnchor != null;
+                    const isEndHandleSnapped = lineObject.endAnchor != null;
+                    const isStartHandleSnapPreview = activeSnapCandidate?.endpoint === 'start';
+                    const isEndHandleSnapPreview = activeSnapCandidate?.endpoint === 'end';
+                    const isStartHandleHighlighted = isStartHandleSnapped || isStartHandleSnapPreview;
+                    const isEndHandleHighlighted = isEndHandleSnapped || isEndHandleSnapPreview;
+                    const selectionOverlayZIndex = this.core.displaySelectionLineUI(object) ? '10000' : (object.zIndex + 1).toString();
                     const handleScale = object.scale ?? 1;
                     const { canRenderResizeHandles, canRenderRotationHandle } = this.getSelectionHandleCapabilities(object);
 
@@ -3204,7 +3216,7 @@ export class KritzelEngine {
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         style={{
-                          zIndex: (object.zIndex + 1).toString(),
+                          zIndex: selectionOverlayZIndex,
                           height: object?.totalHeight.toString(),
                           width: object?.totalWidth.toString(),
                           left: '0',
@@ -3464,7 +3476,7 @@ export class KritzelEngine {
                                   cy={object.startY - object.y}
                                   r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                                   style={{
-                                    fill: 'var(--kritzel-selection-handle-color, #000000)',
+                                    fill: isStartHandleHighlighted ? selectionHandleStrokeColor : 'var(--kritzel-selection-handle-color, #000000)',
                                     stroke: selectionHandleStrokeColor,
                                     strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                                     paintOrder: 'fill',
@@ -3528,7 +3540,7 @@ export class KritzelEngine {
                                   cy={object.endY - object.y}
                                   r={`${((baseHandleSize - 1) * object.scale) / this.core.store.state?.scale}`}
                                   style={{
-                                    fill: 'var(--kritzel-selection-handle-color, #000000)',
+                                    fill: isEndHandleHighlighted ? selectionHandleStrokeColor : 'var(--kritzel-selection-handle-color, #000000)',
                                     stroke: selectionHandleStrokeColor,
                                     strokeWidth: `calc(2px * ${object.scale} / ${this.core.store.state?.scale})`,
                                     paintOrder: 'fill',
@@ -3555,108 +3567,6 @@ export class KritzelEngine {
               </div>
             );
           })}
-
-          {/* Anchor lines for selected line objects - show dashed lines from edge to center */}
-          {(() => {
-            const data = this.core.anchorManager.getAnchorLinesRenderData();
-            if (!data) return null;
-
-            return (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="anchor-lines"
-                style={{
-                  position: 'absolute',
-                  left: '0',
-                  top: '0',
-                  width: '1px',
-                  height: '1px',
-                  pointerEvents: 'none',
-                  zIndex: '9998',
-                  overflow: 'visible',
-                }}
-              >
-                {data.startAnchorViz && (
-                  <g class="anchor-line-start">
-                    {data.startAnchorViz.pathD ? (
-                      <path
-                        d={data.startAnchorViz.pathD}
-                        style={{
-                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
-                          strokeWidth: `${data.lineStrokeWidth}`,
-                          strokeDasharray: data.dashArray,
-                          strokeLinecap: 'round',
-                          fill: 'none',
-                        }}
-                      />
-                    ) : (
-                      <line
-                        x1={data.startAnchorViz.edgeX}
-                        y1={data.startAnchorViz.edgeY}
-                        x2={data.startAnchorViz.centerX}
-                        y2={data.startAnchorViz.centerY}
-                        style={{
-                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
-                          strokeWidth: `${data.lineStrokeWidth}`,
-                          strokeDasharray: data.dashArray,
-                          strokeLinecap: 'round',
-                        }}
-                      />
-                    )}
-                    <circle
-                      cx={data.startAnchorViz.centerX}
-                      cy={data.startAnchorViz.centerY}
-                      r={data.indicatorRadius}
-                      style={{
-                        fill: 'var(--kritzel-snap-indicator-fill, rgba(0, 0, 0))',
-                        stroke: 'var(--kritzel-snap-indicator-stroke, #007bff)',
-                        strokeWidth: data.indicatorStrokeWidth,
-                      }}
-                    />
-                  </g>
-                )}
-                {data.endAnchorViz && (
-                  <g class="anchor-line-end">
-                    {data.endAnchorViz.pathD ? (
-                      <path
-                        d={data.endAnchorViz.pathD}
-                        style={{
-                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
-                          strokeWidth: `${data.lineStrokeWidth}`,
-                          strokeDasharray: data.dashArray,
-                          strokeLinecap: 'round',
-                          fill: 'none',
-                        }}
-                      />
-                    ) : (
-                      <line
-                        x1={data.endAnchorViz.edgeX}
-                        y1={data.endAnchorViz.edgeY}
-                        x2={data.endAnchorViz.centerX}
-                        y2={data.endAnchorViz.centerY}
-                        style={{
-                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
-                          strokeWidth: `${data.lineStrokeWidth}`,
-                          strokeDasharray: data.dashArray,
-                          strokeLinecap: 'round',
-                        }}
-                      />
-                    )}
-                    <circle
-                      cx={data.endAnchorViz.centerX}
-                      cy={data.endAnchorViz.centerY}
-                      r={data.indicatorRadius}
-                      style={{
-                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
-                        stroke: 'var(--kritzel-snap-indicator-stroke, #007bff)',
-                        strokeWidth: data.indicatorStrokeWidth,
-                      }}
-                    />
-                  </g>
-                )}
-              </svg>
-            );
-          })()}
 
           {/* Snap indicator for line anchoring */}
           {(() => {
@@ -3716,11 +3626,113 @@ export class KritzelEngine {
                     r={data.indicatorRadius}
                     style={{
                       fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
-                      stroke: 'var(--kritzel-snap-indicator-stroke, #007bff)',
                       strokeWidth: data.indicatorStrokeWidth,
                     }}
                   />
                 </g>
+              </svg>
+            );
+          })()}
+
+          {/* Anchor lines for selected line objects - show dashed lines from edge to center */}
+          {(() => {
+            const data = this.core.anchorManager.getAnchorLinesRenderData();
+            if (!data) return null;
+
+            return (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="anchor-lines"
+                style={{
+                  position: 'absolute',
+                  left: '0',
+                  top: '0',
+                  width: '1px',
+                  height: '1px',
+                  pointerEvents: 'none',
+                  zIndex: '9998',
+                  overflow: 'visible',
+                }}
+              >
+                {data.startAnchorViz && (
+                  <g class="anchor-line-start">
+                    {data.startAnchorViz.pathD ? (
+                      <path
+                        d={data.startAnchorViz.pathD}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                          fill: 'none',
+                        }}
+                      />
+                    ) : (
+                      <line
+                        x1={data.startAnchorViz.edgeX}
+                        y1={data.startAnchorViz.edgeY}
+                        x2={data.startAnchorViz.centerX}
+                        y2={data.startAnchorViz.centerY}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.3))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                        }}
+                      />
+                    )}
+                    <circle
+                      cx={data.startAnchorViz.centerX}
+                      cy={data.startAnchorViz.centerY}
+                      r={data.indicatorRadius}
+                      style={{
+                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+
+                        stroke: 'var(--kritzel-snap-indicator-stroke, #007bff)',
+                        strokeWidth: data.indicatorStrokeWidth,
+                      }}
+                    />
+                  </g>
+                )}
+                {data.endAnchorViz && (
+                  <g class="anchor-line-end">
+                    {data.endAnchorViz.pathD ? (
+                      <path
+                        d={data.endAnchorViz.pathD}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                          fill: 'none',
+                        }}
+                      />
+                    ) : (
+                      <line
+                        x1={data.endAnchorViz.edgeX}
+                        y1={data.endAnchorViz.edgeY}
+                        x2={data.endAnchorViz.centerX}
+                        y2={data.endAnchorViz.centerY}
+                        style={{
+                          stroke: 'var(--kritzel-snap-line-stroke, rgba(0, 0, 0, 0.2))',
+                          strokeWidth: `${data.lineStrokeWidth}`,
+                          strokeDasharray: data.dashArray,
+                          strokeLinecap: 'round',
+                        }}
+                      />
+                    )}
+                    <circle
+                      cx={data.endAnchorViz.centerX}
+                      cy={data.endAnchorViz.centerY}
+                      r={data.indicatorRadius}
+                      style={{
+                        fill: 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))',
+                        stroke: 'var(--kritzel-snap-indicator-stroke, #007bff)',
+                        strokeWidth: data.indicatorStrokeWidth,
+                      }}
+                    />
+                  </g>
+                )}
               </svg>
             );
           })()}
