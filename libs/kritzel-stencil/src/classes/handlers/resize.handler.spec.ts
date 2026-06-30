@@ -15,6 +15,7 @@ describe('KritzelResizeHandler', () => {
     translateY: number;
     rotation: number;
     scale: number;
+    hasExternalAnchoredLineConnections?: jest.Mock;
     resize: jest.Mock;
     update: jest.Mock;
     beginTransform: jest.Mock;
@@ -99,6 +100,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 20,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -130,6 +132,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 20,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -163,6 +166,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 20,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -185,6 +189,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 0,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -212,6 +217,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 60,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -244,6 +250,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 0,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -269,6 +276,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 0,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -293,6 +301,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 0,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -350,6 +359,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 0,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -528,6 +538,40 @@ describe('KritzelResizeHandler', () => {
         // With 90 degree rotation, horizontal movement becomes vertical in local space
         expect(mockSelectionGroup!.resize).toHaveBeenCalled();
       });
+
+      it('should rebase resize baseline when external anchored lines reshape the group', () => {
+        mockState.resizeHandleType = KritzelHandleType.BottomRight;
+        mockSelectionGroup!.hasExternalAnchoredLineConnections = jest.fn().mockReturnValue(true);
+
+        const downEvent = createPointerEvent('pointerdown', {
+          pointerType: 'mouse',
+          clientX: 100,
+          clientY: 100,
+        });
+        resizeHandler.handlePointerDown(downEvent);
+
+        const moveEvent1 = createPointerEvent('pointermove', {
+          pointerType: 'mouse',
+          clientX: 120,
+          clientY: 120,
+        });
+        resizeHandler.handlePointerMove(moveEvent1);
+
+        // Simulate anchor-constrained line geometry expanding the selection bounds.
+        mockSelectionGroup!.width = 140;
+        mockSelectionGroup!.height = 140;
+        mockSelectionGroup!.translateX = -10;
+        mockSelectionGroup!.translateY = -10;
+
+        const moveEvent2 = createPointerEvent('pointermove', {
+          pointerType: 'mouse',
+          clientX: 130,
+          clientY: 130,
+        });
+        resizeHandler.handlePointerMove(moveEvent2);
+
+        expect(mockSelectionGroup!.resize).toHaveBeenNthCalledWith(2, expect.any(Number), expect.any(Number), 150, 150);
+      });
     });
 
     describe('touch events', () => {
@@ -539,6 +583,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 0,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -615,6 +660,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 0,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -708,6 +754,7 @@ describe('KritzelResizeHandler', () => {
           translateY: 0,
           rotation: 0,
           scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
           resize: jest.fn(),
           update: jest.fn(),
           beginTransform: jest.fn(),
@@ -827,6 +874,7 @@ describe('KritzelResizeHandler', () => {
         translateY: 0,
         rotation: 0,
         scale: 1,
+        hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
         resize: jest.fn(),
         update: jest.fn(),
         beginTransform: jest.fn(),
