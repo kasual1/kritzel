@@ -113,6 +113,9 @@ describe('KritzelLineHandleHandler', () => {
         get state() {
           return mockState;
         },
+        get objects() {
+          return mockState.objects;
+        },
         get selectionGroup() {
           return mockSelectionGroup;
         },
@@ -130,9 +133,12 @@ describe('KritzelLineHandleHandler', () => {
       },
       anchorManager: {
         removeAnchor: jest.fn(),
+        findSnapPreviewTarget: jest.fn().mockReturnValue(null),
         findSnapTarget: jest.fn().mockReturnValue(null),
         setSnapCandidate: jest.fn(),
         clearSnapCandidate: jest.fn(),
+        setSnapPreviewCandidate: jest.fn(),
+        clearSnapPreviewCandidate: jest.fn(),
         setAnchor: jest.fn(),
         computeAnchorClipInfo: jest.fn().mockReturnValue(null),
       },
@@ -525,6 +531,7 @@ describe('KritzelLineHandleHandler', () => {
         lineHandleHandler.handlePointerMove(moveEvent);
 
         expect(mockCore.rerender).toHaveBeenCalled();
+        expect(mockCore.anchorManager.findSnapPreviewTarget).toHaveBeenCalled();
         expect(mockCore.anchorManager.findSnapTarget).toHaveBeenCalled();
       });
 
@@ -540,6 +547,7 @@ describe('KritzelLineHandleHandler', () => {
         lineHandleHandler.handlePointerMove(moveEvent);
 
         expect(mockCore.anchorManager.clearSnapCandidate).toHaveBeenCalled();
+        expect(mockCore.anchorManager.clearSnapPreviewCandidate).toHaveBeenCalled();
       });
 
       it('should set snap candidate when snap target found', () => {
@@ -559,6 +567,28 @@ describe('KritzelLineHandleHandler', () => {
         lineHandleHandler.handlePointerMove(moveEvent);
 
         expect(mockCore.anchorManager.setSnapCandidate).toHaveBeenCalled();
+        expect(mockCore.anchorManager.setSnapPreviewCandidate).toHaveBeenCalledWith(null);
+      });
+
+      it('should set a preview candidate before actual snapping engages', () => {
+        const previewTarget = {
+          objectId: 'preview-obj',
+          centerX: 150,
+          centerY: 150,
+        };
+        (mockCore.anchorManager.findSnapPreviewTarget as jest.Mock).mockReturnValue(previewTarget);
+        (mockCore.anchorManager.findSnapTarget as jest.Mock).mockReturnValue(null);
+
+        const moveEvent = createPointerEvent('pointermove', {
+          pointerType: 'mouse',
+          clientX: 120,
+          clientY: 130,
+        });
+
+        lineHandleHandler.handlePointerMove(moveEvent);
+
+        expect(mockCore.anchorManager.setSnapPreviewCandidate).toHaveBeenCalled();
+        expect(mockCore.anchorManager.clearSnapCandidate).toHaveBeenCalled();
       });
 
       it('should exclude other endpoint anchor from snap targets', () => {
@@ -576,7 +606,8 @@ describe('KritzelLineHandleHandler', () => {
           expect.any(Number),
           expect.any(Number),
           'line-1',
-          'anchor-obj'
+          'anchor-obj',
+          'mouse'
         );
       });
     });
@@ -602,6 +633,7 @@ describe('KritzelLineHandleHandler', () => {
         lineHandleHandler.handlePointerMove(moveEvent);
 
         expect(mockCore.rerender).toHaveBeenCalled();
+        expect(mockCore.anchorManager.findSnapPreviewTarget).toHaveBeenCalled();
         expect(mockCore.anchorManager.findSnapTarget).toHaveBeenCalled();
       });
 
@@ -620,7 +652,37 @@ describe('KritzelLineHandleHandler', () => {
           expect.any(Number),
           expect.any(Number),
           'line-1',
-          'start-anchor-obj'
+          'start-anchor-obj',
+          'mouse'
+        );
+      });
+
+      it('should pass touch pointer type into snap detection', () => {
+        mockState.lineHandleType = 'start';
+        const touchDownEvent = createPointerEvent('pointerdown', {
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 100,
+          clientY: 100,
+        });
+        mockState.pointers.set(1, { clientX: 100, clientY: 100 });
+        lineHandleHandler.handlePointerDown(touchDownEvent);
+
+        const moveEvent = createPointerEvent('pointermove', {
+          pointerType: 'touch',
+          pointerId: 1,
+          clientX: 150,
+          clientY: 150,
+        });
+
+        lineHandleHandler.handlePointerMove(moveEvent);
+
+        expect(mockCore.anchorManager.findSnapTarget).toHaveBeenCalledWith(
+          expect.any(Number),
+          expect.any(Number),
+          'line-1',
+          undefined,
+          'touch'
         );
       });
     });
@@ -923,6 +985,7 @@ describe('KritzelLineHandleHandler', () => {
       lineHandleHandler.handlePointerUp(upEvent);
 
       expect(mockCore.anchorManager.clearSnapCandidate).toHaveBeenCalled();
+      expect(mockCore.anchorManager.clearSnapPreviewCandidate).toHaveBeenCalled();
     });
   });
 
