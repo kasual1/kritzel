@@ -11,6 +11,7 @@ describe('KritzelSelectionGroup', () => {
   let mockAnchorManagerUpdate: jest.Mock;
   let mockAnchorManagerGetLines: jest.Mock;
   let mockObjectsStore: KritzelBaseObject<HTMLElement>[];
+  let mockLocalClientId: number;
 
   beforeEach(() => {
     mockObjectsUpdate = jest.fn();
@@ -18,6 +19,7 @@ describe('KritzelSelectionGroup', () => {
     mockAnchorManagerUpdate = jest.fn();
     mockAnchorManagerGetLines = jest.fn().mockReturnValue([]);
     mockObjectsStore = [];
+    mockLocalClientId = 1;
 
     // Create a custom array-like object that has both array behavior and custom methods
     const createMockObjectsArray = () => {
@@ -28,6 +30,7 @@ describe('KritzelSelectionGroup', () => {
       } = Object.assign([], {
         update: mockObjectsUpdate,
         transaction: mockObjectsTransaction,
+        localClientId: mockLocalClientId,
         filter: (predicate: (obj: KritzelBaseObject<HTMLElement>) => boolean) => {
           return mockObjectsStore.filter(predicate);
         },
@@ -38,6 +41,9 @@ describe('KritzelSelectionGroup', () => {
     };
 
     mockCore = {
+      user: {
+        id: 'local-user',
+      },
       store: {
         state: {
           scale: 1,
@@ -761,18 +767,51 @@ describe('KritzelSelectionGroup', () => {
       expect(selectionGroup.unchangedObjectSnapshots.get('obj-1')?.translateX).toBe(10);
     });
 
-    it('should restore isSelected for selection group and apply it to children', () => {
+    it('should restore isSelected for the local selection group and apply it to children', () => {
       const child = createMockObject({ id: 'obj-1', isSelected: false });
 
       selectionGroup.deserialize({
         id: 'sg-1',
         objectIds: ['obj-1'],
         isSelected: true,
+        userId: 'local-user',
+        clientId: 1,
       });
 
       expect(selectionGroup.isSelected).toBe(true);
       expect(selectionGroup.objectIds).toEqual(['obj-1']);
       expect(child.isSelected).toBe(true);
+    });
+
+    it('should not apply child selection state from a remote selection group', () => {
+      const child = createMockObject({ id: 'obj-1', isSelected: false });
+
+      selectionGroup.deserialize({
+        id: 'sg-1',
+        objectIds: ['obj-1'],
+        isSelected: true,
+        userId: 'remote-user',
+        clientId: 2,
+      });
+
+      expect(selectionGroup.isSelected).toBe(true);
+      expect(selectionGroup.objectIds).toEqual(['obj-1']);
+      expect(child.isSelected).toBe(false);
+    });
+
+    it('should not apply child selection state from the same user on a different client', () => {
+      const child = createMockObject({ id: 'obj-1', isSelected: false });
+
+      selectionGroup.deserialize({
+        id: 'sg-1',
+        objectIds: ['obj-1'],
+        isSelected: true,
+        userId: 'local-user',
+        clientId: 2,
+      });
+
+      expect(selectionGroup.isSelected).toBe(true);
+      expect(child.isSelected).toBe(false);
     });
 
     it('should keep children unselected when deserialized selection group is not selected', () => {
@@ -782,6 +821,8 @@ describe('KritzelSelectionGroup', () => {
         id: 'sg-1',
         objectIds: ['obj-1'],
         isSelected: false,
+        userId: 'local-user',
+        clientId: 1,
       });
 
       expect(selectionGroup.isSelected).toBe(false);
