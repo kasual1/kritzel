@@ -108,6 +108,9 @@ jest.mock('../../helpers/migration.helper', () => ({
 jest.mock('../..', () => ({}));
 
 type MockCore = jest.Mocked<Pick<KritzelCore, 'rerender' | 'editorId'>> & {
+  anchorManager: {
+    rebuildIndex: jest.Mock;
+  };
   engine: {
     emitObjectsChange: jest.Mock;
     emitObjectsAdded: jest.Mock;
@@ -122,6 +125,9 @@ type MockCore = jest.Mocked<Pick<KritzelCore, 'rerender' | 'editorId'>> & {
 const createMockCore = (overrides: Partial<MockCore> = {}): MockCore => ({
   rerender: jest.fn(),
   editorId: undefined,
+  anchorManager: {
+    rebuildIndex: jest.fn(),
+  },
   engine: {
     emitObjectsChange: jest.fn(),
     emitObjectsAdded: jest.fn(),
@@ -504,6 +510,7 @@ describe('KritzelObjectMap', () => {
       objectMap.undo();
 
       expect(mockUndoManagerUndo).toHaveBeenCalled();
+      expect(mockCore.anchorManager.rebuildIndex).toHaveBeenCalled();
       expect(mockCore.engine.emitObjectsChange).toHaveBeenCalled();
     });
 
@@ -521,6 +528,7 @@ describe('KritzelObjectMap', () => {
       objectMap.redo();
 
       expect(mockUndoManagerRedo).toHaveBeenCalled();
+      expect(mockCore.anchorManager.rebuildIndex).toHaveBeenCalled();
       expect(mockCore.engine.emitObjectsChange).toHaveBeenCalled();
     });
 
