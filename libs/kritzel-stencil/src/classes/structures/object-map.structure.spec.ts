@@ -734,6 +734,7 @@ describe('KritzelObjectMap', () => {
         id: 'sg-1',
         __class__: 'KritzelSelectionGroup',
         objectIds: ['obj-1', 'obj-2'],
+        deselectAllChildren: jest.fn(),
         invalidateObjectsCache: jest.fn(),
         refreshObjectDimensions: jest.fn(),
         captureUnchangedSnapshots: jest.fn(),
@@ -876,6 +877,29 @@ describe('KritzelObjectMap', () => {
       observerCallback(mockEvent);
 
       expect(mockStore.invalidateSelectionCache).toHaveBeenCalled();
+    });
+
+    it('should deselect children when a remote SelectionGroup is deleted', () => {
+      const child = { id: 'obj-1', isSelected: true };
+      mockSelectionGroup.deselectAllChildren = jest.fn(() => {
+        child.isSelected = false;
+      });
+
+      // Ensure the SelectionGroup exists in the local id map before delete arrives.
+      objectMap.insert(mockSelectionGroup as any);
+
+      const mockEvent = {
+        transaction: { origin: null },
+        keysChanged: new Set(['sg-1']),
+        changes: {
+          keys: new Map([['sg-1', { action: 'delete' }]]),
+        },
+      };
+
+      observerCallback(mockEvent);
+
+      expect(mockSelectionGroup.deselectAllChildren).toHaveBeenCalled();
+      expect(child.isSelected).toBe(false);
     });
   });
 
