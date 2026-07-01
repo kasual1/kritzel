@@ -791,4 +791,32 @@ describe('KritzelLine', () => {
       expect(fractionalLine.endX).toBe(100.5);
     });
   });
+
+  describe('serialization cache behavior', () => {
+    it('should omit transient caches from serialized output', () => {
+      const linePrivate = line as unknown as {
+        _adjustedPoints: number[][] | null;
+        _clipInfo: { start?: { x: number; y: number; t?: number }; end?: { x: number; y: number; t?: number } } | null;
+      };
+      linePrivate._adjustedPoints = [[1, 2], [3, 4]];
+      linePrivate._clipInfo = { start: { x: 10, y: 20, t: 0.1 } };
+
+      const serialized = line.serialize() as Record<string, unknown>;
+
+      expect(serialized._adjustedPoints).toBeUndefined();
+      expect(serialized._clipInfo).toBeUndefined();
+    });
+
+    it('should reset caches to null after deserialize', () => {
+      const serialized = line.serialize();
+      const revived = KritzelLine.create(mockCore).deserialize<KritzelLine>(serialized);
+      const revivedPrivate = revived as unknown as {
+        _adjustedPoints: number[][] | null;
+        _clipInfo: { start?: { x: number; y: number; t?: number }; end?: { x: number; y: number; t?: number } } | null;
+      };
+
+      expect(revivedPrivate._adjustedPoints).toBeNull();
+      expect(revivedPrivate._clipInfo).toBeNull();
+    });
+  });
 });
