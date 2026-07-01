@@ -59,6 +59,7 @@ jest.mock('yjs', () => ({
 // --- Mock Quadtree ---
 const mockQuadtreeInsert = jest.fn().mockReturnValue(true);
 const mockQuadtreeUpdate = jest.fn().mockReturnValue(true);
+const mockQuadtreeReindex = jest.fn().mockReturnValue(true);
 const mockQuadtreeRemove = jest.fn().mockReturnValue(1);
 const mockQuadtreeFilter = jest.fn().mockReturnValue([]);
 const mockQuadtreeAllObjects = jest.fn().mockReturnValue([]);
@@ -70,6 +71,7 @@ jest.mock('./quadtree.structure', () => ({
   KritzelQuadtree: jest.fn().mockImplementation(() => ({
     insert: mockQuadtreeInsert,
     update: mockQuadtreeUpdate,
+    reindex: mockQuadtreeReindex,
     remove: mockQuadtreeRemove,
     filter: mockQuadtreeFilter,
     allObjects: mockQuadtreeAllObjects,
@@ -349,7 +351,7 @@ describe('KritzelObjectMap', () => {
       const result = objectMap.update(obj);
 
       expect(result).toBe(true);
-      expect(mockQuadtreeUpdate).toHaveBeenCalledWith(obj);
+      expect(mockQuadtreeReindex).toHaveBeenCalledWith(obj);
       expect(mockMapSet).toHaveBeenCalledWith('obj-1', { id: 'obj-1', type: 'mock' });
     });
 
@@ -394,10 +396,22 @@ describe('KritzelObjectMap', () => {
 
       objectMap.update(obj);
 
-      expect(mockQuadtreeUpdate).toHaveBeenCalledWith(obj);
+      expect(mockQuadtreeReindex).toHaveBeenCalledWith(obj);
       // mapSet should not have been called during update (SelectionBox is not persistable)
       const setCallsAfterInit = mockMapSet.mock.calls;
       expect(setCallsAfterInit.filter((c: any) => c[0] === 'sb-1')).toHaveLength(0);
+    });
+
+    it('should skip reindex when skipReindex option is true', () => {
+      const obj = createMockObject('obj-1');
+      objectMap.insert(obj);
+      jest.clearAllMocks();
+
+      const result = objectMap.update(obj, { skipReindex: true });
+
+      expect(result).toBe(true);
+      expect(mockQuadtreeUpdate).toHaveBeenCalledWith(obj);
+      expect(mockQuadtreeReindex).not.toHaveBeenCalled();
     });
   });
 
@@ -908,6 +922,76 @@ describe('KritzelObjectMap', () => {
 
       expect(mockSelectionGroup.deselectAllChildren).toHaveBeenCalled();
       expect(child.isSelected).toBe(false);
+    });
+
+    it('should rebuild the anchor index when a remote line is updated', () => {
+      const { KritzelLine } = require('../objects/line.class');
+      const mockLine: any = {
+        id: 'line-1',
+        __class__: 'KritzelLine',
+        serialize: jest.fn().mockReturnValue({ id: 'line-1', __class__: 'KritzelLine' }),
+        adoptTransientStateFrom: jest.fn(),
+      };
+      Object.setPrototypeOf(mockLine, KritzelLine.prototype);
+
+      mockRevive.mockReturnValueOnce(mockLine);
+      mockMapGet.mockReturnValueOnce({ id: 'line-1', __class__: 'KritzelLine' });
+
+      const mockEvent = {
+        transaction: { origin: null },
+        keysChanged: new Set(['line-1']),
+        changes: {
+          keys: new Map([['line-1', { action: 'update' }]]),
+        },
+      };
+
+      observerCallback(mockEvent);
+
+      expect(mockCore.anchorManager.rebuildIndex).toHaveBeenCalled();
+    });
+
+    it('should rebuild the anchor index when a remote line is deleted', () => {
+      const { KritzelLine } = require('../objects/line.class');
+      const mockLine: any = { id: 'line-1', __class__: 'KritzelLine' };
+      Object.setPrototypeOf(mockLine, KritzelLine.prototype);
+
+      // The line must already exist locally so the delete path can detect its type.
+      objectMap.insert(mockLine);
+
+      const mockEvent = {
+        transaction: { origin: null },
+        keysChanged: new Set(['line-1']),
+        changes: {
+          keys: new Map([['line-1', { action: 'delete' }]]),
+        },
+      };
+
+      observerCallback(mockEvent);
+
+      expect(mockCore.anchorManager.rebuildIndex).toHaveBeenCalled();
+    });
+
+    it('should not rebuild the anchor index when only non-line objects change remotely', () => {
+      const mockPath = {
+        id: 'obj-1',
+        __class__: 'KritzelPath',
+        serialize: jest.fn().mockReturnValue({ id: 'obj-1', __class__: 'KritzelPath' }),
+      };
+
+      mockRevive.mockReturnValueOnce(mockPath);
+      mockMapGet.mockReturnValueOnce({ id: 'obj-1', __class__: 'KritzelPath' });
+
+      const mockEvent = {
+        transaction: { origin: null },
+        keysChanged: new Set(['obj-1']),
+        changes: {
+          keys: new Map([['obj-1', { action: 'update' }]]),
+        },
+      };
+
+      observerCallback(mockEvent);
+
+      expect(mockCore.anchorManager.rebuildIndex).not.toHaveBeenCalled();
     });
   });
 
