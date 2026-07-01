@@ -19,18 +19,17 @@ export class KritzelBrowserPermissionManager {
    */
   constructor(_core: KritzelCore) {
     this.registerRequestPermissionHandler('clipboard-read', async () => {
-      // Firefox and Safari open native paste menus when readText() is called
+      // Firefox and Safari open native paste menus when the clipboard is read
       // proactively, so rely on the permission state instead of an eager read.
-      
       if (this._isFirefox || this._isSafari) {
         return 'granted';
       }
 
       try {
-        await navigator.clipboard.readText();
-        return 'granted';
+        const status = await navigator.permissions.query({ name: 'clipboard-read' as PermissionName });
+        return status.state === 'denied' ? 'denied' : 'granted';
       } catch {
-        return 'denied';
+        return 'granted';
       }
     });
   }
