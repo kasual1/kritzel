@@ -842,6 +842,29 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   }
 
   /**
+   * Serializes the line while excluding transient cache fields.
+   * @returns A serializable line object without runtime caches
+   */
+  override serialize() {
+    const serialized = super.serialize();
+    delete serialized._adjustedPoints;
+    delete serialized._clipInfo;
+    return serialized;
+  }
+
+  /**
+   * Deserializes and resets transient caches so geometry is recomputed lazily.
+   * @param object - The serialized line object
+   * @returns This instance cast to type T
+   */
+  override deserialize<T>(object: any): T {
+    const result = super.deserialize<T>(object);
+    this._adjustedPoints = null;
+    this._clipInfo = null;
+    return result;
+  }
+
+  /**
    * Recalculates and updates the width, height, x, y, and translation properties
    * based on the current endpoint positions and stroke width.
    * Called during construction and after endpoint changes.

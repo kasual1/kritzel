@@ -476,8 +476,13 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     line.translateX = newTranslateX;
     line.translateY = newTranslateY;
 
-    // Clear cached adjusted points
-    (line as unknown as { _adjustedPoints: number[][] | null })._adjustedPoints = null;
+    // Clear transient caches so geometry and anchor clipping recompute on demand.
+    const linePrivate = line as unknown as {
+      _adjustedPoints: number[][] | null;
+      _clipInfo: { start?: { x: number; y: number; t?: number }; end?: { x: number; y: number; t?: number } } | null;
+    };
+    linePrivate._adjustedPoints = null;
+    linePrivate._clipInfo = null;
 
     this._core.store.objects.update(line);
   }

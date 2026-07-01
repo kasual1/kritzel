@@ -467,6 +467,13 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.resizing = false;
     this.markedForRemoval = false;
     this.isVisible = true;
+    // Reset known transient geometry caches if present on subclasses.
+    if ('_adjustedPoints' in this) {
+      (this as unknown as { _adjustedPoints: number[][] | null })._adjustedPoints = null;
+    }
+    if ('_clipInfo' in this) {
+      (this as unknown as { _clipInfo: any })._clipInfo = null;
+    }
     return this as unknown as T;
   }
 

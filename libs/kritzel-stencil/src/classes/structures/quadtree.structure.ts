@@ -103,6 +103,22 @@ export class KritzelQuadtree<T extends KritzelBaseObject<any>> {
   }
 
   /**
+   * Reindexes an existing object by removing it from its current node and
+   * reinserting it based on its latest bounding box.
+   *
+   * @param object - The updated object to reindex
+   * @returns `true` if the object was found and reinserted, `false` otherwise
+   */
+  reindex(object: T): boolean {
+    const removed = this.remove(o => o.id === object.id);
+    if (removed === 0) {
+      return false;
+    }
+
+    return this.insert(object);
+  }
+
+  /**
    * Removes objects from the quadtree that match the given predicate.
    * Recursively searches through all nodes and removes matching objects.
    *

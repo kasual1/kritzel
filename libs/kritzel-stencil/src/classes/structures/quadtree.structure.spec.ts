@@ -213,6 +213,43 @@ describe('KritzelQuadtree', () => {
     });
   });
 
+  describe('reindex', () => {
+    it('should reindex an object into a different query region after a large move', () => {
+      const smallTree = new KritzelQuadtree<any>(WORLD_BOUNDS, 2);
+      smallTree.insert(createObject('a', 10, 10, 5, 5));
+      smallTree.insert(createObject('b', 60, 10, 5, 5));
+      smallTree.insert(createObject('c', 10, 60, 5, 5));
+
+      const result = smallTree.reindex(createObject('a', 80, 80, 5, 5));
+
+      expect(result).toBe(true);
+      const oldRegion = smallTree.query({ x: 0, y: 0, z: 0, width: 50, height: 50 }).map((o: any) => o.id);
+      const newRegion = smallTree.query({ x: 70, y: 70, z: 0, width: 30, height: 30 }).map((o: any) => o.id);
+      expect(oldRegion).not.toContain('a');
+      expect(newRegion).toContain('a');
+    });
+
+    it('should keep tree size stable after reindex', () => {
+      tree.insert(createObject('a', 10, 10, 5, 5));
+      tree.insert(createObject('b', 20, 20, 5, 5));
+      tree.insert(createObject('c', 30, 30, 5, 5));
+
+      const result = tree.reindex(createObject('a', 40, 40, 5, 5));
+
+      expect(result).toBe(true);
+      expect(tree.size).toBe(3);
+    });
+
+    it('should return false when object does not exist', () => {
+      tree.insert(createObject('a', 10, 10, 5, 5));
+
+      const result = tree.reindex(createObject('missing', 40, 40, 5, 5));
+
+      expect(result).toBe(false);
+      expect(tree.size).toBe(1);
+    });
+  });
+
   describe('filter', () => {
     it('should return objects matching the predicate', () => {
       tree.insert(createObject('a', 10, 10, 5, 5));

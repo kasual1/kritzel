@@ -2,6 +2,7 @@ import * as Y from 'yjs';
 import { Awareness } from 'y-protocols/awareness';
 import { KritzelReviver } from '../core/reviver.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
+import { KritzelLine } from '../objects/line.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import type { KritzelCore } from '../core/core.class';
@@ -498,11 +499,21 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     const selectionGroupsToUpdate: KritzelSelectionGroup[] = [];
     const objectsToDelete: any[] = [];
 
+    // The reverse anchor index (targetObjectId -> anchored lines) is derived runtime
+    // state that is NOT synced via Yjs. When line anchor connections arrive through a
+    // remote change it must be rebuilt, otherwise getLinesAnchoredTo/updateAnchorsForObject
+    // return stale/empty results on this client (e.g. anchored lines fail to follow a
+    // locally-moved target, leaving selection UI and anchors visually offset).
+    let anchorIndexNeedsRebuild = false;
+
     changedKeys.forEach(key => {
       const change = event.changes.keys.get(key);
 
       if (change && change.action === 'delete') {
         objectsToDelete.push(key);
+        if (this._idMap.get(key) instanceof KritzelLine) {
+          anchorIndexNeedsRebuild = true;
+        }
       } else {
         const serialized = this._objectsMap?.get(key);
         if (serialized) {
@@ -513,6 +524,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
             selectionGroupsToUpdate.push(object);
           } else {
             objectsToUpdate.push(object);
+            if (object instanceof KritzelLine) {
+              anchorIndexNeedsRebuild = true;
+            }
           }
         }
       }
@@ -543,7 +557,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
         if (previous && typeof object.adoptTransientStateFrom === 'function') {
           object.adoptTransientStateFrom(previous);
         }
-        this.quadtree.update(object);
+        this.quadtree.reindex(object);
         this._idMap.set(object.id, object);
         updatedObjects.push(object);
       } else {
@@ -562,7 +576,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
         if (previous && typeof (object as any).adoptTransientStateFrom === 'function') {
           (object as any).adoptTransientStateFrom(previous);
         }
-        this.quadtree.update(object as unknown as T);
+        this.quadtree.reindex(object as unknown as T);
         this._idMap.set(object.id, object as unknown as T);
       } else {
         this.quadtree.insert(object as unknown as T);
@@ -579,7 +593,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       object.refreshObjectDimensions(undefined, true);
       object.captureUnchangedSnapshots();
       // Update quadtree again with corrected dimensions
-      this.quadtree.update(object as unknown as T);
+      this.quadtree.reindex(object as unknown as T);
     });
 
     // If regular objects were changed but their SelectionGroup wasn't explicitly updated,
@@ -602,9 +616,16 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
           selectionGroup.refreshObjectDimensions(undefined, true);
           selectionGroup.captureUnchangedSnapshots();
           // Update quadtree with corrected dimensions
-          this.quadtree.update(selectionGroup as unknown as T);
+          this.quadtree.reindex(selectionGroup as unknown as T);
         }
       }
+    }
+
+    // Rebuild the anchor index if any line anchor connections may have changed, so that
+    // subsequent local operations (moving a target, refreshing selection UI) resolve the
+    // correct anchored lines on this client.
+    if (anchorIndexNeedsRebuild) {
+      this._core?.anchorManager.rebuildIndex();
     }
 
     // Invalidate the store's selection cache so it fetches the updated SelectionGroup
@@ -870,7 +891,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    *                            with other temporary changes into a single undo step
    * @returns `true` if the object was successfully updated, `false` if the object doesn't exist or has no ID
    */
-  update(object: T, options: { temporary?: boolean } = {}): boolean {
+  update(object: T, options: { temporary?: boolean; skipReindex?: boolean } = {}): boolean {
     if (!object.id) {
       return false;
     }
@@ -878,7 +899,11 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     if (!existed) {
       return false;
     }
-    this.quadtree.update(object);
+    if (this._localOnlyMode || options.skipReindex) {
+      this.quadtree.update(object);
+    } else {
+      this.quadtree.reindex(object);
+    }
     this._idMap.set(object.id, object);
 
     if (!this._localOnlyMode && this._objectsMap && this.isPersistable(object)) {

@@ -82,6 +82,7 @@ describe('KritzelLineHandleHandler', () => {
       getArrowFill: jest.fn().mockReturnValue('#000000'),
       updateControlPoint: jest.fn(),
       _adjustedPoints: null,
+      _clipInfo: null,
     } as unknown as jest.Mocked<KritzelLine>;
 
     Object.setPrototypeOf(line, KritzelLine.prototype);
@@ -609,6 +610,26 @@ describe('KritzelLineHandleHandler', () => {
           'anchor-obj',
           'mouse'
         );
+      });
+
+      it('should clear adjusted and clip caches when endpoint geometry updates', () => {
+        const linePrivate = mockLine as unknown as {
+          _adjustedPoints: number[][] | null;
+          _clipInfo: { start?: { x: number; y: number; t?: number }; end?: { x: number; y: number; t?: number } } | null;
+        };
+        linePrivate._adjustedPoints = [[1, 2], [3, 4]];
+        linePrivate._clipInfo = { start: { x: 10, y: 10, t: 0.2 } };
+
+        const moveEvent = createPointerEvent('pointermove', {
+          pointerType: 'mouse',
+          clientX: 120,
+          clientY: 130,
+        });
+
+        lineHandleHandler.handlePointerMove(moveEvent);
+
+        expect(linePrivate._adjustedPoints).toBeNull();
+        expect(linePrivate._clipInfo).toBeNull();
       });
     });
 
