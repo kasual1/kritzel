@@ -7,37 +7,36 @@ import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelReviver } from '../core/reviver.class';
+import { KritzelPasteIntentProviderRegistry } from '../registries/paste-intent-provider.registry';
+import { KritzelEventPasteIntentProvider } from '../providers/paste-intent/event-paste-intent.provider';
+import { KritzelNavigatorPasteIntentProvider } from '../providers/paste-intent/navigator-paste-intent.provider';
+import { KritzelIosPasteIntentProvider } from '../providers/paste-intent/ios-paste-intent.provider';
+import { KritzelClipboardPayload, PasteIntent, SerializedClipboardObject, CLIPBOARD_PAYLOAD_PREFIX } from './clipboard.types';
 import imageCompression from 'browser-image-compression';
 
-const CLIPBOARD_PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
-
-interface SerializedClipboardObject {
-  [key: string]: any;
-  __class__?: string;
-  __children__?: SerializedClipboardObject[];
-}
-
-interface KritzelClipboardPayload {
-  version: 1;
-  sourceWorkspaceId?: string;
-  objects: SerializedClipboardObject[];
-}
-
-export type PasteIntent =
-  | { type: 'kritzel_objects'; payload: KritzelClipboardPayload }
-  | { type: 'image_files'; files: File[] }
-  | { type: 'plain_text'; text: string }
-  | { type: 'unknown' };
+export type { PasteIntent } from './clipboard.types';
 
 /**
  * Manages clipboard operations (copy/cut/paste) for a core instance.
  *
- * The system clipboard is the single source of truth: copy serializes the current
- * selection into a Kritzel payload, paste reads + revives it. No copied objects are
- * cached on the engine state.
+ * The system clipboard is the preferred source of truth: copy serializes the current
+ * selection into a Kritzel payload, paste reads + revives it.
+ *
+ * A copy also mirrors the payload into an in-memory session buffer. On platforms where
+ * eventless programmatic clipboard access is unavailable (notably iOS Safari, where the
+ * context menu triggers copy/paste without a native ClipboardEvent), the session buffer
+ * is used as the fallback source so internal object copy/paste keeps working.
  */
 export class KritzelClipboardManager {
   private readonly _core: KritzelCore;
+  private readonly _pasteIntentRegistry: KritzelPasteIntentProviderRegistry;
+
+  /**
+   * In-memory mirror of the most recent copy payload. Acts as the fallback clipboard
+   * source when the system clipboard cannot be read programmatically (e.g. iOS Safari
+   * context-menu paste). Reset is not required; a new copy overwrites it.
+   */
+  private _sessionClipboardPayload: KritzelClipboardPayload | null = null;
 
   /**
    * In-memory cascade offset (world units) applied to successive pastes of the same
@@ -47,6 +46,21 @@ export class KritzelClipboardManager {
 
   constructor(core: KritzelCore) {
     this._core = core;
+    this._pasteIntentRegistry = new KritzelPasteIntentProviderRegistry(this._core);
+
+    // Provider order is intentional: iOS eventless path should short-circuit,
+    // native paste events remain preferred, and async navigator APIs are fallback.
+    this._pasteIntentRegistry.register(new KritzelIosPasteIntentProvider());
+    this._pasteIntentRegistry.register(new KritzelEventPasteIntentProvider());
+    this._pasteIntentRegistry.register(new KritzelNavigatorPasteIntentProvider());
+  }
+
+  /**
+   * The most recent copy payload mirrored in memory, used as a fallback clipboard
+   * source when the system clipboard cannot be read programmatically.
+   */
+  get sessionClipboardPayload(): KritzelClipboardPayload | null {
+    return this._sessionClipboardPayload;
   }
 
   /**
@@ -65,37 +79,6 @@ export class KritzelClipboardManager {
 
   private serializeClipboardPayload(payload: KritzelClipboardPayload): string {
     return `${CLIPBOARD_PAYLOAD_PREFIX}${JSON.stringify(payload)}`;
-  }
-
-  private parseClipboardPayload(text: string | null | undefined): KritzelClipboardPayload | null {
-    if (!text || !text.startsWith(CLIPBOARD_PAYLOAD_PREFIX)) {
-      return null;
-    }
-
-    try {
-      const parsed = JSON.parse(text.slice(CLIPBOARD_PAYLOAD_PREFIX.length)) as KritzelClipboardPayload;
-      if (parsed?.version !== 1 || !Array.isArray(parsed.objects)) {
-        return null;
-      }
-
-      return parsed;
-    } catch {
-      return null;
-    }
-  }
-
-  private determineTextPasteIntent(text: string | null | undefined): PasteIntent | null {
-    const payload = this.parseClipboardPayload(text);
-
-    if (payload) {
-      return { type: 'kritzel_objects', payload };
-    }
-
-    if (text && text.trim().length > 0) {
-      return { type: 'plain_text', text };
-    }
-
-    return null;
   }
 
   private async writeBrowserClipboardPayload(payload: KritzelClipboardPayload, event?: ClipboardEvent): Promise<void> {
@@ -189,95 +172,6 @@ export class KritzelClipboardManager {
   }
 
   /**
-   * Evaluates the clipboard event to determine exactly what the user is trying to paste.
-   * Returns a PasteIntent covering the 3 main cases: Kritzel objects, Images, or Plain text.
-   */
-  private async determinePasteIntent(event?: ClipboardEvent): Promise<PasteIntent> {
-    if (event?.clipboardData) {
-      const data = event.clipboardData;
-      const imageFiles = Array.from(data.files ?? []).filter(file => file.type.startsWith('image/'));
-
-      if (imageFiles.length > 0) {
-        return { type: 'image_files', files: imageFiles };
-      }
-
-      if (data.types.includes('text/plain')) {
-        const textIntent = this.determineTextPasteIntent(data.getData('text/plain'));
-        if (textIntent) return textIntent;
-      }
-
-      return { type: 'unknown' };
-    }
-
-    if (typeof navigator === 'undefined' || !navigator.clipboard) {
-      return { type: 'unknown' };
-    }
-
-    const { clipboard } = navigator;
-
-    const permissionState = await this._core.permissionManager.checkPermission('clipboard-read');
-    if (permissionState !== 'granted') {
-      const requestedState = await this._core.permissionManager.requestPermission('clipboard-read');
-      if (requestedState !== 'granted') {
-        return { type: 'unknown' };
-      }
-    }
-
-    if (clipboard.read) {
-      try {
-        const items = await clipboard.read();
-        const { imageFiles, text } = await this.processClipboardItems(items);
-
-        if (imageFiles.length > 0) {
-          return { type: 'image_files', files: imageFiles };
-        }
-
-        if (text !== null) {
-          const textIntent = this.determineTextPasteIntent(text);
-          if (textIntent) return textIntent;
-        }
-      } catch {
-        // Fall back to readText below when read() is denied or unavailable at runtime.
-      }
-    }
-
-    if (clipboard.readText) {
-      const textIntent = this.determineTextPasteIntent(await clipboard.readText());
-      if (textIntent) return textIntent;
-    }
-
-    return { type: 'unknown' };
-  }
-
-  /**
-   * Helper to parse clipboard items in parallel
-   */
-  private async processClipboardItems(items: ClipboardItems): Promise<{ imageFiles: File[]; text: string | null }> {
-    const imageFiles: File[] = [];
-    let text: string | null = null;
-
-    // Process items concurrently
-    await Promise.all(
-      items.map(async item => {
-        const imageType = item.types.find(type => type.startsWith('image/'));
-
-        if (imageType) {
-          const blob = await item.getType(imageType);
-          imageFiles.push(new File([blob], 'pasted-image', { type: imageType }));
-          return;
-        }
-
-        if (text === null && item.types.includes('text/plain')) {
-          const blob = await item.getType('text/plain');
-          text = await blob.text();
-        }
-      }),
-    );
-
-    return { imageFiles, text };
-  }
-
-  /**
    * Copies currently selected objects into internal clipboard state.
    */
   copy(event?: ClipboardEvent): void {
@@ -294,6 +188,10 @@ export class KritzelClipboardManager {
 
     // A fresh copy resets the cascade so the first paste lands at the default offset.
     this._pasteOffset = 0;
+
+    // Mirror the payload in memory so eventless paste still works where the system
+    // clipboard is not programmatically accessible (e.g. iOS Safari context menu).
+    this._sessionClipboardPayload = payload;
 
     void this.writeBrowserClipboardPayload(payload, event);
   }
@@ -364,7 +262,7 @@ export class KritzelClipboardManager {
    * Pastes objects from clipboard with optional explicit world coordinates.
    */
   async paste(x?: number, y?: number, event?: ClipboardEvent): Promise<void> {
-    const pasteIntent = await this.determinePasteIntent(event);
+    const pasteIntent = await this._pasteIntentRegistry.resolve(event);
 
     let objects: KritzelBaseObject<any>[] | null = null;
 

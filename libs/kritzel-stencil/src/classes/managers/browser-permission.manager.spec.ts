@@ -25,21 +25,33 @@ describe('KritzelBrowserPermissionManager', () => {
   });
 
   it('requests clipboard-read permission through the built-in handler', async () => {
+    const query = jest.fn().mockResolvedValue({ state: 'prompt' });
     Object.defineProperty(navigator, 'permissions', {
-      value: {
-        query: jest.fn().mockResolvedValue({ state: 'granted' }),
-      },
+      value: { query },
       configurable: true,
     });
+    const readText = jest.fn();
     Object.defineProperty(navigator, 'clipboard', {
+      value: { readText },
+      configurable: true,
+    });
+
+    // A non-denied state resolves to granted without eagerly reading the
+    // clipboard, so the actual paste read is the one that triggers the prompt.
+    await expect(manager.requestPermission('clipboard-read')).resolves.toBe('granted');
+    expect(query).toHaveBeenCalledWith({ name: 'clipboard-read' });
+    expect(readText).not.toHaveBeenCalled();
+  });
+
+  it('resolves clipboard-read to denied when the Permissions API reports denied', async () => {
+    Object.defineProperty(navigator, 'permissions', {
       value: {
-        readText: jest.fn().mockResolvedValue(''),
+        query: jest.fn().mockResolvedValue({ state: 'denied' }),
       },
       configurable: true,
     });
 
-    await expect(manager.requestPermission('clipboard-read')).resolves.toBe('granted');
-    expect(navigator.clipboard.readText).toHaveBeenCalledTimes(1);
+    await expect(manager.requestPermission('clipboard-read')).resolves.toBe('denied');
   });
 
   it('allows custom request handlers for future permissions', async () => {

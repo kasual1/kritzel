@@ -127,6 +127,16 @@ describe('KritzelClipboardManager', () => {
 
       expect(setData).not.toHaveBeenCalled();
     });
+
+    it('mirrors the copied payload into the in-memory session buffer', () => {
+      const obj = { id: 'a', zIndex: 1, serialize: jest.fn().mockReturnValue({ id: 'a', __class__: 'KritzelShape' }) } as any;
+      mockCore.store.selectionGroup = { objects: [obj] };
+
+      manager.copy({ clipboardData: { setData: jest.fn() } } as any);
+
+      expect(manager.sessionClipboardPayload).not.toBeNull();
+      expect(manager.sessionClipboardPayload?.objects.map(o => o.id)).toEqual(['a']);
+    });
   });
 
   describe('cut', () => {
