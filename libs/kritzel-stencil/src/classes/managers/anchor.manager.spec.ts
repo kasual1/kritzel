@@ -669,6 +669,25 @@ describe('KritzelAnchorManager', () => {
         centerY: obj.centerY,
       });
     });
+
+    it('should apply a screen-space snap radius floor for mouse input when zoomed out', () => {
+      const obj = createMockObject({ id: 'obj-1', zIndex: 1 });
+      mockCore.store.allNonSelectionObjects = [obj];
+      // Zoom out so the base radius (min(w,h)/5 = 10 world units) shrinks in screen space.
+      mockState.scale = 0.25;
+
+      (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+
+      // Distance 40 from center (125,125) exceeds the base radius of 10, but the
+      // mouse floor of 12 / 0.25 = 48 world units keeps snapping usable when zoomed out.
+      const result = manager.findSnapTarget(85, 125, 'line-1', undefined, 'mouse');
+
+      expect(result).toEqual({
+        objectId: 'obj-1',
+        centerX: obj.centerX,
+        centerY: obj.centerY,
+      });
+    });
   });
 
   describe('findSnapPreviewTarget', () => {
