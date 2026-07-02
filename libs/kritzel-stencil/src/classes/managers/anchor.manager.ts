@@ -373,11 +373,12 @@ export class KritzelAnchorManager {
 
   private getSnapRadius(object: KritzelBaseObject<Element>, pointerType: string): number {
     const baseRadius = Math.min(object.width, object.height) / 5;
+    const safeScale = this.getSafeScale(this._core.store.state.scale);
     if (pointerType === 'touch' || pointerType === 'pen') {
-      return Math.max(baseRadius * 1.75, 24 / this.getSafeScale(this._core.store.state.scale));
+      return Math.max(baseRadius * 1.75, 24 / safeScale);
     }
 
-    return baseRadius;
+    return Math.max(baseRadius, 12 / safeScale);
   }
 
   /**
