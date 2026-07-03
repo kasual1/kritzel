@@ -22,6 +22,7 @@ export const darkTheme: KritzelTheme = {
     tabBackground: 'transparent',
     tabBackgroundHover: 'rgba(255, 255, 255, 0.08)',
     tabBackgroundSelected: '#2a2a2a',
+    tabLabelMaxWidth: '10rem',
     tabShadowSelected: '0 1px 3px rgba(0, 0, 0, 0.3)',
     tabTextColor: '#999999',
     tabTextColorSelected: '#ffffff',
