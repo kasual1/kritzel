@@ -408,6 +408,7 @@ export interface KritzelTheme {
     tabBackgroundHover?: string;
     tabBackgroundSelected?: string;
     tabBorderRadius?: string;
+    tabLabelMaxWidth?: string;
     tabShadowSelected?: string;
     tabTextColor?: string;
     tabTextColorSelected?: string;
