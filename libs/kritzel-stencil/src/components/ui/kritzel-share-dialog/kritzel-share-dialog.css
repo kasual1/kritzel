@@ -62,6 +62,23 @@ kritzel-dialog {
   padding: 4px 4px 4px 12px;
 }
 
+.share-qr-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.share-qr-image {
+  width: 180px;
+  height: 180px;
+  border-radius: 8px;
+  border: 1px solid var(--kritzel-share-dialog-qr-border-color, #e0e0e0);
+  background: var(--kritzel-share-dialog-qr-background, #ffffff);
+  padding: 8px;
+  box-sizing: border-box;
+}
+
 .share-url-input {
   flex: 1;
   border: none;
