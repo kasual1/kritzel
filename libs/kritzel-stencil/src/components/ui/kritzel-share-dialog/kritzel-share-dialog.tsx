@@ -1,5 +1,6 @@
 import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop, Watch } from '@stencil/core';
 import { KritzelTermKey } from '../../../interfaces/localization.interface';
+import QRCode from 'qrcode';
 
 /**
  * Share dialog component for managing workspace link sharing.
@@ -30,21 +31,30 @@ export class KritzelShareDialog {
   @Watch('isPublic')
   onIsPublicChange(newValue: boolean) {
     this.internalIsPublic = newValue;
+    void this.updateQrCodeDataUrl();
+  }
+
+  @Watch('workspaceId')
+  onWorkspaceIdChange() {
+    void this.updateQrCodeDataUrl();
   }
 
   @State() isDialogOpen: boolean = false;
   @State() internalIsPublic: boolean = false;
   @State() copySuccess: boolean = false;
+  @State() qrCodeDataUrl: string = '';
+
+  private qrCodeUpdateSequence: number = 0;
 
   /**
    * Emitted when the user toggles the public sharing state.
    */
-  @Event() toggleIsPublic: EventEmitter<boolean>;
+  @Event() toggleIsPublic!: EventEmitter<boolean>;
 
   /**
    * Emitted when the dialog is closed.
    */
-  @Event() dialogClosed: EventEmitter<void>;
+  @Event() dialogClosed!: EventEmitter<void>;
 
   /**
    * Opens the share dialog.
@@ -53,6 +63,7 @@ export class KritzelShareDialog {
   async open(): Promise<void> {
     this.internalIsPublic = this.isPublic;
     this.isDialogOpen = true;
+    await this.updateQrCodeDataUrl();
   }
 
   /**
@@ -68,12 +79,47 @@ export class KritzelShareDialog {
 
     // Update local state optimistically for immediate UI feedback
     this.internalIsPublic = enabled;
+    void this.updateQrCodeDataUrl();
 
     this.toggleIsPublic.emit(enabled);
   };
 
+  private async updateQrCodeDataUrl(): Promise<void> {
+    if (!this.internalIsPublic) {
+      this.qrCodeDataUrl = '';
+      return;
+    }
+
+    const shareUrl = this.getShareUrl();
+    if (!shareUrl) {
+      this.qrCodeDataUrl = '';
+      return;
+    }
+
+    const sequence = ++this.qrCodeUpdateSequence;
+
+    try {
+      const dataUrl = await QRCode.toDataURL(shareUrl, {
+        margin: 1,
+        width: 180,
+      });
+
+      if (sequence !== this.qrCodeUpdateSequence) {
+        return;
+      }
+
+      this.qrCodeDataUrl = dataUrl;
+    } catch {
+      if (sequence !== this.qrCodeUpdateSequence) {
+        return;
+      }
+
+      this.qrCodeDataUrl = '';
+    }
+  }
+
   private getShareUrl(): string {
-     if (!this.workspaceId) return '';
+    if (!this.workspaceId) return '';
 
     const url = new URL(this.workspaceId, window.location.origin);
     url.searchParams.set('share', 'true');
@@ -162,6 +208,15 @@ export class KritzelShareDialog {
                     />
                   </button>
                 </div>
+                {this.qrCodeDataUrl && (
+                  <div class="share-qr-container">
+                    <img
+                      class="share-qr-image"
+                      src={this.qrCodeDataUrl}
+                      alt="QR code for share link"
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
