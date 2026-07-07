@@ -16,6 +16,7 @@ import { defineCustomElement as defineKritzelEngine } from 'kritzel-stencil/dist
 import { defineCustomElement as defineKritzelExport } from 'kritzel-stencil/dist/components/kritzel-export.js';
 import { defineCustomElement as defineKritzelInput } from 'kritzel-stencil/dist/components/kritzel-input.js';
 import { defineCustomElement as defineKritzelLineEndings } from 'kritzel-stencil/dist/components/kritzel-line-endings.js';
+import { defineCustomElement as defineKritzelLoadingOverlay } from 'kritzel-stencil/dist/components/kritzel-loading-overlay.js';
 import { defineCustomElement as defineKritzelLoginDialog } from 'kritzel-stencil/dist/components/kritzel-login-dialog.js';
 import { defineCustomElement as defineKritzelMasterDetail } from 'kritzel-stencil/dist/components/kritzel-master-detail.js';
 import { defineCustomElement as defineKritzelNotificationCard } from 'kritzel-stencil/dist/components/kritzel-notification-card.js';
@@ -277,7 +278,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isLoading', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspace'],
-  outputs: ['isEngineReady', 'activeToolChange', 'objectsSelectionChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange'],
+  outputs: ['isEngineReady', 'activeToolChange', 'objectsSelectionChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange', 'loadingChange'],
 })
 export class KritzelEngine {
   protected el: HTMLKritzelEngineElement;
@@ -296,6 +297,7 @@ export class KritzelEngine {
   @Output() viewportChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelViewportState>>();
   @Output() awarenessChange = new EventEmitter<KritzelEngineCustomEvent<Map<number, Record<string, any>>>>();
   @Output() notificationsChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelNotification>>();
+  @Output() loadingChange = new EventEmitter<KritzelEngineCustomEvent<boolean>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -377,6 +379,10 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
    * Emitted when notifications change.
    */
   notificationsChange: EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelNotification>>;
+  /**
+   * Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes.
+   */
+  loadingChange: EventEmitter<KritzelEngineCustomEvent<boolean>>;
 }
 
 
@@ -478,6 +484,29 @@ export declare interface KritzelLineEndings extends Components.KritzelLineEnding
 
   valueChange: EventEmitter<KritzelLineEndingsCustomEvent<IKritzelLineEndingsLineArrowConfig>>;
 }
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelLoadingOverlay,
+  inputs: ['text', 'visible']
+})
+@Component({
+  selector: 'kritzel-loading-overlay',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['text', 'visible'],
+})
+export class KritzelLoadingOverlay {
+  protected el: HTMLKritzelLoadingOverlayElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelLoadingOverlay extends Components.KritzelLoadingOverlay {}
 
 
 @ProxyCmp({

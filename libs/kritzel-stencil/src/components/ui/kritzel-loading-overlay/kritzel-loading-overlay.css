@@ -1,0 +1,50 @@
+:host {
+  display: contents;
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--kritzel-loading-overlay-z-index, 9999);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: var(--kritzel-loading-overlay-background, rgba(255, 255, 255, 0.6));
+  color: var(--kritzel-loading-overlay-color, #333);
+  font-family: var(--kritzel-font-family, sans-serif);
+  font-size: 1.25rem;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.loading-overlay.visible {
+  pointer-events: all;
+  visibility: visible;
+  animation: kritzel-loading-fade-in 200ms ease-out var(--kritzel-loading-overlay-delay, 300ms) forwards;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  display: block;
+  flex-shrink: 0;
+  border: 2px solid var(--kritzel-loading-overlay-spinner-color, #cccccc);
+  border-top-color: var(--kritzel-loading-overlay-spinner-active-color, #333333);
+  border-radius: 50%;
+  animation: kritzel-loading-spin 0.6s linear infinite;
+}
+
+@keyframes kritzel-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes kritzel-loading-fade-in {
+  to {
+    opacity: 1;
+  }
+}

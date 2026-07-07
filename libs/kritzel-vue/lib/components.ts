@@ -15,6 +15,7 @@ import { defineCustomElement as defineKritzelEngine } from '../../kritzel-stenci
 import { defineCustomElement as defineKritzelExport } from '../../kritzel-stencil/dist/components/kritzel-export.js';
 import { defineCustomElement as defineKritzelInput } from '../../kritzel-stencil/dist/components/kritzel-input.js';
 import { defineCustomElement as defineKritzelLineEndings } from '../../kritzel-stencil/dist/components/kritzel-line-endings.js';
+import { defineCustomElement as defineKritzelLoadingOverlay } from '../../kritzel-stencil/dist/components/kritzel-loading-overlay.js';
 import { defineCustomElement as defineKritzelLoginDialog } from '../../kritzel-stencil/dist/components/kritzel-login-dialog.js';
 import { defineCustomElement as defineKritzelMasterDetail } from '../../kritzel-stencil/dist/components/kritzel-master-detail.js';
 import { defineCustomElement as defineKritzelNotificationCard } from '../../kritzel-stencil/dist/components/kritzel-notification-card.js';
@@ -190,7 +191,8 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'objectsInViewportChange',
   'viewportChange',
   'awarenessChange',
-  'notificationsChange'
+  'notificationsChange',
+  'loadingChange'
 ], [
   'isEngineReady',
   'activeToolChange',
@@ -206,7 +208,8 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'objectsInViewportChange',
   'viewportChange',
   'awarenessChange',
-  'notificationsChange'
+  'notificationsChange',
+  'loadingChange'
 ]);
 
 
@@ -242,6 +245,12 @@ export const KritzelLineEndings: StencilVueComponent<JSX.KritzelLineEndings> = /
   'valueChange'
 ], [
   'valueChange'
+]);
+
+
+export const KritzelLoadingOverlay: StencilVueComponent<JSX.KritzelLoadingOverlay> = /*@__PURE__*/ defineContainer<JSX.KritzelLoadingOverlay>('kritzel-loading-overlay', defineKritzelLoadingOverlay, [
+  'visible',
+  'text'
 ]);
 
 

@@ -20,6 +20,11 @@ kritzel-editor{
   line-height: normal;
 }
 
+.editor-content {
+  position: absolute;
+  inset: 0;
+}
+
 kritzel-controls {
   position: absolute;
   left: 0;
