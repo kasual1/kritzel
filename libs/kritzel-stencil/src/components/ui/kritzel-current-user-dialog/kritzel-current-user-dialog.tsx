@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, Method, State, Element } from '@stencil/core';
+import { Component, Host, h, Prop, Method, State, Element, Event, EventEmitter } from '@stencil/core';
 import { IKritzelUser } from '../../../interfaces/user.interface';
 import { KritzelTermKey } from '../../../interfaces/localization.interface';
 
@@ -17,6 +17,9 @@ export class KritzelCurrentUserDialog {
 
   @State() isDialogOpen: boolean = false;
 
+  /** Emitted when the user clicks the logout action. */
+  @Event() logoutRequest!: EventEmitter<void>;
+
   @Method()
   async open(): Promise<void> {
     this.isDialogOpen = true;
@@ -29,6 +32,11 @@ export class KritzelCurrentUserDialog {
 
   private closeDialog = (): void => {
     this.isDialogOpen = false;
+  };
+
+  private handleLogout = (): void => {
+    this.logoutRequest.emit();
+    this.closeDialog();
   };
 
   private getDisplayName(): string | undefined {
@@ -57,6 +65,10 @@ export class KritzelCurrentUserDialog {
 
             {displayName && <div class="user-name">{displayName}</div>}
             {this.user?.email && <div class="user-email">{this.user.email}</div>}
+
+            <kritzel-button class="logout-button" variant="primary" onButtonClick={this.handleLogout}>
+              {this.terms['menu.logout'] ?? 'Logout'}
+            </kritzel-button>
           </div>
         </kritzel-dialog>
       </Host>

@@ -25,11 +25,13 @@
 
 ### Used by
 
+ - [kritzel-current-user-dialog](../../ui/kritzel-current-user-dialog)
  - [kritzel-editor](../../core/kritzel-editor)
 
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-current-user-dialog --> kritzel-button
   kritzel-editor --> kritzel-button
   style kritzel-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
