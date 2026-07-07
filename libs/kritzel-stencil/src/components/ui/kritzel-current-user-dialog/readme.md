@@ -13,6 +13,13 @@
 | `user`   | --        |                                                                       | `IKritzelUser`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `undefined` |
 
 
+## Events
+
+| Event           | Description                                     | Type                |
+| --------------- | ----------------------------------------------- | ------------------- |
+| `logoutRequest` | Emitted when the user clicks the logout action. | `CustomEvent<void>` |
+
+
 ## Methods
 
 ### `close() => Promise<void>`
@@ -40,19 +47,21 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [kritzel-current-user](../kritzel-current-user)
+ - [kritzel-editor](../../core/kritzel-editor)
 
 ### Depends on
 
 - [kritzel-dialog](../../shared/kritzel-dialog)
 - [kritzel-avatar](../../shared/kritzel-avatar)
+- [kritzel-button](../../shared/kritzel-button)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-current-user-dialog --> kritzel-dialog
   kritzel-current-user-dialog --> kritzel-avatar
-  kritzel-current-user --> kritzel-current-user-dialog
+  kritzel-current-user-dialog --> kritzel-button
+  kritzel-editor --> kritzel-current-user-dialog
   style kritzel-current-user-dialog fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

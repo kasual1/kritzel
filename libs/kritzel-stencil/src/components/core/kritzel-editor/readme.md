@@ -1075,6 +1075,7 @@ Type: `Promise<void>`
 - [kritzel-export](../../ui/kritzel-export)
 - [kritzel-active-users](../../ui/kritzel-active-users)
 - [kritzel-current-user](../../ui/kritzel-current-user)
+- [kritzel-current-user-dialog](../../ui/kritzel-current-user-dialog)
 - [kritzel-button](../../shared/kritzel-button)
 - [kritzel-more-menu](../../ui/kritzel-more-menu)
 - [kritzel-share-dialog](../../ui/kritzel-share-dialog)
@@ -1094,6 +1095,7 @@ graph TD;
   kritzel-editor --> kritzel-export
   kritzel-editor --> kritzel-active-users
   kritzel-editor --> kritzel-current-user
+  kritzel-editor --> kritzel-current-user-dialog
   kritzel-editor --> kritzel-button
   kritzel-editor --> kritzel-more-menu
   kritzel-editor --> kritzel-share-dialog
@@ -1146,9 +1148,9 @@ graph TD;
   kritzel-pill-tabs --> kritzel-icon
   kritzel-active-users --> kritzel-avatar
   kritzel-current-user --> kritzel-avatar
-  kritzel-current-user --> kritzel-current-user-dialog
   kritzel-current-user-dialog --> kritzel-dialog
   kritzel-current-user-dialog --> kritzel-avatar
+  kritzel-current-user-dialog --> kritzel-button
   kritzel-more-menu --> kritzel-icon
   kritzel-more-menu --> kritzel-portal
   kritzel-more-menu --> kritzel-menu

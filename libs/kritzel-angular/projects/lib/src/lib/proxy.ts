@@ -124,9 +124,11 @@ export declare interface KritzelButton extends Components.KritzelButton {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['terms', 'user'],
+  outputs: ['logoutRequest'],
 })
 export class KritzelCurrentUserDialog {
   protected el: HTMLKritzelCurrentUserDialogElement;
+  @Output() logoutRequest = new EventEmitter<KritzelCurrentUserDialogCustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -134,7 +136,14 @@ export class KritzelCurrentUserDialog {
 }
 
 
-export declare interface KritzelCurrentUserDialog extends Components.KritzelCurrentUserDialog {}
+import type { KritzelCurrentUserDialogCustomEvent } from 'kritzel-stencil/dist/components';
+
+export declare interface KritzelCurrentUserDialog extends Components.KritzelCurrentUserDialog {
+  /**
+   * Emitted when the user clicks the logout action.
+   */
+  logoutRequest: EventEmitter<KritzelCurrentUserDialogCustomEvent<void>>;
+}
 
 
 @ProxyCmp({

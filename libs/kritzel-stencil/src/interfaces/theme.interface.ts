@@ -90,6 +90,7 @@ export interface KritzelTheme {
     textActiveBackgroundColor?: string;
     textColor?: string;
     textHoverBackgroundColor?: string;
+    width?: string;
   };
 
   /** Checkerboard variables */
@@ -147,6 +148,10 @@ export interface KritzelTheme {
   /** Current user dialog variables */
   currentUserDialog?: {
     emailColor?: string;
+    logoutButtonActiveBackgroundColor?: string;
+    logoutButtonBackgroundColor?: string;
+    logoutButtonColor?: string;
+    logoutButtonHoverBackgroundColor?: string;
     nameColor?: string;
   };
 
@@ -463,6 +468,8 @@ export interface KritzelTheme {
     inputBorderColor?: string;
     inputTextColor?: string;
     labelColor?: string;
+    qrBackground?: string;
+    qrBorderColor?: string;
     revokeButtonBorderColor?: string;
     revokeButtonColor?: string;
     revokeButtonHoverBackground?: string;
