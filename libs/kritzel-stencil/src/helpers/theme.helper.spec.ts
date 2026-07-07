@@ -157,7 +157,7 @@ describe('ThemeHelper', () => {
     it('should apply all theme variables to the element', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      expect(setPropertyMock).toHaveBeenCalledTimes(269);
+      expect(setPropertyMock).toHaveBeenCalledTimes(265);
     });
 
     it('should apply specific theme values correctly', () => {
