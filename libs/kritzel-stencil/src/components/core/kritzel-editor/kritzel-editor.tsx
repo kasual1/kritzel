@@ -738,6 +738,7 @@ export class KritzelEditor {
   splitButtonRef!: HTMLKritzelSplitButtonElement;
   shareDialogRef!: HTMLKritzelShareDialogElement;
   loginDialogRef!: HTMLKritzelLoginDialogElement;
+  currentUserDialogRef!: HTMLKritzelCurrentUserDialogElement;
 
   componentWillLoad() {
     this.loadSettingsFromStorage();
@@ -1012,15 +1013,7 @@ export class KritzelEditor {
         label: this.resolvedTerms['menu.settings'] ?? 'Settings',
         icon: 'settings',
         action: () => this.settingsRef.open(),
-      },
-      {
-        id: 'logout',
-        label: this.resolvedTerms['menu.logout'] ?? 'Logout',
-        icon: 'log-out',
-        color: '#ff3b30',
-        isVisible: this.isLoggedIn,
-        action: () => this.logout.emit(),
-      },
+      }
     ];
   }
 
@@ -1050,6 +1043,10 @@ export class KritzelEditor {
 
   private handleProviderLogin = (event: CustomEvent<LoginEvent>): void => {
     this.login.emit(event.detail);
+  };
+
+  private handleCurrentUserLogout = (): void => {
+    this.logout.emit();
   };
 
   private get isLoggedIn(): boolean {
@@ -1370,7 +1367,20 @@ export class KritzelEditor {
 
           <kritzel-active-users users={this.activeUsers}></kritzel-active-users>
 
-          {shouldShowCurrentUser && <kritzel-current-user user={this.user} terms={this.resolvedTerms}></kritzel-current-user>}
+          {shouldShowCurrentUser && <kritzel-current-user user={this.user} terms={this.resolvedTerms} onClick={() => this.currentUserDialogRef?.open()}></kritzel-current-user>}
+
+          {shouldShowCurrentUser && (
+            <kritzel-current-user-dialog
+              ref={el => {
+                if (el) {
+                  this.currentUserDialogRef = el;
+                  this.currentUserDialogRef.addEventListener('logoutRequest', this.handleCurrentUserLogout);
+                }
+              }}
+              user={this.user}
+              terms={this.resolvedTerms}
+            ></kritzel-current-user-dialog>
+          )}
 
           {shouldShowLoginButton && (
             <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>
