@@ -352,6 +352,9 @@ export class KritzelEngine {
   /** Emitted when notifications change. */
   @Event() notificationsChange!: EventEmitter<KritzelNotification>;
 
+  /** Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes. */
+  @Event() loadingChange!: EventEmitter<boolean>;
+
   @State() forceUpdate: number = 0;
 
   /** Manually triggers the `objectsSelectionChange` event. */
@@ -2165,6 +2168,7 @@ export class KritzelEngine {
 
   private syncLoadingState(): void {
     this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
+    this.loadingChange.emit(this.core.store.state.isLoading);
   }
 
   private applyToolConfig(tool: KritzelBaseTool, toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): void {
@@ -2642,16 +2646,7 @@ export class KritzelEngine {
 
   render() {
     if (!this.viewport) {
-      return (
-        <Host>
-          {this.core.store.state.isLoading && (
-            <div class="workspace-loading-overlay">
-              <span class="workspace-loading-spinner"></span>
-              {this.core.localizationManager.translate('engine.loading')}
-            </div>
-          )}
-        </Host>
-      );
+      return <Host></Host>;
     }
 
     const currentTheme = this.core.themeManager.getStoredTheme();
@@ -2724,12 +2719,6 @@ export class KritzelEngine {
 
     return (
       <Host>
-        {this.core.store.state.isLoading && (
-          <div class="workspace-loading-overlay">
-            <span class="workspace-loading-spinner"></span>
-            Loading...
-          </div>
-        )}
         {this.core.store.state.debugInfo.showViewportInfo && (
           <div class="debug-panel">
             <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
