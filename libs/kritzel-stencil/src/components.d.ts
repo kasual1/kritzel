@@ -1206,6 +1206,18 @@ export namespace Components {
          */
         "value": LineArrowConfig | undefined;
     }
+    interface KritzelLoadingOverlay {
+        /**
+          * The text to display next to the spinner
+          * @default 'Loading...'
+         */
+        "text": string;
+        /**
+          * Whether the overlay is visible
+          * @default false
+         */
+        "visible": boolean;
+    }
     /**
      * Login dialog component for displaying authentication provider buttons.
      * This is a presentational component that emits events for all actions.
@@ -1973,6 +1985,7 @@ declare global {
         "viewportChange": KritzelViewportState;
         "awarenessChange": Map<number, Record<string, any>>;
         "notificationsChange": KritzelNotification;
+        "loadingChange": boolean;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2086,6 +2099,12 @@ declare global {
     var HTMLKritzelLineEndingsElement: {
         prototype: HTMLKritzelLineEndingsElement;
         new (): HTMLKritzelLineEndingsElement;
+    };
+    interface HTMLKritzelLoadingOverlayElement extends Components.KritzelLoadingOverlay, HTMLStencilElement {
+    }
+    var HTMLKritzelLoadingOverlayElement: {
+        prototype: HTMLKritzelLoadingOverlayElement;
+        new (): HTMLKritzelLoadingOverlayElement;
     };
     interface HTMLKritzelLoginDialogElementEventMap {
         "providerLogin": LoginEvent1;
@@ -2517,6 +2536,7 @@ declare global {
         "kritzel-icon": HTMLKritzelIconElement;
         "kritzel-input": HTMLKritzelInputElement;
         "kritzel-line-endings": HTMLKritzelLineEndingsElement;
+        "kritzel-loading-overlay": HTMLKritzelLoadingOverlayElement;
         "kritzel-login-dialog": HTMLKritzelLoginDialogElement;
         "kritzel-master-detail": HTMLKritzelMasterDetailElement;
         "kritzel-menu": HTMLKritzelMenuElement;
@@ -3054,6 +3074,10 @@ declare namespace LocalJSX {
          */
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
         /**
+          * Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes.
+         */
+        "onLoadingChange"?: (event: KritzelEngineCustomEvent<boolean>) => void;
+        /**
           * Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.
          */
         "onLongpress"?: (event: KritzelEngineCustomEvent<PointerEvent>) => void;
@@ -3256,6 +3280,18 @@ declare namespace LocalJSX {
           * Current line arrow configuration
          */
         "value"?: LineArrowConfig | undefined;
+    }
+    interface KritzelLoadingOverlay {
+        /**
+          * The text to display next to the spinner
+          * @default 'Loading...'
+         */
+        "text"?: string;
+        /**
+          * Whether the overlay is visible
+          * @default false
+         */
+        "visible"?: boolean;
     }
     /**
      * Login dialog component for displaying authentication provider buttons.
@@ -3845,6 +3881,10 @@ declare namespace LocalJSX {
         "type": 'text' | 'email' | 'password' | 'url';
         "disabled": boolean;
     }
+    interface KritzelLoadingOverlayAttributes {
+        "visible": boolean;
+        "text": string;
+    }
     interface KritzelLoginDialogAttributes {
         "dialogTitle": string;
         "subtitle": string;
@@ -3951,6 +3991,7 @@ declare namespace LocalJSX {
         "kritzel-icon": Omit<KritzelIcon, keyof KritzelIconAttributes> & { [K in keyof KritzelIcon & keyof KritzelIconAttributes]?: KritzelIcon[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `attr:${K}`]?: KritzelIconAttributes[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `prop:${K}`]?: KritzelIcon[K] };
         "kritzel-input": Omit<KritzelInput, keyof KritzelInputAttributes> & { [K in keyof KritzelInput & keyof KritzelInputAttributes]?: KritzelInput[K] } & { [K in keyof KritzelInput & keyof KritzelInputAttributes as `attr:${K}`]?: KritzelInputAttributes[K] } & { [K in keyof KritzelInput & keyof KritzelInputAttributes as `prop:${K}`]?: KritzelInput[K] };
         "kritzel-line-endings": KritzelLineEndings;
+        "kritzel-loading-overlay": Omit<KritzelLoadingOverlay, keyof KritzelLoadingOverlayAttributes> & { [K in keyof KritzelLoadingOverlay & keyof KritzelLoadingOverlayAttributes]?: KritzelLoadingOverlay[K] } & { [K in keyof KritzelLoadingOverlay & keyof KritzelLoadingOverlayAttributes as `attr:${K}`]?: KritzelLoadingOverlayAttributes[K] } & { [K in keyof KritzelLoadingOverlay & keyof KritzelLoadingOverlayAttributes as `prop:${K}`]?: KritzelLoadingOverlay[K] };
         "kritzel-login-dialog": Omit<KritzelLoginDialog, keyof KritzelLoginDialogAttributes> & { [K in keyof KritzelLoginDialog & keyof KritzelLoginDialogAttributes]?: KritzelLoginDialog[K] } & { [K in keyof KritzelLoginDialog & keyof KritzelLoginDialogAttributes as `attr:${K}`]?: KritzelLoginDialogAttributes[K] } & { [K in keyof KritzelLoginDialog & keyof KritzelLoginDialogAttributes as `prop:${K}`]?: KritzelLoginDialog[K] };
         "kritzel-master-detail": Omit<KritzelMasterDetail, keyof KritzelMasterDetailAttributes> & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes]?: KritzelMasterDetail[K] } & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes as `attr:${K}`]?: KritzelMasterDetailAttributes[K] } & { [K in keyof KritzelMasterDetail & keyof KritzelMasterDetailAttributes as `prop:${K}`]?: KritzelMasterDetail[K] };
         "kritzel-menu": KritzelMenu;
@@ -4003,6 +4044,7 @@ declare module "@stencil/core" {
             "kritzel-icon": LocalJSX.IntrinsicElements["kritzel-icon"] & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
             "kritzel-input": LocalJSX.IntrinsicElements["kritzel-input"] & JSXBase.HTMLAttributes<HTMLKritzelInputElement>;
             "kritzel-line-endings": LocalJSX.IntrinsicElements["kritzel-line-endings"] & JSXBase.HTMLAttributes<HTMLKritzelLineEndingsElement>;
+            "kritzel-loading-overlay": LocalJSX.IntrinsicElements["kritzel-loading-overlay"] & JSXBase.HTMLAttributes<HTMLKritzelLoadingOverlayElement>;
             /**
              * Login dialog component for displaying authentication provider buttons.
              * This is a presentational component that emits events for all actions.
