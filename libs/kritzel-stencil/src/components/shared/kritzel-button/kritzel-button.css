@@ -15,6 +15,7 @@ button {
   appearance: none;
   cursor: var(--kritzel-global-pointer-cursor, pointer);
   display: inline-flex;
+  width: var(--kritzel-button-width, auto);
   align-items: center;
   justify-content: center;
   gap: 6px;

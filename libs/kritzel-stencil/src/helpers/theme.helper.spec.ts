@@ -102,7 +102,7 @@ describe('ThemeHelper', () => {
 
     it('should return the expected number of variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.size).toBe(269);
+      expect(variables.size).toBe(265);
     });
   });
 

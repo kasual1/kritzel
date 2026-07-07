@@ -96,10 +96,6 @@ export const darkTheme: KritzelTheme = {
 
   currentUserDialog: {
     emailColor: '#999999',
-    logoutButtonActiveBackgroundColor: '#991b1b',
-    logoutButtonBackgroundColor: '#dc2626',
-    logoutButtonColor: '#ffffff',
-    logoutButtonHoverBackgroundColor: '#b91c1c',
     nameColor: '#ffffff',
   },
 
