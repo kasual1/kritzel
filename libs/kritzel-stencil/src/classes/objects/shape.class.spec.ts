@@ -527,6 +527,13 @@ describe('KritzelShape', () => {
       expect(shapeObject.editor?.focus).toHaveBeenCalled();
     });
 
+    it('should accept zero coordinates when provided', () => {
+      shapeObject.focus({ x: 0, y: 0 });
+
+      expect(shapeObject.editor?.posAtCoords).toHaveBeenCalledWith({ left: 0, top: 0 });
+      expect(shapeObject.editor?.focus).toHaveBeenCalled();
+    });
+
     it('should scroll into view on iOS', () => {
       jest.useFakeTimers();
       (KritzelDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
@@ -601,6 +608,33 @@ describe('KritzelShape', () => {
       shapeObject.edit(mockEvent);
 
       expect(focusSpy).toHaveBeenCalledWith({ x: 150, y: 250 });
+    });
+
+    it('should focus with zero coordinates when event is provided', () => {
+      const focusSpy = jest.spyOn(shapeObject, 'focus');
+      const mockEvent = { clientX: 0, clientY: 0 } as PointerEvent;
+
+      shapeObject.edit(mockEvent);
+
+      expect(focusSpy).toHaveBeenCalledWith({ x: 0, y: 0 });
+    });
+
+    it('should retry focus on iOS after rerender', () => {
+      const focusSpy = jest.spyOn(shapeObject, 'focus');
+      (KritzelDevicesHelper.isIOS as jest.Mock).mockReturnValue(true);
+      const requestAnimationFrameSpy = jest
+        .spyOn(globalThis, 'requestAnimationFrame')
+        .mockImplementation(callback => {
+          callback(16);
+          return 1;
+        });
+
+      shapeObject.edit({ clientX: 120, clientY: 220 } as PointerEvent);
+
+      expect(requestAnimationFrameSpy).toHaveBeenCalled();
+      expect(focusSpy).toHaveBeenCalledTimes(2);
+
+      requestAnimationFrameSpy.mockRestore();
     });
   });
 

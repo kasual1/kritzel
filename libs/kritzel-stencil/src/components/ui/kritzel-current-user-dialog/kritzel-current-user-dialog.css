@@ -27,3 +27,12 @@ kritzel-dialog {
   color: var(--kritzel-current-user-dialog-email-color, #666666);
   text-align: center;
 }
+
+.logout-button {
+  margin-top: 16px;
+  width: 100%;
+  --kritzel-button-primary-background-color: var(--kritzel-current-user-dialog-logout-button-background-color, #dc2626);
+  --kritzel-button-primary-hover-background-color: var(--kritzel-current-user-dialog-logout-button-hover-background-color, #b91c1c);
+  --kritzel-button-primary-active-background-color: var(--kritzel-current-user-dialog-logout-button-active-background-color, #991b1b);
+  --kritzel-button-primary-color: var(--kritzel-current-user-dialog-logout-button-color, #ffffff);
+}

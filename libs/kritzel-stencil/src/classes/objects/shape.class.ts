@@ -348,7 +348,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     const doc = this.editor.state.doc;
 
-    if (coords?.x && coords?.y) {
+    if (coords && Number.isFinite(coords.x) && Number.isFinite(coords.y)) {
       const pos = this.editor!.posAtCoords({ left: coords.x, top: coords.y });
       if (pos) {
         this.editor!.dispatch(this.editor!.state.tr.setSelection(TextSelection.create(doc, pos.pos)));
@@ -404,6 +404,8 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
     KritzelKeyboardHelper.disableInteractiveWidget();
 
     this.uneditedObject = this.clone() as KritzelShape;
+    const hasPointerCoordinates = typeof event?.clientX === 'number' && typeof event?.clientY === 'number';
+    const focusCoordinates = hasPointerCoordinates ? { x: event!.clientX, y: event!.clientY } : undefined;
 
     this._core.store.setState('activeTool', this._core.toolRegistry.getTool('shape'));
 
@@ -413,8 +415,18 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     this._core.rerender();
 
-    if(event?.clientX && event?.clientY) {
-      this.focus({ x: event.clientX, y: event.clientY });
+    if (focusCoordinates) {
+      this.focus(focusCoordinates);
+    }
+
+    // iOS can drop initial focus when edit mode toggles and the DOM re-renders.
+    // Retry focus in the next frame while still in the same interaction sequence.
+    if (KritzelDevicesHelper.isIOS() && focusCoordinates) {
+      requestAnimationFrame(() => {
+        if (this.isEditing) {
+          this.focus(focusCoordinates);
+        }
+      });
     }
 
     KritzelKeyboardHelper.enableInteractiveWidget();
