@@ -54,7 +54,10 @@ export const KritzelButton: StencilVueComponent<JSX.KritzelButton> = /*@__PURE__
 
 export const KritzelCurrentUserDialog: StencilVueComponent<JSX.KritzelCurrentUserDialog> = /*@__PURE__*/ defineContainer<JSX.KritzelCurrentUserDialog>('kritzel-current-user-dialog', defineKritzelCurrentUserDialog, [
   'user',
-  'terms'
+  'terms',
+  'logoutRequest'
+], [
+  'logoutRequest'
 ]);
 
 

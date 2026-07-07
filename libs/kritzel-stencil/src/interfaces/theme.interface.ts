@@ -147,6 +147,10 @@ export interface KritzelTheme {
   /** Current user dialog variables */
   currentUserDialog?: {
     emailColor?: string;
+    logoutButtonActiveBackgroundColor?: string;
+    logoutButtonBackgroundColor?: string;
+    logoutButtonColor?: string;
+    logoutButtonHoverBackgroundColor?: string;
     nameColor?: string;
   };
 
