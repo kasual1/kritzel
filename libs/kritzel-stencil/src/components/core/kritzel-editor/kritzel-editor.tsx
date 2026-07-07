@@ -274,6 +274,8 @@ export class KritzelEditor {
   @State() isEditorVisible: boolean = false;
   @State() activeNotification?: KritzelNotification;
   @State() isNotificationDismissing: boolean = false;
+  /** Combined loading state reported by the engine (external `isLoading` prop or internal workspace loading). Starts true so the overlay is shown until the engine reports otherwise. */
+  @State() isEngineLoading: boolean = true;
 
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
   private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
@@ -888,6 +890,11 @@ export class KritzelEditor {
     this.awarenessChange.emit(event.detail);
   }
 
+  handleLoadingChange(event: CustomEvent<boolean>) {
+    event.stopPropagation();
+    this.isEngineLoading = event.detail;
+  }
+
   handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
     event.stopPropagation();
     this.clearNotificationDismissAnimationTimer();
@@ -1223,13 +1230,20 @@ export class KritzelEditor {
     const shouldShowLoginButton = this.isReady &&!!this.loginConfig && !isLoggedIn;
 
     return (
-      <Host
-        style={{
-          opacity: this.isEditorVisible ? '1' : '0',
-          visibility: this.isEditorVisible ? 'visible' : 'hidden',
-          transition: 'opacity 0.2s ease-in-out, visibility 0.2s ease-in-out',
-        }}
-      >
+      <Host>
+        <kritzel-loading-overlay
+          visible={this.isLoading || !this.isEditorVisible || this.isEngineLoading}
+          text={this.resolvedTerms['engine.loading'] ?? 'Loading...'}
+        ></kritzel-loading-overlay>
+
+        <div
+          class="editor-content"
+          style={{
+            opacity: this.isEditorVisible ? '1' : '0',
+            visibility: this.isEditorVisible ? 'visible' : 'hidden',
+            transition: 'opacity 0.2s ease-in-out, visibility 0.2s ease-in-out',
+          }}
+        >
         <div class="top-left-buttons">
           <kritzel-workspace-manager
             visible={this.isWorkspaceManagerVisible}
@@ -1296,6 +1310,7 @@ export class KritzelEditor {
           onViewportChange={event => this.handleViewportChange(event)}
           onAwarenessChange={event => this.handleAwarenessChange(event)}
           onNotificationsChange={event => this.handleNotificationsChange(event)}
+          onLoadingChange={event => this.handleLoadingChange(event)}
         ></kritzel-engine>
 
         <kritzel-controls
@@ -1394,6 +1409,7 @@ export class KritzelEditor {
               onProviderLogin={this.handleProviderLogin}
             ></kritzel-login-dialog>
           )}
+        </div>
         </div>
       </Host>
     );

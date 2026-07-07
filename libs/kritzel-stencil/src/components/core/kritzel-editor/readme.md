@@ -1064,6 +1064,7 @@ Type: `Promise<void>`
 
 ### Depends on
 
+- [kritzel-loading-overlay](../../ui/kritzel-loading-overlay)
 - [kritzel-workspace-manager](../../ui/kritzel-workspace-manager)
 - [kritzel-back-to-content](../../ui/kritzel-back-to-content)
 - [kritzel-notification-card](../../ui/kritzel-notification-card)
@@ -1082,6 +1083,7 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-editor --> kritzel-loading-overlay
   kritzel-editor --> kritzel-workspace-manager
   kritzel-editor --> kritzel-back-to-content
   kritzel-editor --> kritzel-notification-card

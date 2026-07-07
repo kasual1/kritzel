@@ -12,6 +12,7 @@ export const DIRECTIVES = [
   d.KritzelExport,
   d.KritzelInput,
   d.KritzelLineEndings,
+  d.KritzelLoadingOverlay,
   d.KritzelLoginDialog,
   d.KritzelMasterDetail,
   d.KritzelNotificationCard,
