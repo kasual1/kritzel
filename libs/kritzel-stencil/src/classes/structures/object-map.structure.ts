@@ -38,6 +38,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _temporaryItemsCount: number = 0;
   private _idMap: Map<string, T> = new Map();
   private _awareness: Awareness | null = null;
+  private _networkSyncPromise: Promise<void> | null = null;
 
   // Store observer/listener references for cleanup
   private _objectsObserver: ((event: Y.YMapEvent<any>) => void) | null = null;
@@ -70,6 +71,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    */
   get isReady(): boolean {
     return this._isReady;
+  }
+
+  /**
+   * Promise that settles when network providers finish connecting.
+   * Resolves immediately if no network providers. Awaited by the loading overlay.
+   */
+  whenNetworkSynced(): Promise<void> {
+    return this._networkSyncPromise ?? Promise.resolve();
   }
 
   /**
@@ -404,13 +413,15 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     if (showSyncProviderInfo && networkProviders.length > 0) {
       console.info(`[Kritzel] Workspace network providers connecting in background: ${networkProviders.length}`);
     }
-    for (const provider of networkProviders) {
+    const networkConnectPromises = networkProviders.map(provider =>
       provider.connect().catch(err => {
         if (showSyncProviderInfo) {
           console.error(`[Kritzel] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
         }
-      });
-    }
+      }),
+    );
+    // Network sync awaited by loading overlay to show remote workspace hydration
+    this._networkSyncPromise = networkConnectPromises.length > 0 ? Promise.allSettled(networkConnectPromises).then(() => undefined) : null;
     this._isReady = true;
 
     // Find the first provider that exposes awareness (network providers)
