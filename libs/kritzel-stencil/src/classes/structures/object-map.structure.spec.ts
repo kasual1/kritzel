@@ -295,6 +295,68 @@ describe('KritzelObjectMap', () => {
     });
   });
 
+  describe('whenNetworkSynced', () => {
+    it('resolves immediately when there are no network providers', async () => {
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+
+      await expect(objectMap.whenNetworkSynced()).resolves.toBeUndefined();
+    });
+
+    it('resolves immediately when only local providers are configured', async () => {
+      const provider = createMockProvider('local');
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      await expect(objectMap.whenNetworkSynced()).resolves.toBeUndefined();
+    });
+
+    it('stays pending until network providers finish connecting', async () => {
+      let resolveConnect!: () => void;
+      const provider = createMockProvider('network');
+      provider.connect.mockReturnValue(
+        new Promise<void>(res => {
+          resolveConnect = res;
+        }),
+      );
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      let settled = false;
+      const syncPromise = objectMap.whenNetworkSynced().then(() => {
+        settled = true;
+      });
+
+      await Promise.resolve();
+      expect(settled).toBe(false);
+
+      resolveConnect();
+      await syncPromise;
+      expect(settled).toBe(true);
+    });
+
+    it('settles even when a network provider fails to connect', async () => {
+      const provider = createMockProvider('network');
+      provider.connect.mockRejectedValue(new Error('connection timeout'));
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      await expect(objectMap.whenNetworkSynced()).resolves.toBeUndefined();
+    });
+
+    it('does not block initialization on the network sync completing', async () => {
+      const provider = createMockProvider('network');
+      provider.connect.mockReturnValue(new Promise<void>(() => undefined));
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      expect(objectMap.isReady).toBe(true);
+    });
+  });
+
   describe('insert', () => {
     beforeEach(async () => {
       await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });

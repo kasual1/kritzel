@@ -52,6 +52,21 @@ interface SyncProvider {
 | `IndexedDBSyncProvider` | Local IndexedDB persistence |
 | `InMemorySyncProvider` | RAM only (testing/ephemeral) |
 
+### Local vs Network Providers & the Loading Overlay
+
+`ISyncProvider.type` is `'local'` or `'network'`. During `KritzelObjectMap.initialize()`:
+
+- **Local** providers (IndexedDB, BroadcastChannel, InMemory) are **awaited** — their data is available synchronously once `initialize()` resolves.
+- **Network** providers (Hocuspocus, WebSocket) connect in the **background** — `initialize()` does not block on them, and remote data arrives later via Yjs observers. Their `connect()` promises are bounded (they resolve on sync / reject on a ~10s timeout).
+
+The workspace loading overlay is driven by `KritzelEngine._isWorkspaceLoading`. Because `core.initializeWorkspace()` resolves as soon as the local Y.Doc is ready, the overlay must **also** await `KritzelObjectMap.whenNetworkSynced()` — otherwise, for remote-hydrated workspaces, the overlay hides (or flashes past) before remote objects load.
+
+Rules when touching this path:
+
+- Keep network provider connection non-blocking in `KritzelObjectMap.initialize()`; expose completion via `whenNetworkSynced()` instead of awaiting inside `initialize()`.
+- `whenNetworkSynced()` must resolve immediately when there are no network providers, and settle (not hang) even if a network provider fails/times out.
+- When switching workspaces, only the **most recent** initialization may clear `_isWorkspaceLoading`, so a slow network sync from a previously-selected workspace can't hide the overlay for the current one. Capture the `store.objects` reference after init so a concurrent switch doesn't await the wrong map.
+
 ### Creating a New Sync Provider
 
 ```typescript

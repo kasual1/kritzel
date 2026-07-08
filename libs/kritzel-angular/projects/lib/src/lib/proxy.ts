@@ -16,7 +16,6 @@ import { defineCustomElement as defineKritzelEngine } from 'kritzel-stencil/dist
 import { defineCustomElement as defineKritzelExport } from 'kritzel-stencil/dist/components/kritzel-export.js';
 import { defineCustomElement as defineKritzelInput } from 'kritzel-stencil/dist/components/kritzel-input.js';
 import { defineCustomElement as defineKritzelLineEndings } from 'kritzel-stencil/dist/components/kritzel-line-endings.js';
-import { defineCustomElement as defineKritzelLoadingOverlay } from 'kritzel-stencil/dist/components/kritzel-loading-overlay.js';
 import { defineCustomElement as defineKritzelLoginDialog } from 'kritzel-stencil/dist/components/kritzel-login-dialog.js';
 import { defineCustomElement as defineKritzelMasterDetail } from 'kritzel-stencil/dist/components/kritzel-master-detail.js';
 import { defineCustomElement as defineKritzelNotificationCard } from 'kritzel-stencil/dist/components/kritzel-notification-card.js';
@@ -484,29 +483,6 @@ export declare interface KritzelLineEndings extends Components.KritzelLineEnding
 
   valueChange: EventEmitter<KritzelLineEndingsCustomEvent<IKritzelLineEndingsLineArrowConfig>>;
 }
-
-
-@ProxyCmp({
-  defineCustomElementFn: defineKritzelLoadingOverlay,
-  inputs: ['text', 'visible']
-})
-@Component({
-  selector: 'kritzel-loading-overlay',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['text', 'visible'],
-})
-export class KritzelLoadingOverlay {
-  protected el: HTMLKritzelLoadingOverlayElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
-export declare interface KritzelLoadingOverlay extends Components.KritzelLoadingOverlay {}
 
 
 @ProxyCmp({
