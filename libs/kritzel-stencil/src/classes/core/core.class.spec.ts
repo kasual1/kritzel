@@ -77,6 +77,7 @@ describe('KritzelCore', () => {
     mockObjectsMap = {
       isReady: false,
       initialize: jest.fn().mockResolvedValue(undefined),
+      whenNetworkSynced: jest.fn().mockResolvedValue(undefined),
       insert: jest.fn().mockReturnValue(true),
       update: jest.fn().mockReturnValue(true),
       remove: jest.fn(),
