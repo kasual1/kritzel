@@ -1,4 +1,3 @@
-import { IndexedDBSyncProvider } from '../classes/providers/sync/indexeddb-sync-provider.class';
 import { KritzelSyncConfig } from '../interfaces/sync-config.interface';
 
 /**
