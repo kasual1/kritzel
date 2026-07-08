@@ -2483,13 +2483,18 @@ export class KritzelEngine {
 
     try {
       await initializationPromise;
+
+      // Wait for network providers to sync so overlay stays visible until remote data arrives
+      const initializedObjects = this.core.store.objects;
+      await initializedObjects?.whenNetworkSynced();
     } finally {
+      // Only the most recent init clears loading state to prevent race conditions
       if (this._workspaceInitializationPromise === initializationPromise) {
         this._workspaceInitializationPromise = null;
         this._workspaceInitializationTargetKey = null;
+        this._isWorkspaceLoading = false;
+        this.syncLoadingState();
       }
-      this._isWorkspaceLoading = false;
-      this.syncLoadingState();
     }
   }
 

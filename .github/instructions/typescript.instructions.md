@@ -12,3 +12,9 @@ You are an expert in Typescript. You write maintainable, performant, and accessi
 ## TSX (React + TypeScript) Guidelines
 - Keep JSX expressions simple; extract complex logic into typed helper functions
 - Ensure keys are stable and deterministic; never use array index when collection can reorder
+
+## Code Comments
+- Keep comments concise: 1–2 lines maximum for inline comments
+- Prefer short, direct language over detailed explanations
+- If explanation is complex, refactor the code instead of writing long comments
+- Focus on *why*, not *what*; the code shows the what
