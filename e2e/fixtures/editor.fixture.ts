@@ -703,6 +703,28 @@ export class EditorPage {
     await this.page.mouse.up();
   }
 
+  /**
+   * Draw a stroke using engine-relative SCREEN coordinates (pixels from the
+   * engine's top-left), rather than world coordinates.
+   *
+   * At extreme zoom the world→screen mapping is degenerate (large world
+   * deltas collapse to sub-pixel screen deltas), so a drawing gesture must be
+   * expressed directly in screen space to be registered by the browser.
+   */
+  async drawStrokeScreen(screenPoints: WorldPoint[]) {
+    if (screenPoints.length < 2) throw new Error('drawStrokeScreen requires at least 2 points');
+
+    const box = await this.getEngineBoundingBox();
+    await this.page.mouse.move(box.x + screenPoints[0].x, box.y + screenPoints[0].y);
+    await this.page.mouse.down();
+
+    for (let i = 1; i < screenPoints.length; i++) {
+      await this.page.mouse.move(box.x + screenPoints[i].x, box.y + screenPoints[i].y, { steps: 5 });
+    }
+
+    await this.page.mouse.up();
+  }
+
   /** Click at a world position on the engine. */
   async clickAtWorld(x: number, y: number) {
     const { pageX, pageY } = await this.worldToPage(x, y);
@@ -729,6 +751,30 @@ export class EditorPage {
   /** Set viewport position and scale. */
   async setViewport(x: number, y: number, scale: number) {
     return this.callMethod('setViewport', x, y, scale);
+  }
+
+  /**
+   * Set the raw viewport state (translateX, translateY, scale) directly on the
+   * engine store, without animation or clamping.
+   *
+   * Use this to deterministically reproduce extreme viewport positions — far
+   * from the origin at extreme zoom — that the animated public setViewport()
+   * API cannot express precisely (it centers on a world point and animates).
+   */
+  async setViewportRaw(translateX: number, translateY: number, scale: number) {
+    await this.page.evaluate(
+      ({ tx, ty, s }) => {
+        const engine = document.querySelector('kritzel-engine') as any;
+        if (!engine?.core?.store?.state) throw new Error('kritzel-engine store not available');
+        const state = engine.core.store.state;
+        state.scale = s;
+        state.translateX = tx;
+        state.translateY = ty;
+        state.hasViewportChanged = true;
+        engine.core.rerender();
+      },
+      { tx: translateX, ty: translateY, s: scale }
+    );
   }
 
   /** Pan to world coordinates. */
