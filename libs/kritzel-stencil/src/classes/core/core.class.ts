@@ -388,11 +388,24 @@ export class KritzelCore {
 
     // Create new ObjectMap with its own Y.Doc for this workspace
     const objectsMap = new KritzelObjectMap();
-    // Assign immediately so the UI shows an empty state while loading,
-    // instead of showing the old workspace's objects with the new workspace's viewport
-    this._store.state.objects = objectsMap;
 
-    // Set active workspace
+    await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
+    await objectsMap.whenNetworkSynced();
+
+    // Set local user in awareness after object map is initialized
+    if (this._user) {
+      objectsMap.setLocalUser(this._user);
+    }
+
+    // Forward awareness changes to the engine as events
+    objectsMap.onAwarenessChange(states => {
+      this.engine.emitAwarenessChange(states);
+    });
+
+    const previousObjectsMap = this._store.objects;
+
+    // Swap to the new workspace only after it is fully hydrated.
+    this._store.state.objects = objectsMap;
     this._store.state.activeWorkspace = activeWorkspace;
     this._store.state.workspaces = this.loadWorkspacesFromAppState();
 
@@ -405,17 +418,9 @@ export class KritzelCore {
     this._store.state.translateY = viewportHeight / 2 - (viewport.centerWorldY ?? 0) * scale;
     this._store.state.scale = scale;
 
-    await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
-
-    // Set local user in awareness after object map is initialized
-    if (this._user) {
-      objectsMap.setLocalUser(this._user);
+    if (previousObjectsMap && previousObjectsMap !== objectsMap && previousObjectsMap.isReady) {
+      previousObjectsMap.destroy();
     }
-
-    // Forward awareness changes to the engine as events
-    objectsMap.onAwarenessChange(states => {
-      this.engine.emitAwarenessChange(states);
-    });
 
     // Rebuild anchor index after loading objects
     this._anchorManager.rebuildIndex();

@@ -54,7 +54,7 @@ export interface WebSocketOptions {
 export class WebSocketSyncProvider implements ISyncProvider {
   readonly type = 'network';
   private provider: WebsocketProvider;
-  private isConnected: boolean = false;
+  private isSynced: boolean = false;
   private _quiet: boolean = false;
 
   get awareness(): Awareness {
@@ -97,12 +97,10 @@ export class WebSocketSyncProvider implements ISyncProvider {
   private setupEventListeners(): void {
     this.provider.on('status', ({ status }: { status: string }) => {
       if (status === 'connected') {
-        this.isConnected = true;
         if (!this._quiet) {
           console.info('WebSocket connected');
         }
       } else if (status === 'disconnected') {
-        this.isConnected = false;
         if (!this._quiet) {
           console.info('WebSocket disconnected');
         }
@@ -110,38 +108,41 @@ export class WebSocketSyncProvider implements ISyncProvider {
     });
 
     this.provider.on('sync', (synced: boolean) => {
-      if (synced && !this._quiet) {
-        console.info('WebSocket synced');
+      if (synced) {
+        this.isSynced = true;
+        if (!this._quiet) {
+          console.info('WebSocket synced');
+        }
       }
     });
   }
 
   async connect(): Promise<void> {
-    if (this.isConnected) {
+    if (this.isSynced) {
       return;
     }
 
     return new Promise<void>((resolve, reject) => {
       const timeout = setTimeout(() => {
-        reject(new Error('WebSocket connection timeout'));
+        reject(new Error('WebSocket sync timeout'));
       }, 10000); // 10 second timeout
 
-      const statusHandler = ({ status }: { status: string }) => {
-        if (status === 'connected') {
+      const syncHandler = (synced: boolean) => {
+        if (synced) {
           clearTimeout(timeout);
-          this.provider.off('status', statusHandler);
-          this.isConnected = true;
+          this.provider.off('sync', syncHandler);
+          this.isSynced = true;
           resolve();
         }
       };
 
-      this.provider.on('status', statusHandler);
+      this.provider.on('sync', syncHandler);
 
-      // If already connected, resolve immediately
-      if (this.provider.wsconnected) {
+      // If already synced, resolve immediately
+      if ((this.provider as { synced?: boolean }).synced) {
         clearTimeout(timeout);
-        this.provider.off('status', statusHandler);
-        this.isConnected = true;
+        this.provider.off('sync', syncHandler);
+        this.isSynced = true;
         resolve();
       }
     });
@@ -151,7 +152,7 @@ export class WebSocketSyncProvider implements ISyncProvider {
     if (this.provider) {
       this.provider.disconnect();
     }
-    this.isConnected = false;
+    this.isSynced = false;
   }
 
   async reconnect(): Promise<void> {
@@ -163,6 +164,6 @@ export class WebSocketSyncProvider implements ISyncProvider {
     if (this.provider) {
       this.provider.destroy();
     }
-    this.isConnected = false;
+    this.isSynced = false;
   }
 }
