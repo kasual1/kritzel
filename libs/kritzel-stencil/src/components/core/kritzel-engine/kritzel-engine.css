@@ -47,6 +47,27 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   overflow: visible;
 }
 
+.kritzel-image-object--first-reveal {
+  animation: kritzel-image-first-reveal 180ms ease-out both;
+  will-change: filter;
+}
+
+@keyframes kritzel-image-first-reveal {
+  from {
+    filter: opacity(0);
+  }
+
+  to {
+    filter: opacity(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kritzel-image-object--first-reveal {
+    animation: none;
+  }
+}
+
 .PlaygroundEditorTheme__quote {
   margin: 0;
   margin-left: 20px;
