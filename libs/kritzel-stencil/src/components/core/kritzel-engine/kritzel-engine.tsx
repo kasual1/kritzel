@@ -356,7 +356,6 @@ export class KritzelEngine {
   @Event() loadingChange!: EventEmitter<boolean>;
 
   @State() forceUpdate: number = 0;
-  @State() isContentHidden: boolean = true;
 
   /** Manually triggers the `objectsSelectionChange` event. */
   @Method()
@@ -2168,12 +2167,8 @@ export class KritzelEngine {
   private readonly _objectDistanceFadeCloseMinOpacity = 0;
 
   private syncLoadingState(): void {
-    const isLoading = this._isWorkspaceLoading || this.isLoading;
-    this.core.store.state.isLoading = isLoading;
-    if (this.isContentHidden !== isLoading) {
-      this.isContentHidden = isLoading;
-    }
-    this.loadingChange.emit(isLoading);
+    this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
+    this.loadingChange.emit(this.core.store.state.isLoading);
   }
 
   private applyToolConfig(tool: KritzelBaseTool, toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): void {
@@ -2728,7 +2723,12 @@ export class KritzelEngine {
     }
 
     return (
-      <Host class={{ 'is-content-hidden': this.isContentHidden }}>
+      <Host>
+        <kritzel-loading-overlay
+          visible={this.core.store.state.isLoading}
+          text={this.core.localizationManager.translate('engine.loading')}
+        ></kritzel-loading-overlay>
+
         {this.core.store.state.debugInfo.showViewportInfo && (
           <div class="debug-panel">
             <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
