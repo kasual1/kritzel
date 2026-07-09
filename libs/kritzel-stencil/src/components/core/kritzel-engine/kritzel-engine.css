@@ -4,6 +4,7 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
+  isolation: isolate;
   background-color: var(--kritzel-engine-background-color, #ffffff);
 }
 
