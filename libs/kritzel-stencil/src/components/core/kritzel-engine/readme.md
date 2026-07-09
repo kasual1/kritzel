@@ -55,6 +55,7 @@
 | `objectsRemoved`          | Emitted when one or more objects are removed from the canvas.                                              | `CustomEvent<ObjectsRemovedEvent>`                            |
 | `objectsSelectionChange`  | Emitted when the set of selected objects changes.                                                          | `CustomEvent<void>`                                           |
 | `objectsUpdated`          | Emitted when one or more objects are updated on the canvas.                                                | `CustomEvent<ObjectsUpdatedEvent>`                            |
+| `syncingChange`           | Emitted when remote workspace synchronization is in progress.                                              | `CustomEvent<boolean>`                                        |
 | `undoStateChange`         | Emitted when the undo/redo state changes, providing current undo availability.                             | `CustomEvent<KritzelUndoState>`                               |
 | `viewportChange`          | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).        | `CustomEvent<KritzelViewportState>`                           |
 | `workspacesChange`        | Emitted when workspaces are created, updated, or deleted.                                                  | `CustomEvent<KritzelWorkspace[]>`                             |
@@ -1180,6 +1181,7 @@ Type: `Promise<void>`
 ### Depends on
 
 - [kritzel-loading-overlay](../../ui/kritzel-loading-overlay)
+- [kritzel-sync-indicator](../../shared/kritzel-sync-indicator)
 - [kritzel-icon](../../shared/kritzel-icon)
 - [kritzel-context-menu](../../ui/kritzel-context-menu)
 - [kritzel-awareness-cursors](../kritzel-awareness-cursors)
@@ -1190,6 +1192,7 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   kritzel-engine --> kritzel-loading-overlay
+  kritzel-engine --> kritzel-sync-indicator
   kritzel-engine --> kritzel-icon
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-awareness-cursors
