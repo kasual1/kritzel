@@ -2157,6 +2157,7 @@ export class KritzelEngine {
   private _isWorkspaceLoading: boolean = false;
   private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
   private _previousVisibleCustomElements: Set<string> = new Set();
+  private _revealedImageKeys: Set<string> = new Set();
   private readonly _defaultUndoState: KritzelUndoState = {
     canUndo: false,
     canRedo: false,
@@ -2218,6 +2219,7 @@ export class KritzelEngine {
 
   disconnectedCallback() {
     this.throttledPointerMoveMulti.cancel();
+    this._revealedImageKeys.clear();
 
     // Unmount all remaining custom elements
     if (this.core.store.allObjects) {
@@ -2670,6 +2672,36 @@ export class KritzelEngine {
     };
   }
 
+  private getImageRevealKey(image: KritzelImage): string | null {
+    if (image.assetId) {
+      return `asset:${image.assetId}`;
+    }
+
+    if (image.id) {
+      return `object:${image.id}`;
+    }
+
+    return null;
+  }
+
+  private shouldAnimateImageFirstReveal(image: KritzelImage): boolean {
+    if (image.loadState !== 'ready') {
+      return false;
+    }
+
+    const revealKey = this.getImageRevealKey(image);
+    if (!revealKey) {
+      return false;
+    }
+
+    if (this._revealedImageKeys.has(revealKey)) {
+      return false;
+    }
+
+    this._revealedImageKeys.add(revealKey);
+    return true;
+  }
+
   render() {
     if (!this.viewport) {
       return <Host></Host>;
@@ -2916,6 +2948,7 @@ export class KritzelEngine {
                 {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && object.loadState === 'ready' && (
                   <img
                     ref={el => el && object.mount(el)}
+                    class={this.shouldAnimateImageFirstReveal(object) ? 'kritzel-image-object kritzel-image-object--first-reveal' : 'kritzel-image-object'}
                     src={object.resolvedSrc || object.src}
                     style={{
                       position: 'absolute',

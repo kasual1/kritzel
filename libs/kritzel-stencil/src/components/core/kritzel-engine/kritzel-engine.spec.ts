@@ -113,6 +113,9 @@ describe('KritzelEngine', () => {
     permissionManager: {
       requestPermission: jest.fn().mockResolvedValue('granted'),
     },
+    appStateMap: {
+      destroy: jest.fn(),
+    },
     cursorManager: {
       setTargetElement: jest.fn(),
       cleanup: jest.fn(),
@@ -1230,6 +1233,52 @@ describe('KritzelEngine', () => {
       (engine as any).onIsObjectDistanceFadingActiveChange();
 
       expect(core.rerender).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('image first reveal policy', () => {
+    const createImage = (overrides: Partial<any> = {}) => ({
+      id: 'obj-1',
+      assetId: 'asset-1',
+      loadState: 'ready',
+      ...overrides,
+    });
+
+    it('animates first reveal for a ready unseen asset', () => {
+      const shouldAnimate = (engine as any).shouldAnimateImageFirstReveal(createImage());
+
+      expect(shouldAnimate).toBe(true);
+    });
+
+    it('does not animate repeated reveals for the same asset id', () => {
+      (engine as any).shouldAnimateImageFirstReveal(createImage({ id: 'obj-1' }));
+
+      const shouldAnimateAgain = (engine as any).shouldAnimateImageFirstReveal(createImage({ id: 'obj-2' }));
+
+      expect(shouldAnimateAgain).toBe(false);
+    });
+
+    it('does not animate while image is not ready', () => {
+      const shouldAnimate = (engine as any).shouldAnimateImageFirstReveal(createImage({ loadState: 'loading' }));
+
+      expect(shouldAnimate).toBe(false);
+    });
+
+    it('falls back to object id when asset id is missing', () => {
+      const firstReveal = (engine as any).shouldAnimateImageFirstReveal(createImage({ assetId: '', id: 'legacy-1' }));
+      const secondReveal = (engine as any).shouldAnimateImageFirstReveal(createImage({ assetId: '', id: 'legacy-1' }));
+
+      expect(firstReveal).toBe(true);
+      expect(secondReveal).toBe(false);
+    });
+
+    it('clears tracked reveal keys on disconnect', () => {
+      (engine as any).shouldAnimateImageFirstReveal(createImage());
+
+      engine.disconnectedCallback();
+
+      const shouldAnimateAfterDisconnect = (engine as any).shouldAnimateImageFirstReveal(createImage());
+      expect(shouldAnimateAfterDisconnect).toBe(true);
     });
   });
 
