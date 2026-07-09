@@ -355,7 +355,11 @@ export class KritzelEngine {
   /** Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes. */
   @Event() loadingChange!: EventEmitter<boolean>;
 
+  /** Emitted when remote workspace synchronization is in progress. */
+  @Event() syncingChange!: EventEmitter<boolean>;
+
   @State() forceUpdate: number = 0;
+  @State() isSyncing: boolean = false;
 
   /** Manually triggers the `objectsSelectionChange` event. */
   @Method()
@@ -2171,6 +2175,11 @@ export class KritzelEngine {
     this.loadingChange.emit(this.core.store.state.isLoading);
   }
 
+  private syncSyncingState(isSyncing: boolean): void {
+    this.isSyncing = isSyncing;
+    this.syncingChange.emit(isSyncing);
+  }
+
   private applyToolConfig(tool: KritzelBaseTool, toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): void {
     Object.entries(toolConfig).forEach(([key, value]) => {
       (tool as unknown as Record<string, unknown>)[key] = value;
@@ -2484,9 +2493,21 @@ export class KritzelEngine {
     try {
       await initializationPromise;
 
-      // Wait for network providers to sync so overlay stays visible until remote data arrives
+      // Track remote sync in the background without blocking the loading overlay.
       const initializedObjects = this.core.store.objects;
-      await initializedObjects?.whenNetworkSynced();
+      const networkSyncPromise = initializedObjects?.whenNetworkSynced();
+
+      if (networkSyncPromise) {
+        this.syncSyncingState(true);
+        void networkSyncPromise.finally(() => {
+          // Only clear syncing for the currently active object map.
+          if (this.core.store.objects === initializedObjects) {
+            this.syncSyncingState(false);
+          }
+        });
+      } else {
+        this.syncSyncingState(false);
+      }
     } finally {
       // Only the most recent init clears loading state to prevent race conditions
       if (this._workspaceInitializationPromise === initializationPromise) {
@@ -2728,6 +2749,8 @@ export class KritzelEngine {
           visible={this.core.store.state.isLoading}
           text={this.core.localizationManager.translate('engine.loading')}
         ></kritzel-loading-overlay>
+
+        <kritzel-sync-indicator visible={this.isSyncing} text="Syncing..."></kritzel-sync-indicator>
 
         {this.core.store.state.debugInfo.showViewportInfo && (
           <div class="debug-panel">

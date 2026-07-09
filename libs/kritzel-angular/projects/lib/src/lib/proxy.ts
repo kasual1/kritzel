@@ -24,6 +24,7 @@ import { defineCustomElement as defineKritzelNumericInput } from 'kritzel-stenci
 import { defineCustomElement as defineKritzelOpacitySlider } from 'kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelPillTabs } from 'kritzel-stencil/dist/components/kritzel-pill-tabs.js';
 import { defineCustomElement as defineKritzelSettings } from 'kritzel-stencil/dist/components/kritzel-settings.js';
+import { defineCustomElement as defineKritzelSyncIndicator } from 'kritzel-stencil/dist/components/kritzel-sync-indicator.js';
 import { defineCustomElement as defineKritzelWatermark } from 'kritzel-stencil/dist/components/kritzel-watermark.js';
 import { defineCustomElement as defineKritzelZoomPanel } from 'kritzel-stencil/dist/components/kritzel-zoom-panel.js';
 @ProxyCmp({
@@ -278,7 +279,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isLoading', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspace'],
-  outputs: ['isEngineReady', 'activeToolChange', 'objectsSelectionChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange', 'loadingChange'],
+  outputs: ['isEngineReady', 'activeToolChange', 'objectsSelectionChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange', 'loadingChange', 'syncingChange'],
 })
 export class KritzelEngine {
   protected el: HTMLKritzelEngineElement;
@@ -298,6 +299,7 @@ export class KritzelEngine {
   @Output() awarenessChange = new EventEmitter<KritzelEngineCustomEvent<Map<number, Record<string, any>>>>();
   @Output() notificationsChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelNotification>>();
   @Output() loadingChange = new EventEmitter<KritzelEngineCustomEvent<boolean>>();
+  @Output() syncingChange = new EventEmitter<KritzelEngineCustomEvent<boolean>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -383,6 +385,10 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
    * Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes.
    */
   loadingChange: EventEmitter<KritzelEngineCustomEvent<boolean>>;
+  /**
+   * Emitted when remote workspace synchronization is in progress.
+   */
+  syncingChange: EventEmitter<KritzelEngineCustomEvent<boolean>>;
 }
 
 
@@ -744,6 +750,29 @@ export declare interface KritzelSettings extends Components.KritzelSettings {
    */
   settingsChange: EventEmitter<KritzelSettingsCustomEvent<IKritzelSettingsKritzelSettingsConfig>>;
 }
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineKritzelSyncIndicator,
+  inputs: ['text', 'visible']
+})
+@Component({
+  selector: 'kritzel-sync-indicator',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['text', 'visible'],
+})
+export class KritzelSyncIndicator {
+  protected el: HTMLKritzelSyncIndicatorElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface KritzelSyncIndicator extends Components.KritzelSyncIndicator {}
 
 
 @ProxyCmp({
