@@ -31,11 +31,18 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   private _adjustedPoints: number[][] | null = null;
 
   /**
-   * Gets the SVG viewBox string based on the path's position and dimensions.
-   * @returns The viewBox attribute value in the format "x y width height"
+   * Gets the SVG viewBox string for local (object-relative) rendering.
+   *
+   * The path's `d` string is generated in local coordinates (offset so the
+   * object's top-left origin is at 0,0), so the viewBox always starts at 0,0.
+   * Keeping the SVG's internal coordinates small — independent of the object's
+   * world position — avoids float32 precision loss in the browser's SVG
+   * rasterizer (Skia), which otherwise fails to paint paths whose absolute
+   * world coordinates exceed ~2^24 (e.g. far from the origin at extreme zoom).
+   * @returns The viewBox attribute value in the format "0 0 width height"
    */
   get viewBox(): string {
-    return `${this.x} ${this.y} ${this.width} ${this.height}`;
+    return `0 0 ${this.width} ${this.height}`;
   }
 
   /**
@@ -104,6 +111,25 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
       copiedObject.points = this.points.map(p => [...p]);
     }
     return copiedObject;
+  }
+
+  /**
+   * Restores the path from a serialized object, then regenerates the SVG `d`
+   * string from the restored points.
+   *
+   * Regeneration is required because the `d` string is now emitted in local
+   * (object-relative) coordinates paired with a "0 0 width height" viewBox.
+   * Older persisted paths stored `d` in absolute world coordinates, which
+   * would be inconsistent with the local-coordinate viewBox and fail to
+   * rasterize far from the origin at extreme zoom. Recomputing `d` here makes
+   * both freshly created and previously persisted paths render identically.
+   * @param object - The serialized path data to restore from
+   * @returns This instance cast to type T
+   */
+  override deserialize<T>(object: any): T {
+    const result = super.deserialize<T>(object);
+    this.d = this.generateSvgPath();
+    return result;
   }
 
   /**
@@ -438,7 +464,9 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    */
   private generateSvgPath(): string {
     const stroke = this.getStrokeFromPoints(this.points, this.strokeWidth);
-    return this.getSvgPathFromStroke(stroke);
+    const offsetX = this.points.length ? Math.min(...this.points.map(p => p[0])) - this.strokeWidth / 2 : 0;
+    const offsetY = this.points.length ? Math.min(...this.points.map(p => p[1])) - this.strokeWidth / 2 : 0;
+    return this.getSvgPathFromStroke(stroke, offsetX, offsetY);
   }
 
   /**
@@ -473,29 +501,47 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   /**
    * Converts stroke outline points into an SVG path data string.
    * Uses quadratic bezier curves for smooth rendering.
+   * Coordinates are emitted relative to (offsetX, offsetY) so the resulting
+   * path lives in the object's local coordinate space (paired with a
+   * "0 0 width height" viewBox). This keeps SVG-internal coordinates small
+   * regardless of the object's world position, avoiding float32 rasterizer
+   * precision failures far from the origin.
    * @param points - Array of [x, y] coordinate pairs forming the stroke outline
+   * @param offsetX - X origin to subtract from every coordinate (default 0)
+   * @param offsetY - Y origin to subtract from every coordinate (default 0)
    * @param closed - Whether to close the path with 'Z' command (default: true)
    * @returns SVG path data string with M, Q, and T commands
    */
-  private getSvgPathFromStroke(points: number[][], closed = true) {
+  private getSvgPathFromStroke(points: number[][], offsetX = 0, offsetY = 0, closed = true) {
     const len = points.length;
 
     if (len < 4) {
       return ``;
     }
 
-    let a = points[0];
-    let b = points[1];
+    const a = points[0];
+    const b = points[1];
     const c = points[2];
 
-    let result = `M${a[0].toFixed(2)},${a[1].toFixed(2)} Q${b[0].toFixed(2)},${b[1].toFixed(2)} ${KritzelMathHelper.average(b[0], c[0]).toFixed(
+    const ax = a[0] - offsetX;
+    const ay = a[1] - offsetY;
+    const bx = b[0] - offsetX;
+    const by = b[1] - offsetY;
+    const cx = c[0] - offsetX;
+    const cy = c[1] - offsetY;
+
+    let result = `M${ax.toFixed(2)},${ay.toFixed(2)} Q${bx.toFixed(2)},${by.toFixed(2)} ${KritzelMathHelper.average(bx, cx).toFixed(
       2,
-    )},${KritzelMathHelper.average(b[1], c[1]).toFixed(2)} T`;
+    )},${KritzelMathHelper.average(by, cy).toFixed(2)} T`;
 
     for (let i = 2, max = len - 1; i < max; i++) {
-      a = points[i];
-      b = points[i + 1];
-      result += `${KritzelMathHelper.average(a[0], b[0]).toFixed(2)},${KritzelMathHelper.average(a[1], b[1]).toFixed(2)} `;
+      const p = points[i];
+      const q = points[i + 1];
+      const px = p[0] - offsetX;
+      const py = p[1] - offsetY;
+      const qx = q[0] - offsetX;
+      const qy = q[1] - offsetY;
+      result += `${KritzelMathHelper.average(px, qx).toFixed(2)},${KritzelMathHelper.average(py, qy).toFixed(2)} `;
     }
 
     if (closed) {
