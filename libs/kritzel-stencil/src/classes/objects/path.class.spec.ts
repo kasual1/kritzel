@@ -169,13 +169,15 @@ describe('KritzelPath', () => {
   });
 
   describe('viewBox getter', () => {
-    it('should return correct viewBox string', () => {
+    it('should return a local-coordinate viewBox anchored at 0,0', () => {
       path.x = 10;
       path.y = 20;
       path.width = 100;
       path.height = 50;
 
-      expect(path.viewBox).toBe('10 20 100 50');
+      // The path's `d` is emitted in local coordinates, so the viewBox is
+      // always anchored at 0,0 (independent of the object's world position).
+      expect(path.viewBox).toBe('0 0 100 50');
     });
 
     it('should handle zero values', () => {
@@ -185,6 +187,55 @@ describe('KritzelPath', () => {
       path.height = 0;
 
       expect(path.viewBox).toBe('0 0 0 0');
+    });
+  });
+
+  describe('local-coordinate rendering', () => {
+    const maxAbsCoordinate = (d: string): number => {
+      const nums = d.match(/-?\d+(\.\d+)?/g)?.map(Number) ?? [];
+      return nums.length ? Math.max(...nums.map(Math.abs)) : 0;
+    };
+
+    it('should emit d in small local coordinates even when points are far from the origin', () => {
+      const shape = [
+        [0, 0],
+        [10, 0],
+        [10, 10],
+        [0, 10],
+        [5, 5],
+      ];
+      const offset = 40_000_000;
+
+      const far = KritzelPath.create(mockCore, {
+        points: shape.map(([x, y]) => [x + offset, y + offset]),
+        strokeWidth: 6,
+      });
+
+      expect(far.d.length).toBeGreaterThan(0);
+      // Absolute-coordinate rendering would produce coordinates near 40,000,000
+      // (which the SVG rasterizer cannot represent in float32). Local rendering
+      // keeps them bounded by the object's own extent.
+      expect(maxAbsCoordinate(far.d)).toBeLessThan(1000);
+    });
+
+    it('should regenerate a local-coordinate d on deserialize (self-heals absolute data)', () => {
+      const shape = [
+        [40_000_000, 40_000_000],
+        [40_000_010, 40_000_000],
+        [40_000_010, 40_000_010],
+        [40_000_000, 40_000_010],
+        [40_000_005, 40_000_005],
+      ];
+      const original = KritzelPath.create(mockCore, { points: shape, strokeWidth: 6 });
+
+      const serialized = original.serialize() as Record<string, unknown>;
+      // Simulate legacy persisted data whose `d` was stored in absolute coordinates.
+      serialized.d = 'M40000000.00,40000000.00 L40000010.00,40000010.00';
+
+      const revived = KritzelPath.create(mockCore).deserialize<KritzelPath>(serialized);
+
+      expect(revived.d).not.toContain('40000000');
+      expect(maxAbsCoordinate(revived.d)).toBeLessThan(1000);
     });
   });
 

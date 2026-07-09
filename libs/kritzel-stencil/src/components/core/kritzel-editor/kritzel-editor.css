@@ -25,8 +25,15 @@ kritzel-editor{
   inset: 0;
 }
 
+.editor-content > kritzel-engine {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
 kritzel-controls {
   position: absolute;
+  z-index: 1;
   left: 0;
   right: 0;
   margin-inline: auto;
@@ -42,6 +49,7 @@ kritzel-controls.keyboard-open {
 
 .top-left-buttons {
   position: absolute;
+  z-index: 1;
   top: var(--kritzel-editor-top-left-buttons-top, 14px);
   left: var(--kritzel-editor-top-left-buttons-left, 14px);
   display: flex;
@@ -104,6 +112,7 @@ kritzel-controls.keyboard-open {
 
 .top-right-buttons {
   position: absolute;
+  z-index: 1;
   top: var(--kritzel-editor-top-right-buttons-top, 14px);
   right: var(--kritzel-editor-top-right-buttons-right, 14px);
   display: flex;
@@ -113,6 +122,7 @@ kritzel-controls.keyboard-open {
 
 .bottom-left-buttons {
   position: absolute;
+  z-index: 1;
   left: var(--kritzel-editor-top-left-buttons-left, 14px);
   bottom: var(--kritzel-editor-controls-bottom, 14px);
   display: flex;
