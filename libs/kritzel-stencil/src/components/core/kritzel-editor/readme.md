@@ -1109,6 +1109,7 @@ graph TD;
   kritzel-back-to-content --> kritzel-icon
   kritzel-notification-card --> kritzel-icon
   kritzel-engine --> kritzel-loading-overlay
+  kritzel-engine --> kritzel-sync-indicator
   kritzel-engine --> kritzel-icon
   kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-awareness-cursors
