@@ -274,8 +274,6 @@ export class KritzelEditor {
   @State() isEditorVisible: boolean = false;
   @State() activeNotification?: KritzelNotification;
   @State() isNotificationDismissing: boolean = false;
-  /** Combined loading state reported by the engine (external `isLoading` prop or internal workspace loading). Starts true so the overlay is shown until the engine reports otherwise. */
-  @State() isEngineLoading: boolean = true;
 
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
   private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
@@ -891,11 +889,6 @@ export class KritzelEditor {
     this.awarenessChange.emit(event.detail);
   }
 
-  handleLoadingChange(event: CustomEvent<boolean>) {
-    event.stopPropagation();
-    this.isEngineLoading = event.detail;
-  }
-
   handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
     event.stopPropagation();
     this.clearNotificationDismissAnimationTimer();
@@ -1228,11 +1221,6 @@ export class KritzelEditor {
 
     return (
       <Host>
-        <kritzel-loading-overlay
-          visible={this.isLoading || !this.isEditorVisible || this.isEngineLoading}
-          text={this.resolvedTerms['engine.loading'] ?? 'Loading...'}
-        ></kritzel-loading-overlay>
-
         <div
           class="editor-content"
           style={{
@@ -1307,7 +1295,6 @@ export class KritzelEditor {
           onViewportChange={event => this.handleViewportChange(event)}
           onAwarenessChange={event => this.handleAwarenessChange(event)}
           onNotificationsChange={event => this.handleNotificationsChange(event)}
-          onLoadingChange={event => this.handleLoadingChange(event)}
         ></kritzel-engine>
 
         <kritzel-controls
