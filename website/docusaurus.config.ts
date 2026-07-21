@@ -134,13 +134,6 @@ const config: Config = {
   ],
 
   themeConfig: {
-    announcementBar: {
-      id: 'early_preview',
-      content: 'This is an early preview version. Features and APIs may change.',
-      backgroundColor: '#f5a623',
-      textColor: '#1a1a2e',
-      isCloseable: false,
-    },
     image: "img/docusaurus-social-card.jpg",
     navbar: {
       title: "Kritzel",
