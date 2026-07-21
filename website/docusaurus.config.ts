@@ -177,6 +177,12 @@ const config: Config = {
             },
           ],
         },
+        {
+          label: 'Get License',
+          to: '/get-license',
+          position: 'right',
+          className: 'navbar-get-license-link',
+        },
       ],
     },
     colorMode: {
@@ -333,6 +339,13 @@ const config: Config = {
             name: "Vue",
             description: "Use Kritzel in Vue applications.",
             url: ABSOLUTE_URL("/docs/vue/overview"),
+          },
+          {
+            "@type": "SiteNavigationElement",
+            position: 7,
+            name: "Get License",
+            description: "Contact us to remove the Kritzel editor watermark with a commercial license.",
+            url: ABSOLUTE_URL("/get-license"),
           },
         ],
       }),
