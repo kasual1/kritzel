@@ -294,13 +294,6 @@ const config: Config = {
     },
   } satisfies Preset.ThemeConfig,
   headTags: [
-    {
-      tagName: "link",
-      attributes: {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Schoolbell&display=swap",
-      },
-    },
     // Structured data: WebSite (enables Sitelinks Searchbox eligibility)
     {
       tagName: "script",
