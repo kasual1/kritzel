@@ -10,3 +10,37 @@
   font-size: 0.9rem;
   margin-top: 2rem;
 }
+
+.kritzel-footer-brand {
+  max-width: 280px;
+}
+
+.kritzel-footer-brand__logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 0.32rem;
+  border-radius: 0.65rem;
+  margin-bottom: 0.9rem;
+}
+
+.kritzel-footer-brand__logo {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+.kritzel-footer-brand__description {
+  margin: 0;
+  color: var(--ifm-footer-color);
+  line-height: 1.55;
+  font-size: 0.98rem;
+}
+
+@media (max-width: 996px) {
+  .kritzel-footer-brand {
+    max-width: 100%;
+    margin-bottom: 0.75rem;
+  }
+}

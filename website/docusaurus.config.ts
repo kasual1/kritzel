@@ -270,18 +270,6 @@ const config: Config = {
             },
           ],
         },
-        {
-          title: 'More',
-          items: [
-            {
-              html: '<a href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer" class="footer__link-item">Demo</a>',
-            },
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-          ],
-        },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Kritzel. All rights reserved.`,
     },
