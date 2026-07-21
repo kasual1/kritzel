@@ -128,115 +128,47 @@
   }
 }
 
-/* Info Graphics Section */
-.infoSection {
-  padding: 4rem 2rem;
-  max-width: 1200px;
+/* FAQ Section */
+.faqSection {
+  padding: 4.5rem 1.5rem 5rem;
+}
+
+.faqContent {
+  max-width: 900px;
   margin: 0 auto;
 }
 
-.infoRow {
+.faqTitle {
+  text-align: center;
+  font-size: 2rem;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.faqSubtitle {
+  text-align: center;
+  color: var(--ifm-color-content-secondary);
+  max-width: 700px;
+  margin: 0.85rem auto 2rem;
+}
+
+.faqList {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 3rem;
-  margin-bottom: 12rem;
-}
-
-.infoRow:last-child {
-  margin-bottom: 0;
-}
-
-.infoRowReverse {
-  flex-direction: row-reverse;
-}
-
-.infoContent {
-  flex: 1;
-  max-width: 450px;
-}
-
-.infoTitle {
-  font-size: 1.6rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: var(--ifm-heading-color);
-}
-
-.infoDescription {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--ifm-color-content);
-}
-
-.infoLink {
-  display: inline-block;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #1a1a2e;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.infoLink:hover {
-  color: var(--ifm-color-primary-dark);
-  text-decoration: none;
-}
-
-.infoGraphic {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.infoGraphic svg {
-  width: 100%;
-  max-width: 550px;
-  height: auto;
-}
-
-.infoGraphicSmall svg {
-  max-width: 450px;
-}
-
-.infoGraphicLarge svg {
-  max-width: 650px;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 @media screen and (max-width: 768px) {
-
-  .infoRow {
-    margin-bottom: 6rem;
+  .faqSection {
+    padding: 3.5rem 1rem 4rem;
   }
 
-  .infoRow,
-  .infoRowReverse {
-    flex-direction: column-reverse;
-    text-align: center;
+  .faqTitle {
+    font-size: 1.65rem;
   }
 
-  .infoContent {
-    max-width: 100%;
-  }
-
-  .infoTitle {
-    font-size: 1.5rem;
-  }
-
-  .infoDescription {
-    font-size: 1rem;
-  }
-
-  .infoGraphic svg {
-    max-width: 400px;
-  }
-
-  .infoGraphicSmall svg {
-    max-width: 360px;
-  }
-
-  .infoGraphicLarge svg {
-    max-width: 430px;
+  .faqSubtitle {
+    margin-bottom: 1.6rem;
+    font-size: 0.95rem;
   }
 }
