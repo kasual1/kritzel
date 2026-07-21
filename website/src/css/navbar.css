@@ -10,11 +10,21 @@
   margin: 0.75rem auto 0;
   border: 1px solid var(--kritzel-nav-border);
   border-radius: 1rem;
-  background: var(--kritzel-nav-bg);
+  background: transparent;
   box-shadow: var(--kritzel-nav-shadow);
+  padding: 0.45rem 1rem;
+}
+
+.navbar::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: var(--kritzel-nav-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  padding: 0.45rem 1rem;
+  content: "";
+  pointer-events: none;
 }
 
 .navbar--fixed-top {
@@ -28,6 +38,8 @@
 }
 
 .navbar__inner {
+  position: relative;
+  z-index: 1;
   min-height: 2.75rem;
 }
 
@@ -154,8 +166,6 @@ button.navbar-sidebar__close > svg {
     width: calc(100% - 1rem);
     margin-top: 0.5rem;
     padding: 0.35rem 0.75rem;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
   }
 
   .navbar__inner .navbar__brand,
