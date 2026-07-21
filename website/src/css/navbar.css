@@ -62,13 +62,11 @@
   gap: 0.25rem;
 }
 
-.navbar__items a,
-.navbar-pricing-link {
+.navbar__items a {
   text-decoration: none !important;
 }
 
-.navbar__link,
-.navbar-pricing-link {
+.navbar__link {
   border-radius: 999px;
   padding: 0.38rem 0.72rem;
   font-size: 0.93rem;
@@ -78,9 +76,7 @@
 }
 
 .navbar__link:hover,
-.navbar-pricing-link:hover,
-.navbar__link--active,
-.navbar-pricing-link.navbar__link--active {
+.navbar__link--active {
   background: rgba(0, 0, 0, 0.06);
   text-decoration: none !important;
 }
@@ -180,10 +176,6 @@ button.navbar-sidebar__close > svg {
   }
 
   [class*="tocCollapsibleButton"] {
-    display: none !important;
-  }
-
-  .navbar__inner .navbar-pricing-link {
     display: none !important;
   }
 

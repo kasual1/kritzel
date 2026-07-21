@@ -145,12 +145,6 @@ const config: Config = {
       },
       items: [
         {
-          type: 'custom-pricingLink',
-          label: 'Pricing',
-          to: '/pricing',
-          position: 'right',
-        },
-        {
           type: 'custom-blogLink',
           label: 'Blog',
           position: 'right',
@@ -322,27 +316,20 @@ const config: Config = {
           {
             "@type": "SiteNavigationElement",
             position: 4,
-            name: "Pricing",
-            description: "Kritzel licensing and pricing options.",
-            url: ABSOLUTE_URL("/pricing"),
-          },
-          {
-            "@type": "SiteNavigationElement",
-            position: 5,
             name: "Angular",
             description: "Use Kritzel in Angular applications.",
             url: ABSOLUTE_URL("/docs/angular/overview"),
           },
           {
             "@type": "SiteNavigationElement",
-            position: 6,
+            position: 5,
             name: "React",
             description: "Use Kritzel in React applications.",
             url: ABSOLUTE_URL("/docs/react/overview"),
           },
           {
             "@type": "SiteNavigationElement",
-            position: 7,
+            position: 6,
             name: "Vue",
             description: "Use Kritzel in Vue applications.",
             url: ABSOLUTE_URL("/docs/vue/overview"),
