@@ -14,14 +14,6 @@ function isFrameworkPicker(items: readonly LinkLikeNavbarItemProps[]): boolean {
   );
 }
 
-function isFeaturesDropdown(items: readonly LinkLikeNavbarItemProps[]): boolean {
-  // Check if items point to feature pages
-  const featurePaths = ['/features/infinite-canvas', '/features/framework-agnostic', '/features/real-time-collaboration', '/features/drawing-tools'];
-  return items.some((item) => 
-    featurePaths.some((path) => item.to?.includes(path))
-  );
-}
-
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
@@ -71,11 +63,6 @@ export default function DropdownNavbarItemDesktop({
   // Hide framework picker dropdown when not on docs pages
   const isOnDocsPage = localPathname.includes('/docs');
   if (isFrameworkPicker(items) && !isOnDocsPage) {
-    return null;
-  }
-
-  // Hide Features dropdown when on docs pages
-  if (isFeaturesDropdown(items) && isOnDocsPage) {
     return null;
   }
 

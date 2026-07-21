@@ -145,29 +145,6 @@ const config: Config = {
       },
       items: [
         {
-          type: 'dropdown',
-          label: 'Features',
-          position: 'right',
-          items: [
-            {
-              label: 'Infinite Canvas',
-              to: '/features/infinite-canvas',
-            },
-            {
-              label: 'Framework Agnostic',
-              to: '/features/framework-agnostic',
-            },
-            {
-              label: 'Real-time Collaboration',
-              to: '/features/real-time-collaboration',
-            },
-            {
-              label: 'Drawing Tools',
-              to: '/features/drawing-tools',
-            },
-          ],
-        },
-        {
           type: 'custom-pricingLink',
           label: 'Pricing',
           to: '/pricing',
@@ -345,34 +322,27 @@ const config: Config = {
           {
             "@type": "SiteNavigationElement",
             position: 4,
-            name: "Features",
-            description: "Infinite canvas, framework-agnostic integration, real-time collaboration, and drawing tools.",
-            url: ABSOLUTE_URL("/features/infinite-canvas"),
-          },
-          {
-            "@type": "SiteNavigationElement",
-            position: 5,
             name: "Pricing",
             description: "Kritzel licensing and pricing options.",
             url: ABSOLUTE_URL("/pricing"),
           },
           {
             "@type": "SiteNavigationElement",
-            position: 6,
+            position: 5,
             name: "Angular",
             description: "Use Kritzel in Angular applications.",
             url: ABSOLUTE_URL("/docs/angular/overview"),
           },
           {
             "@type": "SiteNavigationElement",
-            position: 7,
+            position: 6,
             name: "React",
             description: "Use Kritzel in React applications.",
             url: ABSOLUTE_URL("/docs/react/overview"),
           },
           {
             "@type": "SiteNavigationElement",
-            position: 8,
+            position: 7,
             name: "Vue",
             description: "Use Kritzel in Vue applications.",
             url: ABSOLUTE_URL("/docs/vue/overview"),

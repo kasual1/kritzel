@@ -48,14 +48,6 @@ function isFrameworkPicker(items: readonly LinkLikeNavbarItemProps[]): boolean {
   );
 }
 
-function isFeaturesDropdown(items: readonly LinkLikeNavbarItemProps[]): boolean {
-  // Check if items point to feature pages
-  const featurePaths = ['/features/infinite-canvas', '/features/framework-agnostic', '/features/real-time-collaboration', '/features/drawing-tools'];
-  return items.some((item) => 
-    featurePaths.some((path) => item.to?.includes(path))
-  );
-}
-
 function CollapseButton({
   collapsed,
   onClick,
@@ -134,13 +126,7 @@ export default function DropdownNavbarItemMobile({
   const href = props.to ? undefined : '#';
 
   // Never render the framework picker in the mobile sidebar — it lives in the top navbar instead.
-  const isOnDocsPage = localPathname.includes('/docs');
   if (isFrameworkPicker(items)) {
-    return null;
-  }
-
-  // Hide Features dropdown when on docs pages
-  if (isFeaturesDropdown(items) && isOnDocsPage) {
     return null;
   }
 
