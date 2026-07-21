@@ -1,6 +1,95 @@
+:root {
+  --kritzel-nav-max-width: 1240px;
+  --kritzel-nav-bg: rgba(255, 255, 255, 0.82);
+  --kritzel-nav-border: rgba(0, 0, 0, 0.08);
+  --kritzel-nav-shadow: 0 14px 32px rgba(8, 12, 18, 0.12);
+}
+
+.navbar {
+  width: min(var(--kritzel-nav-max-width), calc(100% - 1.75rem));
+  margin: 0.75rem auto 0;
+  border: 1px solid var(--kritzel-nav-border);
+  border-radius: 1rem;
+  background: var(--kritzel-nav-bg);
+  box-shadow: var(--kritzel-nav-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.45rem 1rem;
+}
+
+.navbar--fixed-top {
+  top: 0.55rem;
+}
+
+.navbar > .container,
+.navbar > .container-fluid {
+  max-width: none;
+  padding: 0;
+}
+
+.navbar__inner {
+  min-height: 2.75rem;
+}
+
+.navbar__brand {
+  gap: 0.5rem;
+  margin-right: 1.1rem;
+}
+
+.navbar__title {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
 .navbar__logo {
-  height: 32px !important;
-  width: 32px !important;
+  height: 28px !important;
+  width: 28px !important;
+}
+
+.navbar__items {
+  gap: 0.25rem;
+}
+
+.navbar__items a,
+.navbar-pricing-link {
+  text-decoration: none !important;
+}
+
+.navbar__link,
+.navbar-pricing-link {
+  border-radius: 999px;
+  padding: 0.38rem 0.72rem;
+  font-size: 0.93rem;
+  font-weight: 540;
+  line-height: 1.1;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.navbar__link:hover,
+.navbar-pricing-link:hover,
+.navbar__link--active,
+.navbar-pricing-link.navbar__link--active {
+  background: rgba(0, 0, 0, 0.06);
+  text-decoration: none !important;
+}
+
+.navbar-framework-picker > .navbar__link {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.dropdown__menu {
+  margin-top: 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 20px 40px rgba(8, 12, 18, 0.14);
+  padding: 0.4rem;
+}
+
+.dropdown__link {
+  border-radius: 0.65rem;
+  padding: 0.5rem 0.65rem;
 }
 
 .navbar__toggle {
@@ -9,34 +98,20 @@
   background-position: center;
   background-size: 32px 32px;
   color: transparent !important;
-  /* Hide default icon/text */
-}
-
-.navbar__items {
-  gap: 1rem;
-}
-
-.navbar__items a {
-  text-decoration: none !important;
-}
-
-button.navbar-sidebar__close {
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 32px 32px;
-  color: transparent !important;
-  /* Hide default icon/text */
-  height: 32px;
-  width: 32px;
 }
 
 button.navbar-sidebar__close {
   background-image: url("/img/close.svg") !important;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 32px 32px;
+  color: transparent !important;
+  height: 32px;
+  width: 32px;
 }
 
-button.navbar-sidebar__close>svg {
+button.navbar-sidebar__close > svg {
   visibility: hidden !important;
-  /* Hide SVG icon */
 }
 
 .menu__link--sublist-caret::after {
@@ -52,7 +127,7 @@ button.navbar-sidebar__close>svg {
   vertical-align: middle;
 }
 
-.dropdown>.navbar__link::after {
+.dropdown > .navbar__link::after {
   border: none !important;
   content: "" !important;
   display: inline-block !important;
@@ -71,6 +146,11 @@ button.navbar-sidebar__close>svg {
 }
 
 @media (max-width: 996px) {
+  .navbar {
+    width: calc(100% - 1rem);
+    margin-top: 0.5rem;
+    padding: 0.35rem 0.75rem;
+  }
 
   .navbar__inner .navbar__brand,
   .navbar__inner .navbar__logo,
@@ -91,7 +171,6 @@ button.navbar-sidebar__close>svg {
     display: none !important;
   }
 
-  /* Keep the framework picker visible in the top navbar on mobile devices. */
   .navbar__inner .navbar-framework-picker {
     display: inline-flex !important;
     align-items: center;
@@ -99,7 +178,11 @@ button.navbar-sidebar__close>svg {
   }
 
   .navbar__inner .navbar-framework-picker > .navbar__link {
-    padding: 0.25rem 0.5rem;
+    padding: 0.28rem 0.6rem;
+  }
+
+  .navbar-sidebar {
+    background: #ffffff;
   }
 
   .navbar-sidebar .menu__link--sublist {
@@ -116,7 +199,7 @@ button.navbar-sidebar__close>svg {
     opacity: 0.6 !important;
   }
 
-  .navbar-sidebar .menu__list-item--collapsed>.menu__list-item-collapsible .menu__caret::before {
+  .navbar-sidebar .menu__list-item--collapsed > .menu__list-item-collapsible .menu__caret::before {
     transform: rotate(0deg) !important;
   }
 }
