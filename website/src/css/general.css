@@ -24,6 +24,10 @@ nav[aria-label="Breadcrumbs"] {
   color: inherit;
 }
 
+article a[aria-label^="Read more about "] {
+  font-size: 0.93rem;
+}
+
 /* Doc overview cards */
 .doc-cards {
   display: grid;
