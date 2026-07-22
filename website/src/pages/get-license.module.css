@@ -46,12 +46,6 @@
   font-size: 0.8rem;
 }
 
-.fieldRow {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.85rem;
-}
-
 .field {
   display: grid;
   gap: 0.38rem;
@@ -125,6 +119,30 @@
   outline-offset: 2px;
 }
 
+.submit:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.status:empty {
+  display: none;
+}
+
+.status p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  opacity: 1;
+}
+
+.success {
+  color: #18773b;
+}
+
+.error {
+  color: #b42318;
+}
+
 @media (max-width: 996px) {
   .main {
     min-height: auto;
@@ -137,9 +155,5 @@
 
   .title {
     font-size: 1.65rem;
-  }
-
-  .fieldRow {
-    grid-template-columns: 1fr;
   }
 }
