@@ -219,9 +219,28 @@ button.navbar-sidebar__close > svg {
     top: 0;
   }
 
-  .navbar__inner .navbar__brand,
-  .navbar__inner .navbar__logo,
-  .navbar__inner .navbar__title,
+  .navbar__inner {
+    flex-wrap: nowrap;
+  }
+
+  .navbar__inner > .navbar__items:first-child {
+    order: 1;
+    flex: 1 1 auto;
+  }
+
+  .navbar__inner > .navbar__items--right {
+    order: 2;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    padding-right: calc(30px + 0.5rem);
+  }
+
+  .navbar__toggle {
+    position: absolute;
+    right: 0;
+    margin: 0;
+  }
+
   .navbar-sidebar__back {
     display: none !important;
   }
@@ -251,7 +270,8 @@ button.navbar-sidebar__close > svg {
   .navbar-sidebar {
     position: fixed !important;
     top: 0 !important;
-    left: 0 !important;
+    right: 0 !important;
+    left: auto !important;
     bottom: 0 !important;
     width: min(86vw, 22rem) !important;
     max-width: calc(100vw - 2rem) !important;
@@ -259,7 +279,7 @@ button.navbar-sidebar__close > svg {
     border-radius: 0 !important;
     margin: 0 !important;
     background: #ffffff;
-    transform: translateX(-100%) !important;
+    transform: translateX(100%) !important;
     transition: transform 200ms ease !important;
     z-index: 1001 !important;
   }
