@@ -90,7 +90,7 @@ body:has(.theme-doc-markdown) .navbar--fixed-top {
 }
 
 .navbar__link {
-  border-radius: 999px;
+  border-radius: 0.45rem;
   padding: 0.28rem 0.68rem;
   font-size: 0.93rem;
   font-weight: 540;
@@ -100,7 +100,6 @@ body:has(.theme-doc-markdown) .navbar--fixed-top {
 
 .navbar__link:hover,
 .navbar__link--active {
-  border-radius: 0.45rem;
   background: rgba(0, 0, 0, 0.06);
   text-decoration: none !important;
 }
