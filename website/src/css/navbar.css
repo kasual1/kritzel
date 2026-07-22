@@ -198,6 +198,10 @@ body:has(.theme-doc-markdown) .navbar__inner a.navbar-get-license-link {
     margin: 0;
   }
 
+  .navbar-sidebar__brand .navbar__brand {
+    display: none;
+  }
+
   .navbar-sidebar__back {
     display: none !important;
   }
