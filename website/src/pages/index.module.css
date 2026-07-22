@@ -128,6 +128,13 @@
   }
 }
 
+.sectionSeparator {
+  width: 400px;
+  margin: 0 auto;
+  border: 0;
+  border-top: 1px solid var(--ifm-color-emphasis-100);
+}
+
 /* FAQ Section */
 .faqSection {
   padding: 4.5rem 1.5rem 5rem;
