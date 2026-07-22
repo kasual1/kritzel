@@ -1,5 +1,7 @@
 :root {
+  --ifm-navbar-height: 3rem;
   --kritzel-nav-max-width: 1240px;
+  --ifm-container-width-xl: var(--kritzel-nav-max-width);
   --kritzel-nav-bg: rgba(255, 255, 255, 0.82);
   --kritzel-nav-border: rgba(0, 0, 0, 0.08);
   --kritzel-nav-shadow: 0 14px 32px rgba(8, 12, 18, 0.12);
@@ -12,7 +14,7 @@
   border-radius: 1rem;
   background: transparent;
   box-shadow: var(--kritzel-nav-shadow);
-  padding: 0.45rem 1rem;
+  padding: 0.3rem 1rem;
 }
 
 .navbar::before {
@@ -40,7 +42,7 @@
 .navbar__inner {
   position: relative;
   z-index: 1;
-  min-height: 2.75rem;
+  min-height: 2.2rem;
 }
 
 .navbar__brand {
@@ -54,8 +56,12 @@
 }
 
 .navbar__logo {
-  height: 28px !important;
-  width: 28px !important;
+  height: 24px !important;
+  width: 24px !important;
+}
+
+.navbar__logo img {
+  display: block;
 }
 
 .navbar__items {
@@ -68,7 +74,7 @@
 
 .navbar__link {
   border-radius: 999px;
-  padding: 0.38rem 0.72rem;
+  padding: 0.28rem 0.68rem;
   font-size: 0.93rem;
   font-weight: 540;
   line-height: 1.1;
@@ -93,7 +99,7 @@ a.navbar-get-license-link {
   background: #000;
   color: #fff !important;
   font-weight: 620;
-  padding: 0.4rem 0.82rem;
+  padding: 0.3rem 0.75rem;
   line-height: 1.1;
 }
 
@@ -123,7 +129,7 @@ a.navbar-get-license-link.navbar__link--active {
   background-image: url("/img/menu.svg") !important;
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 32px 32px;
+  background-size: 28px 28px;
   color: transparent !important;
 }
 
@@ -180,7 +186,7 @@ button.navbar-sidebar__close > svg {
   .navbar {
     width: calc(100% - 1rem);
     margin-top: 0.5rem;
-    padding: 0.35rem 0.75rem;
+    padding: 0.25rem 0.7rem;
   }
 
   .navbar__inner .navbar__brand,
@@ -205,7 +211,7 @@ button.navbar-sidebar__close > svg {
   }
 
   .navbar__inner .navbar-framework-picker > .navbar__link {
-    padding: 0.28rem 0.6rem;
+    padding: 0.22rem 0.55rem;
   }
 
   .navbar-sidebar .menu__link.navbar-get-license-link {
