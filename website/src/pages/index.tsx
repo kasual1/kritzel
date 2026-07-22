@@ -6,8 +6,8 @@ import HomepageFeatures from "@site/src/components/HomepageFeatures";
 import CallToAction from "@site/src/components/CallToAction";
 import FAQAccordionItem from "@site/src/components/FAQAccordionItem";
 import Heading from "@theme/Heading";
-import ArrowRight from "@site/static/img/arrow_right.svg";
 import BrowserOnly from "@docusaurus/BrowserOnly";
+import { ArrowRight } from "lucide-react";
 
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
@@ -159,7 +159,7 @@ function HomepageHeader() {
           >
             Try the Demo
             <span className="buttonIcon">
-              <ArrowRight style={{ width: "24px", height: "24px" }} />
+              <ArrowRight size={24} aria-hidden="true" />
             </span>
           </Link>
           <Link
@@ -169,7 +169,7 @@ function HomepageHeader() {
           >
             Read the Docs
             <span className="buttonIcon">
-              <ArrowRight style={{ width: "24px", height: "24px" }} />
+              <ArrowRight size={24} aria-hidden="true" />
             </span>
           </Link>
         </div>

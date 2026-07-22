@@ -10,6 +10,7 @@ import {translate} from '@docusaurus/Translate';
 import NavbarNavLink from '@theme/NavbarItem/NavbarNavLink';
 import NavbarItem, {type LinkLikeNavbarItemProps} from '@theme/NavbarItem';
 import type {Props} from '@theme/NavbarItem/DropdownNavbarItem/Mobile';
+import {ChevronDown, ChevronRight} from 'lucide-react';
 import styles from './styles.module.css';
 import { setPreferredFramework, getFrameworkFromPath, getPreferredFramework } from '@site/src/utils/frameworkPreference';
 
@@ -76,7 +77,9 @@ function CollapseButton({
       type="button"
       className="clean-btn menu__caret"
       onClick={onClick}
-    />
+    >
+      {collapsed ? <ChevronRight size={24} aria-hidden="true" /> : <ChevronDown size={24} aria-hidden="true" />}
+    </button>
   );
 }
 

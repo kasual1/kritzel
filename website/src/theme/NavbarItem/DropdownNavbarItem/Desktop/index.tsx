@@ -4,6 +4,7 @@ import {useLocalPathname} from '@docusaurus/theme-common/internal';
 import NavbarNavLink from '@theme/NavbarItem/NavbarNavLink';
 import NavbarItem, {type LinkLikeNavbarItemProps} from '@theme/NavbarItem';
 import type {Props} from '@theme/NavbarItem/DropdownNavbarItem/Desktop';
+import {ChevronDown} from 'lucide-react';
 import { setPreferredFramework, getFrameworkFromPath, getPreferredFramework } from '@site/src/utils/frameworkPreference';
 
 function isFrameworkPicker(items: readonly LinkLikeNavbarItemProps[]): boolean {
@@ -93,7 +94,12 @@ export default function DropdownNavbarItemDesktop({
         href={props.to ? undefined : '#'}
         className={clsx('navbar__link', className)}
         {...props}
-        label={props.children ? undefined : displayLabel}
+        label={
+          <>
+            {props.children ?? displayLabel}
+            <ChevronDown className="navbar-dropdown-chevron" size={18} aria-hidden="true" />
+          </>
+        }
         onClick={props.to ? undefined : (e) => e.preventDefault()}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
@@ -101,7 +107,6 @@ export default function DropdownNavbarItemDesktop({
             setShowDropdown(!showDropdown);
           }
         }}>
-        {props.children ?? displayLabel}
       </NavbarNavLink>
       <ul className="dropdown__menu">
         {items.map((childItemProps, i) => {
