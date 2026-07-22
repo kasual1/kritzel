@@ -213,7 +213,7 @@ function FAQSection() {
     <section className={styles.faqSection}>
       <div className={styles.faqContent}>
         <Heading as="h2" className={styles.faqTitle}>
-          FAQ
+          Frequently Asked Questions
         </Heading>
         <p className={styles.faqSubtitle}>
           Answers to common questions about adopting Kritzel in production projects.
@@ -250,6 +250,7 @@ export default function Home(): ReactNode {
       <HomepageHeader />
       <main>
         <HomepageFeatures />
+        <hr className={styles.sectionSeparator} />
         <FAQSection />
         <CallToAction />
       </main>

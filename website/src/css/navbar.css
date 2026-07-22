@@ -112,9 +112,9 @@ body:has(.theme-doc-markdown) .navbar--fixed-top {
 }
 
 .navbar-framework-picker.dropdown--show > .dropdown__menu {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 a.navbar-get-license-link {
