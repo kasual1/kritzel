@@ -1,8 +1,14 @@
 .item {
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--ifm-color-emphasis-200);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 8px 18px rgba(8, 12, 18, 0.05);
+  background: var(--ifm-background-surface-color);
+  box-shadow: 0 10px 22px rgba(8, 12, 18, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.item:hover {
+  border-color: var(--ifm-color-emphasis-300);
+  box-shadow: 0 14px 28px rgba(8, 12, 18, 0.08);
 }
 
 .trigger {
@@ -19,10 +25,16 @@
   cursor: pointer;
 }
 
+.trigger:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
 .question {
-  font-size: 1rem;
+  font-size: 1.02rem;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.45;
 }
 
 .icon {
@@ -57,7 +69,7 @@
 .answer {
   margin: 0;
   padding: 0 1.15rem 1.05rem;
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   line-height: 1.6;
   color: var(--ifm-color-content-secondary);
 }
