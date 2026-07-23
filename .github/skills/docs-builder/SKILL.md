@@ -52,11 +52,15 @@ Detailed conventions for each documentation category live in the `patterns/` sub
 
 - [`patterns/examples.md`](patterns/examples.md) — How to write, structure, and maintain example pages
 - [`patterns/core-concept.md`](patterns/core-concept.md) — How to write, structure, and maintain core concept pages
-- [`patterns/angular-demo-pages.md`](patterns/angular-demo-pages.md) — How to create Angular demo components that back `<LiveDemo>` embeds
-- [`patterns/react-demo-pages.md`](patterns/react-demo-pages.md) — How to create React demo pages that back `<LiveDemo>` embeds
-- [`patterns/vue-demo-pages.md`](patterns/vue-demo-pages.md) — How to create Vue demo pages that back `<LiveDemo>` embeds
 - [`patterns/framework-porting.md`](patterns/framework-porting.md) — How to port Angular source docs to React and Vue consistently
 - [`patterns/custom-elements.md`](patterns/custom-elements.md) — How to document and demo `KritzelCustomElement` lifecycle, renderer state persistence, wheel behavior, and Vue-specific embedding constraints
+
+For runnable demo implementation under `demos/**`, use the `demo-builder` skill:
+
+- `.github/skills/demo-builder/patterns/angular-demo-pages.md`
+- `.github/skills/demo-builder/patterns/react-demo-pages.md`
+- `.github/skills/demo-builder/patterns/vue-demo-pages.md`
+- `.github/skills/demo-builder/patterns/cross-framework-demo-reliability.md`
 
 ## Cross-Framework LiveDemo Reliability Rules
 
@@ -84,7 +88,7 @@ Apply these rules whenever docs include `<LiveDemo>` (especially during Angular 
 6. Account for framework-specific editor/engine ref access.
 - Vue demos must resolve the editor/engine via the `getEditorRef` / `getEngineRef` composables from `kritzel-vue` (a Vue template ref points at the component instance, not the native element).
 - Angular and React resolve the native `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement` directly (Angular `viewChild`/`ElementRef`, React `useRef`) — no composable needed.
-- See `patterns/vue-demo-pages.md` ("Editor / Engine Ref Access") for the required Vue usage.
+- See `.github/skills/demo-builder/patterns/vue-demo-pages.md` ("Editor / Engine Ref Access") for the required Vue usage.
 
 7. For custom-element documentation, apply lifecycle and framework constraints.
 - Load `patterns/custom-elements.md` whenever docs or demos cover `KritzelCustomElement`, `rendererKey`, or `rendererData`.
@@ -102,4 +106,4 @@ Apply these rules whenever docs include `<LiveDemo>` (especially during Angular 
 
 Normally, docs-builder focuses on Angular source docs only. If a task explicitly requests React and Vue equivalents, use `patterns/framework-porting.md` to perform a structured translation pass from Angular to both target frameworks.
 
-When the translation also requires runnable framework demos, apply `patterns/react-demo-pages.md` and `patterns/vue-demo-pages.md` to implement and register corresponding demo routes.
+When the translation also requires runnable framework demos, apply `demo-builder` patterns to implement and register corresponding demo routes.
