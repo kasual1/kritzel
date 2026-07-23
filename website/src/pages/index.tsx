@@ -131,8 +131,8 @@ function FAQSection() {
             return (
               <FAQAccordionItem
                 key={item.question}
-                question={`Q: ${item.question}`}
-                answer={`A: ${item.answer}`}
+                question={item.question}
+                answer={item.answer}
                 isOpen={isOpen}
                 onToggle={() => setOpenIndex((current) => (current === index ? null : index))}
                 buttonId={buttonId}
