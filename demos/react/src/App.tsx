@@ -38,6 +38,7 @@ import { BlueprintDefectMapperPage } from "./pages/examples/blueprint-defect-map
 import { SlideshowPresentationPage } from "./pages/examples/slideshow-presentation/SlideshowPresentationPage";
 import { InfiniteCanvasGalleryPage } from "./pages/examples/infinite-canvas-gallery/InfiniteCanvasGalleryPage";
 import { ImageAnnotationStudioPage } from "./pages/examples/image-annotation-studio/ImageAnnotationStudioPage";
+import { WebsiteHeroPage } from "./pages/website/WebsiteHeroPage";
 
 function App() {
   return (
@@ -82,6 +83,7 @@ function App() {
         <Route path="/examples/slideshow-presentation" element={<SlideshowPresentationPage />} />
         <Route path="/examples/infinite-canvas-gallery" element={<InfiniteCanvasGalleryPage />} />
         <Route path="/examples/image-annotation-studio" element={<ImageAnnotationStudioPage />} />
+        <Route path="/website/hero" element={<WebsiteHeroPage />} />
         <Route path="*" element={<Navigate to="/e2e/editor" replace />} />
       </Routes>
     </HashRouter>
