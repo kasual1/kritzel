@@ -6,123 +6,28 @@ import HomepageFeatures from "@site/src/components/HomepageFeatures";
 import CallToAction from "@site/src/components/CallToAction";
 import FAQAccordionItem from "@site/src/components/FAQAccordionItem";
 import Heading from "@theme/Heading";
-import BrowserOnly from "@docusaurus/BrowserOnly";
 import { ArrowRight } from "lucide-react";
 
-import useBaseUrl from "@docusaurus/useBaseUrl";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import { getPreferredFramework, frameworkPaths, subscribeToPreferredFramework } from "@site/src/utils/frameworkPreference";
 
 import styles from "./index.module.css";
 import React from "react";
 
-// Separate component to properly use hooks
-function HomepageEditor({ initialWorkspaceUrl }: { initialWorkspaceUrl: string }) {
-  const { KritzelEditor, IndexedDBSyncProvider } = require("kritzel-react");
-  const editorRef = React.useRef<any>(null);
-  const isLoadedRef = React.useRef(false);
-  const observerRef = React.useRef<ResizeObserver | null>(null);
-  const prevWidthRef = React.useRef<number>(0);
-  const [containerEl, setContainerEl] = React.useState<HTMLDivElement | null>(null);
-  const [shouldLoadInitialWorkspace, setShouldLoadInitialWorkspace] = React.useState<boolean | null>(null);
-  const containerRef = React.useCallback((el: HTMLDivElement | null) => {
-    setContainerEl(el);
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-    if (el) {
-      prevWidthRef.current = el.getBoundingClientRect().width;
-      observerRef.current = new ResizeObserver((entries) => {
-        const newWidth = entries[0].contentRect.width;
-        if (newWidth !== prevWidthRef.current && isLoadedRef.current) {
-          prevWidthRef.current = newWidth;
-          editorRef.current?.centerAllObjects(false);
-        }
-      });
-      observerRef.current.observe(el);
-    }
-  }, []);
-
-  // Check if an IndexedDB workspace already exists before the editor initializes
-  React.useEffect(() => {
-    const checkDatabase = async () => {
-      try {
-        const databases = await indexedDB.databases();
-        const hasKritzelWorkspace = databases.some(db =>
-          db.name?.startsWith('kritzel-workspace-homepage')
-        );
-        setShouldLoadInitialWorkspace(!hasKritzelWorkspace);
-      } catch {
-        setShouldLoadInitialWorkspace(false);
-      }
-    };
-    checkDatabase();
-  }, []);
-
-  const handleReady = React.useCallback(async () => {
-    if (editorRef.current && !isLoadedRef.current) {
-      isLoadedRef.current = true;
-      try {
-        if (shouldLoadInitialWorkspace) {
-          const response = await fetch(initialWorkspaceUrl);
-          const json = await response.text();
-          await editorRef.current.loadObjectsFromJson(json);
-        }
-        await editorRef.current.centerAllObjects(false);
-      } catch (error) {
-        console.error('Failed to load initial workspace:', error);
-      }
-    }
-  }, [initialWorkspaceUrl, shouldLoadInitialWorkspace]);
-
-  React.useEffect(() => {
-    if (shouldLoadInitialWorkspace === null) return;
-    let mounted = true;
-    const checkInit = async () => {
-      // Small delay to allow the editor to initialize in case it's remounting
-      await new Promise((r) => setTimeout(r, 100));
-      if (!mounted || !editorRef.current || isLoadedRef.current) return;
-
-      try {
-        const ws = await editorRef.current.getActiveWorkspace();
-        if (ws) {
-          handleReady();
-        }
-      } catch (err) {
-        // Not ready yet, wait for the onIsReady event
-      }
-    };
-    checkInit();
-    return () => {
-      mounted = false;
-    };
-  }, [handleReady, shouldLoadInitialWorkspace]);
-
-  // Wait for database check before rendering editor
-  if (shouldLoadInitialWorkspace === null) {
-    return <div style={{ width: '100%', height: '100%' }} />;
-  }
-
+function HomepageEditorEmbed() {
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      <KritzelEditor
-        editorId="homepage"
-        ref={editorRef}
-        syncConfig={{ providers: [IndexedDBSyncProvider] }}
-        isPanningEnabled={false}
-        isZoomingEnabled={false}
-        cursorTarget={containerEl}
-        onIsReady={handleReady}
-        isWorkspaceManagerVisible={false}
-        isMoreMenuVisible={true}
-      />
-    </div>
+    <iframe
+      src="https://kasual1.github.io/kritzel-demos/react/#/getting-started"
+      title="Kritzel React Getting Started Demo"
+      style={{ width: "100%", height: "100%", border: 0 }}
+      loading="lazy"
+      referrerPolicy="strict-origin-when-cross-origin"
+      allow="clipboard-read; clipboard-write"
+    />
   );
 }
 
 function HomepageHeader() {
-  const initialWorkspaceUrl = useBaseUrl('/json/initial_workspace.json');
   const [targetPath, setTargetPath] = React.useState('/docs/react/overview');
 
   React.useEffect(() => {
@@ -147,9 +52,7 @@ function HomepageHeader() {
           with easy integration for React, Vue, and Angular.
         </p>
         <div className={styles.editorContainer}>
-          <BrowserOnly fallback={<div className={styles.editorPlaceholder}>Loading editor...</div>}>
-            {() => <HomepageEditor initialWorkspaceUrl={initialWorkspaceUrl} />}
-          </BrowserOnly>
+          <HomepageEditorEmbed />
         </div>
         <div className={styles.buttons}>
           <Link
