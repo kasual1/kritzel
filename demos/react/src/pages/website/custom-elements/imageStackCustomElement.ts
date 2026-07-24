@@ -704,8 +704,8 @@ export function createImageStackCustomElement() {
     element: imagePlaceholder,
     rendererKey: IMAGE_STACK_RENDERER_KEY,
     rendererData: createImageStackInitialState(),
-    translateX: 260,
-    translateY: -190,
+    translateX: 325,
+    translateY: -480,
     width: IMAGE_STACK_OBJECT_SIZE,
     height: IMAGE_STACK_OBJECT_SIZE,
   });

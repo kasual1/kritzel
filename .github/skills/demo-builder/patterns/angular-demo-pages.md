@@ -61,6 +61,15 @@ Use `viewChild` + `ElementRef` for direct API calls.
 
 When demos need preloaded canvas content, prefer `createSeedObjects()` from `demos/angular/src/app/const/seed-objects.ts` for visual consistency across demos.
 
+## Custom-Element Objects
+
+When a page uses `KritzelCustomElement`:
+
+1. Keep renderer setup and object factories in dedicated files instead of bloating the page component.
+2. Register/unregister renderers inside component lifecycle paths.
+3. Use idempotent seed guards before adding custom-element objects.
+4. Apply `patterns/custom-element-objects.md` for shared lifecycle, state, and cleanup rules.
+
 ## Docs LiveDemo Correspondence
 
 If the demo is embedded in docs:

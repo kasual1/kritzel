@@ -21,10 +21,10 @@ type MountedRocketTodo = {
 
 const DEFAULT_ROCKET_TODO_STATE: RocketTodoState = {
   items: [
-    { id: "fuel", title: "Confirm propellant tanks are filled and pressure-stable", isChecked: false },
-    { id: "telemetry", title: "Verify live telemetry stream from all critical sensors", isChecked: false },
-    { id: "weather", title: "Approve weather and lightning window for launch corridor", isChecked: false },
-    { id: "range", title: "Receive final range safety clearance and abort readiness", isChecked: false },
+    { id: "fuel", title: "Confirm propellant tanks are filled and pressure-stable", isChecked: true },
+    { id: "telemetry", title: "Verify live telemetry stream from all critical sensors", isChecked: true },
+    { id: "weather", title: "Approve weather and lightning window for launch corridor", isChecked: true },
+    { id: "range", title: "Receive final range safety clearance and abort readiness", isChecked: true },
     { id: "crew", title: "Run final crew and mission control communication check", isChecked: false },
   ],
 };
@@ -246,10 +246,10 @@ export function createRocketTodoCustomElement() {
     element: placeholder,
     rendererKey: ROCKET_TODO_RENDERER_KEY,
     rendererData: createRocketTodoInitialState(),
-    translateX: -320,
-    translateY: -190,
-    width: 500,
-    height: 380,
+    translateX: -1225,
+    translateY: -482,
+    width: 440,
+    height: 563
   });
 
   customElement.isRotatable = false;

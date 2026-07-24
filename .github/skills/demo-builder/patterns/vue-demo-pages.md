@@ -61,6 +61,15 @@ Vue template refs on wrapper components point at component instances, not direct
 
 Use shared seed helpers when demos need initial canvas content to keep visuals and behavior consistent.
 
+## Custom-Element Objects
+
+When a page uses `KritzelCustomElement`:
+
+1. Keep renderer setup and object factory logic in dedicated modules, not inline in the page SFC.
+2. Register/unregister renderers in lifecycle hooks.
+3. Seed via guarded, idempotent setup flow.
+4. Apply `patterns/custom-element-objects.md` for general lifecycle, persistence, and cleanup expectations.
+
 ## Docs LiveDemo Correspondence
 
 If the demo is embedded in docs:
