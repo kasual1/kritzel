@@ -13,6 +13,7 @@ const hostStyle: CSSProperties = {
 
 const ROCKET_TODO_RENDERER_KEY = "website-hero-rocket-todo";
 const IMAGE_STACK_RENDERER_KEY = "website-hero-image-stack";
+const IMAGE_STACK_OBJECT_SIZE = 364;
 
 type RocketTodoItem = {
   id: string;
@@ -272,7 +273,7 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
     "font-family:'Segoe UI', Tahoma, sans-serif",
     "display:grid",
     "place-items:center",
-    "padding:8px",
+    "padding:0",
     "overflow:visible",
     "color:#202634",
   ].join(";");
@@ -280,9 +281,9 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
   const stage = document.createElement("div");
   stage.style.cssText = [
     "position:relative",
-    "width:320px",
-    "height:320px",
-    "border-radius:14px",
+    `width:${IMAGE_STACK_OBJECT_SIZE}px`,
+    `height:${IMAGE_STACK_OBJECT_SIZE}px`,
+    "border-radius:44px",
     "background:#f4f7fb",
     "touch-action:pan-y",
     "overflow:hidden",
@@ -292,7 +293,7 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
 
   const indexBadge = document.createElement("div");
   indexBadge.style.cssText =
-    "position:absolute; inset:auto 10px 10px auto; z-index:20; background:rgba(19, 29, 45, 0.58); color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:4px 9px;";
+    "position:absolute; bottom:18px; right:18px; z-index:20; background:rgba(19, 29, 45, 0.58); color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:4px 9px;";
 
   const buttonBaseStyle = [
     "position:absolute",
@@ -328,7 +329,7 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
   expandButton.textContent = "▦";
   expandButton.setAttribute("aria-label", "Toggle image grid");
   expandButton.style.cssText =
-    "position:absolute; top:10px; right:10px; z-index:22; width:34px; height:34px; border:none; border-radius:10px; background:rgba(16, 24, 38, 0.48); color:#ffffff; cursor:pointer; font-size:16px; line-height:1; display:grid; place-items:center; backdrop-filter:blur(2px);";
+    "position:absolute; top:18px; right:18px; z-index:22; width:34px; height:34px; border:none; border-radius:16px; background:rgba(16, 24, 38, 0.48); color:#ffffff; cursor:pointer; font-size:16px; line-height:1; display:grid; place-items:center; backdrop-filter:blur(2px);";
 
   const cleanupListeners: Array<() => void> = [];
 
@@ -337,6 +338,10 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
   let lastDirection: "forward" | "backward" | null = null;
   let previousImageForTransition: PlaceholderImage | null = null;
   let isExpanded = false;
+  let pendingOpenTransition: { fromRect: DOMRect; imageUrl: string; index: number } | null = null;
+  let pendingCloseTransition: { fromRect: DOMRect; imageUrl: string } | null = null;
+  let isMorphingToSingle = false;
+  let selectedGridThumbnail: HTMLButtonElement | null = null;
 
   function getCurrentImages(): PlaceholderImage[] {
     return getSelectedImages(state.selectedImageIds);
@@ -369,11 +374,10 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
     card.style.cssText = [
       "position:absolute",
       "inset:0",
-      "border-radius:14px",
+      "border-radius:44px",
       "background-size:cover",
       "background-position:center",
       `background-image:url('${image.url}')`,
-      "transition:opacity 0.22s ease",
       "backface-visibility:hidden",
       "transform-style:preserve-3d",
       "will-change:transform, opacity",
@@ -455,6 +459,67 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
     }
   }
 
+  function animateSharedImageTransition(
+    fromRect: DOMRect,
+    toRect: DOMRect,
+    imageUrl: string,
+    fromRadius: number,
+    toRadius: number,
+    onDone?: () => void,
+  ) {
+    const ghost = document.createElement("div");
+    ghost.style.cssText = [
+      "position:fixed",
+      `left:${fromRect.left}px`,
+      `top:${fromRect.top}px`,
+      `width:${fromRect.width}px`,
+      `height:${fromRect.height}px`,
+      "pointer-events:none",
+      "z-index:99999",
+      `border-radius:${fromRadius}px`,
+      `background-image:url('${imageUrl}')`,
+      "background-size:cover",
+      "background-position:center",
+      "box-shadow:0 10px 24px rgba(14, 22, 36, 0.22)",
+      "overflow:hidden",
+    ].join(";");
+
+    document.body.appendChild(ghost);
+
+    const animation = ghost.animate(
+      [
+        {
+          left: `${fromRect.left}px`,
+          top: `${fromRect.top}px`,
+          width: `${fromRect.width}px`,
+          height: `${fromRect.height}px`,
+          borderRadius: `${fromRadius}px`,
+          boxShadow: "0 10px 24px rgba(14, 22, 36, 0.22)",
+        },
+        {
+          left: `${toRect.left}px`,
+          top: `${toRect.top}px`,
+          width: `${toRect.width}px`,
+          height: `${toRect.height}px`,
+          borderRadius: `${toRadius}px`,
+          boxShadow: "0 6px 16px rgba(14, 22, 36, 0.16)",
+        },
+      ],
+      {
+        duration: 360,
+        easing: "cubic-bezier(0.22, 0.73, 0.2, 1)",
+        fill: "both",
+      },
+    );
+
+    animation.onfinish = () => {
+      onDone?.();
+      requestAnimationFrame(() => {
+        ghost.remove();
+      });
+    };
+  }
+
   function buildGridThumbnail(image: PlaceholderImage, index: number, total: number): HTMLButtonElement {
     const thumb = document.createElement("button");
     thumb.type = "button";
@@ -462,10 +527,12 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
       "border:none",
       "padding:0",
       "margin:0",
-      "border-radius:10px",
+      "border-radius:14px",
       "cursor:pointer",
       "overflow:hidden",
       "position:relative",
+      "width:100%",
+      "aspect-ratio:1 / 1",
       "background:#e6ebf2",
       "box-shadow:0 4px 12px rgba(20, 31, 47, 0.18)",
       "transform-origin:center",
@@ -491,8 +558,12 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
     return thumb;
   }
 
-  function animateGridFanOut(gridItems: HTMLButtonElement[]) {
+  function animateGridFanOut(gridItems: HTMLButtonElement[], skipIndex?: number) {
     gridItems.forEach((item, index) => {
+      if (typeof skipIndex === "number" && index === skipIndex) {
+        return;
+      }
+
       const rotation = (index % 2 === 0 ? -1 : 1) * 8;
       item.animate(
         [
@@ -516,7 +587,7 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
   }
 
   const onResize = () => {
-    const side = Math.floor(Math.min(root.clientWidth - 16, root.clientHeight - 16));
+    const side = Math.floor(Math.min(root.clientWidth, root.clientHeight));
     const safeSide = Math.max(120, side);
     stage.style.width = `${safeSide}px`;
     stage.style.height = `${safeSide}px`;
@@ -534,8 +605,10 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
 
     const images = getCurrentImages();
     stage.innerHTML = "";
-    stage.style.boxShadow = isExpanded ? "none" : "0 10px 22px rgba(20, 29, 46, 0.14)";
-    stage.style.background = isExpanded ? "transparent" : "#f4f7fb";
+    selectedGridThumbnail = null;
+    const shouldHideStageChrome = isExpanded || isMorphingToSingle;
+    stage.style.boxShadow = shouldHideStageChrome ? "none" : "0 10px 22px rgba(20, 29, 46, 0.14)";
+    stage.style.background = shouldHideStageChrome ? "transparent" : "#f4f7fb";
 
     if (images.length === 0) {
       const empty = document.createElement("div");
@@ -553,17 +626,24 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
     if (isExpanded) {
       const grid = document.createElement("div");
       grid.style.cssText =
-        "position:absolute; inset:0; display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; padding:12px; background:transparent; backdrop-filter:none; z-index:14;";
+        "position:absolute; inset:0; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; align-content:start; padding:12px; background:transparent; backdrop-filter:none; z-index:14;";
 
       const gridItems = images.map((image, index) => {
         const thumb = buildGridThumbnail(image, index, images.length);
         if (index === state.currentIndex) {
           thumb.style.outline = "2px solid #007AFF";
+          selectedGridThumbnail = thumb;
         }
 
         const onSelect = () => {
+          const fromRect = thumb.getBoundingClientRect();
           state.currentIndex = index;
           isExpanded = false;
+          isMorphingToSingle = true;
+          pendingCloseTransition = {
+            fromRect,
+            imageUrl: image.url,
+          };
           previousImageForTransition = null;
           lastDirection = null;
           render();
@@ -579,7 +659,31 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
       expandButton.textContent = "✕";
       expandButton.style.zIndex = "22";
       indexBadge.textContent = `${state.currentIndex + 1} / ${images.length}`;
-      animateGridFanOut(gridItems);
+
+      if (pendingOpenTransition) {
+        const target = gridItems[pendingOpenTransition.index] ?? null;
+        if (target) {
+          target.style.opacity = "0";
+          animateGridFanOut(gridItems, pendingOpenTransition.index);
+          animateSharedImageTransition(
+            pendingOpenTransition.fromRect,
+            target.getBoundingClientRect(),
+            pendingOpenTransition.imageUrl,
+            44,
+            14,
+            () => {
+              target.style.opacity = "1";
+            },
+          );
+        } else {
+          animateGridFanOut(gridItems);
+        }
+
+        pendingOpenTransition = null;
+      } else {
+        animateGridFanOut(gridItems);
+      }
+
       return;
     }
 
@@ -604,6 +708,26 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
     stage.appendChild(prevButton);
     stage.appendChild(nextButton);
     stage.appendChild(expandButton);
+
+    if (pendingCloseTransition) {
+      incomingCard.style.opacity = "0";
+      animateSharedImageTransition(
+        pendingCloseTransition.fromRect,
+        incomingCard.getBoundingClientRect(),
+        pendingCloseTransition.imageUrl,
+        14,
+        44,
+        () => {
+          incomingCard.style.transition = "none";
+          incomingCard.style.opacity = "1";
+          void incomingCard.offsetWidth;
+          isMorphingToSingle = false;
+          stage.style.boxShadow = "0 10px 22px rgba(20, 29, 46, 0.14)";
+          stage.style.background = "#f4f7fb";
+        },
+      );
+      pendingCloseTransition = null;
+    }
 
     indexBadge.textContent = `${state.currentIndex + 1} / ${images.length}`;
     expandButton.textContent = "▦";
@@ -653,7 +777,34 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
   };
 
   const onToggleExpanded = () => {
-    isExpanded = !isExpanded;
+    const images = getCurrentImages();
+    const currentImage = images[state.currentIndex];
+
+    if (isExpanded) {
+      if (currentImage && selectedGridThumbnail) {
+        pendingCloseTransition = {
+          fromRect: selectedGridThumbnail.getBoundingClientRect(),
+          imageUrl: currentImage.url,
+        };
+        isMorphingToSingle = true;
+      }
+
+      isExpanded = false;
+      previousImageForTransition = null;
+      lastDirection = null;
+      render();
+      return;
+    }
+
+    if (currentImage) {
+      pendingOpenTransition = {
+        fromRect: stage.getBoundingClientRect(),
+        imageUrl: currentImage.url,
+        index: state.currentIndex,
+      };
+    }
+
+    isExpanded = true;
     render();
   };
 
@@ -737,6 +888,9 @@ export function WebsiteHeroPage() {
         if (!container) {
           return;
         }
+
+        // Ensure the custom-element mount container does not clip stage shadows.
+        container.style.overflow = "visible";
 
         const previousWidget = mountedImageWidgets.current.get(object.id);
         if (previousWidget) {
@@ -825,8 +979,8 @@ export function WebsiteHeroPage() {
       rendererData: createImageStackInitialState(),
       translateX: 260,
       translateY: -190,
-      width: 560,
-      height: 380,
+      width: IMAGE_STACK_OBJECT_SIZE,
+      height: IMAGE_STACK_OBJECT_SIZE,
     });
 
     imageStackElement.isRotatable = false;

@@ -3032,7 +3032,7 @@ export class KritzelEngine {
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
-                      overflow: 'hidden',
+                      overflow: 'visible',
                       display: 'block',
                     }}
                   ></div>
