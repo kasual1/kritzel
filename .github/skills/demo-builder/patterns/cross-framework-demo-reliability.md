@@ -18,6 +18,11 @@ Use this pattern whenever demo pages are created, moved, or ported across Angula
 - Keep interaction behavior equivalent across frameworks.
 - Keep API method intent equivalent even when component syntax differs.
 
+4. Preserve custom-element lifecycle parity when applicable.
+- Keep renderer key semantics equivalent.
+- Keep mount/unmount persistence behavior equivalent.
+- Keep seed object behavior idempotent and deterministic.
+
 ## Framework Differences You Must Respect
 
 1. File naming conventions:
@@ -48,6 +53,16 @@ When a docs page embeds a demo:
 
 4. For local docs previews, verify `website/docusaurus.config.ts` `customFields.demoBaseUrls` points to running demo dev servers.
 
+## Custom-Element Reliability Checks
+
+When a demo route uses `KritzelCustomElement`:
+
+1. Renderer registration and teardown are both implemented.
+2. Unmount returns serializable state snapshot where persistence is expected.
+3. Object factories are separated from page orchestration logic.
+4. Per-object cleanup removes listeners/observers and mounted roots.
+5. Seed guards prevent duplicate object insertion across reloads.
+
 ## Pre-Merge Checklist
 
 1. New or changed demo route is registered.
@@ -55,3 +70,4 @@ When a docs page embeds a demo:
 3. Theme application is intentional (framework theme by default).
 4. Editor `editorId` is unique.
 5. Docs links (`demoPath` and `repoFiles`) still resolve if applicable.
+6. If custom elements are used, `patterns/custom-element-objects.md` checks are satisfied.

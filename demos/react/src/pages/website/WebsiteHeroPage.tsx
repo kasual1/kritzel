@@ -1,13 +1,13 @@
 import { CSSProperties, useEffect, useRef } from "react";
 import { KritzelEditor, type HTMLKritzelEditorElement } from "kritzel-react";
 import {
-  createImageStackCustomElement,
   setupImageStackRenderer,
 } from "./custom-elements/imageStackCustomElement";
 import {
-  createRocketTodoCustomElement,
   setupRocketTodoRenderer,
 } from "./custom-elements/rocketTodoCustomElement";
+
+const INITIAL_WORKSPACE_EXPORT_URL = encodeURI("/New Workspace-2026-07-24T16-40-54.json");
 
 const hostStyle: CSSProperties = {
   display: "block",
@@ -16,7 +16,7 @@ const hostStyle: CSSProperties = {
 
 export function WebsiteHeroPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const hasAddedInitialCustomElement = useRef(false);
+  const hasImportedInitialWorkspace = useRef(false);
 
   useEffect(() => {
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
@@ -29,7 +29,7 @@ export function WebsiteHeroPage() {
   }, []);
 
   async function onReady() {
-    if (hasAddedInitialCustomElement.current) {
+    if (hasImportedInitialWorkspace.current) {
       return;
     }
 
@@ -38,10 +38,31 @@ export function WebsiteHeroPage() {
       return;
     }
 
-    hasAddedInitialCustomElement.current = true;
+    const response = await fetch(INITIAL_WORKSPACE_EXPORT_URL);
+    if (!response.ok) {
+      throw new Error(`Failed to load initial workspace export: ${response.status} ${response.statusText}`);
+    }
 
-    await editorRef.current?.addObject(createRocketTodoCustomElement());
-    await editorRef.current?.addObject(createImageStackCustomElement());
+    const workspaceJson = await response.text();
+    const importedWorkspace = JSON.parse(workspaceJson) as {
+      viewport?: {
+        centerWorldX: number;
+        centerWorldY: number;
+        scale: number;
+      };
+    };
+
+    await editorRef.current?.loadObjectsFromJson(workspaceJson);
+
+    if (importedWorkspace.viewport) {
+      await editorRef.current?.setViewport(
+        importedWorkspace.viewport.centerWorldX,
+        importedWorkspace.viewport.centerWorldY,
+        importedWorkspace.viewport.scale,
+      );
+    }
+
+    hasImportedInitialWorkspace.current = true;
   }
 
   return (
@@ -49,7 +70,7 @@ export function WebsiteHeroPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="website-hero"
-        isPanningEnabled={false}
+        isPanningEnabled={true}
         isZoomingEnabled={true}
         isMoreMenuVisible={true}
         isWorkspaceManagerVisible={false}
