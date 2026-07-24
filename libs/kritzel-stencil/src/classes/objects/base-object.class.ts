@@ -40,7 +40,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   zIndex: number = 0;
   userId?: string;
 
-  /** Whether the object is currently visible on the canvas */
   isVisible: boolean = true;
   isSelected: boolean = false;
   isHovered: boolean = false;
