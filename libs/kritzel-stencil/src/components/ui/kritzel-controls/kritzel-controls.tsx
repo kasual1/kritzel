@@ -3,7 +3,6 @@ import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
 import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
-import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelToolbarControl, KritzelToolbarSubOption } from '../../../interfaces/toolbar-control.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
@@ -68,8 +67,9 @@ export class KritzelControls {
   }
 
   handleSelectionChange() {
-    if (this.activeControl?.tool instanceof KritzelSelectionTool) {
-      this.updateDisplayValues(this.activeControl.tool);
+    const tool = this.activeControl?.tool;
+    if (tool && typeof tool !== 'function' && tool.toolType === 'selection') {
+      this.updateDisplayValues(tool);
     }
   }
 
@@ -136,8 +136,8 @@ export class KritzelControls {
       size,
     };
 
-    if (tool instanceof KritzelTextTool) {
-      displayValues.fontFamily = tool.fontFamily;
+    if (tool.toolType === 'text') {
+      displayValues.fontFamily = (tool as KritzelTextTool).fontFamily;
     }
 
     // Check for equality implementation to prevent unnecessary re-renders

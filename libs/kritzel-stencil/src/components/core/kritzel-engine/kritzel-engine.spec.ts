@@ -25,10 +25,27 @@ jest.mock('../../../classes/core/viewport.class', () => ({ KritzelViewport: jest
 jest.mock('../../../classes/handlers/key.handler', () => ({ KritzelKeyHandler: jest.fn() }));
 jest.mock('../../../classes/handlers/context-menu.handler', () => ({ KritzelContextMenuHandler: jest.fn() }));
 
-class MockKritzelSelectionTool {}
-class MockKritzelTextTool {}
-class MockKritzelShapeTool {}
-class MockKritzelEraserTool {}
+class MockKritzelSelectionTool {
+  toolType = 'selection';
+}
+class MockKritzelTextTool {
+  toolType = 'text';
+}
+class MockKritzelShapeTool {
+  toolType = 'shape';
+}
+class MockKritzelEraserTool {
+  toolType = 'eraser';
+}
+class MockKritzelBrushTool {
+  toolType = 'brush';
+}
+class MockKritzelLineTool {
+  toolType = 'line';
+}
+class MockKritzelImageTool {
+  toolType = 'image';
+}
 class MockKritzelBaseTool {}
 class MockKritzelSelectionBox {}
 class MockKritzelSelectionGroup {}
@@ -38,6 +55,9 @@ jest.mock('../../../classes/tools/selection-tool.class', () => ({ KritzelSelecti
 jest.mock('../../../classes/tools/text-tool.class', () => ({ KritzelTextTool: MockKritzelTextTool }));
 jest.mock('../../../classes/tools/shape-tool.class', () => ({ KritzelShapeTool: MockKritzelShapeTool }));
 jest.mock('../../../classes/tools/eraser-tool.class', () => ({ KritzelEraserTool: MockKritzelEraserTool }));
+jest.mock('../../../classes/tools/brush-tool.class', () => ({ KritzelBrushTool: MockKritzelBrushTool }));
+jest.mock('../../../classes/tools/line-tool.class', () => ({ KritzelLineTool: MockKritzelLineTool }));
+jest.mock('../../../classes/tools/image-tool.class', () => ({ KritzelImageTool: MockKritzelImageTool }));
 jest.mock('../../../classes/tools/base-tool.class', () => ({ KritzelBaseTool: MockKritzelBaseTool }));
 jest.mock('../../../classes/objects/selection-box.class', () => ({ KritzelSelectionBox: MockKritzelSelectionBox }));
 jest.mock('../../../classes/objects/selection-group.class', () => ({ KritzelSelectionGroup: MockKritzelSelectionGroup }));
@@ -1789,6 +1809,51 @@ describe('KritzelEngine', () => {
       expect(core.toolRegistry.hasTool).toHaveBeenCalledWith('line');
       expect(core.toolRegistry.registerTool).toHaveBeenCalledWith('line', FakeLineTool);
       expect(result).toBe(newTool);
+    });
+
+    it('substitutes the internal built-in class when a foreign copy of a built-in tool is registered', async () => {
+      const newTool = { name: 'selection' };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      // Simulates a built-in tool class from another compiled copy of the library
+      // (dual-package hazard): does not extend the local KritzelBaseTool but
+      // identifies itself via the toolType discriminator.
+      class ForeignSelectionTool {
+        toolType = 'selection';
+      }
+      const result = await engine.registerTool('selection', ForeignSelectionTool, undefined);
+
+      expect(core.toolRegistry.registerTool).toHaveBeenCalledWith('selection', MockKritzelSelectionTool);
+      expect(result).toBe(newTool);
+    });
+
+    it('registers a tool class extending the local base tool as-is', async () => {
+      const newTool = { name: 'custom' };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class LocalCustomTool extends MockKritzelBaseTool {
+        toolType = 'selection';
+      }
+      await engine.registerTool('custom', LocalCustomTool, undefined);
+
+      expect(core.toolRegistry.registerTool).toHaveBeenCalledWith('custom', LocalCustomTool);
+    });
+
+    it('registers the original class when probing a foreign tool class throws', async () => {
+      const newTool = { name: 'throwing' };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class ThrowingTool {
+        constructor() {
+          throw new Error('boom');
+        }
+      }
+      await engine.registerTool('throwing', ThrowingTool, undefined);
+
+      expect(core.toolRegistry.registerTool).toHaveBeenCalledWith('throwing', ThrowingTool);
     });
 
     it('applies toolConfig to a newly registered tool', async () => {
