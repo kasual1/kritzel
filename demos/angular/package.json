@@ -4,6 +4,8 @@
   "scripts": {
     "start": "rimraf .angular && ng serve --no-hmr",
     "start:e2e": "ng serve --no-hmr --configuration e2e",
+    "build:e2e:prod": "ng build --configuration production",
+    "start:e2e:prod": "npm run build:e2e:prod && npx --yes http-server ./dist/angular/browser -p 4200 -c-1 --silent",
     "clean": "rimraf dist .angular node_modules",
     "build-app": "ng build"
   },
