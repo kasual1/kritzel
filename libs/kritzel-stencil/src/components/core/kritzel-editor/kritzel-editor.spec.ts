@@ -1,6 +1,7 @@
 import { KritzelEditor } from './kritzel-editor';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
+import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '../../../constants/text-tool-fonts.constants';
 
 // Simple mock for decorators
@@ -291,6 +292,7 @@ describe('KritzelEditor', () => {
 
     it('should register custom fonts in componentDidLoad', () => {
       const spy = jest.spyOn(KritzelFontRegistry, 'registerFonts').mockImplementation();
+      const keyboardSpy = jest.spyOn(KritzelKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
       component.customFonts = {
         'editor-inter': {
           family: 'Inter',
@@ -301,6 +303,7 @@ describe('KritzelEditor', () => {
       component.componentDidLoad();
 
       expect(spy).toHaveBeenCalledWith(component.customFonts);
+      keyboardSpy.mockRestore();
     });
 
     it('should register custom fonts through the public method', async () => {
@@ -379,6 +382,7 @@ describe('KritzelEditor', () => {
 
       const customElementsSpy = jest.spyOn(customElements, 'whenDefined').mockResolvedValue(undefined as any);
       const waitForFontsSpy = jest.spyOn(KritzelFontRegistry, 'waitForFonts').mockReturnValue(deferred.promise);
+      const keyboardSpy = jest.spyOn(KritzelKeyboardHelper, 'onKeyboardVisibleChanged').mockReturnValue(() => {});
       component.isReady = { emit: jest.fn() } as any;
       component.customFonts = {
         'editor-racing': {
@@ -406,6 +410,7 @@ describe('KritzelEditor', () => {
 
       customElementsSpy.mockRestore();
       waitForFontsSpy.mockRestore();
+      keyboardSpy.mockRestore();
     });
   });
 });
