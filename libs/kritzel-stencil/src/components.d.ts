@@ -543,7 +543,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default {   providers: [IndexedDBSyncProvider], }
+          * @default {   providers: [], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -3016,7 +3016,7 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         /**
-          * @default {   providers: [IndexedDBSyncProvider], }
+          * @default {   providers: [], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
