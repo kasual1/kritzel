@@ -94,4 +94,34 @@ describe('KritzelFontRegistry', () => {
     expect(KritzelFontRegistry.has('editor-remove')).toBe(false);
     expect(KritzelFontRegistry.unregister('editor-remove')).toBe(false);
   });
+
+  it('waits for registered font families to load', async () => {
+    const originalFonts = (document as Document & { fonts?: FontFaceSet }).fonts;
+    const load = jest.fn().mockResolvedValue([]);
+    const ready = Promise.resolve(undefined);
+
+    Object.defineProperty(document, 'fonts', {
+      configurable: true,
+      value: {
+        load,
+        ready,
+      },
+    });
+
+    try {
+      await KritzelFontRegistry.waitForFonts({
+        'editor-racing': {
+          family: 'Racing Sans One',
+          cssFontFamily: "'Racing Sans One', sans-serif",
+        },
+      });
+
+      expect(load).toHaveBeenCalledWith('1em "Racing Sans One"');
+    } finally {
+      Object.defineProperty(document, 'fonts', {
+        configurable: true,
+        value: originalFonts,
+      });
+    }
+  });
 });
