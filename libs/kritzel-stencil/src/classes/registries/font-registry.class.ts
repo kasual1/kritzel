@@ -55,6 +55,29 @@ export class KritzelFontRegistry {
     return getGlobalRegistryStore().fonts;
   }
 
+  private static getFontFaceSet(): FontFaceSet | null {
+    if (typeof document === 'undefined' || !document.fonts) {
+      return null;
+    }
+
+    return document.fonts;
+  }
+
+  private static toCssFontFace(fontFamily: string): string {
+    return fontFamily.includes(' ')
+      ? `"${fontFamily.replaceAll('"', '\\"')}"`
+      : fontFamily;
+  }
+
+  private static getRegisteredFontFamilies(fonts: KritzelFontMap): string[] {
+    return [...new Set(
+      Object.values(fonts)
+        .map(registration => (typeof registration === 'string' ? registration : registration.family))
+        .map(family => family.trim())
+        .filter(Boolean),
+    )];
+  }
+
   static register(key: string, registration: KritzelFontRegistration): void {
     const normalized = normalizeFontRegistration(key, registration);
 
@@ -70,6 +93,62 @@ export class KritzelFontRegistry {
     for (const [key, registration] of Object.entries(fonts)) {
       this.register(key, registration);
     }
+  }
+
+  private static injectFontStylesheets(fonts: KritzelFontMap): Promise<void[]> {
+    if (typeof document === 'undefined') {
+      return Promise.resolve([]);
+    }
+
+    const loadPromises: Promise<void>[] = [];
+
+    for (const [key, registration] of Object.entries(fonts)) {
+      if (typeof registration === 'string' || !registration.source) {
+        continue;
+      }
+
+      const sourceUrl = registration.source;
+      const linkId = `kritzel-font-stylesheet-${key}`;
+
+      if (document.getElementById(linkId)) {
+        continue;
+      }
+
+      const link = document.createElement('link');
+      link.id = linkId;
+      link.rel = 'stylesheet';
+      link.href = sourceUrl;
+
+      const promise = new Promise<void>((resolve) => {
+        link.onload = () => resolve();
+        link.onerror = () => {
+          console.warn(`[FontRegistry] Failed to load stylesheet for font "${key}": ${sourceUrl}`);
+          resolve(); // Resolve anyway so we don't hang startup on external failures
+        };
+      });
+
+      document.head.appendChild(link);
+      loadPromises.push(promise);
+    }
+
+    return Promise.all(loadPromises);
+  }
+
+  static async waitForFonts(fonts: KritzelFontMap): Promise<void> {
+    await this.injectFontStylesheets(fonts);
+
+    const fontFaceSet = this.getFontFaceSet();
+    const registeredFontFamilies = this.getRegisteredFontFamilies(fonts);
+
+    if (!fontFaceSet || registeredFontFamilies.length === 0) {
+      return;
+    }
+
+    await Promise.allSettled(
+      registeredFontFamilies.map(fontFamily => fontFaceSet.load(`1em ${this.toCssFontFace(fontFamily)}`)),
+    );
+
+    await fontFaceSet.ready;
   }
 
   static get(key: string): KritzelRegisteredFont | undefined {

@@ -290,6 +290,8 @@ export class KritzelEditor {
   private readonly notificationDisplayDurationMs = 5000;
   private readonly notificationDismissAnimationDurationMs = 180;
   private isNotificationHovered: boolean = false;
+  private customFontsLoadVersion: number = 0;
+  private customFontsReady: Promise<void> = Promise.resolve();
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -331,7 +333,7 @@ export class KritzelEditor {
 
   @Watch('customFonts')
   onCustomFontsChange(newValue: KritzelFontMap) {
-    this.registerCustomFonts(newValue);
+    void this.registerCustomFonts(newValue);
   }
 
   @Watch('controls')
@@ -813,6 +815,7 @@ export class KritzelEditor {
     await customElements.whenDefined('kritzel-workspace-manager');
     await customElements.whenDefined('kritzel-controls');
     await customElements.whenDefined('kritzel-engine');
+    await this.waitForCustomFontsReady();
 
     if (!this.isEngineReady || !this.isControlsReady || !this.isWorkspaceManagerReady || !this.activeWorkspace) {
       return;
@@ -1143,7 +1146,7 @@ export class KritzelEditor {
    */
   @Method()
   async registerFonts(fonts: KritzelFontMap): Promise<void> {
-    this.registerCustomFonts(fonts);
+    await this.registerCustomFonts(fonts);
   }
 
   /**
@@ -1230,8 +1233,29 @@ export class KritzelEditor {
     }
   }
 
-  private registerCustomFonts(fonts: KritzelFontMap = this.customFonts) {
+  private async registerCustomFonts(fonts: KritzelFontMap = this.customFonts): Promise<void> {
     KritzelFontRegistry.registerFonts(fonts);
+
+    const currentVersion = ++this.customFontsLoadVersion;
+    const loadPromise = KritzelFontRegistry.waitForFonts(fonts);
+    this.customFontsReady = loadPromise;
+
+    await loadPromise;
+
+    if (currentVersion !== this.customFontsLoadVersion) {
+      await this.waitForCustomFontsReady();
+    }
+  }
+
+  private async waitForCustomFontsReady(): Promise<void> {
+    while (true) {
+      const version = this.customFontsLoadVersion;
+      await this.customFontsReady;
+
+      if (version === this.customFontsLoadVersion) {
+        return;
+      }
+    }
   }
 
   private listenForMobileKeyboard() {

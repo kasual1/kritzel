@@ -367,5 +367,45 @@ describe('KritzelEditor', () => {
         },
       ]);
     });
+
+    it('should wait for custom fonts before emitting isReady', async () => {
+      const deferred = (() => {
+        let resolve!: () => void;
+        const promise = new Promise<void>(res => {
+          resolve = res;
+        });
+        return { promise, resolve };
+      })();
+
+      const customElementsSpy = jest.spyOn(customElements, 'whenDefined').mockResolvedValue(undefined as any);
+      const waitForFontsSpy = jest.spyOn(KritzelFontRegistry, 'waitForFonts').mockReturnValue(deferred.promise);
+      component.isReady = { emit: jest.fn() } as any;
+      component.customFonts = {
+        'editor-racing': {
+          family: 'Racing Sans One',
+          cssFontFamily: "'Racing Sans One', sans-serif",
+        },
+      };
+      component.isEngineReady = true;
+      component.isControlsReady = true;
+      component.isWorkspaceManagerReady = true;
+      component.activeWorkspace = { id: 'workspace-1', name: 'Workspace 1', isPublic: false } as any;
+
+      component.componentDidLoad();
+
+      const readyPromise = component.checkIsReady();
+
+      expect(waitForFontsSpy).toHaveBeenCalledWith(component.customFonts);
+      expect(component.isReady.emit).not.toHaveBeenCalled();
+
+      deferred.resolve();
+      await readyPromise;
+
+      expect(component.isEditorVisible).toBe(true);
+      expect(component.isReady.emit).toHaveBeenCalled();
+
+      customElementsSpy.mockRestore();
+      waitForFontsSpy.mockRestore();
+    });
   });
 });
