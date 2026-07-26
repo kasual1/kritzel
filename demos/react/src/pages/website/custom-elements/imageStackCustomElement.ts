@@ -22,17 +22,15 @@ type MountedImageStack = {
 };
 
 const IMAGE_POOL: PlaceholderImage[] = [
-  { id: "img-1", label: "Falcon", url: "https://picsum.photos/id/1011/1200/800" },
-  { id: "img-2", label: "Atlas", url: "https://picsum.photos/id/1015/1200/800" },
-  { id: "img-3", label: "Orion", url: "https://picsum.photos/id/1016/1200/800" },
-  { id: "img-4", label: "Nova", url: "https://picsum.photos/id/1025/1200/800" },
-  { id: "img-5", label: "Astra", url: "https://picsum.photos/id/1033/1200/800" },
-  { id: "img-6", label: "Helios", url: "https://picsum.photos/id/1043/1200/800" },
+    { id: "img-3", label: "Booster Separation 3", url: "/image_stack_3.png" },
+    { id: "img-4", label: "Booster Separation 4", url: "/image_stack_4.png" },
+    { id: "img-2", label: "Booster Separation 2", url: "/image_stack_2.png" },
+  { id: "img-1", label: "Booster Separation 1", url: "/image_stack_1.png" },
 ];
 
 export function createImageStackInitialState(): ImageStackState {
   return {
-    selectedImageIds: IMAGE_POOL.slice(0, 5).map((image) => image.id),
+    selectedImageIds: IMAGE_POOL.map((image) => image.id),
     currentIndex: 0,
   };
 }
