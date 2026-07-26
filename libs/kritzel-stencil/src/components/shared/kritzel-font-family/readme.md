@@ -9,7 +9,7 @@
 
 | Property             | Attribute              | Description | Type           | Default     |
 | -------------------- | ---------------------- | ----------- | -------------- | ----------- |
-| `fontOptions`        | --                     |             | `FontOption[]` | `undefined` |
+| `fontOptions`        | --                     |             | `FontOption[]` | `[]`        |
 | `selectedFontFamily` | `selected-font-family` |             | `string`       | `undefined` |
 
 

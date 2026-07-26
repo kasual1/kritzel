@@ -11,7 +11,7 @@ import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelTermKey } from '../../../interfaces/localization.interface';
 import { KritzelFontRegistration } from '../../../interfaces/font.interface';
 import { FontOption } from '../../shared/kritzel-font-family/kritzel-font-family';
-import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
+import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
 
 @Component({
   tag: 'kritzel-tool-config',
@@ -88,14 +88,20 @@ export class KritzelToolConfig {
   @State() private updateTrigger: number = 0;
 
   private getFontOptionsFromTool(): FontOption[] | undefined {
-    const availableFonts = (this.tool as { availableFonts?: KritzelFontRegistration[] }).availableFonts;
-
-    if (!availableFonts || availableFonts.length === 0) {
-      return undefined;
-    }
+    const availableFonts = resolveTextToolAvailableFonts((this.tool as { availableFonts?: KritzelFontRegistration[] }).availableFonts);
 
     return availableFonts.map(font => {
-      const registeredFont = KritzelFontRegistry.toRegisteredFont(font);
+      const registeredFont = typeof font === 'string'
+        ? {
+            family: font,
+            label: font,
+            cssFontFamily: font,
+          }
+        : {
+            family: font.family,
+            label: font.label ?? font.family,
+            cssFontFamily: font.cssFontFamily ?? font.family,
+          };
 
       return {
         value: registeredFont.family,

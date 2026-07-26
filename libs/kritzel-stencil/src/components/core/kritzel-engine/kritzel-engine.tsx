@@ -47,6 +47,7 @@ import { KritzelWheelHelper } from '../../../helpers/wheel.helper';
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInViewportChangeEvent } from '../../../interfaces/object-change-event.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
+import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
 
 @Component({
   tag: 'kritzel-engine',
@@ -2182,13 +2183,15 @@ export class KritzelEngine {
   }
 
   private applyToolConfig(tool: KritzelBaseTool, toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): void {
-    Object.entries(toolConfig).forEach(([key, value]) => {
+    const normalizedToolConfig = this.normalizeToolConfig(toolConfig);
+
+    Object.entries(normalizedToolConfig).forEach(([key, value]) => {
       (tool as unknown as Record<string, unknown>)[key] = value;
     });
 
     // Resolve palettes map into the flat palette array the UI reads
-    if ('palettes' in toolConfig && 'type' in toolConfig) {
-      const brushConfig = toolConfig as KritzelBrushToolConfig;
+    if ('palettes' in normalizedToolConfig && 'type' in normalizedToolConfig) {
+      const brushConfig = normalizedToolConfig as KritzelBrushToolConfig;
       const resolvedPalette = brushConfig.palettes[brushConfig.type];
       if (resolvedPalette) {
         (tool as unknown as Record<string, unknown>)['palette'] = resolvedPalette;
@@ -2196,13 +2199,32 @@ export class KritzelEngine {
     }
 
     // Resolve sizes map into the flat sizes array the UI reads (brush tool uses a map keyed by type)
-    if ('sizes' in toolConfig && toolConfig.sizes != null && 'type' in toolConfig) {
-      const brushConfig = toolConfig as KritzelBrushToolConfig;
+    if ('sizes' in normalizedToolConfig && normalizedToolConfig.sizes != null && 'type' in normalizedToolConfig) {
+      const brushConfig = normalizedToolConfig as KritzelBrushToolConfig;
       const resolvedSizes = brushConfig.sizes?.[brushConfig.type];
       if (resolvedSizes) {
         (tool as unknown as Record<string, unknown>)['sizes'] = resolvedSizes;
       }
     }
+  }
+
+  private normalizeToolConfig(
+    toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
+  ): KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig {
+    if (!this.isTextToolConfig(toolConfig)) {
+      return toolConfig;
+    }
+
+    return {
+      ...toolConfig,
+      availableFonts: resolveTextToolAvailableFonts(toolConfig.availableFonts),
+    };
+  }
+
+  private isTextToolConfig(
+    toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
+  ): toolConfig is KritzelTextToolConfig {
+    return 'fontFamily' in toolConfig && 'size' in toolConfig && 'color' in toolConfig;
   }
 
   get isSelecting() {
