@@ -12,6 +12,8 @@
     "websocket"
   ],
   "devDependencies": {
+    "@angular/common": "22.0.8",
+    "@angular/core": "22.0.8",
     "@ngrok/ngrok": "^1.5.2",
     "@playwright/test": "^1.58.2",
     "@types/node": "^22.14.1",
