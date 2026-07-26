@@ -4,21 +4,18 @@ import {useLocalPathname} from '@docusaurus/theme-common/internal';
 import NavbarNavLink from '@theme/NavbarItem/NavbarNavLink';
 import NavbarItem, {type LinkLikeNavbarItemProps} from '@theme/NavbarItem';
 import type {Props} from '@theme/NavbarItem/DropdownNavbarItem/Desktop';
-import { setPreferredFramework, getFrameworkFromPath, getPreferredFramework } from '@site/src/utils/frameworkPreference';
+import {ChevronDown} from 'lucide-react';
+import {
+  setPreferredFramework,
+  getFrameworkFromPath,
+  getPreferredFramework,
+} from '@site/src/utils/frameworkPreference';
 
 function isFrameworkPicker(items: readonly LinkLikeNavbarItemProps[]): boolean {
   // Check if all items point to framework-specific docs
   const frameworkPaths = ['/docs/angular', '/docs/react', '/docs/vue'];
   return items.every((item) => 
     frameworkPaths.some((path) => item.to?.includes(path) || item.activeBasePath?.includes(path))
-  );
-}
-
-function isFeaturesDropdown(items: readonly LinkLikeNavbarItemProps[]): boolean {
-  // Check if items point to feature pages
-  const featurePaths = ['/features/infinite-canvas', '/features/framework-agnostic', '/features/real-time-collaboration', '/features/drawing-tools'];
-  return items.some((item) => 
-    featurePaths.some((path) => item.to?.includes(path))
   );
 }
 
@@ -37,12 +34,13 @@ export default function DropdownNavbarItemDesktop({
   const [showDropdown, setShowDropdown] = useState(false);
   const localPathname = useLocalPathname();
   const [preferredLabel, setPreferredLabel] = useState<string>('React');
+  const isFramework = isFrameworkPicker(items);
 
   useEffect(() => {
-    if (isFrameworkPicker(items)) {
+    if (isFramework) {
       setPreferredLabel(capitalize(getPreferredFramework()));
     }
-  }, [items]);
+  }, [isFramework]);
 
   useEffect(() => {
     const handleClickOutside = (
@@ -70,28 +68,24 @@ export default function DropdownNavbarItemDesktop({
 
   // Hide framework picker dropdown when not on docs pages
   const isOnDocsPage = localPathname.includes('/docs');
-  if (isFrameworkPicker(items) && !isOnDocsPage) {
+  if (isFramework && !isOnDocsPage) {
     return null;
   }
 
-  // Hide Features dropdown when on docs pages
-  if (isFeaturesDropdown(items) && isOnDocsPage) {
-    return null;
-  }
-
-  const frameworkFromPath = isFrameworkPicker(items) ? getFrameworkFromPath(localPathname) : null;
+  const frameworkFromPath = isFramework
+    ? getFrameworkFromPath(localPathname)
+    : null;
   const displayLabel = frameworkFromPath
     ? capitalize(frameworkFromPath)
-    : isFrameworkPicker(items)
+    : isFramework
     ? preferredLabel
     : props.label;
-
-  const isFramework = isFrameworkPicker(items);
 
   return (
     <div
       ref={dropdownRef}
-      className={clsx('navbar__item', 'dropdown', 'dropdown--hoverable', {
+      className={clsx('navbar__item', 'dropdown', {
+        'dropdown--hoverable': !isFramework,
         'dropdown--right': position === 'right',
         'dropdown--show': showDropdown,
         'navbar-framework-picker': isFramework,
@@ -106,15 +100,30 @@ export default function DropdownNavbarItemDesktop({
         href={props.to ? undefined : '#'}
         className={clsx('navbar__link', className)}
         {...props}
-        label={props.children ? undefined : displayLabel}
-        onClick={props.to ? undefined : (e) => e.preventDefault()}
+        label={
+          <>
+            {props.children ?? displayLabel}
+            <ChevronDown className="navbar-dropdown-chevron" size={18} aria-hidden="true" />
+          </>
+        }
+        onClick={(event) => {
+          if (!props.to) {
+            event.preventDefault();
+          }
+          onClick?.(event);
+          if (isFramework) {
+            setShowDropdown((isOpen) => !isOpen);
+          }
+        }}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === 'Escape') {
             e.preventDefault();
-            setShowDropdown(!showDropdown);
+            setShowDropdown(false);
+          } else if (isFramework && e.key === ' ') {
+            e.preventDefault();
+            setShowDropdown((isOpen) => !isOpen);
           }
         }}>
-        {props.children ?? displayLabel}
       </NavbarNavLink>
       <ul className="dropdown__menu">
         {items.map((childItemProps, i) => {
@@ -123,6 +132,7 @@ export default function DropdownNavbarItemDesktop({
             if (framework) {
               setPreferredFramework(framework);
             }
+            setShowDropdown(false);
           } : undefined;
           
           return (

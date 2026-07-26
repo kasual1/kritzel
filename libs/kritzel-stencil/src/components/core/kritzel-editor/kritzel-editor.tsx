@@ -46,6 +46,10 @@ import { KritzelLoginConfig as KritzelLoginConfig } from '../../../interfaces/lo
 import { LoginEvent } from '../../../events/login.event';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
 import { ObjectHelper } from '../../../helpers/object.helper';
+import { KritzelFontMap } from '../../../interfaces/font.interface';
+import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
+import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
+
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -215,6 +219,11 @@ export class KritzelEditor {
   /** The locale used to resolve terms missing from the active locale. */
   @Prop() fallbackLocale: LocaleCode = 'en';
   @Prop() customSvgIcons: Record<string, string> = {};
+  /**
+   * Registers fonts for runtime usage (for example custom object rendering).
+   * Text-tool config tooltip options are controlled via controls[].config.availableFonts.
+   */
+  @Prop() customFonts: KritzelFontMap = {};
   @Prop({ mutable: true }) isPanningEnabled: boolean = true;
   @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
   @Prop() isControlsVisible: boolean = true;
@@ -274,12 +283,15 @@ export class KritzelEditor {
   @State() isEditorVisible: boolean = false;
   @State() activeNotification?: KritzelNotification;
   @State() isNotificationDismissing: boolean = false;
+  @State() normalizedControls: KritzelToolbarControl[] = [];
 
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
   private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
   private readonly notificationDisplayDurationMs = 5000;
   private readonly notificationDismissAnimationDurationMs = 180;
   private isNotificationHovered: boolean = false;
+  private customFontsLoadVersion: number = 0;
+  private customFontsReady: Promise<void> = Promise.resolve();
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
@@ -317,6 +329,16 @@ export class KritzelEditor {
   @Watch('activeWorkspace')
   onActiveWorkspaceChange() {
     this.updateCurrentIsPublic();
+  }
+
+  @Watch('customFonts')
+  onCustomFontsChange(newValue: KritzelFontMap) {
+    void this.registerCustomFonts(newValue);
+  }
+
+  @Watch('controls')
+  onControlsChange(newValue: KritzelToolbarControl[]) {
+    this.normalizedControls = this.normalizeControls(newValue);
   }
 
   @Watch('activeWorkspaceId')
@@ -739,8 +761,31 @@ export class KritzelEditor {
   currentUserDialogRef!: HTMLKritzelCurrentUserDialogElement;
 
   componentWillLoad() {
+    this.normalizedControls = this.normalizeControls(this.controls);
     this.loadSettingsFromStorage();
     this.applyTheme();
+  }
+
+  private isTextToolConfig(
+    config?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
+  ): config is KritzelTextToolConfig {
+    return !!config && 'fontFamily' in config && 'size' in config && 'color' in config;
+  }
+
+  private normalizeControls(controls: KritzelToolbarControl[]): KritzelToolbarControl[] {
+    return controls.map(control => {
+      if (!this.isTextToolConfig(control.config)) {
+        return control;
+      }
+
+      return {
+        ...control,
+        config: {
+          ...control.config,
+          availableFonts: resolveTextToolAvailableFonts(control.config.availableFonts),
+        },
+      };
+    });
   }
 
   private applyTheme(): void {
@@ -755,6 +800,7 @@ export class KritzelEditor {
 
   componentDidLoad() {
     this.registerCustomSvgIcons();
+    this.registerCustomFonts();
     this.listenForMobileKeyboard();
     this.setOsSpecificCssVariables();
   }
@@ -769,6 +815,7 @@ export class KritzelEditor {
     await customElements.whenDefined('kritzel-workspace-manager');
     await customElements.whenDefined('kritzel-controls');
     await customElements.whenDefined('kritzel-engine');
+    await this.waitForCustomFontsReady();
 
     if (!this.isEngineReady || !this.isControlsReady || !this.isWorkspaceManagerReady || !this.activeWorkspace) {
       return;
@@ -1092,6 +1139,17 @@ export class KritzelEditor {
   }
 
   /**
+   * Registers custom fonts for the editor runtime.
+   * @param fonts - Mapping from font keys to family names or font definitions.
+   * @remarks This no longer controls the text-tool config tooltip font options.
+   * Configure tooltip fonts via controls[].config.availableFonts.
+   */
+  @Method()
+  async registerFonts(fonts: KritzelFontMap): Promise<void> {
+    await this.registerCustomFonts(fonts);
+  }
+
+  /**
    * Resolves a term key to its translated string for the active locale.
    * @param key - The term key to resolve.
    * @param vars - Optional values for `{placeholder}` interpolation.
@@ -1172,6 +1230,31 @@ export class KritzelEditor {
   private registerCustomSvgIcons() {
     for (const [name, svg] of Object.entries(this.customSvgIcons)) {
       KritzelIconRegistry.register(name, svg);
+    }
+  }
+
+  private async registerCustomFonts(fonts: KritzelFontMap = this.customFonts): Promise<void> {
+    KritzelFontRegistry.registerFonts(fonts);
+
+    const currentVersion = ++this.customFontsLoadVersion;
+    const loadPromise = KritzelFontRegistry.waitForFonts(fonts);
+    this.customFontsReady = loadPromise;
+
+    await loadPromise;
+
+    if (currentVersion !== this.customFontsLoadVersion) {
+      await this.waitForCustomFontsReady();
+    }
+  }
+
+  private async waitForCustomFontsReady(): Promise<void> {
+    while (true) {
+      const version = this.customFontsLoadVersion;
+      await this.customFontsReady;
+
+      if (version === this.customFontsLoadVersion) {
+        return;
+      }
     }
   }
 
@@ -1305,7 +1388,7 @@ export class KritzelEditor {
               this.controlsRef = el;
             }
           }}
-          controls={this.controls}
+          controls={this.normalizedControls}
           isUtilityPanelVisible={this.isUtilityPanelVisible}
           undoState={this.undoState ?? undefined}
           theme={this.theme}

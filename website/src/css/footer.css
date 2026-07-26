@@ -2,11 +2,65 @@
   background-color: #000 !important;
 }
 
+.footer__link-item {
+  font-size: 0.93rem;
+  line-height: 1.5;
+}
+
 .footer__link-item:hover {
   color: #aaaaaa !important;
 }
 
 .footer__copyright {
-  font-size: 0.9rem;
+  font-size: 0.72rem;
   margin-top: 2rem;
+  text-align: left;
+}
+
+.footer .footer__links > .theme-layout-footer-column:first-child {
+  align-self: flex-start;
+}
+
+.footer .footer__links > .theme-layout-footer-column:first-child .footer__title:empty {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footer .footer__links > .theme-layout-footer-column:first-child .footer__items {
+  margin-top: 0;
+}
+
+.kritzel-footer-brand {
+  max-width: 280px;
+}
+
+.kritzel-footer-brand__logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 0.32rem;
+  border-radius: 0.65rem;
+  margin-bottom: 0.9rem;
+}
+
+.kritzel-footer-brand__logo {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+.kritzel-footer-brand__description {
+  margin: 0;
+  color: var(--ifm-footer-color);
+  line-height: 1.55;
+  font-size: 0.93rem;
+}
+
+@media (max-width: 996px) {
+  .kritzel-footer-brand {
+    max-width: 100%;
+    margin-bottom: 0.75rem;
+  }
 }

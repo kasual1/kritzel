@@ -18,6 +18,7 @@ import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./in
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
+import { KritzelFontMap } from "./interfaces/font.interface";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
@@ -59,6 +60,7 @@ export { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./in
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
+export { KritzelFontMap } from "./interfaces/font.interface";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
@@ -378,6 +380,11 @@ export namespace Components {
          */
         "cursorTarget"?: HTMLElement;
         /**
+          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via controls[].config.availableFonts.
+          * @default {}
+         */
+        "customFonts": KritzelFontMap;
+        /**
           * @default {}
          */
         "customSvgIcons": Record<string, string>;
@@ -501,6 +508,12 @@ export namespace Components {
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
         /**
+          * Registers custom fonts for the editor runtime.
+          * @param fonts - Mapping from font keys to family names or font definitions.
+          * @remarks This no longer controls the text-tool config tooltip font options. Configure tooltip fonts via controls[].config.availableFonts.
+         */
+        "registerFonts": (fonts: KritzelFontMap) => Promise<void>;
+        /**
           * Registers additional locale definitions (with optional partial term overrides).
           * @param locales - The locale definitions to register.
          */
@@ -530,7 +543,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default {   providers: [], }
+          * @default {   providers: [IndexedDBSyncProvider], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -1136,7 +1149,7 @@ export namespace Components {
     }
     interface KritzelFontFamily {
         /**
-          * @default [     { value: 'arial', label: 'Arial' },     { value: 'verdana', label: 'Verdana' },     { value: 'helvetica', label: 'Helvetica' },     { value: 'tahoma', label: 'Tahoma' },     { value: 'trebuchet ms', label: 'Trebuchet MS' },     { value: 'times new roman', label: 'Times New Roman' },     { value: 'georgia', label: 'Georgia' },     { value: 'garamond', label: 'Garamond' },     { value: 'courier new', label: 'Courier New' },     { value: 'brush script mt', label: 'Brush Script MT' },   ]
+          * @default []
          */
         "fontOptions": FontOption[];
         "selectedFontFamily": string;
@@ -2893,6 +2906,11 @@ declare namespace LocalJSX {
          */
         "cursorTarget"?: HTMLElement;
         /**
+          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via controls[].config.availableFonts.
+          * @default {}
+         */
+        "customFonts"?: KritzelFontMap;
+        /**
           * @default {}
          */
         "customSvgIcons"?: Record<string, string>;
@@ -2998,7 +3016,7 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         /**
-          * @default {   providers: [], }
+          * @default {   providers: [IndexedDBSyncProvider], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -3247,7 +3265,7 @@ declare namespace LocalJSX {
     }
     interface KritzelFontFamily {
         /**
-          * @default [     { value: 'arial', label: 'Arial' },     { value: 'verdana', label: 'Verdana' },     { value: 'helvetica', label: 'Helvetica' },     { value: 'tahoma', label: 'Tahoma' },     { value: 'trebuchet ms', label: 'Trebuchet MS' },     { value: 'times new roman', label: 'Times New Roman' },     { value: 'georgia', label: 'Georgia' },     { value: 'garamond', label: 'Garamond' },     { value: 'courier new', label: 'Courier New' },     { value: 'brush script mt', label: 'Brush Script MT' },   ]
+          * @default []
          */
         "fontOptions"?: FontOption[];
         "onFontFamilyChange"?: (event: KritzelFontFamilyCustomEvent<string>) => void;

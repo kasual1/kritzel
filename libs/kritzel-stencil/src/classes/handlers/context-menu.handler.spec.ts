@@ -59,6 +59,7 @@ describe('KritzelContextMenuHandler', () => {
     mockSelectionGroup = null;
 
     mockSelectionTool = {
+      toolType: 'selection',
       moveHandler: {
         cancelPendingDrag: jest.fn(),
       },
