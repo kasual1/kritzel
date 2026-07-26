@@ -21,7 +21,7 @@ import {
   setupRocketTodoRenderer,
 } from "./custom-elements/rocketTodoCustomElement";
 
-const INITIAL_WORKSPACE_EXPORT_URL = encodeURI("/New Workspace-2026-07-25T11-57-58.json");
+const INITIAL_WORKSPACE_EXPORT_URL = encodeURI("/hero_workspace.json");
 const RACING_SANS_ONE_STYLESHEET_URL = "https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap";
 
 const WEBSITE_HERO_CUSTOM_FONTS = {

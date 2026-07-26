@@ -1,0 +1,731 @@
+{
+  "__class__": "KritzelWorkspace",
+  "version": "1.2.0",
+  "id": "j7bS6SqAmSW7Gzq5",
+  "name": "New Workspace",
+  "createdAt": "2026-07-24T17:08:33.249Z",
+  "updatedAt": "2026-07-26T14:32:11.464Z",
+  "viewport": {
+    "centerWorldX": -268.8415112571932,
+    "centerWorldY": 162.0514369678999,
+    "scale": 0.32424420014683836
+  },
+  "isPublic": false,
+  "objects": [
+    {
+      "__class__": "KritzelCustomElement",
+      "id": "P1qOk9Eg5DJZKDM1",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": -1242.8004372420287,
+      "translateY": -403.9794498395151,
+      "height": 580.7051234637128,
+      "width": 434.09829217876245,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 1,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": false,
+      "rendererKey": "website-hero-rocket-todo",
+      "rendererData": {
+        "items": [
+          {
+            "id": "fuel",
+            "title": "Confirm propellant tanks are filled and pressure-stable",
+            "isChecked": true
+          },
+          {
+            "id": "telemetry",
+            "title": "Verify live telemetry stream from all critical sensors",
+            "isChecked": true
+          },
+          {
+            "id": "weather",
+            "title": "Approve weather and lightning window for launch corridor",
+            "isChecked": true
+          },
+          {
+            "id": "range",
+            "title": "Receive final range safety clearance and abort readiness",
+            "isChecked": true
+          },
+          {
+            "id": "crew",
+            "title": "Run final crew and mission control communication check",
+            "isChecked": false
+          }
+        ]
+      },
+      "htmlString": "<div style=\"pointer-events: none; width: 434.098px; height: 580.705px;\">Loading Launch Checklist...</div>",
+      "serializedWidth": 434.09829217876245,
+      "serializedHeight": 580.7051234637128
+    },
+    {
+      "__class__": "KritzelLine",
+      "id": "5M61klKi9m2C2P3D",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 711.6523599618711,
+      "y": 514.7089505178557,
+      "translateX": -1027.7512911526474,
+      "translateY": -115.62688810765871,
+      "height": 504.4234403469935,
+      "width": 662.3224759340205,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 5,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "startX": 713.6523599618711,
+      "startY": 516.7089505178557,
+      "endX": 1371.9748358958916,
+      "endY": 885.6466585719286,
+      "controlX": 804.2030125514649,
+      "controlY": 1273.6446566740444,
+      "stroke": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "strokeWidth": 4,
+      "options": {
+        "startX": 1629.5398815316155,
+        "startY": 1387.9464065582715,
+        "endX": 1921.3977707611587,
+        "endY": 1400.9178683018067,
+        "translateX": -1739.4036511145184,
+        "translateY": -630.3358386255144,
+        "scale": 1,
+        "stroke": {
+          "light": "#000000",
+          "dark": "#ffffff",
+          "label": "Primary"
+        },
+        "strokeWidth": 4,
+        "opacity": 1,
+        "arrows": {
+          "end": {
+            "enabled": true,
+            "style": "triangle"
+          }
+        }
+      },
+      "startAnchor": {
+        "objectId": "P1qOk9Eg5DJZKDM1"
+      },
+      "endAnchor": {
+        "objectId": "ghBAOvWj6MHMZN42"
+      },
+      "arrows": {
+        "end": {
+          "enabled": true,
+          "style": "triangle"
+        }
+      },
+      "isDebugInfoVisible": true,
+      "isCompleted": true
+    },
+    {
+      "__class__": "KritzelLine",
+      "id": "Y7aICp50nJgV1Tnk",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 1369.9748358958916,
+      "y": 804.2881103489151,
+      "translateX": -369.4288152186268,
+      "translateY": 173.9522717234007,
+      "height": 95.5622351155206,
+      "width": 611.8459990811323,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 6,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "startX": 1371.9748358958916,
+      "startY": 885.6466585719286,
+      "endX": 1979.8208349770239,
+      "endY": 897.8503454644357,
+      "controlX": 1675.670155969296,
+      "controlY": 721.0458318081464,
+      "stroke": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "strokeWidth": 4,
+      "options": {
+        "startX": 1707.368651992827,
+        "startY": 1371.7320793788524,
+        "endX": 2002.469406658254,
+        "endY": 1358.7606176353172,
+        "translateX": -1739.4036511145184,
+        "translateY": -630.3358386255144,
+        "scale": 1,
+        "stroke": {
+          "light": "#000000",
+          "dark": "#ffffff",
+          "label": "Primary"
+        },
+        "strokeWidth": 4,
+        "opacity": 1,
+        "arrows": {
+          "end": {
+            "enabled": true,
+            "style": "triangle"
+          }
+        }
+      },
+      "startAnchor": {
+        "objectId": "ghBAOvWj6MHMZN42"
+      },
+      "endAnchor": {
+        "objectId": "1pEOJL6idhY15FCX"
+      },
+      "arrows": {
+        "end": {
+          "enabled": true,
+          "style": "triangle"
+        }
+      },
+      "isDebugInfoVisible": true,
+      "isCompleted": true
+    },
+    {
+      "__class__": "KritzelImage",
+      "id": "ghBAOvWj6MHMZN42",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 0,
+      "y": 0,
+      "translateX": -485.15105374001877,
+      "translateY": -403.9337157733812,
+      "height": 468,
+      "width": 83.57142857142847,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 0.3549517475249262,
+      "rotation": 0,
+      "zIndex": 9,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "assetId": "c3ab4b2a-0c8f-4c2a-99db-bd6996b915bf",
+      "mimeType": "image/png",
+      "src": "",
+      "maxWidth": 300,
+      "maxHeight": 300,
+      "maxCompressionSize": 1200,
+      "maxLoadAttempts": 3,
+      "maxTransientRetryDurationMs": 30000
+    },
+    {
+      "__class__": "KritzelImage",
+      "id": "X43IraaftxYYWjBA",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 0,
+      "y": 0,
+      "translateX": -1021.4361565624324,
+      "translateY": 562.1901799679355,
+      "height": 152.8138528138528,
+      "width": 300,
+      "borderWidth": 0,
+      "opacity": 0.44,
+      "padding": 0,
+      "scale": 0.3549517475249262,
+      "rotation": 0,
+      "zIndex": -1,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "assetId": "b566557e-0a11-486b-a3f6-79094b3e5899",
+      "mimeType": "image/png",
+      "src": "",
+      "maxWidth": 300,
+      "maxHeight": 300,
+      "maxCompressionSize": 1200,
+      "maxLoadAttempts": 3,
+      "maxTransientRetryDurationMs": 30000
+    },
+    {
+      "__class__": "KritzelImage",
+      "id": "1pEOJL6idhY15FCX",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 0,
+      "y": 0,
+      "translateX": 100.41718386250552,
+      "translateY": 127.51450683892132,
+      "height": 280,
+      "width": 280,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 4,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "assetId": "67177f24-c756-4a78-8d99-388925c524a8",
+      "mimeType": "image/gif",
+      "src": "",
+      "maxWidth": 300,
+      "maxHeight": 300,
+      "maxCompressionSize": 1200,
+      "maxLoadAttempts": 3,
+      "maxTransientRetryDurationMs": 30000
+    },
+    {
+      "__class__": "KritzelCustomElement",
+      "id": "SgqctumaolzpWZZg",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": 630.3875654386105,
+      "translateY": -437.2193442196716,
+      "height": 326.0515890498909,
+      "width": 321.9173435060755,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 13,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": false,
+      "rendererKey": "website-hero-image-stack",
+      "rendererData": {
+        "selectedImageIds": [
+          "img-1",
+          "img-2",
+          "img-3",
+          "img-4",
+          "img-5"
+        ],
+        "currentIndex": 0
+      },
+      "htmlString": "<div style=\"pointer-events: auto; width: 321.917px; height: 326.052px; cursor: auto;\">Loading Image Stack...</div>",
+      "serializedWidth": 321.9173435060755,
+      "serializedHeight": 326.0515890498909
+    },
+    {
+      "__class__": "KritzelLine",
+      "id": "1ft0C2oPSIn9em8Y",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 1977.8208349770239,
+      "y": 354.14228893078825,
+      "translateX": 238.41718386250545,
+      "translateY": -276.19354969472613,
+      "height": 610.9692891808256,
+      "width": 554.9290533291428,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 7,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "startX": 1979.8208349770239,
+      "startY": 897.8503454644357,
+      "endX": 2530.7498883061667,
+      "endY": 356.14228893078825,
+      "controlX": 2459.258601726444,
+      "controlY": 1162.138119032473,
+      "stroke": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "strokeWidth": 4,
+      "options": {
+        "startX": 2043.0052246068017,
+        "startY": 1329.574828712363,
+        "endX": 2360.8060373234152,
+        "endY": 1199.8602112770104,
+        "translateX": -1739.4036511145184,
+        "translateY": -630.3358386255144,
+        "scale": 1,
+        "stroke": {
+          "light": "#000000",
+          "dark": "#ffffff",
+          "label": "Primary"
+        },
+        "strokeWidth": 4,
+        "opacity": 1,
+        "arrows": {
+          "end": {
+            "enabled": true,
+            "style": "triangle"
+          }
+        }
+      },
+      "startAnchor": {
+        "objectId": "1pEOJL6idhY15FCX"
+      },
+      "endAnchor": {
+        "objectId": "SgqctumaolzpWZZg"
+      },
+      "arrows": {
+        "end": {
+          "enabled": true,
+          "style": "triangle"
+        }
+      },
+      "isDebugInfoVisible": true,
+      "isCompleted": true
+    },
+    {
+      "__class__": "KritzelText",
+      "id": "CVgjxbbYPpu6Mn0w",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": -681.5759458443191,
+      "translateY": -509.4265305465092,
+      "height": 169.8046710870023,
+      "width": 999.9608408456803,
+      "backgroundColor": {
+        "light": "transparent",
+        "dark": "transparent"
+      },
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 0,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": true,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "fontFamily": "Racing Sans One",
+      "fontSize": 16,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "initialWidth": 1,
+      "initialHeight": 19.2,
+      "scaleFactor": 6.289061892111197,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "isNewlyCreated": false,
+      "content": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Launch a Rocket"
+              }
+            ]
+          }
+        ]
+      },
+      "rows": 1
+    },
+    {
+      "__class__": "KritzelText",
+      "id": "Lakce2FTjOEowWiE",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": -662.9032955952782,
+      "translateY": -528.7216024705189,
+      "height": 38.108224632608454,
+      "width": 142.9058423722817,
+      "backgroundColor": {
+        "light": "transparent",
+        "dark": "transparent"
+      },
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 8,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": true,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "fontFamily": "Courier New",
+      "fontSize": 16,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "initialWidth": 1,
+      "initialHeight": 19.2,
+      "scaleFactor": 1.5878426930253524,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "isNewlyCreated": false,
+      "content": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "How to:"
+              }
+            ]
+          }
+        ]
+      },
+      "rows": 1
+    },
+    {
+      "__class__": "KritzelText",
+      "id": "3A7m0L5lkp55JXAq",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": -901.2944456525005,
+      "translateY": 406.7877147690301,
+      "height": 24,
+      "width": 346,
+      "backgroundColor": {
+        "light": "transparent",
+        "dark": "transparent"
+      },
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 10,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": true,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "fontFamily": "Courier New",
+      "fontSize": 16,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "initialWidth": 1,
+      "initialHeight": 19.2,
+      "scaleFactor": 1,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "isNewlyCreated": false,
+      "content": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "1. All security checks pass"
+              }
+            ]
+          }
+        ]
+      },
+      "rows": 1
+    },
+    {
+      "__class__": "KritzelText",
+      "id": "BYs52OaiwuFGaDE6",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": -151.82353863534044,
+      "translateY": 123.8242207333238,
+      "height": 24,
+      "width": 141,
+      "backgroundColor": {
+        "light": "transparent",
+        "dark": "transparent"
+      },
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 11,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": true,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "fontFamily": "Courier New",
+      "fontSize": 16,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "initialWidth": 1,
+      "initialHeight": 19.2,
+      "scaleFactor": 1,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "isNewlyCreated": false,
+      "content": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "2. Lift off"
+              }
+            ]
+          }
+        ]
+      },
+      "rows": 1
+    },
+    {
+      "__class__": "KritzelText",
+      "id": "BoRfXWYLFKsIOYJ8",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": 676.2931819028473,
+      "translateY": 246.99895153187305,
+      "height": 24,
+      "width": 230,
+      "backgroundColor": {
+        "light": "transparent",
+        "dark": "transparent"
+      },
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 12,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": true,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "fontFamily": "Courier New",
+      "fontSize": 16,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "initialWidth": 1,
+      "initialHeight": 19.2,
+      "scaleFactor": 1,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "isNewlyCreated": false,
+      "content": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "3.Stage separation"
+              }
+            ]
+          }
+        ]
+      },
+      "rows": 1
+    },
+    {
+      "__class__": "KritzelGroup",
+      "id": "M0ScBMPK7BOfPMZo",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": -1021.4361565624324,
+      "translateY": -403.9337157733812,
+      "height": 485.28226388463327,
+      "width": 293.6707175014807,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 0.347463114580165,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 13,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": false,
+      "isEditable": false,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "childIds": [
+        "X43IraaftxYYWjBA",
+        "ghBAOvWj6MHMZN42"
+      ],
+      "snapshotRotation": 0,
+      "snapshotTranslateX": -1021.4361565624324,
+      "snapshotTranslateY": -403.9337157733812,
+      "snapshotTotalWidth": 293.6707175014807,
+      "snapshotTotalHeight": 485.28226388463327,
+      "snapshotScale": 0.347463114580165,
+      "unchangedChildSnapshots": {
+        "X43IraaftxYYWjBA": {
+          "id": "X43IraaftxYYWjBA",
+          "translateX": -1490.32450286983,
+          "translateY": 293.39233660053355,
+          "rotation": 0,
+          "width": 300,
+          "height": 152.8138528138528,
+          "totalWidth": 300,
+          "totalHeight": 152.8138528138528,
+          "scale": 0.3549517475249262
+        },
+        "ghBAOvWj6MHMZN42": {
+          "id": "ghBAOvWj6MHMZN42",
+          "translateX": -954.0394000474166,
+          "translateY": -672.731559140783,
+          "rotation": 0,
+          "width": 83.57142857142847,
+          "height": 468,
+          "totalWidth": 83.57142857142847,
+          "totalHeight": 468,
+          "scale": 0.3549517475249262
+        }
+      }
+    }
+  ]
+}
