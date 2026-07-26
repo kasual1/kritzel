@@ -1,5 +1,6 @@
 import { KritzelEditor } from './kritzel-editor';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
+import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
 
 // Simple mock for decorators
 jest.mock('@stencil/core', () => ({
@@ -266,6 +267,48 @@ describe('KritzelEditor', () => {
       
       expect(component.currentIsPublic).toBe(true);
       expect(component.isPublicChange.emit).toHaveBeenCalledWith({ isPublic: true, workspaceId: '1' });
+    });
+
+    it('should register custom fonts when the customFonts prop changes', () => {
+      const spy = jest.spyOn(KritzelFontRegistry, 'registerFonts').mockImplementation();
+      const customFonts = {
+        'editor-lora': {
+          family: 'Lora',
+          cssFontFamily: "'Lora', serif",
+        },
+      };
+
+      component.onCustomFontsChange(customFonts);
+
+      expect(spy).toHaveBeenCalledWith(customFonts);
+    });
+
+    it('should register custom fonts in componentDidLoad', () => {
+      const spy = jest.spyOn(KritzelFontRegistry, 'registerFonts').mockImplementation();
+      component.customFonts = {
+        'editor-inter': {
+          family: 'Inter',
+          cssFontFamily: "'Inter', sans-serif",
+        },
+      };
+
+      component.componentDidLoad();
+
+      expect(spy).toHaveBeenCalledWith(component.customFonts);
+    });
+
+    it('should register custom fonts through the public method', async () => {
+      const spy = jest.spyOn(KritzelFontRegistry, 'registerFonts').mockImplementation();
+      const runtimeFonts = {
+        'editor-space-grotesk': {
+          family: 'Space Grotesk',
+          cssFontFamily: "'Space Grotesk', sans-serif",
+        },
+      };
+
+      await component.registerFonts(runtimeFonts);
+
+      expect(spy).toHaveBeenCalledWith(runtimeFonts);
     });
   });
 });

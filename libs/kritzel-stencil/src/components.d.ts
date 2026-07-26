@@ -18,6 +18,7 @@ import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./in
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
+import { KritzelFontMap } from "./interfaces/font.interface";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
@@ -29,14 +30,9 @@ import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
-import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelNotification } from "./interfaces/notification.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
-import { KritzelImage } from "./classes/objects/image.class";
-import { KritzelText } from "./classes/objects/text.class";
-import { KritzelGroup } from "./classes/objects/group.class";
-import { KritzelLine } from "./classes/objects/line.class";
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
@@ -59,6 +55,7 @@ export { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./in
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
+export { KritzelFontMap } from "./interfaces/font.interface";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
@@ -380,6 +377,10 @@ export namespace Components {
         /**
           * @default {}
          */
+        "customFonts": KritzelFontMap;
+        /**
+          * @default {}
+         */
         "customSvgIcons": Record<string, string>;
         "cut": () => Promise<void>;
         /**
@@ -501,6 +502,11 @@ export namespace Components {
         "paste": (x: number, y: number) => Promise<void>;
         "redo": () => Promise<void>;
         /**
+          * Registers custom fonts for the editor runtime.
+          * @param fonts - Mapping from font keys to family names or font definitions.
+         */
+        "registerFonts": (fonts: KritzelFontMap) => Promise<void>;
+        /**
           * Registers additional locale definitions (with optional partial term overrides).
           * @param locales - The locale definitions to register.
          */
@@ -530,7 +536,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default {   providers: [IndexeddbsyncProvider], }
+          * @default {   providers: [IndexedDBSyncProvider], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -1135,10 +1141,7 @@ export namespace Components {
         "size": number;
     }
     interface KritzelFontFamily {
-        /**
-          * @default [     { value: 'arial', label: 'Arial' },     { value: 'verdana', label: 'Verdana' },     { value: 'helvetica', label: 'Helvetica' },     { value: 'tahoma', label: 'Tahoma' },     { value: 'trebuchet ms', label: 'Trebuchet MS' },     { value: 'times new roman', label: 'Times New Roman' },     { value: 'georgia', label: 'Georgia' },     { value: 'garamond', label: 'Garamond' },     { value: 'courier new', label: 'Courier New' },     { value: 'brush script mt', label: 'Brush Script MT' },   ]
-         */
-        "fontOptions": FontOption[];
+        "fontOptions"?: FontOption[];
         "selectedFontFamily": string;
     }
     interface KritzelFontSize {
@@ -2895,6 +2898,10 @@ declare namespace LocalJSX {
         /**
           * @default {}
          */
+        "customFonts"?: KritzelFontMap;
+        /**
+          * @default {}
+         */
         "customSvgIcons"?: Record<string, string>;
         /**
           * @default {     showViewportInfo: false,     showObjectInfo: false,     showSyncProviderInfo: true,     showMigrationInfo: true,     showAssetResolverInfo: false,   }
@@ -2998,7 +3005,7 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         /**
-          * @default {   providers: [IndexeddbsyncProvider], }
+          * @default {   providers: [IndexedDBSyncProvider], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -3246,9 +3253,6 @@ declare namespace LocalJSX {
         "size"?: number;
     }
     interface KritzelFontFamily {
-        /**
-          * @default [     { value: 'arial', label: 'Arial' },     { value: 'verdana', label: 'Verdana' },     { value: 'helvetica', label: 'Helvetica' },     { value: 'tahoma', label: 'Tahoma' },     { value: 'trebuchet ms', label: 'Trebuchet MS' },     { value: 'times new roman', label: 'Times New Roman' },     { value: 'georgia', label: 'Georgia' },     { value: 'garamond', label: 'Garamond' },     { value: 'courier new', label: 'Courier New' },     { value: 'brush script mt', label: 'Brush Script MT' },   ]
-         */
         "fontOptions"?: FontOption[];
         "onFontFamilyChange"?: (event: KritzelFontFamilyCustomEvent<string>) => void;
         "selectedFontFamily"?: string;

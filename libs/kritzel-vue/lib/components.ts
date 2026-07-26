@@ -103,6 +103,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'locales',
   'fallbackLocale',
   'customSvgIcons',
+  'customFonts',
   'isPanningEnabled',
   'isZoomingEnabled',
   'isControlsVisible',

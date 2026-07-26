@@ -46,6 +46,9 @@ import { KritzelLoginConfig as KritzelLoginConfig } from '../../../interfaces/lo
 import { LoginEvent } from '../../../events/login.event';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
 import { ObjectHelper } from '../../../helpers/object.helper';
+import { KritzelFontMap } from '../../../interfaces/font.interface';
+import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
+
 @Component({
   tag: 'kritzel-editor',
   styleUrl: 'kritzel-editor.css',
@@ -215,6 +218,7 @@ export class KritzelEditor {
   /** The locale used to resolve terms missing from the active locale. */
   @Prop() fallbackLocale: LocaleCode = 'en';
   @Prop() customSvgIcons: Record<string, string> = {};
+  @Prop() customFonts: KritzelFontMap = {};
   @Prop({ mutable: true }) isPanningEnabled: boolean = true;
   @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
   @Prop() isControlsVisible: boolean = true;
@@ -317,6 +321,11 @@ export class KritzelEditor {
   @Watch('activeWorkspace')
   onActiveWorkspaceChange() {
     this.updateCurrentIsPublic();
+  }
+
+  @Watch('customFonts')
+  onCustomFontsChange(newValue: KritzelFontMap) {
+    this.registerCustomFonts(newValue);
   }
 
   @Watch('activeWorkspaceId')
@@ -755,6 +764,7 @@ export class KritzelEditor {
 
   componentDidLoad() {
     this.registerCustomSvgIcons();
+    this.registerCustomFonts();
     this.listenForMobileKeyboard();
     this.setOsSpecificCssVariables();
   }
@@ -1092,6 +1102,15 @@ export class KritzelEditor {
   }
 
   /**
+   * Registers custom fonts for the editor runtime.
+   * @param fonts - Mapping from font keys to family names or font definitions.
+   */
+  @Method()
+  async registerFonts(fonts: KritzelFontMap): Promise<void> {
+    this.registerCustomFonts(fonts);
+  }
+
+  /**
    * Resolves a term key to its translated string for the active locale.
    * @param key - The term key to resolve.
    * @param vars - Optional values for `{placeholder}` interpolation.
@@ -1173,6 +1192,10 @@ export class KritzelEditor {
     for (const [name, svg] of Object.entries(this.customSvgIcons)) {
       KritzelIconRegistry.register(name, svg);
     }
+  }
+
+  private registerCustomFonts(fonts: KritzelFontMap = this.customFonts) {
+    KritzelFontRegistry.registerFonts(fonts);
   }
 
   private listenForMobileKeyboard() {
