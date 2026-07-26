@@ -5,6 +5,9 @@ import { KritzelLine } from '../../../classes/objects/line.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
+import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
+import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
+import { KritzelImageTool } from '../../../classes/tools/image-tool.class';
 import { KritzelImage } from '../../../classes/objects/image.class';
 import { KritzelText } from '../../../classes/objects/text.class';
 import { KritzelShape } from '../../../classes/objects/shape.class';
@@ -13,6 +16,7 @@ import { KritzelGroup } from '../../../classes/objects/group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelKeyHandler } from '../../../classes/handlers/key.handler';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
+import { KritzelToolType } from '../../../interfaces/tool-type.interface';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
@@ -743,7 +747,7 @@ export class KritzelEngine {
       return existingTool;
     }
 
-    const registeredTool = this.core.toolRegistry.registerTool(toolName, toolClass);
+    const registeredTool = this.core.toolRegistry.registerTool(toolName, this.resolveToolClass(toolClass));
 
     if (toolConfig) {
       this.applyToolConfig(registeredTool, toolConfig);
@@ -2227,12 +2231,41 @@ export class KritzelEngine {
     return 'fontFamily' in toolConfig && 'size' in toolConfig && 'color' in toolConfig;
   }
 
+  /** Built-in tool classes of this bundle keyed by their tool type. */
+  private static readonly BUILT_IN_TOOL_CLASSES: Partial<Record<KritzelToolType, new (core: KritzelCore) => KritzelBaseTool>> = {
+    selection: KritzelSelectionTool,
+    brush: KritzelBrushTool,
+    eraser: KritzelEraserTool,
+    line: KritzelLineTool,
+    shape: KritzelShapeTool,
+    text: KritzelTextTool,
+    image: KritzelImageTool,
+  };
+
+  /**
+   * Resolves a tool class to the internal built-in class when a foreign copy is passed.
+   * Classes from another compiled copy of the library (dual-package hazard, e.g. built-ins
+   * re-exported by a framework wrapper) would otherwise break `instanceof` checks.
+   */
+  private resolveToolClass(toolClass: new (core: KritzelCore) => KritzelBaseTool): new (core: KritzelCore) => KritzelBaseTool {
+    if (toolClass.prototype instanceof KritzelBaseTool) {
+      return toolClass;
+    }
+
+    try {
+      const probe = new toolClass(this.core);
+      return KritzelEngine.BUILT_IN_TOOL_CLASSES[probe.toolType] ?? toolClass;
+    } catch {
+      return toolClass;
+    }
+  }
+
   get isSelecting() {
-    return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
+    return this.core.store.state.activeTool?.toolType === 'selection' && this.core.store.state.isSelecting;
   }
 
   get isSelectionActive() {
-    return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.selectionGroup !== null;
+    return this.core.store.state.activeTool?.toolType === 'selection' && this.core.store.selectionGroup !== null;
   }
 
   constructor() {
@@ -2596,7 +2629,7 @@ export class KritzelEngine {
   }
 
   private _handleActiveToolChange(activeTool: KritzelBaseTool | null) {
-    if (!(activeTool instanceof KritzelSelectionTool)) {
+    if (activeTool?.toolType !== 'selection') {
       this.core.clearSelection();
       this.core.store.objects?.remove(o => o instanceof KritzelSelectionBox);
       this.core.store.setSelectionBox(null);
@@ -2606,11 +2639,11 @@ export class KritzelEngine {
       this.core.store.state.isRotationHandleSelected = false;
     }
 
-    if (!(activeTool instanceof KritzelTextTool)) {
+    if (activeTool?.toolType !== 'text') {
       this.core.resetActiveText();
     }
 
-    if (!(activeTool instanceof KritzelShapeTool)) {
+    if (activeTool?.toolType !== 'shape') {
       this.core.resetActiveShape();
     }
 
@@ -3850,7 +3883,7 @@ export class KritzelEngine {
 
         {this.core.store.objects?.hasAwareness && <kritzel-awareness-cursors core={this.core}></kritzel-awareness-cursors>}
 
-        {this.core.store.state?.activeTool instanceof KritzelEraserTool && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
+        {this.core.store.state?.activeTool?.toolType === 'eraser' && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
 
         {!this.core.licenseManager.isLicensed && <kritzel-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></kritzel-watermark>}
       </Host>
