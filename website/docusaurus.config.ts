@@ -134,13 +134,6 @@ const config: Config = {
   ],
 
   themeConfig: {
-    announcementBar: {
-      id: 'early_preview',
-      content: 'This is an early preview version. Features and APIs may change.',
-      backgroundColor: '#f5a623',
-      textColor: '#1a1a2e',
-      isCloseable: false,
-    },
     image: "img/docusaurus-social-card.jpg",
     navbar: {
       title: "Kritzel",
@@ -151,35 +144,6 @@ const config: Config = {
         height: 32,
       },
       items: [
-        {
-          type: 'dropdown',
-          label: 'Features',
-          position: 'right',
-          items: [
-            {
-              label: 'Infinite Canvas',
-              to: '/features/infinite-canvas',
-            },
-            {
-              label: 'Framework Agnostic',
-              to: '/features/framework-agnostic',
-            },
-            {
-              label: 'Real-time Collaboration',
-              to: '/features/real-time-collaboration',
-            },
-            {
-              label: 'Drawing Tools',
-              to: '/features/drawing-tools',
-            },
-          ],
-        },
-        {
-          type: 'custom-pricingLink',
-          label: 'Pricing',
-          to: '/pricing',
-          position: 'right',
-        },
         {
           type: 'custom-blogLink',
           label: 'Blog',
@@ -212,6 +176,12 @@ const config: Config = {
               activeBasePath: 'docs/angular'
             },
           ],
+        },
+        {
+          label: 'Get License',
+          to: '/get-license',
+          position: 'right',
+          className: 'navbar-get-license-link',
         },
       ],
     },
@@ -277,30 +247,11 @@ const config: Config = {
             },
           ],
         },
-        {
-          title: 'More',
-          items: [
-            {
-              html: '<a href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer" class="footer__link-item">Demo</a>',
-            },
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
-          ],
-        },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Kritzel. All rights reserved.`,
     },
   } satisfies Preset.ThemeConfig,
   headTags: [
-    {
-      tagName: "link",
-      attributes: {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Schoolbell&display=swap",
-      },
-    },
     // Structured data: WebSite (enables Sitelinks Searchbox eligibility)
     {
       tagName: "script",
@@ -371,37 +322,30 @@ const config: Config = {
           {
             "@type": "SiteNavigationElement",
             position: 4,
-            name: "Features",
-            description: "Infinite canvas, framework-agnostic integration, real-time collaboration, and drawing tools.",
-            url: ABSOLUTE_URL("/features/infinite-canvas"),
-          },
-          {
-            "@type": "SiteNavigationElement",
-            position: 5,
-            name: "Pricing",
-            description: "Kritzel licensing and pricing options.",
-            url: ABSOLUTE_URL("/pricing"),
-          },
-          {
-            "@type": "SiteNavigationElement",
-            position: 6,
             name: "Angular",
             description: "Use Kritzel in Angular applications.",
             url: ABSOLUTE_URL("/docs/angular/overview"),
           },
           {
             "@type": "SiteNavigationElement",
-            position: 7,
+            position: 5,
             name: "React",
             description: "Use Kritzel in React applications.",
             url: ABSOLUTE_URL("/docs/react/overview"),
           },
           {
             "@type": "SiteNavigationElement",
-            position: 8,
+            position: 6,
             name: "Vue",
             description: "Use Kritzel in Vue applications.",
             url: ABSOLUTE_URL("/docs/vue/overview"),
+          },
+          {
+            "@type": "SiteNavigationElement",
+            position: 7,
+            name: "Get License",
+            description: "Contact us to remove the Kritzel editor watermark with a commercial license.",
+            url: ABSOLUTE_URL("/get-license"),
           },
         ],
       }),

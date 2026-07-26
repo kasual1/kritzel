@@ -1,5 +1,7 @@
 import { KritzelEditor } from './kritzel-editor';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
+import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
+import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '../../../constants/text-tool-fonts.constants';
 
 // Simple mock for decorators
 jest.mock('@stencil/core', () => ({
@@ -20,6 +22,11 @@ describe('KritzelEditor', () => {
 
   beforeEach(() => {
     component = new KritzelEditor();
+    component.host = {
+      style: {
+        setProperty: jest.fn(),
+      },
+    } as any;
     
     // Mock the engine ref
     mockEngine = {
@@ -266,6 +273,139 @@ describe('KritzelEditor', () => {
       
       expect(component.currentIsPublic).toBe(true);
       expect(component.isPublicChange.emit).toHaveBeenCalledWith({ isPublic: true, workspaceId: '1' });
+    });
+
+    it('should register custom fonts when the customFonts prop changes', () => {
+      const spy = jest.spyOn(KritzelFontRegistry, 'registerFonts').mockImplementation();
+      const customFonts = {
+        'editor-lora': {
+          family: 'Lora',
+          cssFontFamily: "'Lora', serif",
+        },
+      };
+
+      component.onCustomFontsChange(customFonts);
+
+      expect(spy).toHaveBeenCalledWith(customFonts);
+    });
+
+    it('should register custom fonts in componentDidLoad', () => {
+      const spy = jest.spyOn(KritzelFontRegistry, 'registerFonts').mockImplementation();
+      component.customFonts = {
+        'editor-inter': {
+          family: 'Inter',
+          cssFontFamily: "'Inter', sans-serif",
+        },
+      };
+
+      component.componentDidLoad();
+
+      expect(spy).toHaveBeenCalledWith(component.customFonts);
+    });
+
+    it('should register custom fonts through the public method', async () => {
+      const spy = jest.spyOn(KritzelFontRegistry, 'registerFonts').mockImplementation();
+      const runtimeFonts = {
+        'editor-space-grotesk': {
+          family: 'Space Grotesk',
+          cssFontFamily: "'Space Grotesk', sans-serif",
+        },
+      };
+
+      await component.registerFonts(runtimeFonts);
+
+      expect(spy).toHaveBeenCalledWith(runtimeFonts);
+    });
+
+    it('should normalize controls with default text fonts when availableFonts is missing', () => {
+      component.controls = [
+        {
+          name: 'text',
+          type: 'tool',
+          config: {
+            color: { light: '#000', dark: '#fff' },
+            size: 16,
+            fontFamily: 'Arial',
+            palette: [],
+          } as any,
+        } as any,
+      ];
+
+      component.onControlsChange(component.controls);
+
+      const normalizedConfig = (component as any).normalizedControls[0].config;
+      expect(normalizedConfig.availableFonts).toEqual(DEFAULT_TEXT_TOOL_AVAILABLE_FONTS);
+    });
+
+    it('should preserve explicitly configured text fonts in controls', () => {
+      component.controls = [
+        {
+          name: 'text',
+          type: 'tool',
+          config: {
+            color: { light: '#000', dark: '#fff' },
+            size: 16,
+            fontFamily: 'Lora',
+            availableFonts: [
+              {
+                family: 'Lora',
+                cssFontFamily: "'Lora', serif",
+              },
+            ],
+            palette: [],
+          } as any,
+        } as any,
+      ];
+
+      component.onControlsChange(component.controls);
+
+      const normalizedConfig = (component as any).normalizedControls[0].config;
+      expect(normalizedConfig.availableFonts).toEqual([
+        {
+          family: 'Lora',
+          cssFontFamily: "'Lora', serif",
+        },
+      ]);
+    });
+
+    it('should wait for custom fonts before emitting isReady', async () => {
+      const deferred = (() => {
+        let resolve!: () => void;
+        const promise = new Promise<void>(res => {
+          resolve = res;
+        });
+        return { promise, resolve };
+      })();
+
+      const customElementsSpy = jest.spyOn(customElements, 'whenDefined').mockResolvedValue(undefined as any);
+      const waitForFontsSpy = jest.spyOn(KritzelFontRegistry, 'waitForFonts').mockReturnValue(deferred.promise);
+      component.isReady = { emit: jest.fn() } as any;
+      component.customFonts = {
+        'editor-racing': {
+          family: 'Racing Sans One',
+          cssFontFamily: "'Racing Sans One', sans-serif",
+        },
+      };
+      component.isEngineReady = true;
+      component.isControlsReady = true;
+      component.isWorkspaceManagerReady = true;
+      component.activeWorkspace = { id: 'workspace-1', name: 'Workspace 1', isPublic: false } as any;
+
+      component.componentDidLoad();
+
+      const readyPromise = component.checkIsReady();
+
+      expect(waitForFontsSpy).toHaveBeenCalledWith(component.customFonts);
+      expect(component.isReady.emit).not.toHaveBeenCalled();
+
+      deferred.resolve();
+      await readyPromise;
+
+      expect(component.isEditorVisible).toBe(true);
+      expect(component.isReady.emit).toHaveBeenCalled();
+
+      customElementsSpy.mockRestore();
+      waitForFontsSpy.mockRestore();
     });
   });
 });

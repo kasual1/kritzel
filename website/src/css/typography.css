@@ -1,5 +1,8 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/inter/wght-italic.css";
+
 *:not(kritzel-button) {
-  font-family: "Schoolbell", cursive !important;
+  font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
 html {
@@ -38,23 +41,23 @@ h3 {
 p {
   font-size: 0.9rem;
   opacity: 0.75;
-  font-family: Arial, sans-serif !important;
+  font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
 .markdown p {
   font-size: 0.9rem;
   opacity: 0.75;
-  font-family: Arial, sans-serif !important;
+  font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
 .markdown strong,
 .markdown b {
-  font-family: Arial, sans-serif !important;
+  font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
 .markdown em,
 .markdown i {
-  font-family: Arial, sans-serif !important;
+  font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
 table {
@@ -89,11 +92,11 @@ table td {
 }
 
 table td {
-  font-family: Arial, sans-serif !important;
+  font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
 .markdown a {
-  font-family: Arial, sans-serif !important;
+  font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
 .markdown ul,
@@ -101,7 +104,7 @@ table td {
 .markdown li {
   font-size: 0.9rem;
   color: var(--ifm-text-color-light);
-  font-family: Arial, sans-serif !important;
+  font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
 nav.menu {

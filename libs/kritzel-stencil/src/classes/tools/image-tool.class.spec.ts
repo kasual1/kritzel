@@ -242,6 +242,30 @@ describe('KritzelImageTool', () => {
 
       expect(KritzelImage.fromBlob).toHaveBeenCalledWith(mockCore, compressedFile);
     });
+
+    it('should pass GIF files to KritzelImage.fromBlob without compression', async () => {
+      const gifFile = new File(['gif-data'], 'animated.gif', { type: 'image/gif' });
+      const event = { target: { files: [gifFile] } } as unknown as Event;
+
+      handleFileSelect(event);
+      await new Promise(process.nextTick);
+      await new Promise(process.nextTick);
+
+      expect(mockImageCompression).not.toHaveBeenCalled();
+      expect(KritzelImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile);
+    });
+
+    it('should preserve GIF files identified by extension when the MIME type is empty', async () => {
+      const gifFile = new File(['gif-data'], 'animated.GIF');
+      const event = { target: { files: [gifFile] } } as unknown as Event;
+
+      handleFileSelect(event);
+      await new Promise(process.nextTick);
+      await new Promise(process.nextTick);
+
+      expect(mockImageCompression).not.toHaveBeenCalled();
+      expect(KritzelImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile);
+    });
   });
 
   // ============================================

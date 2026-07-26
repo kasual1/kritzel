@@ -1,0 +1,21 @@
+.categoryLink {
+  overflow: hidden;
+}
+
+.categoryLinkLabel {
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.categoryChevron {
+  flex-shrink: 0;
+  margin-left: var(--ifm-menu-link-padding-vertical);
+}
+
+.caret::before {
+  display: none;
+}

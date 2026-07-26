@@ -1,6 +1,7 @@
 import { KritzelBaseTool } from '../classes/tools/base-tool.class';
 import { ShapeType } from '../enums/shape-type.enum';
 import { ThemeAwareColor } from '../constants/color-palette.constants';
+import { KritzelFontRegistration } from './font.interface';
 
 export interface KritzelToolbarSubOption {
   id: string;
@@ -25,6 +26,7 @@ export interface KritzelTextToolConfig {
   size: number;
   opacity?: number;
   fontFamily: string;
+  availableFonts?: KritzelFontRegistration[];
   palette: ThemeAwareColor[];
   sizes?: number[];
 }

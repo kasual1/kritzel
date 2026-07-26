@@ -364,6 +364,26 @@ describe('KritzelClipboardManager', () => {
       expect(mockCore.addObject).toHaveBeenCalledWith(imageObject);
     });
 
+    it('pastes GIF files without compression', async () => {
+      const gifFile = new File(['gif-data'], 'animated.gif', { type: 'image/gif' });
+      const imageObject = makeRevived();
+
+      jest.spyOn(KritzelImage, 'fromBlob').mockResolvedValue(imageObject);
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+
+      await manager.paste(undefined, undefined, {
+        clipboardData: {
+          files: [gifFile],
+          types: [],
+          getData: jest.fn(),
+        },
+      } as any);
+
+      expect(imageCompression).not.toHaveBeenCalled();
+      expect(KritzelImage.fromBlob).toHaveBeenCalledWith(mockCore, gifFile, { translateX: 0, translateY: 0 });
+      expect(mockCore.addObject).toHaveBeenCalledWith(imageObject);
+    });
+
     it('keeps an explicit paste position', async () => {
       const revived = makeRevived();
       jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revived);
