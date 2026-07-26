@@ -7,7 +7,17 @@ import {
   setupRocketTodoRenderer,
 } from "./custom-elements/rocketTodoCustomElement";
 
-const INITIAL_WORKSPACE_EXPORT_URL = encodeURI("/New Workspace-2026-07-24T16-40-54.json");
+const INITIAL_WORKSPACE_EXPORT_URL = encodeURI("/New Workspace-2026-07-25T11-57-58.json");
+const RACING_SANS_ONE_STYLESHEET_URL = "https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap";
+
+const WEBSITE_HERO_CUSTOM_FONTS = {
+  "website-hero-racing-sans-one": {
+    family: "Racing Sans One",
+    label: "Racing Sans One",
+    cssFontFamily: "'Racing Sans One', sans-serif",
+    source: RACING_SANS_ONE_STYLESHEET_URL,
+  },
+};
 
 const hostStyle: CSSProperties = {
   display: "block",
@@ -19,12 +29,25 @@ export function WebsiteHeroPage() {
   const hasImportedInitialWorkspace = useRef(false);
 
   useEffect(() => {
+    const linkElementId = "website-hero-racing-sans-one-font";
+    let injectedLinkElement: HTMLLinkElement | null = null;
+
+    if (!document.getElementById(linkElementId)) {
+      const link = document.createElement("link");
+      link.id = linkElementId;
+      link.rel = "stylesheet";
+      link.href = RACING_SANS_ONE_STYLESHEET_URL;
+      document.head.appendChild(link);
+      injectedLinkElement = link;
+    }
+
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
     const cleanupImageStackRenderer = setupImageStackRenderer();
 
     return () => {
       cleanupRocketTodoRenderer();
       cleanupImageStackRenderer();
+      injectedLinkElement?.remove();
     };
   }, []);
 
@@ -70,6 +93,7 @@ export function WebsiteHeroPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="website-hero"
+        customFonts={WEBSITE_HERO_CUSTOM_FONTS}
         isPanningEnabled={true}
         isZoomingEnabled={true}
         isMoreMenuVisible={true}

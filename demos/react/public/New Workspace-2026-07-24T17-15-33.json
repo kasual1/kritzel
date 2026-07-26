@@ -1,0 +1,473 @@
+{
+  "__class__": "KritzelWorkspace",
+  "version": "1.2.0",
+  "id": "j7bS6SqAmSW7Gzq5",
+  "name": "New Workspace",
+  "createdAt": "2026-07-24T17:08:33.249Z",
+  "updatedAt": "2026-07-24T17:15:28.305Z",
+  "viewport": {
+    "centerWorldX": -45.42435082115441,
+    "centerWorldY": 144.13458870607775,
+    "scale": 0.6426511416405158
+  },
+  "isPublic": false,
+  "objects": [
+    {
+      "__class__": "KritzelCustomElement",
+      "id": "P1qOk9Eg5DJZKDM1",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": -1225,
+      "translateY": -482,
+      "height": 563,
+      "width": 440,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 1,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": false,
+      "rendererKey": "website-hero-rocket-todo",
+      "rendererData": {
+        "items": [
+          {
+            "id": "fuel",
+            "title": "Confirm propellant tanks are filled and pressure-stable",
+            "isChecked": true
+          },
+          {
+            "id": "telemetry",
+            "title": "Verify live telemetry stream from all critical sensors",
+            "isChecked": true
+          },
+          {
+            "id": "weather",
+            "title": "Approve weather and lightning window for launch corridor",
+            "isChecked": true
+          },
+          {
+            "id": "range",
+            "title": "Receive final range safety clearance and abort readiness",
+            "isChecked": true
+          },
+          {
+            "id": "crew",
+            "title": "Run final crew and mission control communication check",
+            "isChecked": false
+          }
+        ]
+      },
+      "htmlString": "<div style=\"pointer-events: none;\">Loading Launch Checklist...</div>",
+      "serializedWidth": 440,
+      "serializedHeight": 563
+    },
+    {
+      "__class__": "KritzelImage",
+      "id": "baujeZ0wpZSU7Imp",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 0,
+      "y": 0,
+      "translateX": -473,
+      "translateY": -402,
+      "height": 1158,
+      "width": 214,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 3,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "assetId": "9feaef82-f164-49e7-95f5-b52fa546f121",
+      "mimeType": "image/png",
+      "src": "",
+      "maxWidth": 300,
+      "maxHeight": 300,
+      "maxCompressionSize": 1200,
+      "maxLoadAttempts": 3,
+      "maxTransientRetryDurationMs": 30000
+    },
+    {
+      "__class__": "KritzelLine",
+      "id": "5M61klKi9m2C2P3D",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 732.4036511145184,
+      "y": 427.8358386255144,
+      "translateX": -1007,
+      "translateY": -202.5,
+      "height": 547.4728163324319,
+      "width": 643,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 5,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "startX": 734.4036511145184,
+      "startY": 429.8358386255144,
+      "endX": 1373.4036511145184,
+      "endY": 807.3358386255144,
+      "controlX": 804.2030125514649,
+      "controlY": 1273.6446566740444,
+      "stroke": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "strokeWidth": 4,
+      "options": {
+        "startX": 1629.5398815316155,
+        "startY": 1387.9464065582715,
+        "endX": 1921.3977707611587,
+        "endY": 1400.9178683018067,
+        "translateX": -1739.4036511145184,
+        "translateY": -630.3358386255144,
+        "scale": 1,
+        "stroke": {
+          "light": "#000000",
+          "dark": "#ffffff",
+          "label": "Primary"
+        },
+        "strokeWidth": 4,
+        "opacity": 1,
+        "arrows": {
+          "end": {
+            "enabled": true,
+            "style": "triangle"
+          }
+        }
+      },
+      "startAnchor": {
+        "objectId": "P1qOk9Eg5DJZKDM1"
+      },
+      "endAnchor": {
+        "objectId": "baujeZ0wpZSU7Imp"
+      },
+      "arrows": {
+        "end": {
+          "enabled": true,
+          "style": "triangle"
+        }
+      },
+      "isDebugInfoVisible": true,
+      "isCompleted": true
+    },
+    {
+      "__class__": "KritzelLine",
+      "id": "Y7aICp50nJgV1Tnk",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 1371.4036511145184,
+      "y": 669.0743647370957,
+      "translateX": -368,
+      "translateY": 38.738526111581336,
+      "height": 319.1383492504101,
+      "width": 576.7920899507037,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 6,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "startX": 1373.4036511145184,
+      "startY": 807.3358386255144,
+      "endX": 1946.1957410652221,
+      "endY": 986.2127139875058,
+      "controlX": 1838.9680114224511,
+      "controlY": 463.8517406160213,
+      "stroke": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "strokeWidth": 4,
+      "options": {
+        "startX": 1707.368651992827,
+        "startY": 1371.7320793788524,
+        "endX": 2002.469406658254,
+        "endY": 1358.7606176353172,
+        "translateX": -1739.4036511145184,
+        "translateY": -630.3358386255144,
+        "scale": 1,
+        "stroke": {
+          "light": "#000000",
+          "dark": "#ffffff",
+          "label": "Primary"
+        },
+        "strokeWidth": 4,
+        "opacity": 1,
+        "arrows": {
+          "end": {
+            "enabled": true,
+            "style": "triangle"
+          }
+        }
+      },
+      "startAnchor": {
+        "objectId": "baujeZ0wpZSU7Imp"
+      },
+      "endAnchor": {
+        "objectId": "1pEOJL6idhY15FCX"
+      },
+      "arrows": {
+        "end": {
+          "enabled": true,
+          "style": "triangle"
+        }
+      },
+      "isDebugInfoVisible": true,
+      "isCompleted": true
+    },
+    {
+      "__class__": "KritzelImage",
+      "id": "1pEOJL6idhY15FCX",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 0,
+      "y": 0,
+      "translateX": 66.79208995070384,
+      "translateY": 215.87687536199147,
+      "height": 280,
+      "width": 280,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 4,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "assetId": "67177f24-c756-4a78-8d99-388925c524a8",
+      "mimeType": "image/gif",
+      "src": "",
+      "maxWidth": 300,
+      "maxHeight": 300,
+      "maxCompressionSize": 1200,
+      "maxLoadAttempts": 3,
+      "maxTransientRetryDurationMs": 30000
+    },
+    {
+      "__class__": "KritzelCustomElement",
+      "id": "SgqctumaolzpWZZg",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": 603.8864274860077,
+      "translateY": -476.75713456411626,
+      "height": 364,
+      "width": 364,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 2,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": false,
+      "rendererKey": "website-hero-image-stack",
+      "rendererData": {
+        "selectedImageIds": [
+          "img-1",
+          "img-2",
+          "img-3",
+          "img-4",
+          "img-5"
+        ],
+        "currentIndex": 0
+      },
+      "htmlString": "<div style=\"pointer-events: none;\">Loading Image Stack...</div>",
+      "serializedWidth": 364,
+      "serializedHeight": 364
+    },
+    {
+      "__class__": "KritzelLine",
+      "id": "1ft0C2oPSIn9em8Y",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "x": 1944.1957410652221,
+      "y": 333.5787040613981,
+      "translateX": 204.7920899507037,
+      "translateY": -296.75713456411626,
+      "height": 1007.3026895270548,
+      "width": 584.3502632039185,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 7,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "startX": 1946.1957410652221,
+      "startY": 986.2127139875058,
+      "endX": 2525.290078600526,
+      "endY": 335.5787040613981,
+      "controlX": 2553.543722549488,
+      "controlY": 1933.7203926088482,
+      "stroke": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "strokeWidth": 4,
+      "options": {
+        "startX": 2043.0052246068017,
+        "startY": 1329.574828712363,
+        "endX": 2360.8060373234152,
+        "endY": 1199.8602112770104,
+        "translateX": -1739.4036511145184,
+        "translateY": -630.3358386255144,
+        "scale": 1,
+        "stroke": {
+          "light": "#000000",
+          "dark": "#ffffff",
+          "label": "Primary"
+        },
+        "strokeWidth": 4,
+        "opacity": 1,
+        "arrows": {
+          "end": {
+            "enabled": true,
+            "style": "triangle"
+          }
+        }
+      },
+      "startAnchor": {
+        "objectId": "1pEOJL6idhY15FCX"
+      },
+      "endAnchor": {
+        "objectId": "SgqctumaolzpWZZg"
+      },
+      "arrows": {
+        "end": {
+          "enabled": true,
+          "style": "triangle"
+        }
+      },
+      "isDebugInfoVisible": true,
+      "isCompleted": true
+    },
+    {
+      "__class__": "KritzelText",
+      "id": "CVgjxbbYPpu6Mn0w",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": -677.4935617511784,
+      "translateY": -507.3852995666962,
+      "height": 169.8046710870023,
+      "width": 999.9608408456803,
+      "backgroundColor": {
+        "light": "transparent",
+        "dark": "transparent"
+      },
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 0,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": true,
+      "isMounted": true,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "fontFamily": "Racing Sans One",
+      "fontSize": 16,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "initialWidth": 1,
+      "initialHeight": 19.2,
+      "scaleFactor": 6.289061892111197,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "isNewlyCreated": false,
+      "content": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Launch a Rocket"
+              }
+            ]
+          }
+        ]
+      },
+      "rows": 1
+    },
+    {
+      "__class__": "KritzelText",
+      "id": "Lakce2FTjOEowWiE",
+      "workspaceId": "j7bS6SqAmSW7Gzq5",
+      "translateX": -658.8209115021375,
+      "translateY": -526.680371490706,
+      "height": 38.108224632608454,
+      "width": 142.9058423722817,
+      "backgroundColor": {
+        "light": "transparent",
+        "dark": "transparent"
+      },
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 8,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": true,
+      "isMounted": true,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "fontFamily": "Courier New",
+      "fontSize": 16,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "initialWidth": 1,
+      "initialHeight": 19.2,
+      "scaleFactor": 1.5878426930253524,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "isNewlyCreated": false,
+      "content": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "How to:"
+              }
+            ]
+          }
+        ]
+      },
+      "rows": 1
+    }
+  ]
+}
