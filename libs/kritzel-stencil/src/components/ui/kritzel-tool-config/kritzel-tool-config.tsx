@@ -9,6 +9,9 @@ import { KritzelColorHelper } from '../../../helpers/color.helper';
 import { ThemeAwareColor } from '../../../constants/color-palette.constants';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelTermKey } from '../../../interfaces/localization.interface';
+import { KritzelFontRegistration } from '../../../interfaces/font.interface';
+import { FontOption } from '../../shared/kritzel-font-family/kritzel-font-family';
+import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
 
 @Component({
   tag: 'kritzel-tool-config',
@@ -83,6 +86,24 @@ export class KritzelToolConfig {
   @State() sizes: number[] = [];
   @State() currentOpacity: number = 1;
   @State() private updateTrigger: number = 0;
+
+  private getFontOptionsFromTool(): FontOption[] | undefined {
+    const availableFonts = (this.tool as { availableFonts?: KritzelFontRegistration[] }).availableFonts;
+
+    if (!availableFonts || availableFonts.length === 0) {
+      return undefined;
+    }
+
+    return availableFonts.map(font => {
+      const registeredFont = KritzelFontRegistry.toRegisteredFont(font);
+
+      return {
+        value: registeredFont.family,
+        label: registeredFont.label,
+        cssFontFamily: registeredFont.cssFontFamily,
+      };
+    });
+  }
 
   handleSelectionChange() {
     if (this.tool instanceof KritzelSelectionTool) {
@@ -268,6 +289,7 @@ export class KritzelToolConfig {
         return (
           <kritzel-font-family
             key={control.type}
+            fontOptions={this.getFontOptionsFromTool()}
             selectedFontFamily={value}
             onFontFamilyChange={(event: CustomEvent<string>) =>
               this.handlePropertyChange(control.propertyName, event.detail)

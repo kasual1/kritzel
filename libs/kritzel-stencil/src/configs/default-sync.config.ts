@@ -1,9 +1,9 @@
 import { KritzelSyncConfig } from '../interfaces/sync-config.interface';
-import { IndexeddbsyncProvider } from '../providers/indexeddb-sync.provider';
+import { IndexedDBSyncProvider } from '../classes/providers/sync/indexeddb-sync-provider.class';
 
 /**
  * Default sync configuration - None
  */
 export const DEFAULT_SYNC_CONFIG: KritzelSyncConfig = {
-  providers: [IndexeddbsyncProvider],
+  providers: [IndexedDBSyncProvider],
 };

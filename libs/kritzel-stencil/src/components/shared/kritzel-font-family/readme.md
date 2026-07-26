@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property             | Attribute              | Description | Type           | Default                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| -------------------- | ---------------------- | ----------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `fontOptions`        | --                     |             | `FontOption[]` | `[     { value: 'arial', label: 'Arial' },     { value: 'verdana', label: 'Verdana' },     { value: 'helvetica', label: 'Helvetica' },     { value: 'tahoma', label: 'Tahoma' },     { value: 'trebuchet ms', label: 'Trebuchet MS' },     { value: 'times new roman', label: 'Times New Roman' },     { value: 'georgia', label: 'Georgia' },     { value: 'garamond', label: 'Garamond' },     { value: 'courier new', label: 'Courier New' },     { value: 'brush script mt', label: 'Brush Script MT' },   ]` |
-| `selectedFontFamily` | `selected-font-family` |             | `string`       | `undefined`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Property             | Attribute              | Description | Type           | Default     |
+| -------------------- | ---------------------- | ----------- | -------------- | ----------- |
+| `fontOptions`        | --                     |             | `FontOption[]` | `undefined` |
+| `selectedFontFamily` | `selected-font-family` |             | `string`       | `undefined` |
 
 
 ## Events

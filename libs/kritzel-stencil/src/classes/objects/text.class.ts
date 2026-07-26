@@ -12,6 +12,7 @@ import { baseKeymap } from 'prosemirror-commands';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 import { KritzelColorHelper } from '../../helpers/color.helper';
 import { KritzelMathHelper } from '../../helpers/math.helper';
+import { KritzelFontRegistry } from '../registries/font-registry.class';
 
 /**
  * Represents a text object on the canvas that supports rich text editing via ProseMirror.
@@ -190,7 +191,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       return;
     }
 
-    element.style.fontFamily = this.fontFamily;
+    element.style.fontFamily = KritzelFontRegistry.resolveCssFontFamily(this.fontFamily);
     element.style.fontSize = `${this.fontSize}pt`;
     element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
 
